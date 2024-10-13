@@ -21,7 +21,7 @@ function Content() {
           <View className='flex flex-col items-center gap-4 text-center'>
             <Text
               role='heading'
-              className='text-3xl text-center native:text-5xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl'
+              className='text-2xl text-center native:text-5xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl'
             >
               Welcome to Project writer
             </Text>
