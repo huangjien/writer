@@ -1,13 +1,14 @@
 {
   "name": "writer",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "main": "expo-router/entry",
   "scripts": {
     "prettier": "prettier --write .",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "prepare": "husky"
   },
   "dependencies": {
     "@react-native-picker/picker": "2.7.5",
@@ -18,6 +19,7 @@
     "expo-speech": "~12.0.2",
     "expo-splash-screen": "~0.27.6",
     "expo-status-bar": "~1.12.1",
+    "husky": "^9.1.6",
     "nativewind": "^4.0.1",
     "prettier": "^3.3.3",
     "react": "18.2.0",

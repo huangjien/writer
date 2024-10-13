@@ -1,0 +1,1 @@
+npm --no-git-tag-version version patch && git add .
