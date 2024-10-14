@@ -2,6 +2,8 @@ import { Link } from 'expo-router';
 import React from 'react';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { FontAwesome } from '@expo/vector-icons';
+import packageJson from '../../package.json';
 
 export default function Page() {
   return (
@@ -36,7 +38,7 @@ function Content() {
                 className='flex h-9 items-center justify-center overflow-hidden rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-50 web:shadow ios:shadow transition-colors hover:bg-gray-900/90 active:bg-gray-400/90 web:focus-visible:outline-none web:focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300'
                 href='/'
               >
-                Login
+                <FontAwesome name='user' size={24} />
               </Link>
             </View>
           </View>
@@ -56,27 +58,31 @@ function Header() {
         </Link>
         <View className='flex flex-row gap-4 sm:gap-6'>
           <Link
-            className='text-md font-medium hover:underline web:underline-offset-4'
+            className='text-md m-1 p-1 font-medium hover:underline web:underline-offset-4'
             href='/'
           >
+            <FontAwesome name='info' />
             About
           </Link>
           <Link
-            className='text-md font-medium hover:underline web:underline-offset-4'
+            className='text-md m-1 p-1 font-medium hover:underline web:underline-offset-4'
             href='/'
           >
+            <FontAwesome name='code' />
             GitHub
           </Link>
           <Link
-            className='text-md font-medium hover:underline web:underline-offset-4'
+            className='text-md m-1 p-1 font-medium hover:underline web:underline-offset-4'
             href='/read'
           >
+            <FontAwesome name='bookmark' />
             Read
           </Link>
           <Link
-            className='text-md font-medium hover:underline web:underline-offset-4'
+            className='text-md m-1 p-1 font-medium hover:underline web:underline-offset-4'
             href='/setting'
           >
+            <FontAwesome name='gear' />
             Setting
           </Link>
         </View>
@@ -94,7 +100,8 @@ function Footer() {
     >
       <View className='py-6 flex-1 items-start px-4 md:px-6 '>
         <Text className={'text-center text-gray-700'}>
-          © {new Date().getFullYear()} Me
+          © {new Date().getFullYear()} &nbsp; {packageJson.copyright} &nbsp;{' '}
+          {packageJson.author} &nbsp; {packageJson.version}
         </Text>
       </View>
     </View>
