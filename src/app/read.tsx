@@ -1,29 +1,53 @@
-import { Text, View, Button, Pressable } from 'react-native';
+import { Text, View, Button, Pressable, ScrollView } from 'react-native';
 import * as Speech from 'expo-speech';
 import { Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
 
 export default function Page() {
+  const { bottom } = useSafeAreaInsets();
   const [items, setItems] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState('zh');
   const [voice, setVoice] = useState('zh');
+  const forceUpdate = useCallback(() => setStatus('stopped'), []);
+  const [content, SetContent] = useState(
+    '白日何短短，百年苦易满。苍穹浩茫茫，万劫太极长。麻姑垂两鬓，一半已成霜。天公见玉女，大笑亿千场。吾欲揽六龙，回车挂扶桑。北斗酌美酒，劝龙各一觞。富贵非所愿，与人驻颜光。'
+  );
+
+  const [status, setStatus] = useState('stopped'); // it only has 3 statuses: stopped, playing, paused
   const speak = () => {
-    const thingToSay =
-      '白日何短短，百年苦易满。苍穹浩茫茫，万劫太极长。麻姑垂两鬓，一半已成霜。天公见玉女，大笑亿千场。吾欲揽六龙，回车挂扶桑。北斗酌美酒，劝龙各一觞。富贵非所愿，与人驻颜光。';
-    Speech.speak(thingToSay, { language: selectedLanguage, voice: voice });
+    if (status === 'paused') {
+      setStatus('playing');
+      Speech.resume();
+    }
+    if (status === 'stopped') {
+      setStatus('playing');
+      Speech.speak(content, {
+        language: selectedLanguage,
+        voice: voice,
+        onDone: () => {
+          setStatus('stopped');
+          console.log('reading finished, what next?');
+          forceUpdate();
+        },
+      });
+    }
   };
   useEffect(() => {
     Speech.getAvailableVoicesAsync()
       .then((res) => {
-        // console.log(JSON.stringify(res, null, 2));
         let count = 0;
         let arr = [];
         res.map((v) => {
           v['key'] = count.toString();
           count++;
-          // console.log(v)
           arr.push(v);
         });
         return arr;
@@ -39,38 +63,113 @@ export default function Page() {
   ));
 
   const handleSelected = (itemValue, itemPosition) => {
-    console.log(itemValue, itemPosition);
     setVoice(items[itemPosition].identifier);
-    console.log(items[itemPosition]);
     setSelectedLanguage(itemValue);
   };
+
+  const doubleTap = Gesture.Tap()
+    .numberOfTaps(3)
+    .onStart(() => {
+      // console.log('double taps')
+      if (status === 'paused') {
+        setStatus('playing');
+        Speech.resume();
+      }
+      if (status === 'stopped') {
+        setStatus('playing');
+        Speech.speak(content, {
+          language: selectedLanguage,
+          voice: voice,
+          onDone: () => {
+            setStatus('stopped');
+            console.log('reading finished, what next?');
+            forceUpdate();
+          },
+        });
+      }
+      if (status === 'playing') {
+        Speech.stop();
+        setStatus('stopped');
+      }
+    });
   return (
-    <View className='  m-2 p-2 gap-4  items-center '>
-      <Text>Max Read Length: {Speech.maxSpeechInputLength}</Text>
-      <Picker
-        prompt='Language: '
-        onValueChange={(itemValue, itemPosition) => {
-          handleSelected(itemValue, itemPosition);
-        }}
-      >
-        {renderItemList}
-      </Picker>
-      <View className='bottom-4 right-1 inline-flex flex-row m-2 p-2 gap-8 justify-between '>
-        <Pressable onPress={speak}>
-          <FontAwesome size={24} name='play' />
+    <GestureHandlerRootView>
+      <GestureDetector gesture={doubleTap}>{content_area()}</GestureDetector>
+      <View className='flex bg-gray-200'>
+        <View className='py-0 flex-1 items-end px-4 md:px-6 right-0 bottom-0 '>
+          {play_bar()}
+        </View>
+      </View>
+    </GestureHandlerRootView>
+  );
+
+  function play_bar() {
+    return (
+      <View className='inline-flex flex-row m-2 gap-16 justify-between '>
+        <Text className='sm:hidden xs:hidden'>
+          Max Read Length: {Speech.maxSpeechInputLength}
+        </Text>
+        <Picker
+          className='sm:hidden'
+          prompt='Language: '
+          onValueChange={(itemValue, itemPosition) => {
+            handleSelected(itemValue, itemPosition);
+          }}
+        >
+          {renderItemList}
+        </Picker>
+        <Pressable disabled={status === 'playing'} onPress={speak}>
+          <FontAwesome
+            size={24}
+            name='play'
+            color={status === 'playing' ? 'grey' : 'primary'}
+          />
         </Pressable>
 
         {/* <Button title='Play' onPress={speak} /> */}
         {Platform.OS !== 'android' && (
           <>
-            <Button title='Pause' onPress={Speech.pause} />
-            <Button title='Resume' onPress={Speech.resume} />
+            <Pressable
+              disabled={status !== 'playing'}
+              onPress={() => {
+                Speech.pause();
+                setStatus('paused');
+              }}
+            >
+              <FontAwesome
+                size={24}
+                name='pause'
+                color={status !== 'playing' ? 'grey' : 'primary'}
+              />
+            </Pressable>
           </>
         )}
-        <Pressable onPress={Speech.stop}>
-          <FontAwesome size={24} name='stop' />
+        <Pressable
+          disabled={status === 'stopped'}
+          onPress={() => {
+            Speech.stop();
+            setStatus('stopped');
+          }}
+        >
+          <FontAwesome
+            size={24}
+            name='stop'
+            color={status === 'stopped' ? 'grey' : 'primary'}
+          />
         </Pressable>
       </View>
-    </View>
-  );
+    );
+  }
+
+  function content_area() {
+    return (
+      <View className='flex-1 py-12 md:py-24 lg:py-32 xl:py-48 px-4 md:px-6'>
+        <View className='flex flex-col m-2 p-2 items-center gap-4 text-center'>
+          <ScrollView>
+            <Text className='text-lg text-pretty'>{content}</Text>
+          </ScrollView>
+        </View>
+      </View>
+    );
+  }
 }
