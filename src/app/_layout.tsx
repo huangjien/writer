@@ -66,12 +66,12 @@ function Footer() {
       className='fixed inline-flex flex-row bg-gray-100 h-5'
       style={{ paddingBottom: bottom }}
     >
-      <Text className='sm:hidden xs:inline'>xs</Text>
+      {/* <Text className='sm:hidden xs:inline'>xs</Text>
       <Text className='hidden sm:inline md:hidden'>sm</Text>
       <Text className='hidden md:inline lg:hidden'>md</Text>
       <Text className='hidden lg:inline xl:hidden'>lg</Text>
       <Text className='hidden xl:inline'>xl</Text>
-      <Text className='hidden 2xl:inline'>2xl</Text>
+      <Text className='hidden 2xl:inline'>2xl</Text> */}
 
       <Text className={'ml-2 text-center text-gray-700'}>
         © {new Date().getFullYear()} &nbsp; {packageJson.copyright} &nbsp;{' '}

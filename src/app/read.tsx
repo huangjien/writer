@@ -88,8 +88,13 @@ export default function Page() {
         });
       }
       if (status === 'playing') {
-        Speech.stop();
-        setStatus('stopped');
+        if (Platform.OS === 'android') {
+          Speech.stop();
+          setStatus('stopped');
+        } else {
+          Speech.pause();
+          setStatus('paused');
+        }
       }
     })
     .runOnJS(true);
@@ -121,7 +126,9 @@ export default function Page() {
             {renderItemList}
           </Picker>
         </View>
-        <Text>Max Read Length: {Speech.maxSpeechInputLength}</Text>
+        <Text className='hidden lg:inline'>
+          Max Read Length: {Speech.maxSpeechInputLength}
+        </Text>
 
         <Pressable disabled={status === 'playing'} onPress={speak}>
           <FontAwesome
