@@ -8,7 +8,7 @@ import packageJson from '../../package.json';
 
 export default function Layout() {
   return (
-    <View className='flex flex-1'>
+    <View className='flex flex-shrink-0 flex-1 flex-col h-screen'>
       <Header />
       <Slot />
       <Footer />
@@ -62,13 +62,21 @@ function Header() {
 function Footer() {
   const { bottom } = useSafeAreaInsets();
   return (
-    <View className='flex bg-gray-100 ' style={{ paddingBottom: bottom }}>
-      <View className='py-2 flex-1 items-start px-4 md:px-6 '>
-        <Text className={'text-center text-gray-700'}>
-          © {new Date().getFullYear()} &nbsp; {packageJson.copyright} &nbsp;{' '}
-          {packageJson.author} &nbsp; {packageJson.version}
-        </Text>
-      </View>
+    <View
+      className='fixed inline-flex flex-row bg-gray-100 h-5'
+      style={{ paddingBottom: bottom }}
+    >
+      <Text className='sm:hidden xs:inline'>xs</Text>
+      <Text className='hidden sm:inline md:hidden'>sm</Text>
+      <Text className='hidden md:inline lg:hidden'>md</Text>
+      <Text className='hidden lg:inline xl:hidden'>lg</Text>
+      <Text className='hidden xl:inline'>xl</Text>
+      <Text className='hidden 2xl:inline'>2xl</Text>
+
+      <Text className={'ml-2 text-center text-gray-700'}>
+        © {new Date().getFullYear()} &nbsp; {packageJson.copyright} &nbsp;{' '}
+        {packageJson.author} &nbsp; {packageJson.version}
+      </Text>
     </View>
   );
 }

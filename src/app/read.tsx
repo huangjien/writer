@@ -68,8 +68,8 @@ export default function Page() {
   };
 
   const doubleTap = Gesture.Tap()
-    .numberOfTaps(3)
-    .onStart(() => {
+    .numberOfTaps(2)
+    .onEnd(() => {
       // console.log('double taps')
       if (status === 'paused') {
         setStatus('playing');
@@ -91,33 +91,38 @@ export default function Page() {
         Speech.stop();
         setStatus('stopped');
       }
-    });
+    })
+    .runOnJS(true);
   return (
-    <GestureHandlerRootView>
-      <GestureDetector gesture={doubleTap}>{content_area()}</GestureDetector>
-      <View className='flex bg-gray-200'>
-        <View className='py-0 flex-1 items-end px-4 md:px-6 right-0 bottom-0 '>
-          {play_bar()}
+    <>
+      <GestureHandlerRootView>
+        <View className='mb-auto min-h-10'>
+          <GestureDetector gesture={doubleTap}>
+            {content_area()}
+          </GestureDetector>
         </View>
+      </GestureHandlerRootView>
+      <View className=' bg-gray-200 py-0 items-end px-4 md:px-6 right-0 bottom-0'>
+        {play_bar()}
       </View>
-    </GestureHandlerRootView>
+    </>
   );
 
   function play_bar() {
     return (
-      <View className='inline-flex flex-row m-2 gap-16 justify-between '>
-        <Text className='sm:hidden xs:hidden'>
-          Max Read Length: {Speech.maxSpeechInputLength}
-        </Text>
-        <Picker
-          className='sm:hidden'
-          prompt='Language: '
-          onValueChange={(itemValue, itemPosition) => {
-            handleSelected(itemValue, itemPosition);
-          }}
-        >
-          {renderItemList}
-        </Picker>
+      <View className='inline-flex flex-row gap-16 justify-between '>
+        <View className='hidden lg:inline'>
+          <Picker
+            prompt='Language: '
+            onValueChange={(itemValue, itemPosition) => {
+              handleSelected(itemValue, itemPosition);
+            }}
+          >
+            {renderItemList}
+          </Picker>
+        </View>
+        <Text>Max Read Length: {Speech.maxSpeechInputLength}</Text>
+
         <Pressable disabled={status === 'playing'} onPress={speak}>
           <FontAwesome
             size={24}
@@ -163,8 +168,8 @@ export default function Page() {
 
   function content_area() {
     return (
-      <View className='flex-1 py-12 md:py-24 lg:py-32 xl:py-48 px-4 md:px-6'>
-        <View className='flex flex-col m-2 p-2 items-center gap-4 text-center'>
+      <View className=' py-12 md:py-24 lg:py-32 xl:py-48 px-4 md:px-6'>
+        <View className='m-2 p-2 items-center gap-4 text-center'>
           <ScrollView>
             <Text className='text-lg text-pretty'>{content}</Text>
           </ScrollView>
