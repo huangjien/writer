@@ -3,7 +3,14 @@
     "scheme": "writer",
     "userInterfaceStyle": "automatic",
     "orientation": "default",
+    "icon": "./assets/favicon.png",
+    "splash": {
+      "image": "./assets/icon-512x512.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "web": {
+      "favicon": "./assets/favicon.png",
       "output": "static",
       "bundler": "metro"
     },
@@ -13,21 +20,39 @@
         {
           "origin": "https://n"
         }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+        }
       ]
     ],
     "name": "writer",
     "slug": "writer",
-    "extra": {
-      "eas": {
-        "projectId": "f5ed2fb9-b8ce-461b-8806-1dc0a58785ce"
-      }
-    },
+    // "extra": {
+    //   "eas": {
+    //     "projectId": "f5ed2fb9-b8ce-461b-8806-1dc0a58785ce"
+    //   }
+    // },
     "owner": "huangjien",
     "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/favicon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permissions.USE_BIOMETRIC",
+        "android.permissions.USE_FINGERPRINT"
+      ],
       "package": "com.huangjien.writer"
     },
     "ios": {
-      "bundleIdentifier": "com.huangjien.writer"
+      "supportsTablet": true,
+      "bundleIdentifier": "com.huangjien.writer",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID."
+      }
     }
   }
 }
