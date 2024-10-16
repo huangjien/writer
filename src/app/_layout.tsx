@@ -63,7 +63,7 @@ function Footer() {
   const { bottom } = useSafeAreaInsets();
   return (
     <View
-      className='fixed inline-flex flex-row bg-gray-100 h-5'
+      className='fixed bottom-0 inline-flex flex-row bg-gray-100 h-5'
       style={{ paddingBottom: bottom }}
     >
       {/* <Text className='sm:hidden xs:inline'>xs</Text>

@@ -1,13 +1,38 @@
 import { Link } from 'expo-router';
-import React from 'react';
-import { Text, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { Alert, Pressable, Text, View } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import * as LocalAuthentication from 'expo-local-authentication';
 
 export default function Page() {
-  return <Content />;
-}
+  // wherever the useState is located
+  const [isBiometricSupported, setIsBiometricSupported] = React.useState(false);
 
-function Content() {
+  // Check if hardware supports biometrics
+  useEffect(() => {
+    (async () => {
+      const compatible = await LocalAuthentication.hasHardwareAsync();
+      setIsBiometricSupported(compatible);
+    })();
+  });
+
+  const handleBiometricAuth = async () => {
+    
+    const savedBiometrics = await LocalAuthentication.isEnrolledAsync();
+    if (!savedBiometrics)
+      return Alert.alert(
+        'No Biometrics Authentication',
+        'Please verify your identity with your password',
+        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+        { cancelable: false }
+      );
+    const biometricAuth = await LocalAuthentication.authenticateAsync({
+      promptMessage: 'You need to be this device\'s owner to use this app',
+      disableDeviceFallback: false,
+    });
+    console.log(biometricAuth.success)
+  };
+
   return (
     <View className='flex-1'>
       <View className='py-12 md:py-24 lg:py-32 xl:py-48'>
@@ -25,14 +50,19 @@ function Content() {
             </Text>
 
             <View className='gap-4'>
-              <Link
-                suppressHighlighting
+              <Pressable
                 className='flex h-9 items-center justify-center overflow-hidden rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-50 web:shadow ios:shadow transition-colors hover:bg-gray-900/90 active:bg-gray-400/90 web:focus-visible:outline-none web:focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300'
-                href='/'
+                onPress={handleBiometricAuth}
               >
                 <FontAwesome name='user' size={24} />
-              </Link>
+              </Pressable>
             </View>
+
+            <Text>
+              {isBiometricSupported
+                ? 'Your device is compatible with Biometrics'
+                : 'Face or Fingerprint scanner is available on this device'}
+            </Text>
           </View>
         </View>
       </View>

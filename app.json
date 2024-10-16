@@ -16,6 +16,18 @@
       ]
     ],
     "name": "writer",
-    "slug": "writer"
+    "slug": "writer",
+    "extra": {
+      "eas": {
+        "projectId": "f5ed2fb9-b8ce-461b-8806-1dc0a58785ce"
+      }
+    },
+    "owner": "huangjien",
+    "android": {
+      "package": "com.huangjien.writer"
+    },
+    "ios": {
+      "bundleIdentifier": "com.huangjien.writer"
+    }
   }
 }
