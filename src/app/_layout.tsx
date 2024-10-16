@@ -1,18 +1,27 @@
 import React from 'react';
 import '../global.css';
-import { Link, Slot } from 'expo-router';
+import { Link } from 'expo-router';
+import { Drawer } from 'expo-router/drawer';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import packageJson from '../../package.json';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function Layout() {
   return (
-    <View className='flex flex-shrink-0 flex-1 flex-col h-screen'>
-      <Header />
-      <Slot />
-      <Footer />
-    </View>
+    <GestureHandlerRootView>
+      <View className='flex flex-shrink-0 flex-1 flex-col h-screen'>
+        {/* <Header /> */}
+        <Drawer >
+          <Drawer.Screen name='index' options={{ drawerLabel : 'Home', title: 'Welcome'}} />
+          <Drawer.Screen name='github' options={{ drawerLabel : 'GitHub', title: 'Repository'}} />
+          <Drawer.Screen name='read' options={{ drawerLabel : 'Read', title: 'Chapter'}} />
+          <Drawer.Screen name='setting' options={{ drawerLabel : 'Setting', title: 'Configuration'}} />
+        </Drawer>
+        <Footer />
+      </View>
+    </GestureHandlerRootView>
   );
 }
 

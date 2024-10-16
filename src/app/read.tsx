@@ -100,13 +100,10 @@ export default function Page() {
     .runOnJS(true);
   return (
     <>
-      <GestureHandlerRootView>
-        <ScrollView className='mb-auto min-h-10'>
-          <GestureDetector gesture={doubleTap}>
-            {content_area()}
-          </GestureDetector>
-        </ScrollView>
-      </GestureHandlerRootView>
+      <ScrollView className='mb-auto min-h-10'>
+        <GestureDetector gesture={doubleTap}>{content_area()}</GestureDetector>
+      </ScrollView>
+
       <View className=' bg-gray-200 py-0 items-end px-4 md:px-6 right-0 bottom-0'>
         {play_bar()}
       </View>

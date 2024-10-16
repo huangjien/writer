@@ -1,19 +1,21 @@
 {
   "name": "writer",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "copyright": "MIT",
   "scripts": {
     "start": "expo start",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
+    "prettier": "prettier --write .",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
     "web": "expo start --web",
     "prepare": "husky"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",
     "@react-native-picker/picker": "2.7.5",
+    "@react-navigation/drawer": "^6.7.2",
     "expo": "^51.0.38",
     "expo-constants": "~16.0.2",
     "expo-linking": "~6.3.1",
@@ -42,6 +44,7 @@
     "@types/react": "~18.2.79",
     "metro": "^0.80.8",
     "metro-inspector-proxy": "^0.78.1",
+    "prettier": "^3.3.3",
     "typescript": "~5.3.3"
   },
   "private": true,
