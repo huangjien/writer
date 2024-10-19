@@ -25,7 +25,7 @@ export default function Page() {
         setValue('githubRepo', parsedData.githubRepo);
         setValue('githubToken', parsedData.githubToken);
         setValue('contentFolder', parsedData.contentFolder);
-        setValue("analysisFolder", parsedData.analysisFolder);
+        setValue('analysisFolder', parsedData.analysisFolder);
       }
     });
   });

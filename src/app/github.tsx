@@ -5,8 +5,6 @@ import { Feather } from '@expo/vector-icons';
 import * as LocalAuthentication from 'expo-local-authentication';
 
 export default function Page() {
-  
-
   return (
     <View className='flex-1'>
       <View className='py-12 md:py-24 lg:py-32 xl:py-48'>
@@ -22,10 +20,6 @@ export default function Page() {
               This project will allow you sync with a GitHub repository. Can you
               can call local TTS service to read content of files.
             </Text>
-
-            
-
-            
           </View>
         </View>
       </View>
