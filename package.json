@@ -1,12 +1,11 @@
 {
   "name": "writer",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "copyright": "MIT",
   "scripts": {
     "start": "expo start",
-    "prettier": "prettier --write .",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
@@ -49,7 +48,7 @@
   },
   "private": true,
   "resolutions": {
-    "@expo/cli": "^0.15.0",
+    "@expo/cli": "^0.18.30",
     "wrap-ansi": "7.0.0",
     "string-width": "4.1.0"
   }
