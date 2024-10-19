@@ -1,7 +1,7 @@
 import { Link } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import * as LocalAuthentication from 'expo-local-authentication';
 
 export default function Page() {

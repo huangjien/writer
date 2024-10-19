@@ -3,7 +3,7 @@ import * as Speech from 'expo-speech';
 import { Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FontAwesome } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Gesture,
@@ -128,7 +128,7 @@ export default function Page() {
         </Text>
 
         <Pressable disabled={status === 'playing'} onPress={speak}>
-          <FontAwesome
+          <Feather
             size={24}
             name='play'
             color={status === 'playing' ? 'grey' : 'primary'}
@@ -145,7 +145,7 @@ export default function Page() {
                 setStatus('paused');
               }}
             >
-              <FontAwesome
+              <Feather
                 size={24}
                 name='pause'
                 color={status !== 'playing' ? 'grey' : 'primary'}
@@ -160,9 +160,9 @@ export default function Page() {
             setStatus('stopped');
           }}
         >
-          <FontAwesome
+          <Feather
             size={24}
-            name='stop'
+            name='square'
             color={status === 'stopped' ? 'grey' : 'primary'}
           />
         </Pressable>
