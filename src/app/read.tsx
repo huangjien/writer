@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Gesture,
   GestureDetector,
-  GestureHandlerRootView,
+  Swipeable,
 } from 'react-native-gesture-handler';
 
 export default function Page() {
@@ -67,6 +67,20 @@ export default function Page() {
     setSelectedLanguage(itemValue);
   };
 
+  const showEval = () => {
+    alert('showEval');
+  };
+
+  const toPreview = () => {
+    alert('toPreview');
+  };
+
+  const toNext = () => {
+    alert('toNext');
+  };
+
+  const longPress = Gesture.LongPress().onEnd(showEval).runOnJS(true);
+
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
     .onEnd(() => {
@@ -98,10 +112,18 @@ export default function Page() {
       }
     })
     .runOnJS(true);
+
+  const composed = Gesture.Simultaneous(longPress, doubleTap);
   return (
     <>
       <ScrollView className='mb-auto min-h-10'>
-        <GestureDetector gesture={doubleTap}>{content_area()}</GestureDetector>
+        <Swipeable
+          onSwipeableClose={(direction) => {
+            direction === 'right' ? toPreview() : toNext();
+          }}
+        >
+          <GestureDetector gesture={composed}>{content_area()}</GestureDetector>
+        </Swipeable>
       </ScrollView>
 
       <View className=' bg-gray-200 py-0 items-end px-4 md:px-6 right-0 bottom-0'>
@@ -112,7 +134,7 @@ export default function Page() {
 
   function play_bar() {
     return (
-      <View className='inline-flex flex-row gap-16 justify-between '>
+      <View className='inline-flex flex-row gap-16 md:gap-8 justify-evenly '>
         <View className='hidden lg:inline'>
           <Picker
             prompt='Language: '
@@ -127,6 +149,16 @@ export default function Page() {
           Max Read Length: {Speech.maxSpeechInputLength}
         </Text>
 
+        <Pressable onPress={showEval}>
+          <Feather size={24} name='cpu' color={'primary'} />
+        </Pressable>
+
+        <Pressable onPress={toPreview}>
+          <Feather size={24} name='chevrons-left' color={'primary'} />
+        </Pressable>
+        <Pressable onPress={toNext}>
+          <Feather size={24} name='chevrons-right' color={'primary'} />
+        </Pressable>
         <Pressable disabled={status === 'playing'} onPress={speak}>
           <Feather
             size={24}

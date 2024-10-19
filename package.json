@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "copyright": "MIT",
@@ -16,6 +16,7 @@
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-picker/picker": "2.7.5",
     "@react-navigation/drawer": "^6.7.2",
+    "axios": "^1.7.7",
     "expo": "^51.0.38",
     "expo-constants": "~16.0.2",
     "expo-linking": "~6.3.1",
