@@ -5,29 +5,37 @@ import { Picker } from '@react-native-picker/picker';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useRouter } from 'expo-router';
 import {
   Gesture,
   GestureDetector,
   Swipeable,
 } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Modal from 'react-native-modal';
 
 export default function Page() {
-  const { bottom } = useSafeAreaInsets();
+  useSafeAreaInsets();
   const [items, setItems] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState('zh');
   const [voice, setVoice] = useState('zh');
   const forceUpdate = useCallback(() => setStatus('stopped'), []);
-  const [content, SetContent] = useState(
-    '白日何短短，百年苦易满。苍穹浩茫茫，万劫太极长。麻姑垂两鬓，一半已成霜。天公见玉女，大笑亿千场。吾欲揽六龙，回车挂扶桑。北斗酌美酒，劝龙各一觞。富贵非所愿，与人驻颜光。'
-  );
+  const [content, SetContent] = useState('Please select a file to read');
+  const [analysis, setAnalysis] = useState('No analysis for this chapter yet');
+  const [modalVisible, setModalVisible] = useState(false);
   const { post } = useLocalSearchParams();
 
   useEffect(() => {
     if (post) {
       AsyncStorage.getItem(post.toString()).then((data) => {
+        if (!data) return;
         SetContent(JSON.parse(data)['content']);
+      });
+      AsyncStorage.getItem(
+        post.toString().replace('@Content:', '@Analysis:')
+      ).then((data) => {
+        if (!data) return;
+        setAnalysis(JSON.parse(data)['content']);
       });
     }
   }, [post]);
@@ -79,7 +87,7 @@ export default function Page() {
   };
 
   const showEval = () => {
-    alert('showEval');
+    setModalVisible(true);
   };
 
   const toPreview = () => {
@@ -134,6 +142,25 @@ export default function Page() {
         >
           <GestureDetector gesture={composed}>{content_area()}</GestureDetector>
         </Swipeable>
+        <Modal
+          isVisible={modalVisible}
+          backdropOpacity={0.9}
+          onBackdropPress={() => setModalVisible(false)}
+          onSwipeComplete={() => setModalVisible(false)}
+          swipeDirection={'left'}
+        >
+          <ScrollView className='flex-1 bg-opacity-10 py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6'>
+            <Text className='text-lg text-pretty bottom-6 items-center justify-center text-white'>
+              {analysis}
+            </Text>
+            <Pressable
+              className='bottom-4 items-center justify-center '
+              onPress={() => setModalVisible(false)}
+            >
+              <Feather name='check' size={24} color={'primary'} />
+            </Pressable>
+          </ScrollView>
+        </Modal>
       </ScrollView>
 
       <View className=' bg-gray-200 py-0 items-end px-4 md:px-6 right-0 bottom-0'>
@@ -214,7 +241,7 @@ export default function Page() {
 
   function content_area() {
     return (
-      <View className=' py-12 md:py-24 lg:py-32 xl:py-48 px-4 md:px-6'>
+      <View className=' py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6'>
         <View className='m-2 p-2 items-center gap-4 text-center'>
           <ScrollView>
             <Text className='text-lg text-pretty'>{content}</Text>

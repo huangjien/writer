@@ -11,17 +11,6 @@ import { components } from '@octokit/openapi-types';
 
 type RepoContent = components['schemas']['content-file'];
 
-function base64EncodeUnicode(str: string): string {
-  const utf8Bytes = decodeURIComponent(str).replace(
-    /%([0-9A-F]{2})/g,
-    function (match, p1) {
-      return String.fromCharCode(parseInt(p1, 16));
-    }
-  );
-
-  return atob(utf8Bytes);
-}
-
 // Define a function named fileNameComparator that takes two parameters, a and b, of type any and returns a number
 function fileNameComparator(a: any, b: any): number {
   // Extract the number from the name property of object a by splitting it at the underscore and parsing the first part as an integer
@@ -46,9 +35,7 @@ export default function Page() {
   const [settings, setSettings] = useState({});
   const [content, setContent] = useState([]);
   const [analysis, setAnalysis] = useState([]);
-  const navigation = useNavigation();
   const router = useRouter();
-  const params = useLocalSearchParams();
 
   useEffect(() => {
     if (settings) {
