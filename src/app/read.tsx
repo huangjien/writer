@@ -5,11 +5,13 @@ import { Picker } from '@react-native-picker/picker';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useLocalSearchParams } from 'expo-router';
 import {
   Gesture,
   GestureDetector,
   Swipeable,
 } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Page() {
   const { bottom } = useSafeAreaInsets();
@@ -20,6 +22,15 @@ export default function Page() {
   const [content, SetContent] = useState(
     '白日何短短，百年苦易满。苍穹浩茫茫，万劫太极长。麻姑垂两鬓，一半已成霜。天公见玉女，大笑亿千场。吾欲揽六龙，回车挂扶桑。北斗酌美酒，劝龙各一觞。富贵非所愿，与人驻颜光。'
   );
+  const { post } = useLocalSearchParams();
+
+  useEffect(() => {
+    if (post) {
+      AsyncStorage.getItem(post.toString()).then((data) => {
+        SetContent(JSON.parse(data)['content']);
+      });
+    }
+  }, [post]);
 
   const [status, setStatus] = useState('stopped'); // it only has 3 statuses: stopped, playing, paused
   const speak = () => {
@@ -84,7 +95,6 @@ export default function Page() {
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
     .onEnd(() => {
-      // console.log('double taps')
       if (status === 'paused') {
         setStatus('playing');
         Speech.resume();

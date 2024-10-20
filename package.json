@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "copyright": "MIT",
@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",
+    "@octokit/rest": "^21.0.2",
+    "@octokit/types": "^13.6.1",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-picker/picker": "2.7.5",
     "@react-navigation/drawer": "^6.7.2",
@@ -44,7 +46,6 @@
     "@babel/core": "^7.25.8",
     "@expo/cli": "^0.18.30",
     "@types/react": "~18.2.79",
-    "@types/react-native": "^0.73.0",
     "metro": "^0.80.8",
     "metro-inspector-proxy": "^0.78.1",
     "prettier": "^3.3.3",
