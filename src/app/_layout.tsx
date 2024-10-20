@@ -7,72 +7,76 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import packageJson from '../../package.json';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SessionProvider, useSession } from './ctx';
 
 export default function Layout() {
+  const {} = useSession();
   return (
     <GestureHandlerRootView>
-      <View className='flex flex-shrink-0 flex-1 flex-col h-screen'>
-        {/* <Header /> */}
-        <Drawer>
-          <Drawer.Screen
-            name='index'
-            options={{
-              drawerLabel: 'Home',
-              title: 'Welcome',
-              drawerIcon: ({ focused, size }) => (
-                <Feather
-                  name='home'
-                  size={size}
-                  color={focused ? '#7cc' : '#ccc'}
-                />
-              ),
-            }}
-          />
-          <Drawer.Screen
-            name='github'
-            options={{
-              drawerLabel: 'GitHub',
-              title: 'Repository',
-              drawerIcon: ({ focused, size }) => (
-                <Feather
-                  name='code'
-                  size={size}
-                  color={focused ? '#7cc' : '#ccc'}
-                />
-              ),
-            }}
-          />
-          <Drawer.Screen
-            name='read'
-            options={{
-              drawerLabel: 'Read',
-              title: 'Chapter',
-              drawerIcon: ({ focused, size }) => (
-                <Feather
-                  name='play'
-                  size={size}
-                  color={focused ? '#7cc' : '#ccc'}
-                />
-              ),
-            }}
-          />
-          <Drawer.Screen
-            name='setting'
-            options={{
-              drawerLabel: 'Setting',
-              title: 'Configuration',
-              drawerIcon: ({ focused, size }) => (
-                <Feather
-                  name='settings'
-                  size={size}
-                  color={focused ? '#7cc' : '#ccc'}
-                />
-              ),
-            }}
-          />
-        </Drawer>
-        <Footer />
-      </View>
+      <SessionProvider>
+        <View className='flex flex-shrink-0 flex-1 flex-col h-screen'>
+          {/* <Header /> */}
+          <Drawer>
+            <Drawer.Screen
+              name='index'
+              options={{
+                drawerLabel: 'Home',
+                title: 'Welcome',
+                drawerIcon: ({ focused, size }) => (
+                  <Feather
+                    name='home'
+                    size={size}
+                    color={focused ? '#7cc' : '#ccc'}
+                  />
+                ),
+              }}
+            />
+            <Drawer.Screen
+              name='github'
+              options={{
+                drawerLabel: 'GitHub',
+                title: 'Repository',
+                drawerIcon: ({ focused, size }) => (
+                  <Feather
+                    name='code'
+                    size={size}
+                    color={focused ? '#7cc' : '#ccc'}
+                  />
+                ),
+              }}
+            />
+            <Drawer.Screen
+              name='read'
+              options={{
+                drawerLabel: 'Read',
+                title: 'Chapter',
+                drawerIcon: ({ focused, size }) => (
+                  <Feather
+                    name='play'
+                    size={size}
+                    color={focused ? '#7cc' : '#ccc'}
+                  />
+                ),
+              }}
+            />
+            <Drawer.Screen
+              name='setting'
+              options={{
+                drawerLabel: 'Setting',
+                title: 'Configuration',
+                drawerIcon: ({ focused, size }) => (
+                  <Feather
+                    name='settings'
+                    size={size}
+                    color={focused ? '#7cc' : '#ccc'}
+                  />
+                ),
+              }}
+            />
+          </Drawer>
+          <Footer />
+        </View>
+      </SessionProvider>
     </GestureHandlerRootView>
   );
 }

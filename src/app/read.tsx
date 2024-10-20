@@ -1,11 +1,11 @@
-import { Text, View, Button, Pressable, ScrollView } from 'react-native';
+import { Text, View, Pressable, ScrollView } from 'react-native';
 import * as Speech from 'expo-speech';
 import { Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router, useLocalSearchParams, useRouter } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import {
   Gesture,
   GestureDetector,
@@ -19,11 +19,21 @@ export default function Page() {
   const [items, setItems] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState('zh');
   const [voice, setVoice] = useState('zh');
-  const forceUpdate = useCallback(() => setStatus('stopped'), []);
+  const [status, setStatus] = useState('stopped'); // it only has 3 statuses: stopped, playing, paused
   const [content, SetContent] = useState('Please select a file to read');
   const [analysis, setAnalysis] = useState('No analysis for this chapter yet');
   const [modalVisible, setModalVisible] = useState(false);
+  const [preview, setPreview] = useState(undefined);
+  const [next, setNext] = useState(undefined);
   const { post } = useLocalSearchParams();
+
+  useEffect(() => {
+    // This is used for switch to another chapter, if was reading before, then read new chapter
+    if (status === 'playing' && content.length > 64) {
+      Speech.stop();
+      speak(true);
+    }
+  }, [content]);
 
   useEffect(() => {
     if (post) {
@@ -37,24 +47,39 @@ export default function Page() {
         if (!data) return;
         setAnalysis(JSON.parse(data)['content']);
       });
+
+      AsyncStorage.getItem('@Content:').then((data) => {
+        if (!data) return;
+        const content = JSON.parse(data);
+        const index = content.findIndex(
+          (item) => item['name'] === post.toString().replace('@Content:', '')
+        );
+        if (index === -1) return; // we don't find this item, how could this happen?!
+        const prev = index === 0 ? undefined : content[index - 1]['name'];
+        const next =
+          index === content.length - 1 ? undefined : content[index + 1]['name'];
+        setPreview('@Content:' + prev);
+        setNext('@Content:' + next);
+      });
     }
   }, [post]);
 
-  const [status, setStatus] = useState('stopped'); // it only has 3 statuses: stopped, playing, paused
-  const speak = () => {
+  const speak = (force: boolean = false) => {
+    if (content.length > Speech.maxSpeechInputLength) {
+      alert('Content is too long to handle by TTS engine');
+      return;
+    }
     if (status === 'paused') {
       setStatus('playing');
       Speech.resume();
     }
-    if (status === 'stopped') {
+    if (status === 'stopped' || force === true) {
       setStatus('playing');
       Speech.speak(content, {
         language: selectedLanguage,
         voice: voice,
         onDone: () => {
-          setStatus('stopped');
-          console.log('reading finished, what next?');
-          forceUpdate();
+          toNext();
         },
       });
     }
@@ -91,11 +116,21 @@ export default function Page() {
   };
 
   const toPreview = () => {
-    alert('toPreview');
+    if (preview) {
+      router.push({
+        pathname: '/read',
+        params: { post: preview },
+      });
+    }
   };
 
   const toNext = () => {
-    alert('toNext');
+    if (next) {
+      router.push({
+        pathname: '/read',
+        params: { post: next },
+      });
+    }
   };
 
   const longPress = Gesture.LongPress().onEnd(showEval).runOnJS(true);
@@ -113,9 +148,7 @@ export default function Page() {
           language: selectedLanguage,
           voice: voice,
           onDone: () => {
-            setStatus('stopped');
-            console.log('reading finished, what next?');
-            forceUpdate();
+            toNext();
           },
         });
       }
@@ -137,7 +170,7 @@ export default function Page() {
       <ScrollView className='mb-auto min-h-10'>
         <Swipeable
           onSwipeableClose={(direction) => {
-            direction === 'right' ? toPreview() : toNext();
+            direction === 'left' ? toPreview() : toNext();
           }}
         >
           <GestureDetector gesture={composed}>{content_area()}</GestureDetector>
@@ -147,7 +180,7 @@ export default function Page() {
           backdropOpacity={0.9}
           onBackdropPress={() => setModalVisible(false)}
           onSwipeComplete={() => setModalVisible(false)}
-          swipeDirection={'left'}
+          swipeDirection={'right'}
         >
           <ScrollView className='flex-1 bg-opacity-10 py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6'>
             <Text className='text-lg text-pretty bottom-6 items-center justify-center text-white'>
@@ -157,7 +190,7 @@ export default function Page() {
               className='bottom-4 items-center justify-center '
               onPress={() => setModalVisible(false)}
             >
-              <Feather name='check' size={24} color={'primary'} />
+              <Feather name='check' size={24} color={'white'} />
             </Pressable>
           </ScrollView>
         </Modal>
@@ -196,7 +229,7 @@ export default function Page() {
         <Pressable onPress={toNext}>
           <Feather size={24} name='chevrons-right' color={'primary'} />
         </Pressable>
-        <Pressable disabled={status === 'playing'} onPress={speak}>
+        <Pressable disabled={status === 'playing'} onPress={() => speak()}>
           <Feather
             size={24}
             name='play'
@@ -244,6 +277,13 @@ export default function Page() {
       <View className=' py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6'>
         <View className='m-2 p-2 items-center gap-4 text-center'>
           <ScrollView>
+            <Text className='text-lg font-bold text-center items-center text-pretty'>
+              {post
+                .toString()
+                .replace('_', '  ')
+                .replace('@Content:', '')
+                .replace('.md', '')}
+            </Text>
             <Text className='text-lg text-pretty'>{content}</Text>
           </ScrollView>
         </View>
