@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import packageJson from '../../package.json';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SessionProvider, useSession } from './ctx';
+import { SessionProvider, useSession } from '../components/ctx';
 
 export default function Layout() {
   const {} = useSession();

@@ -13,6 +13,7 @@ import {
 } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal';
+import Markdown from 'react-native-markdown-display';
 
 export default function Page() {
   useSafeAreaInsets();
@@ -165,6 +166,7 @@ export default function Page() {
     .runOnJS(true);
 
   const composed = Gesture.Simultaneous(longPress, doubleTap);
+
   return (
     <>
       <ScrollView className='mb-auto min-h-10'>
@@ -182,12 +184,12 @@ export default function Page() {
           onSwipeComplete={() => setModalVisible(false)}
           swipeDirection={'right'}
         >
-          <ScrollView className='flex-1 bg-opacity-10 py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6'>
-            <Text className='text-lg text-pretty bottom-6 items-center justify-center text-white'>
+          <ScrollView className='flex-1 m-4 p-4 bg-opacity-10 py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 text-white'>
+            <Markdown style={{ body: { color: 'white', fontSize: 16 } }}>
               {analysis}
-            </Text>
+            </Markdown>
             <Pressable
-              className='bottom-4 items-center justify-center '
+              className='bottom-4 gap-8 items-center justify-center '
               onPress={() => setModalVisible(false)}
             >
               <Feather name='check' size={24} color={'white'} />
