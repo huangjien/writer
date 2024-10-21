@@ -51,7 +51,10 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.huangjien.writer",
       "infoPlist": {
-        "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID."
+        "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID.",
+        "UIBackgroundModes": [
+          "audio"
+        ]
       }
     }
   }

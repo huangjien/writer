@@ -19,6 +19,9 @@ import {
   DrawerItem,
 } from '@react-navigation/drawer';
 import { useThemeConfig } from '@/components/use-theme-config';
+import { enableFreeze } from 'react-native-screens';
+
+enableFreeze(true);
 
 const images = {
   logo: require('assets/favicon.png'),
