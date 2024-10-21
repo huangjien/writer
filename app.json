@@ -42,8 +42,9 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "android.permissions.USE_BIOMETRIC",
-        "android.permissions.USE_FINGERPRINT"
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.POST_NOTIFICATIONS"
       ],
       "package": "com.huangjien.writer"
     },
