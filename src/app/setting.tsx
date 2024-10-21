@@ -37,7 +37,7 @@ export default function Page() {
   };
 
   return (
-    <View className='w-full m-2 p-2 md:w-1/2 px-3 mb-6 md:mb-0'>
+    <View className='w-full h-full m-2 p-2 md:w-1/2 px-3 mb-6 md:mb-0 bg-white dark:bg-black'>
       <Controller
         control={control}
         rules={{
@@ -49,7 +49,7 @@ export default function Page() {
               GitHub Repository URL
             </Text>
             <TextInput
-              className='m-2 p-2 border-spacing-1'
+              className='m-2 p-2 border-spacing-1 text-black dark:text-white'
               key={'githubRepo'}
               placeholder='GitHub Repository URL'
               onBlur={onBlur}
@@ -76,7 +76,7 @@ export default function Page() {
               GitHub Token
             </Text>
             <TextInput
-              className='m-2 p-2 border-1 rounded-md'
+              className='m-2 p-2 border-1 rounded-md text-black dark:text-white'
               secureTextEntry={true}
               key={'githubToken'}
               placeholder='GitHub Token'
@@ -104,7 +104,7 @@ export default function Page() {
               Content Folder
             </Text>
             <TextInput
-              className='m-2 p-2 border-spacing-1'
+              className='m-2 p-2 border-spacing-1 text-black dark:text-white'
               key={'contentFolder'}
               placeholder='Content Folder'
               onBlur={onBlur}
@@ -132,7 +132,7 @@ export default function Page() {
               Analysis Folder
             </Text>
             <TextInput
-              className='m-2 p-2 border-spacing-1'
+              className='m-2 p-2 border-spacing-1 text-black dark:text-white'
               key={'analysisFolder'}
               placeholder='Analysis Folder'
               onBlur={onBlur}
@@ -150,12 +150,13 @@ export default function Page() {
 
       {errors.analysisFolder && <Text>This is required.</Text>}
 
-      <View className='mt-8'>
+      <View className='mt-8 bg-white dark:bg-black'>
         <Pressable
-          className='flex h-12 items-center justify-center overflow-hidden rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-50 web:shadow ios:shadow transition-colors hover:bg-gray-900/90 active:bg-gray-400/90 web:focus-visible:outline-none web:focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300'
+          className='flex h-12 items-center justify-center overflow-hidden 
+          text-black dark:text-white bg-white dark:bg-black'
           onPress={handleSubmit(onSubmit)}
         >
-          <Feather name='save' size={24} />
+          <Feather name='save' size={24} color={'green'} />
         </Pressable>
       </View>
     </View>

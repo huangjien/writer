@@ -140,12 +140,12 @@ export default function Page() {
         settings['contentFolder'] &&
         settings['analysisFolder'] && (
           <View className='flex-1'>
-            <View className='px-4 md:px-6 flex-1 flex-shrink-0  inline-flex items-stretch w-full gap-4 overflow-hidden '>
+            <View className='px-4 md:px-6 flex-1 flex-shrink-0 bg-white dark:bg-black  inline-flex items-stretch w-full gap-4 overflow-hidden '>
               <ScrollView>
                 {content.map((item) => (
                   <Text
                     key={item.sha}
-                    className='m-1 p-1 text-2xl items-stretch native:text-2xl w-11/12  sm:text-2xl md:text-3xl lg:text-4xl'
+                    className='m-1 p-1 text-black dark:text-white text-2xl items-stretch native:text-2xl w-11/12  sm:text-2xl md:text-3xl lg:text-4xl'
                     onPress={() => {
                       router.push({
                         pathname: '/read',

@@ -169,13 +169,17 @@ export default function Page() {
 
   return (
     <>
-      <ScrollView className='mb-auto min-h-10'>
+      <ScrollView className='mb-auto min-h-10 '>
         <Swipeable
           onSwipeableClose={(direction) => {
             direction === 'left' ? toPreview() : toNext();
           }}
         >
-          <GestureDetector gesture={composed}>{content_area()}</GestureDetector>
+          {post && (
+            <GestureDetector gesture={composed}>
+              {content_area()}
+            </GestureDetector>
+          )}
         </Swipeable>
         <Modal
           isVisible={modalVisible}
@@ -184,7 +188,7 @@ export default function Page() {
           onSwipeComplete={() => setModalVisible(false)}
           swipeDirection={'right'}
         >
-          <ScrollView className='flex-1 m-4 p-4 bg-opacity-10 py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 text-white'>
+          <ScrollView className='flex-grow m-4 p-4 bg-opacity-10 py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 text-white'>
             <Markdown style={{ body: { color: 'white', fontSize: 16 } }}>
               {analysis}
             </Markdown>
@@ -198,16 +202,14 @@ export default function Page() {
         </Modal>
       </ScrollView>
 
-      <View className=' bg-gray-200 py-0 items-end px-4 md:px-6 right-0 bottom-0'>
-        {play_bar()}
-      </View>
+      <View className='  py-0 right-0 bottom-0'>{play_bar()}</View>
     </>
   );
 
   function play_bar() {
     return (
-      <View className='inline-flex flex-row gap-16 md:gap-8 justify-evenly '>
-        <View className='hidden lg:inline'>
+      <View className='bg-white dark:bg-black text-black dark:text-white  inline-flex flex-row gap-16 md:gap-8 justify-evenly '>
+        {/* <View className='hidden lg:inline'>
           <Picker
             prompt='Language: '
             onValueChange={(itemValue, itemPosition) => {
@@ -216,26 +218,27 @@ export default function Page() {
           >
             {renderItemList}
           </Picker>
-        </View>
-        <Text className='hidden lg:inline'>
-          Max Read Length: {Speech.maxSpeechInputLength}
+        </View> */}
+        <Text className='text-black dark:text-white bg-white dark:bg-black block sm:hidden xs:hidden'>
+          Max Read: {Speech.maxSpeechInputLength}
         </Text>
 
         <Pressable onPress={showEval}>
-          <Feather size={24} name='cpu' color={'primary'} />
+          <Feather size={24} name='cpu' color={'green'} />
         </Pressable>
 
         <Pressable onPress={toPreview}>
-          <Feather size={24} name='chevrons-left' color={'primary'} />
+          <Feather size={24} name='chevrons-left' color={'green'} />
         </Pressable>
         <Pressable onPress={toNext}>
-          <Feather size={24} name='chevrons-right' color={'primary'} />
+          <Feather size={24} name='chevrons-right' color={'green'} />
         </Pressable>
         <Pressable disabled={status === 'playing'} onPress={() => speak()}>
           <Feather
+            className='text-black dark:text-white '
             size={24}
             name='play'
-            color={status === 'playing' ? 'grey' : 'primary'}
+            color={status === 'playing' ? 'grey' : 'green'}
           />
         </Pressable>
 
@@ -252,7 +255,7 @@ export default function Page() {
               <Feather
                 size={24}
                 name='pause'
-                color={status !== 'playing' ? 'grey' : 'primary'}
+                color={status !== 'playing' ? 'grey' : 'green'}
               />
             </Pressable>
           </>
@@ -267,7 +270,7 @@ export default function Page() {
           <Feather
             size={24}
             name='square'
-            color={status === 'stopped' ? 'grey' : 'primary'}
+            color={status === 'stopped' ? 'grey' : 'green'}
           />
         </Pressable>
       </View>
@@ -276,17 +279,19 @@ export default function Page() {
 
   function content_area() {
     return (
-      <View className=' py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6'>
+      <View className=' py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6  dark:bg-black'>
         <View className='m-2 p-2 items-center gap-4 text-center'>
           <ScrollView>
-            <Text className='text-lg font-bold text-center items-center text-pretty'>
+            <Text className='text-black dark:text-white text-lg font-bold text-center items-center text-pretty'>
               {post
                 .toString()
                 .replace('_', '  ')
                 .replace('@Content:', '')
                 .replace('.md', '')}
             </Text>
-            <Text className='text-lg text-pretty'>{content}</Text>
+            <Text className='text-black dark:text-white text-lg text-pretty'>
+              {content}
+            </Text>
           </ScrollView>
         </View>
       </View>
