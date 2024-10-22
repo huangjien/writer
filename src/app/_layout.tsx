@@ -1,4 +1,10 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, {
+  createContext,
+  ReactElement,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import '../global.css';
 import { Link, SplashScreen, useRouter } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
@@ -23,6 +29,13 @@ import { enableFreeze } from 'react-native-screens';
 
 enableFreeze(true);
 
+export const AuthContext = createContext({
+  authenticated: false,
+  setAuthenticated: (authenticated: boolean) => {
+    authenticated = authenticated;
+  },
+});
+
 const images = {
   logo: require('assets/favicon.png'),
 };
@@ -32,6 +45,7 @@ const CustomDrawerContent = ({
   navigation,
 }: any): ReactElement => {
   const router = useRouter();
+  const authContext = useContext(AuthContext);
   const { themeName, setSelectedTheme } = useThemeConfig();
 
   return (
@@ -96,7 +110,7 @@ const CustomDrawerContent = ({
         )}
         icon={() => <Feather name='log-out' size={24} color={'green'} />}
         onPress={() => {
-          console.log('Logout');
+          authContext.setAuthenticated(false);
         }}
       />
     </ScrollView>
@@ -104,25 +118,25 @@ const CustomDrawerContent = ({
 };
 
 export default function Layout() {
-  const {} = useSession();
   const [isBiometricSupported, setIsBiometricSupported] = React.useState(false);
-  const [authenticated, setAuthenticated] = React.useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
 
   // Prevent the splash screen from auto-hiding before asset loading is complete.
   SplashScreen.preventAutoHideAsync();
   const { theme } = useThemeConfig();
 
   useEffect(() => {
-    (async () => {
-      const compatible = await LocalAuthentication.hasHardwareAsync();
+    LocalAuthentication.hasHardwareAsync().then((compatible) => {
       setIsBiometricSupported(compatible);
-    })().then(() => {
-      if (!isBiometricSupported) setAuthenticated(true);
-      if (!authenticated) handleBiometricAuth();
     });
-  }, []);
+  }, [isBiometricSupported]);
+
+  useEffect(() => {
+    if (!authenticated) handleBiometricAuth();
+  }, [authenticated]);
 
   const handleBiometricAuth = async () => {
+    if (authenticated) return;
     const savedBiometrics = await LocalAuthentication.isEnrolledAsync();
     if (!savedBiometrics)
       return Alert.alert(
@@ -135,12 +149,16 @@ export default function Layout() {
       promptMessage: "You need to be this device's owner to use this app",
       disableDeviceFallback: false,
     });
-    setAuthenticated(biometricAuth.success);
+    if (!biometricAuth.success) {
+      handleBiometricAuth();
+    } else {
+      setAuthenticated(true);
+    }
   };
 
   return (
     <GestureHandlerRootView>
-      <SessionProvider>
+      <AuthContext.Provider value={{ authenticated, setAuthenticated }}>
         <ThemeProvider value={theme}>
           <View className='flex flex-1 flex-col text-black dark:text-white bg-white dark:bg-black'>
             {/* <Header /> */}
@@ -233,7 +251,7 @@ export default function Layout() {
             <Footer />
           </View>
         </ThemeProvider>
-      </SessionProvider>
+      </AuthContext.Provider>
     </GestureHandlerRootView>
   );
 }

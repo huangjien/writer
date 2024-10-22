@@ -27,6 +27,23 @@ export default function Page() {
   const [preview, setPreview] = useState(undefined);
   const [next, setNext] = useState(undefined);
   const { post } = useLocalSearchParams();
+  const [fontSize, setFontSize] = useState(16);
+
+  // const pinchGesture = Gesture.Pinch()
+  //   .onUpdate((e) => {
+  //     if (e.scale > 1) {
+  //       setFontSize(fontSize + 2);
+  //       console.log(fontSize);
+  //     }
+  //     if (e.scale < 1) {
+  //       setFontSize(fontSize - 2);
+  //       console.log(fontSize);
+  //     }
+
+  //   })
+  //   .onEnd(() => {
+  //     console.log(fontSize);
+  //   }).runOnJS(true);
 
   useEffect(() => {
     // This is used for switch to another chapter, if was reading before, then read new chapter

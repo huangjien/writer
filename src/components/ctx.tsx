@@ -15,39 +15,7 @@ export function useSession() {
 }
 
 export function SessionProvider(props: PropsWithChildren) {
-  const [isBiometricSupported, setIsBiometricSupported] = useState(false);
-  // Check if hardware supports biometrics
-  useEffect(() => {
-    (async () => {
-      const compatible = await LocalAuthentication.hasHardwareAsync();
-      setIsBiometricSupported(compatible);
-    })();
-  });
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  const handleBiometricAuth = async () => {
-    const savedBiometrics = await LocalAuthentication.isEnrolledAsync();
-    if (!savedBiometrics)
-      return Alert.alert(
-        'No Biometrics Authentication',
-        'Please verify your identity with your password',
-        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-        { cancelable: false }
-      );
-    const biometricAuth = await LocalAuthentication.authenticateAsync({
-      promptMessage: "You need to be this device's owner to use this app",
-      disableDeviceFallback: false,
-    });
-    setIsAuthenticated(biometricAuth.success);
-  };
-
-  const signIn = () => {
-    handleBiometricAuth();
-  };
-
-  const signOut = () => {
-    setIsAuthenticated(false);
-  };
+  const [isAuthenticated, setAuthenticated] = useState(false);
   return (
     <AuthContext.Provider value={isAuthenticated}>
       {props.children}
