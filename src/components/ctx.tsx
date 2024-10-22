@@ -38,7 +38,6 @@ export function SessionProvider(props: PropsWithChildren) {
       promptMessage: "You need to be this device's owner to use this app",
       disableDeviceFallback: false,
     });
-    console.log(biometricAuth.success);
     setIsAuthenticated(biometricAuth.success);
   };
 

@@ -180,7 +180,11 @@ export default function Page() {
                 },
               })
               .then((response) => {
-                const content = { sha: item['sha'], content: response['data'] };
+                const content = {
+                  sha: item['sha'],
+                  content: response['data'],
+                  size: response['data'].toString().length,
+                };
                 AsyncStorage.setItem(mark + item.name, JSON.stringify(content));
               });
           }

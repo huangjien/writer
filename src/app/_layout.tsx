@@ -152,42 +152,81 @@ export default function Layout() {
               <Drawer.Screen
                 name='index'
                 options={{
-                  drawerLabel: 'Home',
-                  title: 'Welcome',
+                  headerShown: true,
+                  headerTitle(props) {
+                    return (
+                      <Text className='bg-white dark:bg-black text-black dark:text-white'>
+                        Welcome
+                      </Text>
+                    );
+                  },
+                  headerBackground(props) {
+                    return (
+                      <View className='bg-white dark:bg-black text-black dark:text-white'>
+                        <View style={{ height: 100 }} />
+                      </View>
+                    );
+                  },
                 }}
               />
               <Drawer.Screen
                 name='github'
                 options={{
-                  title: 'Index',
+                  headerShown: true,
+                  headerTitle(props) {
+                    return (
+                      <Text className='bg-white dark:bg-black text-black dark:text-white'>
+                        Index
+                      </Text>
+                    );
+                  },
+                  headerBackground(props) {
+                    return (
+                      <View className='bg-white dark:bg-black text-black dark:text-white'>
+                        <View style={{ height: 100 }} />
+                      </View>
+                    );
+                  },
                 }}
               />
               <Drawer.Screen
                 name='read'
                 options={{
-                  drawerLabel: 'Read',
-                  title: 'Chapter',
-                  drawerIcon: ({ focused, size }) => (
-                    <Feather
-                      name='play'
-                      size={size}
-                      color={focused ? '#7cc' : '#ccc'}
-                    />
-                  ),
+                  headerShown: true,
+                  headerTitle(props) {
+                    return (
+                      <Text className='bg-white dark:bg-black text-black dark:text-white'>
+                        Configuration
+                      </Text>
+                    );
+                  },
+                  headerBackground(props) {
+                    return (
+                      <View className='bg-white dark:bg-black text-black dark:text-white'>
+                        <View style={{ height: 100 }} />
+                      </View>
+                    );
+                  },
                 }}
               />
               <Drawer.Screen
                 name='setting'
                 options={{
-                  drawerLabel: 'Setting',
-                  title: 'Configuration',
-                  drawerIcon: ({ focused, size }) => (
-                    <Feather
-                      name='settings'
-                      size={size}
-                      color={focused ? '#7cc' : '#ccc'}
-                    />
-                  ),
+                  headerShown: true,
+                  headerTitle(props) {
+                    return (
+                      <Text className='bg-white dark:bg-black text-black dark:text-white'>
+                        Configuration
+                      </Text>
+                    );
+                  },
+                  headerBackground(props) {
+                    return (
+                      <View className='bg-white dark:bg-black text-black dark:text-white'>
+                        <View style={{ height: 100 }} />
+                      </View>
+                    );
+                  },
                 }}
               />
             </Drawer>

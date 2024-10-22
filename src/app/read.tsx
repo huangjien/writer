@@ -39,13 +39,19 @@ export default function Page() {
   useEffect(() => {
     if (post) {
       AsyncStorage.getItem(post.toString()).then((data) => {
-        if (!data) return;
+        if (!data) {
+          SetContent(undefined);
+          return;
+        }
         SetContent(JSON.parse(data)['content']);
       });
       AsyncStorage.getItem(
         post.toString().replace('@Content:', '@Analysis:')
       ).then((data) => {
-        if (!data) return;
+        if (!data) {
+          setAnalysis(undefined);
+          return;
+        }
         setAnalysis(JSON.parse(data)['content']);
       });
 
@@ -59,8 +65,11 @@ export default function Page() {
         const prev = index === 0 ? undefined : content[index - 1]['name'];
         const next =
           index === content.length - 1 ? undefined : content[index + 1]['name'];
-        setPreview('@Content:' + prev);
-        setNext('@Content:' + next);
+
+        if (prev) setPreview('@Content:' + prev);
+        else setPreview(undefined);
+        if (next) setNext('@Content:' + next);
+        else setNext(undefined);
       });
     }
   }, [post]);
@@ -113,7 +122,9 @@ export default function Page() {
   };
 
   const showEval = () => {
-    setModalVisible(true);
+    if (analysis) {
+      setModalVisible(true);
+    }
   };
 
   const toPreview = () => {
@@ -190,7 +201,7 @@ export default function Page() {
         >
           <ScrollView className='flex-grow m-4 p-4 bg-opacity-10 py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 text-white'>
             <Markdown style={{ body: { color: 'white', fontSize: 16 } }}>
-              {analysis}
+              {analysis ? analysis : 'No analysis for this chapter yet'}
             </Markdown>
             <Pressable
               className='bottom-4 gap-8 items-center justify-center '
@@ -208,7 +219,7 @@ export default function Page() {
 
   function play_bar() {
     return (
-      <View className='bg-white dark:bg-black text-black dark:text-white  inline-flex flex-row gap-16 md:gap-8 justify-evenly '>
+      <View className='bg-white dark:bg-black text-black dark:text-white  inline-flex flex-row lg:gap-16 md:gap-4 justify-evenly '>
         {/* <View className='hidden lg:inline'>
           <Picker
             prompt='Language: '
@@ -219,19 +230,28 @@ export default function Page() {
             {renderItemList}
           </Picker>
         </View> */}
-        <Text className='text-black dark:text-white bg-white dark:bg-black block sm:hidden xs:hidden'>
+
+        {/* <Text className='text-black dark:text-white bg-white dark:bg-black block sm:hidden xs:hidden'>
           Max Read: {Speech.maxSpeechInputLength}
-        </Text>
+        </Text> */}
 
         <Pressable onPress={showEval}>
-          <Feather size={24} name='cpu' color={'green'} />
+          <Feather size={24} name='cpu' color={analysis ? 'green' : 'grey'} />
         </Pressable>
 
         <Pressable onPress={toPreview}>
-          <Feather size={24} name='chevrons-left' color={'green'} />
+          <Feather
+            size={24}
+            name='chevrons-left'
+            color={preview ? 'green' : 'grey'}
+          />
         </Pressable>
         <Pressable onPress={toNext}>
-          <Feather size={24} name='chevrons-right' color={'green'} />
+          <Feather
+            size={24}
+            name='chevrons-right'
+            color={next ? 'green' : 'grey'}
+          />
         </Pressable>
         <Pressable disabled={status === 'playing'} onPress={() => speak()}>
           <Feather
@@ -282,14 +302,19 @@ export default function Page() {
       <View className=' py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 bg-white  dark:bg-black'>
         <View className='m-2 p-2 items-center gap-4 text-center'>
           <ScrollView>
-            <Text className='text-black dark:text-white text-lg font-bold text-center items-center text-pretty'>
+            <Text className=' text-black dark:text-white text-xl font-bold text-center justify-stretch text-pretty'>
               {post
                 .toString()
                 .replace('_', '  ')
                 .replace('@Content:', '')
-                .replace('.md', '')}
+                .replace('.md', '')}{' '}
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <Text className='items-end text-gray-500 dark:text-grey-300 '>
+                {content.length}
+              </Text>
             </Text>
-            <Text className='text-black dark:text-white text-lg text-pretty'>
+
+            <Text className='text-black dark:text-white text-xl text-pretty'>
               {content}
             </Text>
           </ScrollView>
