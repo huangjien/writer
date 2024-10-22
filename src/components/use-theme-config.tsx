@@ -30,7 +30,7 @@ const LightTheme: Theme = {
 };
 
 export function useThemeConfig() {
-  const { colorScheme, setColorScheme, toggleColorScheme } = useColorScheme();
+  const { colorScheme, setColorScheme } = useColorScheme();
   const [theme, _setTheme] = useState(
     colorScheme === 'dark' ? DarkTheme : LightTheme
   );

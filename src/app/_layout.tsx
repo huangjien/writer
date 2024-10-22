@@ -41,22 +41,24 @@ const CustomDrawerContent = ({
           source={images.logo}
           className='flex w-12 h-12 m-2 rounded-full'
         />
-        <Text className='text-black dark:text-white font-bold'>writer</Text>
+        <Text className='text-black dark:text-white font-bold'>
+          {packageJson.name}
+        </Text>
         <Text className='text-black dark:text-white text-xs'>
-          {packageJson.author}
+          {packageJson.slogan}
         </Text>
       </View>
 
       <DrawerItem
         label={() => <Text className='text-black dark:text-white '>Home</Text>}
-        icon={() => <Feather name='home' size={24} color={'grey'} />}
+        icon={() => <Feather name='home' size={24} color={'green'} />}
         onPress={() => {
           router.push('/');
         }}
       />
       <DrawerItem
         label={() => <Text className='text-black dark:text-white '>Index</Text>}
-        icon={() => <Feather name='code' size={24} color={'grey'} />}
+        icon={() => <Feather name='code' size={24} color={'green'} />}
         onPress={() => {
           router.push('/github');
         }}
@@ -65,7 +67,7 @@ const CustomDrawerContent = ({
         label={() => (
           <Text className='text-black dark:text-white '>Settings</Text>
         )}
-        icon={() => <Feather name='settings' size={24} color={'grey'} />}
+        icon={() => <Feather name='settings' size={24} color={'green'} />}
         onPress={() => {
           router.push('/setting');
         }}
@@ -75,9 +77,9 @@ const CustomDrawerContent = ({
         label={() => <Text className='text-black dark:text-white '>Theme</Text>}
         icon={() => {
           if (themeName === 'dark') {
-            return <Feather name='moon' size={24} color={'grey'} />;
+            return <Feather name='moon' size={24} color={'green'} />;
           } else {
-            return <Feather name='sun' size={24} color={'grey'} />;
+            return <Feather name='sun' size={24} color={'green'} />;
           }
         }}
         onPress={() => {
@@ -92,7 +94,7 @@ const CustomDrawerContent = ({
         label={() => (
           <Text className='text-black dark:text-white '>Log out</Text>
         )}
-        icon={() => <Feather name='log-out' size={24} color={'grey'} />}
+        icon={() => <Feather name='log-out' size={24} color={'green'} />}
         onPress={() => {
           console.log('Logout');
         }}

@@ -279,7 +279,7 @@ export default function Page() {
 
   function content_area() {
     return (
-      <View className=' py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6  dark:bg-black'>
+      <View className=' py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 bg-white  dark:bg-black'>
         <View className='m-2 p-2 items-center gap-4 text-center'>
           <ScrollView>
             <Text className='text-black dark:text-white text-lg font-bold text-center items-center text-pretty'>
