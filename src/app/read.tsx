@@ -14,6 +14,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal';
 import Markdown from 'react-native-markdown-display';
+import {activateKeepAwakeAsync, deactivateKeepAwake} from 'expo-keep-awake'
 
 export default function Page() {
   useSafeAreaInsets();
@@ -44,6 +45,14 @@ export default function Page() {
   //   .onEnd(() => {
   //     console.log(fontSize);
   //   }).runOnJS(true);
+
+  useEffect(()=>{
+    if(status==='playing'){
+      activateKeepAwakeAsync();
+    }else {
+      deactivateKeepAwake();
+    }
+  },[status])
 
   useEffect(() => {
     // This is used for switch to another chapter, if was reading before, then read new chapter

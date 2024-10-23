@@ -1,6 +1,6 @@
-import { Text, View, TextInput, Button, Alert, Pressable } from 'react-native';
+import { Text, View, TextInput, Pressable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Feather } from '@expo/vector-icons';
 
@@ -16,6 +16,8 @@ export default function Page() {
       githubToken: '',
       contentFolder: 'Content',
       analysisFolder: 'Analysis',
+      fontSize: 16,
+      backgroundImage: '',
     },
   });
 
