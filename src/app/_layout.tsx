@@ -6,19 +6,18 @@ import React, {
   useState,
 } from 'react';
 import '../global.css';
-import { Link, SplashScreen, useRouter } from 'expo-router';
+import { SplashScreen, useRouter } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
-import { Alert, Text, View, SafeAreaView, Pressable } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import packageJson from '../../package.json';
-import { DarkTheme, ThemeProvider, useTheme } from '@react-navigation/native';
+import { ThemeProvider } from '@react-navigation/native';
 import { Image } from '@/components/image';
 import {
   GestureHandlerRootView,
   ScrollView,
 } from 'react-native-gesture-handler';
-import { SessionProvider, useSession } from '../components/ctx';
 import * as LocalAuthentication from 'expo-local-authentication';
 import {
   DrawerContentComponentProps,
@@ -26,6 +25,10 @@ import {
 } from '@react-navigation/drawer';
 import { useThemeConfig } from '@/components/use-theme-config';
 import { enableFreeze } from 'react-native-screens';
+import { images } from './images';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RootSiblingParent } from 'react-native-root-siblings';
+import Toast from 'react-native-root-toast';
 
 enableFreeze(true);
 
@@ -36,14 +39,7 @@ export const AuthContext = createContext({
   },
 });
 
-const images = {
-  logo: require('assets/favicon.png'),
-};
-
-const CustomDrawerContent = ({
-  drawerPosition,
-  navigation,
-}: any): ReactElement => {
+const CustomDrawerContent = (): ReactElement => {
   const router = useRouter();
   const authContext = useContext(AuthContext);
   const { themeName, setSelectedTheme } = useThemeConfig();
@@ -120,10 +116,33 @@ const CustomDrawerContent = ({
 export default function Layout() {
   const [isBiometricSupported, setIsBiometricSupported] = React.useState(false);
   const [authenticated, setAuthenticated] = useState(false);
+  const [settings, setSettings] = useState({});
 
   // Prevent the splash screen from auto-hiding before asset loading is complete.
   SplashScreen.preventAutoHideAsync();
   const { theme } = useThemeConfig();
+
+  useEffect(() => {
+    AsyncStorage.getItem('@Settings')
+      .then((data) => {
+        if (data) {
+          const parsedData = JSON.parse(data);
+          setSettings(parsedData);
+        }
+      })
+      .catch((err) => {
+        Toast.show(err.message, {
+          position: Toast.positions.CENTER,
+          shadow: true,
+          animation: true,
+          hideOnPress: true,
+          textColor: 'orange',
+          delay: 100,
+          duration: Toast.durations.LONG,
+        });
+        console.error(err.status, err.message);
+      });
+  }, []);
 
   useEffect(() => {
     LocalAuthentication.hasHardwareAsync().then((compatible) => {
@@ -155,148 +174,122 @@ export default function Layout() {
       setAuthenticated(true);
     }
   };
-
+  const handleError = (e) => {
+    Toast.show(e.nativeEvent.error, {
+      position: Toast.positions.CENTER,
+      shadow: true,
+      animation: true,
+      textColor: 'red',
+      hideOnPress: true,
+      delay: 100,
+      duration: Toast.durations.LONG,
+    });
+    console.error(e.nativeEvent.error);
+  };
   return (
-    <GestureHandlerRootView>
-      <AuthContext.Provider value={{ authenticated, setAuthenticated }}>
-        <ThemeProvider value={theme}>
-          <View className='flex flex-1 flex-col text-black dark:text-white bg-white dark:bg-black'>
-            {/* <Header /> */}
-            <Drawer
-              drawerContent={(props: DrawerContentComponentProps) => (
-                <CustomDrawerContent drawerPosition={undefined} {...props} />
-              )}
-            >
-              <Drawer.Screen
-                name='index'
-                options={{
-                  headerShown: true,
-                  headerTitle(props) {
-                    return (
-                      <Text className='bg-white dark:bg-black text-black dark:text-white'>
-                        Welcome
-                      </Text>
-                    );
-                  },
-                  headerBackground(props) {
-                    return (
-                      <View className='bg-white dark:bg-black text-black dark:text-white'>
-                        <View style={{ height: 100 }} />
-                      </View>
-                    );
-                  },
-                }}
-              />
-              <Drawer.Screen
-                name='github'
-                options={{
-                  headerShown: true,
-                  headerTitle(props) {
-                    return (
-                      <Text className='bg-white dark:bg-black text-black dark:text-white'>
-                        Index
-                      </Text>
-                    );
-                  },
-                  headerBackground(props) {
-                    return (
-                      <View className='bg-white dark:bg-black text-black dark:text-white'>
-                        <View style={{ height: 100 }} />
-                      </View>
-                    );
-                  },
-                }}
-              />
-              <Drawer.Screen
-                name='read'
-                options={{
-                  headerShown: true,
-                  headerTitle(props) {
-                    return (
-                      <Text className='bg-white dark:bg-black text-black dark:text-white'>
-                        Configuration
-                      </Text>
-                    );
-                  },
-                  headerBackground(props) {
-                    return (
-                      <View className='bg-white dark:bg-black text-black dark:text-white'>
-                        <View style={{ height: 100 }} />
-                      </View>
-                    );
-                  },
-                }}
-              />
-              <Drawer.Screen
-                name='setting'
-                options={{
-                  headerShown: true,
-                  headerTitle(props) {
-                    return (
-                      <Text className='bg-white dark:bg-black text-black dark:text-white'>
-                        Configuration
-                      </Text>
-                    );
-                  },
-                  headerBackground(props) {
-                    return (
-                      <View className='bg-white dark:bg-black text-black dark:text-white'>
-                        <View style={{ height: 100 }} />
-                      </View>
-                    );
-                  },
-                }}
-              />
-            </Drawer>
-            <Footer />
-          </View>
-        </ThemeProvider>
-      </AuthContext.Provider>
-    </GestureHandlerRootView>
+    <RootSiblingParent>
+      <GestureHandlerRootView>
+        <AuthContext.Provider value={{ authenticated, setAuthenticated }}>
+          <ThemeProvider value={theme}>{major_area()}</ThemeProvider>
+        </AuthContext.Provider>
+      </GestureHandlerRootView>
+    </RootSiblingParent>
   );
-}
 
-function Header() {
-  const { top } = useSafeAreaInsets();
-  return (
-    <View style={{ paddingTop: top }}>
-      <View className='px-4 lg:px-6 h-14 flex items-center flex-row justify-between '>
-        <Link className='font-bold flex-1 items-center justify-center' href='/'>
-          writer
-        </Link>
-        <View className='flex flex-row gap-2 sm:gap-6'>
-          <Link
-            className='text-md  font-medium hover:underline web:underline-offset-4'
-            href='/'
-          >
-            <Feather className='m-1 p-1' name='info' />
-            About
-          </Link>
-          <Link
-            className='text-md font-medium hover:underline web:underline-offset-4'
-            href='/'
-          >
-            <Feather className='m-1 p-1' name='code' />
-            GitHub
-          </Link>
-          <Link
-            className='text-md font-medium hover:underline web:underline-offset-4'
-            href='/read'
-          >
-            <Feather className='m-1 p-1' name='bookmark' />
-            Read
-          </Link>
-          <Link
-            className='text-md font-medium hover:underline web:underline-offset-4'
-            href='/setting'
-          >
-            <Feather className='m-1 p-1' name='settings' />
-            Setting
-          </Link>
-        </View>
+  function major_area() {
+    return (
+      <View className='flex flex-1 flex-col text-black dark:text-white bg-white dark:bg-black'>
+        {/* <Header /> */}
+        <Drawer
+          drawerContent={(props: DrawerContentComponentProps) => (
+            <CustomDrawerContent />
+          )}
+        >
+          <Drawer.Screen
+            name='index'
+            options={{
+              headerShown: true,
+              headerTitle() {
+                return (
+                  <Text className='bg-white dark:bg-black text-black dark:text-white'>
+                    Welcome
+                  </Text>
+                );
+              },
+              headerBackground() {
+                return (
+                  <View className='bg-white dark:bg-black text-black dark:text-white'>
+                    <View style={{ height: 100 }} />
+                  </View>
+                );
+              },
+            }}
+          />
+          <Drawer.Screen
+            name='github'
+            options={{
+              headerShown: true,
+              headerTitle() {
+                return (
+                  <Text className='bg-white dark:bg-black text-black dark:text-white'>
+                    Index
+                  </Text>
+                );
+              },
+              headerBackground() {
+                return (
+                  <View className='bg-white dark:bg-black text-black dark:text-white'>
+                    <View style={{ height: 100 }} />
+                  </View>
+                );
+              },
+            }}
+          />
+          <Drawer.Screen
+            name='read'
+            options={{
+              headerShown: true,
+              headerTitle() {
+                return (
+                  <Text className='bg-white dark:bg-black text-black dark:text-white'>
+                    Configuration
+                  </Text>
+                );
+              },
+              headerBackground() {
+                return (
+                  <View className='bg-white dark:bg-black text-black dark:text-white'>
+                    <View style={{ height: 100 }} />
+                  </View>
+                );
+              },
+            }}
+          />
+          <Drawer.Screen
+            name='setting'
+            options={{
+              headerShown: true,
+              headerTitle() {
+                return (
+                  <Text className='bg-white dark:bg-black text-black dark:text-white'>
+                    Configuration
+                  </Text>
+                );
+              },
+              headerBackground() {
+                return (
+                  <View className='bg-white dark:bg-black text-black dark:text-white'>
+                    <View style={{ height: 100 }} />
+                  </View>
+                );
+              },
+            }}
+          />
+        </Drawer>
+        <Footer />
       </View>
-    </View>
-  );
+    );
+  }
 }
 
 function Footer() {

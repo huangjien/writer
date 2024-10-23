@@ -14,7 +14,8 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal';
 import Markdown from 'react-native-markdown-display';
-import {activateKeepAwakeAsync, deactivateKeepAwake} from 'expo-keep-awake'
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
+import Toast from 'react-native-root-toast';
 
 export default function Page() {
   useSafeAreaInsets();
@@ -46,13 +47,31 @@ export default function Page() {
   //     console.log(fontSize);
   //   }).runOnJS(true);
 
-  useEffect(()=>{
-    if(status==='playing'){
-      activateKeepAwakeAsync();
-    }else {
+  const enableKeepAwake = async () => {
+    await activateKeepAwakeAsync();
+  };
+
+  useEffect(() => {
+    AsyncStorage.getItem('@Settings').then((data) => {
+      if (data) {
+        const parsedData = JSON.parse(data);
+
+        if (!parsedData.fontSize) {
+          setFontSize(16);
+        } else {
+          setFontSize(parsedData.fontSize);
+        }
+      }
+    });
+  }, [post]);
+
+  useEffect(() => {
+    if (status === 'playing') {
+      enableKeepAwake();
+    } else {
       deactivateKeepAwake();
     }
-  },[status])
+  }, [status]);
 
   useEffect(() => {
     // This is used for switch to another chapter, if was reading before, then read new chapter
@@ -134,6 +153,17 @@ export default function Page() {
       })
       .then((arr) => setItems(arr))
       .catch((err) => {
+        Toast.show(
+          'network issue or folder not exist in the github \n' + err.message,
+          {
+            position: Toast.positions.CENTER,
+            shadow: true,
+            animation: true,
+            hideOnPress: true,
+            delay: 100,
+            duration: Toast.durations.LONG,
+          }
+        );
         console.error(err.status, err.message);
       });
   }, []);
@@ -226,7 +256,7 @@ export default function Page() {
           swipeDirection={'right'}
         >
           <ScrollView className='flex-grow m-4 p-4 bg-opacity-10 py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 text-white'>
-            <Markdown style={{ body: { color: 'white', fontSize: 16 } }}>
+            <Markdown style={{ body: { color: 'white', fontSize: fontSize } }}>
               {analysis ? analysis : 'No analysis for this chapter yet'}
             </Markdown>
             <Pressable
@@ -328,7 +358,10 @@ export default function Page() {
       <View className=' py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 bg-white  dark:bg-black'>
         <View className='m-2 p-2 items-center gap-4 text-center'>
           <ScrollView>
-            <Text className=' text-black dark:text-white text-xl font-bold text-center justify-stretch text-pretty'>
+            <Text
+              className=' text-black dark:text-white font-bold text-center justify-stretch text-pretty'
+              style={{ fontSize: fontSize }}
+            >
               {post
                 .toString()
                 .replace('_', '  ')
@@ -340,7 +373,10 @@ export default function Page() {
               </Text>
             </Text>
 
-            <Text className='text-black dark:text-white text-xl text-pretty'>
+            <Text
+              className='text-black dark:text-white text-pretty'
+              style={{ fontSize: fontSize }}
+            >
               {content}
             </Text>
           </ScrollView>

@@ -5,6 +5,7 @@ import axios from 'axios';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 import { components } from '@octokit/openapi-types';
+import Toast from 'react-native-root-toast';
 
 type RepoContent = components['schemas']['content-file'];
 
@@ -80,6 +81,15 @@ export default function Page() {
         }
       })
       .catch((err) => {
+        Toast.show(err.message, {
+          position: Toast.positions.CENTER,
+          shadow: true,
+          animation: true,
+          textColor: 'red',
+          hideOnPress: true,
+          delay: 100,
+          duration: Toast.durations.LONG,
+        });
         console.error(err.status, err.message);
       });
   }, []);
@@ -110,6 +120,17 @@ export default function Page() {
         return response.json();
       });
     } catch (error) {
+      Toast.show(
+        'network issue or folder not exist in the github \n' + error.message,
+        {
+          position: Toast.positions.CENTER,
+          shadow: true,
+          animation: true,
+          hideOnPress: true,
+          delay: 100,
+          duration: Toast.durations.LONG,
+        }
+      );
       console.error(error);
     }
   };
