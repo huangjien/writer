@@ -16,6 +16,12 @@
     },
     "plugins": [
       [
+        "expo-secure-store",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+        }
+      ],
+      [
         "expo-router",
         {
           "origin": "https://n"
@@ -26,15 +32,11 @@
         {
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "name": "writer",
     "slug": "writer",
-    // "extra": {
-    //   "eas": {
-    //     "projectId": "f5ed2fb9-b8ce-461b-8806-1dc0a58785ce"
-    //   }
-    // },
     "owner": "huangjien",
     "android": {
       "adaptiveIcon": {
@@ -51,6 +53,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.huangjien.writer",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "infoPlist": {
         "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID.",
         "UIBackgroundModes": [

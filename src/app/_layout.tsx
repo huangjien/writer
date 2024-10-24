@@ -8,11 +8,12 @@ import React, {
 import '../global.css';
 import { SplashScreen, useRouter } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
-import { Alert, Text, View } from 'react-native';
+import DrawerToggleButton from 'expo-router/drawer';
+import { Alert, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import packageJson from '../../package.json';
-import { ThemeProvider } from '@react-navigation/native';
+import { DrawerActions, ThemeProvider } from '@react-navigation/native';
 import { Image } from '@/components/image';
 import {
   GestureHandlerRootView,
@@ -71,6 +72,13 @@ const CustomDrawerContent = (): ReactElement => {
         icon={() => <Feather name='code' size={24} color={'green'} />}
         onPress={() => {
           router.push('/github');
+        }}
+      />
+      <DrawerItem
+        label={() => <Text className='text-black dark:text-white '>Read</Text>}
+        icon={() => <Feather name='play' size={24} color={'green'} />}
+        onPress={() => {
+          router.push('/read');
         }}
       />
       <DrawerItem
@@ -200,7 +208,22 @@ export default function Layout() {
     return (
       <View className='flex flex-1 flex-col text-black dark:text-white bg-white dark:bg-black'>
         {/* <Header /> */}
-        <Drawer
+        <Drawer screenOptions={({ navigation }) => ({
+          headerLeft: () => (
+            <Pressable onPress={() => navigation.toggleDrawer()}>
+              <Feather name='menu' size={24} color={'green'} />
+            </Pressable>
+
+          ),
+        })}
+          // screenOptions={{
+          //   headerLeft: () => (
+          //     <Pressable onPress={() => navigation.toggleDrawer()}>
+          //       <Feather name='menu' size={24} color={'green'} />
+          //     </Pressable>
+
+          //   ),
+          // }}
           drawerContent={(props: DrawerContentComponentProps) => (
             <CustomDrawerContent />
           )}
@@ -252,7 +275,7 @@ export default function Layout() {
               headerTitle() {
                 return (
                   <Text className='bg-white dark:bg-black text-black dark:text-white'>
-                    Configuration
+                    Reading
                   </Text>
                 );
               },
@@ -292,7 +315,7 @@ export default function Layout() {
   }
 }
 
-function Footer() {
+const Footer = () => {
   const { bottom } = useSafeAreaInsets();
   return (
     <View
@@ -309,4 +332,4 @@ function Footer() {
       </Text>
     </View>
   );
-}
+};
