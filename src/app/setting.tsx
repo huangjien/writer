@@ -66,8 +66,8 @@ export default function Page() {
 
   return (
     <View className='flex-1 '>
-      <ScrollView>
-        <View className='h-full items-stretch justify-stretch gap-2  px-8 md:px-4  bg-white dark:bg-black'>
+      <View className='h-full items-stretch justify-stretch gap-2  px-8 md:px-4  bg-white dark:bg-black'>
+        <ScrollView>
           <Controller
             control={control}
             rules={{
@@ -212,15 +212,14 @@ export default function Page() {
 
           <View className='mt-8 bg-white dark:bg-black'>
             <Pressable
-              className='flex h-12 items-center justify-center overflow-hidden 
-          text-black dark:text-white bg-white dark:bg-black'
+              className='flex h-12 items-center justify-center overflow-hidden '
               onPress={handleSubmit(onSubmit)}
             >
               <Feather name='save' size={24} color={'green'} />
             </Pressable>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
     </View>
   );
 }

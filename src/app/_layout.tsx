@@ -208,22 +208,14 @@ export default function Layout() {
     return (
       <View className='flex flex-1 flex-col text-black dark:text-white bg-white dark:bg-black'>
         {/* <Header /> */}
-        <Drawer screenOptions={({ navigation }) => ({
-          headerLeft: () => (
-            <Pressable onPress={() => navigation.toggleDrawer()}>
-              <Feather name='menu' size={24} color={'green'} />
-            </Pressable>
-
-          ),
-        })}
-          // screenOptions={{
-          //   headerLeft: () => (
-          //     <Pressable onPress={() => navigation.toggleDrawer()}>
-          //       <Feather name='menu' size={24} color={'green'} />
-          //     </Pressable>
-
-          //   ),
-          // }}
+        <Drawer
+          screenOptions={({ navigation }) => ({
+            headerLeft: () => (
+              <Pressable onPress={() => navigation.toggleDrawer()}>
+                <Feather name='menu' size={24} color={'green'} />
+              </Pressable>
+            ),
+          })}
           drawerContent={(props: DrawerContentComponentProps) => (
             <CustomDrawerContent />
           )}
