@@ -16,13 +16,15 @@ import Modal from 'react-native-modal';
 import Markdown from 'react-native-markdown-display';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import Toast from 'react-native-root-toast';
+import { ANALYSIS_KEY, CONTENT_KEY, SETTINGS_KEY, STATUS_PAUSED, STATUS_PLAYING, STATUS_STOPPED } from '../components/global';
+
 
 export default function Page() {
   useSafeAreaInsets();
   const [items, setItems] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState('zh');
   const [voice, setVoice] = useState('zh');
-  const [status, setStatus] = useState('stopped'); // it only has 3 statuses: stopped, playing, paused
+  const [status, setStatus] = useState(STATUS_STOPPED); // it only has 3 statuses: stopped, playing, paused
   const [content, SetContent] = useState('Please select a file to read');
   const [analysis, setAnalysis] = useState('No analysis for this chapter yet');
   const [modalVisible, setModalVisible] = useState(false);
@@ -52,21 +54,22 @@ export default function Page() {
   };
 
   useEffect(() => {
-    AsyncStorage.getItem('@Settings').then((data) => {
+    AsyncStorage.getItem(SETTINGS_KEY).then((data) => {
       if (data) {
         const parsedData = JSON.parse(data);
 
         if (!parsedData.fontSize) {
+          // default 16
           setFontSize(16);
         } else {
           setFontSize(parsedData.fontSize);
         }
       }
     });
-  }, [post]);
+  }, []);
 
   useEffect(() => {
-    if (status === 'playing') {
+    if (status === STATUS_PLAYING) {
       enableKeepAwake();
     } else {
       deactivateKeepAwake();
@@ -75,47 +78,18 @@ export default function Page() {
 
   useEffect(() => {
     // This is used for switch to another chapter, if was reading before, then read new chapter
-    if (status === 'playing' && content.length > 64) {
+    if (status === STATUS_PLAYING && content.length > 64) {
       Speech.stop();
       speak(true);
     }
   }, [content]);
 
   useEffect(() => {
+    if(!post) {
+      // get current post from local storage, we'd better also get progress, then can resume from last breaking point
+    }
     if (post) {
-      AsyncStorage.getItem(post.toString()).then((data) => {
-        if (!data) {
-          SetContent(undefined);
-          return;
-        }
-        SetContent(JSON.parse(data)['content']);
-      });
-      AsyncStorage.getItem(
-        post.toString().replace('@Content:', '@Analysis:')
-      ).then((data) => {
-        if (!data) {
-          setAnalysis(undefined);
-          return;
-        }
-        setAnalysis(JSON.parse(data)['content']);
-      });
-
-      AsyncStorage.getItem('@Content:').then((data) => {
-        if (!data) return;
-        const content = JSON.parse(data);
-        const index = content.findIndex(
-          (item) => item['name'] === post.toString().replace('@Content:', '')
-        );
-        if (index === -1) return; // we don't find this item, how could this happen?!
-        const prev = index === 0 ? undefined : content[index - 1]['name'];
-        const next =
-          index === content.length - 1 ? undefined : content[index + 1]['name'];
-
-        if (prev) setPreview('@Content:' + prev);
-        else setPreview(undefined);
-        if (next) setNext('@Content:' + next);
-        else setNext(undefined);
-      });
+      loadReadingByName();
     }
   }, [post]);
 
@@ -124,12 +98,12 @@ export default function Page() {
       alert('Content is too long to handle by TTS engine');
       return;
     }
-    if (status === 'paused') {
-      setStatus('playing');
+    if (status === STATUS_PAUSED) {
+      setStatus(STATUS_PLAYING);
       Speech.resume();
     }
-    if (status === 'stopped' || force === true) {
-      setStatus('playing');
+    if (status === STATUS_STOPPED || force === true) {
+      setStatus(STATUS_PLAYING);
       Speech.speak(content, {
         language: selectedLanguage,
         voice: voice,
@@ -206,12 +180,12 @@ export default function Page() {
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
     .onEnd(() => {
-      if (status === 'paused') {
-        setStatus('playing');
+      if (status === STATUS_PAUSED) {
+        setStatus(STATUS_PLAYING);
         Speech.resume();
       }
-      if (status === 'stopped') {
-        setStatus('playing');
+      if (status === STATUS_STOPPED) {
+        setStatus(STATUS_PLAYING);
         Speech.speak(content, {
           language: selectedLanguage,
           voice: voice,
@@ -220,13 +194,13 @@ export default function Page() {
           },
         });
       }
-      if (status === 'playing') {
+      if (status === STATUS_PLAYING) {
         if (Platform.OS === 'android') {
           Speech.stop();
-          setStatus('stopped');
+          setStatus(STATUS_STOPPED);
         } else {
           Speech.pause();
-          setStatus('paused');
+          setStatus(STATUS_PAUSED);
         }
       }
     })
@@ -273,6 +247,41 @@ export default function Page() {
     </>
   );
 
+  function loadReadingByName() {
+    AsyncStorage.getItem(post.toString()).then((data) => {
+      if (!data) {
+        SetContent(undefined);
+        return;
+      }
+      SetContent(JSON.parse(data)['content']);
+    });
+    AsyncStorage.getItem(
+      post.toString().replace(CONTENT_KEY, ANALYSIS_KEY)
+    ).then((data) => {
+      if (!data) {
+        setAnalysis(undefined);
+        return;
+      }
+      setAnalysis(JSON.parse(data)['content']);
+    });
+
+    AsyncStorage.getItem(CONTENT_KEY).then((data) => {
+      if (!data) return;
+      const content = JSON.parse(data);
+      const index = content.findIndex(
+        (item) => item['name'] === post.toString().replace(CONTENT_KEY, '')
+      );
+      if (index === -1) return; // we don't find this item, how could this happen?!
+      const prev = index === 0 ? undefined : content[index - 1]['name'];
+      const next = index === content.length - 1 ? undefined : content[index + 1]['name'];
+
+      if (prev) setPreview(CONTENT_KEY + prev);
+      else setPreview(undefined);
+      if (next) setNext(CONTENT_KEY + next);
+      else setNext(undefined);
+    });
+  }
+
   function play_bar() {
     return (
       <View className='bg-white dark:bg-black text-black dark:text-white  inline-flex flex-row lg:gap-16 md:gap-4 justify-evenly '>
@@ -309,12 +318,12 @@ export default function Page() {
             color={next ? 'green' : 'grey'}
           />
         </Pressable>
-        <Pressable disabled={status === 'playing'} onPress={() => speak()}>
+        <Pressable disabled={status === STATUS_PLAYING} onPress={() => speak()}>
           <Feather
             className='text-black dark:text-white '
             size={24}
             name='play'
-            color={status === 'playing' ? 'grey' : 'green'}
+            color={status === STATUS_PLAYING ? 'grey' : 'green'}
           />
         </Pressable>
 
@@ -322,31 +331,31 @@ export default function Page() {
         {Platform.OS !== 'android' && (
           <>
             <Pressable
-              disabled={status !== 'playing'}
+              disabled={status !== STATUS_PLAYING}
               onPress={() => {
                 Speech.pause();
-                setStatus('paused');
+                setStatus(STATUS_PAUSED);
               }}
             >
               <Feather
                 size={24}
                 name='pause'
-                color={status !== 'playing' ? 'grey' : 'green'}
+                color={status !== STATUS_PLAYING ? 'grey' : 'green'}
               />
             </Pressable>
           </>
         )}
         <Pressable
-          disabled={status === 'stopped'}
+          disabled={status === STATUS_STOPPED}
           onPress={() => {
             Speech.stop();
-            setStatus('stopped');
+            setStatus(STATUS_STOPPED);
           }}
         >
           <Feather
             size={24}
             name='square'
-            color={status === 'stopped' ? 'grey' : 'green'}
+            color={status === STATUS_STOPPED ? 'grey' : 'green'}
           />
         </Pressable>
       </View>
@@ -365,7 +374,7 @@ export default function Page() {
               {post
                 .toString()
                 .replace('_', '  ')
-                .replace('@Content:', '')
+                .replace(CONTENT_KEY, '')
                 .replace('.md', '')}{' '}
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <Text className='items-end text-gray-500 dark:text-grey-300 '>

@@ -6,6 +6,8 @@ import { Feather } from '@expo/vector-icons';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { ScrollView } from 'react-native-gesture-handler';
 import Toast from 'react-native-root-toast';
+import { SETTINGS_KEY } from '../components/global';
+
 
 export default function Page() {
   const {
@@ -28,7 +30,7 @@ export default function Page() {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
   useEffect(() => {
-    AsyncStorage.getItem('@Settings').then((data) => {
+    AsyncStorage.getItem(SETTINGS_KEY).then((data) => {
       if (data) {
         const parsedData = JSON.parse(data);
         setValue('githubRepo', parsedData.githubRepo);
@@ -61,7 +63,7 @@ export default function Page() {
   };
 
   const saveToStorage = async (values: any) => {
-    await AsyncStorage.setItem('@Settings', JSON.stringify(values));
+    await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(values));
   };
 
   return (

@@ -30,6 +30,8 @@ import { images } from './images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import Toast from 'react-native-root-toast';
+import { SETTINGS_KEY } from '../components/global';
+
 
 enableFreeze(true);
 
@@ -131,7 +133,7 @@ export default function Layout() {
   const { theme } = useThemeConfig();
 
   useEffect(() => {
-    AsyncStorage.getItem('@Settings')
+    AsyncStorage.getItem(SETTINGS_KEY)
       .then((data) => {
         if (data) {
           const parsedData = JSON.parse(data);

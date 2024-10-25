@@ -6,7 +6,8 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 import { components } from '@octokit/openapi-types';
 import Toast from 'react-native-root-toast';
-import { Float } from 'react-native/Libraries/Types/CodegenTypes';
+import { ANALYSIS_KEY, CONTENT_KEY, SETTINGS_KEY } from '../components/global';
+
 
 type RepoContent = components['schemas']['content-file'];
 
@@ -48,7 +49,7 @@ export default function Page() {
           return;
         }
         setAnalysis(data);
-        saveToStorage('@Analysis:', data);
+        saveToStorage(ANALYSIS_KEY, data);
       });
 
       const contentFolder = getFolderAndMdfiles(settings['contentFolder']);
@@ -57,14 +58,14 @@ export default function Page() {
           return;
         }
         
-        saveToStorage('@Content:', data);
+        saveToStorage(CONTENT_KEY, data);
         // return data;
       });
     }
   }, [settings]);
 
   useEffect(() => {
-    AsyncStorage.getItem('@Settings')
+    AsyncStorage.getItem(SETTINGS_KEY)
       .then((data) => {
         if (data) {
           const parsedData = JSON.parse(data);
@@ -161,7 +162,7 @@ export default function Page() {
                     onPress={() => {
                       router.push({
                         pathname: '/read',
-                        params: { post: '@Content:' + item['name'] },
+                        params: { post: CONTENT_KEY + item['name'] },
                       });
                     }}
                   >
@@ -196,7 +197,7 @@ export default function Page() {
                   content: response['data'],
                   size: response['data'].toString().length,
                 };
-                if (mark === '@Content:') {
+                if (mark === CONTENT_KEY) {
                   // need to update size and analysed
                   item['size'] = content['size'];
                   if (elementWithNameExists(analysis, item['name'])) {
@@ -213,7 +214,7 @@ export default function Page() {
         .catch((err) => console.error(err));
     });
     Promise.all(requests).then(() => {
-      if (mark === '@Content:') {
+      if (mark === CONTENT_KEY) {
       items.sort(fileNameComparator);
       setContent(items);
       // console.log(items)
