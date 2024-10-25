@@ -6,15 +6,20 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 import { components } from '@octokit/openapi-types';
 import Toast from 'react-native-root-toast';
+import { Float } from 'react-native/Libraries/Types/CodegenTypes';
 
 type RepoContent = components['schemas']['content-file'];
 
+function elementWithNameExists(array: any[], nameToFind: string): boolean {
+  return array.some((element) => element.name === nameToFind);
+}
+
 // Define a function named fileNameComparator that takes two parameters, a and b, of type any and returns a number
-function fileNameComparator(a: any, b: any): number {
+function fileNameComparator(a: any, b: any): Number {
   // Extract the number from the name property of object a by splitting it at the underscore and parsing the first part as an integer
-  const aNumber = parseInt(a.name.split('_')[0]);
+  const aNumber = parseFloat(a.name.split('_')[0]);
   // Extract the number from the name property of object b by splitting it at the underscore and parsing the first part as an integer
-  const bNumber = parseInt(b.name.split('_')[0]);
+  const bNumber = parseFloat(b.name.split('_')[0]);
 
   // Compare the extracted numbers
   if (aNumber < bNumber) {
@@ -37,38 +42,24 @@ export default function Page() {
 
   useEffect(() => {
     if (settings) {
-      const contentFolder = getFolderAndMdfiles(settings['contentFolder']);
-      contentFolder
-        .then((data) => {
-          if (!data) {
-            return;
-          }
-          data.sort(fileNameComparator);
-          setContent(data);
-          return data;
-        })
-        .then((data) => {
-          // write to storage
-          if (!data) {
-            return;
-          }
-          // if data already exist, then skip
-          saveToStorage('@Content:', data);
-        }); // end of contentFolder.then
-
       const analysisFolder = getFolderAndMdfiles(settings['analysisFolder']);
-      analysisFolder
-        .then((data) => {
-          setAnalysis(data);
-          return data;
-        })
-        .then((data) => {
-          if (!data) {
-            return;
-          }
-          // if data already exist, then skip
-          saveToStorage('@Analysis:', data);
-        });
+      analysisFolder.then((data) => {
+        if (!data) {
+          return;
+        }
+        setAnalysis(data);
+        saveToStorage('@Analysis:', data);
+      });
+
+      const contentFolder = getFolderAndMdfiles(settings['contentFolder']);
+      contentFolder.then((data) => {
+        if (!data) {
+          return;
+        }
+        
+        saveToStorage('@Content:', data);
+        // return data;
+      });
     }
   }, [settings]);
 
@@ -175,7 +166,7 @@ export default function Page() {
                     }}
                   >
                     {item.name} &nbsp;&nbsp;
-                    <Text className=' text-gray-400 ml-2'>{item.size}</Text>
+                    <Text className=' text-gray-400 ml-2'>{item.size}</Text> {item.analysed && <Text className='text-green-500'>✓</Text>}
                   </Text>
                 ))}
               </ScrollView>
@@ -186,8 +177,7 @@ export default function Page() {
   );
 
   function saveToStorage(mark: string, items: any) {
-    AsyncStorage.setItem(mark, JSON.stringify(items));
-    items.map((item) => {
+    const requests = items.map((item) => {
       AsyncStorage.getItem(mark + item.name)
         .then((data) => {
           if (!data || data['sha'] !== item['sha']) {
@@ -206,11 +196,30 @@ export default function Page() {
                   content: response['data'],
                   size: response['data'].toString().length,
                 };
+                if (mark === '@Content:') {
+                  // need to update size and analysed
+                  item['size'] = content['size'];
+                  if (elementWithNameExists(analysis, item['name'])) {
+                    item['analysed'] = true;
+                  } else {
+                    item['analysed'] = false;
+                  }
+                }
                 AsyncStorage.setItem(mark + item.name, JSON.stringify(content));
               });
           }
+          return items;
         })
         .catch((err) => console.error(err));
     });
+    Promise.all(requests).then(() => {
+      if (mark === '@Content:') {
+      items.sort(fileNameComparator);
+      setContent(items);
+      // console.log(items)
+      }
+      AsyncStorage.setItem(mark, JSON.stringify(items));
+    });
+    
   }
 }
