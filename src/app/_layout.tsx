@@ -1,5 +1,6 @@
 import React, {
   createContext,
+  PropsWithChildren,
   ReactElement,
   useContext,
   useEffect,
@@ -33,18 +34,20 @@ import Toast from 'react-native-root-toast';
 import { SETTINGS_KEY } from '../components/global';
 
 
-enableFreeze(true);
-
-export const AuthContext = createContext({
-  authenticated: false,
-  setAuthenticated: (authenticated: boolean) => {
-    authenticated = authenticated;
-  },
+const AuthContext = createContext({
+  expiry: 0,
+  setExpiry: (expiry) => {},
 });
+
+export function useSession() {
+  return useContext(AuthContext);
+}
+
+enableFreeze(true);
 
 const CustomDrawerContent = (): ReactElement => {
   const router = useRouter();
-  const authContext = useContext(AuthContext);
+  const authContext = useSession();
   const { themeName, setSelectedTheme } = useThemeConfig();
 
   return (
@@ -116,7 +119,7 @@ const CustomDrawerContent = (): ReactElement => {
         )}
         icon={() => <Feather name='log-out' size={24} color={'green'} />}
         onPress={() => {
-          authContext.setAuthenticated(false);
+          authContext.setExpiry(Date.now());
         }}
       />
     </ScrollView>
@@ -125,7 +128,7 @@ const CustomDrawerContent = (): ReactElement => {
 
 export default function Layout() {
   const [isBiometricSupported, setIsBiometricSupported] = React.useState(false);
-  const [authenticated, setAuthenticated] = useState(false);
+  const [expiry, setExpiry] = useState(Date.now());
   const [settings, setSettings] = useState({});
 
   // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -138,34 +141,38 @@ export default function Layout() {
         if (data) {
           const parsedData = JSON.parse(data);
           setSettings(parsedData);
+          let temp = settings['expiry']
+          if (!temp) temp = Date.now();
+          setExpiry(temp);
         }
-      })
-      .catch((err) => {
-        Toast.show(err.message, {
-          position: Toast.positions.CENTER,
-          shadow: true,
-          animation: true,
-          hideOnPress: true,
-          textColor: 'orange',
-          delay: 100,
-          duration: Toast.durations.LONG,
+      }).then(()=>{
+        LocalAuthentication.hasHardwareAsync().then((compatible) => {
+          setIsBiometricSupported(compatible);
         });
-        console.error(err.status, err.message);
+      })
+      .then(() => {SplashScreen.hideAsync()})
+      .catch((err) => {
+        SplashScreen.hideAsync().then(() => {
+          Toast.show(err.message, {
+            position: Toast.positions.CENTER,
+            shadow: true,
+            animation: true,
+            hideOnPress: true,
+            textColor: 'orange',
+            delay: 100,
+            duration: Toast.durations.LONG,
+          });
+          console.error(err.status, err.message);
+        });
       });
   }, []);
 
   useEffect(() => {
-    LocalAuthentication.hasHardwareAsync().then((compatible) => {
-      setIsBiometricSupported(compatible);
-    });
-  }, [isBiometricSupported]);
-
-  useEffect(() => {
-    if (!authenticated) handleBiometricAuth();
-  }, [authenticated]);
+    if (expiry && expiry < Date.now()) handleBiometricAuth();
+  }, [expiry]);
 
   const handleBiometricAuth = async () => {
-    if (authenticated) return;
+    if (expiry && expiry < Date.now()) return;
     const savedBiometrics = await LocalAuthentication.isEnrolledAsync();
     if (!savedBiometrics)
       return Alert.alert(
@@ -181,7 +188,10 @@ export default function Layout() {
     if (!biometricAuth.success) {
       handleBiometricAuth();
     } else {
-      setAuthenticated(true);
+      setExpiry(Date.now() + 1000 * 60 * 5);
+      settings['expiry'] = expiry;
+      setSettings(settings)
+      AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
     }
   };
   const handleError = (e) => {
@@ -199,7 +209,7 @@ export default function Layout() {
   return (
     <RootSiblingParent>
       <GestureHandlerRootView>
-        <AuthContext.Provider value={{ authenticated, setAuthenticated }}>
+        <AuthContext.Provider value={{expiry, setExpiry}} >
           <ThemeProvider value={theme}>{major_area()}</ThemeProvider>
         </AuthContext.Provider>
       </GestureHandlerRootView>
