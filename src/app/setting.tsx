@@ -6,7 +6,7 @@ import { Feather } from '@expo/vector-icons';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { ScrollView } from 'react-native-gesture-handler';
 import Toast from 'react-native-root-toast';
-import { SETTINGS_KEY } from '../components/global';
+import { getStoredSettings, SETTINGS_KEY } from '../components/global';
 
 export default function Page() {
   const {
@@ -31,25 +31,23 @@ export default function Page() {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
 
   useEffect(() => {
-    AsyncStorage.getItem(SETTINGS_KEY).then((data) => {
-      if (data) {
-        const parsedData = JSON.parse(data);
-        setValue('githubRepo', parsedData.githubRepo);
-        setValue('githubToken', parsedData.githubToken);
-        setValue('contentFolder', parsedData.contentFolder);
-        setValue('analysisFolder', parsedData.analysisFolder);
-        setValue('backgroundImage', parsedData.backgroundImage);
-        setValue('expiry', parsedData.expiry);
-        setValue('progress', parsedData.progress ? parsedData.progress : 0); // current chapter reading progress, if not exist, set to 0, means from beginning
-        if (!parsedData.fontSize) {
+    getStoredSettings.then((res) => {
+      if (res) {
+        setValue('githubRepo', res.githubRepo);
+        setValue('githubToken', res.githubToken);
+        setValue('contentFolder', res.contentFolder);
+        setValue('analysisFolder', res.analysisFolder);
+        setValue('backgroundImage', res.backgroundImage);
+        setValue('expiry', res.expiry);
+        setValue('progress', res.progress ? res.progress : 0); // current chapter reading progress, if not exist, set to 0, means from beginning
+        if (!res.fontSize) {
           setValue('fontSize', 16);
           setSelectedIndex(0);
         } else {
-          setValue('fontSize', parsedData.fontSize);
-          setSelectedIndex((parsedData.fontSize - 16) / 2);
+          setValue('fontSize', res.fontSize);
+          setSelectedIndex((res.fontSize - 16) / 2);
         }
-        if (!parsedData.backgroundImage)
-          setValue('backgroundImage', 'wood.jpg');
+        if (!res.backgroundImage) setValue('backgroundImage', 'wood.jpg');
       }
     });
   }, []);

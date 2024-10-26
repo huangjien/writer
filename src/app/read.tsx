@@ -19,6 +19,7 @@ import Toast from 'react-native-root-toast';
 import {
   ANALYSIS_KEY,
   CONTENT_KEY,
+  getStoredSettings,
   SETTINGS_KEY,
   STATUS_PAUSED,
   STATUS_PLAYING,
@@ -44,15 +45,13 @@ export default function Page() {
   };
 
   useEffect(() => {
-    AsyncStorage.getItem(SETTINGS_KEY).then((data) => {
+    getStoredSettings.then((data) => {
       if (data) {
-        const parsedData = JSON.parse(data);
-
-        if (!parsedData.fontSize) {
+        if (!data.fontSize) {
           // default 16
           setFontSize(16);
         } else {
-          setFontSize(parsedData.fontSize);
+          setFontSize(data.fontSize);
         }
       }
     });

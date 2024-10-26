@@ -7,7 +7,12 @@ import { useRouter } from 'expo-router';
 import { components } from '@octokit/openapi-types';
 import Toast from 'react-native-root-toast';
 import { useIsFocused } from '@react-navigation/native';
-import { ANALYSIS_KEY, CONTENT_KEY, SETTINGS_KEY } from '../components/global';
+import {
+  ANALYSIS_KEY,
+  CONTENT_KEY,
+  getStoredSettings,
+  SETTINGS_KEY,
+} from '../components/global';
 
 type RepoContent = components['schemas']['content-file'];
 
@@ -64,12 +69,9 @@ export default function Page() {
   }, [settings]);
 
   useEffect(() => {
-    AsyncStorage.getItem(SETTINGS_KEY)
+    getStoredSettings
       .then((data) => {
-        if (data) {
-          const parsedData = JSON.parse(data);
-          setSettings(parsedData);
-        }
+        setSettings(data);
       })
       .catch((err) => {
         Toast.show(err.message, {

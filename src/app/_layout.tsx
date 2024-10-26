@@ -29,7 +29,7 @@ import { images } from './images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import Toast from 'react-native-root-toast';
-import { SETTINGS_KEY } from '../components/global';
+import { getStoredSettings, SETTINGS_KEY } from '../components/global';
 
 const AuthContext = createContext({
   expiry: 0,
@@ -134,11 +134,10 @@ export default function Layout() {
   const { theme } = useThemeConfig();
 
   useEffect(() => {
-    AsyncStorage.getItem(SETTINGS_KEY)
+    getStoredSettings
       .then((data) => {
         if (data) {
-          const parsedData = JSON.parse(data);
-          setSettings(parsedData);
+          setSettings(data);
           let temp = settings['expiry'];
           if (!temp) temp = Date.now();
           setExpiry(temp);
