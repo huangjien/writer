@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -11,7 +11,6 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "push": "git tag v$npm_package_config_version && git push --tags",
     "eject": "expo eject",
     "prepare": "husky"
   },
