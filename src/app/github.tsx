@@ -8,7 +8,6 @@ import { components } from '@octokit/openapi-types';
 import Toast from 'react-native-root-toast';
 import { ANALYSIS_KEY, CONTENT_KEY, SETTINGS_KEY } from '../components/global';
 
-
 type RepoContent = components['schemas']['content-file'];
 
 function elementWithNameExists(array: any[], nameToFind: string): boolean {
@@ -57,7 +56,7 @@ export default function Page() {
         if (!data) {
           return;
         }
-        
+
         saveToStorage(CONTENT_KEY, data);
         // return data;
       });
@@ -70,6 +69,7 @@ export default function Page() {
         if (data) {
           const parsedData = JSON.parse(data);
           setSettings(parsedData);
+          console.log(settings, parsedData);
         }
       })
       .catch((err) => {
@@ -129,10 +129,7 @@ export default function Page() {
 
   return (
     <>
-      {(!settings['githubRepo'] ||
-        !settings['githubToken'] ||
-        !settings['contentFolder'] ||
-        !settings['analysisFolder']) && (
+      {!content && (
         <View className='flex-1'>
           <View className='py-12 md:py-24 lg:py-32 xl:py-48'>
             <View className='px-4 md:px-6'>
@@ -141,39 +138,38 @@ export default function Page() {
                   role='heading'
                   className='text-2xl text-center native:text-5xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl'
                 >
-                  Welcome to Project writer
+                  Please configure your settings first, we cannot retrieve any
+                  content at the moment.
                 </Text>
               </View>
             </View>
           </View>
         </View>
       )}
-      {settings['githubRepo'] &&
-        settings['githubToken'] &&
-        settings['contentFolder'] &&
-        settings['analysisFolder'] && (
-          <View className='flex-1'>
-            <View className='px-4 md:px-6 flex-1 flex-shrink-0 bg-white dark:bg-black  inline-flex items-stretch w-full gap-4 overflow-hidden '>
-              <ScrollView>
-                {content.map((item) => (
-                  <Text
-                    key={item.sha}
-                    className='m-1 p-1 text-black dark:text-white text-2xl items-stretch native:text-2xl w-11/12  sm:text-2xl md:text-3xl lg:text-4xl'
-                    onPress={() => {
-                      router.push({
-                        pathname: '/read',
-                        params: { post: CONTENT_KEY + item['name'] },
-                      });
-                    }}
-                  >
-                    {item.name} &nbsp;&nbsp;
-                    <Text className=' text-gray-400 ml-2'>{item.size}</Text> {item.analysed && <Text className='text-green-500'>✓</Text>}
-                  </Text>
-                ))}
-              </ScrollView>
-            </View>
+      {content && (
+        <View className='flex-1'>
+          <View className='px-4 md:px-6 flex-1 flex-shrink-0 bg-white dark:bg-black  inline-flex items-stretch w-full gap-4 overflow-hidden '>
+            <ScrollView>
+              {content.map((item) => (
+                <Text
+                  key={item.sha}
+                  className='m-1 p-1 text-black dark:text-white text-2xl items-stretch native:text-2xl w-11/12  sm:text-2xl md:text-3xl lg:text-4xl'
+                  onPress={() => {
+                    router.push({
+                      pathname: '/read',
+                      params: { post: CONTENT_KEY + item['name'] },
+                    });
+                  }}
+                >
+                  {item.name} &nbsp;&nbsp;
+                  <Text className=' text-gray-400 ml-2'>{item.size}</Text>{' '}
+                  {item.analysed && <Text className='text-green-500'>✓</Text>}
+                </Text>
+              ))}
+            </ScrollView>
           </View>
-        )}
+        </View>
+      )}
     </>
   );
 
@@ -215,12 +211,10 @@ export default function Page() {
     });
     Promise.all(requests).then(() => {
       if (mark === CONTENT_KEY) {
-      items.sort(fileNameComparator);
-      setContent(items);
-      // console.log(items)
+        items.sort(fileNameComparator);
+        setContent(items);
       }
       AsyncStorage.setItem(mark, JSON.stringify(items));
     });
-    
   }
 }

@@ -1,6 +1,5 @@
 import React, {
   createContext,
-  PropsWithChildren,
   ReactElement,
   useContext,
   useEffect,
@@ -9,12 +8,11 @@ import React, {
 import '../global.css';
 import { SplashScreen, useRouter } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
-import DrawerToggleButton from 'expo-router/drawer';
-import { Alert, Pressable, Text, View } from 'react-native';
+import { Alert, AppState, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import packageJson from '../../package.json';
-import { DrawerActions, ThemeProvider } from '@react-navigation/native';
+import { ThemeProvider } from '@react-navigation/native';
 import { Image } from '@/components/image';
 import {
   GestureHandlerRootView,
@@ -32,7 +30,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import Toast from 'react-native-root-toast';
 import { SETTINGS_KEY } from '../components/global';
-
 
 const AuthContext = createContext({
   expiry: 0,
@@ -130,6 +127,7 @@ export default function Layout() {
   const [isBiometricSupported, setIsBiometricSupported] = React.useState(false);
   const [expiry, setExpiry] = useState(Date.now());
   const [settings, setSettings] = useState({});
+  const [aState, setAppState] = useState(AppState.currentState);
 
   // Prevent the splash screen from auto-hiding before asset loading is complete.
   SplashScreen.preventAutoHideAsync();
@@ -141,16 +139,19 @@ export default function Layout() {
         if (data) {
           const parsedData = JSON.parse(data);
           setSettings(parsedData);
-          let temp = settings['expiry']
+          let temp = settings['expiry'];
           if (!temp) temp = Date.now();
           setExpiry(temp);
         }
-      }).then(()=>{
+      })
+      .then(() => {
         LocalAuthentication.hasHardwareAsync().then((compatible) => {
           setIsBiometricSupported(compatible);
         });
       })
-      .then(() => {SplashScreen.hideAsync()})
+      .then(() => {
+        SplashScreen.hideAsync();
+      })
       .catch((err) => {
         SplashScreen.hideAsync().then(() => {
           Toast.show(err.message, {
@@ -165,11 +166,21 @@ export default function Layout() {
           console.error(err.status, err.message);
         });
       });
+    const appStateListener = AppState.addEventListener(
+      'change',
+      (nextAppState) => {
+        console.log('Next AppState is: ', nextAppState);
+        setAppState(nextAppState);
+      }
+    );
+    return () => {
+      appStateListener?.remove();
+    };
   }, []);
 
   useEffect(() => {
     if (expiry && expiry < Date.now()) handleBiometricAuth();
-  }, [expiry]);
+  }, [expiry, aState]);
 
   const handleBiometricAuth = async () => {
     if (expiry && expiry < Date.now()) return;
@@ -190,7 +201,7 @@ export default function Layout() {
     } else {
       setExpiry(Date.now() + 1000 * 60 * 5);
       settings['expiry'] = expiry;
-      setSettings(settings)
+      setSettings(settings);
       AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
     }
   };
@@ -209,7 +220,7 @@ export default function Layout() {
   return (
     <RootSiblingParent>
       <GestureHandlerRootView>
-        <AuthContext.Provider value={{expiry, setExpiry}} >
+        <AuthContext.Provider value={{ expiry, setExpiry }}>
           <ThemeProvider value={theme}>{major_area()}</ThemeProvider>
         </AuthContext.Provider>
       </GestureHandlerRootView>

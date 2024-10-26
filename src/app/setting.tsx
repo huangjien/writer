@@ -8,7 +8,6 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Toast from 'react-native-root-toast';
 import { SETTINGS_KEY } from '../components/global';
 
-
 export default function Page() {
   const {
     control,
@@ -24,6 +23,8 @@ export default function Page() {
       analysisFolder: 'Analysis',
       fontSize: 16,
       backgroundImage: '',
+      expiry: Date.now(),
+      progress: 0,
     },
   });
 
@@ -38,6 +39,8 @@ export default function Page() {
         setValue('contentFolder', parsedData.contentFolder);
         setValue('analysisFolder', parsedData.analysisFolder);
         setValue('backgroundImage', parsedData.backgroundImage);
+        setValue('expiry', parsedData.expiry);
+        setValue('progress', parsedData.progress ? parsedData.progress : 0); // current chapter reading progress, if not exist, set to 0, means from beginning
         if (!parsedData.fontSize) {
           setValue('fontSize', 16);
           setSelectedIndex(0);

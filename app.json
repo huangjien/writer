@@ -16,12 +16,6 @@
     },
     "plugins": [
       [
-        "expo-secure-store",
-        {
-          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
-        }
-      ],
-      [
         "expo-router",
         {
           "origin": "https://n"
@@ -32,8 +26,7 @@
         {
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
         }
-      ],
-      "expo-secure-store"
+      ]
     ],
     "name": "writer",
     "slug": "writer",

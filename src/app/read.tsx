@@ -16,8 +16,14 @@ import Modal from 'react-native-modal';
 import Markdown from 'react-native-markdown-display';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import Toast from 'react-native-root-toast';
-import { ANALYSIS_KEY, CONTENT_KEY, SETTINGS_KEY, STATUS_PAUSED, STATUS_PLAYING, STATUS_STOPPED } from '../components/global';
-
+import {
+  ANALYSIS_KEY,
+  CONTENT_KEY,
+  SETTINGS_KEY,
+  STATUS_PAUSED,
+  STATUS_PLAYING,
+  STATUS_STOPPED,
+} from '../components/global';
 
 export default function Page() {
   useSafeAreaInsets();
@@ -32,22 +38,6 @@ export default function Page() {
   const [next, setNext] = useState(undefined);
   const { post } = useLocalSearchParams();
   const [fontSize, setFontSize] = useState(16);
-
-  // const pinchGesture = Gesture.Pinch()
-  //   .onUpdate((e) => {
-  //     if (e.scale > 1) {
-  //       setFontSize(fontSize + 2);
-  //       console.log(fontSize);
-  //     }
-  //     if (e.scale < 1) {
-  //       setFontSize(fontSize - 2);
-  //       console.log(fontSize);
-  //     }
-
-  //   })
-  //   .onEnd(() => {
-  //     console.log(fontSize);
-  //   }).runOnJS(true);
 
   const enableKeepAwake = async () => {
     await activateKeepAwakeAsync();
@@ -85,7 +75,7 @@ export default function Page() {
   }, [content]);
 
   useEffect(() => {
-    if(!post) {
+    if (!post) {
       // get current post from local storage, we'd better also get progress, then can resume from last breaking point
     }
     if (post) {
@@ -273,7 +263,8 @@ export default function Page() {
       );
       if (index === -1) return; // we don't find this item, how could this happen?!
       const prev = index === 0 ? undefined : content[index - 1]['name'];
-      const next = index === content.length - 1 ? undefined : content[index + 1]['name'];
+      const next =
+        index === content.length - 1 ? undefined : content[index + 1]['name'];
 
       if (prev) setPreview(CONTENT_KEY + prev);
       else setPreview(undefined);
