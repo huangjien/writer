@@ -45,10 +45,37 @@ export default function Page() {
   const [fontSize, setFontSize] = useState(16);
   const isFocused = useIsFocused();
   const [showBar, setShowBar] = useState(true);
+  const [playingTime, setPlayingTime] = useState(0);
+  const [intervalId, setIntervalId] = useState(null);
 
   const enableKeepAwake = async () => {
     await activateKeepAwakeAsync();
   };
+
+  useEffect(() => {
+    if (status === STATUS_PLAYING) {
+      const id = setInterval(() => {
+        setPlayingTime((prevTime) => prevTime + 1);
+      }, 1000);
+
+      setIntervalId(id);
+    } else {
+      if (intervalId) {
+        clearInterval(intervalId);
+        setIntervalId(null);
+      }
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [status]);
+
+  useEffect(() => {
+    setProgress(progress + 6.2 / content.length);
+  }, [playingTime]);
 
   useEffect(() => {
     getStoredSettings.then((data) => {
@@ -97,9 +124,12 @@ export default function Page() {
     }
     if (post) {
       setCurrent(post);
+      setProgress(0);
+      setPlayingTime(0);
       getStoredSettings.then((data) => {
         if (data) {
           data['current'] = post;
+          data['progress'] = 0;
           AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(data));
         }
       });
@@ -295,7 +325,7 @@ export default function Page() {
       if (!data) {
         return;
       }
-      SetContent(JSON.parse(data)['content'] + '&nbsp;');
+      SetContent(JSON.parse(data)['content']);
     });
     AsyncStorage.getItem(
       current.toString().replace(CONTENT_KEY, ANALYSIS_KEY)
@@ -328,17 +358,15 @@ export default function Page() {
   function getContentFromProgress() {
     // get the content from the progress
     if (!content) return '';
-    const left_content_length: number = Math.round(
-      content.length * (1 - progress)
-    );
-    return content.substring(left_content_length);
+    const content_length: number = Math.round(content.length * progress);
+    return content.substring(content_length);
   }
 
   function play_bar() {
     return (
-      <View className='bg-white dark:bg-black text-black dark:text-white '>
+      <View className='bg-white dark:bg-black text-black dark:text-white gap-4'>
         <Slider
-          className='w-full h-4 m-2 p-2'
+          className='w-full h-8 m-2 p-2'
           value={progress}
           onValueChange={setProgress}
           minimumValue={0}
@@ -346,6 +374,9 @@ export default function Page() {
           minimumTrackTintColor='grey'
           maximumTrackTintColor='green'
         />
+        <Text className='text-black dark:text-white'>
+          Playing Time: {formatTime(playingTime)}
+        </Text>
         {/* <View className='hidden lg:inline'>
           <Picker
             prompt='Language: '
@@ -427,13 +458,20 @@ export default function Page() {
     );
   }
 
+  // Helper function to format time
+  function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  }
+
   function content_area() {
     return (
       <View className=' py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 bg-white  dark:bg-black'>
         <View className='m-2 p-2 items-center gap-4 text-center'>
           <ScrollView>
             <Text
-              className=' text-black dark:text-white font-bold text-center justify-stretch text-pretty'
+              className=' text-black  dark:text-white font-bold text-center justify-stretch text-pretty'
               style={{ fontSize: fontSize }}
             >
               {current &&
@@ -442,8 +480,8 @@ export default function Page() {
                   .replace('_', '  ')
                   .replace(CONTENT_KEY, '')
                   .replace('.md', '')}{' '}
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <Text className='items-end text-gray-500 dark:text-grey-300 '>
+              &nbsp;&nbsp;
+              <Text className='text-xs leading-8 text-gray-500 dark:text-grey-300 '>
                 {content.length}
               </Text>
             </Text>

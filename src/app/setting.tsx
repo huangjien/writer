@@ -7,6 +7,7 @@ import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { ScrollView } from 'react-native-gesture-handler';
 import Toast from 'react-native-root-toast';
 import { getStoredSettings, SETTINGS_KEY } from '../components/global';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function Page() {
   const {
@@ -30,6 +31,7 @@ export default function Page() {
   });
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     getStoredSettings.then((res) => {
@@ -52,7 +54,7 @@ export default function Page() {
         if (!res.backgroundImage) setValue('backgroundImage', 'wood.jpg');
       }
     });
-  }, []);
+  }, [isFocused]);
   const onSubmit = (data: any) => {
     saveToStorage(data);
     let toast = Toast.show('Setting saved!', {
