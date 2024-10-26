@@ -25,6 +25,8 @@ import {
   STATUS_PLAYING,
   STATUS_STOPPED,
 } from '../components/global';
+import { useIsFocused } from '@react-navigation/native';
+import Slider from '@react-native-community/slider';
 
 export default function Page() {
   useSafeAreaInsets();
@@ -38,7 +40,11 @@ export default function Page() {
   const [preview, setPreview] = useState(undefined);
   const [next, setNext] = useState(undefined);
   const { post } = useLocalSearchParams();
+  const [current, setCurrent] = useState(post);
+  const [progress, setProgress] = useState(0);
   const [fontSize, setFontSize] = useState(16);
+  const isFocused = useIsFocused();
+  const [showBar, setShowBar] = useState(true);
 
   const enableKeepAwake = async () => {
     await activateKeepAwakeAsync();
@@ -76,11 +82,45 @@ export default function Page() {
   useEffect(() => {
     if (!post) {
       // get current post from local storage, we'd better also get progress, then can resume from last breaking point
+      getStoredSettings.then((data) => {
+        if (data) {
+          if (data['current']) {
+            // default 16
+            setCurrent(data['current']);
+            setProgress(data['progress'] ? data['progress'] : 0);
+          } else {
+            // if nothing exist, no post, no current, I don't know either.
+            console.log('No current chapter, please select a chapter to read');
+          }
+        }
+      });
     }
     if (post) {
-      loadReadingByName();
+      setCurrent(post);
+      getStoredSettings.then((data) => {
+        if (data) {
+          data['current'] = post;
+          AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(data));
+        }
+      });
     }
   }, [post]);
+
+  useEffect(() => {
+    if (current) {
+      loadReadingByName();
+    }
+  }, [current, isFocused]);
+
+  useEffect(() => {
+    // save it to local storage
+    getStoredSettings.then((data) => {
+      if (data) {
+        data['progress'] = progress;
+        AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(data));
+      }
+    });
+  }, [progress]);
 
   const speak = (force: boolean = false) => {
     if (content.length > Speech.maxSpeechInputLength) {
@@ -93,7 +133,7 @@ export default function Page() {
     }
     if (status === STATUS_STOPPED || force === true) {
       setStatus(STATUS_PLAYING);
-      Speech.speak(content, {
+      Speech.speak(getContentFromProgress(), {
         language: selectedLanguage,
         voice: voice,
         onDone: () => {
@@ -166,6 +206,13 @@ export default function Page() {
 
   const longPress = Gesture.LongPress().onEnd(showEval).runOnJS(true);
 
+  const oneTap = Gesture.Tap()
+    .numberOfTaps(1)
+    .onEnd(() => {
+      setShowBar(!showBar);
+    })
+    .runOnJS(true);
+
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
     .onEnd(() => {
@@ -175,7 +222,7 @@ export default function Page() {
       }
       if (status === STATUS_STOPPED) {
         setStatus(STATUS_PLAYING);
-        Speech.speak(content, {
+        Speech.speak(getContentFromProgress(), {
           language: selectedLanguage,
           voice: voice,
           onDone: () => {
@@ -195,7 +242,7 @@ export default function Page() {
     })
     .runOnJS(true);
 
-  const composed = Gesture.Simultaneous(longPress, doubleTap);
+  const composed = Gesture.Simultaneous(longPress, doubleTap, oneTap);
 
   return (
     <>
@@ -205,47 +252,53 @@ export default function Page() {
             direction === 'left' ? toPreview() : toNext();
           }}
         >
-          {post && (
+          {current && (
             <GestureDetector gesture={composed}>
               {content_area()}
             </GestureDetector>
           )}
         </Swipeable>
-        <Modal
-          isVisible={modalVisible}
-          backdropOpacity={0.9}
-          onBackdropPress={() => setModalVisible(false)}
-          onSwipeComplete={() => setModalVisible(false)}
-          swipeDirection={'right'}
-        >
-          <ScrollView className='flex-grow m-4 p-4 bg-opacity-10 py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 text-white'>
-            <Markdown style={{ body: { color: 'white', fontSize: fontSize } }}>
-              {analysis ? analysis : 'No analysis for this chapter yet'}
-            </Markdown>
-            <Pressable
-              className='bottom-4 gap-8 items-center justify-center '
-              onPress={() => setModalVisible(false)}
-            >
-              <Feather name='check' size={24} color={'white'} />
-            </Pressable>
-          </ScrollView>
-        </Modal>
+        {analysis_modal()}
       </ScrollView>
 
-      <View className='  py-0 right-0 bottom-0'>{play_bar()}</View>
+      {showBar && <View className='  py-0 right-0 bottom-0'>{play_bar()}</View>}
     </>
   );
 
+  function analysis_modal() {
+    return (
+      <Modal
+        isVisible={modalVisible}
+        backdropOpacity={0.9}
+        onBackdropPress={() => setModalVisible(false)}
+        onSwipeComplete={() => setModalVisible(false)}
+        swipeDirection={'right'}
+      >
+        <ScrollView className='flex-grow m-4 p-4 bg-opacity-10 py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 text-white'>
+          <Markdown style={{ body: { color: 'white', fontSize: fontSize } }}>
+            {analysis ? analysis : 'No analysis for this chapter yet'}
+          </Markdown>
+          <Pressable
+            className='bottom-4 gap-8 items-center justify-center '
+            onPress={() => setModalVisible(false)}
+          >
+            <Feather name='check' size={24} color={'white'} />
+          </Pressable>
+        </ScrollView>
+      </Modal>
+    );
+  }
+
   function loadReadingByName() {
-    AsyncStorage.getItem(post.toString()).then((data) => {
+    if (!current) return;
+    AsyncStorage.getItem(current.toString().trim()).then((data) => {
       if (!data) {
-        SetContent(undefined);
         return;
       }
-      SetContent(JSON.parse(data)['content']);
+      SetContent(JSON.parse(data)['content'] + '&nbsp;');
     });
     AsyncStorage.getItem(
-      post.toString().replace(CONTENT_KEY, ANALYSIS_KEY)
+      current.toString().replace(CONTENT_KEY, ANALYSIS_KEY)
     ).then((data) => {
       if (!data) {
         setAnalysis(undefined);
@@ -258,7 +311,7 @@ export default function Page() {
       if (!data) return;
       const content = JSON.parse(data);
       const index = content.findIndex(
-        (item) => item['name'] === post.toString().replace(CONTENT_KEY, '')
+        (item) => item['name'] === current.toString().replace(CONTENT_KEY, '')
       );
       if (index === -1) return; // we don't find this item, how could this happen?!
       const prev = index === 0 ? undefined : content[index - 1]['name'];
@@ -272,9 +325,27 @@ export default function Page() {
     });
   }
 
+  function getContentFromProgress() {
+    // get the content from the progress
+    if (!content) return '';
+    const left_content_length: number = Math.round(
+      content.length * (1 - progress)
+    );
+    return content.substring(left_content_length);
+  }
+
   function play_bar() {
     return (
-      <View className='bg-white dark:bg-black text-black dark:text-white  inline-flex flex-row lg:gap-16 md:gap-4 justify-evenly '>
+      <View className='bg-white dark:bg-black text-black dark:text-white '>
+        <Slider
+          className='w-full h-4 m-2 p-2'
+          value={progress}
+          onValueChange={setProgress}
+          minimumValue={0}
+          maximumValue={1}
+          minimumTrackTintColor='grey'
+          maximumTrackTintColor='green'
+        />
         {/* <View className='hidden lg:inline'>
           <Picker
             prompt='Language: '
@@ -289,65 +360,69 @@ export default function Page() {
         {/* <Text className='text-black dark:text-white bg-white dark:bg-black block sm:hidden xs:hidden'>
           Max Read: {Speech.maxSpeechInputLength}
         </Text> */}
+        <View className='inline-flex flex-row lg:gap-16 md:gap-4 justify-evenly'>
+          <Pressable onPress={showEval}>
+            <Feather size={24} name='cpu' color={analysis ? 'green' : 'grey'} />
+          </Pressable>
 
-        <Pressable onPress={showEval}>
-          <Feather size={24} name='cpu' color={analysis ? 'green' : 'grey'} />
-        </Pressable>
+          <Pressable onPress={toPreview}>
+            <Feather
+              size={24}
+              name='chevrons-left'
+              color={preview ? 'green' : 'grey'}
+            />
+          </Pressable>
+          <Pressable onPress={toNext}>
+            <Feather
+              size={24}
+              name='chevrons-right'
+              color={next ? 'green' : 'grey'}
+            />
+          </Pressable>
+          <Pressable
+            disabled={status === STATUS_PLAYING}
+            onPress={() => speak()}
+          >
+            <Feather
+              className='text-black dark:text-white '
+              size={24}
+              name='play'
+              color={status === STATUS_PLAYING ? 'grey' : 'green'}
+            />
+          </Pressable>
 
-        <Pressable onPress={toPreview}>
-          <Feather
-            size={24}
-            name='chevrons-left'
-            color={preview ? 'green' : 'grey'}
-          />
-        </Pressable>
-        <Pressable onPress={toNext}>
-          <Feather
-            size={24}
-            name='chevrons-right'
-            color={next ? 'green' : 'grey'}
-          />
-        </Pressable>
-        <Pressable disabled={status === STATUS_PLAYING} onPress={() => speak()}>
-          <Feather
-            className='text-black dark:text-white '
-            size={24}
-            name='play'
-            color={status === STATUS_PLAYING ? 'grey' : 'green'}
-          />
-        </Pressable>
-
-        {/* <Button title='Play' onPress={speak} /> */}
-        {Platform.OS !== 'android' && (
-          <>
-            <Pressable
-              disabled={status !== STATUS_PLAYING}
-              onPress={() => {
-                Speech.pause();
-                setStatus(STATUS_PAUSED);
-              }}
-            >
-              <Feather
-                size={24}
-                name='pause'
-                color={status !== STATUS_PLAYING ? 'grey' : 'green'}
-              />
-            </Pressable>
-          </>
-        )}
-        <Pressable
-          disabled={status === STATUS_STOPPED}
-          onPress={() => {
-            Speech.stop();
-            setStatus(STATUS_STOPPED);
-          }}
-        >
-          <Feather
-            size={24}
-            name='square'
-            color={status === STATUS_STOPPED ? 'grey' : 'green'}
-          />
-        </Pressable>
+          {/* <Button title='Play' onPress={speak} /> */}
+          {Platform.OS !== 'android' && (
+            <>
+              <Pressable
+                disabled={status !== STATUS_PLAYING}
+                onPress={() => {
+                  Speech.pause();
+                  setStatus(STATUS_PAUSED);
+                }}
+              >
+                <Feather
+                  size={24}
+                  name='pause'
+                  color={status !== STATUS_PLAYING ? 'grey' : 'green'}
+                />
+              </Pressable>
+            </>
+          )}
+          <Pressable
+            disabled={status === STATUS_STOPPED}
+            onPress={() => {
+              Speech.stop();
+              setStatus(STATUS_STOPPED);
+            }}
+          >
+            <Feather
+              size={24}
+              name='square'
+              color={status === STATUS_STOPPED ? 'grey' : 'green'}
+            />
+          </Pressable>
+        </View>
       </View>
     );
   }
@@ -361,11 +436,12 @@ export default function Page() {
               className=' text-black dark:text-white font-bold text-center justify-stretch text-pretty'
               style={{ fontSize: fontSize }}
             >
-              {post
-                .toString()
-                .replace('_', '  ')
-                .replace(CONTENT_KEY, '')
-                .replace('.md', '')}{' '}
+              {current &&
+                current
+                  .toString()
+                  .replace('_', '  ')
+                  .replace(CONTENT_KEY, '')
+                  .replace('.md', '')}{' '}
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <Text className='items-end text-gray-500 dark:text-grey-300 '>
                 {content.length}

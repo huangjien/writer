@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -19,6 +19,7 @@
     "@octokit/rest": "^21.0.2",
     "@octokit/types": "^13.6.1",
     "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-community/slider": "4.5.2",
     "@react-native-picker/picker": "2.7.5",
     "@react-native-segmented-control/segmented-control": "2.5.2",
     "@react-navigation/drawer": "^6.7.2",

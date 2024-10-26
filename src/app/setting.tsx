@@ -24,6 +24,7 @@ export default function Page() {
       fontSize: 16,
       backgroundImage: '',
       expiry: Date.now(),
+      current: '',
       progress: 0,
     },
   });
@@ -39,6 +40,7 @@ export default function Page() {
         setValue('analysisFolder', res.analysisFolder);
         setValue('backgroundImage', res.backgroundImage);
         setValue('expiry', res.expiry);
+        setValue('current', res.current);
         setValue('progress', res.progress ? res.progress : 0); // current chapter reading progress, if not exist, set to 0, means from beginning
         if (!res.fontSize) {
           setValue('fontSize', 16);
@@ -211,6 +213,56 @@ export default function Page() {
               </>
             )}
             name='fontSize'
+          />
+
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <>
+                <Text className='mt-4 block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2'>
+                  Current Reading
+                </Text>
+                <Text
+                  className='border-spacing-1 text-black dark:text-white'
+                  key={'current'}
+                  aria-label='Analysis Folder'
+                >
+                  {getValues(['current'])}
+                </Text>
+                <Text className='text-gray-600 text-xs italic'>
+                  Current Reading Chapter.
+                </Text>
+              </>
+            )}
+            name='current'
+          />
+
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <>
+                <Text className='mt-4 block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2'>
+                  Current Reading Progress
+                </Text>
+                <Text
+                  className='border-spacing-1 text-black dark:text-white'
+                  key={'progress'}
+                  aria-label='Analysis Folder'
+                >
+                  {getValues(['progress'])}
+                </Text>
+                <Text className='text-gray-600 text-xs italic'>
+                  Current Reading Progress.
+                </Text>
+              </>
+            )}
+            name='progress'
           />
 
           <View className='mt-8 bg-white dark:bg-black'>
