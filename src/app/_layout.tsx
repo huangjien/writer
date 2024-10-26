@@ -169,7 +169,6 @@ export default function Layout() {
     const appStateListener = AppState.addEventListener(
       'change',
       (nextAppState) => {
-        console.log('Next AppState is: ', nextAppState);
         setAppState(nextAppState);
       }
     );

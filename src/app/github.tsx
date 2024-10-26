@@ -6,6 +6,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 import { components } from '@octokit/openapi-types';
 import Toast from 'react-native-root-toast';
+import { useIsFocused } from '@react-navigation/native';
 import { ANALYSIS_KEY, CONTENT_KEY, SETTINGS_KEY } from '../components/global';
 
 type RepoContent = components['schemas']['content-file'];
@@ -15,7 +16,7 @@ function elementWithNameExists(array: any[], nameToFind: string): boolean {
 }
 
 // Define a function named fileNameComparator that takes two parameters, a and b, of type any and returns a number
-function fileNameComparator(a: any, b: any): Number {
+function fileNameComparator(a: any, b: any): number {
   // Extract the number from the name property of object a by splitting it at the underscore and parsing the first part as an integer
   const aNumber = parseFloat(a.name.split('_')[0]);
   // Extract the number from the name property of object b by splitting it at the underscore and parsing the first part as an integer
@@ -40,10 +41,11 @@ export default function Page() {
   const [analysis, setAnalysis] = useState([]);
   const router = useRouter();
 
+  // const {isFocused} = useIsFocused()
+
   useEffect(() => {
     if (settings) {
-      const analysisFolder = getFolderAndMdfiles(settings['analysisFolder']);
-      analysisFolder.then((data) => {
+      getFolderAndMdfiles(settings['analysisFolder']).then((data) => {
         if (!data) {
           return;
         }
@@ -51,12 +53,10 @@ export default function Page() {
         saveToStorage(ANALYSIS_KEY, data);
       });
 
-      const contentFolder = getFolderAndMdfiles(settings['contentFolder']);
-      contentFolder.then((data) => {
+      getFolderAndMdfiles(settings['contentFolder']).then((data) => {
         if (!data) {
           return;
         }
-
         saveToStorage(CONTENT_KEY, data);
         // return data;
       });
@@ -69,7 +69,6 @@ export default function Page() {
         if (data) {
           const parsedData = JSON.parse(data);
           setSettings(parsedData);
-          console.log(settings, parsedData);
         }
       })
       .catch((err) => {
@@ -150,7 +149,7 @@ export default function Page() {
         <View className='flex-1'>
           <View className='px-4 md:px-6 flex-1 flex-shrink-0 bg-white dark:bg-black  inline-flex items-stretch w-full gap-4 overflow-hidden '>
             <ScrollView>
-              {content.map((item) => (
+              {content.sort(fileNameComparator).map((item) => (
                 <Text
                   key={item.sha}
                   className='m-1 p-1 text-black dark:text-white text-2xl items-stretch native:text-2xl w-11/12  sm:text-2xl md:text-3xl lg:text-4xl'
@@ -174,6 +173,8 @@ export default function Page() {
   );
 
   function saveToStorage(mark: string, items: any) {
+    let simple_content: any[] = [];
+    items.sort(fileNameComparator);
     const requests = items.map((item) => {
       AsyncStorage.getItem(mark + item.name)
         .then((data) => {
@@ -201,20 +202,23 @@ export default function Page() {
                   } else {
                     item['analysed'] = false;
                   }
+                  simple_content.push({
+                    name: item['name'],
+                    sha: item['sha'],
+                    size: item['size'],
+                    analysed: item['analysed'],
+                  });
+                  setContent(simple_content);
+                  // console.log(simple_content)
                 }
                 AsyncStorage.setItem(mark + item.name, JSON.stringify(content));
               });
           }
-          return items;
         })
-        .catch((err) => console.error(err));
-    });
-    Promise.all(requests).then(() => {
-      if (mark === CONTENT_KEY) {
-        items.sort(fileNameComparator);
-        setContent(items);
-      }
-      AsyncStorage.setItem(mark, JSON.stringify(items));
+        .catch((err) => {
+          console.error(err);
+        });
+      return items;
     });
   }
 }
