@@ -13,6 +13,7 @@ import {
   fileNameComparator,
   getStoredSettings,
   SETTINGS_KEY,
+  showErrorToast,
 } from '../components/global';
 
 type RepoContent = components['schemas']['content-file'];
@@ -31,21 +32,23 @@ export default function Page() {
 
   useEffect(() => {
     if (settings) {
-      getFolderAndMdfiles(settings['analysisFolder']).then((data) => {
-        if (!data) {
-          return;
-        }
-        setAnalysis(data);
-        saveToStorage(ANALYSIS_KEY, data);
-      });
-
-      getFolderAndMdfiles(settings['contentFolder']).then((data) => {
-        if (!data) {
-          return;
-        }
-        saveToStorage(CONTENT_KEY, data);
-        // return data;
-      });
+      getFolderAndMdfiles(settings['analysisFolder'])
+        .then((data) => {
+          if (!data) {
+            return;
+          }
+          setAnalysis(data);
+          saveToStorage(ANALYSIS_KEY, data);
+        })
+        .then(() => {
+          getFolderAndMdfiles(settings['contentFolder']).then((data) => {
+            if (!data) {
+              return;
+            }
+            saveToStorage(CONTENT_KEY, data);
+            // return data;
+          });
+        });
     }
   }, [settings]);
 
@@ -55,15 +58,7 @@ export default function Page() {
         setSettings(data);
       })
       .catch((err) => {
-        Toast.show(err.message, {
-          position: Toast.positions.CENTER,
-          shadow: true,
-          animation: true,
-          textColor: 'red',
-          hideOnPress: true,
-          delay: 100,
-          duration: Toast.durations.LONG,
-        });
+        showErrorToast(err.message);
         console.error(err.status, err.message);
       });
   }, []);
@@ -94,16 +89,8 @@ export default function Page() {
         return response.json();
       });
     } catch (error) {
-      Toast.show(
-        'network issue or folder not exist in the github \n' + error.message,
-        {
-          position: Toast.positions.CENTER,
-          shadow: true,
-          animation: true,
-          hideOnPress: true,
-          delay: 100,
-          duration: Toast.durations.LONG,
-        }
+      showErrorToast(
+        'network issue or folder not exist in the github \n' + error.message
       );
       console.error(error);
     }
@@ -144,8 +131,10 @@ export default function Page() {
                   }}
                 >
                   {item.name} &nbsp;&nbsp;
-                  <Text className=' text-gray-400 ml-2'>{item.size}</Text>{' '}
                   {item.analysed && <Text className='text-green-500'>✓</Text>}
+                  <Text className='text-xs leading-8 text-gray-400 ml-2'>
+                    {item.size}
+                  </Text>{' '}
                 </Text>
               ))}
             </ScrollView>
@@ -156,13 +145,37 @@ export default function Page() {
   );
 
   function saveToStorage(mark: string, items: any) {
-    AsyncStorage.setItem(mark, JSON.stringify(items));
     if (!items || items.length <= 0) return;
     let simple_content = new Array();
     items.sort(fileNameComparator);
+    if (mark === CONTENT_KEY) {
+      items.map((item) => {
+        if (item['name'].endsWith('.md')) {
+          // need to update size and analysed
+
+          if (elementWithNameExists(analysis, item['name'])) {
+            item['analysed'] = true;
+          } else {
+            item['analysed'] = false;
+          }
+          const oneItem = JSON.parse(
+            JSON.stringify({
+              name: item['name'],
+              sha: item['sha'],
+              analysed: item['analysed'],
+            })
+          );
+
+          simple_content.push(oneItem);
+        }
+      });
+      AsyncStorage.setItem(mark, JSON.stringify(simple_content));
+    }
+
     items.map((item) => {
       AsyncStorage.getItem(mark + item.name)
         .then((data) => {
+          // if not equals, that means need to update
           if (!data || data['sha'] !== item['sha']) {
             axios
               .get<RepoContent>(item['download_url'], {
@@ -182,26 +195,12 @@ export default function Page() {
                 if (mark === CONTENT_KEY && item['name'].endsWith('.md')) {
                   // need to update size and analysed
                   item['size'] = content['size'];
-                  if (elementWithNameExists(analysis, item['name'])) {
-                    item['analysed'] = true;
-                  } else {
-                    item['analysed'] = false;
-                  }
-                  const oneItem = JSON.parse(
-                    JSON.stringify({
-                      name: item['name'],
-                      sha: item['sha'],
-                      size: item['size'],
-                      analysed: item['analysed'],
-                    })
-                  );
 
-                  simple_content.push(oneItem);
-
-                  setContent(simple_content);
+                  simple_content.find(
+                    (element) => element.name === item['name']
+                  ).size = content['size'];
                 }
-
-                AsyncStorage.setItem(mark + item.name, JSON.stringify(content));
+                // AsyncStorage.setItem(mark + item.name, JSON.stringify(content));
               });
           }
         })
@@ -209,5 +208,9 @@ export default function Page() {
           console.error(err);
         });
     });
+    if (simple_content.length > 0) {
+      AsyncStorage.setItem(mark, JSON.stringify(simple_content));
+      setContent(simple_content);
+    }
   }
 }

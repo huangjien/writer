@@ -8,7 +8,7 @@ import React, {
 import '../global.css';
 import { SplashScreen, useRouter } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
-import { Alert, AppState, Pressable, Text, View } from 'react-native';
+import { AppState, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import packageJson from '../../package.json';
@@ -28,8 +28,11 @@ import { enableFreeze } from 'react-native-screens';
 import { images } from './images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootSiblingParent } from 'react-native-root-siblings';
-import Toast from 'react-native-root-toast';
-import { getStoredSettings, SETTINGS_KEY } from '../components/global';
+import {
+  getStoredSettings,
+  SETTINGS_KEY,
+  showErrorToast,
+} from '../components/global';
 
 const AuthContext = createContext({
   expiry: 0,
@@ -153,15 +156,7 @@ export default function Layout() {
       })
       .catch((err) => {
         SplashScreen.hideAsync().then(() => {
-          Toast.show(err.message, {
-            position: Toast.positions.CENTER,
-            shadow: true,
-            animation: true,
-            hideOnPress: true,
-            textColor: 'orange',
-            delay: 100,
-            duration: Toast.durations.LONG,
-          });
+          showErrorToast(err.message);
           console.error(err.status, err.message);
         });
       });
@@ -184,11 +179,8 @@ export default function Layout() {
     if (expiry && expiry < Date.now()) return;
     const savedBiometrics = await LocalAuthentication.isEnrolledAsync();
     if (!savedBiometrics)
-      return Alert.alert(
-        'No Biometrics Authentication',
-        'Please verify your identity with your password',
-        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-        { cancelable: false }
+      return showErrorToast(
+        'No Biometrics Authentication\nPlease verify your identity with your password'
       );
     const biometricAuth = await LocalAuthentication.authenticateAsync({
       promptMessage: "You need to be this device's owner to use this app",
@@ -204,15 +196,7 @@ export default function Layout() {
     }
   };
   const handleError = (e) => {
-    Toast.show(e.nativeEvent.error, {
-      position: Toast.positions.CENTER,
-      shadow: true,
-      animation: true,
-      textColor: 'red',
-      hideOnPress: true,
-      delay: 100,
-      duration: Toast.durations.LONG,
-    });
+    showErrorToast(e.nativeEvent.error);
     console.error(e.nativeEvent.error);
   };
   return (

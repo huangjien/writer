@@ -1,8 +1,5 @@
-import { Link } from 'expo-router';
-import React, { useEffect } from 'react';
-import { Alert, Pressable, Text, View } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import * as LocalAuthentication from 'expo-local-authentication';
+import React from 'react';
+import { Text, View } from 'react-native';
 
 export default function Page() {
   return (

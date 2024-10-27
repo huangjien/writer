@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-root-toast';
 
 // components/global.tsx
 export const SETTINGS_KEY = '@Settings';
@@ -17,6 +18,33 @@ export const getStoredSettings = AsyncStorage.getItem(SETTINGS_KEY).then(
     return undefined;
   }
 );
+
+export function showErrorToast(message: string) {
+  Toast.show(message, {
+    position: Toast.positions.CENTER,
+    shadow: true,
+    shadowColor: 'red',
+    animation: true,
+    hideOnPress: false,
+    delay: 100,
+    duration: Toast.durations.LONG,
+  });
+}
+
+export function showInfoToast(message: string) {
+  Toast.show(message, {
+    position: Toast.positions.TOP,
+    shadow: true,
+    animation: true,
+    hideOnPress: true,
+    delay: 100,
+    duration: Toast.durations.LONG,
+  });
+}
+
+export function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 // Define a function named fileNameComparator that takes two parameters, a and b, of type any and returns a number
 export function fileNameComparator(a: any, b: any): number {

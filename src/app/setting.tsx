@@ -10,6 +10,8 @@ import {
   CONTENT_KEY,
   getStoredSettings,
   SETTINGS_KEY,
+  showErrorToast,
+  showInfoToast,
 } from '../components/global';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -61,14 +63,7 @@ export default function Page() {
   }, [isFocused]);
   const onSubmit = (data: any) => {
     saveToStorage(data);
-    let toast = Toast.show('Setting saved!', {
-      position: Toast.positions.TOP,
-      shadow: true,
-      animation: true,
-      hideOnPress: true,
-      delay: 100,
-      duration: Toast.durations.SHORT,
-    });
+    showInfoToast('Setting saved!');
   };
 
   const saveToStorage = async (values: any) => {

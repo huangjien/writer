@@ -20,6 +20,8 @@ import {
   CONTENT_KEY,
   getStoredSettings,
   SETTINGS_KEY,
+  showErrorToast,
+  sleep,
   STATUS_PAUSED,
   STATUS_PLAYING,
   STATUS_STOPPED,
@@ -98,9 +100,12 @@ export default function Page() {
 
   useEffect(() => {
     // This is used for switch to another chapter, if was reading before, then read new chapter
+    console.log('we are in new chapter now, status is: ' + status);
     if (status === STATUS_PLAYING && content.length > 64) {
       Speech.stop();
-      speak(true);
+      sleep(1000).then(() => {
+        speak();
+      });
     }
   }, [content]);
 
@@ -150,16 +155,17 @@ export default function Page() {
     });
   }, [progress]);
 
-  const speak = (force: boolean = false) => {
+  const speak = () => {
     if (content.length > Speech.maxSpeechInputLength) {
-      alert('Content is too long to handle by TTS engine');
+      setStatus(STATUS_STOPPED);
+      showErrorToast('Content is too long to handle by TTS engine');
       return;
     }
     if (status === STATUS_PAUSED) {
       setStatus(STATUS_PLAYING);
       Speech.resume();
     }
-    if (status === STATUS_STOPPED || force === true) {
+    if (status === STATUS_STOPPED || status === STATUS_PLAYING) {
       setStatus(STATUS_PLAYING);
       Speech.speak(getContentFromProgress(), {
         language: selectedLanguage,
@@ -184,16 +190,8 @@ export default function Page() {
       })
       .then((arr) => setItems(arr))
       .catch((err) => {
-        Toast.show(
-          'network issue or folder is not exist in the github \n' + err.message,
-          {
-            position: Toast.positions.CENTER,
-            shadow: true,
-            animation: true,
-            hideOnPress: true,
-            delay: 100,
-            duration: Toast.durations.LONG,
-          }
+        showErrorToast(
+          'network issue or folder is not exist in the github \n' + err.message
         );
         console.error(err.status, err.message);
       });
@@ -254,6 +252,8 @@ export default function Page() {
           language: selectedLanguage,
           voice: voice,
           onDone: () => {
+            console.log('done');
+            setStatus(STATUS_PLAYING);
             toNext();
           },
         });
