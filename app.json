@@ -55,6 +55,11 @@
           "audio"
         ]
       }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f5ed2fb9-b8ce-461b-8806-1dc0a58785ce"
+      }
     }
   }
 }

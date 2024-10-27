@@ -63,6 +63,24 @@ An advanced e-reader application with text-to-speech capabilities and AI-driven 
 2. Configure your GitHub repository and other preferences.
 3. Return to the main page to start reading or listening to your content.
 4. Use the play bar at the bottom to control audio playback and navigate chapters.
+   
+## Create Installer
+
+1. Prebuild the app for faster builds:
+
+   npx expo prebuild
+
+2. Build the app for production:
+
+   ```
+   cd android && ./gradlew build
+   ```
+
+   or
+
+   ```
+   cd ios && xcodebuild -workspace ./writer.xcworkspace -scheme writer -configuration Release -sdk iphoneos -derivedDataPath build
+   ```
 
 ## Contributing
 

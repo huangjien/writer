@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -26,6 +26,7 @@
     "axios": "^1.7.7",
     "expo": "^51.0.38",
     "expo-constants": "~16.0.2",
+    "expo-dev-client": "~4.0.28",
     "expo-image": "^1.13.0",
     "expo-keep-awake": "~13.0.2",
     "expo-linking": "~6.3.1",
