@@ -231,6 +231,7 @@ export default function Layout() {
         {/* <Header /> */}
         <Drawer
           screenOptions={({ navigation }) => ({
+            headerMode: 'float',
             headerLeft: () => (
               <Pressable onPress={() => navigation.toggleDrawer()}>
                 <Feather name='menu' size={24} color={'green'} />

@@ -27,7 +27,7 @@ export default function Page() {
   const [analysis, setAnalysis] = useState([]);
   const router = useRouter();
 
-  // const {isFocused} = useIsFocused()
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     if (settings) {
@@ -156,9 +156,11 @@ export default function Page() {
   );
 
   function saveToStorage(mark: string, items: any) {
-    let simple_content: any[] = [];
+    AsyncStorage.setItem(mark, JSON.stringify(items));
+    if (!items || items.length <= 0) return;
+    let simple_content = new Array();
     items.sort(fileNameComparator);
-    const requests = items.map((item) => {
+    items.map((item) => {
       AsyncStorage.getItem(mark + item.name)
         .then((data) => {
           if (!data || data['sha'] !== item['sha']) {
@@ -177,7 +179,7 @@ export default function Page() {
                   content: response['data'],
                   size: response['data'].toString().length,
                 };
-                if (mark === CONTENT_KEY) {
+                if (mark === CONTENT_KEY && item['name'].endsWith('.md')) {
                   // need to update size and analysed
                   item['size'] = content['size'];
                   if (elementWithNameExists(analysis, item['name'])) {
@@ -185,15 +187,20 @@ export default function Page() {
                   } else {
                     item['analysed'] = false;
                   }
-                  simple_content.push({
-                    name: item['name'],
-                    sha: item['sha'],
-                    size: item['size'],
-                    analysed: item['analysed'],
-                  });
+                  const oneItem = JSON.parse(
+                    JSON.stringify({
+                      name: item['name'],
+                      sha: item['sha'],
+                      size: item['size'],
+                      analysed: item['analysed'],
+                    })
+                  );
+
+                  simple_content.push(oneItem);
+
                   setContent(simple_content);
-                  // console.log(simple_content)
                 }
+
                 AsyncStorage.setItem(mark + item.name, JSON.stringify(content));
               });
           }
@@ -201,7 +208,6 @@ export default function Page() {
         .catch((err) => {
           console.error(err);
         });
-      return items;
     });
   }
 }

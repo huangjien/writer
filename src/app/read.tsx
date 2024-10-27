@@ -4,7 +4,6 @@ import { Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useEffect, useState } from 'react';
 import { Feather } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import {
   Gesture,
@@ -29,7 +28,6 @@ import { useIsFocused } from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
 
 export default function Page() {
-  useSafeAreaInsets();
   const [items, setItems] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState('zh');
   const [voice, setVoice] = useState('zh');
@@ -187,7 +185,7 @@ export default function Page() {
       .then((arr) => setItems(arr))
       .catch((err) => {
         Toast.show(
-          'network issue or folder not exist in the github \n' + err.message,
+          'network issue or folder is not exist in the github \n' + err.message,
           {
             position: Toast.positions.CENTER,
             shadow: true,
