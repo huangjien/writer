@@ -6,7 +6,11 @@ import { Feather } from '@expo/vector-icons';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { ScrollView } from 'react-native-gesture-handler';
 import Toast from 'react-native-root-toast';
-import { getStoredSettings, SETTINGS_KEY } from '../components/global';
+import {
+  CONTENT_KEY,
+  getStoredSettings,
+  SETTINGS_KEY,
+} from '../components/global';
 import { useIsFocused } from '@react-navigation/native';
 
 export default function Page() {
@@ -232,7 +236,7 @@ export default function Page() {
                   key={'current'}
                   aria-label='Analysis Folder'
                 >
-                  {getValues(['current'])}
+                  {getValues(['current']).toString().replace(CONTENT_KEY, '')}
                 </Text>
                 <Text className='text-gray-600 text-xs italic'>
                   Current Reading Chapter.
