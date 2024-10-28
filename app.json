@@ -34,7 +34,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/favicon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#FFFFFF"
       },
       "permissions": [
         "android.permission.USE_BIOMETRIC",
