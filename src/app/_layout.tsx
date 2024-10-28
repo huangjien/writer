@@ -211,7 +211,7 @@ export default function Layout() {
 
   function major_area() {
     return (
-      <View className='flex flex-1 flex-col text-black dark:text-white bg-white dark:bg-black'>
+      <View className='flex elevation z-auto flex-1 flex-col text-black dark:text-white bg-white dark:bg-black'>
         {/* <Header /> */}
         <Drawer
           screenOptions={({ navigation }) => ({
