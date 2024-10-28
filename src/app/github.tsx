@@ -130,7 +130,7 @@ export default function Page() {
                     });
                   }}
                 >
-                  {item.name} &nbsp;&nbsp;
+                  {item.name.replace('_', '').replace('.md', '')} &nbsp;&nbsp;
                   {item.analysed && <Text className='text-green-500'>✓</Text>}
                   <Text className='text-xs leading-8 text-gray-400 ml-2'>
                     {item.size}

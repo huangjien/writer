@@ -1,16 +1,15 @@
 import { Text, View, TextInput, Pressable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect } from 'react';
+import * as Speech from 'expo-speech';
 import { useForm, Controller } from 'react-hook-form';
 import { Feather } from '@expo/vector-icons';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { ScrollView } from 'react-native-gesture-handler';
-import Toast from 'react-native-root-toast';
 import {
   CONTENT_KEY,
   getStoredSettings,
   SETTINGS_KEY,
-  showErrorToast,
   showInfoToast,
 } from '../components/global';
 import { useIsFocused } from '@react-navigation/native';
@@ -38,6 +37,14 @@ export default function Page() {
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const isFocused = useIsFocused();
+
+  useEffect(() => {
+    Speech.getAvailableVoicesAsync().then((res) => {
+      res.map((v) => {
+        console.log(v);
+      });
+    });
+  }, []);
 
   useEffect(() => {
     getStoredSettings.then((res) => {
@@ -68,6 +75,11 @@ export default function Page() {
 
   const saveToStorage = async (values: any) => {
     await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(values));
+  };
+
+  const getProgressPercentage = () => {
+    const progress = getValues('progress');
+    return (progress * 100).toFixed(2).toString() + ' %';
   };
 
   return (
@@ -256,7 +268,7 @@ export default function Page() {
                   key={'progress'}
                   aria-label='Analysis Folder'
                 >
-                  {getValues(['progress'])}
+                  {getProgressPercentage()}
                 </Text>
                 <Text className='text-gray-600 text-xs italic'>
                   Current Reading Progress.

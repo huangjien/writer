@@ -1,8 +1,14 @@
-import { Text, View, Pressable, ScrollView } from 'react-native';
+import {
+  Text,
+  View,
+  Pressable,
+  ScrollView,
+  useWindowDimensions,
+} from 'react-native';
 import * as Speech from 'expo-speech';
 import { Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Feather } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import {
@@ -21,6 +27,7 @@ import {
   getStoredSettings,
   SETTINGS_KEY,
   showErrorToast,
+  showInfoToast,
   sleep,
   STATUS_PAUSED,
   STATUS_PLAYING,
@@ -30,6 +37,7 @@ import { useIsFocused } from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
 
 export default function Page() {
+  const { width, height } = useWindowDimensions();
   const [items, setItems] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState('zh');
   const [voice, setVoice] = useState('zh');
@@ -47,6 +55,7 @@ export default function Page() {
   const [showBar, setShowBar] = useState(true);
   const [playingTime, setPlayingTime] = useState(0);
   const [intervalId, setIntervalId] = useState(null);
+  const scrollViewRef = useRef(null);
 
   const enableKeepAwake = async () => {
     await activateKeepAwakeAsync();
@@ -74,7 +83,17 @@ export default function Page() {
   }, [status]);
 
   useEffect(() => {
-    setProgress(progress + 6.2 / content.length);
+    setProgress(progress + 6.17 / content.length);
+    if (progress > 1) {
+      // we need to go to next chapter
+      Speech.stop();
+      setStatus(STATUS_PLAYING);
+      toNext();
+    }
+    // if (isFocused){
+    //   console.log('isFocused, it should scroll, x:' + Math.round(height * progress));
+    //   scrollViewRef.current?.scrollTo({y: Math.round(100 * progress) + 128, x: 0, animated: true});
+    // }
   }, [playingTime]);
 
   useEffect(() => {
@@ -100,10 +119,9 @@ export default function Page() {
 
   useEffect(() => {
     // This is used for switch to another chapter, if was reading before, then read new chapter
-    console.log('we are in new chapter now, status is: ' + status);
     if (status === STATUS_PLAYING && content.length > 64) {
       Speech.stop();
-      sleep(1000).then(() => {
+      sleep(5000).then(() => {
         speak();
       });
     }
@@ -120,7 +138,12 @@ export default function Page() {
             setProgress(data['progress'] ? data['progress'] : 0);
           } else {
             // if nothing exist, no post, no current, I don't know either.
-            console.log('No current chapter, please select a chapter to read');
+            showInfoToast(
+              'No current chapter, please select a chapter to read'
+            );
+            console.error(
+              'No current chapter, please select a chapter to read'
+            );
           }
         }
       });
@@ -252,9 +275,11 @@ export default function Page() {
           language: selectedLanguage,
           voice: voice,
           onDone: () => {
-            console.log('done');
             setStatus(STATUS_PLAYING);
             toNext();
+          },
+          onBoundary: ({ charIndex, charLength }) => {
+            console.log(charIndex, charLength);
           },
         });
       }
@@ -274,7 +299,7 @@ export default function Page() {
 
   return (
     <>
-      <ScrollView className='mb-auto min-h-10 '>
+      <ScrollView ref={scrollViewRef} className='mb-auto min-h-10 '>
         <Swipeable
           onSwipeableClose={(direction) => {
             direction === 'left' ? toPreview() : toNext();
@@ -360,20 +385,29 @@ export default function Page() {
     return content.substring(content_length);
   }
 
+  function onProgressChanged(e) {
+    setProgress(e);
+    if (status === STATUS_PLAYING) {
+      Speech.stop();
+      speak();
+    }
+  }
+
   function play_bar() {
     return (
-      <View className='bg-white dark:bg-black text-black dark:text-white gap-4'>
+      <View className='bg-white dark:bg-black text-black dark:text-white gap-4 '>
         <Slider
           className='w-full h-8 m-2 p-2'
           value={progress}
-          onValueChange={setProgress}
+          onValueChange={(e) => onProgressChanged(e)}
           minimumValue={0}
           maximumValue={1}
           minimumTrackTintColor='grey'
           maximumTrackTintColor='green'
         />
         <Text className='text-black dark:text-white'>
-          Playing Time: {formatTime(playingTime)}
+          Playing Time: {formatTime(playingTime)} &nbsp;{' '}
+          {(progress * 100).toFixed(2) + ' %'}
         </Text>
         {/* <View className='hidden lg:inline'>
           <Picker
