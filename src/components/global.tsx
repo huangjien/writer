@@ -13,6 +13,7 @@ export const getStoredSettings = AsyncStorage.getItem(SETTINGS_KEY).then(
   (data) => {
     if (data) {
       const parsedData = JSON.parse(data);
+      console.log(SETTINGS_KEY, parsedData);
       return parsedData;
     }
     return undefined;

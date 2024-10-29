@@ -51,8 +51,14 @@ export default function Page() {
       if (res) {
         setValue('githubRepo', res.githubRepo);
         setValue('githubToken', res.githubToken);
-        setValue('contentFolder', res.contentFolder);
-        setValue('analysisFolder', res.analysisFolder);
+        setValue(
+          'contentFolder',
+          res.contentFolder ? res.contentFolder : 'Content'
+        );
+        setValue(
+          'analysisFolder',
+          res.analysisFolder ? res.analysisFolder : 'Analysis'
+        );
         setValue('backgroundImage', res.backgroundImage);
         setValue('expiry', res.expiry);
         setValue('current', res.current);
@@ -74,6 +80,7 @@ export default function Page() {
   };
 
   const saveToStorage = async (values: any) => {
+    console.log(SETTINGS_KEY, values);
     await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(values));
   };
 
@@ -243,7 +250,7 @@ export default function Page() {
                   key={'current'}
                   aria-label='Analysis Folder'
                 >
-                  {getValues(['current']).toString().replace(CONTENT_KEY, '')}
+                  {getValues(['current']).toString()}
                 </Text>
                 <Text className='text-gray-600 text-xs italic'>
                   Current Reading Chapter.

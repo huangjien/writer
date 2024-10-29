@@ -33,10 +33,11 @@ import {
   STATUS_PLAYING,
   STATUS_STOPPED,
 } from '../components/global';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
 
 export default function Page() {
+  const navigation = useNavigation();
   const { width, height } = useWindowDimensions();
   const [items, setItems] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState('zh');
@@ -98,6 +99,9 @@ export default function Page() {
 
   useEffect(() => {
     getStoredSettings.then((data) => {
+      if (!data) {
+        setFontSize(16);
+      }
       if (data) {
         if (!data.fontSize) {
           // default 16
@@ -149,6 +153,7 @@ export default function Page() {
       });
     }
     if (post) {
+      // console.log(post)
       setCurrent(post);
       setProgress(0);
       setPlayingTime(0);
@@ -258,6 +263,9 @@ export default function Page() {
   const oneTap = Gesture.Tap()
     .numberOfTaps(1)
     .onEnd(() => {
+      navigation.setOptions({
+        headerShown: !showBar,
+      });
       setShowBar(!showBar);
     })
     .runOnJS(true);
@@ -278,9 +286,9 @@ export default function Page() {
             setStatus(STATUS_PLAYING);
             toNext();
           },
-          onBoundary: ({ charIndex, charLength }) => {
-            console.log(charIndex, charLength);
-          },
+          // onBoundary: ({ charIndex, charLength }) => {
+          //   console.log(charIndex, charLength);
+          // },
         });
       }
       if (status === STATUS_PLAYING) {
@@ -346,10 +354,14 @@ export default function Page() {
     if (!current) return;
     AsyncStorage.getItem(current.toString().trim()).then((data) => {
       if (!data) {
+        showErrorToast('No content for this chapter yet:' + current + '!');
         return;
       }
+      // console.log(data);
       SetContent(JSON.parse(data)['content']);
     });
+
+    // get analysis from local storage
     AsyncStorage.getItem(
       current.toString().replace(CONTENT_KEY, ANALYSIS_KEY)
     ).then((data) => {
@@ -360,6 +372,7 @@ export default function Page() {
       setAnalysis(JSON.parse(data)['content']);
     });
 
+    // get prev and next chapter name
     AsyncStorage.getItem(CONTENT_KEY).then((data) => {
       if (!data) return;
       const content = JSON.parse(data);

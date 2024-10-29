@@ -33,10 +33,43 @@ import {
   SETTINGS_KEY,
   showErrorToast,
 } from '../components/global';
+// import * as BackgroundFetch from 'expo-background-fetch';
+// import * as TaskManager from 'expo-task-manager';
+
+// const BACKGROUND_FETCH_TASK = 'background-fetch';
+
+// TaskManager.defineTask(BACKGROUND_FETCH_TASK, () => {
+//   console.log('background fetch task');
+
+//   return BackgroundFetch.BackgroundFetchResult.NewData;
+// });
+
+// async function unregisterBackgroundFetchAsync() {
+//   console.log('unregistering background fetch task')
+//   return BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
+// }
+
+// async function registerBackgroundFetchAsync() {
+//   const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_FETCH_TASK)
+//   if (isRegistered) {
+//     console.log('background fetch task is already registered')
+//     return;
+//   } else {
+//     console.log('registering background fetch task');
+//     return BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
+//       minimumInterval: 60 * 5, // 5 minutes
+//       stopOnTerminate: false, // android only,
+//       startOnBoot: true, // android only
+//     });
+//   }
+
+// }
 
 const AuthContext = createContext({
-  expiry: 0,
-  setExpiry: (expiry) => {},
+  expiry: Date.now(),
+  setExpiry: (expiry) => {
+    expiry = expiry;
+  },
 });
 
 export function useSession() {
@@ -47,7 +80,7 @@ enableFreeze(true);
 
 const CustomDrawerContent = (): ReactElement => {
   const router = useRouter();
-  const authContext = useSession();
+  const AuthContext = useSession();
   const { themeName, setSelectedTheme } = useThemeConfig();
 
   return (
@@ -119,7 +152,8 @@ const CustomDrawerContent = (): ReactElement => {
         )}
         icon={() => <Feather name='log-out' size={24} color={'green'} />}
         onPress={() => {
-          authContext.setExpiry(Date.now());
+          AuthContext.setExpiry(Date.now() - 1000);
+          // unregisterBackgroundFetchAsync();
         }}
       />
     </ScrollView>
@@ -129,6 +163,7 @@ const CustomDrawerContent = (): ReactElement => {
 export default function Layout() {
   const [isBiometricSupported, setIsBiometricSupported] = React.useState(false);
   const [expiry, setExpiry] = useState(Date.now());
+  const authContext = useSession();
   const [settings, setSettings] = useState({});
   const [aState, setAppState] = useState(AppState.currentState);
 
@@ -172,11 +207,19 @@ export default function Layout() {
   }, []);
 
   useEffect(() => {
+    // console.log('expiry', expiry, 'authContext.expiry', authContext.expiry);
+    // if (expiry > authContext.expiry){
+    //   authContext.setExpiry(expiry)
+    // } else{
+    //   setExpiry(authContext.expiry)
+    // }
+
     if (expiry && expiry < Date.now()) handleBiometricAuth();
-  }, [expiry, aState]);
+  }, [expiry, aState, authContext.expiry]);
 
   const handleBiometricAuth = async () => {
-    if (expiry && expiry < Date.now()) return;
+    // registerBackgroundFetchAsync();
+    if (expiry && expiry > Date.now()) return;
     const savedBiometrics = await LocalAuthentication.isEnrolledAsync();
     if (!savedBiometrics)
       return showErrorToast(
@@ -190,9 +233,17 @@ export default function Layout() {
       handleBiometricAuth();
     } else {
       setExpiry(Date.now() + 1000 * 60 * 5);
-      settings['expiry'] = expiry;
-      setSettings(settings);
-      AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      getStoredSettings
+        .then((data) => {
+          setSettings(data);
+          settings['expiry'] = expiry;
+          setSettings(settings);
+          AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+        })
+        .catch((err) => {
+          showErrorToast(err.message);
+          console.error(err.status, err.message);
+        });
     }
   };
   const handleError = (e) => {

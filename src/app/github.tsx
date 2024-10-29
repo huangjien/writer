@@ -5,14 +5,12 @@ import axios from 'axios';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 import { components } from '@octokit/openapi-types';
-import Toast from 'react-native-root-toast';
 import { useIsFocused } from '@react-navigation/native';
 import {
   ANALYSIS_KEY,
   CONTENT_KEY,
   fileNameComparator,
   getStoredSettings,
-  SETTINGS_KEY,
   showErrorToast,
 } from '../components/global';
 
@@ -32,9 +30,12 @@ export default function Page() {
 
   useEffect(() => {
     if (settings) {
+      // console.log(settings);
       getFolderAndMdfiles(settings['analysisFolder'])
         .then((data) => {
+          // console.log(data)
           if (!data) {
+            console.log('no data returned for analysis');
             return;
           }
           setAnalysis(data);
@@ -43,6 +44,7 @@ export default function Page() {
         .then(() => {
           getFolderAndMdfiles(settings['contentFolder']).then((data) => {
             if (!data) {
+              console.log('no data returned for content');
               return;
             }
             saveToStorage(CONTENT_KEY, data);
@@ -50,7 +52,7 @@ export default function Page() {
           });
         });
     }
-  }, [settings]);
+  }, [settings, isFocused]);
 
   useEffect(() => {
     getStoredSettings
@@ -145,38 +147,24 @@ export default function Page() {
   );
 
   function saveToStorage(mark: string, items: any) {
-    if (!items || items.length <= 0) return;
-    let simple_content = new Array();
-    items.sort(fileNameComparator);
-    if (mark === CONTENT_KEY) {
-      items.map((item) => {
-        if (item['name'].endsWith('.md')) {
-          // need to update size and analysed
+    // load existed to show, then update them
+    AsyncStorage.getItem(mark).then((res) => setContent(JSON.parse(res)));
 
-          if (elementWithNameExists(analysis, item['name'])) {
-            item['analysed'] = true;
-          } else {
-            item['analysed'] = false;
-          }
-          const oneItem = JSON.parse(
-            JSON.stringify({
-              name: item['name'],
-              sha: item['sha'],
-              analysed: item['analysed'],
-            })
-          );
-
-          simple_content.push(oneItem);
-        }
-      });
-      AsyncStorage.setItem(mark, JSON.stringify(simple_content));
+    // console.log('saveToStorage', mark, items)
+    if (!items || items.length <= 0) {
+      console.log('no items to save');
+      return;
     }
+    items.sort(fileNameComparator);
 
-    items.map((item) => {
+    items.map((item, index) => {
+      // console.log('saveToStorage', mark+item.name)
       AsyncStorage.getItem(mark + item.name)
-        .then((data) => {
+        .then((res) => {
           // if not equals, that means need to update
+          const data = JSON.parse(res);
           if (!data || data['sha'] !== item['sha']) {
+            //  console.log(mark+item.name, 'need to update')
             axios
               .get<RepoContent>(item['download_url'], {
                 method: 'GET',
@@ -193,24 +181,31 @@ export default function Page() {
                   size: response['data'].toString().length,
                 };
                 if (mark === CONTENT_KEY && item['name'].endsWith('.md')) {
+                  // console.log('index', index, 'name', item['name']);
                   // need to update size and analysed
                   item['size'] = content['size'];
-
-                  simple_content.find(
-                    (element) => element.name === item['name']
-                  ).size = content['size'];
+                  if (elementWithNameExists(analysis, item['name'])) {
+                    item['analysed'] = true;
+                  } else {
+                    item['analysed'] = false;
+                  }
                 }
-                // AsyncStorage.setItem(mark + item.name, JSON.stringify(content));
+                if (index >= items.length - 1) {
+                  // console.log("last item", index, items.length);
+                  items = items.filter((item) => item.name.endsWith('.md'));
+                  AsyncStorage.setItem(mark, JSON.stringify(items));
+                  setContent(items);
+                }
+
+                AsyncStorage.setItem(mark + item.name, JSON.stringify(content));
               });
+          } else {
+            // console.log(mark+item.name, 'no need to update')
           }
         })
         .catch((err) => {
           console.error(err);
         });
     });
-    if (simple_content.length > 0) {
-      AsyncStorage.setItem(mark, JSON.stringify(simple_content));
-      setContent(simple_content);
-    }
   }
 }
