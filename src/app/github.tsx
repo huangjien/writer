@@ -11,7 +11,7 @@ import {
   CONTENT_KEY,
   fileNameComparator,
   getStoredSettings,
-  showErrorToast,
+  handleError,
 } from '../components/global';
 
 type RepoContent = components['schemas']['content-file'];
@@ -40,8 +40,7 @@ export default function Page() {
           }
         })
         .catch((err) => {
-          showErrorToast(err.message);
-          console.error(err.status, err.message);
+          handleError(err);
         });
     }
     if (settings) {
@@ -95,10 +94,7 @@ export default function Page() {
         return response.json();
       });
     } catch (error) {
-      showErrorToast(
-        'network issue or folder not exist in the github \n' + error.message
-      );
-      console.error(error);
+      handleError(error);
     }
   };
 
@@ -152,8 +148,9 @@ export default function Page() {
 
   function saveToStorage(mark: string, items: any) {
     // load existed to show, then update them
-    // AsyncStorage.getItem(mark).then((res) => setContent(JSON.parse(res)));
-
+    if (mark === CONTENT_KEY) {
+      AsyncStorage.getItem(mark).then((res) => setContent(JSON.parse(res)));
+    }
     // console.log('saveToStorage', mark, items)
     if (!items || items.length <= 0) {
       console.log('no items to save');
@@ -208,7 +205,7 @@ export default function Page() {
           }
         })
         .catch((err) => {
-          console.error(err);
+          handleError(err);
         });
     });
   }

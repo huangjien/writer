@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import {
   getStoredSettings,
+  handleError,
   SETTINGS_KEY,
   showErrorToast,
 } from '../components/global';
@@ -24,37 +25,6 @@ import {
   useSession,
 } from '@/components/CustomDrawerContent';
 import { Footer } from '@/components/Footer';
-// import * as BackgroundFetch from 'expo-background-fetch';
-// import * as TaskManager from 'expo-task-manager';
-
-// const BACKGROUND_FETCH_TASK = 'background-fetch';
-
-// TaskManager.defineTask(BACKGROUND_FETCH_TASK, () => {
-//   console.log('background fetch task');
-
-//   return BackgroundFetch.BackgroundFetchResult.NewData;
-// });
-
-// async function unregisterBackgroundFetchAsync() {
-//   console.log('unregistering background fetch task')
-//   return BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
-// }
-
-// async function registerBackgroundFetchAsync() {
-//   const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_FETCH_TASK)
-//   if (isRegistered) {
-//     console.log('background fetch task is already registered')
-//     return;
-//   } else {
-//     console.log('registering background fetch task');
-//     return BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-//       minimumInterval: 60 * 5, // 5 minutes
-//       stopOnTerminate: false, // android only,
-//       startOnBoot: true, // android only
-//     });
-//   }
-
-// }
 
 enableFreeze(true);
 
@@ -90,8 +60,7 @@ export default function Layout() {
       })
       .catch((err) => {
         SplashScreen.hideAsync().then(() => {
-          showErrorToast(err.message);
-          console.error(err.status, err.message);
+          handleError(err);
         });
       });
     const appStateListener = AppState.addEventListener(
@@ -105,9 +74,10 @@ export default function Layout() {
     };
   }, []);
 
-  // useEffect(() => {
-  //   if (!expiry || expiry < Date.now()) handleBiometricAuth();
-  // }, [expiry]);
+  useEffect(() => {
+    if (authContext.expiry || authContext.expiry < Date.now())
+      handleBiometricAuth();
+  }, [authContext.expiry]);
 
   const handleBiometricAuth = async () => {
     // registerBackgroundFetchAsync();
@@ -134,18 +104,15 @@ export default function Layout() {
             data['expiry'] = expiry;
             setSettings(data);
             AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+            authContext.setExpiry(expiry);
           }
         })
         .catch((err) => {
-          showErrorToast(err.message);
-          console.error(err.status, err.message);
+          handleError(err);
         });
     }
   };
-  const handleError = (e) => {
-    showErrorToast(e.nativeEvent.error);
-    console.error(e.nativeEvent.error);
-  };
+
   return (
     <RootSiblingParent>
       <GestureHandlerRootView>
