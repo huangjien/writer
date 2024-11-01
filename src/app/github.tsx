@@ -21,7 +21,7 @@ function elementWithNameExists(array: any[], nameToFind: string): boolean {
 }
 
 export default function Page() {
-  const [settings, setSettings] = useState({});
+  const [settings, setSettings] = useState(undefined);
   const [content, setContent] = useState([]);
   const [analysis, setAnalysis] = useState([]);
   const router = useRouter();
@@ -29,8 +29,23 @@ export default function Page() {
   const isFocused = useIsFocused();
 
   useEffect(() => {
+    if (!settings) {
+      getStoredSettings
+        .then((data) => {
+          if (!data) {
+            console.log('no data returned for settings');
+            return;
+          } else {
+            setSettings(data);
+          }
+        })
+        .catch((err) => {
+          showErrorToast(err.message);
+          console.error(err.status, err.message);
+        });
+    }
     if (settings) {
-      // console.log(settings);
+      console.log(settings);
       getFolderAndMdfiles(settings['analysisFolder'])
         .then((data) => {
           // console.log(data)
@@ -53,17 +68,6 @@ export default function Page() {
         });
     }
   }, [settings, isFocused]);
-
-  useEffect(() => {
-    getStoredSettings
-      .then((data) => {
-        setSettings(data);
-      })
-      .catch((err) => {
-        showErrorToast(err.message);
-        console.error(err.status, err.message);
-      });
-  }, []);
 
   const getFolderAndMdfiles = async (folder) => {
     try {
@@ -148,7 +152,7 @@ export default function Page() {
 
   function saveToStorage(mark: string, items: any) {
     // load existed to show, then update them
-    AsyncStorage.getItem(mark).then((res) => setContent(JSON.parse(res)));
+    // AsyncStorage.getItem(mark).then((res) => setContent(JSON.parse(res)));
 
     // console.log('saveToStorage', mark, items)
     if (!items || items.length <= 0) {

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, Image } from 'react-native';
+import { images } from './images';
 
 export default function Page() {
   return (
@@ -18,7 +19,7 @@ export default function Page() {
               you sync with a GitHub repository, then you can use local TTS
               service to read content of files.
             </Text>
-            <View className='mx-auto max-w-[700px] m-4 p-4 gap-4'>
+            <View className='mx-auto items-center max-w-[700px] m-6 p-6 gap-6'>
               <Text className='mx-auto max-w-[700px] text-2xl text-center text-gray-700  dark:text-gray-200'>
                 兼听则明
               </Text>
@@ -37,6 +38,10 @@ export default function Page() {
               <Text className='mx-auto max-w-[700px] text-2xl text-center text-gray-700  dark:text-gray-200'>
                 Escuchar es el comienzo de la sabiduría
               </Text>
+              <Image
+                source={images.logo}
+                className='flex w-16 h-16 justify-center rounded-2xl'
+              />
             </View>
           </View>
         </View>

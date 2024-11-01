@@ -20,7 +20,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal';
 import Markdown from 'react-native-markdown-display';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
-import Toast from 'react-native-root-toast';
 import {
   ANALYSIS_KEY,
   CONTENT_KEY,
@@ -35,9 +34,11 @@ import {
 } from '../components/global';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Page() {
   const navigation = useNavigation();
+  const { top } = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const [items, setItems] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState('zh');
@@ -512,7 +513,10 @@ export default function Page() {
 
   function content_area() {
     return (
-      <View className=' py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 bg-white  dark:bg-black'>
+      <View
+        className=' py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 bg-white  dark:bg-black'
+        style={{ paddingTop: top }}
+      >
         <View className='m-2 p-2 items-center gap-4 text-center'>
           <ScrollView>
             <Text

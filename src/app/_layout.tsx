@@ -1,31 +1,16 @@
-import React, {
-  createContext,
-  ReactElement,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import React, { useEffect, useState } from 'react';
 import '../global.css';
-import { SplashScreen, useRouter } from 'expo-router';
+import { SplashScreen } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import { AppState, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import packageJson from '../../package.json';
 import { ThemeProvider } from '@react-navigation/native';
-import { Image } from '@/components/image';
-import {
-  GestureHandlerRootView,
-  ScrollView,
-} from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as LocalAuthentication from 'expo-local-authentication';
-import {
-  DrawerContentComponentProps,
-  DrawerItem,
-} from '@react-navigation/drawer';
+import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { useThemeConfig } from '@/components/use-theme-config';
 import { enableFreeze } from 'react-native-screens';
-import { images } from './images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import {
@@ -33,6 +18,12 @@ import {
   SETTINGS_KEY,
   showErrorToast,
 } from '../components/global';
+import {
+  AuthContext,
+  CustomDrawerContent,
+  useSession,
+} from '@/components/CustomDrawerContent';
+import { Footer } from '@/components/Footer';
 // import * as BackgroundFetch from 'expo-background-fetch';
 // import * as TaskManager from 'expo-task-manager';
 
@@ -65,100 +56,7 @@ import {
 
 // }
 
-const AuthContext = createContext({
-  expiry: Date.now(),
-  setExpiry: (expiry) => {
-    expiry = expiry;
-  },
-});
-
-export function useSession() {
-  return useContext(AuthContext);
-}
-
 enableFreeze(true);
-
-const CustomDrawerContent = (): ReactElement => {
-  const router = useRouter();
-  const AuthContext = useSession();
-  const { themeName, setSelectedTheme } = useThemeConfig();
-
-  return (
-    <ScrollView contentContainerClassName='flex-1 py-4  text-black dark:text-white bg-white dark:bg-black'>
-      <View className='container m-4 p-4'>
-        <Image
-          source={images.logo}
-          className='flex w-12 h-12 m-2 rounded-full'
-        />
-        <Text className='text-black dark:text-white font-bold'>
-          {packageJson.name}
-        </Text>
-        <Text className='text-black dark:text-white text-xs'>
-          {packageJson.slogan}
-        </Text>
-      </View>
-
-      <DrawerItem
-        label={() => <Text className='text-black dark:text-white '>Home</Text>}
-        icon={() => <Feather name='home' size={24} color={'green'} />}
-        onPress={() => {
-          router.push('/');
-        }}
-      />
-      <DrawerItem
-        label={() => <Text className='text-black dark:text-white '>Index</Text>}
-        icon={() => <Feather name='code' size={24} color={'green'} />}
-        onPress={() => {
-          router.push('/github');
-        }}
-      />
-      <DrawerItem
-        label={() => <Text className='text-black dark:text-white '>Read</Text>}
-        icon={() => <Feather name='play' size={24} color={'green'} />}
-        onPress={() => {
-          router.push('/read');
-        }}
-      />
-      <DrawerItem
-        label={() => (
-          <Text className='text-black dark:text-white '>Settings</Text>
-        )}
-        icon={() => <Feather name='settings' size={24} color={'green'} />}
-        onPress={() => {
-          router.push('/setting');
-        }}
-      />
-      <DrawerItem label={''} onPress={() => {}} />
-      <DrawerItem
-        label={() => <Text className='text-black dark:text-white '>Theme</Text>}
-        icon={() => {
-          if (themeName === 'dark') {
-            return <Feather name='moon' size={24} color={'green'} />;
-          } else {
-            return <Feather name='sun' size={24} color={'green'} />;
-          }
-        }}
-        onPress={() => {
-          if (themeName === 'dark') {
-            setSelectedTheme('light');
-          } else {
-            setSelectedTheme('dark');
-          }
-        }}
-      />
-      <DrawerItem
-        label={() => (
-          <Text className='text-black dark:text-white '>Log out</Text>
-        )}
-        icon={() => <Feather name='log-out' size={24} color={'green'} />}
-        onPress={() => {
-          AuthContext.setExpiry(Date.now() - 1000);
-          // unregisterBackgroundFetchAsync();
-        }}
-      />
-    </ScrollView>
-  );
-};
 
 export default function Layout() {
   const [isBiometricSupported, setIsBiometricSupported] = React.useState(false);
@@ -177,7 +75,7 @@ export default function Layout() {
         if (data) {
           setSettings(data);
           let temp = settings['expiry'];
-          if (!temp) temp = Date.now();
+          if (!temp) temp = Date.now() - 1000;
           setExpiry(temp);
         }
       })
@@ -188,6 +86,7 @@ export default function Layout() {
       })
       .then(() => {
         SplashScreen.hideAsync();
+        handleBiometricAuth();
       })
       .catch((err) => {
         SplashScreen.hideAsync().then(() => {
@@ -206,16 +105,9 @@ export default function Layout() {
     };
   }, []);
 
-  useEffect(() => {
-    // console.log('expiry', expiry, 'authContext.expiry', authContext.expiry);
-    // if (expiry > authContext.expiry){
-    //   authContext.setExpiry(expiry)
-    // } else{
-    //   setExpiry(authContext.expiry)
-    // }
-
-    if (expiry && expiry < Date.now()) handleBiometricAuth();
-  }, [expiry, aState, authContext.expiry]);
+  // useEffect(() => {
+  //   if (!expiry || expiry < Date.now()) handleBiometricAuth();
+  // }, [expiry]);
 
   const handleBiometricAuth = async () => {
     // registerBackgroundFetchAsync();
@@ -230,15 +122,19 @@ export default function Layout() {
       disableDeviceFallback: false,
     });
     if (!biometricAuth.success) {
-      handleBiometricAuth();
+      setExpiry(Date.now() - 1000 * 60 * 5);
     } else {
       setExpiry(Date.now() + 1000 * 60 * 5);
       getStoredSettings
         .then((data) => {
-          setSettings(data);
-          settings['expiry'] = expiry;
-          setSettings(settings);
-          AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+          if (!data) {
+            console.log('no data returned for settings');
+            return;
+          } else {
+            data['expiry'] = expiry;
+            setSettings(data);
+            AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+          }
         })
         .catch((err) => {
           showErrorToast(err.message);
@@ -363,22 +259,3 @@ export default function Layout() {
     );
   }
 }
-
-const Footer = () => {
-  const { bottom } = useSafeAreaInsets();
-  return (
-    <View
-      className='fixed bottom-0 inline-flex flex-row h-5'
-      style={{ paddingBottom: bottom }}
-    >
-      <Text
-        className={
-          'ml-2 text-center bg-white text-black dark:text-gray-200  dark:bg-black'
-        }
-      >
-        © {new Date().getFullYear()} &nbsp; {packageJson.copyright} &nbsp;{' '}
-        {packageJson.author} &nbsp; {packageJson.version}
-      </Text>
-    </View>
-  );
-};
