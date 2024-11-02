@@ -9,6 +9,11 @@ export const STATUS_PLAYING = 'playing';
 export const STATUS_PAUSED = 'paused';
 export const STATUS_STOPPED = 'stopped';
 
+export const handleError = (err) => {
+  showErrorToast(err.message);
+  console.error(err.status, err.message);
+};
+
 export const setStoredSettings = (key: string, value: any) => {
   getStoredSettings
     .then((data) => {

@@ -11,7 +11,7 @@ import {
   CONTENT_KEY,
   fileNameComparator,
   getStoredSettings,
-  showErrorToast,
+  handleError,
 } from '../components/global';
 
 type RepoContent = components['schemas']['content-file'];
@@ -40,8 +40,7 @@ export default function Page() {
           }
         })
         .catch((err) => {
-          showErrorToast(err.message);
-          console.error(err.status, err.message);
+          handleError(err);
         });
     }
     if (settings) {
@@ -95,10 +94,7 @@ export default function Page() {
         return response.json();
       });
     } catch (error) {
-      showErrorToast(
-        'network issue or folder not exist in the github \n' + error.message
-      );
-      console.error(error);
+      handleError(error);
     }
   };
 
@@ -152,8 +148,9 @@ export default function Page() {
 
   function saveToStorage(mark: string, items: any) {
     // load existed to show, then update them
-    // AsyncStorage.getItem(mark).then((res) => setContent(JSON.parse(res)));
-
+    if (mark === CONTENT_KEY) {
+      AsyncStorage.getItem(mark).then((res) => setContent(JSON.parse(res)));
+    }
     // console.log('saveToStorage', mark, items)
     if (!items || items.length <= 0) {
       console.log('no items to save');
@@ -204,11 +201,26 @@ export default function Page() {
                 AsyncStorage.setItem(mark + item.name, JSON.stringify(content));
               });
           } else {
-            // console.log(mark+item.name, 'no need to update')
+            if (mark === CONTENT_KEY && item['name'].endsWith('.md')) {
+              // console.log('index', index, 'name', item['name']);
+              // need to update size and analysed
+              item['size'] = data['size'];
+              if (elementWithNameExists(analysis, item['name'])) {
+                item['analysed'] = true;
+              } else {
+                item['analysed'] = false;
+              }
+            }
+            if (index >= items.length - 1) {
+              // console.log("last item", index, items.length);
+              items = items.filter((item) => item.name.endsWith('.md'));
+              AsyncStorage.setItem(mark, JSON.stringify(items));
+              setContent(items);
+            }
           }
         })
         .catch((err) => {
-          console.error(err);
+          handleError(err);
         });
     });
   }

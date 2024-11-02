@@ -6,8 +6,7 @@ import { createContext, ReactElement, useContext } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useThemeConfig } from './use-theme-config';
 import { images } from '@/app/images';
-import { Drawer } from 'expo-router/drawer';
-import { AppState, Pressable, Text } from 'react-native';
+import { Text } from 'react-native';
 import packageJson from '../../package.json';
 
 export const AuthContext = createContext({

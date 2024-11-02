@@ -24,6 +24,7 @@ import {
   ANALYSIS_KEY,
   CONTENT_KEY,
   getStoredSettings,
+  handleError,
   SETTINGS_KEY,
   showErrorToast,
   showInfoToast,
@@ -219,10 +220,7 @@ export default function Page() {
       })
       .then((arr) => setItems(arr))
       .catch((err) => {
-        showErrorToast(
-          'network issue or folder is not exist in the github \n' + err.message
-        );
-        console.error(err.status, err.message);
+        handleError(err);
       });
   }, []);
 
