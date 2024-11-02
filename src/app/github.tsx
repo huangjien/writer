@@ -12,7 +12,7 @@ import {
   fileNameComparator,
   getStoredSettings,
   handleError,
-} from '../components/global';
+} from '@/components/global';
 
 type RepoContent = components['schemas']['content-file'];
 

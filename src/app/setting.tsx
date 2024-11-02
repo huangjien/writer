@@ -11,7 +11,7 @@ import {
   getStoredSettings,
   SETTINGS_KEY,
   showInfoToast,
-} from '../components/global';
+} from '@/components/global';
 import { useIsFocused } from '@react-navigation/native';
 
 export default function Page() {

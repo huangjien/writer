@@ -32,7 +32,7 @@ import {
   STATUS_PAUSED,
   STATUS_PLAYING,
   STATUS_STOPPED,
-} from '../components/global';
+} from '@/components/global';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

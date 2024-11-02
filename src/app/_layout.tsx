@@ -1,24 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import '../global.css';
 import { SplashScreen } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
-import { AppState, Pressable, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Pressable, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { ThemeProvider } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as LocalAuthentication from 'expo-local-authentication';
-import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { useThemeConfig } from '@/components/use-theme-config';
 import { enableFreeze } from 'react-native-screens';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootSiblingParent } from 'react-native-root-siblings';
-import {
-  getStoredSettings,
-  handleError,
-  SETTINGS_KEY,
-  showErrorToast,
-} from '../components/global';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { handleError, showErrorToast } from '@/components/global';
 import { CustomDrawerContent } from '@/components/CustomDrawerContent';
 import { Footer } from '@/components/Footer';
 import {
@@ -36,7 +30,9 @@ export default function Layout() {
       <RootSiblingParent>
         <GestureHandlerRootView>
           <ThemeProvider value={theme}>
-            <InnerLayout />
+            <SafeAreaProvider>
+              <InnerLayout />
+            </SafeAreaProvider>
           </ThemeProvider>
         </GestureHandlerRootView>
       </RootSiblingParent>
@@ -46,10 +42,8 @@ export default function Layout() {
   function InnerLayout() {
     const [isBiometricSupported, setIsBiometricSupported] =
       React.useState(false);
-    const [storage, { getItem, setItem, removeItem }, isLoading, hasChanged] =
+    const [storage, { getItem, setItem }, isLoading, hasChanged] =
       useAsyncStorage();
-    const [settings, setSettings] = useState({});
-    const [aState, setAppState] = useState(AppState.currentState);
 
     // Prevent the splash screen from auto-hiding before asset loading is complete.
     SplashScreen.preventAutoHideAsync();
@@ -68,15 +62,6 @@ export default function Layout() {
             handleError(err);
           });
         });
-      const appStateListener = AppState.addEventListener(
-        'change',
-        (nextAppState) => {
-          setAppState(nextAppState);
-        }
-      );
-      return () => {
-        appStateListener?.remove();
-      };
     }, []);
 
     useEffect(() => {
@@ -99,9 +84,7 @@ export default function Layout() {
             promptMessage: "You need to be this device's owner to use this app",
             disableDeviceFallback: false,
           }).then((biometricAuth) => {
-            if (!biometricAuth.success) {
-              console.log('login failed');
-            } else {
+            if (biometricAuth.success) {
               setItem('expiry', (Date.now() + 1000 * 60 * 5).toString());
             }
           });
@@ -120,9 +103,7 @@ export default function Layout() {
               </Pressable>
             ),
           })}
-          drawerContent={(props: DrawerContentComponentProps) => (
-            <CustomDrawerContent />
-          )}
+          drawerContent={() => <CustomDrawerContent />}
         >
           <Drawer.Screen
             name='index'
