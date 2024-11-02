@@ -8,6 +8,7 @@ export const ANALYSIS_KEY = '@Analysis:';
 export const STATUS_PLAYING = 'playing';
 export const STATUS_PAUSED = 'paused';
 export const STATUS_STOPPED = 'stopped';
+export const EXPIRY_KEY = 'expiry';
 
 export const handleError = (err) => {
   showErrorToast(err.message);

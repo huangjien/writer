@@ -127,7 +127,7 @@ export default function Page() {
     // This is used for switch to another chapter, if was reading before, then read new chapter
     if (status === STATUS_PLAYING && content.length > 64) {
       Speech.stop();
-      sleep(5000).then(() => {
+      sleep(2000).then(() => {
         speak();
       });
     }
