@@ -1,1 +1,1 @@
-npx expo start --reset-cache
+npx expo start --reset-cache --go
