@@ -201,7 +201,22 @@ export default function Page() {
                 AsyncStorage.setItem(mark + item.name, JSON.stringify(content));
               });
           } else {
-            // console.log(mark+item.name, 'no need to update')
+            if (mark === CONTENT_KEY && item['name'].endsWith('.md')) {
+              // console.log('index', index, 'name', item['name']);
+              // need to update size and analysed
+              item['size'] = data['size'];
+              if (elementWithNameExists(analysis, item['name'])) {
+                item['analysed'] = true;
+              } else {
+                item['analysed'] = false;
+              }
+            }
+            if (index >= items.length - 1) {
+              // console.log("last item", index, items.length);
+              items = items.filter((item) => item.name.endsWith('.md'));
+              AsyncStorage.setItem(mark, JSON.stringify(items));
+              setContent(items);
+            }
           }
         })
         .catch((err) => {
