@@ -200,27 +200,6 @@ export default function Page() {
       });
   }, [progress]);
 
-  const speak = () => {
-    if (content.length > Speech.maxSpeechInputLength) {
-      setStatus(STATUS_STOPPED);
-      showErrorToast('Content is too long to handle by TTS engine');
-      return;
-    }
-    if (status === STATUS_PAUSED) {
-      setStatus(STATUS_PLAYING);
-      Speech.resume();
-    }
-    if (status === STATUS_STOPPED || status === STATUS_PLAYING) {
-      setStatus(STATUS_PLAYING);
-      Speech.speak(getContentFromProgress(), {
-        language: selectedLanguage,
-        voice: voice,
-        onDone: () => {
-          toNext();
-        },
-      });
-    }
-  };
   useEffect(() => {
     Speech.getAvailableVoicesAsync()
       .then((res) => {
@@ -238,6 +217,28 @@ export default function Page() {
         handleError(err);
       });
   }, []);
+
+  const speak = () => {
+    if (content.length > Speech.maxSpeechInputLength) {
+      setStatus(STATUS_STOPPED);
+      showErrorToast('Content is too long to be handled by TTS engine');
+      return;
+    }
+    if (status === STATUS_PAUSED) {
+      setStatus(STATUS_PLAYING);
+      Speech.resume();
+    }
+    if (status === STATUS_STOPPED || status === STATUS_PLAYING) {
+      setStatus(STATUS_PLAYING);
+      Speech.speak(getContentFromProgress(), {
+        language: selectedLanguage,
+        voice: voice,
+        onDone: () => {
+          toNext();
+        },
+      });
+    }
+  };
 
   const renderItemList = items.map((item) => (
     <Picker.Item key={item.key} label={item.identifier} value={item.language} />
@@ -306,13 +307,8 @@ export default function Page() {
         });
       }
       if (status === STATUS_PLAYING) {
-        if (Platform.OS === 'android') {
-          Speech.stop();
-          setStatus(STATUS_STOPPED);
-        } else {
-          Speech.pause();
-          setStatus(STATUS_PAUSED);
-        }
+        Speech.stop();
+        setStatus(STATUS_STOPPED);
       }
     })
     .runOnJS(true);
@@ -484,24 +480,6 @@ export default function Page() {
             />
           </Pressable>
 
-          {/* <Button title='Play' onPress={speak} /> */}
-          {Platform.OS !== 'android' && (
-            <>
-              <Pressable
-                disabled={status !== STATUS_PLAYING}
-                onPress={() => {
-                  Speech.pause();
-                  setStatus(STATUS_PAUSED);
-                }}
-              >
-                <Feather
-                  size={24}
-                  name='pause'
-                  color={status !== STATUS_PLAYING ? 'grey' : 'green'}
-                />
-              </Pressable>
-            </>
-          )}
           <Pressable
             disabled={status === STATUS_STOPPED}
             onPress={() => {

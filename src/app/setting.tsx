@@ -79,7 +79,7 @@ export default function Page() {
   };
 
   const saveToStorage = async (values: any) => {
-    console.log(SETTINGS_KEY, values);
+    // console.log(SETTINGS_KEY, values);
     await setItem(SETTINGS_KEY, JSON.stringify(values));
   };
 
