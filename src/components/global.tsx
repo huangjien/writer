@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-root-toast';
 
 // components/global.tsx
@@ -8,42 +7,12 @@ export const ANALYSIS_KEY = '@Analysis:';
 export const STATUS_PLAYING = 'playing';
 export const STATUS_PAUSED = 'paused';
 export const STATUS_STOPPED = 'stopped';
+export const EXPIRY_KEY = 'expiry';
 
 export const handleError = (err) => {
   showErrorToast(err.message);
   console.error(err.status, err.message);
 };
-
-export const setStoredSettings = (key: string, value: any) => {
-  getStoredSettings
-    .then((data) => {
-      if (!data) {
-        console.error('no data returned for settings');
-        return;
-      } else {
-        data[key] = value;
-        AsyncStorage.setItem(key, JSON.stringify(data)).then(() => {
-          console.log('we have update the settings:', key, value);
-        });
-      }
-    })
-    .catch((err) => {
-      showErrorToast(err.message);
-      console.error(err.status, err.message);
-    });
-};
-
-export const getStoredSettings = AsyncStorage.getItem(SETTINGS_KEY).then(
-  (data) => {
-    console.log('getStoredSettings', data);
-    if (data) {
-      const parsedData = JSON.parse(data);
-      console.log(SETTINGS_KEY, parsedData);
-      return parsedData;
-    }
-    return undefined;
-  }
-);
 
 export function showErrorToast(message: string) {
   Toast.show(message, {

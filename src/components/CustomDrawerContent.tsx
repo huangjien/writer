@@ -2,27 +2,17 @@ import { Image } from '@/components/image';
 import { Feather } from '@expo/vector-icons';
 import { DrawerItem } from '@react-navigation/drawer';
 import { useRouter } from 'expo-router';
-import { createContext, ReactElement, useContext } from 'react';
+import { ReactElement } from 'react';
 import { ScrollView, View } from 'react-native';
-import { useThemeConfig } from './use-theme-config';
+import { useThemeConfig } from '@/components/use-theme-config';
 import { images } from '@/app/images';
 import { Text } from 'react-native';
-import packageJson from '../../package.json';
-
-export const AuthContext = createContext({
-  expiry: Date.now(),
-  setExpiry: (expiry) => {
-    expiry = expiry;
-  },
-});
-
-export function useSession() {
-  return useContext(AuthContext);
-}
+import packageJson from '@/../package.json';
+import { useAsyncStorage } from '@/components/useAsyncStorage';
 
 export const CustomDrawerContent = (): ReactElement => {
   const router = useRouter();
-  const AuthContext = useSession();
+  const [storage, { setItem }, isLoading, hasChanged] = useAsyncStorage();
   const { themeName, setSelectedTheme } = useThemeConfig();
 
   return (
@@ -94,8 +84,7 @@ export const CustomDrawerContent = (): ReactElement => {
         )}
         icon={() => <Feather name='log-out' size={24} color={'green'} />}
         onPress={() => {
-          AuthContext.setExpiry(Date.now() - 1000);
-          // unregisterBackgroundFetchAsync();
+          setItem('expiry', (Date.now() - 1000 * 60 * 5).toString());
         }}
       />
     </ScrollView>

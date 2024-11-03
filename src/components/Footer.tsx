@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import packageJson from '../../package.json';
+import packageJson from '@/../package.json';
 
 export const Footer = () => {
   const { bottom } = useSafeAreaInsets();

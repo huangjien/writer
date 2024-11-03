@@ -1,129 +1,95 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import '../global.css';
 import { SplashScreen } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
-import { AppState, Pressable, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Pressable, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { ThemeProvider } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as LocalAuthentication from 'expo-local-authentication';
-import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { useThemeConfig } from '@/components/use-theme-config';
 import { enableFreeze } from 'react-native-screens';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootSiblingParent } from 'react-native-root-siblings';
-import {
-  getStoredSettings,
-  handleError,
-  SETTINGS_KEY,
-  showErrorToast,
-} from '../components/global';
-import {
-  AuthContext,
-  CustomDrawerContent,
-  useSession,
-} from '@/components/CustomDrawerContent';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { handleError, showErrorToast } from '@/components/global';
+import { CustomDrawerContent } from '@/components/CustomDrawerContent';
 import { Footer } from '@/components/Footer';
+import {
+  AsyncStorageProvider,
+  useAsyncStorage,
+} from '@/components/useAsyncStorage';
 
 enableFreeze(true);
 
 export default function Layout() {
-  const [isBiometricSupported, setIsBiometricSupported] = React.useState(false);
-  const [expiry, setExpiry] = useState(Date.now());
-  const authContext = useSession();
-  const [settings, setSettings] = useState({});
-  const [aState, setAppState] = useState(AppState.currentState);
-
-  // Prevent the splash screen from auto-hiding before asset loading is complete.
-  SplashScreen.preventAutoHideAsync();
   const { theme } = useThemeConfig();
 
-  useEffect(() => {
-    getStoredSettings
-      .then((data) => {
-        if (data) {
-          setSettings(data);
-          let temp = settings['expiry'];
-          if (!temp) temp = Date.now() - 1000;
-          setExpiry(temp);
-        }
-      })
-      .then(() => {
-        LocalAuthentication.hasHardwareAsync().then((compatible) => {
-          setIsBiometricSupported(compatible);
-        });
-      })
-      .then(() => {
-        SplashScreen.hideAsync();
-        handleBiometricAuth();
-      })
-      .catch((err) => {
-        SplashScreen.hideAsync().then(() => {
-          handleError(err);
-        });
-      });
-    const appStateListener = AppState.addEventListener(
-      'change',
-      (nextAppState) => {
-        setAppState(nextAppState);
-      }
-    );
-    return () => {
-      appStateListener?.remove();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (authContext.expiry || authContext.expiry < Date.now())
-      handleBiometricAuth();
-  }, [authContext.expiry]);
-
-  const handleBiometricAuth = async () => {
-    // registerBackgroundFetchAsync();
-    if (expiry && expiry > Date.now()) return;
-    const savedBiometrics = await LocalAuthentication.isEnrolledAsync();
-    if (!savedBiometrics)
-      return showErrorToast(
-        'No Biometrics Authentication\nPlease verify your identity with your password'
-      );
-    const biometricAuth = await LocalAuthentication.authenticateAsync({
-      promptMessage: "You need to be this device's owner to use this app",
-      disableDeviceFallback: false,
-    });
-    if (!biometricAuth.success) {
-      setExpiry(Date.now() - 1000 * 60 * 5);
-    } else {
-      setExpiry(Date.now() + 1000 * 60 * 5);
-      getStoredSettings
-        .then((data) => {
-          if (!data) {
-            console.log('no data returned for settings');
-            return;
-          } else {
-            data['expiry'] = expiry;
-            setSettings(data);
-            AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-            authContext.setExpiry(expiry);
-          }
-        })
-        .catch((err) => {
-          handleError(err);
-        });
-    }
-  };
-
   return (
-    <RootSiblingParent>
-      <GestureHandlerRootView>
-        <AuthContext.Provider value={{ expiry, setExpiry }}>
-          <ThemeProvider value={theme}>{major_area()}</ThemeProvider>
-        </AuthContext.Provider>
-      </GestureHandlerRootView>
-    </RootSiblingParent>
+    <AsyncStorageProvider>
+      <RootSiblingParent>
+        <GestureHandlerRootView>
+          <ThemeProvider value={theme}>
+            <SafeAreaProvider>
+              <InnerLayout />
+            </SafeAreaProvider>
+          </ThemeProvider>
+        </GestureHandlerRootView>
+      </RootSiblingParent>
+    </AsyncStorageProvider>
   );
 
-  function major_area() {
+  function InnerLayout() {
+    const [isBiometricSupported, setIsBiometricSupported] =
+      React.useState(false);
+    const [storage, { getItem, setItem }, isLoading, hasChanged] =
+      useAsyncStorage();
+
+    // Prevent the splash screen from auto-hiding before asset loading is complete.
+    SplashScreen.preventAutoHideAsync();
+
+    useEffect(() => {
+      LocalAuthentication.hasHardwareAsync()
+        .then((compatible) => {
+          setIsBiometricSupported(compatible);
+        })
+        .then(() => {
+          SplashScreen.hideAsync();
+          handleBiometricAuth();
+        })
+        .catch((err) => {
+          SplashScreen.hideAsync().then(() => {
+            handleError(err);
+          });
+        });
+    }, []);
+
+    useEffect(() => {
+      getItem('expiry').then((expiry) => {
+        if (expiry || parseInt(expiry) < Date.now()) handleBiometricAuth();
+      });
+    }, [hasChanged]);
+
+    const handleBiometricAuth = async () => {
+      // registerBackgroundFetchAsync();
+      await getItem('expiry').then((expiry) => {
+        if (expiry && parseInt(expiry) > Date.now()) return;
+        else {
+          const savedBiometrics = LocalAuthentication.isEnrolledAsync();
+          if (!savedBiometrics)
+            return showErrorToast(
+              'No Biometrics Authentication\nPlease verify your identity with your password'
+            );
+          LocalAuthentication.authenticateAsync({
+            promptMessage: "You need to be this device's owner to use this app",
+            disableDeviceFallback: false,
+          }).then((biometricAuth) => {
+            if (biometricAuth.success) {
+              setItem('expiry', (Date.now() + 1000 * 60 * 5).toString());
+            }
+          });
+        }
+      });
+    };
     return (
       <View className='flex elevation z-auto flex-1 flex-col text-black dark:text-white bg-white dark:bg-black'>
         {/* <Header /> */}
@@ -136,9 +102,7 @@ export default function Layout() {
               </Pressable>
             ),
           })}
-          drawerContent={(props: DrawerContentComponentProps) => (
-            <CustomDrawerContent />
-          )}
+          drawerContent={() => <CustomDrawerContent />}
         >
           <Drawer.Screen
             name='index'
