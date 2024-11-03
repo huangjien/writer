@@ -9,6 +9,7 @@ import { images } from '@/app/images';
 import { Text } from 'react-native';
 import packageJson from '@/../package.json';
 import { useAsyncStorage } from '@/components/useAsyncStorage';
+import { TIMEOUT } from './global';
 
 export const CustomDrawerContent = (): ReactElement => {
   const router = useRouter();
@@ -84,7 +85,7 @@ export const CustomDrawerContent = (): ReactElement => {
         )}
         icon={() => <Feather name='log-out' size={24} color={'green'} />}
         onPress={() => {
-          setItem('expiry', (Date.now() - 1000 * 60 * 5).toString());
+          setItem('expiry', (Date.now() - TIMEOUT).toString());
         }}
       />
     </ScrollView>

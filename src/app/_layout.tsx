@@ -11,7 +11,7 @@ import { useThemeConfig } from '@/components/use-theme-config';
 import { enableFreeze } from 'react-native-screens';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { handleError, showErrorToast } from '@/components/global';
+import { handleError, showErrorToast, TIMEOUT } from '@/components/global';
 import { CustomDrawerContent } from '@/components/CustomDrawerContent';
 import { Footer } from '@/components/Footer';
 import {
@@ -84,7 +84,7 @@ export default function Layout() {
             disableDeviceFallback: false,
           }).then((biometricAuth) => {
             if (biometricAuth.success) {
-              setItem('expiry', (Date.now() + 1000 * 60 * 5).toString());
+              setItem('expiry', (Date.now() + TIMEOUT).toString());
             }
           });
         }
