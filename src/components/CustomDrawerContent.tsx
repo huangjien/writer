@@ -2,7 +2,7 @@ import { Image } from '@/components/image';
 import { Feather } from '@expo/vector-icons';
 import { DrawerItem } from '@react-navigation/drawer';
 import { useRouter } from 'expo-router';
-import { createContext, ReactElement, useContext } from 'react';
+import { ReactElement } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useThemeConfig } from '@/components/use-theme-config';
 import { images } from '@/app/images';

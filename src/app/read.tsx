@@ -1,10 +1,4 @@
-import {
-  Text,
-  View,
-  Pressable,
-  ScrollView,
-  useWindowDimensions,
-} from 'react-native';
+import { Text, View, Pressable, ScrollView } from 'react-native';
 import * as Speech from 'expo-speech';
 import { Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -16,7 +10,6 @@ import {
   GestureDetector,
   Swipeable,
 } from 'react-native-gesture-handler';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal';
 import Markdown from 'react-native-markdown-display';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
@@ -181,7 +174,7 @@ export default function Page() {
           if (data) {
             data['current'] = post;
             data['progress'] = 0;
-            AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(data));
+            setItem(SETTINGS_KEY, JSON.stringify(data));
           }
         });
     }
@@ -202,7 +195,7 @@ export default function Page() {
       .then((data) => {
         if (data) {
           data['progress'] = progress;
-          AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(data));
+          setItem(SETTINGS_KEY, JSON.stringify(data));
         }
       });
   }, [progress]);
@@ -376,7 +369,7 @@ export default function Page() {
 
   function loadReadingByName() {
     if (!current) return;
-    AsyncStorage.getItem(current.toString().trim()).then((data) => {
+    getItem(current.toString().trim()).then((data) => {
       if (!data) {
         showErrorToast('No content for this chapter yet:' + current + '!');
         return;
@@ -386,18 +379,18 @@ export default function Page() {
     });
 
     // get analysis from local storage
-    AsyncStorage.getItem(
-      current.toString().replace(CONTENT_KEY, ANALYSIS_KEY)
-    ).then((data) => {
-      if (!data) {
-        setAnalysis(undefined);
-        return;
+    getItem(current.toString().replace(CONTENT_KEY, ANALYSIS_KEY)).then(
+      (data) => {
+        if (!data) {
+          setAnalysis(undefined);
+          return;
+        }
+        setAnalysis(JSON.parse(data)['content']);
       }
-      setAnalysis(JSON.parse(data)['content']);
-    });
+    );
 
     // get prev and next chapter name
-    AsyncStorage.getItem(CONTENT_KEY).then((data) => {
+    getItem(CONTENT_KEY).then((data) => {
       if (!data) return;
       const content = JSON.parse(data);
       const index = content.findIndex(

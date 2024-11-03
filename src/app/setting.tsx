@@ -35,13 +35,14 @@ export default function Page() {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const isFocused = useIsFocused();
 
-  useEffect(() => {
-    Speech.getAvailableVoicesAsync().then((res) => {
-      res.map((v) => {
-        console.log(v);
-      });
-    });
-  }, []);
+  // not ready to go
+  // useEffect(() => {
+  //   Speech.getAvailableVoicesAsync().then((res) => {
+  //     res.map((v) => {
+  //       console.log(v);
+  //     });
+  //   });
+  // }, []);
 
   useEffect(() => {
     getItem(SETTINGS_KEY).then((data) => {

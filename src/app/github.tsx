@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
@@ -49,12 +48,16 @@ export default function Page() {
         });
     }
     if (settings) {
-      console.log(settings);
       getFolderAndMdfiles(settings['analysisFolder'])
         .then((data) => {
-          // console.log(data)
           if (!data) {
             console.log('no data returned for analysis');
+            return;
+          }
+          // if they are same, no need to do anything
+
+          if (data === analysis) {
+            console.log('same as existed analyssi');
             return;
           }
           setAnalysis(data);
@@ -64,6 +67,11 @@ export default function Page() {
           getFolderAndMdfiles(settings['contentFolder']).then((data) => {
             if (!data) {
               console.log('no data returned for content');
+              return;
+            }
+            // if they are same, no need to do anything
+            if (data === content) {
+              console.log('same as existed content');
               return;
             }
             saveToStorage(CONTENT_KEY, data);
@@ -154,7 +162,7 @@ export default function Page() {
   function saveToStorage(mark: string, items: any) {
     // load existed to show, then update them
     if (mark === CONTENT_KEY) {
-      AsyncStorage.getItem(mark).then((res) => setContent(JSON.parse(res)));
+      getItem(mark).then((res) => setContent(JSON.parse(res)));
     }
     // console.log('saveToStorage', mark, items)
     if (!items || items.length <= 0) {
@@ -165,7 +173,7 @@ export default function Page() {
 
     items.map((item, index) => {
       // console.log('saveToStorage', mark+item.name)
-      AsyncStorage.getItem(mark + item.name)
+      getItem(mark + item.name)
         .then((res) => {
           // if not equals, that means need to update
           const data = JSON.parse(res);
@@ -199,11 +207,11 @@ export default function Page() {
                 if (index >= items.length - 1) {
                   // console.log("last item", index, items.length);
                   items = items.filter((item) => item.name.endsWith('.md'));
-                  AsyncStorage.setItem(mark, JSON.stringify(items));
+                  setItem(mark, JSON.stringify(items));
                   setContent(items);
                 }
 
-                AsyncStorage.setItem(mark + item.name, JSON.stringify(content));
+                setItem(mark + item.name, JSON.stringify(content));
               });
           } else {
             if (mark === CONTENT_KEY && item['name'].endsWith('.md')) {
@@ -219,7 +227,7 @@ export default function Page() {
             if (index >= items.length - 1) {
               // console.log("last item", index, items.length);
               items = items.filter((item) => item.name.endsWith('.md'));
-              AsyncStorage.setItem(mark, JSON.stringify(items));
+              setItem(mark, JSON.stringify(items));
               setContent(items);
             }
           }
@@ -228,5 +236,6 @@ export default function Page() {
           handleError(err);
         });
     });
+    setItem(mark, JSON.stringify(items));
   }
 }

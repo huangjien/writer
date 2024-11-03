@@ -11,7 +11,6 @@ import { useThemeConfig } from '@/components/use-theme-config';
 import { enableFreeze } from 'react-native-screens';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-
 import { handleError, showErrorToast } from '@/components/global';
 import { CustomDrawerContent } from '@/components/CustomDrawerContent';
 import { Footer } from '@/components/Footer';
