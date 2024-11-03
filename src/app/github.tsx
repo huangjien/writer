@@ -10,9 +10,10 @@ import {
   ANALYSIS_KEY,
   CONTENT_KEY,
   fileNameComparator,
-  getStoredSettings,
   handleError,
+  SETTINGS_KEY,
 } from '@/components/global';
+import { useAsyncStorage } from '@/components/useAsyncStorage';
 
 type RepoContent = components['schemas']['content-file'];
 
@@ -25,12 +26,16 @@ export default function Page() {
   const [content, setContent] = useState([]);
   const [analysis, setAnalysis] = useState([]);
   const router = useRouter();
-
   const isFocused = useIsFocused();
+  const [storage, { setItem, getItem }, isLoading, hasChanged] =
+    useAsyncStorage();
 
   useEffect(() => {
     if (!settings) {
-      getStoredSettings
+      getItem(SETTINGS_KEY)
+        .then((res) => {
+          return JSON.parse(res);
+        })
         .then((data) => {
           if (!data) {
             console.log('no data returned for settings');

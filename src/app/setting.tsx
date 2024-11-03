@@ -1,20 +1,17 @@
 import { Text, View, TextInput, Pressable } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAsyncStorage } from '@/components/useAsyncStorage';
 import React, { useEffect } from 'react';
 import * as Speech from 'expo-speech';
 import { useForm, Controller } from 'react-hook-form';
 import { Feather } from '@expo/vector-icons';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { ScrollView } from 'react-native-gesture-handler';
-import {
-  CONTENT_KEY,
-  getStoredSettings,
-  SETTINGS_KEY,
-  showInfoToast,
-} from '@/components/global';
+import { CONTENT_KEY, SETTINGS_KEY, showInfoToast } from '@/components/global';
 import { useIsFocused } from '@react-navigation/native';
 
 export default function Page() {
+  const [storage, { setItem, getItem }, isLoading, hasChanged] =
+    useAsyncStorage();
   const {
     control,
     handleSubmit,
@@ -47,7 +44,8 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    getStoredSettings.then((res) => {
+    getItem(SETTINGS_KEY).then((data) => {
+      const res = JSON.parse(data);
       if (res) {
         setValue('githubRepo', res.githubRepo);
         setValue('githubToken', res.githubToken);
@@ -81,7 +79,7 @@ export default function Page() {
 
   const saveToStorage = async (values: any) => {
     console.log(SETTINGS_KEY, values);
-    await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(values));
+    await setItem(SETTINGS_KEY, JSON.stringify(values));
   };
 
   const getProgressPercentage = () => {

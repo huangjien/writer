@@ -23,7 +23,6 @@ import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import {
   ANALYSIS_KEY,
   CONTENT_KEY,
-  getStoredSettings,
   handleError,
   SETTINGS_KEY,
   showErrorToast,
@@ -36,11 +35,13 @@ import {
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAsyncStorage } from '@/components/useAsyncStorage';
 
 export default function Page() {
   const navigation = useNavigation();
   const { top } = useSafeAreaInsets();
-  const { width, height } = useWindowDimensions();
+  const [storage, { setItem, getItem }, isLoading, hasChanged] =
+    useAsyncStorage();
   const [items, setItems] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState('zh');
   const [voice, setVoice] = useState('zh');
@@ -63,6 +64,31 @@ export default function Page() {
   const enableKeepAwake = async () => {
     await activateKeepAwakeAsync();
   };
+
+  // 1st time enter this page, get settings from local storage
+  // if cannot get settings, then that's seariously problem, no need to proceed, we need to show error message
+  useEffect(() => {
+    getItem(SETTINGS_KEY)
+      .then((res) => {
+        return JSON.parse(res);
+      })
+      .then((data) => {
+        if (!data) {
+          // how could this happen!
+          showErrorToast('No settings found, please set up settings first');
+          console.error('No settings found, please set up settings first');
+          return;
+        }
+        if (data) {
+          if (!data.fontSize) {
+            // default 16
+            setFontSize(16);
+          } else {
+            setFontSize(data.fontSize);
+          }
+        }
+      });
+  }, [hasChanged]);
 
   useEffect(() => {
     if (status === STATUS_PLAYING) {
@@ -100,22 +126,6 @@ export default function Page() {
   }, [playingTime]);
 
   useEffect(() => {
-    getStoredSettings.then((data) => {
-      if (!data) {
-        setFontSize(16);
-      }
-      if (data) {
-        if (!data.fontSize) {
-          // default 16
-          setFontSize(16);
-        } else {
-          setFontSize(data.fontSize);
-        }
-      }
-    });
-  }, []);
-
-  useEffect(() => {
     if (status === STATUS_PLAYING) {
       enableKeepAwake();
     } else {
@@ -136,36 +146,44 @@ export default function Page() {
   useEffect(() => {
     if (!post) {
       // get current post from local storage, we'd better also get progress, then can resume from last breaking point
-      getStoredSettings.then((data) => {
-        if (data) {
-          if (data['current']) {
-            // default 16
-            setCurrent(data['current']);
-            setProgress(data['progress'] ? data['progress'] : 0);
-          } else {
-            // if nothing exist, no post, no current, I don't know either.
-            showInfoToast(
-              'No current chapter, please select a chapter to read'
-            );
-            console.error(
-              'No current chapter, please select a chapter to read'
-            );
+      getItem(SETTINGS_KEY)
+        .then((res) => {
+          return JSON.parse(res);
+        })
+        .then((data) => {
+          if (data) {
+            if (data['current']) {
+              // default 16
+              setCurrent(data['current']);
+              setProgress(data['progress'] ? data['progress'] : 0);
+            } else {
+              // if nothing exist, no post, no current, I don't know either.
+              showInfoToast(
+                'No current chapter, please select a chapter to read'
+              );
+              console.error(
+                'No current chapter, please select a chapter to read'
+              );
+            }
           }
-        }
-      });
+        });
     }
     if (post) {
       // console.log(post)
       setCurrent(post);
       setProgress(0);
       setPlayingTime(0);
-      getStoredSettings.then((data) => {
-        if (data) {
-          data['current'] = post;
-          data['progress'] = 0;
-          AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(data));
-        }
-      });
+      getItem(SETTINGS_KEY)
+        .then((res) => {
+          return JSON.parse(res);
+        })
+        .then((data) => {
+          if (data) {
+            data['current'] = post;
+            data['progress'] = 0;
+            AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(data));
+          }
+        });
     }
   }, [post]);
 
@@ -177,12 +195,16 @@ export default function Page() {
 
   useEffect(() => {
     // save it to local storage
-    getStoredSettings.then((data) => {
-      if (data) {
-        data['progress'] = progress;
-        AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(data));
-      }
-    });
+    getItem(SETTINGS_KEY)
+      .then((res) => {
+        return JSON.parse(res);
+      })
+      .then((data) => {
+        if (data) {
+          data['progress'] = progress;
+          AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(data));
+        }
+      });
   }, [progress]);
 
   const speak = () => {
@@ -515,7 +537,7 @@ export default function Page() {
   function content_area() {
     return (
       <View
-        className=' py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 bg-white  dark:bg-black'
+        className='flex-1 py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 bg-white  dark:bg-black'
         style={{ paddingTop: top }}
       >
         <View className='m-2 p-2 items-center gap-4 text-center'>
