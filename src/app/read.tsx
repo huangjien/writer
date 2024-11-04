@@ -1,4 +1,10 @@
-import { Text, View, Pressable, ScrollView } from 'react-native';
+import {
+  Text,
+  View,
+  Pressable,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import * as Speech from 'expo-speech';
 import { Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -349,15 +355,17 @@ export default function Page() {
         swipeDirection={'right'}
       >
         <ScrollView className='flex-grow m-4 p-4 bg-opacity-10 py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 text-white'>
-          <Markdown style={{ body: { color: 'white', fontSize: fontSize } }}>
-            {analysis ? analysis : 'No analysis for this chapter yet'}
-          </Markdown>
-          <Pressable
-            className='bottom-4 gap-8 items-center justify-center '
-            onPress={() => setModalVisible(false)}
-          >
-            <Feather name='check' size={24} color={'white'} />
-          </Pressable>
+          <TouchableOpacity>
+            <Markdown style={{ body: { color: 'white', fontSize: fontSize } }}>
+              {analysis ? analysis : 'No analysis for this chapter yet'}
+            </Markdown>
+            <Pressable
+              className='bottom-4 gap-8 items-center justify-center '
+              onPress={() => setModalVisible(false)}
+            >
+              <Feather name='check' size={24} color={'white'} />
+            </Pressable>
+          </TouchableOpacity>
         </ScrollView>
       </Modal>
     );
