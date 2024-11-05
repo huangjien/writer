@@ -346,8 +346,8 @@ export default function Page() {
     return (
       <Modal
         isVisible={modalVisible}
-        animationIn={'slideInUp'}
-        animationOut={'slideOutDown'}
+        animationIn={'zoomInUp'}
+        animationOut={'zoomOutDown'}
         coverScreen={true}
         backdropOpacity={0.9}
         onBackdropPress={() => setModalVisible(false)}
