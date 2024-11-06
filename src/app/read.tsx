@@ -118,6 +118,11 @@ export default function Page() {
       setStatus(STATUS_PLAYING);
       toNext();
     }
+    Speech.isSpeakingAsync().then((res) => {
+      if (!res) {
+        toNext();
+      }
+    });
     // if (isFocused){
     //   console.log('isFocused, it should scroll, x:' + Math.round(height * progress));
     //   scrollViewRef.current?.scrollTo({y: Math.round(100 * progress) + 128, x: 0, animated: true});
@@ -136,7 +141,7 @@ export default function Page() {
     // This is used for switch to another chapter, if was reading before, then read new chapter
     if (status === STATUS_PLAYING && content.length > 64) {
       Speech.stop();
-      sleep(2000).then(() => {
+      sleep(1000).then(() => {
         speak();
       });
     }
@@ -155,6 +160,17 @@ export default function Page() {
               // default 16
               setCurrent(data['current']);
               setProgress(data['progress'] ? data['progress'] : 0);
+              getItem(SETTINGS_KEY)
+                .then((res) => {
+                  return JSON.parse(res);
+                })
+                .then((data) => {
+                  if (data) {
+                    data['current'] = post;
+                    data['progress'] = 0;
+                    setItem(SETTINGS_KEY, JSON.stringify(data));
+                  }
+                });
             } else {
               // if nothing exist, no post, no current, I don't know either.
               showInfoToast(
@@ -420,9 +436,9 @@ export default function Page() {
   }
 
   function onProgressChanged(e) {
+    Speech.stop();
     setProgress(e);
     if (status === STATUS_PLAYING) {
-      Speech.stop();
       speak();
     }
   }
