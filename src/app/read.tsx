@@ -119,7 +119,7 @@ export default function Page() {
       toNext();
     }
     Speech.isSpeakingAsync().then((res) => {
-      if (!res) {
+      if (!res && status === STATUS_PLAYING && progress > 0.1) {
         toNext();
       }
     });
@@ -160,17 +160,6 @@ export default function Page() {
               // default 16
               setCurrent(data['current']);
               setProgress(data['progress'] ? data['progress'] : 0);
-              getItem(SETTINGS_KEY)
-                .then((res) => {
-                  return JSON.parse(res);
-                })
-                .then((data) => {
-                  if (data) {
-                    data['current'] = post;
-                    data['progress'] = 0;
-                    setItem(SETTINGS_KEY, JSON.stringify(data));
-                  }
-                });
             } else {
               // if nothing exist, no post, no current, I don't know either.
               showInfoToast(
@@ -222,24 +211,6 @@ export default function Page() {
       });
   }, [progress]);
 
-  useEffect(() => {
-    Speech.getAvailableVoicesAsync()
-      .then((res) => {
-        let count = 0;
-        let arr = [];
-        res.map((v) => {
-          v['key'] = count.toString();
-          count++;
-          arr.push(v);
-        });
-        return arr;
-      })
-      .then((arr) => setItems(arr))
-      .catch((err) => {
-        handleError(err);
-      });
-  }, []);
-
   const speak = () => {
     if (content.length > Speech.maxSpeechInputLength) {
       setStatus(STATUS_STOPPED);
@@ -260,15 +231,6 @@ export default function Page() {
         },
       });
     }
-  };
-
-  const renderItemList = items.map((item) => (
-    <Picker.Item key={item.key} label={item.identifier} value={item.language} />
-  ));
-
-  const handleSelected = (itemValue, itemPosition) => {
-    setVoice(items[itemPosition].identifier);
-    setSelectedLanguage(itemValue);
   };
 
   const showEval = () => {
