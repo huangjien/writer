@@ -79,7 +79,7 @@ export default function Page() {
           });
         });
     }
-  }, [settings, isFocused]);
+  }, [settings]);
 
   const getFolderAndMdfiles = async (folder) => {
     try {
