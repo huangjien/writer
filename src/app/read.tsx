@@ -35,6 +35,7 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAsyncStorage } from '@/components/useAsyncStorage';
+import BackgroundTimer from 'react-native-background-timer';
 
 export default function Page() {
   const navigation = useNavigation();
@@ -91,21 +92,21 @@ export default function Page() {
 
   useEffect(() => {
     if (status === STATUS_PLAYING) {
-      const id = setInterval(() => {
+      const id = BackgroundTimer.setInterval(() => {
         setPlayingTime((prevTime) => prevTime + 1);
       }, 1000);
 
       setIntervalId(id);
     } else {
       if (intervalId) {
-        clearInterval(intervalId);
+        BackgroundTimer.clearInterval(intervalId);
         setIntervalId(null);
       }
     }
 
     return () => {
       if (intervalId) {
-        clearInterval(intervalId);
+        BackgroundTimer.clearInterval(intervalId);
       }
     };
   }, [status]);
