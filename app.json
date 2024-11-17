@@ -37,6 +37,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "permissions": [
+        "android.permission.FOREGOUND_SERVICE",
         "android.permission.USE_BIOMETRIC",
         "android.permission.USE_FINGERPRINT",
         "android.permission.POST_NOTIFICATIONS"

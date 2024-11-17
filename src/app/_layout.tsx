@@ -18,6 +18,20 @@ import {
   AsyncStorageProvider,
   useAsyncStorage,
 } from '@/components/useAsyncStorage';
+import { SPEECH_TASK } from '@/components/SpeechTask';
+import * as BackgroundFetch from 'expo-background-fetch';
+
+const registerBackgroundTask = async () => {
+  try {
+    await BackgroundFetch.registerTaskAsync(SPEECH_TASK, {
+      minimumInterval: 10,
+      stopOnTerminate: true,
+      startOnBoot: false,
+    });
+  } catch (err) {
+    console.error('Failed to Register speech task', err);
+  }
+};
 
 enableFreeze(true);
 
@@ -48,6 +62,7 @@ export default function Layout() {
     SplashScreen.preventAutoHideAsync();
 
     useEffect(() => {
+      registerBackgroundTask();
       LocalAuthentication.hasHardwareAsync()
         .then((compatible) => {
           setIsBiometricSupported(compatible);
