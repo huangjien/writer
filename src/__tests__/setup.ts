@@ -1,5 +1,7 @@
 // Mock React Native modules FIRST to ensure proper initialization
 jest.mock('react-native', () => {
+  const React = require('react');
+
   const mockNativeModules = {
     ExpoConstants: {
       appOwnership: 'standalone',
@@ -29,6 +31,25 @@ jest.mock('react-native', () => {
     },
   };
 
+  // Create mock components that work with React Native Testing Library
+  const mockComponent = (name: string) => {
+    const Component = React.forwardRef((props: any, ref: any) => {
+      return React.createElement(
+        'div',
+        {
+          ...props,
+          ref,
+          'data-testid': props.testID,
+          className: props.className,
+          'data-rn-component': name,
+        },
+        props.children
+      );
+    });
+    Component.displayName = name;
+    return Component;
+  };
+
   return {
     NativeModules: mockNativeModules,
     Platform: {
@@ -50,39 +71,100 @@ jest.mock('react-native', () => {
       create: jest.fn((styles) => styles),
       flatten: jest.fn((style) => style),
     },
-    View: ({ children, ...props }: any) => {
-      const React = require('react');
-      return React.createElement('View', props, children);
-    },
-    Text: ({ children, ...props }: any) => {
-      const React = require('react');
-      return React.createElement('Text', props, children);
-    },
-    ScrollView: ({ children, ...props }: any) => {
-      const React = require('react');
-      return React.createElement('ScrollView', props, children);
-    },
-    TouchableOpacity: ({ children, ...props }: any) => {
-      const React = require('react');
-      return React.createElement('TouchableOpacity', props, children);
-    },
-    Pressable: ({ children, ...props }: any) => {
-      const React = require('react');
-      return React.createElement('Pressable', props, children);
-    },
-    Image: (props: any) => {
-      const React = require('react');
-      return React.createElement('Image', props);
-    },
-    TextInput: (props: any) => {
-      const React = require('react');
-      return React.createElement('TextInput', props);
-    },
+    View: mockComponent('View'),
+    Text: mockComponent('Text'),
+    ScrollView: mockComponent('ScrollView'),
+    TouchableOpacity: mockComponent('TouchableOpacity'),
+    Pressable: mockComponent('Pressable'),
+    Image: mockComponent('Image'),
+    TextInput: mockComponent('TextInput'),
+    Modal: mockComponent('Modal'),
+    FlatList: mockComponent('FlatList'),
+    SectionList: mockComponent('SectionList'),
+    Switch: mockComponent('Switch'),
+    ActivityIndicator: mockComponent('ActivityIndicator'),
+    RefreshControl: mockComponent('RefreshControl'),
+    SafeAreaView: mockComponent('SafeAreaView'),
+    KeyboardAvoidingView: mockComponent('KeyboardAvoidingView'),
+    StatusBar: mockComponent('StatusBar'),
     Alert: {
       alert: jest.fn(),
     },
   };
 });
+
+// Mock React Native Testing Library's host component detection
+jest.mock(
+  '@testing-library/react-native/build/helpers/host-component-names',
+  () => ({
+    getHostComponentNames: jest.fn(
+      () =>
+        new Set([
+          'View',
+          'Text',
+          'ScrollView',
+          'TouchableOpacity',
+          'Pressable',
+          'Image',
+          'TextInput',
+          'Modal',
+          'FlatList',
+          'SectionList',
+          'Switch',
+          'ActivityIndicator',
+          'RefreshControl',
+          'SafeAreaView',
+          'KeyboardAvoidingView',
+          'StatusBar',
+        ])
+    ),
+    detectHostComponentNames: jest.fn(
+      () =>
+        new Set([
+          'View',
+          'Text',
+          'ScrollView',
+          'TouchableOpacity',
+          'Pressable',
+          'Image',
+          'TextInput',
+          'Modal',
+          'FlatList',
+          'SectionList',
+          'Switch',
+          'ActivityIndicator',
+          'RefreshControl',
+          'SafeAreaView',
+          'KeyboardAvoidingView',
+          'StatusBar',
+        ])
+    ),
+    configureHostComponentNamesIfNeeded: jest.fn(() => {
+      // Mock implementation that does nothing
+    }),
+    isHostComponentName: jest.fn((name) => {
+      const hostComponents = new Set([
+        'View',
+        'Text',
+        'ScrollView',
+        'TouchableOpacity',
+        'Pressable',
+        'Image',
+        'TextInput',
+        'Modal',
+        'FlatList',
+        'SectionList',
+        'Switch',
+        'ActivityIndicator',
+        'RefreshControl',
+        'SafeAreaView',
+        'KeyboardAvoidingView',
+        'StatusBar',
+      ]);
+      return hostComponents.has(name);
+    }),
+  })
+);
 
 import 'react-native-gesture-handler/jestSetup';
 import mockAsyncStorage from '@react-native-async-storage/async-storage/jest/async-storage-mock';
@@ -344,6 +426,12 @@ global.console = {
 jest.mock('nativewind', () => ({
   styled: (Component: any) => Component,
   withExpoSnack: jest.fn((component) => component),
+  useColorScheme: jest.fn(() => ({
+    colorScheme: 'light',
+    setColorScheme: jest.fn(),
+    toggleColorScheme: jest.fn(),
+  })),
+  cssInterop: jest.fn(),
 }));
 
 jest.mock('react-native-css-interop', () => ({
@@ -372,10 +460,7 @@ jest.mock('@react-native-picker/picker', () => ({
 jest.mock('@react-native-segmented-control/segmented-control', () => ({
   default: 'SegmentedControl',
 }));
-jest.mock('react-native-background-timer', () => ({
-  setInterval: jest.fn(),
-  clearInterval: jest.fn(),
-}));
+
 jest.mock('react-native-screens', () => ({
   enableFreeze: jest.fn(),
 }));

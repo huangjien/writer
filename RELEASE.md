@@ -89,6 +89,138 @@ Release URL: https://github.com/your-username/writer/releases/tag/v20240702-2315
 - **GitHub CLI not found**: Install with `brew install gh`
 - **Authentication failed**: Check your token permissions and validity
 
+## Test Coverage Report
+
+The project now includes comprehensive test coverage reporting and enhanced testing capabilities.
+
+### Coverage Report Location
+- **HTML Report**: `coverage/lcov-report/index.html`
+- **JSON Report**: `coverage/coverage-final.json`
+- **Detailed Analysis**: `coverage/COVERAGE_REPORT.md`
+
+### Current Coverage Status
+- **Statements**: 40.78% (312/765)
+- **Branches**: 28.9% (50/173)
+- **Functions**: 33.33% (49/147)
+- **Lines**: 39.94% (288/721)
+
+### Enhanced Test Suite
+A new enhanced test suite has been created for the read component:
+- **File**: `src/__tests__/read.enhanced.test.tsx`
+- **Tests**: 35 comprehensive test cases
+- **Features**: Isolated mocks, robust error handling, multiple rendering scenarios
+
+### Current Test Issues
+
+#### Critical Test Failures (124 failing tests)
+The test suite currently has significant issues that need to be addressed:
+
+1. **useThemeConfig Hook Tests** (22 failures)
+   - **Issue**: Hook returning `null` instead of expected object
+   - **Root Cause**: Missing proper AsyncStorageProvider wrapper in tests
+   - **Fix**: Update test setup to properly wrap hooks with required providers
+
+2. **useAsyncStorage Tests** (Multiple failures)
+   - **Issue**: Context not properly initialized in test environment
+   - **Root Cause**: Mock setup conflicts and missing provider context
+   - **Fix**: Isolate test mocks and ensure proper provider wrapping
+
+3. **Module Resolution Errors**
+   - **Issue**: Cannot locate `@/components/use-theme-config` module
+   - **Root Cause**: Incorrect path mapping in Jest configuration
+   - **Fix**: Update Jest moduleNameMapper configuration
+
+4. **SpeechService Tests**
+   - **Issue**: Mock functions not being called as expected
+   - **Root Cause**: Incomplete mock setup for toast notifications
+   - **Fix**: Properly mock all external dependencies
+
+#### Test Infrastructure Issues
+
+1. **Setup Files**
+   - Some test files (setup.ts, test-utils.tsx) are being treated as test suites
+   - **Fix**: Exclude setup files from test discovery
+
+2. **Mock Conflicts**
+   - Global mocks interfering with individual test requirements
+   - **Fix**: Use isolated mocks per test file when needed
+
+3. **TypeScript Configuration**
+   - Path resolution issues in test environment
+   - **Fix**: Align Jest configuration with TypeScript paths
+
+### Running Tests with Coverage
+```bash
+# Run all tests with coverage (currently failing)
+npm test -- --coverage --watchAll=false
+
+# Run specific working test file
+npm test -- src/__tests__/read.enhanced.test.tsx
+
+# Run tests in watch mode
+npm test
+```
+
+### Coverage by Module
+- **Utils**: 100% coverage (excellent)
+- **Services**: 88.73% coverage (good, but has test failures)
+- **Components**: 90.9% coverage (good)
+- **App**: 20.86% coverage (needs improvement)
+- **Hooks**: 15.88% coverage (needs significant improvement, has test failures)
+
+### Immediate Action Items
+
+1. **Fix Test Infrastructure**
+   - Update Jest configuration for proper module resolution
+   - Fix AsyncStorageProvider wrapper issues
+   - Resolve mock conflicts
+
+2. **Fix Failing Tests**
+   - useThemeConfig: Add proper provider wrapper
+   - useAsyncStorage: Fix context initialization
+   - SpeechService: Complete mock setup
+
+3. **Improve Coverage**
+   - Add tests for app components (read.tsx, index.tsx)
+   - Test custom hooks comprehensively
+   - Focus on branch coverage improvement
+
+### Coverage Improvement Goals
+- **Target Overall Coverage**: 80%+
+- **Priority Areas**: Fix existing test failures first, then App module, Hooks module
+- **Focus**: Branch coverage improvement (currently 28.9%)
+- **Next Steps**: Stabilize test suite, then expand coverage
+
+### Additional Documentation
+
+- **Comprehensive Analysis**: `TEST_COVERAGE_SUMMARY.md` - Executive summary and strategic overview
+- **Action Plan**: `TEST_FIXES_ACTION_PLAN.md` - Step-by-step instructions for fixing test failures
+- **Detailed Coverage**: `coverage/COVERAGE_REPORT.md` - Module-by-module coverage analysis
+
+### Key Insights
+
+1. **Infrastructure Issues**: 124 failing tests primarily due to Jest configuration and mock setup problems
+2. **Module Performance**: Utils (100%) and Services (88.73%) modules have excellent coverage
+3. **Critical Gaps**: App (20.86%) and Hooks (15.88%) modules need significant testing improvement
+4. **Working Example**: Enhanced test suite demonstrates comprehensive testing is achievable
+
+### Success Metrics
+
+**Short-term (1-2 weeks)**:
+- Reduce failing tests from 124 to < 20
+- Fix all infrastructure issues
+- Achieve stable test suite execution
+
+**Medium-term (3-4 weeks)**:
+- Achieve 60%+ overall statement coverage
+- Improve branch coverage to 50%+
+- Complete app component and hook testing
+
+**Long-term (1-2 months)**:
+- Achieve 80%+ overall coverage
+- Implement automated coverage gates
+- Add integration test suite
+
 ## Security Notes
 
 - Never commit your GitHub token to the repository
