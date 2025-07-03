@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAsyncStorage } from '@/hooks/useAsyncStorage';
 import {
   checkBiometricHardware,
@@ -28,9 +28,20 @@ export const useAuthentication = (): UseAuthenticationReturn => {
     isAuthenticated: false,
   });
   const [isInitializing, setIsInitializing] = useState(false);
+  const isAuthenticatingRef = useRef(false);
 
   const [storage, { getItem, setItem }, isStorageLoading, hasChanged] =
     useAsyncStorage();
+
+  // Create stable references to storage functions
+  const getItemRef = useRef(getItem);
+  const setItemRef = useRef(setItem);
+
+  // Update refs when functions change
+  useEffect(() => {
+    getItemRef.current = getItem;
+    setItemRef.current = setItem;
+  }, [getItem, setItem]);
 
   /**
    * Initialize authentication system
@@ -64,8 +75,14 @@ export const useAuthentication = (): UseAuthenticationReturn => {
    * Perform biometric authentication
    */
   const performBiometricAuth = useCallback(async (): Promise<void> => {
+    if (isAuthenticatingRef.current) return;
+
+    isAuthenticatingRef.current = true;
     try {
-      const success = await handleBiometricAuthFlow(getItem, setItem);
+      const success = await handleBiometricAuthFlow(
+        getItemRef.current,
+        setItemRef.current
+      );
       setAuthState((prev) => ({
         ...prev,
         isAuthenticated: success,
@@ -74,20 +91,41 @@ export const useAuthentication = (): UseAuthenticationReturn => {
     } catch (error) {
       console.error('Biometric authentication failed:', error);
       setAuthState((prev) => ({ ...prev, isAuthenticated: false }));
+    } finally {
+      isAuthenticatingRef.current = false;
     }
-  }, [getItem, setItem]);
+  }, []);
 
   /**
    * Check authentication status when storage changes
    */
   useEffect(() => {
-    if (!hasChanged || isStorageLoading) return;
+    if (!hasChanged || isInitializing || isAuthenticatingRef.current) return;
 
     const checkAuthStatus = async () => {
       try {
-        const expiry = await getItem('expiry');
+        const expiry = await getItemRef.current('expiry');
         if (!expiry || parseInt(expiry) < Date.now()) {
-          await performBiometricAuth();
+          // Only trigger auth if we're not already authenticating
+          if (!isAuthenticatingRef.current) {
+            isAuthenticatingRef.current = true;
+            try {
+              const success = await handleBiometricAuthFlow(
+                getItemRef.current,
+                setItemRef.current
+              );
+              setAuthState((prev) => ({
+                ...prev,
+                isAuthenticated: success,
+                expiry: success ? Date.now() + 3600000 : undefined,
+              }));
+            } catch (error) {
+              console.error('Biometric authentication failed:', error);
+              setAuthState((prev) => ({ ...prev, isAuthenticated: false }));
+            } finally {
+              isAuthenticatingRef.current = false;
+            }
+          }
         }
       } catch (error) {
         console.error('Failed to check auth status:', error);
@@ -95,11 +133,11 @@ export const useAuthentication = (): UseAuthenticationReturn => {
     };
 
     checkAuthStatus();
-  }, [hasChanged, isStorageLoading, getItem, performBiometricAuth]);
+  }, [hasChanged, isInitializing]);
 
   return {
     authState,
-    isLoading: isInitializing || isStorageLoading,
+    isLoading: isInitializing,
     initializeAuth,
     performBiometricAuth,
   };

@@ -17,17 +17,17 @@ import { useAuthentication } from '@/hooks/useAuthentication';
 enableFreeze(true);
 
 export function InnerLayout() {
-  console.log('InnerLayout component is rendering');
+  // console.log('InnerLayout component is rendering');
   const { authState, isLoading, initializeAuth } = useAuthentication();
 
-  console.log('InnerLayout auth state:', {
-    authState,
-    isLoading,
-  });
+  // console.log('InnerLayout auth state:', {
+  //   authState,
+  //   isLoading,
+  // });
 
   useEffect(() => {
     initializeAuth();
-  }, [initializeAuth]);
+  }, []);
 
   // Show loading state while initializing
   if (isLoading) {
@@ -145,7 +145,7 @@ export default function Layout() {
   return (
     <AsyncStorageProvider>
       <RootSiblingParent>
-        <GestureHandlerRootView>
+        <GestureHandlerRootView style={{ flex: 1 }}>
           <ThemeProvider value={theme}>
             <SafeAreaProvider>
               <InnerLayout />

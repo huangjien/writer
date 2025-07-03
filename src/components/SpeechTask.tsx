@@ -14,7 +14,7 @@ TaskManager.defineTask(SPEECH_TASK, async ({ data, error }) => {
     speechService.stop();
     return;
   }
-  if (data) {
+  if (data && data['current'] && data['progress'] !== undefined) {
     console.log(
       'Data provided, calling speak with:',
       data['current'],
@@ -28,6 +28,8 @@ TaskManager.defineTask(SPEECH_TASK, async ({ data, error }) => {
       language: 'zh',
       voice: 'zh',
     });
+  } else {
+    console.log('Invalid data provided, ignoring task execution:', data);
   }
 });
 

@@ -2,11 +2,10 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
-import { STATUS_PLAYING, STATUS_STOPPED } from '@/components/global';
+// Removed STATUS imports - using string literals directly
 
 interface PlayBarProps {
   progress: number;
-  speechProgress: number;
   currentSentenceIndex: number;
   status: string;
   analysis: string | undefined;
@@ -22,7 +21,6 @@ interface PlayBarProps {
 
 export function PlayBar({
   progress,
-  speechProgress,
   currentSentenceIndex,
   status,
   analysis,
@@ -47,9 +45,8 @@ export function PlayBar({
         maximumTrackTintColor='green'
       />
       <Text className='text-black dark:text-white'>
-        Speech Progress: {(speechProgress * 100).toFixed(1)}% &nbsp; Sentence:{' '}
-        {currentSentenceIndex + 1} &nbsp; Reading: {(progress * 100).toFixed(2)}
-        %
+        Paragraph: {currentSentenceIndex + 1} &nbsp; Reading:{' '}
+        {(progress * 100).toFixed(2)}%
       </Text>
 
       <View className='inline-flex flex-row lg:gap-16 md:gap-4 justify-evenly'>
@@ -71,20 +68,20 @@ export function PlayBar({
             color={next ? 'green' : 'grey'}
           />
         </Pressable>
-        <Pressable disabled={status === STATUS_PLAYING} onPress={onPlay}>
+        <Pressable disabled={status === 'playing'} onPress={onPlay}>
           <Feather
             className='text-black dark:text-white '
             size={24}
             name='play'
-            color={status === STATUS_PLAYING ? 'grey' : 'green'}
+            color={status === 'playing' ? 'grey' : 'green'}
           />
         </Pressable>
 
-        <Pressable disabled={status === STATUS_STOPPED} onPress={onStop}>
+        <Pressable disabled={status === 'stopped'} onPress={onStop}>
           <Feather
             size={24}
             name='square'
-            color={status === STATUS_STOPPED ? 'grey' : 'green'}
+            color={status === 'stopped' ? 'grey' : 'green'}
           />
         </Pressable>
       </View>

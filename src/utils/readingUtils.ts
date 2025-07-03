@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import * as Speech from 'expo-speech';
-import { sleep, STATUS_PLAYING } from '@/components/global';
+import { sleep } from '@/components/global';
 
 export const navigateToChapter = (chapterName: string | undefined) => {
   if (chapterName) {
@@ -19,7 +19,7 @@ export const handleProgressChange = (
 ) => {
   Speech.stop();
   setProgress(newProgress);
-  if (status === STATUS_PLAYING) {
+  if (status === 'playing') {
     speak();
   }
 };
@@ -30,7 +30,7 @@ export const handleContentChange = (
   speak: () => void
 ) => {
   // This is used for switch to another chapter, if was reading before, then read new chapter
-  if (status === STATUS_PLAYING && contentLength > 64) {
+  if (status === 'playing' && contentLength > 64) {
     Speech.stop();
     sleep(1000).then(() => {
       speak();
@@ -56,7 +56,7 @@ export const handleSpeechProgressUpdate = (
 
   // Check if speech has stopped unexpectedly
   Speech.isSpeakingAsync().then((res) => {
-    if (!res && status === STATUS_PLAYING && speechProgress > 0.1) {
+    if (!res && status === 'playing' && speechProgress > 0.1) {
       toNext();
     }
   });

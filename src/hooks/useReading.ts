@@ -20,6 +20,7 @@ export function useReading() {
   const { post } = useLocalSearchParams();
   const [current, setCurrent] = useState(post);
   const [progress, setProgress] = useState(0);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [fontSize, setFontSize] = useState(16);
   const isFocused = useIsFocused();
 
@@ -57,7 +58,9 @@ export function useReading() {
           if (data) {
             if (data['current']) {
               setCurrent(data['current']);
-              setProgress(data['progress'] ? data['progress'] : 0);
+              const progressToLoad = data['progress'] ? data['progress'] : 0;
+              setProgress(progressToLoad);
+              setIsInitialLoad(false);
             } else {
               showInfoToast(
                 'No current chapter, please select a chapter to read'
@@ -71,15 +74,28 @@ export function useReading() {
     }
     if (post) {
       setCurrent(post);
-      setProgress(0);
       getItem(SETTINGS_KEY)
         .then((res) => {
           return JSON.parse(res);
         })
         .then((data) => {
           if (data) {
+            // Check if this is the same chapter as the last one
+            const isContinuingFromLastChapter = data['current'] === post;
+
+            if (isContinuingFromLastChapter) {
+              // Continue reading from saved progress
+              const progressToLoad = data['progress'] ? data['progress'] : 0;
+              setProgress(progressToLoad);
+              setIsInitialLoad(false);
+            } else {
+              // New chapter, start from beginning
+              setProgress(0);
+              setIsInitialLoad(false);
+              data['progress'] = 0;
+            }
+
             data['current'] = post;
-            data['progress'] = 0;
             setItem(SETTINGS_KEY, JSON.stringify(data));
           }
         });
@@ -95,6 +111,10 @@ export function useReading() {
 
   // Save progress to local storage
   useEffect(() => {
+    if (isInitialLoad) {
+      return;
+    }
+
     getItem(SETTINGS_KEY)
       .then((res) => {
         return JSON.parse(res);
@@ -102,10 +122,13 @@ export function useReading() {
       .then((data) => {
         if (data) {
           data['progress'] = progress;
-          setItem(SETTINGS_KEY, JSON.stringify(data));
+          return setItem(SETTINGS_KEY, JSON.stringify(data));
         }
+      })
+      .catch((error) => {
+        console.error('useReading: Error saving progress:', error);
       });
-  }, [progress]);
+  }, [progress, isInitialLoad]);
 
   const loadReadingByName = () => {
     if (!current) return;

@@ -72,7 +72,7 @@ export default function Page() {
         if (!res.backgroundImage) setValue('backgroundImage', 'wood.jpg');
       }
     });
-  }, []);
+  }, [isFocused]);
 
   const onSubmit = (data: any) => {
     saveToStorage(data);
