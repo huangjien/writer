@@ -3,7 +3,7 @@ import { render, waitFor, act } from '@testing-library/react-native';
 import { Text, View } from 'react-native';
 import Layout, { InnerLayout } from '../app/_layout';
 import * as LocalAuthentication from 'expo-local-authentication';
-import * as BackgroundFetch from 'expo-background-fetch';
+import * as BackgroundTask from 'expo-background-task';
 import { SplashScreen } from 'expo-router';
 import { useThemeConfig } from '@/hooks/use-theme-config';
 import { useAsyncStorage, AsyncStorageProvider } from '@/hooks/useAsyncStorage';
@@ -40,11 +40,18 @@ jest.mock('expo-local-authentication', () => ({
   authenticateAsync: jest.fn(),
 }));
 
-jest.mock('expo-background-fetch', () => ({
+jest.mock('expo-background-task', () => ({
   registerTaskAsync: jest.fn(),
+  unregisterTaskAsync: jest.fn(),
+  getStatusAsync: jest.fn(),
+  BackgroundTaskStatus: {
+    Available: 1,
+    Denied: 2,
+    Restricted: 3,
+  },
 }));
 
-jest.mock('@/components/use-theme-config', () => ({
+jest.mock('@/hooks/use-theme-config', () => ({
   useThemeConfig: jest.fn(),
 }));
 
@@ -60,7 +67,7 @@ const mockAsyncStorageContext = {
   hasChanged: 0,
 };
 
-jest.mock('@/components/useAsyncStorage', () => {
+jest.mock('@/hooks/useAsyncStorage', () => {
   return {
     useAsyncStorage: jest.fn(() => [
       mockAsyncStorageContext.storage,
@@ -161,7 +168,7 @@ describe('Layout Component', () => {
     (LocalAuthentication.authenticateAsync as jest.Mock).mockResolvedValue({
       success: true,
     });
-    (BackgroundFetch.registerTaskAsync as jest.Mock).mockResolvedValue(
+    (BackgroundTask.registerTaskAsync as jest.Mock).mockResolvedValue(
       undefined
     );
     mockAsyncStorageContext.operations.getItem.mockResolvedValue(null);
@@ -195,12 +202,10 @@ describe('Layout Component', () => {
       render(<Layout />);
 
       await waitFor(() => {
-        expect(BackgroundFetch.registerTaskAsync).toHaveBeenCalledWith(
+        expect(BackgroundTask.registerTaskAsync).toHaveBeenCalledWith(
           SPEECH_TASK,
           {
             minimumInterval: 10,
-            stopOnTerminate: true,
-            startOnBoot: false,
           }
         );
       });
@@ -208,7 +213,7 @@ describe('Layout Component', () => {
 
     it('handles background task registration error', async () => {
       const error = new Error('Registration failed');
-      (BackgroundFetch.registerTaskAsync as jest.Mock).mockRejectedValue(error);
+      (BackgroundTask.registerTaskAsync as jest.Mock).mockRejectedValue(error);
 
       render(<Layout />);
 

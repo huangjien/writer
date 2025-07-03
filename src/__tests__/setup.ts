@@ -238,15 +238,18 @@ jest.mock('expo-keep-awake', () => ({
   deactivateKeepAwake: jest.fn(),
 }));
 
-jest.mock('expo-background-fetch', () => ({
-  BackgroundFetchStatus: {
+jest.mock('expo-background-task', () => ({
+  BackgroundTaskStatus: {
     Available: 1,
-    Denied: 2,
-    Restricted: 3,
+    Restricted: 2,
   },
-  setMinimumIntervalAsync: jest.fn(),
+  BackgroundTaskResult: {
+    Success: 1,
+    Failed: 2,
+  },
   registerTaskAsync: jest.fn(),
   unregisterTaskAsync: jest.fn(),
+  getStatusAsync: jest.fn(),
 }));
 
 jest.mock('expo-image', () => ({

@@ -4,18 +4,28 @@ import {
   isBackgroundTaskRegistered,
   DEFAULT_BACKGROUND_TASK_CONFIG,
 } from '@/services/backgroundTaskService';
-import * as BackgroundFetch from 'expo-background-fetch';
+import * as BackgroundTask from 'expo-background-task';
 import { SPEECH_TASK } from '@/components/SpeechTask';
 
 // Mock dependencies
-jest.mock('expo-background-fetch');
+jest.mock('expo-background-task', () => ({
+  registerTaskAsync: jest.fn(),
+  unregisterTaskAsync: jest.fn(),
+  getStatusAsync: jest.fn(),
+  BackgroundTaskStatus: {
+    Available: 1,
+    Restricted: 2,
+  },
+  BackgroundTaskResult: {
+    Success: 1,
+    Failed: 2,
+  },
+}));
 jest.mock('@/components/SpeechTask', () => ({
   SPEECH_TASK: 'test-speech-task',
 }));
 
-const mockBackgroundFetch = BackgroundFetch as jest.Mocked<
-  typeof BackgroundFetch
->;
+const mockBackgroundTask = BackgroundTask as jest.Mocked<typeof BackgroundTask>;
 
 describe('backgroundTaskService', () => {
   beforeEach(() => {
@@ -35,12 +45,12 @@ describe('backgroundTaskService', () => {
 
   describe('registerBackgroundTask', () => {
     it('should register background task with default parameters', async () => {
-      mockBackgroundFetch.registerTaskAsync.mockResolvedValue(undefined);
+      mockBackgroundTask.registerTaskAsync.mockResolvedValue(undefined);
 
       const result = await registerBackgroundTask();
 
       expect(result).toBe(true);
-      expect(mockBackgroundFetch.registerTaskAsync).toHaveBeenCalledWith(
+      expect(mockBackgroundTask.registerTaskAsync).toHaveBeenCalledWith(
         SPEECH_TASK,
         DEFAULT_BACKGROUND_TASK_CONFIG
       );
@@ -50,18 +60,16 @@ describe('backgroundTaskService', () => {
     });
 
     it('should register background task with custom parameters', async () => {
-      mockBackgroundFetch.registerTaskAsync.mockResolvedValue(undefined);
+      mockBackgroundTask.registerTaskAsync.mockResolvedValue(undefined);
       const customTaskName = 'custom-task';
       const customConfig = {
-        minimumInterval: 20,
-        stopOnTerminate: false,
-        startOnBoot: true,
+        minimumInterval: 15,
       };
 
       const result = await registerBackgroundTask(customTaskName, customConfig);
 
       expect(result).toBe(true);
-      expect(mockBackgroundFetch.registerTaskAsync).toHaveBeenCalledWith(
+      expect(mockBackgroundTask.registerTaskAsync).toHaveBeenCalledWith(
         customTaskName,
         customConfig
       );
@@ -72,7 +80,7 @@ describe('backgroundTaskService', () => {
 
     it('should return false and log error when registration fails', async () => {
       const error = new Error('Registration failed');
-      mockBackgroundFetch.registerTaskAsync.mockRejectedValue(error);
+      mockBackgroundTask.registerTaskAsync.mockRejectedValue(error);
 
       const result = await registerBackgroundTask();
 
@@ -86,12 +94,12 @@ describe('backgroundTaskService', () => {
 
   describe('unregisterBackgroundTask', () => {
     it('should unregister background task with default task name', async () => {
-      mockBackgroundFetch.unregisterTaskAsync.mockResolvedValue(undefined);
+      mockBackgroundTask.unregisterTaskAsync.mockResolvedValue(undefined);
 
       const result = await unregisterBackgroundTask();
 
       expect(result).toBe(true);
-      expect(mockBackgroundFetch.unregisterTaskAsync).toHaveBeenCalledWith(
+      expect(mockBackgroundTask.unregisterTaskAsync).toHaveBeenCalledWith(
         SPEECH_TASK
       );
       expect(console.log).toHaveBeenCalledWith(
@@ -100,13 +108,13 @@ describe('backgroundTaskService', () => {
     });
 
     it('should unregister background task with custom task name', async () => {
-      mockBackgroundFetch.unregisterTaskAsync.mockResolvedValue(undefined);
+      mockBackgroundTask.unregisterTaskAsync.mockResolvedValue(undefined);
       const customTaskName = 'custom-task';
 
       const result = await unregisterBackgroundTask(customTaskName);
 
       expect(result).toBe(true);
-      expect(mockBackgroundFetch.unregisterTaskAsync).toHaveBeenCalledWith(
+      expect(mockBackgroundTask.unregisterTaskAsync).toHaveBeenCalledWith(
         customTaskName
       );
       expect(console.log).toHaveBeenCalledWith(
@@ -116,7 +124,7 @@ describe('backgroundTaskService', () => {
 
     it('should return false and log error when unregistration fails', async () => {
       const error = new Error('Unregistration failed');
-      mockBackgroundFetch.unregisterTaskAsync.mockRejectedValue(error);
+      mockBackgroundTask.unregisterTaskAsync.mockRejectedValue(error);
 
       const result = await unregisterBackgroundTask();
 
@@ -130,19 +138,19 @@ describe('backgroundTaskService', () => {
 
   describe('isBackgroundTaskRegistered', () => {
     it('should return true when background fetch is available', async () => {
-      mockBackgroundFetch.getStatusAsync.mockResolvedValue(
-        BackgroundFetch.BackgroundFetchStatus.Available
+      mockBackgroundTask.getStatusAsync.mockResolvedValue(
+        BackgroundTask.BackgroundTaskStatus.Available
       );
 
       const result = await isBackgroundTaskRegistered();
 
       expect(result).toBe(true);
-      expect(mockBackgroundFetch.getStatusAsync).toHaveBeenCalledTimes(1);
+      expect(mockBackgroundTask.getStatusAsync).toHaveBeenCalledTimes(1);
     });
 
     it('should return false when background fetch is not available', async () => {
-      mockBackgroundFetch.getStatusAsync.mockResolvedValue(
-        BackgroundFetch.BackgroundFetchStatus.Denied
+      mockBackgroundTask.getStatusAsync.mockResolvedValue(
+        BackgroundTask.BackgroundTaskStatus.Restricted
       );
 
       const result = await isBackgroundTaskRegistered();
@@ -152,7 +160,7 @@ describe('backgroundTaskService', () => {
 
     it('should return false and log error when status check fails', async () => {
       const error = new Error('Status check failed');
-      mockBackgroundFetch.getStatusAsync.mockRejectedValue(error);
+      mockBackgroundTask.getStatusAsync.mockRejectedValue(error);
 
       const result = await isBackgroundTaskRegistered();
 
@@ -168,8 +176,6 @@ describe('backgroundTaskService', () => {
     it('should have correct default values', () => {
       expect(DEFAULT_BACKGROUND_TASK_CONFIG).toEqual({
         minimumInterval: 10,
-        stopOnTerminate: true,
-        startOnBoot: false,
       });
     });
   });

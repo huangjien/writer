@@ -1,19 +1,15 @@
-import * as BackgroundFetch from 'expo-background-fetch';
+import * as BackgroundTask from 'expo-background-task';
 import { SPEECH_TASK } from '@/components/SpeechTask';
 
 export interface BackgroundTaskConfig {
   minimumInterval: number;
-  stopOnTerminate: boolean;
-  startOnBoot: boolean;
 }
 
 /**
  * Default configuration for background tasks
  */
 export const DEFAULT_BACKGROUND_TASK_CONFIG: BackgroundTaskConfig = {
-  minimumInterval: 10,
-  stopOnTerminate: true,
-  startOnBoot: false,
+  minimumInterval: 10, // minimum interval in minutes
 };
 
 /**
@@ -24,7 +20,7 @@ export const registerBackgroundTask = async (
   config: BackgroundTaskConfig = DEFAULT_BACKGROUND_TASK_CONFIG
 ): Promise<boolean> => {
   try {
-    await BackgroundFetch.registerTaskAsync(taskName, config);
+    await BackgroundTask.registerTaskAsync(taskName, config);
     console.log(`Background task '${taskName}' registered successfully`);
     return true;
   } catch (error) {
@@ -40,7 +36,7 @@ export const unregisterBackgroundTask = async (
   taskName: string = SPEECH_TASK
 ): Promise<boolean> => {
   try {
-    await BackgroundFetch.unregisterTaskAsync(taskName);
+    await BackgroundTask.unregisterTaskAsync(taskName);
     console.log(`Background task '${taskName}' unregistered successfully`);
     return true;
   } catch (error) {
@@ -56,8 +52,8 @@ export const isBackgroundTaskRegistered = async (
   taskName: string = SPEECH_TASK
 ): Promise<boolean> => {
   try {
-    const isRegistered = await BackgroundFetch.getStatusAsync();
-    return isRegistered === BackgroundFetch.BackgroundFetchStatus.Available;
+    const status = await BackgroundTask.getStatusAsync();
+    return status === BackgroundTask.BackgroundTaskStatus.Available;
   } catch (error) {
     console.error(
       `Failed to check background task status for '${taskName}':`,

@@ -157,8 +157,6 @@ export default function Page() {
   const stop = (source = 'unknown') => {
     isSpeakingRef.current = false;
     setStatus('stopped');
-    setSpeechProgress(0);
-    setCurrentSentenceIndex(0);
     Speech.stop();
   };
 
