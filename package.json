@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "1.5.10",
+  "version": "1.5.11",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -12,64 +12,101 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",
     "@octokit/rest": "^21.0.2",
     "@octokit/types": "^13.6.1",
-    "@react-native-async-storage/async-storage": "1.23.1",
-    "@react-native-community/slider": "4.5.2",
-    "@react-native-picker/picker": "2.7.5",
-    "@react-native-segmented-control/segmented-control": "2.5.2",
+    "@react-native-async-storage/async-storage": "2.1.2",
+    "@react-native-community/slider": "4.5.6",
+    "@react-native-picker/picker": "2.11.1",
+    "@react-native-segmented-control/segmented-control": "2.5.7",
     "@react-navigation/drawer": "^6.7.2",
     "ahooks": "^3.8.4",
     "axios": "^1.7.7",
-    "expo": "~51.0.39",
-    "expo-background-fetch": "~12.0.1",
-    "expo-constants": "~16.0.2",
-    "expo-dev-client": "~4.0.29",
-    "expo-image": "^1.13.0",
-    "expo-keep-awake": "~13.0.2",
-    "expo-linking": "~6.3.1",
-    "expo-local-authentication": "^14.0.1",
-    "expo-router": "~3.5.24",
-    "expo-speech": "~12.0.2",
-    "expo-splash-screen": "~0.27.7",
-    "expo-status-bar": "~1.12.1",
-    "expo-system-ui": "^3.0.7",
-    "expo-task-manager": "~11.8.2",
+    "expo": "^53.0.16",
+    "expo-background-fetch": "~13.1.6",
+    "expo-constants": "~17.1.6",
+    "expo-dev-client": "~5.2.3",
+    "expo-image": "~2.3.2",
+    "expo-keep-awake": "~14.1.4",
+    "expo-linking": "~7.1.6",
+    "expo-local-authentication": "~16.0.5",
+    "expo-router": "~5.1.2",
+    "expo-speech": "~13.1.7",
+    "expo-splash-screen": "~0.30.9",
+    "expo-status-bar": "~2.2.3",
+    "expo-system-ui": "~5.0.10",
+    "expo-task-manager": "~13.1.6",
     "husky": "^9.1.7",
     "nanoid": "^5.0.9",
     "nativewind": "^4.1.23",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
     "react-hook-form": "^7.53.0",
-    "react-native": "0.74.5",
+    "react-native": "0.79.5",
     "react-native-background-timer": "^2.4.1",
-    "react-native-gesture-handler": "~2.16.1",
+    "react-native-gesture-handler": "~2.24.0",
     "react-native-markdown-display": "^7.0.2",
     "react-native-modal": "^13.0.1",
-    "react-native-reanimated": "3.10.1",
+    "react-native-reanimated": "~3.17.4",
     "react-native-root-toast": "^3.6.0",
-    "react-native-safe-area-context": "4.10.5",
-    "react-native-screens": "3.31.1",
-    "react-native-web": "~0.19.12",
+    "react-native-safe-area-context": "5.4.0",
+    "react-native-screens": "~4.11.1",
+    "react-native-web": "^0.20.0",
     "tailwindcss": "^3.4.17"
   },
   "devDependencies": {
     "@babel/core": "^7.25.8",
+    "@babel/preset-env": "^7.28.0",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
     "@expo/cli": "^0.18.30",
-    "@types/react": "~18.2.79",
-    "metro": "^0.80.8",
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^12.4.2",
+    "@types/jest": "^30.0.0",
+    "@types/react": "~19.0.10",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^30.0.2",
+    "metro": "^0.82.0",
     "metro-inspector-proxy": "^0.78.1",
     "prettier": "^3.4.2",
-    "typescript": "~5.3.3"
+    "react-test-renderer": "^19.1.0",
+    "ts-jest": "^29.4.0",
+    "typescript": "~5.8.3"
   },
   "private": true,
   "resolutions": {
     "@expo/cli": "^0.18.30",
     "wrap-ansi": "7.0.0",
     "string-width": "4.1.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/__tests__/setup.ts"
+    ],
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/src/**/*.(test|spec).{js,jsx,ts,tsx}"
+    ],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1",
+      "^~/(.*)$": "<rootDir>/$1",
+      "\\.(css|less|scss|sass)$": "identity-obj-proxy"
+    },
+    "globals": {
+      "ts-jest": {
+        "tsconfig": {
+          "jsx": "react-jsx"
+        }
+      }
+    }
   }
 }

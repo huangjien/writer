@@ -6,6 +6,7 @@ export const Footer = () => {
   const { bottom } = useSafeAreaInsets();
   return (
     <View
+      testID='footer'
       className='fixed bottom-0 inline-flex flex-row h-5'
       style={{ paddingBottom: bottom }}
     >
