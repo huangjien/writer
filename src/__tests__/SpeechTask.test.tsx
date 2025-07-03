@@ -1,55 +1,65 @@
-import React from 'react';
-import { renderHook } from '@testing-library/react-native';
 import * as TaskManager from 'expo-task-manager';
-import * as Speech from 'expo-speech';
 // Import the entire module to ensure the task is registered
 import '../components/SpeechTask';
-import { SPEECH_TASK } from '../components/SpeechTask';
-import { AsyncStorageProvider } from '../hooks/useAsyncStorage';
+import { SPEECH_TASK, speechService } from '../components/SpeechTask';
+import { speechService as importedSpeechService } from '../services/speechService';
 
-// Mock AsyncStorage
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  __esModule: true,
-  default: {
-    getItem: jest.fn(),
-    setItem: jest.fn(),
-    removeItem: jest.fn(),
-    clear: jest.fn(),
-    getAllKeys: jest.fn(),
-    multiGet: jest.fn(),
-    multiSet: jest.fn(),
-    multiRemove: jest.fn(),
+// Mock TaskManager with spy to track calls
+let taskFunction:
+  | ((params: { data?: any; error?: any }) => Promise<void>)
+  | null = null;
+
+const mockDefineTask = jest.fn();
+
+jest.mock('expo-task-manager', () => {
+  return {
+    defineTask: jest.fn((taskName: string, taskFn: any) => {
+      // Store in global scope for test access
+      (global as any).capturedTaskFunction = taskFn;
+      (global as any).mockDefineTaskCalls =
+        (global as any).mockDefineTaskCalls || [];
+      (global as any).mockDefineTaskCalls.push([taskName, taskFn]);
+    }),
+  };
+});
+
+// Mock speechService
+jest.mock('../services/speechService', () => ({
+  speechService: {
+    speak: jest.fn(),
+    stop: jest.fn(),
+    pause: jest.fn(),
+    resume: jest.fn(),
+    isSpeaking: jest.fn(),
+    getNext: jest.fn(),
   },
 }));
 
-// Get the mocked AsyncStorage
-import AsyncStorage from '@react-native-async-storage/async-storage';
-const mockGetItem = AsyncStorage.getItem as jest.MockedFunction<
-  typeof AsyncStorage.getItem
->;
-const mockSetItem = AsyncStorage.setItem as jest.MockedFunction<
-  typeof AsyncStorage.setItem
+const mockSpeechService = importedSpeechService as jest.Mocked<
+  typeof importedSpeechService
 >;
 
-// Mock dependencies
-jest.mock('expo-task-manager');
-jest.mock('expo-speech');
-jest.mock('../components/global', () => ({
-  CONTENT_KEY: '@Content:',
-  showErrorToast: jest.fn(),
-}));
+// Mock console methods to avoid noise in tests
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+beforeAll(() => {
+  console.log = jest.fn();
+  console.error = jest.fn();
+});
 
-const mockTaskManager = TaskManager as jest.Mocked<typeof TaskManager>;
-const mockSpeech = Speech as jest.Mocked<typeof Speech>;
-
-jest.mock('../components/useAsyncStorage', () => ({
-  AsyncStorageProvider: ({ children }: { children: React.ReactNode }) =>
-    children,
-}));
+afterAll(() => {
+  console.log = originalConsoleLog;
+  console.error = originalConsoleError;
+});
 
 describe('SpeechTask', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Reset all mock implementations
+    mockSpeechService.speak.mockResolvedValue(undefined);
+    mockSpeechService.stop.mockReturnValue(undefined);
+    // Update local reference to captured function
+    taskFunction = (global as any).capturedTaskFunction;
   });
 
   describe('SPEECH_TASK constant', () => {
@@ -58,273 +68,173 @@ describe('SpeechTask', () => {
     });
   });
 
-  describe('task definition', () => {
-    it('should define background speech task', () => {
-      // Since TaskManager.defineTask is called at module level,
-      // we can't reliably test it in Jest environment.
-      // Instead, we verify the task name constant is properly defined.
-      expect(SPEECH_TASK).toBe('background-speech-task');
+  describe('speechService export', () => {
+    it('should export speechService from the module', () => {
+      expect(speechService).toBeDefined();
+      expect(speechService).toBe(importedSpeechService);
+    });
+
+    it('should have all required speechService methods', () => {
+      expect(speechService).toHaveProperty('speak');
+      expect(speechService).toHaveProperty('stop');
+      expect(speechService).toHaveProperty('pause');
+      expect(speechService).toHaveProperty('resume');
+      expect(speechService).toHaveProperty('isSpeaking');
+      expect(speechService).toHaveProperty('getNext');
     });
   });
 
-  describe('task execution', () => {
-    // Instead of trying to extract the task function from mocks,
-    // let's test the behavior by checking if the task was registered
-    beforeEach(() => {
-      // Clear all mocks but don't reset modules to preserve mock setup
-      jest.clearAllMocks();
-      // Re-import the module to trigger task definition after clearing mocks
-      require('../components/SpeechTask');
+  describe('TaskManager integration', () => {
+    it('should register task with TaskManager', () => {
+      const calls = (global as any).mockDefineTaskCalls || [];
+      expect(calls.length).toBeGreaterThan(0);
+      expect(calls[0][0]).toBe('background-speech-task');
+      expect(typeof calls[0][1]).toBe('function');
     });
 
-    it('should handle task execution with valid data', async () => {
-      const mockContent = {
-        content: 'This is test content.',
-        sha: 'abc123',
-        size: 100,
-      };
-      mockGetItem.mockResolvedValue(JSON.stringify(mockContent));
-      mockSpeech.isSpeakingAsync.mockResolvedValue(false);
+    it('should register task function that can be called', () => {
+      expect(taskFunction).toBeDefined();
+      expect(typeof taskFunction).toBe('function');
+    });
+  });
 
-      // Simulate the task function behavior directly
-      const current = 'chapter1.md';
-
-      if (current) {
-        const contentKey = `@Content:${current}`;
-        const data = await AsyncStorage.getItem(contentKey);
-        if (data) {
-          const content = JSON.parse(data);
-          const isSpeaking = await Speech.isSpeakingAsync();
-          if (!isSpeaking) {
-            await Speech.speak(content.content, { voice: content.voice });
-          }
-        }
+  describe('task function execution', () => {
+    it('should handle error parameter and log error', async () => {
+      if (!taskFunction) {
+        throw new Error('Task function not defined');
       }
 
-      expect(mockGetItem).toHaveBeenCalledWith('@Content:chapter1.md');
-      expect(mockSpeech.isSpeakingAsync).toHaveBeenCalled();
-      expect(mockSpeech.speak).toHaveBeenCalledWith('This is test content.', {
-        voice: undefined,
+      const error = new Error('Test error');
+      await taskFunction({ error });
+
+      expect(console.error).toHaveBeenCalledWith('Task Manager Error:', error);
+      expect(mockSpeechService.speak).not.toHaveBeenCalled();
+      expect(mockSpeechService.stop).not.toHaveBeenCalled();
+    });
+
+    it('should stop speech when no data is provided', async () => {
+      if (!taskFunction) {
+        throw new Error('Task function not defined');
+      }
+
+      await taskFunction({});
+
+      expect(console.log).toHaveBeenCalledWith(
+        'No data provided, stopping speech'
+      );
+      expect(mockSpeechService.stop).toHaveBeenCalled();
+      expect(mockSpeechService.speak).not.toHaveBeenCalled();
+    });
+
+    it('should call speechService.speak with valid data', async () => {
+      if (!taskFunction) {
+        throw new Error('Task function not defined');
+      }
+
+      const data = {
+        current: 'chapter1.md',
+        progress: 50,
+      };
+
+      await taskFunction({ data });
+
+      expect(console.log).toHaveBeenCalledWith(
+        'Data provided, calling speak with:',
+        'chapter1.md',
+        50
+      );
+      expect(mockSpeechService.speak).toHaveBeenCalledWith('chapter1.md', 50, {
+        language: 'zh',
+        voice: 'zh',
+      });
+      expect(mockSpeechService.stop).not.toHaveBeenCalled();
+    });
+
+    it('should call speechService.speak with partial data', async () => {
+      if (!taskFunction) {
+        throw new Error('Task function not defined');
+      }
+
+      const data = {
+        current: 'chapter2.md',
+      };
+
+      await taskFunction({ data });
+
+      expect(console.log).toHaveBeenCalledWith(
+        'Data provided, calling speak with:',
+        'chapter2.md',
+        undefined
+      );
+      expect(mockSpeechService.speak).toHaveBeenCalledWith(
+        'chapter2.md',
+        undefined,
+        {
+          language: 'zh',
+          voice: 'zh',
+        }
+      );
+    });
+
+    it('should handle speechService.speak throwing an error', async () => {
+      if (!taskFunction) {
+        throw new Error('Task function not defined');
+      }
+
+      const data = {
+        current: 'chapter1.md',
+        progress: 0,
+      };
+
+      mockSpeechService.speak.mockRejectedValue(new Error('Speech error'));
+
+      // The task function doesn't handle errors, so it should throw
+      await expect(taskFunction({ data })).rejects.toThrow('Speech error');
+
+      expect(mockSpeechService.speak).toHaveBeenCalledWith('chapter1.md', 0, {
+        language: 'zh',
+        voice: 'zh',
       });
     });
 
-    it('should handle task execution with no current content', async () => {
-      // Simulate the task function behavior directly
-      const current = null;
-
-      if (current) {
-        const contentKey = `@Content:${current}`;
-        const data = await AsyncStorage.getItem(contentKey);
-        if (data) {
-          const content = JSON.parse(data);
-          await Speech.speak(content.content, { voice: content.voice });
-        }
+    it('should log task execution details', async () => {
+      if (!taskFunction) {
+        throw new Error('Task function not defined');
       }
 
-      expect(mockGetItem).not.toHaveBeenCalled();
-      expect(mockSpeech.speak).not.toHaveBeenCalled();
-    });
+      const data = { current: 'test.md' };
+      const error = null;
 
-    it('should handle task execution with error', async () => {
-      // Simulate the task function behavior directly with error
-      const error = { message: 'Task execution error', code: 'TEST_ERROR' };
-      const current = 'chapter1.md';
+      await taskFunction({ data, error });
 
-      if (error) {
-        // Task should exit early when there's an error
-        return;
-      }
-
-      // This code should not execute due to error
-      const contentKey = `@Content:${current}`;
-      const data = await AsyncStorage.getItem(contentKey);
-      if (data) {
-        const content = JSON.parse(data);
-        await Speech.speak(content.content, { voice: content.voice });
-      }
-
-      // Should not proceed with speech when there's an error
-      expect(mockSpeech.speak).not.toHaveBeenCalled();
-    });
-
-    it('should handle missing content data', async () => {
-      mockGetItem.mockResolvedValue(null);
-
-      // Simulate the task function behavior directly
-      const current = 'nonexistent.md';
-
-      if (current) {
-        const contentKey = `@Content:${current}`;
-        const data = await AsyncStorage.getItem(contentKey);
-        if (data) {
-          const content = JSON.parse(data);
-          await Speech.speak(content.content, { voice: content.voice });
-        }
-      }
-
-      expect(mockGetItem).toHaveBeenCalledWith('@Content:nonexistent.md');
-      expect(mockSpeech.speak).not.toHaveBeenCalled();
-    });
-
-    it('should handle invalid JSON content', async () => {
-      mockGetItem.mockResolvedValue('invalid json');
-
-      // Simulate the task function behavior directly
-      const current = 'chapter1.md';
-
-      if (current) {
-        const contentKey = `@Content:${current}`;
-        try {
-          const data = await AsyncStorage.getItem(contentKey);
-          if (data) {
-            const content = JSON.parse(data);
-            await Speech.speak(content.content, { voice: content.voice });
-          }
-        } catch (error) {
-          // Should handle JSON parse error gracefully
-        }
-      }
-
-      expect(mockGetItem).toHaveBeenCalledWith('@Content:chapter1.md');
-      // Should handle JSON parse error gracefully
-    });
-
-    it('should handle speech synthesis when already speaking', async () => {
-      const mockContent = {
-        content: 'This is test content.',
-        sha: 'abc123',
-        size: 100,
-      };
-
-      mockGetItem.mockResolvedValue(JSON.stringify(mockContent));
-      mockSpeech.isSpeakingAsync.mockResolvedValue(true); // Already speaking
-
-      // Simulate the task function behavior directly
-      const current = 'chapter1.md';
-
-      if (current) {
-        const contentKey = `@Content:${current}`;
-        const data = await AsyncStorage.getItem(contentKey);
-        if (data) {
-          const content = JSON.parse(data);
-          const isSpeaking = await Speech.isSpeakingAsync();
-          if (!isSpeaking) {
-            await Speech.speak(content.content, { voice: content.voice });
-          }
-        }
-      }
-
-      expect(mockSpeech.isSpeakingAsync).toHaveBeenCalled();
-      // Should not start new speech if already speaking
-    });
-
-    it('should handle content with progress offset', async () => {
-      const mockContent = {
-        content:
-          'This is a long test content for speech synthesis with multiple sentences.',
-        sha: 'abc123',
-        size: 200,
-      };
-
-      mockGetItem.mockResolvedValue(JSON.stringify(mockContent));
-      mockSpeech.isSpeakingAsync.mockResolvedValue(false);
-
-      // Simulate the task function behavior directly
-      const current = 'chapter1.md';
-      const progress = 50; // Start from middle of content
-
-      if (current) {
-        const contentKey = `@Content:${current}`;
-        const data = await AsyncStorage.getItem(contentKey);
-        if (data) {
-          const content = JSON.parse(data);
-          const isSpeaking = await Speech.isSpeakingAsync();
-          if (!isSpeaking) {
-            const textToSpeak = content.content.substring(progress);
-            await Speech.speak(textToSpeak, { voice: content.voice });
-          }
-        }
-      }
-
-      expect(mockGetItem).toHaveBeenCalledWith('@Content:chapter1.md');
-      // Should handle progress offset correctly
-    });
-
-    it('should handle empty content', async () => {
-      const mockContent = {
-        content: '',
-        sha: 'abc123',
-        size: 0,
-      };
-
-      mockGetItem.mockResolvedValue(JSON.stringify(mockContent));
-      mockSpeech.isSpeakingAsync.mockResolvedValue(false);
-
-      // Simulate the task function behavior directly
-      const current = 'empty.md';
-
-      if (current) {
-        const contentKey = `@Content:${current}`;
-        const data = await AsyncStorage.getItem(contentKey);
-        if (data) {
-          const content = JSON.parse(data);
-          const isSpeaking = await Speech.isSpeakingAsync();
-          if (!isSpeaking && content.content) {
-            await Speech.speak(content.content, { voice: content.voice });
-          }
-        }
-      }
-
-      expect(mockGetItem).toHaveBeenCalledWith('@Content:empty.md');
-      // Should handle empty content gracefully
-    });
-  });
-
-  describe('error handling', () => {
-    it('should handle AsyncStorage errors gracefully', async () => {
-      mockGetItem.mockRejectedValue(new Error('AsyncStorage error'));
-
-      // Simulate the task function behavior directly
-      const contentKey = '@Content:chapter1.md';
-      try {
-        const data = await AsyncStorage.getItem(contentKey);
-        if (data) {
-          const content = JSON.parse(data);
-          await Speech.speak(content.content, { voice: content.voice });
-        }
-      } catch (error) {
-        // Error handling is expected
-      }
-
-      expect(mockGetItem).toHaveBeenCalledWith(contentKey);
-    });
-
-    it('should handle Speech API errors gracefully', async () => {
-      const mockContent = {
-        content: 'Test content',
-        sha: 'abc123',
-        size: 100,
-      };
-
-      mockGetItem.mockResolvedValue(JSON.stringify(mockContent));
-      mockSpeech.isSpeakingAsync.mockRejectedValue(
-        new Error('Speech API error')
+      expect(console.log).toHaveBeenCalledWith(
+        'TaskManager.defineTask called with:',
+        { data, error }
       );
+    });
 
-      // Simulate the task function behavior directly
-      const contentKey = '@Content:chapter1.md';
-      try {
-        const data = await AsyncStorage.getItem(contentKey);
-        if (data) {
-          const content = JSON.parse(data);
-          await Speech.isSpeakingAsync();
-        }
-      } catch (error) {
-        // Error handling is expected
+    it('should handle empty data object', async () => {
+      if (!taskFunction) {
+        throw new Error('Task function not defined');
       }
 
-      expect(mockGetItem).toHaveBeenCalledWith(contentKey);
-      expect(mockSpeech.isSpeakingAsync).toHaveBeenCalled();
+      const data = {};
+
+      await taskFunction({ data });
+
+      expect(console.log).toHaveBeenCalledWith(
+        'Data provided, calling speak with:',
+        undefined,
+        undefined
+      );
+      expect(mockSpeechService.speak).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        {
+          language: 'zh',
+          voice: 'zh',
+        }
+      );
     });
   });
 });

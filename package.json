@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "1.5.13",
+  "version": "1.5.14",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -90,7 +90,8 @@
     "preset": "ts-jest",
     "testEnvironment": "jsdom",
     "setupFilesAfterEnv": [
-      "<rootDir>/src/__tests__/setup.ts"
+      "<rootDir>/src/__tests__/setup.ts",
+      "@testing-library/jest-native/extend-expect"
     ],
     "testMatch": [
       "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",

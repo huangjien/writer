@@ -38,10 +38,11 @@ export function useThemeConfig() {
     colorScheme === 'dark' ? 'dark' : 'light'
   );
 
-  const setSelectedTheme = (t) => {
-    setColorScheme(t);
-    _setTheme(t);
-    setThemeName(t);
+  const setSelectedTheme = (themeName: 'light' | 'dark') => {
+    setColorScheme(themeName);
+    const newTheme = themeName === 'dark' ? DarkTheme : LightTheme;
+    _setTheme(newTheme);
+    setThemeName(themeName);
   };
   return { theme, themeName, setSelectedTheme };
 }

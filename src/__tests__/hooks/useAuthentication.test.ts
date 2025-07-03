@@ -6,17 +6,20 @@ import * as splashScreenService from '@/services/splashScreenService';
 import * as backgroundTaskService from '@/services/backgroundTaskService';
 import { AsyncStorageProvider } from '@/hooks/useAsyncStorage';
 
+// Mock AsyncStorage with proper implementation
+const mockAsyncStorage = {
+  getItem: jest.fn(() => Promise.resolve(null)),
+  setItem: jest.fn(() => Promise.resolve()),
+  removeItem: jest.fn(() => Promise.resolve()),
+  getAllKeys: jest.fn(() => Promise.resolve([])),
+  multiGet: jest.fn(() => Promise.resolve([])),
+};
+
 // Mock dependencies
 jest.mock('@/services/authService');
 jest.mock('@/services/splashScreenService');
 jest.mock('@/services/backgroundTaskService');
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  getAllKeys: jest.fn(() => Promise.resolve([])),
-  multiGet: jest.fn(() => Promise.resolve([])),
-}));
+jest.mock('@react-native-async-storage/async-storage', () => mockAsyncStorage);
 
 const mockAuthService = authService as jest.Mocked<typeof authService>;
 const mockSplashScreenService = splashScreenService as jest.Mocked<
@@ -37,6 +40,13 @@ describe('useAuthentication', () => {
     // Mock console.error to prevent test output pollution
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    // Reset AsyncStorage mocks
+    mockAsyncStorage.getItem.mockResolvedValue(null);
+    mockAsyncStorage.setItem.mockResolvedValue();
+    mockAsyncStorage.removeItem.mockResolvedValue();
+    mockAsyncStorage.getAllKeys.mockResolvedValue([]);
+    mockAsyncStorage.multiGet.mockResolvedValue([]);
 
     // Default mock implementations
     mockAuthService.checkBiometricHardware.mockResolvedValue(true);

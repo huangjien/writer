@@ -168,7 +168,8 @@
 <a name='L103'></a><a href='#L103'>103</a>
 <a name='L104'></a><a href='#L104'>104</a>
 <a name='L105'></a><a href='#L105'>105</a>
-<a name='L106'></a><a href='#L106'>106</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -199,23 +200,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -227,6 +225,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -268,6 +269,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -303,30 +305,30 @@ export const useAuthentication = <span class="fstat-no" title="function not cove
     isAuthenticated: false,
   });
   const [isInitializing, setIsInitializing] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
-  
-  const [storage, { getItem, setItem }, isStorageLoading, hasChanged] = <span class="cstat-no" title="statement not covered" >useAsyncStorage();</span>
+&nbsp;
+  const [storage, { getItem, setItem }, isStorageLoading, hasChanged] =
+<span class="cstat-no" title="statement not covered" >    useAsyncStorage();</span>
 &nbsp;
   /**
    * Initialize authentication system
    */
   const initializeAuth = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setIsInitializing(true);</span>
-    
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // Prevent splash screen from auto-hiding
 <span class="cstat-no" title="statement not covered" >      preventSplashScreenAutoHide();</span>
-      
+&nbsp;
       // Register background task
 <span class="cstat-no" title="statement not covered" >      await registerBackgroundTask();</span>
-      
+&nbsp;
       // Check biometric hardware support
       const isBiometricSupported = <span class="cstat-no" title="statement not covered" >await checkBiometricHardware();</span>
-<span class="cstat-no" title="statement not covered" >      setAuthState(<span class="fstat-no" title="function not covered" >prev </span>=&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, isBiometricSupported })</span>);</span>
-      
+<span class="cstat-no" title="statement not covered" >      setAuthState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, isBiometricSupported })</span>);</span>
+&nbsp;
       // Hide splash screen and perform initial auth
 <span class="cstat-no" title="statement not covered" >      await hideSplashScreen();</span>
 <span class="cstat-no" title="statement not covered" >      await performBiometricAuth();</span>
-      
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Authentication initialization failed:', error);</span>
 <span class="cstat-no" title="statement not covered" >      await hideSplashScreenWithErrorHandling(error as Error);</span>
@@ -341,14 +343,14 @@ export const useAuthentication = <span class="fstat-no" title="function not cove
   const performBiometricAuth = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
       const success = <span class="cstat-no" title="statement not covered" >await handleBiometricAuthFlow(getItem, setItem);</span>
-<span class="cstat-no" title="statement not covered" >      setAuthState(<span class="fstat-no" title="function not covered" >prev </span>=&gt; (<span class="cstat-no" title="statement not covered" >{ </span></span>
-        ...prev, 
+<span class="cstat-no" title="statement not covered" >      setAuthState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+        ...prev,
         isAuthenticated: success,
-        expiry: success ? Date.now() + 3600000 : undefined // 1 hour from now
+        expiry: success ? Date.now() + 3600000 : undefined, // 1 hour from now
       }));
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Biometric authentication failed:', error);</span>
-<span class="cstat-no" title="statement not covered" >      setAuthState(<span class="fstat-no" title="function not covered" >prev </span>=&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, isAuthenticated: false })</span>);</span>
+<span class="cstat-no" title="statement not covered" >      setAuthState(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, isAuthenticated: false })</span>);</span>
     }
   }, [getItem, setItem]);
 &nbsp;
@@ -357,7 +359,7 @@ export const useAuthentication = <span class="fstat-no" title="function not cove
    */
 <span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!hasChanged || isStorageLoading) <span class="cstat-no" title="statement not covered" >return;</span></span>
-    
+&nbsp;
     const checkAuthStatus = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      try {</span>
         const expiry = <span class="cstat-no" title="statement not covered" >await getItem('expiry');</span>
@@ -368,7 +370,7 @@ export const useAuthentication = <span class="fstat-no" title="function not cove
 <span class="cstat-no" title="statement not covered" >        console.error('Failed to check auth status:', error);</span>
       }
     };
-    
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    checkAuthStatus();</span>
   }, [hasChanged, isStorageLoading, getItem, performBiometricAuth]);
 &nbsp;
@@ -378,14 +380,15 @@ export const useAuthentication = <span class="fstat-no" title="function not cove
     initializeAuth,
     performBiometricAuth,
   };
-};</pre></td></tr></table></pre>
+};
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-03T01:13:22.316Z
+                at 2025-07-03T05:33:23.008Z
             </div>
         <script src="../prettify.js"></script>
         <script>
