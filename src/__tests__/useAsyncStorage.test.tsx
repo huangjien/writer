@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   AsyncStorageProvider,
   useAsyncStorage,
-} from '../components/useAsyncStorage';
+} from '../hooks/useAsyncStorage';
 
 // Mock AsyncStorage
 jest.mock('@react-native-async-storage/async-storage');

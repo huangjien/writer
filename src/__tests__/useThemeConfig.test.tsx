@@ -1,6 +1,6 @@
 import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
-import { useThemeConfig } from '../components/use-theme-config';
+import { useThemeConfig } from '../hooks/use-theme-config';
 
 // Mock useColorScheme
 const mockSetColorScheme = jest.fn();

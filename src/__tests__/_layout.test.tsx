@@ -5,11 +5,8 @@ import Layout, { InnerLayout } from '../app/_layout';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as BackgroundFetch from 'expo-background-fetch';
 import { SplashScreen } from 'expo-router';
-import { useThemeConfig } from '@/components/use-theme-config';
-import {
-  useAsyncStorage,
-  AsyncStorageProvider,
-} from '@/components/useAsyncStorage';
+import { useThemeConfig } from '@/hooks/use-theme-config';
+import { useAsyncStorage, AsyncStorageProvider } from '@/hooks/useAsyncStorage';
 import { handleError, showErrorToast, TIMEOUT } from '@/components/global';
 import { SPEECH_TASK } from '@/components/SpeechTask';
 import { SafeAreaProvider } from 'react-native-safe-area-context';

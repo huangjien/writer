@@ -34,7 +34,7 @@ import {
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAsyncStorage } from '@/components/useAsyncStorage';
+import { useAsyncStorage } from '@/hooks/useAsyncStorage';
 import BackgroundTimer from 'react-native-background-timer';
 
 export default function Page() {

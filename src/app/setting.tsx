@@ -1,5 +1,5 @@
 import { Text, View, TextInput, Pressable } from 'react-native';
-import { useAsyncStorage } from '@/components/useAsyncStorage';
+import { useAsyncStorage } from '@/hooks/useAsyncStorage';
 import React, { useEffect } from 'react';
 import * as Speech from 'expo-speech';
 import { useForm, Controller } from 'react-hook-form';

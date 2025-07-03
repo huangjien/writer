@@ -5,7 +5,7 @@ import * as Speech from 'expo-speech';
 // Import the entire module to ensure the task is registered
 import '../components/SpeechTask';
 import { SPEECH_TASK } from '../components/SpeechTask';
-import { AsyncStorageProvider } from '../components/useAsyncStorage';
+import { AsyncStorageProvider } from '../hooks/useAsyncStorage';
 
 // Mock AsyncStorage
 jest.mock('@react-native-async-storage/async-storage', () => ({

@@ -12,7 +12,7 @@ import {
   handleError,
   SETTINGS_KEY,
 } from '@/components/global';
-import { useAsyncStorage } from '@/components/useAsyncStorage';
+import { useAsyncStorage } from '@/hooks/useAsyncStorage';
 
 type RepoContent = components['schemas']['content-file'];
 

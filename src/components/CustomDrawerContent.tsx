@@ -4,11 +4,11 @@ import { DrawerItem } from '@react-navigation/drawer';
 import { useRouter } from 'expo-router';
 import { ReactElement } from 'react';
 import { ScrollView, View } from 'react-native';
-import { useThemeConfig } from '@/components/use-theme-config';
+import { useThemeConfig } from '@/hooks/use-theme-config';
 import { images } from '@/app/images';
 import { Text } from 'react-native';
 import packageJson from '@/../package.json';
-import { useAsyncStorage } from '@/components/useAsyncStorage';
+import { useAsyncStorage } from '@/hooks/useAsyncStorage';
 import { TIMEOUT } from './global';
 
 export const CustomDrawerContent = (): ReactElement => {

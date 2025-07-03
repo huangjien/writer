@@ -1,98 +1,42 @@
 import React, { useEffect } from 'react';
 import '../global.css';
-import { SplashScreen } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import { Pressable, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { ThemeProvider } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import * as LocalAuthentication from 'expo-local-authentication';
-import { useThemeConfig } from '@/components/use-theme-config';
+import { useThemeConfig } from '@/hooks/use-theme-config';
 import { enableFreeze } from 'react-native-screens';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { handleError, showErrorToast, TIMEOUT } from '@/components/global';
 import { CustomDrawerContent } from '@/components/CustomDrawerContent';
 import { Footer } from '@/components/Footer';
-import {
-  AsyncStorageProvider,
-  useAsyncStorage,
-} from '@/components/useAsyncStorage';
-import { SPEECH_TASK } from '@/components/SpeechTask';
-import * as BackgroundFetch from 'expo-background-fetch';
-
-const registerBackgroundTask = async () => {
-  try {
-    await BackgroundFetch.registerTaskAsync(SPEECH_TASK, {
-      minimumInterval: 10,
-      stopOnTerminate: true,
-      startOnBoot: false,
-    });
-  } catch (err) {
-    console.error('Failed to Register speech task', err);
-  }
-};
+import { AsyncStorageProvider } from '@/hooks/useAsyncStorage';
+import { useAuthentication } from '@/hooks/useAuthentication';
 
 enableFreeze(true);
 
 export function InnerLayout() {
   console.log('InnerLayout component is rendering');
-  const [isBiometricSupported, setIsBiometricSupported] = React.useState(false);
-  const [storage, { getItem, setItem }, isLoading, hasChanged] =
-    useAsyncStorage();
-  console.log('InnerLayout useAsyncStorage result:', {
-    storage,
+  const { authState, isLoading, initializeAuth } = useAuthentication();
+
+  console.log('InnerLayout auth state:', {
+    authState,
     isLoading,
-    hasChanged,
   });
 
-  // Prevent the splash screen from auto-hiding before asset loading is complete.
-  SplashScreen.preventAutoHideAsync();
-
   useEffect(() => {
-    registerBackgroundTask();
-    LocalAuthentication.hasHardwareAsync()
-      .then((compatible) => {
-        setIsBiometricSupported(compatible);
-      })
-      .then(() => {
-        SplashScreen.hideAsync();
-        handleBiometricAuth();
-      })
-      .catch((err) => {
-        SplashScreen.hideAsync().then(() => {
-          handleError(err);
-        });
-      });
-  }, []);
+    initializeAuth();
+  }, [initializeAuth]);
 
-  useEffect(() => {
-    getItem('expiry').then((expiry) => {
-      if (!expiry || parseInt(expiry) < Date.now()) handleBiometricAuth();
-    });
-  }, [hasChanged]);
-
-  const handleBiometricAuth = async () => {
-    // registerBackgroundFetchAsync();
-    const expiry = await getItem('expiry');
-    if (expiry && parseInt(expiry) > Date.now()) return;
-
-    const savedBiometrics = await LocalAuthentication.isEnrolledAsync();
-    if (!savedBiometrics) {
-      return showErrorToast(
-        'No Biometrics Authentication\nPlease verify your identity with your password'
-      );
-    }
-
-    const biometricAuth = await LocalAuthentication.authenticateAsync({
-      promptMessage: "You need to be this device's owner to use this app",
-      disableDeviceFallback: false,
-    });
-
-    if (biometricAuth.success) {
-      setItem('expiry', (Date.now() + TIMEOUT).toString());
-    }
-  };
+  // Show loading state while initializing
+  if (isLoading) {
+    return (
+      <View className='flex-1 justify-center items-center bg-white dark:bg-black'>
+        <Text className='text-black dark:text-white'>Initializing...</Text>
+      </View>
+    );
+  }
   return (
     <View className='flex elevation z-auto flex-1 flex-col text-black dark:text-white bg-white dark:bg-black'>
       {/* <Header /> */}

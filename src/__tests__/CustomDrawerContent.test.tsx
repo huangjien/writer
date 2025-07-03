@@ -2,8 +2,8 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { CustomDrawerContent } from '../components/CustomDrawerContent';
 import { useRouter } from 'expo-router';
-import { useThemeConfig } from '@/components/use-theme-config';
-import { useAsyncStorage } from '@/components/useAsyncStorage';
+import { useThemeConfig } from '@/hooks/use-theme-config';
+import { useAsyncStorage } from '@/hooks/useAsyncStorage';
 import { TIMEOUT } from '../components/global';
 
 // Mock dependencies
