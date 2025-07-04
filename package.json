@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "1.5.22",
+  "version": "1.5.23",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -113,6 +113,9 @@
       "^~/(.*)$": "<rootDir>/$1",
       "\\.(css|less|scss|sass)$": "identity-obj-proxy"
     },
+    "transformIgnorePatterns": [
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
+    ],
     "transform": {
       "^.+\\.(ts|tsx)$": [
         "ts-jest",
