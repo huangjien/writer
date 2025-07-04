@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "1.5.26",
+  "version": "1.5.27",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -46,8 +46,8 @@
     "husky": "^9.1.7",
     "nanoid": "^5.0.9",
     "nativewind": "^4.1.23",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
     "react-hook-form": "^7.53.0",
     "react-native": "0.79.5",
     "react-native-gesture-handler": "~2.24.0",
@@ -76,7 +76,7 @@
     "metro": "^0.82.0",
     "metro-inspector-proxy": "^0.78.1",
     "prettier": "^3.4.2",
-    "react-test-renderer": "^19.1.0",
+    "react-test-renderer": "^19.0.0",
     "ts-jest": "^29.4.0",
     "typescript": "~5.8.3"
   },
