@@ -111,20 +111,17 @@ export default function Page() {
       {/* Multi-language Welcome */}
       <View className='py-12 px-4 md:px-6'>
         <Text className='text-xl font-semibold text-center mb-6 text-black dark:text-white'>
-          Welcome in Multiple Languages
+          Auditus est initium sapientiae
         </Text>
         <View className='flex flex-col gap-3 items-center'>
           <Text className='text-lg text-gray-600 dark:text-gray-300'>
-            🇨🇳 欢迎使用 Writer - 您的智能阅读助手
+            🇨🇳 兼听则明
           </Text>
           <Text className='text-lg text-gray-600 dark:text-gray-300'>
-            🇪🇸 Bienvenido a Writer - Tu asistente de lectura inteligente
+            🇪🇸 Escuchar es el comienzo de la sabiduría
           </Text>
           <Text className='text-lg text-gray-600 dark:text-gray-300'>
-            🇫🇷 Bienvenue dans Writer - Votre assistant de lecture intelligent
-          </Text>
-          <Text className='text-lg text-gray-600 dark:text-gray-300'>
-            🇩🇪 Willkommen bei Writer - Ihr intelligenter Leseassistent
+            🇩🇪 das zuhören ist der anfang der weisheit
           </Text>
         </View>
       </View>
