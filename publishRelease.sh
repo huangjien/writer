@@ -14,7 +14,11 @@ APK_PATH="$HOME/temp/writer.apk"
 PACKAGE_VERSION=$(node -p "require('./package.json').version")
 RELEASE_TAG="${RELEASE_TAG:-v$PACKAGE_VERSION}"
 RELEASE_NAME="Writer App v$PACKAGE_VERSION"
-RELEASE_BODY="Writer Android app release v$PACKAGE_VERSION\n\nGenerated on: $(date)\nAPK Size: $(ls -lh $HOME/temp/writer.apk | awk '{print $5}')"
+if [ "$APK_EXISTS" = true ]; then
+    RELEASE_BODY="Writer Android app release v$PACKAGE_VERSION\n\nGenerated on: $(date)\nAPK Size: $(ls -lh $HOME/temp/writer.apk | awk '{print $5}')"
+else
+    RELEASE_BODY="Writer app release v$PACKAGE_VERSION\n\nGenerated on: $(date)\nSource code release"
+fi
 
 # Colors for output
 RED='\033[0;31m'
@@ -25,11 +29,14 @@ NC='\033[0m' # No Color
 echo -e "${YELLOW}🚀 GitHub Release Publisher${NC}"
 echo "=============================="
 
-# Check if APK exists
-if [ ! -f "$APK_PATH" ]; then
-    echo -e "${RED}❌ Error: APK file not found at $APK_PATH${NC}"
-    echo "Please run ./buildAndroid.sh first to generate the APK"
-    exit 1
+# Check if APK exists (optional for GitHub-only releases)
+APK_EXISTS=false
+if [ -f "$APK_PATH" ]; then
+    APK_EXISTS=true
+    echo -e "${GREEN}✅ APK file found at $APK_PATH${NC}"
+else
+    echo -e "${YELLOW}⚠️  APK file not found at $APK_PATH${NC}"
+    echo "Creating GitHub release without APK attachment"
 fi
 
 # Check if GitHub token is set
@@ -64,12 +71,16 @@ echo "Repository: $REPO_NAME"
 echo "Tag: $RELEASE_TAG"
 echo "APK: $APK_PATH"
 
-# Confirm before proceeding
-read -p "Do you want to proceed with the release? (y/N): " -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo -e "${YELLOW}⏹️  Release cancelled${NC}"
-    exit 0
+# Skip confirmation in CI environment
+if [ "$CI" != "true" ]; then
+    read -p "Do you want to proceed with the release? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo -e "${YELLOW}⏹️  Release cancelled${NC}"
+        exit 0
+    fi
+else
+    echo -e "${YELLOW}🤖 Running in CI environment, proceeding automatically${NC}"
 fi
 
 # Create the release
@@ -87,20 +98,25 @@ else
     exit 1
 fi
 
-# Upload the APK
-echo -e "${YELLOW}📤 Uploading APK to release...${NC}"
-gh release upload "$RELEASE_TAG" "$APK_PATH" \
-    --repo "$REPO_OWNER/$REPO_NAME" \
-    --clobber
-
-if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✅ APK uploaded successfully${NC}"
-    echo -e "${GREEN}🎉 Release published!${NC}"
-    echo
-    echo "Release URL: https://github.com/$REPO_OWNER/$REPO_NAME/releases/tag/$RELEASE_TAG"
+# Upload the APK if it exists
+if [ "$APK_EXISTS" = true ]; then
+    echo -e "${YELLOW}📤 Uploading APK to release...${NC}"
+    gh release upload "$RELEASE_TAG" "$APK_PATH" \
+        --repo "$REPO_OWNER/$REPO_NAME" \
+        --clobber
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✅ APK uploaded successfully${NC}"
+    else
+        echo -e "${RED}❌ Failed to upload APK${NC}"
+        exit 1
+    fi
 else
-    echo -e "${RED}❌ Failed to upload APK${NC}"
-    exit 1
+    echo -e "${YELLOW}📝 No APK to upload, source-only release${NC}"
 fi
+
+echo -e "${GREEN}🎉 Release published!${NC}"
+echo
+echo "Release URL: https://github.com/$REPO_OWNER/$REPO_NAME/releases/tag/$RELEASE_TAG"
 
 echo -e "${GREEN}✨ All done!${NC}"

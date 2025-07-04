@@ -52,5 +52,17 @@ jobs:
       id: package-version
       run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
       
+    - name: Install GitHub CLI
+      run: |
+        type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+        sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+        sudo apt update
+        sudo apt install gh -y
+      
     - name: Publish release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CI: true
       run: npm run publishRelease
