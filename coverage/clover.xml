@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1751614106541" clover="3.2.0">
-  <project timestamp="1751614106541" name="All files">
+<coverage generated="1751617413787" clover="3.2.0">
+  <project timestamp="1751617413787" name="All files">
     <metrics statements="857" coveredstatements="308" conditionals="223" coveredconditionals="51" methods="183" coveredmethods="50" elements="1263" coveredelements="409" complexity="0" loc="857" ncloc="857" packages="5" files="21" classes="21"/>
     <package name="app">
       <metrics statements="265" coveredstatements="51" conditionals="92" coveredconditionals="0" methods="63" coveredmethods="2"/>
@@ -322,25 +322,25 @@
       </file>
       <file name="global.tsx" path="/Users/huangjien/workspace/writer/src/components/global.tsx">
         <metrics statements="26" coveredstatements="26" conditionals="4" coveredconditionals="4" methods="6" coveredmethods="6"/>
-        <line num="1" count="12" type="stmt"/>
-        <line num="4" count="12" type="stmt"/>
-        <line num="5" count="12" type="stmt"/>
-        <line num="6" count="12" type="stmt"/>
-        <line num="7" count="12" type="stmt"/>
-        <line num="8" count="12" type="stmt"/>
-        <line num="9" count="12" type="stmt"/>
-        <line num="10" count="12" type="stmt"/>
-        <line num="11" count="12" type="stmt"/>
-        <line num="13" count="12" type="stmt"/>
+        <line num="1" count="11" type="stmt"/>
+        <line num="4" count="11" type="stmt"/>
+        <line num="5" count="11" type="stmt"/>
+        <line num="6" count="11" type="stmt"/>
+        <line num="7" count="11" type="stmt"/>
+        <line num="8" count="11" type="stmt"/>
+        <line num="9" count="11" type="stmt"/>
+        <line num="10" count="11" type="stmt"/>
+        <line num="11" count="11" type="stmt"/>
+        <line num="13" count="11" type="stmt"/>
         <line num="14" count="3" type="stmt"/>
         <line num="15" count="3" type="stmt"/>
-        <line num="18" count="12" type="stmt"/>
+        <line num="18" count="11" type="stmt"/>
         <line num="19" count="5" type="stmt"/>
-        <line num="30" count="12" type="stmt"/>
+        <line num="30" count="11" type="stmt"/>
         <line num="31" count="2" type="stmt"/>
-        <line num="41" count="12" type="stmt"/>
+        <line num="41" count="11" type="stmt"/>
         <line num="42" count="2" type="stmt"/>
-        <line num="46" count="12" type="stmt"/>
+        <line num="46" count="11" type="stmt"/>
         <line num="48" count="10" type="stmt"/>
         <line num="50" count="10" type="stmt"/>
         <line num="53" count="10" type="cond" truecount="2" falsecount="0"/>
@@ -688,11 +688,11 @@
       </file>
       <file name="useSpeech.ts" path="/Users/huangjien/workspace/writer/src/hooks/useSpeech.ts">
         <metrics statements="75" coveredstatements="5" conditionals="18" coveredconditionals="0" methods="11" coveredmethods="0"/>
-        <line num="1" count="2" type="stmt"/>
-        <line num="2" count="2" type="stmt"/>
-        <line num="3" count="2" type="stmt"/>
-        <line num="4" count="2" type="stmt"/>
-        <line num="10" count="2" type="stmt"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
         <line num="11" count="0" type="stmt"/>
         <line num="12" count="0" type="stmt"/>
         <line num="13" count="0" type="stmt"/>
