@@ -6,19 +6,20 @@
 set -e
 
 # Configuration
-REPO_OWNER="${GITHUB_REPO_OWNER:-$(git config user.name)}"
-REPO_NAME="${GITHUB_REPO_NAME:-writer}"
+# In GitHub Actions, use GITHUB_REPOSITORY environment variable
+if [ -n "$GITHUB_REPOSITORY" ]; then
+    REPO_OWNER="$(echo $GITHUB_REPOSITORY | cut -d'/' -f1)"
+    REPO_NAME="$(echo $GITHUB_REPOSITORY | cut -d'/' -f2)"
+else
+    REPO_OWNER="${GITHUB_REPO_OWNER:-$(git config user.name)}"
+    REPO_NAME="${GITHUB_REPO_NAME:-writer}"
+fi
 APK_PATH="$HOME/temp/writer.apk"
 
 # Read version from package.json
 PACKAGE_VERSION=$(node -p "require('./package.json').version")
 RELEASE_TAG="${RELEASE_TAG:-v$PACKAGE_VERSION}"
 RELEASE_NAME="Writer App v$PACKAGE_VERSION"
-if [ "$APK_EXISTS" = true ]; then
-    RELEASE_BODY="Writer Android app release v$PACKAGE_VERSION\n\nGenerated on: $(date)\nAPK Size: $(ls -lh $HOME/temp/writer.apk | awk '{print $5}')"
-else
-    RELEASE_BODY="Writer app release v$PACKAGE_VERSION\n\nGenerated on: $(date)\nSource code release"
-fi
 
 # Colors for output
 RED='\033[0;31m'
@@ -37,6 +38,13 @@ if [ -f "$APK_PATH" ]; then
 else
     echo -e "${YELLOW}⚠️  APK file not found at $APK_PATH${NC}"
     echo "Creating GitHub release without APK attachment"
+fi
+
+# Set release body based on APK availability
+if [ "$APK_EXISTS" = true ]; then
+    RELEASE_BODY="Writer Android app release v$PACKAGE_VERSION\n\nGenerated on: $(date)\nAPK Size: $(ls -lh $HOME/temp/writer.apk | awk '{print $5}')"
+else
+    RELEASE_BODY="Writer app release v$PACKAGE_VERSION\n\nGenerated on: $(date)\nSource code release"
 fi
 
 # Check if GitHub token is set
@@ -64,6 +72,12 @@ fi
 # GitHub CLI will automatically use GITHUB_TOKEN environment variable
 echo -e "${YELLOW}🔐 Using GitHub token for authentication...${NC}"
 
+# Debug: Check environment variables
+echo -e "${YELLOW}🔍 Debug Info:${NC}"
+echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
+echo "GITHUB_TOKEN set: $([ -n "$GITHUB_TOKEN" ] && echo 'Yes' || echo 'No')"
+echo "CI environment: $CI"
+
 # Get repository info
 echo -e "${YELLOW}📋 Repository Info:${NC}"
 echo "Owner: $REPO_OWNER"
@@ -85,6 +99,14 @@ fi
 
 # Create the release
 echo -e "${YELLOW}📦 Creating GitHub release...${NC}"
+echo "Command: gh release create $RELEASE_TAG --repo $REPO_OWNER/$REPO_NAME --title '$RELEASE_NAME' --notes '$RELEASE_BODY' --latest"
+
+# Check if release already exists
+if gh release view "$RELEASE_TAG" --repo "$REPO_OWNER/$REPO_NAME" >/dev/null 2>&1; then
+    echo -e "${YELLOW}⚠️  Release $RELEASE_TAG already exists, deleting it first...${NC}"
+    gh release delete "$RELEASE_TAG" --repo "$REPO_OWNER/$REPO_NAME" --yes
+fi
+
 gh release create "$RELEASE_TAG" \
     --repo "$REPO_OWNER/$REPO_NAME" \
     --title "$RELEASE_NAME" \
@@ -95,6 +117,12 @@ if [ $? -eq 0 ]; then
     echo -e "${GREEN}✅ Release created successfully${NC}"
 else
     echo -e "${RED}❌ Failed to create release${NC}"
+    echo "Error details:"
+    gh release create "$RELEASE_TAG" \
+        --repo "$REPO_OWNER/$REPO_NAME" \
+        --title "$RELEASE_NAME" \
+        --notes "$RELEASE_BODY" \
+        --latest 2>&1 || true
     exit 1
 fi
 
