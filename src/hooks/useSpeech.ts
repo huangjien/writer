@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import * as Speech from 'expo-speech';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import {
@@ -17,6 +18,7 @@ export function useSpeech() {
   const totalContentLengthRef = useRef(0);
   const completedContentLengthRef = useRef(0);
   const isPausedRef = useRef(false);
+  const wasPlayingBeforeBackgroundRef = useRef(false);
   const speechOptionsRef = useRef<{
     language?: string;
     pitch?: number;
@@ -35,6 +37,34 @@ export function useSpeech() {
     } else {
       deactivateKeepAwake();
     }
+  }, [status]);
+
+  // Handle app state changes for background/foreground
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (nextAppState === 'background' || nextAppState === 'inactive') {
+        // App is going to background
+        if (status === STATUS_PLAYING) {
+          wasPlayingBeforeBackgroundRef.current = true;
+          pause();
+        }
+      } else if (nextAppState === 'active') {
+        // App is coming to foreground
+        if (wasPlayingBeforeBackgroundRef.current && status === STATUS_PAUSED) {
+          wasPlayingBeforeBackgroundRef.current = false;
+          resume();
+        }
+      }
+    };
+
+    const subscription = AppState.addEventListener(
+      'change',
+      handleAppStateChange
+    );
+
+    return () => {
+      subscription?.remove();
+    };
   }, [status]);
 
   // Helper function to split content into sentences

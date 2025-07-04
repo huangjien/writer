@@ -10,7 +10,7 @@ npm-debug.*
 *.orig.*
 web-build/
 yarn.lock
-
+coverage/
 # macOS
 .DS_Store
 android/
