@@ -157,23 +157,16 @@ describe('SpeechTask', () => {
 
       const data = {
         current: 'chapter2.md',
+        progress: undefined,
       };
 
       await taskFunction({ data });
 
       expect(console.log).toHaveBeenCalledWith(
-        'Data provided, calling speak with:',
-        'chapter2.md',
-        undefined
+        'Invalid data provided, ignoring task execution:',
+        data
       );
-      expect(mockSpeechService.speak).toHaveBeenCalledWith(
-        'chapter2.md',
-        undefined,
-        {
-          language: 'zh',
-          voice: 'zh',
-        }
-      );
+      expect(mockSpeechService.speak).not.toHaveBeenCalled();
     });
 
     it('should handle speechService.speak throwing an error', async () => {
@@ -223,18 +216,10 @@ describe('SpeechTask', () => {
       await taskFunction({ data });
 
       expect(console.log).toHaveBeenCalledWith(
-        'Data provided, calling speak with:',
-        undefined,
-        undefined
+        'Invalid data provided, ignoring task execution:',
+        data
       );
-      expect(mockSpeechService.speak).toHaveBeenCalledWith(
-        undefined,
-        undefined,
-        {
-          language: 'zh',
-          voice: 'zh',
-        }
-      );
+      expect(mockSpeechService.speak).not.toHaveBeenCalled();
     });
   });
 });

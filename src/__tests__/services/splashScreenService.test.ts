@@ -101,7 +101,7 @@ describe('splashScreenService', () => {
       await hideSplashScreenWithErrorHandling(originalError);
 
       expect(console.error).toHaveBeenCalledWith(
-        'Failed to hide splash screen with error handling:',
+        'Failed to hide splash screen:',
         hideError
       );
       expect(mockHandleError).toHaveBeenCalledWith(originalError);
@@ -114,7 +114,7 @@ describe('splashScreenService', () => {
       await hideSplashScreenWithErrorHandling();
 
       expect(console.error).toHaveBeenCalledWith(
-        'Failed to hide splash screen with error handling:',
+        'Failed to hide splash screen:',
         hideError
       );
       expect(mockHandleError).not.toHaveBeenCalled();
@@ -128,7 +128,7 @@ describe('splashScreenService', () => {
       await hideSplashScreenWithErrorHandling(originalError);
 
       expect(console.error).toHaveBeenCalledWith(
-        'Failed to hide splash screen with error handling:',
+        'Failed to hide splash screen:',
         hideError
       );
       expect(mockHandleError).toHaveBeenCalledWith(originalError);

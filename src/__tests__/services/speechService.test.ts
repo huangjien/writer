@@ -182,17 +182,21 @@ describe('SpeechService', () => {
       expect(mockSpeech.speak).not.toHaveBeenCalled();
     });
 
-    it('should show error when content is too long', async () => {
+    it('should handle long content without errors', async () => {
       const longContent = 'a'.repeat(5000);
       const mockLongChapterData = JSON.stringify({ content: longContent });
       mockAsyncStorage.getItem.mockResolvedValue(mockLongChapterData);
 
       await speechService.speak('chapter1', 0);
 
-      expect(mockShowErrorToast).toHaveBeenCalledWith(
-        'Content is too long to be handled by TTS engine'
+      expect(mockSpeech.speak).toHaveBeenCalledWith(
+        longContent,
+        expect.objectContaining({
+          language: 'zh',
+          voice: 'zh',
+          onDone: expect.any(Function),
+        })
       );
-      expect(mockSpeech.speak).not.toHaveBeenCalled();
     });
 
     it('should handle AsyncStorage errors gracefully', async () => {

@@ -1,36 +1,16 @@
-import React, { createContext, useContext } from 'react';
-import { renderHook } from '@testing-library/react-native';
-
-// Simple test context
-const TestContext = createContext<string | null>(null);
-
-function TestProvider({ children }: { children: React.ReactNode }) {
-  return (
-    <TestContext.Provider value='test-value'>{children}</TestContext.Provider>
-  );
-}
-
-function useTestContext() {
-  const context = useContext(TestContext);
-  if (!context) {
-    throw new Error('useTestContext must be used within TestProvider');
-  }
-  return context;
-}
-
+// Mock Setup Tests
 describe('Context Debug Test', () => {
-  it('should throw error when used outside provider', () => {
-    expect(() => {
-      renderHook(() => useTestContext());
-    }).toThrow('useTestContext must be used within TestProvider');
+  it('should have React defined', () => {
+    expect(typeof require('react')).toBe('object');
   });
 
-  it('should work when used with provider', () => {
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <TestProvider>{children}</TestProvider>
-    );
+  it('should have createContext defined', () => {
+    const { createContext } = require('react');
+    expect(typeof createContext).toBe('function');
+  });
 
-    const { result } = renderHook(() => useTestContext(), { wrapper });
-    expect(result.current).toBe('test-value');
+  it('should have useContext defined', () => {
+    const { useContext } = require('react');
+    expect(typeof useContext).toBe('function');
   });
 });

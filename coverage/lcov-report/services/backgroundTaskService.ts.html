@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80.76% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>21/26</span>
+                <span class='fraction'>26/26</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/4</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.66% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">78.26% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>18/23</span>
+                <span class='fraction'>23/23</span>
             </div>
         
             
@@ -127,12 +127,8 @@
 <a name='L62'></a><a href='#L62'>62</a>
 <a name='L63'></a><a href='#L63'>63</a>
 <a name='L64'></a><a href='#L64'>64</a>
-<a name='L65'></a><a href='#L65'>65</a>
-<a name='L66'></a><a href='#L66'>66</a>
-<a name='L67'></a><a href='#L67'>67</a>
-<a name='L68'></a><a href='#L68'>68</a>
-<a name='L69'></a><a href='#L69'>69</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<a name='L65'></a><a href='#L65'>65</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -141,18 +137,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -169,7 +161,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
@@ -185,36 +177,32 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import * as BackgroundFetch from 'expo-background-fetch';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import * as BackgroundTask from 'expo-background-task';
 import { SPEECH_TASK } from '@/components/SpeechTask';
 &nbsp;
 export interface BackgroundTaskConfig {
   minimumInterval: number;
-  stopOnTerminate: boolean;
-  startOnBoot: boolean;
 }
 &nbsp;
 /**
  * Default configuration for background tasks
  */
 export const DEFAULT_BACKGROUND_TASK_CONFIG: BackgroundTaskConfig = {
-  minimumInterval: 10,
-  stopOnTerminate: true,
-  startOnBoot: false,
+  minimumInterval: 10, // minimum interval in minutes
 };
 &nbsp;
 /**
@@ -225,7 +213,7 @@ export const registerBackgroundTask = async (
   config: BackgroundTaskConfig = DEFAULT_BACKGROUND_TASK_CONFIG
 ): Promise&lt;boolean&gt; =&gt; {
   try {
-    await BackgroundFetch.registerTaskAsync(taskName, config);
+    await BackgroundTask.registerTaskAsync(taskName, config);
     console.log(`Background task '${taskName}' registered successfully`);
     return true;
   } catch (error) {
@@ -241,7 +229,7 @@ export const unregisterBackgroundTask = async (
   taskName: string = SPEECH_TASK
 ): Promise&lt;boolean&gt; =&gt; {
   try {
-    await BackgroundFetch.unregisterTaskAsync(taskName);
+    await BackgroundTask.unregisterTaskAsync(taskName);
     console.log(`Background task '${taskName}' unregistered successfully`);
     return true;
   } catch (error) {
@@ -253,18 +241,18 @@ export const unregisterBackgroundTask = async (
 /**
  * Check if a background task is registered
  */
-export const isBackgroundTaskRegistered = <span class="fstat-no" title="function not covered" >async </span>(
-  taskName: string = <span class="branch-0 cbranch-no" title="branch not covered" >SPEECH_TASK</span>
+export const isBackgroundTaskRegistered = async (
+  taskName: string = SPEECH_TASK
 ): Promise&lt;boolean&gt; =&gt; {
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    const isRegistered = <span class="cstat-no" title="statement not covered" >await BackgroundFetch.getStatusAsync();</span>
-<span class="cstat-no" title="statement not covered" >    return isRegistered === BackgroundFetch.BackgroundFetchStatus.Available;</span>
+  try {
+    const status = await BackgroundTask.getStatusAsync();
+    return status === BackgroundTask.BackgroundTaskStatus.Available;
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error(</span>
+    console.error(
       `Failed to check background task status for '${taskName}':`,
       error
     );
-<span class="cstat-no" title="statement not covered" >    return false;</span>
+    return false;
   }
 };
 &nbsp;</pre></td></tr></table></pre>
@@ -274,7 +262,7 @@ export const isBackgroundTaskRegistered = <span class="fstat-no" title="function
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-03T17:16:46.566Z
+                at 2025-07-04T07:28:26.520Z
             </div>
         <script src="../prettify.js"></script>
         <script>

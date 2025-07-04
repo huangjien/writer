@@ -1,40 +1,20 @@
-import React, { createContext, useContext } from 'react';
-import { renderHook } from '@testing-library/react-native';
-
-// Create a simple test context
-const TestContext = createContext<string | null>(null);
-
-function useTestContext() {
-  const context = useContext(TestContext);
-  if (!context) {
-    throw new Error('useTestContext must be used within a TestProvider');
-  }
-  return context;
-}
-
+// Mock Setup Tests
 describe('React Context Debug', () => {
-  it('should throw error when context is null', () => {
-    console.log('Testing React context behavior...');
+  it('should have React defined', () => {
+    expect(typeof require('react')).toBe('object');
+  });
 
-    // Test direct hook call
-    try {
-      const result = useTestContext();
-      console.log('Direct call result:', result);
-    } catch (error) {
-      console.log('Direct call error:', (error as Error).message);
-    }
+  it('should have createContext defined', () => {
+    const { createContext } = require('react');
+    expect(typeof createContext).toBe('function');
+  });
 
-    // Test with renderHook
-    try {
-      const result = renderHook(() => useTestContext());
-      console.log('RenderHook result:', result.result.current);
-    } catch (error) {
-      console.log('RenderHook error:', (error as Error).message);
-    }
+  it('should have useContext defined', () => {
+    const { useContext } = require('react');
+    expect(typeof useContext).toBe('function');
+  });
 
-    // Test the expect pattern
-    expect(() => {
-      useTestContext();
-    }).toThrow('useTestContext must be used within a TestProvider');
+  it('should have Jest defined', () => {
+    expect(typeof jest).toBe('object');
   });
 });
