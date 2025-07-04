@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -15,7 +15,8 @@
     "prepare": "husky",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "publishRelease": "bash publishRelease.sh"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",
