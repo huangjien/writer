@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "1.5.20",
+  "version": "1.5.21",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -118,7 +118,8 @@
         "ts-jest",
         {
           "tsconfig": {
-            "jsx": "react-jsx"
+            "jsx": "react-jsx",
+            "outDir": "./dist"
           }
         }
       ]
