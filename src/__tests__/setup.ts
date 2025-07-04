@@ -266,6 +266,21 @@ jest.mock('expo-speech', () => ({
   isSpeakingAsync: jest.fn(() => Promise.resolve(false)),
 }));
 
+// Mock expo-av
+jest.mock('expo-av', () => ({
+  Audio: {
+    setAudioModeAsync: jest.fn(() => Promise.resolve()),
+    Sound: {
+      createAsync: jest.fn(() => Promise.resolve({ sound: {}, status: {} })),
+    },
+    INTERRUPTION_MODE_IOS_DO_NOT_MIX: 0,
+    INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS: 1,
+    INTERRUPTION_MODE_ANDROID_DO_NOT_MIX: 1,
+    INTERRUPTION_MODE_ANDROID_DUCK_OTHERS: 2,
+  },
+  Video: jest.fn(),
+}));
+
 // Mock expo-local-authentication
 jest.mock('expo-local-authentication', () => ({
   hasHardwareAsync: jest.fn(() => Promise.resolve(true)),

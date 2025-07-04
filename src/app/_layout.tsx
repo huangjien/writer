@@ -13,6 +13,7 @@ import { CustomDrawerContent } from '@/components/CustomDrawerContent';
 import { Footer } from '@/components/Footer';
 import { AsyncStorageProvider } from '@/hooks/useAsyncStorage';
 import { useAuthentication } from '@/hooks/useAuthentication';
+import { Audio } from 'expo-av';
 
 enableFreeze(true);
 
@@ -141,6 +142,26 @@ export default function Layout() {
   console.log('Layout component is rendering');
   const { theme } = useThemeConfig();
   console.log('Layout theme:', theme);
+
+  // Initialize audio session on app start
+  useEffect(() => {
+    const initializeAudioSession = async () => {
+      try {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          staysActiveInBackground: true,
+          playsInSilentModeIOS: true,
+          shouldDuckAndroid: true,
+          playThroughEarpieceAndroid: false,
+        });
+        console.log('Audio session initialized successfully');
+      } catch (error) {
+        console.error('Failed to initialize audio session:', error);
+      }
+    };
+
+    initializeAudioSession();
+  }, []);
 
   return (
     <AsyncStorageProvider>
