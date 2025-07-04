@@ -52,7 +52,26 @@ jobs:
       id: package-version
       run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
       
+    - name: Setup Expo CLI
+      run: npm install -g @expo/cli eas-cli
+      
+    - name: Build APK with EAS
+      env:
+        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      run: |
+        eas build --platform android --profile production --non-interactive --wait
+        
+    - name: Download APK
+      env:
+        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      run: |
+        # Get the latest build URL
+        BUILD_URL=$(eas build:list --platform android --status finished --limit 1 --json | jq -r '.[0].artifacts.buildUrl')
+        # Download the APK
+        curl -L -o writer-v${{ steps.package-version.outputs.version }}.apk "$BUILD_URL"
+        
     - name: Create Release
+      id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -64,5 +83,18 @@ jobs:
           
           Changes in this release:
           - Automated release from main branch
+          
+          ## Downloads
+          - Android APK: writer-v${{ steps.package-version.outputs.version }}.apk
         draft: false
         prerelease: false
+        
+    - name: Upload APK to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./writer-v${{ steps.package-version.outputs.version }}.apk
+        asset_name: writer-v${{ steps.package-version.outputs.version }}.apk
+        asset_content_type: application/vnd.android.package-archive
