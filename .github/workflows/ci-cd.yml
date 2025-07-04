@@ -47,8 +47,23 @@ jobs:
         node-version: '18'
         cache: 'npm'
         
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      
     - name: Install dependencies
       run: npm ci
+      
+    - name: Create temp directory
+      run: mkdir -p ~/temp
+      
+    - name: Build Android APK
+      run: ./buildAndroid.sh
       
     - name: Get package version
       id: package-version
