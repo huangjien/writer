@@ -3,7 +3,7 @@ import '../global.css';
 import { Drawer } from 'expo-router/drawer';
 import { Pressable, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { ThemeProvider } from '@react-navigation/native';
+import { ThemeProvider, useTheme } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useThemeConfig } from '@/hooks/use-theme-config';
 import { enableFreeze } from 'react-native-screens';
@@ -18,13 +18,9 @@ import { Audio } from 'expo-av';
 enableFreeze(true);
 
 export function InnerLayout() {
+  const theme = useTheme();
   // console.log('InnerLayout component is rendering');
   const { authState, isLoading, initializeAuth } = useAuthentication();
-
-  // console.log('InnerLayout auth state:', {
-  //   authState,
-  //   isLoading,
-  // });
 
   useEffect(() => {
     initializeAuth();
@@ -33,109 +29,95 @@ export function InnerLayout() {
   // Show loading state while initializing
   if (isLoading) {
     return (
-      <View className='flex-1 justify-center items-center bg-white dark:bg-black'>
-        <Text className='text-black dark:text-white'>Initializing...</Text>
+      <View className='flex-1 justify-center items-center'>
+        <Text style={{ color: theme.colors.text }}>Initializing...</Text>
       </View>
     );
   }
   return (
-    <View className='flex elevation z-auto flex-1 flex-col text-black dark:text-white bg-white dark:bg-black'>
+    <View
+      className='flex elevation z-auto flex-1 flex-col'
+      style={{ backgroundColor: theme.colors.background }}
+    >
       {/* <Header /> */}
       <Drawer
-        screenOptions={({ navigation }) => ({
-          headerMode: 'float',
-          headerLeft: () => (
-            <Pressable onPress={() => navigation.toggleDrawer()}>
-              <Feather name='menu' size={24} color={'green'} />
-            </Pressable>
-          ),
-        })}
+        screenOptions={{
+          headerTransparent: true,
+          headerStyle: {
+            backgroundColor: 'transparent',
+          },
+          headerTitleStyle: {
+            color: theme.colors.text,
+          },
+          headerTintColor: theme.colors.text,
+          drawerStyle: {
+            backgroundColor: theme.colors.background,
+          },
+          drawerLabelStyle: {
+            color: theme.colors.text,
+          },
+          drawerActiveBackgroundColor: theme.colors.primary,
+          drawerActiveTintColor: theme.colors.text,
+          drawerInactiveTintColor: theme.colors.text,
+        }}
         drawerContent={() => <CustomDrawerContent />}
       >
         <Drawer.Screen
           name='index'
-          options={{
+          options={({ navigation }) => ({
             headerShown: true,
-            headerTitle() {
-              return (
-                <Text className='bg-white dark:bg-black text-black dark:text-white'>
-                  Welcome
-                </Text>
-              );
-            },
-            headerBackground() {
-              return (
-                <View className='bg-white dark:bg-black text-black dark:text-white'>
-                  <View style={{ height: 100 }} />
-                </View>
-              );
-            },
-          }}
+            headerLeft: () => menuButton(navigation), // Now screen-specific
+            headerTitle: () => (
+              <Text className='text-inherit dark:text-white'>Welcome</Text>
+            ),
+          })}
         />
+
         <Drawer.Screen
           name='github'
-          options={{
+          options={({ navigation }) => ({
             headerShown: true,
-            headerTitle() {
-              return (
-                <Text className='bg-white dark:bg-black text-black dark:text-white'>
-                  Index
-                </Text>
-              );
-            },
-            headerBackground() {
-              return (
-                <View className='bg-white dark:bg-black text-black dark:text-white'>
-                  <View style={{ height: 100 }} />
-                </View>
-              );
-            },
-          }}
+            headerLeft: () => menuButton(navigation), // Now screen-specific
+            headerTitle: () => (
+              <Text className='text-inherit dark:text-white'>Index</Text>
+            ),
+          })}
         />
         <Drawer.Screen
           name='read'
-          options={{
+          options={({ navigation }) => ({
             headerShown: true,
-            headerTitle() {
-              return (
-                <Text className='bg-white dark:bg-black text-black dark:text-white'>
-                  Reading
-                </Text>
-              );
-            },
-            headerBackground() {
-              return (
-                <View className='bg-white dark:bg-black text-black dark:text-white'>
-                  <View style={{ height: 100 }} />
-                </View>
-              );
-            },
-          }}
+            headerLeft: () => menuButton(navigation), // Now screen-specific
+            headerTitle: () => (
+              <Text className='text-inherit dark:text-white'>Reading</Text>
+            ),
+          })}
         />
         <Drawer.Screen
           name='setting'
-          options={{
+          options={({ navigation }) => ({
             headerShown: true,
-            headerTitle() {
-              return (
-                <Text className='bg-white dark:bg-black text-black dark:text-white'>
-                  Configuration
-                </Text>
-              );
-            },
-            headerBackground() {
-              return (
-                <View className='bg-white dark:bg-black text-black dark:text-white'>
-                  <View style={{ height: 100 }} />
-                </View>
-              );
-            },
-          }}
+            headerLeft: () => menuButton(navigation), // Now screen-specific
+            headerTitle: () => (
+              <Text className='text-inherit dark:text-white'>Settings</Text>
+            ),
+          })}
         />
       </Drawer>
       <Footer />
     </View>
   );
+
+  function menuButton(navigation): React.ReactNode {
+    return (
+      <Pressable
+        onPress={() => navigation.toggleDrawer()}
+        style={{ marginLeft: 16 }}
+      >
+        <Feather name='menu' size={24} color={theme.colors.border} />
+      </Pressable>
+    );
+  }
 }
 
 export default function Layout() {
@@ -166,13 +148,13 @@ export default function Layout() {
   return (
     <AsyncStorageProvider>
       <RootSiblingParent>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <ThemeProvider value={theme}>
+        <ThemeProvider value={theme}>
+          <GestureHandlerRootView>
             <SafeAreaProvider>
               <InnerLayout />
             </SafeAreaProvider>
-          </ThemeProvider>
-        </GestureHandlerRootView>
+          </GestureHandlerRootView>
+        </ThemeProvider>
       </RootSiblingParent>
     </AsyncStorageProvider>
   );

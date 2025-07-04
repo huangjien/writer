@@ -16,7 +16,7 @@ const DarkTheme: Theme = {
     background: colors.charcoal[950],
     text: colors.charcoal[100],
     border: colors.charcoal[500],
-    card: colors.charcoal[850],
+    card: 'transparent',
   },
 };
 
@@ -26,6 +26,7 @@ const LightTheme: Theme = {
     ...DefaultTheme.colors,
     primary: colors.primary[400],
     background: colors.white,
+    card: 'transparent',
   },
 };
 

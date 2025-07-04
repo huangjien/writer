@@ -64,7 +64,7 @@ export default function Page() {
                 onPress={() => router.push('/github')}
               >
                 <Feather name='book-open' size={20} color='white' />
-                <Text className='text-white font-semibold'>Browse Content</Text>
+                <Text className='text-white font-semibold'>Browse</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -121,7 +121,28 @@ export default function Page() {
             🇪🇸 Escuchar es el comienzo de la sabiduría
           </Text>
           <Text className='text-lg text-gray-600 dark:text-gray-300'>
-            🇩🇪 das zuhören ist der anfang der weisheit
+            🇩🇪 Das Zuhören ist der Anfang der Weisheit
+          </Text>
+          <Text className='text-lg text-gray-600 dark:text-gray-300'>
+            🇫🇷 L'écoute est le commencement de la sagesse
+          </Text>
+          <Text className='text-lg text-gray-600 dark:text-gray-300'>
+            🇮🇹 L'ascolto è l'inizio della saggezza
+          </Text>
+          <Text className='text-lg text-gray-600 dark:text-gray-300'>
+            🇯🇵 聞くことは知恵の始まり
+          </Text>
+          <Text className='text-lg text-gray-600 dark:text-gray-300'>
+            🇰🇷 듣는 것은 지혜의 시작이다
+          </Text>
+          <Text className='text-lg text-gray-600 dark:text-gray-300'>
+            🇷🇺 Слушание - начало мудрости
+          </Text>
+          <Text className='text-lg text-gray-600 dark:text-gray-300'>
+            🇵🇹 Ouvir é o começo da sabedoria
+          </Text>
+          <Text className='text-lg text-gray-600 dark:text-gray-300'>
+            🇳🇱 Luisteren is het begin van wijsheid
           </Text>
         </View>
       </View>

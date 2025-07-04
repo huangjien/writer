@@ -1,5 +1,6 @@
 import { Text, View, TextInput, Pressable } from 'react-native';
 import { useAsyncStorage } from '@/hooks/useAsyncStorage';
+import { useHeaderHeight } from '@react-navigation/elements';
 import React, { useEffect } from 'react';
 import * as Speech from 'expo-speech';
 import { useForm, Controller } from 'react-hook-form';
@@ -10,6 +11,7 @@ import { CONTENT_KEY, SETTINGS_KEY, showInfoToast } from '@/components/global';
 import { useIsFocused } from '@react-navigation/native';
 
 export default function Page() {
+  const headerHeight = useHeaderHeight();
   const [storage, { setItem, getItem }, isLoading, hasChanged] =
     useAsyncStorage();
   const {
@@ -90,7 +92,10 @@ export default function Page() {
   };
 
   return (
-    <View className='flex-1 '>
+    <View
+      style={{ paddingTop: headerHeight }}
+      className='flex-1 bg-white dark: bg-black'
+    >
       <View className='h-full items-stretch justify-stretch gap-2  px-8 md:px-4  bg-white dark:bg-black'>
         <ScrollView>
           <Controller

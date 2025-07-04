@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, TouchableOpacity } from 'react-native';
+import { useHeaderHeight } from '@react-navigation/elements';
 import axios from 'axios';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
@@ -22,6 +23,7 @@ function elementWithNameExists(array: any[], nameToFind: string): boolean {
 }
 
 export default function Page() {
+  const headerHeight = useHeaderHeight();
   const [settings, setSettings] = useState(undefined);
   const [content, setContent] = useState([]);
   const [analysis, setAnalysis] = useState([]);
@@ -146,13 +148,13 @@ export default function Page() {
   };
 
   return (
-    <View className='flex-1 bg-white dark:bg-black'>
+    <View
+      style={{ paddingTop: headerHeight }}
+      className='flex-1 bg-white dark:bg-black'
+    >
       {/* Header with refresh indicator */}
       <View className='px-4 py-3 border-b border-gray-200 dark:border-gray-700'>
         <View className='flex flex-row items-center justify-between'>
-          <Text className='text-xl font-semibold text-black dark:text-white'>
-            Content Library
-          </Text>
           {isRefreshing && (
             <View className='flex flex-row items-center gap-2'>
               <Text className='text-sm text-gray-500 dark:text-gray-400'>
