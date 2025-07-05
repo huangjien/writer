@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, TouchableOpacity } from 'react-native';
-import { useHeaderHeight } from '@react-navigation/elements';
+// Removed useSafeAreaInsets import due to navigation context issues
 import axios from 'axios';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
@@ -30,17 +30,17 @@ const loadSettingsFromStorage = async (
 ) => {
   try {
     const res = await getItem(SETTINGS_KEY);
-    const data = JSON.parse(res);
-
-    if (!data) {
+    if (!res) {
       console.log('no data returned for settings');
       setIsLoadingContent(false);
       return null;
     }
 
+    const data = JSON.parse(res);
     setSettings(data);
     return data;
   } catch (err) {
+    console.error('Error loading settings from storage:', err);
     handleError(err);
     setIsLoadingContent(false);
     return null;
@@ -52,9 +52,13 @@ const loadExistingContentFromStorage = async (getItem, setContent) => {
   try {
     const existingContent = await getItem(CONTENT_KEY);
     if (existingContent) {
-      const parsedContent = JSON.parse(existingContent);
-      if (Array.isArray(parsedContent) && parsedContent.length > 0) {
-        setContent(parsedContent);
+      try {
+        const parsedContent = JSON.parse(existingContent);
+        if (Array.isArray(parsedContent) && parsedContent.length > 0) {
+          setContent(parsedContent);
+        }
+      } catch (parseError) {
+        console.error('Error parsing existing content:', parseError);
       }
     }
   } catch (error) {
@@ -67,9 +71,13 @@ const loadExistingAnalysisFromStorage = async (getItem, setAnalysis) => {
   try {
     const existingAnalysis = await getItem(ANALYSIS_KEY);
     if (existingAnalysis) {
-      const parsedAnalysis = JSON.parse(existingAnalysis);
-      if (Array.isArray(parsedAnalysis)) {
-        setAnalysis(parsedAnalysis);
+      try {
+        const parsedAnalysis = JSON.parse(existingAnalysis);
+        if (Array.isArray(parsedAnalysis)) {
+          setAnalysis(parsedAnalysis);
+        }
+      } catch (parseError) {
+        console.error('Error parsing existing analysis:', parseError);
       }
     }
   } catch (error) {
@@ -78,14 +86,36 @@ const loadExistingAnalysisFromStorage = async (getItem, setAnalysis) => {
 };
 
 export default function Page() {
-  const headerHeight = useHeaderHeight();
   const [settings, setSettings] = useState(undefined);
   const [content, setContent] = useState([]);
   const [analysis, setAnalysis] = useState([]);
   const [isLoadingContent, setIsLoadingContent] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const router = useRouter();
-  const isFocused = useIsFocused();
+
+  // Handle navigation hooks with fallbacks for context issues
+  let router;
+  let isFocused = true;
+
+  try {
+    router = useRouter();
+  } catch (error) {
+    console.warn(
+      'Navigation context not available for useRouter:',
+      error.message
+    );
+    router = { push: () => console.warn('Navigation not available') };
+  }
+
+  try {
+    isFocused = useIsFocused();
+  } catch (error) {
+    console.warn(
+      'Navigation context not available for useIsFocused:',
+      error.message
+    );
+    isFocused = true;
+  }
+
   const [storage, { setItem, getItem, removeItem }, isLoading, hasChanged] =
     useAsyncStorage();
 
@@ -190,65 +220,75 @@ export default function Page() {
   );
 
   // Helper component for content list
-  const renderContentList = () => (
-    <View className='flex-1'>
-      <View className='px-4 md:px-6 flex-1'>
-        <ScrollView className='flex-1'>
-          <View className='py-4'>
-            {content.sort(fileNameComparator).map((item) => (
-              <TouchableOpacity
-                key={item.sha}
-                className='mb-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700'
-                onPress={() => {
-                  router.push({
-                    pathname: '/read',
-                    params: { post: CONTENT_KEY + item['name'] },
-                  });
-                }}
-              >
-                <View className='flex flex-row items-center justify-between'>
-                  <View className='flex-1'>
-                    <Text className='text-lg font-semibold text-black dark:text-white mb-1'>
-                      {item.name.replace('_', '').replace('.md', '')}
-                    </Text>
-                    <View className='flex flex-row items-center gap-2'>
-                      <Text className='text-sm text-gray-500 dark:text-gray-400'>
-                        {item.size} characters
+  const renderContentList = () => {
+    return (
+      <ScrollView className='flex-1 px-4'>
+        {content.sort(fileNameComparator).map((item, index) => (
+          <TouchableOpacity
+            key={item.sha}
+            className='mb-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700'
+            onPress={() => {
+              try {
+                router?.push({
+                  pathname: '/read',
+                  params: { post: CONTENT_KEY + item.name },
+                });
+              } catch (error) {
+                console.warn('Navigation failed:', error);
+              }
+            }}
+          >
+            <View className='flex-row items-center justify-between'>
+              <View className='flex-1'>
+                <Text className='text-lg font-semibold text-gray-900 dark:text-white mb-1'>
+                  {item.name.replace('_', '').replace('.md', '')}
+                </Text>
+                <View className='flex-row items-center gap-2'>
+                  <Text className='text-sm text-gray-600 dark:text-gray-400'>
+                    {item.size} characters
+                  </Text>
+                  {item.analysed && (
+                    <View className='flex-row items-center gap-1'>
+                      <Text className='text-green-500'>✓</Text>
+                      <Text className='text-xs text-green-600 dark:text-green-400'>
+                        Analyzed
                       </Text>
-                      {item.analysed && (
-                        <View className='flex flex-row items-center gap-1'>
-                          <Text className='text-green-500'>✓</Text>
-                          <Text className='text-xs text-green-600 dark:text-green-400'>
-                            Analyzed
-                          </Text>
-                        </View>
-                      )}
                     </View>
-                  </View>
-                  <Text className='text-gray-400 text-lg'>›</Text>
+                  )}
                 </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
-      </View>
-    </View>
-  );
+              </View>
+              <Text className='text-gray-400 text-lg'>›</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    );
+  };
 
   // Main content renderer
   const renderMainContent = () => {
+    console.log('renderMainContent called:', {
+      isLoadingContent,
+      hasSettings: !!settings,
+      contentLength: content.length,
+    });
+
     if (isLoadingContent) {
+      console.log('Rendering loading state');
       return renderLoadingState();
     }
 
     if (!settings) {
+      console.log('Rendering settings required');
       return renderSettingsRequired();
     }
 
     if (content.length === 0) {
+      console.log('Rendering no content');
       return renderNoContent();
     }
 
+    console.log('Rendering content list');
     return renderContentList();
   };
 
@@ -347,29 +387,6 @@ export default function Page() {
     }
   };
 
-  return (
-    <View
-      style={{ paddingTop: headerHeight }}
-      className='flex-1 bg-white dark:bg-black'
-    >
-      {/* Header with refresh indicator */}
-      <View className='px-4 py-3 border-b border-gray-200 dark:border-gray-700'>
-        <View className='flex flex-row items-center justify-between'>
-          {isRefreshing && (
-            <View className='flex flex-row items-center gap-2'>
-              <Text className='text-sm text-gray-500 dark:text-gray-400'>
-                Syncing...
-              </Text>
-              <View className='w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin' />
-            </View>
-          )}
-        </View>
-      </View>
-
-      {renderMainContent()}
-    </View>
-  );
-
   // Helper function to validate items for storage
   const validateItemsForStorage = (items: any) => {
     if (!items || items.length <= 0) {
@@ -439,7 +456,20 @@ export default function Page() {
   ) => {
     try {
       const existingData = await getItem(mark + item.name);
-      const data = existingData ? JSON.parse(existingData) : null;
+      let data = null;
+
+      if (existingData) {
+        try {
+          data = JSON.parse(existingData);
+        } catch (parseError) {
+          console.error(
+            'Error parsing existing data for item:',
+            item.name,
+            parseError
+          );
+          data = null;
+        }
+      }
 
       if (!data || data['sha'] !== item['sha']) {
         // Need to update - fetch new content
@@ -460,11 +490,22 @@ export default function Page() {
   function saveToStorage(mark: string, items: any) {
     // Load existing content to show immediately
     if (mark === CONTENT_KEY) {
-      getItem(mark).then((res) => {
-        if (res) {
-          setContent(JSON.parse(res));
-        }
-      });
+      getItem(mark)
+        .then((res) => {
+          if (res) {
+            try {
+              setContent(JSON.parse(res));
+            } catch (parseError) {
+              console.error(
+                'Error parsing content for immediate display:',
+                parseError
+              );
+            }
+          }
+        })
+        .catch((error) => {
+          console.error('Error loading content for immediate display:', error);
+        });
     }
 
     // Validate items
@@ -485,4 +526,18 @@ export default function Page() {
     // Save the items list
     setItem(mark, JSON.stringify(items));
   }
+
+  return (
+    <View className='flex-1 bg-white dark:bg-black' style={{ paddingTop: 100 }}>
+      {isRefreshing && (
+        <View className='absolute top-20 right-4 z-10 flex flex-row items-center gap-2 bg-white dark:bg-black px-3 py-2 rounded-lg shadow'>
+          <Text className='text-sm text-gray-500 dark:text-gray-400'>
+            Syncing...
+          </Text>
+          <View className='w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin' />
+        </View>
+      )}
+      {renderMainContent()}
+    </View>
+  );
 }

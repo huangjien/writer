@@ -494,9 +494,58 @@ jest.mock('react-native-screens', () => ({
 
 // Mock react-native-reanimated
 jest.mock('react-native-reanimated', () => {
-  const Reanimated = require('react-native-reanimated/mock');
-  Reanimated.default.call = () => {};
-  return Reanimated;
+  const mockReanimated = {
+    default: {
+      call: () => {},
+      Value: jest.fn(),
+      event: jest.fn(),
+      add: jest.fn(),
+      eq: jest.fn(),
+      set: jest.fn(),
+      cond: jest.fn(),
+      interpolate: jest.fn(),
+      View: jest.fn(),
+      Extrapolate: { EXTEND: 'extend', CLAMP: 'clamp', IDENTITY: 'identity' },
+      Transition: {
+        Together: 'Together',
+        Sequence: 'Sequence',
+        In: 'In',
+        Out: 'Out',
+      },
+      Easing: {
+        in: jest.fn(),
+        out: jest.fn(),
+        inOut: jest.fn(),
+      },
+    },
+    configureReanimatedLogger: jest.fn(),
+    ReanimatedLogLevel: {
+      warn: 'warn',
+      error: 'error',
+      info: 'info',
+      debug: 'debug',
+    },
+    useSharedValue: jest.fn(() => ({ value: 0 })),
+    useAnimatedStyle: jest.fn(() => ({})),
+    withTiming: jest.fn((value) => value),
+    withSpring: jest.fn((value) => value),
+    withDecay: jest.fn((value) => value),
+    withRepeat: jest.fn((value) => value),
+    cancelAnimation: jest.fn(),
+    measure: jest.fn(),
+    useAnimatedGestureHandler: jest.fn(),
+    useAnimatedRef: jest.fn(),
+    useDerivedValue: jest.fn(),
+    interpolateColor: jest.fn(),
+    useAnimatedProps: jest.fn(() => ({})),
+    createAnimatedPropAdapter: jest.fn(),
+    useAnimatedScrollHandler: jest.fn(),
+    useAnimatedReaction: jest.fn(),
+    useWorkletCallback: jest.fn((fn) => fn),
+    runOnJS: jest.fn((fn) => fn),
+    runOnUI: jest.fn((fn) => fn),
+  };
+  return mockReanimated;
 });
 jest.mock('react-native-root-siblings', () => ({
   RootSiblingParent: ({ children }: { children: React.ReactNode }) => children,
