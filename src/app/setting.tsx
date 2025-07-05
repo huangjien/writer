@@ -18,8 +18,8 @@ const useSettingsForm = () => {
   try {
     isFocused = useIsFocused();
   } catch (error) {
-    console.warn('Navigation context not available for useIsFocused:', error);
-    isFocused = true; // Default to true when navigation context is not available
+    // Silently handle navigation context not being available
+    isFocused = true;
   }
 
   const form = useForm({

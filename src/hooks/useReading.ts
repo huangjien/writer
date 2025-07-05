@@ -24,15 +24,13 @@ export function useReading() {
   const [fontSize, setFontSize] = useState(16);
 
   // Handle navigation context safely
-  let isFocused = false;
+  let isFocused = true; // Default to focused
   try {
     isFocused = useIsFocused();
   } catch (error) {
-    console.warn(
-      'Navigation context not available for useIsFocused in useReading hook:',
-      error
-    );
-    isFocused = true; // Default to focused when navigation context is unavailable
+    // Silently handle navigation context not being available
+    // This is expected during initial app load or in certain contexts
+    isFocused = true;
   }
 
   // Load settings on mount and when hasChanged

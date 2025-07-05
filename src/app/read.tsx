@@ -25,7 +25,7 @@ export default function Page() {
   try {
     navigation = useNavigation();
   } catch (error) {
-    console.warn('Navigation context not available:', error);
+    // Silently handle navigation context not being available
     navigation = null;
   }
   let top = 0;
@@ -219,6 +219,9 @@ export default function Page() {
                   content={content}
                   fontSize={fontSize}
                   top={top}
+                  currentParagraphIndex={currentSentenceIndex}
+                  isReading={status === 'playing'}
+                  scrollViewRef={scrollViewRef}
                 />
               </View>
             </GestureDetector>
