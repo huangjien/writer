@@ -1,1 +1,1 @@
-npx prettier -w ./src
+pnpm exec prettier -w ./src

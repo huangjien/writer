@@ -1,1 +1,1 @@
-npx expo start --reset-cache --go
+pnpm exec expo start --reset-cache --go

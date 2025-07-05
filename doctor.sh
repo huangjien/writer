@@ -1,1 +1,1 @@
-npx expo-doctor
+pnpm exec expo-doctor

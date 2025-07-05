@@ -1,1 +1,1 @@
-npx expo install --check
+pnpm exec expo install --check
