@@ -86,7 +86,7 @@ export default function Page() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const router = useRouter();
   const isFocused = useIsFocused();
-  const [storage, { setItem, getItem }, isLoading, hasChanged] =
+  const [storage, { setItem, getItem, removeItem }, isLoading, hasChanged] =
     useAsyncStorage();
 
   // Load existing data immediately on mount
@@ -257,6 +257,31 @@ export default function Page() {
     return await getFolderAndMdfiles(settings.contentFolder);
   };
 
+  // Helper function to clean up orphan items from storage
+  const cleanupOrphanItems = async (currentItems: any[], keyPrefix: string) => {
+    try {
+      // Get all storage keys
+      const allKeys = Object.keys(storage);
+      const prefixKeys = allKeys.filter((key) => key.startsWith(keyPrefix));
+      const currentFileKeys = currentItems.map((item) => keyPrefix + item.name);
+      const orphanKeys = prefixKeys.filter(
+        (key) =>
+          key !== keyPrefix && // Keep the main list key
+          !currentFileKeys.includes(key)
+      );
+
+      // Remove orphan items
+      if (orphanKeys.length > 0) {
+        await Promise.all(orphanKeys.map((key) => removeItem(key)));
+        console.log(
+          `Cleaned up ${orphanKeys.length} orphan items for ${keyPrefix}`
+        );
+      }
+    } catch (error) {
+      console.error('Error cleaning orphan items:', error);
+    }
+  };
+
   const refreshDataFromGitHub = async () => {
     if (!validateGitHubSettings(settings)) {
       console.log('Settings not available for refresh');
@@ -273,12 +298,16 @@ export default function Page() {
       if (analysisData) {
         setAnalysis(analysisData);
         saveToStorage(ANALYSIS_KEY, analysisData);
+        // Clean up orphan analysis items
+        await cleanupOrphanItems(analysisData, ANALYSIS_KEY);
       }
 
       // Refresh content data
       const contentData = await getFolderAndMdfiles(settings['contentFolder']);
       if (contentData) {
         saveToStorage(CONTENT_KEY, contentData);
+        // Clean up orphan content items
+        await cleanupOrphanItems(contentData, CONTENT_KEY);
       }
     } catch (err) {
       handleError(err);

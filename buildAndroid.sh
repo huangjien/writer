@@ -1,1 +1,1 @@
-npx expo prebuild && cd android && ./gradlew assembleRelease && cd .. && ls -al android/app/build/outputs/apk/release/app-release.apk && mv android/app/build/outputs/apk/release/app-release.apk ~/temp/writer.apk
+pnpm exec expo prebuild && cd android && ./gradlew assembleRelease && cd .. && ls -al android/app/build/outputs/apk/release/app-release.apk && mv android/app/build/outputs/apk/release/app-release.apk ~/temp/writer.apk
