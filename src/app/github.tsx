@@ -19,6 +19,9 @@ import { useAsyncStorage } from '@/hooks/useAsyncStorage';
 type RepoContent = components['schemas']['content-file'];
 
 function elementWithNameExists(array: any[], nameToFind: string): boolean {
+  if (!array || !Array.isArray(array)) {
+    return false;
+  }
   return array.some((element) => element.name === nameToFind);
 }
 
@@ -535,3 +538,11 @@ export default function Page() {
     </View>
   );
 }
+
+// Export helper functions for testing
+export {
+  elementWithNameExists,
+  loadSettingsFromStorage,
+  loadExistingContentFromStorage,
+  loadExistingAnalysisFromStorage,
+};
