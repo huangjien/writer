@@ -70,7 +70,7 @@ A powerful cross-platform text-to-speech application that transforms your GitHub
 
 ### Prerequisites
 
-- **Node.js** (v18 or later)
+- **Node.js** (v22 or later)
 - **pnpm** (recommended package manager)
 - **Expo CLI** (installed globally)
 - **Git** for version control
