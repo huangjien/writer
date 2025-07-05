@@ -126,6 +126,9 @@ importers:
       react-native-reanimated:
         specifier: ~3.17.5
         version: 3.17.5(@babel/core@7.28.0)(react-native@0.79.5(@babel/core@7.28.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
+      react-native-root-siblings:
+        specifier: ^5.0.1
+        version: 5.0.1
       react-native-root-toast:
         specifier: ^3.6.0
         version: 3.6.0(react-native@0.79.5(@babel/core@7.28.0)(@types/react@19.0.14)(react@19.0.0))
@@ -3926,6 +3929,9 @@ packages:
 
   react-native-root-siblings@4.1.1:
     resolution: {integrity: sha512-sdmLElNs5PDWqmZmj4/aNH4anyxreaPm61c4ZkRiR8SO/GzLg6KjAbb0e17RmMdnBdD0AIQbS38h/l55YKN4ZA==}
+
+  react-native-root-siblings@5.0.1:
+    resolution: {integrity: sha512-Ay3k/fBj6ReUkWX5WNS+oEAcgPLEGOK8n7K/L7D85mf3xvd8rm/b4spsv26E4HlFzluVx5HKbxEt9cl0wQ1u3g==}
 
   react-native-root-toast@3.6.0:
     resolution: {integrity: sha512-HgZ2OS84ZbInJGuejGghBCPmBwoSBuJFO/bAJoR/NS6rCl9eiXSRegIG/gLEo7lH9BijeA63is1noUqR8Y1DpQ==}
@@ -9410,6 +9416,8 @@ snapshots:
       - supports-color
 
   react-native-root-siblings@4.1.1: {}
+
+  react-native-root-siblings@5.0.1: {}
 
   react-native-root-toast@3.6.0(react-native@0.79.5(@babel/core@7.28.0)(@types/react@19.0.14)(react@19.0.0)):
     dependencies:
