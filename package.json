@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "2.0.24",
+  "version": "2.0.25",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -56,6 +56,7 @@
     "react-native-gesture-handler": "~2.24.0",
     "react-native-markdown-display": "^7.0.2",
     "react-native-modal": "^13.0.1",
+    "react-native-css-interop": "^0.1.22",
     "react-native-reanimated": "~3.17.5",
     "react-native-root-toast": "^3.6.0",
     "react-native-safe-area-context": "5.4.0",
