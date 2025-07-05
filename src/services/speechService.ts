@@ -46,7 +46,14 @@ export class SpeechService {
       const data = await this.getItem(CONTENT_KEY);
       if (!data) return undefined;
 
-      const content = JSON.parse(data);
+      let content;
+      try {
+        content = JSON.parse(data);
+      } catch (parseError) {
+        console.error('Error in getNext function:', parseError);
+        return undefined;
+      }
+
       const index = content.findIndex(
         (item: any) =>
           item['name'] === current.toString().replace(CONTENT_KEY, '')
@@ -79,7 +86,16 @@ export class SpeechService {
         return;
       }
 
-      const content = JSON.parse(data)['content'];
+      let parsedData;
+      try {
+        parsedData = JSON.parse(data);
+      } catch (parseError) {
+        console.error('Error parsing content data in speak:', parseError);
+        showErrorToast('Error loading content for chapter: ' + current);
+        return;
+      }
+
+      const content = parsedData['content'] || '';
 
       const speechOptions = {
         language: options.language || 'zh',

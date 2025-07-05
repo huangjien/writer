@@ -14,6 +14,16 @@ import { Footer } from '@/components/Footer';
 import { AsyncStorageProvider } from '@/hooks/useAsyncStorage';
 import { useAuthentication } from '@/hooks/useAuthentication';
 import { Audio } from 'expo-av';
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from 'react-native-reanimated';
+
+// Configure Reanimated logger to reduce warnings
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false, // Disable strict mode to reduce warnings about writing to value during render
+});
 
 enableFreeze(true);
 

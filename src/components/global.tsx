@@ -10,7 +10,7 @@ export const STATUS_STOPPED = 'stopped';
 export const EXPIRY_KEY = 'expiry';
 export const TIMEOUT = 1000 * 60 * 60 * 8;
 
-export const handleError = (err) => {
+export const handleError = (err: any) => {
   showErrorToast(err.message);
   console.error(err.status, err.message);
 };
@@ -38,7 +38,7 @@ export function showInfoToast(message: string) {
   });
 }
 
-export function sleep(ms) {
+export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
