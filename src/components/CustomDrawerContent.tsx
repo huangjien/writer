@@ -14,10 +14,13 @@ import { TIMEOUT } from './global';
 export const CustomDrawerContent = (): ReactElement => {
   const router = useRouter();
   const [storage, { setItem }, isLoading, hasChanged] = useAsyncStorage();
-  const { themeName, setSelectedTheme } = useThemeConfig();
+  const { theme, themeName, setSelectedTheme } = useThemeConfig();
 
   return (
-    <ScrollView contentContainerClassName='flex-1 py-4  text-black dark:text-white bg-white dark:bg-black'>
+    <ScrollView
+      contentContainerClassName='flex-1 py-4'
+      style={{ backgroundColor: theme.colors.background }}
+    >
       <View className='container m-4 p-4'>
         <Image
           source={images.logo}
@@ -33,21 +36,21 @@ export const CustomDrawerContent = (): ReactElement => {
 
       <DrawerItem
         label={() => <Text className='text-black dark:text-white '>Home</Text>}
-        icon={() => <Feather name='home' size={24} color={'green'} />}
+        icon={() => <Feather name='home' size={24} color={theme.colors.text} />}
         onPress={() => {
           router.push('/');
         }}
       />
       <DrawerItem
         label={() => <Text className='text-black dark:text-white '>Index</Text>}
-        icon={() => <Feather name='code' size={24} color={'green'} />}
+        icon={() => <Feather name='code' size={24} color={theme.colors.text} />}
         onPress={() => {
           router.push('/github');
         }}
       />
       <DrawerItem
         label={() => <Text className='text-black dark:text-white '>Read</Text>}
-        icon={() => <Feather name='play' size={24} color={'green'} />}
+        icon={() => <Feather name='play' size={24} color={theme.colors.text} />}
         onPress={() => {
           router.push('/read');
         }}
@@ -56,7 +59,9 @@ export const CustomDrawerContent = (): ReactElement => {
         label={() => (
           <Text className='text-black dark:text-white '>Settings</Text>
         )}
-        icon={() => <Feather name='settings' size={24} color={'green'} />}
+        icon={() => (
+          <Feather name='settings' size={24} color={theme.colors.text} />
+        )}
         onPress={() => {
           router.push('/setting');
         }}

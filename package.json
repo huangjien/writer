@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "2.0.15",
+  "version": "2.0.18",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -16,6 +16,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "lint": "prettier --write ./src",
     "publishRelease": "bash publishRelease.sh"
   },
   "dependencies": {
