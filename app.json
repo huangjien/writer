@@ -26,7 +26,8 @@
         {
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
         }
-      ]
+      ],
+      "expo-background-task"
     ],
     "name": "writer",
     "slug": "writer",
