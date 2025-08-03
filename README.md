@@ -4,6 +4,16 @@
 
 A powerful cross-platform text-to-speech application that transforms your GitHub repositories into an immersive audio reading experience. Writer seamlessly integrates with GitHub to fetch and read your content aloud with natural voice synthesis.
 
+## 🚀 Recent Updates
+
+### Version 2.0.29 Highlights
+- **Enhanced Testing Suite**: Comprehensive test coverage with 70+ passing tests
+- **Improved GitHub Integration**: Robust API handling and error management
+- **Advanced Coverage Reporting**: Detailed HTML coverage reports and analysis
+- **TypeScript Enhancements**: Full type safety with strict configuration
+- **Test Infrastructure**: Modern Jest setup with React Native Testing Library
+- **Documentation**: Comprehensive test coverage analysis and action plans
+
 ## ✨ Features
 
 ### 📖 Smart Reading Experience
@@ -61,10 +71,12 @@ A powerful cross-platform text-to-speech application that transforms your GitHub
 - **Background Tasks**: Continue audio playback in background
 
 ### Development Tools
-- **Jest**: Testing framework with 657+ tests
-- **Prettier**: Code formatting
-- **Husky**: Git hooks for code quality
-- **ESLint**: Code linting and style enforcement
+- **Jest**: Testing framework with comprehensive test suite (70+ tests)
+- **Testing Library**: React Native testing utilities
+- **TypeScript**: Full type safety with strict configuration
+- **Prettier**: Code formatting and style consistency
+- **Husky**: Git hooks for code quality assurance
+- **Coverage Reporting**: Detailed test coverage analysis and HTML reports
 
 ## 🚀 Getting Started
 
@@ -227,7 +239,7 @@ This will:
 
 ## 🧪 Testing
 
-The project includes comprehensive testing with 657+ tests across multiple categories:
+The project includes a comprehensive testing suite with **70+ passing tests** and detailed coverage reporting:
 
 ```bash
 # Run all tests
@@ -236,15 +248,33 @@ pnpm test
 # Run tests in watch mode
 pnpm run test:watch
 
-# Generate coverage report
+# Generate coverage report with HTML output
 pnpm run test:coverage
+
+# View coverage report
+open coverage/lcov-report/index.html
 ```
 
-### Test Coverage
+### Test Coverage Status
+- **Overall Coverage**: 40.78% statement coverage with ongoing improvements
+- **Utils Module**: 100% coverage (excellent)
+- **Services Module**: 88.73% coverage (good)
+- **Components**: 90.9% statement coverage
+- **Enhanced Test Suite**: Comprehensive integration tests for core functionality
+
+### Test Categories
 - **Unit Tests**: Component and utility function testing
-- **Integration Tests**: API and storage integration
-- **Hook Tests**: Custom React hooks validation
+- **Integration Tests**: GitHub API and storage integration
+- **Hook Tests**: Custom React hooks validation with proper context providers
 - **Service Tests**: Background services and speech functionality
+- **Enhanced Tests**: Advanced component interaction and state management testing
+
+### Test Infrastructure
+- **Jest Configuration**: TypeScript support with module path mapping
+- **Testing Library**: React Native testing utilities for component testing
+- **Coverage Reports**: HTML and JSON coverage reports with detailed analysis
+- **Mock System**: Comprehensive mocking for external dependencies
+- **Test Documentation**: Detailed coverage analysis in `TEST_COVERAGE_SUMMARY.md`
 
 ## 🤝 Contributing
 
@@ -278,6 +308,18 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - **Open Source Contributors**: For the amazing libraries that make this app possible
 - **Beta Testers**: For their valuable feedback and bug reports
 
+## 📊 Project Documentation
+
+### Testing & Coverage
+- **Test Coverage Summary**: `TEST_COVERAGE_SUMMARY.md` - Comprehensive analysis of test coverage
+- **Test Fixes Action Plan**: `TEST_FIXES_ACTION_PLAN.md` - Detailed improvement roadmap
+- **Coverage Reports**: `coverage/lcov-report/index.html` - Interactive HTML coverage report
+- **Dependency Analysis**: `DEPENDENCY_ANALYSIS.md` - Project dependency overview
+
+### Release Information
+- **Release Notes**: `RELEASE.md` - Version history and changelog
+- **Build Scripts**: Various automation scripts for development and deployment
+
 ## 📞 Support
 
 If you encounter any issues or have questions:
@@ -285,6 +327,7 @@ If you encounter any issues or have questions:
 - **Issues**: [GitHub Issues](https://github.com/huangjien/writer/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/huangjien/writer/discussions)
 - **Email**: Contact the maintainer for urgent matters
+- **Documentation**: Check the project documentation files for detailed information
 
 ---
 

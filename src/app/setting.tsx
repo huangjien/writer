@@ -18,8 +18,8 @@ const useSettingsForm = () => {
   try {
     isFocused = useIsFocused();
   } catch (error) {
-    console.warn('Navigation context not available for useIsFocused:', error);
-    isFocused = true; // Default to true when navigation context is not available
+    // Silently handle navigation context not being available
+    isFocused = true;
   }
 
   const form = useForm({
@@ -334,10 +334,7 @@ export default function Page() {
   }, [isFocused]);
 
   return (
-    <View
-      style={{ paddingTop: 100 }}
-      className='flex-1 bg-white dark: bg-black'
-    >
+    <View style={{ paddingTop: 100 }} className='flex-1 bg-white dark:bg-black'>
       <View className='h-full items-stretch justify-stretch gap-2  px-8 md:px-4  bg-white dark:bg-black'>
         <ScrollView>
           <GitHubRepoField control={control} errors={errors} />

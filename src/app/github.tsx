@@ -19,6 +19,9 @@ import { useAsyncStorage } from '@/hooks/useAsyncStorage';
 type RepoContent = components['schemas']['content-file'];
 
 function elementWithNameExists(array: any[], nameToFind: string): boolean {
+  if (!array || !Array.isArray(array)) {
+    return false;
+  }
   return array.some((element) => element.name === nameToFind);
 }
 
@@ -99,20 +102,14 @@ export default function Page() {
   try {
     router = useRouter();
   } catch (error) {
-    console.warn(
-      'Navigation context not available for useRouter:',
-      error.message
-    );
-    router = { push: () => console.warn('Navigation not available') };
+    // Silently handle navigation context not being available
+    router = { push: () => {} };
   }
 
   try {
     isFocused = useIsFocused();
   } catch (error) {
-    console.warn(
-      'Navigation context not available for useIsFocused:',
-      error.message
-    );
+    // Silently handle navigation context not being available
     isFocused = true;
   }
 
@@ -541,3 +538,11 @@ export default function Page() {
     </View>
   );
 }
+
+// Export helper functions for testing
+export {
+  elementWithNameExists,
+  loadSettingsFromStorage,
+  loadExistingContentFromStorage,
+  loadExistingAnalysisFromStorage,
+};
