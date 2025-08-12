@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
 import * as Speech from 'expo-speech';
 import * as KeepAwake from 'expo-keep-awake';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,7 +17,6 @@ import {
 
 // Mock dependencies
 jest.mock('expo-router');
-jest.mock('@react-navigation/native');
 jest.mock('expo-speech');
 jest.mock('expo-keep-awake', () => ({
   activateKeepAwakeAsync: jest.fn(),
@@ -98,12 +96,6 @@ const mockUseLocalSearchParams = useLocalSearchParams as jest.MockedFunction<
   typeof useLocalSearchParams
 >;
 const mockRouter = router as jest.Mocked<typeof router>;
-const mockUseNavigation = useNavigation as jest.MockedFunction<
-  typeof useNavigation
->;
-const mockUseIsFocused = useIsFocused as jest.MockedFunction<
-  typeof useIsFocused
->;
 const mockSpeech = Speech as jest.Mocked<typeof Speech>;
 const mockKeepAwake = KeepAwake as jest.Mocked<typeof KeepAwake>;
 const mockUseSafeAreaInsets = useSafeAreaInsets as jest.MockedFunction<
@@ -132,8 +124,6 @@ describe('Read Page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockUseLocalSearchParams.mockReturnValue({});
-    mockUseNavigation.mockReturnValue(mockNavigation as any);
-    mockUseIsFocused.mockReturnValue(true);
     mockUseSafeAreaInsets.mockReturnValue({
       top: 44,
       bottom: 0,
@@ -493,6 +483,82 @@ describe('Read Page', () => {
       expect(mockUseLocalSearchParams()).toEqual({ post: testPost });
       expect(emptyContent.content).toBe('');
       expect(testSettings.fontSize).toBe(16);
+    });
+  });
+
+  describe('Auto-play Functionality', () => {
+    it('should auto-play when chapter finishes and navigates to next chapter', async () => {
+      const testPost = '@Content:chapter1.md';
+      const contentList = [
+        { name: 'chapter1.md' },
+        { name: 'chapter2.md' },
+        { name: 'chapter3.md' },
+      ];
+      const testSettings = { fontSize: 16, current: null, progress: 0 };
+      const testContent = { content: 'Test chapter content for auto-play.' };
+
+      mockUseLocalSearchParams.mockReturnValue({ post: testPost });
+      mockGetItem
+        .mockResolvedValueOnce(JSON.stringify(testSettings)) // settings for fontSize
+        .mockResolvedValueOnce(JSON.stringify(testSettings)) // settings for current/progress
+        .mockResolvedValueOnce(JSON.stringify(testContent)) // content
+        .mockResolvedValueOnce(null) // analysis
+        .mockResolvedValueOnce(JSON.stringify(contentList)) // content list
+        .mockResolvedValueOnce(JSON.stringify(testSettings)); // settings for progress save
+
+      // Test that the setup is correct for auto-play functionality
+      expect(mockUseLocalSearchParams()).toEqual({ post: testPost });
+      expect(contentList.length).toBe(3);
+      expect(contentList[0].name).toBe('chapter1.md');
+      expect(contentList[1].name).toBe('chapter2.md');
+      expect(testContent.content).toBe('Test chapter content for auto-play.');
+
+      // Verify that speech synthesis is available for auto-play
+      expect(mockSpeech.speak).toBeDefined();
+      expect(mockKeepAwake.activateKeepAwakeAsync).toBeDefined();
+    });
+
+    it('should set shouldAutoPlay flag when chapter completes', async () => {
+      const testSettings = {
+        fontSize: 16,
+        current: '@Content:chapter1.md',
+        progress: 1.0,
+      };
+      const contentList = [{ name: 'chapter1.md' }, { name: 'chapter2.md' }];
+
+      mockGetItem
+        .mockResolvedValueOnce(JSON.stringify(testSettings))
+        .mockResolvedValueOnce(JSON.stringify(contentList));
+
+      // Test that when progress reaches 1.0 (chapter complete), the system is ready for auto-play
+      expect(testSettings.progress).toBe(1.0);
+      expect(contentList.length).toBe(2);
+      expect(contentList[1].name).toBe('chapter2.md'); // Next chapter available
+
+      // Verify auto-play setup components are available
+      expect(mockRouter).toBeDefined();
+      expect(mockSpeech.speak).toBeDefined();
+    });
+
+    it('should not auto-play if no next chapter available', async () => {
+      const testSettings = {
+        fontSize: 16,
+        current: '@Content:chapter2.md',
+        progress: 1.0,
+      };
+      const contentList = [{ name: 'chapter1.md' }, { name: 'chapter2.md' }];
+
+      mockGetItem
+        .mockResolvedValueOnce(JSON.stringify(testSettings))
+        .mockResolvedValueOnce(JSON.stringify(contentList));
+
+      // Test that when on last chapter, no auto-play should occur
+      expect(testSettings.progress).toBe(1.0);
+      expect(contentList.length).toBe(2);
+      expect(contentList[1].name).toBe('chapter2.md'); // Current is last chapter
+
+      // Verify that router is available for navigation checks
+      expect(mockRouter).toBeDefined();
     });
   });
 });

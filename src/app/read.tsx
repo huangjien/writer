@@ -1,6 +1,5 @@
 import { View, ScrollView } from 'react-native';
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Speech from 'expo-speech';
 import {
@@ -20,14 +19,7 @@ import {
 } from '@/utils/readingUtils';
 
 export default function Page() {
-  // Navigation and safe area setup
-  let navigation;
-  try {
-    navigation = useNavigation();
-  } catch (error) {
-    // Silently handle navigation context not being available
-    navigation = null;
-  }
+  // Safe area setup
   let top = 0;
   try {
     const safeAreaInsets = useSafeAreaInsets();
@@ -60,18 +52,21 @@ export default function Page() {
   const [speechProgress, setSpeechProgress] = useState(0);
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [status, setStatus] = useState('stopped');
+  const [shouldAutoPlay, setShouldAutoPlay] = useState(false);
   const scrollViewRef = useRef(null);
   const isSpeakingRef = useRef(false);
 
   // Effects for handling content changes and playing time updates
   useEffect(() => {
-    // Only handle content change if we're not in the middle of chunk-based reading
-    // The chunk-based reading will handle its own progression
-    // Don't call handleContentChange as it interferes with chunk-based reading
-    // handleContentChange(status, content.length, () => {
-    //   speak();
-    // });
-  }, [content]);
+    // Auto-play when new content loads after chapter completion
+    if (content && content.length > 0 && shouldAutoPlay && progress === 0) {
+      setShouldAutoPlay(false); // Reset the flag
+      // Small delay to ensure content is fully loaded
+      setTimeout(() => {
+        speak(0); // Start from beginning
+      }, 100);
+    }
+  }, [content, shouldAutoPlay, progress]);
 
   // Removed the speechProgress useEffect that was interfering with chunk-based progress updates
   // The speak() function now handles progress updates directly
@@ -139,6 +134,7 @@ export default function Page() {
             // Finished the entire content, go to next chapter
             setSpeechProgress(1);
             setStatus('stopped');
+            setShouldAutoPlay(true); // Set flag for auto-play on next chapter
             navigateToChapter(next);
           } else {
             // Continue with next chunk
@@ -181,11 +177,6 @@ export default function Page() {
   const oneTap = Gesture.Tap()
     .numberOfTaps(1)
     .onEnd(() => {
-      if (navigation && navigation.setOptions) {
-        navigation.setOptions({
-          headerShown: !showBar,
-        });
-      }
       setShowBar(!showBar);
     })
     .runOnJS(true);
