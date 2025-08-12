@@ -1,15 +1,27 @@
-# Clean any existing prebuild artifacts
-rm -rf android ios
+#!/bin/bash
 
-# Install dependencies to ensure expo-modules-core is available
-pnpm install --frozen-lockfile
+# Build the Android APK for converted basic Android app
+echo "Building Android APK..."
 
-# Run prebuild with clean slate
-pnpm exec expo prebuild --clean
+# Navigate to android directory and build
+cd android
 
-# Build the Android APK
-cd android && ./gradlew assembleRelease && cd ..
+# Clean previous build
+./gradlew clean
+
+# Build release APK
+./gradlew assembleRelease
+
+# Return to root directory
+cd ..
 
 # Verify and move the APK
+echo "Checking for generated APK..."
 ls -al android/app/build/outputs/apk/release/app-release.apk
-mv android/app/build/outputs/apk/release/app-release.apk ~/temp/writer.apk
+
+# Create temp directory if it doesn't exist
+mkdir -p ~/temp
+
+# Move the APK
+cp android/app/build/outputs/apk/release/app-release.apk ~/temp/writer.apk
+echo "APK copied to ~/temp/writer.apk"

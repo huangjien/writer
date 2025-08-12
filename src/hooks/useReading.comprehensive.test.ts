@@ -1,6 +1,5 @@
+// Mock dependencies for basic Android app (React Native/Expo dependencies removed)
 import { useReading } from './useReading';
-import { useLocalSearchParams } from 'expo-router';
-import { useIsFocused } from '@react-navigation/native';
 import { useAsyncStorage } from '@/hooks/useAsyncStorage';
 import {
   ANALYSIS_KEY,
@@ -10,19 +9,12 @@ import {
   showInfoToast,
 } from '@/components/global';
 
-// Mock dependencies
-jest.mock('expo-router', () => ({
-  useLocalSearchParams: jest.fn(),
-}));
-
-jest.mock('@react-navigation/native', () => ({
-  useIsFocused: jest.fn(),
-}));
-
+// Mock the useAsyncStorage hook
 jest.mock('@/hooks/useAsyncStorage', () => ({
   useAsyncStorage: jest.fn(),
 }));
 
+// Mock global components
 jest.mock('@/components/global', () => ({
   ANALYSIS_KEY: 'analysis_',
   CONTENT_KEY: 'content_',
@@ -31,12 +23,7 @@ jest.mock('@/components/global', () => ({
   showInfoToast: jest.fn(),
 }));
 
-const mockUseLocalSearchParams = useLocalSearchParams as jest.MockedFunction<
-  typeof useLocalSearchParams
->;
-const mockUseIsFocused = useIsFocused as jest.MockedFunction<
-  typeof useIsFocused
->;
+// Mock functions for testing
 const mockUseAsyncStorage = useAsyncStorage as jest.MockedFunction<
   typeof useAsyncStorage
 >;
@@ -57,8 +44,6 @@ describe('useReading - Comprehensive Tests', () => {
     jest.clearAllMocks();
 
     // Default mock implementations
-    mockUseLocalSearchParams.mockReturnValue({ post: undefined });
-    mockUseIsFocused.mockReturnValue(true);
     mockUseAsyncStorage.mockReturnValue([
       mockStorage,
       {
@@ -300,32 +285,7 @@ describe('useReading - Comprehensive Tests', () => {
     });
   });
 
-  describe('Navigation Context Handling', () => {
-    it('should handle navigation context not available', () => {
-      mockUseIsFocused.mockImplementation(() => {
-        throw new Error('Navigation context not available');
-      });
-
-      // Should handle the error gracefully and default to focused
-      let isFocused = true;
-      try {
-        isFocused = mockUseIsFocused();
-      } catch (error) {
-        isFocused = true; // Default fallback
-      }
-
-      expect(isFocused).toBe(true);
-    });
-
-    it('should handle rapid focus changes', () => {
-      const focusStates = [true, false, true, false, true];
-
-      focusStates.forEach((state, index) => {
-        mockUseIsFocused.mockReturnValueOnce(state);
-        expect(mockUseIsFocused()).toBe(state);
-      });
-    });
-  });
+  // Navigation Context Handling tests removed - not applicable for basic Android app
 
   describe('Content List Management', () => {
     it('should handle empty content list', async () => {
@@ -400,22 +360,6 @@ describe('useReading - Comprehensive Tests', () => {
   });
 
   describe('Memory and Performance', () => {
-    it('should handle rapid state changes without memory leaks', () => {
-      // Simulate rapid state changes
-      for (let i = 0; i < 1000; i++) {
-        mockUseLocalSearchParams.mockReturnValueOnce({ post: `chapter_${i}` });
-        mockUseIsFocused.mockReturnValueOnce(i % 2 === 0);
-      }
-
-      // Should not throw or cause issues
-      expect(() => {
-        for (let i = 0; i < 1000; i++) {
-          mockUseLocalSearchParams();
-          mockUseIsFocused();
-        }
-      }).not.toThrow();
-    });
-
     it('should handle large number of chapters efficiently', async () => {
       const largeChapterList = Array.from({ length: 10000 }, (_, i) => ({
         name: `chapter_${i.toString().padStart(5, '0')}`,

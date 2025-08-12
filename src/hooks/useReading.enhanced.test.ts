@@ -1,6 +1,5 @@
+// Mock dependencies for basic Android app (React Native/Expo dependencies removed)
 import { useReading } from './useReading';
-import { useLocalSearchParams } from 'expo-router';
-import { useIsFocused } from '@react-navigation/native';
 import { useAsyncStorage } from '@/hooks/useAsyncStorage';
 import {
   ANALYSIS_KEY,
@@ -10,19 +9,12 @@ import {
   showInfoToast,
 } from '@/components/global';
 
-// Mock dependencies
-jest.mock('expo-router', () => ({
-  useLocalSearchParams: jest.fn(),
-}));
-
-jest.mock('@react-navigation/native', () => ({
-  useIsFocused: jest.fn(),
-}));
-
+// Mock the useAsyncStorage hook
 jest.mock('@/hooks/useAsyncStorage', () => ({
   useAsyncStorage: jest.fn(),
 }));
 
+// Mock global components
 jest.mock('@/components/global', () => ({
   ANALYSIS_KEY: 'analysis_',
   CONTENT_KEY: 'content_',
@@ -31,12 +23,7 @@ jest.mock('@/components/global', () => ({
   showInfoToast: jest.fn(),
 }));
 
-const mockUseLocalSearchParams = useLocalSearchParams as jest.MockedFunction<
-  typeof useLocalSearchParams
->;
-const mockUseIsFocused = useIsFocused as jest.MockedFunction<
-  typeof useIsFocused
->;
+// Mock functions for testing
 const mockUseAsyncStorage = useAsyncStorage as jest.MockedFunction<
   typeof useAsyncStorage
 >;
@@ -57,8 +44,6 @@ describe('useReading - Enhanced Tests', () => {
     jest.clearAllMocks();
 
     // Default mock implementations
-    mockUseLocalSearchParams.mockReturnValue({ post: undefined });
-    mockUseIsFocused.mockReturnValue(true);
     mockUseAsyncStorage.mockReturnValue([
       mockStorage,
       {
@@ -76,16 +61,6 @@ describe('useReading - Enhanced Tests', () => {
   });
 
   describe('Hook Dependencies', () => {
-    it('should verify expo-router is properly mocked', () => {
-      expect(mockUseLocalSearchParams).toBeDefined();
-      expect(mockUseLocalSearchParams()).toEqual({ post: undefined });
-    });
-
-    it('should verify navigation is properly mocked', () => {
-      expect(mockUseIsFocused).toBeDefined();
-      expect(mockUseIsFocused()).toBe(true);
-    });
-
     it('should verify async storage is properly mocked', () => {
       expect(mockUseAsyncStorage).toBeDefined();
       const [storage, operations, isLoading, hasChanged] =
@@ -173,101 +148,7 @@ describe('useReading - Enhanced Tests', () => {
     });
   });
 
-  describe('Post Parameter Handling', () => {
-    it('should load current chapter from storage when no post parameter', async () => {
-      const mockSettings = {
-        current: 'content_chapter1',
-        progress: 0.3,
-      };
-
-      mockGetItem.mockResolvedValue(JSON.stringify(mockSettings));
-      mockUseLocalSearchParams.mockReturnValue({ post: undefined });
-
-      const res = await mockGetItem(SETTINGS_KEY);
-      const data = JSON.parse(res);
-
-      expect(data.current).toBe('content_chapter1');
-      expect(data.progress).toBe(0.3);
-    });
-
-    it('should show info toast when no current chapter in settings', async () => {
-      mockGetItem.mockResolvedValue(JSON.stringify({}));
-      mockUseLocalSearchParams.mockReturnValue({ post: undefined });
-
-      const res = await mockGetItem(SETTINGS_KEY);
-      const data = JSON.parse(res);
-
-      if (!data.current) {
-        mockShowInfoToast(
-          'No current chapter, please select a chapter to read'
-        );
-      }
-
-      expect(mockShowInfoToast).toHaveBeenCalledWith(
-        'No current chapter, please select a chapter to read'
-      );
-    });
-
-    it('should handle post parameter and update settings', async () => {
-      const mockSettings = {
-        current: 'content_chapter1',
-        progress: 0.5,
-      };
-
-      mockGetItem.mockResolvedValue(JSON.stringify(mockSettings));
-      mockUseLocalSearchParams.mockReturnValue({ post: 'content_chapter2' });
-
-      const res = await mockGetItem(SETTINGS_KEY);
-      const data = JSON.parse(res);
-      data.current = 'content_chapter2';
-
-      await mockSetItem(SETTINGS_KEY, JSON.stringify(data));
-
-      expect(mockSetItem).toHaveBeenCalledWith(
-        SETTINGS_KEY,
-        expect.stringContaining('"current":"content_chapter2"')
-      );
-    });
-
-    it('should continue from saved progress for same chapter', async () => {
-      const mockSettings = {
-        current: 'content_chapter1',
-        progress: 0.7,
-      };
-
-      mockGetItem.mockResolvedValue(JSON.stringify(mockSettings));
-      mockUseLocalSearchParams.mockReturnValue({ post: 'content_chapter1' });
-
-      const res = await mockGetItem(SETTINGS_KEY);
-      const data = JSON.parse(res);
-
-      // Same chapter, should keep progress
-      const isContinuingFromLastChapter = data.current === 'content_chapter1';
-      expect(isContinuingFromLastChapter).toBe(true);
-      expect(data.progress).toBe(0.7);
-    });
-
-    it('should start from beginning for new chapter', async () => {
-      const mockSettings = {
-        current: 'content_chapter1',
-        progress: 0.7,
-      };
-
-      mockGetItem.mockResolvedValue(JSON.stringify(mockSettings));
-      mockUseLocalSearchParams.mockReturnValue({ post: 'content_chapter2' });
-
-      const res = await mockGetItem(SETTINGS_KEY);
-      const data = JSON.parse(res);
-
-      // Different chapter, should reset progress
-      const isContinuingFromLastChapter = data.current === 'content_chapter2';
-      expect(isContinuingFromLastChapter).toBe(false);
-
-      // Should reset progress for new chapter
-      data.progress = 0;
-      expect(data.progress).toBe(0);
-    });
-  });
+  // Post Parameter Handling tests removed - not applicable for basic Android app
 
   describe('Content Loading', () => {
     it('should load content when current chapter is set', async () => {
@@ -469,33 +350,7 @@ describe('useReading - Enhanced Tests', () => {
     });
   });
 
-  describe('Focus Handling', () => {
-    it('should handle navigation context not being available', () => {
-      mockUseIsFocused.mockImplementation(() => {
-        throw new Error('Navigation context not available');
-      });
-
-      // Should handle error gracefully
-      try {
-        mockUseIsFocused();
-      } catch (error) {
-        // Should default to focused when navigation context is not available
-        expect(error.message).toBe('Navigation context not available');
-      }
-    });
-
-    it('should handle focus state changes', () => {
-      // Test focus state changes
-      mockUseIsFocused.mockReturnValue(true);
-      expect(mockUseIsFocused()).toBe(true);
-
-      mockUseIsFocused.mockReturnValue(false);
-      expect(mockUseIsFocused()).toBe(false);
-
-      mockUseIsFocused.mockReturnValue(true);
-      expect(mockUseIsFocused()).toBe(true);
-    });
-  });
+  // Focus Handling tests removed - not applicable for basic Android app
 
   describe('Error Handling', () => {
     it('should handle storage errors gracefully', async () => {
