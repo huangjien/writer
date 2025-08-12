@@ -43,17 +43,12 @@ export function useSpeech() {
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       if (nextAppState === 'background' || nextAppState === 'inactive') {
-        // App is going to background
-        if (status === STATUS_PLAYING) {
-          wasPlayingBeforeBackgroundRef.current = true;
-          pause();
-        }
+        // App is going to background - continue playing audio
+        // Keep the audio playing in background for continuous playback
+        console.log('App going to background, continuing audio playback');
       } else if (nextAppState === 'active') {
         // App is coming to foreground
-        if (wasPlayingBeforeBackgroundRef.current && status === STATUS_PAUSED) {
-          wasPlayingBeforeBackgroundRef.current = false;
-          resume();
-        }
+        console.log('App coming to foreground, audio should continue');
       }
     };
 
