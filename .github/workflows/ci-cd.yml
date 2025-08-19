@@ -7,6 +7,7 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
+  packages: write
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -88,6 +89,25 @@ jobs:
         sudo apt update
         sudo apt install gh -y
       
+    - name: Upload APK to GitHub Packages
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Create a unique package name with version and timestamp
+        PACKAGE_NAME="writer-apk"
+        VERSION="${{ steps.package-version.outputs.version }}"
+        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+        APK_NAME="writer-v${VERSION}-${TIMESTAMP}.apk"
+        
+        # Rename the APK with version info
+        cp ~/temp/writer.apk ~/temp/${APK_NAME}
+        
+        # Upload to GitHub Packages using GitHub CLI
+        gh release create "v${VERSION}-${TIMESTAMP}" ~/temp/${APK_NAME} \
+          --title "Writer APK v${VERSION}" \
+          --notes "Automated APK build for Writer app version ${VERSION}" \
+          --prerelease
+    
     - name: Publish release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
