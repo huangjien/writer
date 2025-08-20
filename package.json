@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "2.2.9",
+  "version": "2.2.10",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",

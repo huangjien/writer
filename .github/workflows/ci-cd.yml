@@ -87,7 +87,7 @@ jobs:
         
         # Install dependencies for the native project
         echo "Installing dependencies for native Android project..."
-        npm install
+        pnpm install
         
         # Make Gradle wrapper executable
         if [ -f "android/gradlew" ]; then
