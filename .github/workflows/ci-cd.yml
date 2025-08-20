@@ -79,11 +79,11 @@ jobs:
     - name: Create temp directory
       run: mkdir -p ~/temp
       
-    - name: Eject from Expo and Build Android APK
+    - name: Create native Android project and Build APK
       run: |
-        # Eject from Expo to create native Android project
-        echo "Ejecting from Expo to create native Android project..."
-        npx expo eject --non-interactive
+        # Create native Android project using Expo prebuild
+        echo "Creating native Android project using Expo prebuild..."
+        CI=1 npx expo prebuild --platform android --no-install
         
         # Make Gradle wrapper executable
         if [ -f "android/gradlew" ]; then
