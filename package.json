@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -20,7 +20,6 @@
     "publishRelease": "bash publishRelease.sh"
   },
   "dependencies": {
-    "expo": "53.0.20",
     "@expo/vector-icons": "^14.0.4",
     "@octokit/rest": "^21.0.2",
     "@octokit/types": "^13.6.1",
@@ -32,10 +31,12 @@
     "@react-navigation/drawer": "^7.3.9",
     "ahooks": "^3.8.4",
     "axios": "^1.7.7",
+    "expo": "53.0.20",
     "expo-av": "~15.1.7",
     "expo-background-task": "~0.2.8",
     "expo-constants": "17.1.7",
     "expo-dev-client": "5.2.4",
+    "expo-font": "~13.3.2",
     "expo-image": "~2.4.0",
     "expo-keep-awake": "~14.1.4",
     "expo-linking": "7.1.7",

@@ -20,8 +20,8 @@ echo "Checking for generated APK..."
 ls -al android/app/build/outputs/apk/release/app-release.apk
 
 # Create temp directory if it doesn't exist
-mkdir -p ~/temp
+mkdir -p "$HOME/temp"
 
 # Move the APK
-cp android/app/build/outputs/apk/release/app-release.apk ~/temp/writer.apk
-echo "APK copied to ~/temp/writer.apk"
+cp android/app/build/outputs/apk/release/app-release.apk "$HOME/temp/writer.apk"
+echo "APK copied to $HOME/temp/writer.apk"

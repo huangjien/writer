@@ -99,11 +99,21 @@ jobs:
         TIMESTAMP=$(date +%Y%m%d-%H%M%S)
         APK_NAME="writer-v${VERSION}-${TIMESTAMP}.apk"
         
-        # Rename the APK with version info
-        cp ~/temp/writer.apk ~/temp/${APK_NAME}
+        # Check if APK exists and copy with version info
+        if [ -f "$HOME/temp/writer.apk" ]; then
+          cp "$HOME/temp/writer.apk" "$HOME/temp/${APK_NAME}"
+          echo "APK found and renamed to ${APK_NAME}"
+        else
+          echo "Error: APK not found at $HOME/temp/writer.apk"
+          echo "Listing contents of $HOME/temp:"
+          ls -la "$HOME/temp/" || echo "temp directory does not exist"
+          echo "Checking for APK in build output:"
+          ls -la android/app/build/outputs/apk/release/ || echo "Build output directory not found"
+          exit 1
+        fi
         
         # Upload to GitHub Packages using GitHub CLI
-        gh release create "v${VERSION}-${TIMESTAMP}" ~/temp/${APK_NAME} \
+        gh release create "v${VERSION}-${TIMESTAMP}" "$HOME/temp/${APK_NAME}" \
           --title "Writer APK v${VERSION}" \
           --notes "Automated APK build for Writer app version ${VERSION}" \
           --prerelease
