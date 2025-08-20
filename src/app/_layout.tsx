@@ -146,7 +146,9 @@ export default function Layout() {
           shouldDuckAndroid: true,
           playThroughEarpieceAndroid: false,
         });
-        console.log('Audio session initialized successfully');
+        console.log(
+          'Audio session initialized successfully for background playback'
+        );
       } catch (error) {
         console.error('Failed to initialize audio session:', error);
       }

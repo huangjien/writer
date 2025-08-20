@@ -30,6 +30,45 @@ export function useSpeech() {
     await activateKeepAwakeAsync();
   };
 
+  // Enhanced background audio handling for screen lock scenarios
+  const handleScreenLock = () => {
+    // When screen locks, ensure audio continues by maintaining keep awake
+    if (status === STATUS_PLAYING) {
+      console.log('Screen locked, maintaining audio playback');
+      enableKeepAwake();
+
+      // Force continue current sentence if speech was interrupted
+      if (
+        currentSentenceIndex < sentencesRef.current.length &&
+        !isPausedRef.current
+      ) {
+        setTimeout(() => {
+          if (status === STATUS_PLAYING) {
+            speakCurrentSentence();
+          }
+        }, 100);
+      }
+    }
+  };
+
+  // Monitor for potential speech interruptions and resume
+  const monitorSpeechContinuity = () => {
+    if (status === STATUS_PLAYING && !isPausedRef.current) {
+      // Check if we should be speaking but aren't
+      if (currentSentenceIndex < sentencesRef.current.length) {
+        const checkInterval = setInterval(() => {
+          if (status === STATUS_PLAYING && !isPausedRef.current) {
+            // Ensure speech continues
+            speakCurrentSentence();
+            clearInterval(checkInterval);
+          } else {
+            clearInterval(checkInterval);
+          }
+        }, 1000);
+      }
+    }
+  };
+
   // Keep awake effect
   useEffect(() => {
     if (status === STATUS_PLAYING) {
@@ -43,12 +82,34 @@ export function useSpeech() {
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       if (nextAppState === 'background' || nextAppState === 'inactive') {
-        // App is going to background - continue playing audio
-        // Keep the audio playing in background for continuous playback
-        console.log('App going to background, continuing audio playback');
+        // App is going to background - save current playing state
+        wasPlayingBeforeBackgroundRef.current = status === STATUS_PLAYING;
+        console.log(
+          'App going to background, audio state saved:',
+          wasPlayingBeforeBackgroundRef.current
+        );
+
+        // Keep the device awake to maintain audio playback
+        if (status === STATUS_PLAYING) {
+          enableKeepAwake();
+          handleScreenLock();
+        }
       } else if (nextAppState === 'active') {
         // App is coming to foreground
-        console.log('App coming to foreground, audio should continue');
+        console.log('App coming to foreground, restoring audio state');
+
+        // If we were playing before going to background, ensure we continue
+        if (
+          wasPlayingBeforeBackgroundRef.current &&
+          status !== STATUS_PLAYING &&
+          !isPausedRef.current
+        ) {
+          // Resume speech if it was interrupted
+          setStatus(STATUS_PLAYING);
+          if (currentSentenceIndex < sentencesRef.current.length) {
+            speakCurrentSentence();
+          }
+        }
       }
     };
 
@@ -60,7 +121,7 @@ export function useSpeech() {
     return () => {
       subscription?.remove();
     };
-  }, [status]);
+  }, [status, currentSentenceIndex]);
 
   // Helper function to split content into sentences
   const splitIntoSentences = (content: string): string[] => {
@@ -153,6 +214,9 @@ export function useSpeech() {
 
     // Start speaking the first sentence
     speakCurrentSentence();
+
+    // Monitor speech continuity for background playback
+    monitorSpeechContinuity();
   };
 
   const stop = () => {
