@@ -1,27 +1,24 @@
 #!/bin/bash
 
-# Build the Android APK for converted basic Android app
-echo "Building Android APK..."
+# Build the Android APK for Expo project
+echo "Building Android APK with Expo..."
 
-# Navigate to android directory and build
-cd android
-
-# Clean previous build
-./gradlew clean
-
-# Build release APK
-./gradlew assembleRelease
-
-# Return to root directory
-cd ..
-
-# Verify and move the APK
-echo "Checking for generated APK..."
-ls -al android/app/build/outputs/apk/release/app-release.apk
+# Check if this is an Expo project
+if [ ! -f "app.json" ] && [ ! -f "app.config.js" ]; then
+  echo "Error: This doesn't appear to be an Expo project (no app.json or app.config.js found)"
+  exit 1
+fi
 
 # Create temp directory if it doesn't exist
 mkdir -p "$HOME/temp"
 
-# Move the APK
-cp android/app/build/outputs/apk/release/app-release.apk "$HOME/temp/writer.apk"
-echo "APK copied to $HOME/temp/writer.apk"
+# Build APK using EAS Build local
+echo "Building APK using EAS Build..."
+eas build --platform android --profile production --local --output "$HOME/temp/writer.apk" --non-interactive
+
+if [ $? -eq 0 ]; then
+  echo "APK built successfully and saved to $HOME/temp/writer.apk"
+else
+  echo "Error: APK build failed"
+  exit 1
+fi

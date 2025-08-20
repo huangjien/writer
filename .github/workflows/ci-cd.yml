@@ -67,14 +67,44 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       
+    - name: Setup Expo CLI
+      run: npm install -g @expo/cli eas-cli
+      
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
       
     - name: Create temp directory
       run: mkdir -p ~/temp
       
-    - name: Build Android APK
-      run: ./buildAndroid.sh
+    - name: Build Android APK with Expo
+      env:
+        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        EAS_LOCAL_BUILD_SKIP_CLEANUP: 1
+      run: |
+        # Login to Expo (if token is provided)
+        if [ -n "$EXPO_TOKEN" ]; then
+          echo "Logging in to Expo..."
+          expo login --non-interactive
+        else
+          echo "No EXPO_TOKEN provided, building without authentication"
+        fi
+        
+        # Verify Expo project
+        echo "Verifying Expo project configuration..."
+        expo doctor || echo "Expo doctor completed with warnings"
+        
+        # Build APK using EAS Build
+         echo "Starting EAS Build..."
+         eas build --platform android --profile production --local --output "$HOME/temp/writer.apk" --non-interactive
+        
+        # Verify APK was created
+         if [ -f "$HOME/temp/writer.apk" ]; then
+           echo "APK build successful!"
+           ls -la "$HOME/temp/writer.apk"
+         else
+           echo "Error: APK was not created"
+           exit 1
+         fi
       
     - name: Get package version
       id: package-version
