@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import { AppState, AppStateStatus, Platform } from 'react-native';
 import * as Speech from 'expo-speech';
+import { Audio, InterruptionModeIOS } from 'expo-av';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import {
   STATUS_PAUSED,
@@ -30,6 +31,33 @@ export function useSpeech() {
     await activateKeepAwakeAsync();
   };
 
+  // Configure audio session for background playback
+  const configureAudioSession = async () => {
+    try {
+      if (Platform.OS === 'android') {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          staysActiveInBackground: true,
+          playsInSilentModeIOS: true,
+          shouldDuckAndroid: true,
+          playThroughEarpieceAndroid: false,
+        });
+      } else if (Platform.OS === 'ios') {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          staysActiveInBackground: true,
+          playsInSilentModeIOS: true,
+          interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+          shouldDuckAndroid: false,
+          playThroughEarpieceAndroid: false,
+        });
+      }
+      console.log('Audio session configured for background playback');
+    } catch (error) {
+      console.error('Failed to configure audio session:', error);
+    }
+  };
+
   // Enhanced background audio handling for screen lock scenarios
   const handleScreenLock = () => {
     // When screen locks, ensure audio continues by maintaining keep awake
@@ -37,16 +65,27 @@ export function useSpeech() {
       console.log('Screen locked, maintaining audio playback');
       enableKeepAwake();
 
-      // Force continue current sentence if speech was interrupted
-      if (
-        currentSentenceIndex < sentencesRef.current.length &&
-        !isPausedRef.current
-      ) {
+      // For Android, implement more aggressive recovery
+      if (Platform.OS === 'android') {
+        // Stop any current speech and restart to ensure continuity
+        Speech.stop();
         setTimeout(() => {
-          if (status === STATUS_PLAYING) {
+          if (status === STATUS_PLAYING && !isPausedRef.current) {
             speakCurrentSentence();
           }
-        }, 100);
+        }, 200);
+      } else {
+        // For iOS, try to continue current sentence if interrupted
+        if (
+          currentSentenceIndex < sentencesRef.current.length &&
+          !isPausedRef.current
+        ) {
+          setTimeout(() => {
+            if (status === STATUS_PLAYING) {
+              speakCurrentSentence();
+            }
+          }, 100);
+        }
       }
     }
   };
@@ -56,10 +95,19 @@ export function useSpeech() {
     if (status === STATUS_PLAYING && !isPausedRef.current) {
       // Check if we should be speaking but aren't
       if (currentSentenceIndex < sentencesRef.current.length) {
-        const checkInterval = setInterval(() => {
+        const checkInterval = setInterval(async () => {
           if (status === STATUS_PLAYING && !isPausedRef.current) {
-            // Ensure speech continues
-            speakCurrentSentence();
+            try {
+              // Check if speech is actually running
+              const isSpeaking = await Speech.isSpeakingAsync();
+              if (!isSpeaking) {
+                console.log('Speech interrupted, restarting current sentence');
+                speakCurrentSentence();
+              }
+            } catch (error) {
+              console.log('Error checking speech status, restarting:', error);
+              speakCurrentSentence();
+            }
             clearInterval(checkInterval);
           } else {
             clearInterval(checkInterval);
@@ -93,6 +141,10 @@ export function useSpeech() {
         if (status === STATUS_PLAYING) {
           enableKeepAwake();
           handleScreenLock();
+          // Start monitoring speech continuity for Android
+          if (Platform.OS === 'android') {
+            setTimeout(() => monitorSpeechContinuity(), 500);
+          }
         }
       } else if (nextAppState === 'active') {
         // App is coming to foreground
@@ -120,6 +172,50 @@ export function useSpeech() {
 
     return () => {
       subscription?.remove();
+    };
+  }, [status, currentSentenceIndex]);
+
+  // Initialize audio session for background playbook
+  useEffect(() => {
+    configureAudioSession();
+  }, []);
+
+  // Continuous monitoring for speech interruptions (especially for Android)
+  useEffect(() => {
+    let monitoringInterval: number | null = null;
+
+    if (status === STATUS_PLAYING && Platform.OS === 'android') {
+      monitoringInterval = setInterval(async () => {
+        if (status === STATUS_PLAYING && !isPausedRef.current) {
+          try {
+            const isSpeaking = await Speech.isSpeakingAsync();
+            if (
+              !isSpeaking &&
+              currentSentenceIndex < sentencesRef.current.length
+            ) {
+              console.log(
+                'Android: Speech stopped unexpectedly, recovering...'
+              );
+              // Restart current sentence
+              speakCurrentSentence();
+            }
+          } catch (error) {
+            console.log(
+              'Android: Error monitoring speech, attempting recovery:',
+              error
+            );
+            if (currentSentenceIndex < sentencesRef.current.length) {
+              speakCurrentSentence();
+            }
+          }
+        }
+      }, 2000); // Check every 2 seconds
+    }
+
+    return () => {
+      if (monitoringInterval) {
+        clearInterval(monitoringInterval);
+      }
     };
   }, [status, currentSentenceIndex]);
 
