@@ -85,6 +85,10 @@ jobs:
         echo "Creating native Android project using Expo prebuild..."
         CI=1 npx expo prebuild --platform android --no-install
         
+        # Install dependencies for the native project
+        echo "Installing dependencies for native Android project..."
+        npm install
+        
         # Make Gradle wrapper executable
         if [ -f "android/gradlew" ]; then
           chmod +x android/gradlew

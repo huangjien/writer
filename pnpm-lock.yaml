@@ -75,6 +75,12 @@ importers:
       expo-local-authentication:
         specifier: 16.0.5
         version: 16.0.5(expo@53.0.20(@babel/core@7.28.0)(@expo/metro-runtime@5.0.4(react-native@0.79.5(@babel/core@7.28.0)(@types/react@19.0.14)(react@19.0.0)))(react-native@0.79.5(@babel/core@7.28.0)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))
+      expo-modules-autolinking:
+        specifier: ^2.1.14
+        version: 2.1.14
+      expo-modules-core:
+        specifier: ~2.5.0
+        version: 2.5.0
       expo-router:
         specifier: 5.1.4
         version: 5.1.4(8a5ca3a4876121ac082aaa0e9af8a03f)
