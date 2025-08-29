@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, forwardRef } from 'react';
+import * as React from 'react';
+const { useRef, useEffect, forwardRef } = React;
 import { View, Text, ScrollView } from 'react-native';
 import { CONTENT_KEY } from '@/components/global';
 
@@ -46,9 +47,9 @@ export const ContentArea = forwardRef<ScrollView, ContentAreaProps>(
 
     return (
       <View className='flex-1 py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 bg-white dark:bg-black'>
-        <View className='m-2 p-2 items-center gap-4 text-center'>
+        <View className='m-2 p-2 items-start gap-4 text-left'>
           <Text
-            className='text-black dark:text-white font-bold text-center justify-stretch text-pretty'
+            className='text-black dark:text-white font-bold text-left justify-stretch text-pretty'
             style={{ fontSize: fontSize }}
           >
             {current &&
