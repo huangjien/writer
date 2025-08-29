@@ -59,14 +59,18 @@ export default function Page() {
   // Effects for handling content changes and playing time updates
   useEffect(() => {
     // Auto-play when new content loads after chapter completion
-    if (content && content.length > 0 && shouldAutoPlay && progress === 0) {
+    if (content && content.length > 0 && shouldAutoPlay) {
       setShouldAutoPlay(false); // Reset the flag
+      // Reset progress to 0 for new chapter and start speaking
+      setProgress(0);
+      setSpeechProgress(0);
+      setCurrentSentenceIndex(0);
       // Small delay to ensure content is fully loaded
       setTimeout(() => {
         speak(0); // Start from beginning
       }, 100);
     }
-  }, [content, shouldAutoPlay, progress]);
+  }, [content, shouldAutoPlay]);
 
   // Removed the speechProgress useEffect that was interfering with chunk-based progress updates
   // The speak() function now handles progress updates directly
