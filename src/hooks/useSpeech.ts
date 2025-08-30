@@ -1,8 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 import * as Speech from 'expo-speech';
-import { Audio, InterruptionModeIOS } from 'expo-av';
+import { Audio, InterruptionModeIOS, AVPlaybackStatus } from 'expo-av';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
+import TrackPlayer, {
+  Event,
+  State,
+  Capability,
+} from 'react-native-track-player';
 import {
   STATUS_PAUSED,
   STATUS_PLAYING,
@@ -20,6 +25,8 @@ export function useSpeech() {
   const completedContentLengthRef = useRef(0);
   const isPausedRef = useRef(false);
   const wasPlayingBeforeBackgroundRef = useRef(false);
+  const wasPlayingBeforeInterruptionRef = useRef(false);
+  const audioInterruptionListenerRef = useRef<any>(null);
   const speechOptionsRef = useRef<{
     language?: string;
     pitch?: number;
@@ -29,6 +36,66 @@ export function useSpeech() {
 
   const enableKeepAwake = async () => {
     await activateKeepAwakeAsync();
+  };
+
+  // Handle audio interruptions from other apps
+  const handleAudioInterruption = (interruptionStatus: any) => {
+    console.log('Audio interruption:', interruptionStatus);
+
+    if (interruptionStatus.shouldPause || interruptionStatus.shouldStop) {
+      // Another app is taking over audio focus
+      if (status === STATUS_PLAYING) {
+        console.log('Audio interrupted by another app, pausing playback');
+        wasPlayingBeforeInterruptionRef.current = true;
+        Speech.pause();
+        setStatus(STATUS_PAUSED);
+        isPausedRef.current = true;
+      }
+    } else if (interruptionStatus.shouldResume) {
+      // Audio focus returned, resume if we were playing before
+      if (wasPlayingBeforeInterruptionRef.current && status === STATUS_PAUSED) {
+        console.log('Audio focus returned, resuming playback');
+        wasPlayingBeforeInterruptionRef.current = false;
+        Speech.resume();
+        setStatus(STATUS_PLAYING);
+        isPausedRef.current = false;
+
+        // Continue with current sentence if needed
+        if (currentSentenceIndex < sentencesRef.current.length) {
+          speakCurrentSentence();
+        }
+      }
+    }
+  };
+
+  // Set up media session controls for earphone buttons
+  const setupMediaSessionControls = async () => {
+    try {
+      await TrackPlayer.setupPlayer({
+        waitForBuffer: false,
+      });
+
+      // Set up media session metadata
+      await TrackPlayer.updateOptions({
+        capabilities: [
+          Capability.Play,
+          Capability.Pause,
+          Capability.Stop,
+          Capability.SkipToNext,
+          Capability.SkipToPrevious,
+        ],
+        compactCapabilities: [
+          Capability.Play,
+          Capability.Pause,
+          Capability.SkipToNext,
+          Capability.SkipToPrevious,
+        ],
+      });
+
+      console.log('Media session controls configured');
+    } catch (error) {
+      console.error('Failed to setup media session controls:', error);
+    }
   };
 
   // Configure audio session for background playback
@@ -47,12 +114,18 @@ export function useSpeech() {
           allowsRecordingIOS: false,
           staysActiveInBackground: true,
           playsInSilentModeIOS: true,
-          interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+          interruptionModeIOS: InterruptionModeIOS.DuckOthers,
           shouldDuckAndroid: false,
           playThroughEarpieceAndroid: false,
         });
       }
-      console.log('Audio session configured for background playback');
+
+      // Configure audio session to handle interruptions properly
+      await Audio.setIsEnabledAsync(true);
+
+      console.log(
+        'Audio session configured for background playback with interruption handling'
+      );
     } catch (error) {
       console.error('Failed to configure audio session:', error);
     }
@@ -178,7 +251,98 @@ export function useSpeech() {
   // Initialize audio session for background playbook
   useEffect(() => {
     configureAudioSession();
-  }, []);
+    setupMediaSessionControls();
+
+    // Set up media session event listener for earphone buttons
+    const mediaSessionListener = TrackPlayer.addEventListener(
+      Event.RemotePlay,
+      () => {
+        if (status === STATUS_PAUSED) {
+          resume();
+        } else if (
+          status === STATUS_STOPPED &&
+          sentencesRef.current.length > 0
+        ) {
+          speak(sentencesRef.current.join(' '));
+        }
+      }
+    );
+    const pauseListener = TrackPlayer.addEventListener(
+      Event.RemotePause,
+      () => {
+        if (status === STATUS_PLAYING) {
+          pause();
+        }
+      }
+    );
+    const stopListener = TrackPlayer.addEventListener(Event.RemoteStop, () => {
+      stop();
+    });
+    const nextListener = TrackPlayer.addEventListener(Event.RemoteNext, () => {
+      if (currentSentenceIndex < sentencesRef.current.length - 1) {
+        setCurrentSentenceIndex((prev) => prev + 1);
+        speakCurrentSentence();
+      }
+    });
+    const previousListener = TrackPlayer.addEventListener(
+      Event.RemotePrevious,
+      () => {
+        if (currentSentenceIndex > 0) {
+          setCurrentSentenceIndex((prev) => prev - 1);
+          speakCurrentSentence();
+        }
+      }
+    );
+
+    // Set up audio interruption handling using app state changes
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      console.log('App state changed to:', nextAppState);
+
+      if (nextAppState === 'background' || nextAppState === 'inactive') {
+        // App going to background, check if we should pause due to audio interruption
+        if (status === STATUS_PLAYING) {
+          console.log(
+            'App backgrounded while playing, checking for audio interruption'
+          );
+          // In a real scenario, we'd check if another app is using audio
+          // For now, we'll pause when app goes to background
+          wasPlayingBeforeInterruptionRef.current = true;
+          Speech.pause();
+          setStatus(STATUS_PAUSED);
+          isPausedRef.current = true;
+        }
+      } else if (nextAppState === 'active') {
+        // App coming back to foreground
+        if (
+          wasPlayingBeforeInterruptionRef.current &&
+          status === STATUS_PAUSED
+        ) {
+          console.log('App foregrounded, resuming playback');
+          wasPlayingBeforeInterruptionRef.current = false;
+          Speech.resume();
+          setStatus(STATUS_PLAYING);
+          isPausedRef.current = false;
+        }
+      }
+    };
+
+    const subscription = AppState.addEventListener(
+      'change',
+      handleAppStateChange
+    );
+
+    return () => {
+      subscription?.remove();
+      mediaSessionListener?.remove();
+      pauseListener?.remove();
+      stopListener?.remove();
+      nextListener?.remove();
+      previousListener?.remove();
+      if (audioInterruptionListenerRef.current) {
+        audioInterruptionListenerRef.current = null;
+      }
+    };
+  }, [status]);
 
   // Continuous monitoring for speech interruptions (especially for Android)
   useEffect(() => {

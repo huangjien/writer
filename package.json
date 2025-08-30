@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "2.3.6",
+  "version": "2.5.1",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -24,6 +24,7 @@
     "@octokit/rest": "^21.0.2",
     "@octokit/types": "^13.6.1",
     "@react-native-async-storage/async-storage": "2.1.2",
+    "@react-native-community/audio-toolkit": "^2.0.3",
     "@react-native-community/cli-server-api": "^18.0.0",
     "@react-native-community/slider": "4.5.6",
     "@react-native-picker/picker": "2.11.1",
@@ -64,6 +65,7 @@
     "react-native-root-toast": "^3.6.0",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
+    "react-native-track-player": "^4.1.2",
     "react-native-web": "^0.20.0",
     "tailwindcss": "^3.4.17"
   },

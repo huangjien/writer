@@ -86,7 +86,7 @@ describe('useSpeech', () => {
       const progress = 0;
       const currentSentenceIndex = 0;
 
-      const speak = jest.fn((text, options) => {
+      const speak = jest.fn((text, options = undefined) => {
         mockSpeech.speak(text, options);
         mockKeepAwake.activateKeepAwakeAsync();
       });
@@ -118,7 +118,7 @@ describe('useSpeech', () => {
 
     it('should call Speech.speak when speak method is called', () => {
       const hookResult = mockHookImplementation();
-      hookResult.speak('Hello world.');
+      hookResult.speak('Hello world.', undefined);
 
       expect(mockSpeech.speak).toHaveBeenCalledWith('Hello world.', undefined);
     });
@@ -146,14 +146,14 @@ describe('useSpeech', () => {
 
     it('should activate keep awake when speaking', () => {
       const hookResult = mockHookImplementation();
-      hookResult.speak('Hello world.');
+      hookResult.speak('Hello world.', undefined);
 
       expect(mockKeepAwake.activateKeepAwakeAsync).toHaveBeenCalled();
     });
 
     it('should deactivate keep awake when stopped', () => {
       const hookResult = mockHookImplementation();
-      hookResult.speak('Hello world.');
+      hookResult.speak('Hello world.', undefined);
       hookResult.stop();
 
       expect(mockKeepAwake.deactivateKeepAwake).toHaveBeenCalled();
@@ -161,7 +161,7 @@ describe('useSpeech', () => {
 
     it('should deactivate keep awake when paused', () => {
       const hookResult = mockHookImplementation();
-      hookResult.speak('Hello world.');
+      hookResult.speak('Hello world.', undefined);
       hookResult.pause();
 
       expect(mockKeepAwake.deactivateKeepAwake).toHaveBeenCalled();
