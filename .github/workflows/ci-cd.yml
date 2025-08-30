@@ -81,19 +81,19 @@ jobs:
         echo "Creating native Android project using Expo prebuild..."
         CI=1 npx expo prebuild --platform android --no-install
         
+        # Download original file, patch it, and overwrite the one in node_modules
+        echo "Downloading and patching parseDeclaration.ts..."
+        curl -o parseDeclaration.ts.temp https://unpkg.com/react-native-css-interop@0.1.22/src/css-to-rn/parseDeclaration.ts
+        
         # Add a newline to the patch file to prevent "unexpectedly ends in middle of line" error
         echo "" >> patches/react-native-css-interop+0.1.22.patch
 
         # Convert line endings
-        echo "Converting line endings..."
+        dos2unix parseDeclaration.ts.temp
         dos2unix patches/react-native-css-interop+0.1.22.patch
-        dos2unix node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
-        
-        # Apply patch using the patch command
-        echo "Applying patch directly..."
-        patch -p1 --forward --force < patches/react-native-css-interop+0.1.22.patch
 
-
+        patch parseDeclaration.ts.temp < patches/react-native-css-interop+0.1.22.patch
+        cp parseDeclaration.ts.temp node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
         
         # Run comprehensive patch verification AFTER prebuild
         echo "Running comprehensive patch verification after prebuild..."
