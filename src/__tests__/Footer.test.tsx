@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { Footer } from '../components/Footer';
+import Footer from '../components/Footer';
 
 // Mock the package.json
 jest.mock('@/../package.json', () => ({

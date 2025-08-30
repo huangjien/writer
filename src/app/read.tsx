@@ -1,3 +1,4 @@
+import React from 'react';
 import { View, ScrollView } from 'react-native';
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,7 +8,7 @@ import {
   GestureDetector,
   Swipeable,
 } from 'react-native-gesture-handler';
-import { AnalysisModal } from '@/components/AnalysisModal';
+import AnalysisModal from '@/components/AnalysisModal';
 import { PlayBar } from '@/components/PlayBar';
 import { ContentArea } from '@/components/ContentArea';
 import { useReading } from '@/hooks/useReading';
@@ -223,9 +224,8 @@ export default function Page() {
           )}
         </Swipeable>
         <AnalysisModal
-          isVisible={modalVisible}
-          analysis={analysis}
-          fontSize={fontSize}
+          visible={modalVisible}
+          analysis={null}
           onClose={() => setModalVisible(false)}
         />
       </ScrollView>

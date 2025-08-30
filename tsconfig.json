@@ -2,6 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "jsx": "react-jsx",
+    "isolatedModules": true,
     "paths": {
       "@/*": ["./src/*"]
     }
