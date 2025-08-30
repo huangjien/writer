@@ -75,12 +75,6 @@ jobs:
     - name: Install dependencies
       run: npm ci --legacy-peer-deps
       
-    - name: Apply patches
-      run: npx patch-package
-      
-    - name: Rebuild native modules
-      run: npm rebuild
-      
     - name: Create temp directory
       run: mkdir -p ~/temp
       
@@ -89,10 +83,6 @@ jobs:
         # Create native Android project using Expo prebuild
         echo "Creating native Android project using Expo prebuild..."
         CI=1 npx expo prebuild --platform android --no-install
-        
-        # Install dependencies for the native project
-        echo "Installing dependencies for native Android project..."
-        npm install --legacy-peer-deps
         
         # Force reinstall lightningcss for Linux
         echo "Force reinstalling lightningcss for Linux platform..."
@@ -167,6 +157,13 @@ jobs:
           fi
         fi
         
+        # Clear Metro cache before build
+        echo "Clearing Metro cache..."
+        rm -rf /tmp/metro-cache
+        
+        echo "Final content of parseDeclaration.ts before build:"
+        sed -n '2640,2655p' node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
+
         # Build Android APK using Gradle
         echo "Building Android APK using Gradle..."
         ./buildAndroid.sh
