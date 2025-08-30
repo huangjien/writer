@@ -71,7 +71,7 @@ jobs:
       run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
       
     - name: Setup Expo CLI
-      run: npm install -g @expo/cli
+      run: pnpm add -g @expo/cli
       
     - name: Install dependencies
       run: pnpm install --frozen-lockfile

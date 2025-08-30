@@ -152,13 +152,13 @@ The test suite currently has significant issues that need to be addressed:
 ### Running Tests with Coverage
 ```bash
 # Run all tests with coverage (currently failing)
-npm test -- --coverage --watchAll=false
+pnpm test -- --coverage --watchAll=false
 
 # Run specific working test file
-npm test -- src/__tests__/read.enhanced.test.tsx
+pnpm test -- src/__tests__/read.enhanced.test.tsx
 
 # Run tests in watch mode
-npm test
+pnpm test
 ```
 
 ### Coverage by Module

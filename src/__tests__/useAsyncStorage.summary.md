@@ -39,7 +39,7 @@ The `useAsyncStorage` hook tests are failing due to a fundamental incompatibilit
 ### Option 2: Use Web-Compatible Testing Library
 
 ```bash
-npm install --save-dev @testing-library/react @testing-library/react-hooks
+pnpm add -D @testing-library/react @testing-library/react-hooks
 ```
 
 ### Option 3: Create Custom Test Utilities

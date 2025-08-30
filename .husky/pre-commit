@@ -1,4 +1,4 @@
 ./prettier.sh
 #./doctor.sh
 #./check.sh
-npm --no-git-tag-version version patch && git add .
+pnpm version patch --no-git-tag-version && git add .
