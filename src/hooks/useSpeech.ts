@@ -248,7 +248,7 @@ export function useSpeech() {
     };
   }, [status, currentSentenceIndex]);
 
-  // Initialize audio session for background playbook
+  // Initialize audio session and media controls once on mount
   useEffect(() => {
     configureAudioSession();
     setupMediaSessionControls();
@@ -257,6 +257,7 @@ export function useSpeech() {
     const mediaSessionListener = TrackPlayer.addEventListener(
       Event.RemotePlay,
       () => {
+        console.log('Remote play button pressed');
         if (status === STATUS_PAUSED) {
           resume();
         } else if (
@@ -270,15 +271,18 @@ export function useSpeech() {
     const pauseListener = TrackPlayer.addEventListener(
       Event.RemotePause,
       () => {
+        console.log('Remote pause button pressed');
         if (status === STATUS_PLAYING) {
           pause();
         }
       }
     );
     const stopListener = TrackPlayer.addEventListener(Event.RemoteStop, () => {
+      console.log('Remote stop button pressed');
       stop();
     });
     const nextListener = TrackPlayer.addEventListener(Event.RemoteNext, () => {
+      console.log('Remote next button pressed');
       if (currentSentenceIndex < sentencesRef.current.length - 1) {
         setCurrentSentenceIndex((prev) => prev + 1);
         speakCurrentSentence();
@@ -287,6 +291,7 @@ export function useSpeech() {
     const previousListener = TrackPlayer.addEventListener(
       Event.RemotePrevious,
       () => {
+        console.log('Remote previous button pressed');
         if (currentSentenceIndex > 0) {
           setCurrentSentenceIndex((prev) => prev - 1);
           speakCurrentSentence();
@@ -294,7 +299,17 @@ export function useSpeech() {
       }
     );
 
-    // Set up audio interruption handling using app state changes
+    return () => {
+      mediaSessionListener?.remove();
+      pauseListener?.remove();
+      stopListener?.remove();
+      nextListener?.remove();
+      previousListener?.remove();
+    };
+  }, []); // Empty dependency array - only run once on mount
+
+  // Handle app state changes for background/foreground
+  useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       console.log('App state changed to:', nextAppState);
 
@@ -333,11 +348,6 @@ export function useSpeech() {
 
     return () => {
       subscription?.remove();
-      mediaSessionListener?.remove();
-      pauseListener?.remove();
-      stopListener?.remove();
-      nextListener?.remove();
-      previousListener?.remove();
       if (audioInterruptionListenerRef.current) {
         audioInterruptionListenerRef.current = null;
       }

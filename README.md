@@ -7,11 +7,13 @@ A powerful cross-platform text-to-speech application that transforms your GitHub
 ## 🚀 Recent Updates
 
 ### Version 2.0.29 Highlights
+- **Enhanced Audio Controls**: Audio focus management, media session integration, and earphone button support
 - **Enhanced Testing Suite**: Comprehensive test coverage with 70+ passing tests
 - **Improved GitHub Integration**: Robust API handling and error management
 - **Advanced Coverage Reporting**: Detailed HTML coverage reports and analysis
 - **TypeScript Enhancements**: Full type safety with strict configuration
 - **Test Infrastructure**: Modern Jest setup with React Native Testing Library
+- **Audio Interruption Handling**: Seamless management of phone calls and other audio interruptions
 - **Documentation**: Comprehensive test coverage analysis and action plans
 
 ## ✨ Features
@@ -27,6 +29,10 @@ A powerful cross-platform text-to-speech application that transforms your GitHub
 - **Adjustable Playback Speed**: Customize reading pace to your preference
 - **Background Audio**: Continue listening while using other apps
 - **Audio Controls**: Play, pause, skip, and navigate with intuitive controls
+- **Audio Focus Management**: Automatically pauses when other apps take over audio
+- **Media Session Integration**: System-level media controls in notification panel and lock screen
+- **Earphone Button Controls**: Previous/next/play/pause/stop using earphone buttons
+- **Audio Interruption Handling**: Seamless handling of phone calls and other audio interruptions
 
 ### 🎨 Customizable Interface
 - **Dark/Light Mode**: Automatic theme switching based on system preferences
@@ -67,8 +73,10 @@ A powerful cross-platform text-to-speech application that transforms your GitHub
 
 ### Audio & Media
 - **Expo Speech**: Text-to-speech synthesis
-- **Expo AV**: Audio session management
-- **Background Tasks**: Continue audio playback in background
+- **Expo AV**: Audio session management and interruption handling
+- **React Native Track Player**: Advanced audio playback with media session support
+- **Audio Toolkit**: Enhanced audio focus management and earphone controls
+- **Background Tasks**: Continue audio playback in background with proper session management
 
 ### Development Tools
 - **Jest**: Testing framework with comprehensive test suite (70+ tests)
@@ -155,6 +163,11 @@ pnpm test
    - ⏮️⏭️ Navigate between chapters
    - 🔄 Adjust playback speed
    - 📍 Track reading progress
+5. **System-Level Controls**: Access media controls from:
+   - 📱 Notification panel (Android/iOS)
+   - 🔒 Lock screen media controls
+   - 🎧 Earphone button controls (play/pause/next/previous)
+   - 📞 Automatic pause during phone calls and audio interruptions
 
 ### Navigation
 
@@ -168,6 +181,9 @@ pnpm test
 - **Progress Sync**: Your reading position is automatically saved
 - **Offline Access**: Previously loaded content works without internet
 - **Multi-language**: Supports content in multiple languages
+- **Smart Audio Management**: Automatically handles audio focus and interruptions
+- **Universal Media Controls**: Works with system media controls and earphone buttons
+- **Seamless Integration**: Integrates with device audio session for optimal user experience
 
 ## 🔧 Configuration
 
