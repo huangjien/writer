@@ -25,6 +25,9 @@ jobs:
     - name: Install dependencies
       run: npm install --legacy-peer-deps 
       
+    - name: Apply patches
+      run: npx patch-package
+      
     - name: Force reinstall lightningcss for Linux
       run: npm uninstall lightningcss && npm install lightningcss@^1.27.0 --legacy-peer-deps
       
@@ -72,6 +75,9 @@ jobs:
     - name: Install dependencies
       run: npm ci --legacy-peer-deps
       
+    - name: Apply patches
+      run: npx patch-package
+      
     - name: Rebuild native modules
       run: npm rebuild
       
@@ -87,6 +93,10 @@ jobs:
         # Install dependencies for the native project
         echo "Installing dependencies for native Android project..."
         npm install --legacy-peer-deps
+        
+        # Apply patches to ensure CSS parsing fix is active
+        echo "Applying patches..."
+        npx patch-package
         
         # Force reinstall lightningcss for Linux
          echo "Force reinstalling lightningcss for Linux platform..."
