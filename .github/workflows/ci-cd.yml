@@ -94,8 +94,25 @@ jobs:
         echo "Installing dependencies for native Android project..."
         npm install --legacy-peer-deps
         
-        # Apply patches to ensure CSS parsing fix is active
-        echo "Applying patches..."
+        # Force reinstall lightningcss for Linux
+        echo "Force reinstalling lightningcss for Linux platform..."
+        npm uninstall lightningcss && npm install lightningcss@^1.27.0 --legacy-peer-deps
+        
+        # Rebuild native modules
+        echo "Rebuilding native modules..."
+        npm rebuild
+        
+        # Apply patches AFTER rebuild to ensure they stick
+        echo "Applying patches after rebuild..."
+        # First verify patch file exists
+        if [ -f "patches/react-native-css-interop+0.1.22.patch" ]; then
+          echo "✓ Patch file found"
+          cat patches/react-native-css-interop+0.1.22.patch | head -10
+        else
+          echo "✗ Patch file not found!"
+          ls -la patches/ || echo "Patches directory not found"
+          exit 1
+        fi
         npx patch-package
         
         # Verify patch was applied
@@ -111,18 +128,13 @@ jobs:
             echo "✓ Patch successfully applied on retry"
           else
             echo "✗ Patch failed to apply - showing file content for debugging"
-            head -20 node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
+            echo "Current parseAspectRatio function:"
+            grep -A 15 "function parseAspectRatio" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts || echo "Function not found"
+            echo "Current parseDeclaration aspect-ratio case:"
+            grep -A 5 -B 2 "aspect-ratio" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts || echo "Case not found"
             exit 1
           fi
         fi
-        
-        # Force reinstall lightningcss for Linux
-         echo "Force reinstalling lightningcss for Linux platform..."
-         npm uninstall lightningcss && npm install lightningcss@^1.27.0 --legacy-peer-deps
-        
-        # Rebuild native modules
-        echo "Rebuilding native modules..."
-        npm rebuild
         
         # Make Gradle wrapper executable
         if [ -f "android/gradlew" ]; then
@@ -137,6 +149,20 @@ jobs:
         else
           echo "✗ Patch lost before build - reapplying..."
           npx patch-package
+          # Final verification after reapplication
+          if grep -q "options: ParseDeclarationOptionsWithValueWarning" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts; then
+            echo "✓ Patch successfully reapplied before build"
+          else
+            echo "✗ Critical: Patch cannot be applied - build will fail"
+            echo "Showing detailed file analysis:"
+            echo "File exists check:"
+            ls -la node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts || echo "File not found"
+            echo "parseAspectRatio function signature:"
+            grep -A 5 "function parseAspectRatio" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts || echo "Function not found"
+            echo "aspect-ratio case in parseDeclaration:"
+            grep -A 10 -B 2 "case \"aspect-ratio\"" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts || echo "Case not found"
+            exit 1
+          fi
         fi
         
         # Build Android APK using Gradle
