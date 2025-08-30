@@ -26,7 +26,7 @@ jobs:
       run: npm install --legacy-peer-deps 
       
     - name: Force reinstall lightningcss for Linux
-      run: npm uninstall lightningcss && npm install lightningcss@^1.27.0 --legacy-peer-deps
+      run: npm uninstall lightningcss && npm install lightningcss@^1.27.0 --force
       
     - name: Rebuild native modules
       run: npm rebuild
