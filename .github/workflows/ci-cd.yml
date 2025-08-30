@@ -146,12 +146,30 @@ jobs:
         echo "Final patch verification before build..."
         if grep -q "options: ParseDeclarationOptionsWithValueWarning" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts; then
           echo "✓ Patch confirmed active before build"
+          # Additional verification: check the exact line that was failing
+          echo "Verifying specific fix for line 2645..."
+          if grep -q "if (!aspectRatio.ratio || aspectRatio.ratio.length === 0)" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts; then
+            echo "✓ Null check for aspectRatio.ratio confirmed"
+          else
+            echo "✗ Critical: Null check missing - this will cause the exact error we're seeing"
+            echo "Current parseAspectRatio function around line 2645:"
+            sed -n '2640,2655p' node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
+            exit 1
+          fi
         else
           echo "✗ Patch lost before build - reapplying..."
           npx patch-package
           # Final verification after reapplication
           if grep -q "options: ParseDeclarationOptionsWithValueWarning" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts; then
             echo "✓ Patch successfully reapplied before build"
+            # Verify the specific fix again
+            if grep -q "if (!aspectRatio.ratio || aspectRatio.ratio.length === 0)" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts; then
+              echo "✓ Null check for aspectRatio.ratio confirmed after reapplication"
+            else
+              echo "✗ Critical: Null check still missing after reapplication"
+              sed -n '2640,2655p' node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
+              exit 1
+            fi
           else
             echo "✗ Critical: Patch cannot be applied - build will fail"
             echo "Showing detailed file analysis:"
