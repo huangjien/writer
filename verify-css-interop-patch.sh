@@ -42,7 +42,7 @@ else
 fi
 
 # Check for the parseOptions call in parseDeclaration
-if grep -A 2 'case "aspect-ratio"' "$TARGET_FILE" | grep -q "parseAspectRatio(declaration.value, parseOptions)"; then
+if grep -A 5 'case "aspect-ratio"' "$TARGET_FILE" | grep -q "parseAspectRatio(declaration.value, parseOptions)"; then
     echo "✓ parseAspectRatio called with parseOptions parameter"
 else
     echo "✗ parseAspectRatio not called with parseOptions parameter"
