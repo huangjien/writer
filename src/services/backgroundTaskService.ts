@@ -1,4 +1,5 @@
 import * as BackgroundTask from 'expo-background-task';
+import { Platform } from 'react-native';
 import { SPEECH_TASK } from '@/components/SpeechTask';
 
 export interface BackgroundTaskConfig {
@@ -19,6 +20,12 @@ export const registerBackgroundTask = async (
   taskName: string = SPEECH_TASK,
   config: BackgroundTaskConfig = DEFAULT_BACKGROUND_TASK_CONFIG
 ): Promise<boolean> => {
+  // Background tasks are only available on native platforms
+  if (Platform.OS === 'web') {
+    console.log(`Background task '${taskName}' skipped on web platform`);
+    return true;
+  }
+
   try {
     await BackgroundTask.registerTaskAsync(taskName, config);
     console.log(`Background task '${taskName}' registered successfully`);
@@ -35,6 +42,14 @@ export const registerBackgroundTask = async (
 export const unregisterBackgroundTask = async (
   taskName: string = SPEECH_TASK
 ): Promise<boolean> => {
+  // Background tasks are only available on native platforms
+  if (Platform.OS === 'web') {
+    console.log(
+      `Background task '${taskName}' unregister skipped on web platform`
+    );
+    return true;
+  }
+
   try {
     await BackgroundTask.unregisterTaskAsync(taskName);
     console.log(`Background task '${taskName}' unregistered successfully`);
@@ -51,6 +66,14 @@ export const unregisterBackgroundTask = async (
 export const isBackgroundTaskRegistered = async (
   taskName: string = SPEECH_TASK
 ): Promise<boolean> => {
+  // Background tasks are only available on native platforms
+  if (Platform.OS === 'web') {
+    console.log(
+      `Background task status check skipped on web platform for '${taskName}'`
+    );
+    return false;
+  }
+
   try {
     const status = await BackgroundTask.getStatusAsync();
     return status === BackgroundTask.BackgroundTaskStatus.Available;

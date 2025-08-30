@@ -15,6 +15,34 @@ module.exports = {
     900: '#1E1E1E',
     950: '#121212',
   },
+  // Apple Glass Vision Color Palette
+  glass: {
+    // Ultra-light glass surfaces
+    ultraLight: 'rgba(255, 255, 255, 0.08)',
+    ultraLightDark: 'rgba(255, 255, 255, 0.05)',
+    // Light glass surfaces
+    light: 'rgba(255, 255, 255, 0.15)',
+    lightDark: 'rgba(255, 255, 255, 0.10)',
+    // Medium glass surfaces
+    medium: 'rgba(255, 255, 255, 0.25)',
+    mediumDark: 'rgba(255, 255, 255, 0.18)',
+    // Strong glass surfaces
+    strong: 'rgba(255, 255, 255, 0.35)',
+    strongDark: 'rgba(255, 255, 255, 0.25)',
+    // Glass borders
+    border: 'rgba(255, 255, 255, 0.20)',
+    borderDark: 'rgba(255, 255, 255, 0.15)',
+    // Glass shadows
+    shadow: 'rgba(0, 0, 0, 0.10)',
+    shadowDark: 'rgba(0, 0, 0, 0.25)',
+  },
+  // Glass background overlays
+  glassBackground: {
+    light: 'rgba(248, 250, 252, 0.85)',
+    dark: 'rgba(15, 23, 42, 0.85)',
+    primary: 'rgba(59, 130, 246, 0.15)',
+    secondary: 'rgba(139, 92, 246, 0.15)',
+  },
   neutral: {
     50: '#FAFAFA',
     100: '#F5F5F5',

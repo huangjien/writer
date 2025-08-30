@@ -10,10 +10,12 @@ import { enableFreeze } from 'react-native-screens';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { CustomDrawerContent } from '@/components/CustomDrawerContent';
-import { Footer } from '@/components/Footer';
+import Footer from '@/components/Footer';
 import { AsyncStorageProvider } from '@/hooks/useAsyncStorage';
 import { useAuthentication } from '@/hooks/useAuthentication';
 import { Audio } from 'expo-av';
+import { StatusBar } from 'expo-status-bar';
+import { useColorScheme } from 'nativewind';
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
@@ -44,31 +46,63 @@ export function InnerLayout() {
       </View>
     );
   }
+  function menuButton(navigation): React.ReactNode {
+    return (
+      <Pressable
+        onPress={() => navigation.toggleDrawer()}
+        style={{ marginLeft: 16 }}
+      >
+        <Feather name='menu' size={24} color={theme.colors.border} />
+      </Pressable>
+    );
+  }
+
   return (
     <View
       className='flex elevation z-auto flex-1 flex-col'
-      style={{ backgroundColor: theme.colors.background }}
+      style={{ backgroundColor: 'transparent' }}
     >
+      <StatusBar
+        style={theme.dark ? 'light' : 'dark'}
+        translucent
+        backgroundColor='transparent'
+      />
       {/* <Header /> */}
       <Drawer
         screenOptions={{
           headerTransparent: true,
           headerStyle: {
             backgroundColor: 'transparent',
+            elevation: 0,
+            shadowOpacity: 0,
+            borderBottomWidth: 0,
           },
           headerTitleStyle: {
             color: theme.colors.text,
+            fontWeight: '600',
+            textShadowColor: theme.dark
+              ? 'rgba(0, 0, 0, 0.3)'
+              : 'rgba(255, 255, 255, 0.8)',
+            textShadowOffset: { width: 0, height: 1 },
+            textShadowRadius: 2,
           },
           headerTintColor: theme.colors.text,
           drawerStyle: {
-            backgroundColor: theme.colors.background,
+            backgroundColor: 'transparent',
+            width: 320,
           },
+          drawerType: 'slide',
+          overlayColor: theme.dark
+            ? 'rgba(15, 23, 42, 0.6)'
+            : 'rgba(248, 250, 252, 0.6)',
           drawerLabelStyle: {
             color: theme.colors.text,
           },
-          drawerActiveBackgroundColor: theme.colors.primary,
-          drawerActiveTintColor: theme.colors.text,
-          drawerInactiveTintColor: theme.colors.text,
+          drawerActiveBackgroundColor: theme.dark
+            ? 'rgba(165, 180, 252, 0.2)'
+            : 'rgba(79, 70, 229, 0.1)',
+          drawerActiveTintColor: theme.dark ? '#a5b4fc' : '#4f46e5',
+          drawerInactiveTintColor: theme.dark ? '#cbd5e1' : '#64748b',
         }}
         drawerContent={() => <CustomDrawerContent />}
       >
@@ -117,17 +151,6 @@ export function InnerLayout() {
       <Footer />
     </View>
   );
-
-  function menuButton(navigation): React.ReactNode {
-    return (
-      <Pressable
-        onPress={() => navigation.toggleDrawer()}
-        style={{ marginLeft: 16 }}
-      >
-        <Feather name='menu' size={24} color={theme.colors.border} />
-      </Pressable>
-    );
-  }
 }
 
 export default function Layout() {
@@ -161,9 +184,20 @@ export default function Layout() {
     <AsyncStorageProvider>
       <RootSiblingParent>
         <ThemeProvider value={theme}>
-          <GestureHandlerRootView>
+          <GestureHandlerRootView
+            style={{ flex: 1, backgroundColor: 'transparent' }}
+          >
             <SafeAreaProvider>
-              <InnerLayout />
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: theme.dark
+                    ? 'rgba(15, 23, 42, 0.95)'
+                    : 'rgba(248, 250, 252, 0.95)',
+                }}
+              >
+                <InnerLayout />
+              </View>
             </SafeAreaProvider>
           </GestureHandlerRootView>
         </ThemeProvider>
