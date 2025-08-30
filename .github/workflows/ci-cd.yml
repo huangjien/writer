@@ -23,17 +23,8 @@ jobs:
         cache: 'npm'
         
     - name: Install dependencies
-      run: npm install --legacy-peer-deps 
-      
-    - name: Apply patches
-      run: npx patch-package
-      
-    - name: Force reinstall lightningcss for Linux
-      run: npm uninstall lightningcss && npm install lightningcss@^1.27.0 --legacy-peer-deps
-      
-    - name: Rebuild native modules
-      run: npm rebuild
-      
+      run: npm install --legacy-peer-deps
+
     - name: Run tests
       run: npm test
       
@@ -72,13 +63,11 @@ jobs:
     - name: Setup Expo CLI
       run: npm install -g @expo/cli
       
-    - name: Install dependencies and apply patch
+    - name: Install dependencies
       run: |
         npm ci --legacy-peer-deps
         echo "Force reinstalling lightningcss for Linux platform..."
         npm uninstall lightningcss && npm install lightningcss@^1.27.0 --legacy-peer-deps
-        echo "Applying patches..."
-        npx patch-package
 
     - name: Create temp directory
       run: mkdir -p ~/temp
@@ -88,6 +77,16 @@ jobs:
         # Create native Android project using Expo prebuild
         echo "Creating native Android project using Expo prebuild..."
         CI=1 npx expo prebuild --platform android --no-install
+        
+        # Apply patch using the patch command
+        echo "Applying patch directly..."
+        patch -p1 < patches/react-native-css-interop+0.1.22.patch
+
+        # Make the file immutable
+        echo "Making parseDeclaration.ts immutable..."
+        sudo chattr +i node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
+
+
         
         # Run comprehensive patch verification AFTER prebuild
         echo "Running comprehensive patch verification after prebuild..."
