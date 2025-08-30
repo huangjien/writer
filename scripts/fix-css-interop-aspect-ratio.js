@@ -1,7 +1,7 @@
 /*
   Post-prebuild fix for react-native-css-interop aspect-ratio parsing
   - Adds options: ParseDeclarationOptionsWithValueWarning to parseAspectRatio signature if missing
-  - Inserts null guard for aspectRatio?.ratio at the top of parseAspectRatio
+  - Inserts null guard for aspectRatio?.ratio AFTER the declaration of `const aspectRatio = ...`
   - Ensures parseAspectRatio is called with (declaration.value, parseOptions) in the 'aspect-ratio' case
   Idempotent: safe to run multiple times
 */
@@ -31,51 +31,93 @@ function findMatchingParen(text, startIndex) {
   return -1;
 }
 
-function applyFix(content) {
-  let changed = false;
-  const logs = [];
+function findFunctionRegion(content) {
+  // Supports two forms:
+  // 1) function parseAspectRatio(...) { ... }
+  // 2) const parseAspectRatio = (...) => { ... }
+  const nameIdx = content.indexOf('parseAspectRatio');
+  if (nameIdx === -1) return null;
 
-  const fnMarker = 'function parseAspectRatio';
-  const fnIdx = content.indexOf(fnMarker);
-  if (fnIdx === -1) {
-    logs.push('parseAspectRatio function not found; no changes applied');
-  } else {
-    const paramsStart = content.indexOf('(', fnIdx);
-    const paramsEnd = findMatchingParen(content, paramsStart);
-    if (paramsStart !== -1 && paramsEnd !== -1) {
-      const paramList = content.slice(paramsStart + 1, paramsEnd);
-      if (!/ParseDeclarationOptionsWithValueWarning/.test(paramList)) {
-        const trimmed = paramList.trim();
-        const needsComma = trimmed.length > 0 && !trimmed.endsWith(',');
-        const insertion = (trimmed.length > 0 ? (needsComma ? ', ' : ' ') : '') +
-          'options: ParseDeclarationOptionsWithValueWarning';
-        const before = content.slice(0, paramsEnd);
-        const after = content.slice(paramsEnd);
-        content = before + insertion + after;
-        changed = true;
-        logs.push('Added options: ParseDeclarationOptionsWithValueWarning to parseAspectRatio signature');
-      } else {
-        logs.push('Signature already includes ParseDeclarationOptionsWithValueWarning');
-      }
+  // Find the first '(' after the name for param list
+  const paramsStart = content.indexOf('(', nameIdx);
+  if (paramsStart === -1) return null;
+  const paramsEnd = findMatchingParen(content, paramsStart);
+  if (paramsEnd === -1) return null;
 
-      // Recompute body start because content may have shifted
-      const newParamsEnd = findMatchingParen(content, content.indexOf('(', fnIdx));
-      const bodyStart = content.indexOf('{', newParamsEnd);
-      if (bodyStart !== -1) {
-        const nextChunk = content.slice(bodyStart + 1, bodyStart + 300);
-        if (!/aspectRatio\.?\??ratio/.test(nextChunk) || !/return\s+null/.test(nextChunk)) {
-          const guard = `\n  if (!aspectRatio?.ratio || aspectRatio.ratio.length === 0) {\n    return null;\n  }\n`;
-          content = content.slice(0, bodyStart + 1) + guard + content.slice(bodyStart + 1);
-          changed = true;
-          logs.push('Inserted null-safety guard for aspectRatio?.ratio');
-        } else {
-          logs.push('Null-safety guard already present');
-        }
+  // Find body start '{' after paramsEnd
+  let bodyStart = content.indexOf('{', paramsEnd);
+  if (bodyStart === -1) return null;
+
+  // Naively find body end by simple brace matching from bodyStart
+  let depth = 0;
+  let bodyEnd = -1;
+  for (let i = bodyStart; i < content.length; i++) {
+    if (content[i] === '{') depth++;
+    else if (content[i] === '}') {
+      depth--;
+      if (depth === 0) {
+        bodyEnd = i;
+        break;
       }
     }
   }
+  if (bodyEnd === -1) return null;
 
-  // Update the call site inside the 'aspect-ratio' case
+  return { nameIdx, paramsStart, paramsEnd, bodyStart, bodyEnd };
+}
+
+function addOptionsParam(content, paramsStart, paramsEnd, logs) {
+  const paramList = content.slice(paramsStart + 1, paramsEnd);
+  if (/ParseDeclarationOptionsWithValueWarning/.test(paramList)) {
+    logs.push('Signature already includes ParseDeclarationOptionsWithValueWarning');
+    return { content, changed: false, paramsEnd };
+  }
+
+  const trimmed = paramList.trim();
+  const needsComma = trimmed.length > 0 && !trimmed.endsWith(',');
+  const insertion =
+    (trimmed.length > 0 ? (needsComma ? ', ' : ' ') : '') +
+    'options: ParseDeclarationOptionsWithValueWarning';
+
+  const before = content.slice(0, paramsEnd);
+  const after = content.slice(paramsEnd);
+  const updated = before + insertion + after;
+  const newParamsEnd = paramsEnd + insertion.length;
+  logs.push('Added options: ParseDeclarationOptionsWithValueWarning to parseAspectRatio signature');
+  return { content: updated, changed: true, paramsEnd: newParamsEnd };
+}
+
+function insertNullGuardAfterAspectRatioDecl(content, bodyStart, bodyEnd, logs) {
+  const body = content.slice(bodyStart + 1, bodyEnd);
+  const declRegex = /const\s+aspectRatio\s*=\s*[^;]+;/m;
+  const declMatch = body.match(declRegex);
+  if (!declMatch) {
+    logs.push('Could not locate `const aspectRatio = ...;` declaration to insert guard');
+    return { content, changed: false };
+  }
+
+  const guard = `\n  if (!aspectRatio?.ratio || aspectRatio.ratio.length === 0) {\n    return null;\n  }\n`;
+  const declStartInBody = declMatch.index;
+  const declEndInBody = declStartInBody + declMatch[0].length;
+
+  // Check if guard already present right after declaration
+  const afterDeclSlice = body.slice(declEndInBody, declEndInBody + guard.length + 20);
+  if (/aspectRatio\?\.ratio/.test(afterDeclSlice) && /return\s+null/.test(afterDeclSlice)) {
+    logs.push('Null-safety guard already present after aspectRatio declaration');
+    return { content, changed: false };
+  }
+
+  const newBody =
+    body.slice(0, declEndInBody) +
+    guard +
+    body.slice(declEndInBody);
+
+  const updated = content.slice(0, bodyStart + 1) + newBody + content.slice(bodyEnd);
+  logs.push('Inserted null-safety guard after aspectRatio declaration');
+  return { content: updated, changed: true };
+}
+
+function ensureCallSiteUsesParseOptions(content, logs) {
   const casePatterns = [
     'case "aspect-ratio"',
     "case 'aspect-ratio'",
@@ -85,52 +127,101 @@ function applyFix(content) {
     caseIdx = content.indexOf(pat);
     if (caseIdx !== -1) break;
   }
-  if (caseIdx !== -1) {
-    // Define a small window for the case block
-    const windowEnd = (() => {
-      const nextCase = content.indexOf('case ', caseIdx + 5);
-      const nextDefault = content.indexOf('default:', caseIdx + 5);
-      let end = content.length;
-      if (nextCase !== -1) end = Math.min(end, nextCase);
-      if (nextDefault !== -1) end = Math.min(end, nextDefault);
-      return end;
-    })();
+  if (caseIdx === -1) {
+    logs.push("'aspect-ratio' case not found; no call-site changes applied");
+    return { content, changed: false };
+  }
 
-    const block = content.slice(caseIdx, windowEnd);
-    const callRegex = /parseAspectRatio\(\s*declaration\.value(?!\s*,\s*parseOptions)/;
-    if (callRegex.test(block)) {
-      const updatedBlock = block.replace(
-        /parseAspectRatio\(\s*declaration\.value\s*\)/g,
-        'parseAspectRatio(declaration.value, parseOptions)'
-      ).replace(
-        /parseAspectRatio\(\s*declaration\.value\s*,\s*([^\)]*)\)/g,
-        (m, rest) => m.includes('parseOptions') ? m : `parseAspectRatio(declaration.value, parseOptions${rest ? ', ' + rest : ''})`
-      ).replace(
-        /parseAspectRatio\(\s*declaration\.value\s*(?=,)/g,
-        (m) => (m.includes('parseOptions') ? m : 'parseAspectRatio(declaration.value, parseOptions')
-      );
+  const windowEnd = (() => {
+    const nextCase = content.indexOf('case ', caseIdx + 5);
+    const nextDefault = content.indexOf('default:', caseIdx + 5);
+    let end = content.length;
+    if (nextCase !== -1) end = Math.min(end, nextCase);
+    if (nextDefault !== -1) end = Math.min(end, nextDefault);
+    return end;
+  })();
 
-      content = content.slice(0, caseIdx) + updatedBlock + content.slice(windowEnd);
+  const block = content.slice(caseIdx, windowEnd);
+  const hasOptions = /parseAspectRatio\(\s*declaration\.value\s*,\s*parseOptions/.test(block);
+  const hasCall = /parseAspectRatio\(\s*declaration\.value/.test(block);
+
+  if (!hasCall) {
+    logs.push('No parseAspectRatio(declaration.value ...) call found in aspect-ratio case');
+    return { content, changed: false };
+  }
+
+  if (hasOptions) {
+    logs.push('Call site already includes parseOptions');
+    return { content, changed: false };
+  }
+
+  const updatedBlock = block
+    // parseAspectRatio(declaration.value)
+    .replace(
+      /parseAspectRatio\(\s*declaration\.value\s*\)/g,
+      'parseAspectRatio(declaration.value, parseOptions)'
+    )
+    // parseAspectRatio(declaration.value, somethingElse) -> ensure parseOptions first
+    .replace(
+      /parseAspectRatio\(\s*declaration\.value\s*,\s*([^\)]*)\)/g,
+      (m, rest) => {
+        if (/\bparseOptions\b/.test(rest)) return m; // already has
+        return `parseAspectRatio(declaration.value, parseOptions${rest ? ', ' + rest : ''})`;
+      }
+    );
+
+  const updated = content.slice(0, caseIdx) + updatedBlock + content.slice(windowEnd);
+  logs.push("Ensured parseAspectRatio is called with parseOptions in 'aspect-ratio' case");
+  return { content: updated, changed: true };
+}
+
+function applyFix(original) {
+  let content = original;
+  let changed = false;
+  const logs = [];
+
+  const region = findFunctionRegion(content);
+  if (!region) {
+    logs.push('parseAspectRatio function region not found; no signature/guard changes applied');
+  } else {
+    // 1) Add options param if missing
+    const r1 = addOptionsParam(content, region.paramsStart, region.paramsEnd, logs);
+    if (r1.changed) {
+      content = r1.content;
       changed = true;
-      logs.push("Ensured parseAspectRatio is called with parseOptions in 'aspect-ratio' case");
-    } else {
-      // If already has parseOptions, log it
-      if (/parseAspectRatio\(\s*declaration\.value\s*,\s*parseOptions/.test(block)) {
-        logs.push('Call site already includes parseOptions');
-      } else {
-        logs.push('Could not find parseAspectRatio(declaration.value ...) call in aspect-ratio case');
+      // If params changed, bodyStart/bodyEnd indexes likely shifted; recompute region
+      const rAgain = findFunctionRegion(content);
+      if (rAgain) {
+        region.paramsStart = rAgain.paramsStart;
+        region.paramsEnd = rAgain.paramsEnd;
+        region.bodyStart = rAgain.bodyStart;
+        region.bodyEnd = rAgain.bodyEnd;
       }
     }
-  } else {
-    logs.push("'aspect-ratio' case not found; no call-site changes applied");
+
+    // 2) Insert null guard after aspectRatio declaration
+    const r2 = insertNullGuardAfterAspectRatioDecl(content, region.bodyStart, region.bodyEnd, logs);
+    if (r2.changed) {
+      content = r2.content;
+      changed = true;
+      // bodyEnd may shift but we don't need it further
+    }
+  }
+
+  // 3) Ensure call site uses parseOptions
+  const r3 = ensureCallSiteUsesParseOptions(content, logs);
+  if (r3.changed) {
+    content = r3.content;
+    changed = true;
   }
 
   return { content, changed, logs };
 }
 
 (function main() {
+  console.log('[fix-css-interop] Target:', TARGET);
   if (!fs.existsSync(TARGET)) {
-    console.error(`Target file not found: ${TARGET}`);
+    console.error(`[fix-css-interop] Target file not found: ${TARGET}`);
     process.exit(1);
   }
   const original = fs.readFileSync(TARGET, 'utf8');
@@ -140,6 +231,6 @@ function applyFix(content) {
     fs.writeFileSync(TARGET, content, 'utf8');
     console.log('[fix-css-interop] Changes written to target file');
   } else {
-    console.log('[fix-css-interop] No changes needed (already patched)');
+    console.log('[fix-css-interop] No changes needed (already patched or patterns not found)');
   }
 })();
