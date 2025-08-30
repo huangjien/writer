@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "2.3.16",
+  "version": "2.3.17",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -13,6 +13,7 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "prepare": "husky",
+    "postinstall": "patch-package",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -86,6 +87,7 @@
     "jest-environment-jsdom": "^30.0.2",
     "metro": "^0.82.0",
     "metro-inspector-proxy": "^0.78.1",
+    "patch-package": "^8.0.0",
     "prettier": "^3.4.2",
     "react-test-renderer": "19.0.0",
     "ts-jest": "^29.4.0",

@@ -1,0 +1,15 @@
+diff --git a/node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts b/node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
+index bf095a5..cea0bf9 100644
+--- a/node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
++++ b/node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
+@@ -2642,7 +2642,9 @@ function parseAspectRatio(
+   if (aspectRatio.auto) {
+     return "auto";
+   } else {
+-    if (aspectRatio.ratio[0] === aspectRatio.ratio[1]) {
++    if (!aspectRatio.ratio || aspectRatio.ratio.length === 0) {
++      return 1;
++    } else if (aspectRatio.ratio[0] === aspectRatio.ratio[1]) {
+       return 1;
+     } else {
+       return aspectRatio.ratio.join(" / ");
