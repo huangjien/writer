@@ -80,11 +80,7 @@ jobs:
         
         # Apply patch using the patch command
         echo "Applying patch directly..."
-        patch -p1 < patches/react-native-css-interop+0.1.22.patch
-
-        # Make the file immutable
-        echo "Making parseDeclaration.ts immutable..."
-        sudo chattr +i node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
+        patch -p1 --forward --force < patches/react-native-css-interop+0.1.22.patch
 
 
         
