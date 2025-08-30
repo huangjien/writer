@@ -69,32 +69,24 @@ jobs:
         echo "Force reinstalling lightningcss for Linux platform..."
         npm uninstall lightningcss && npm install lightningcss@^1.27.0 --legacy-peer-deps
 
-    - name: Create temp directory
-      run: mkdir -p ~/temp
-
-    - name: Install dos2unix
-      run: sudo apt-get install -y dos2unix
-
-    - name: Create native Android project and Build APK
+    - name: Create native Android project
       run: |
-        # Create native Android project using Expo prebuild
         echo "Creating native Android project using Expo prebuild..."
         CI=1 npx expo prebuild --platform android --no-install
-        
-        # Download original file, patch it, and overwrite the one in node_modules
-        echo "Downloading and patching parseDeclaration.ts..."
-        curl -o parseDeclaration.ts.temp https://unpkg.com/react-native-css-interop@0.1.22/src/css-to-rn/parseDeclaration.ts
-        
-        # Add a newline to the patch file to prevent "unexpectedly ends in middle of line" error
+
+    - name: Apply patch for react-native-css-interop
+      run: |
+        set -e
+        echo "Applying patch to react-native-css-interop..."
+        sudo apt-get update && sudo apt-get install -y dos2unix patch
         echo "" >> patches/react-native-css-interop+0.1.22.patch
-
-        # Convert line endings
-        dos2unix parseDeclaration.ts.temp
         dos2unix patches/react-native-css-interop+0.1.22.patch
+        dos2unix node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
+        patch --verbose --forward --force node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts < patches/react-native-css-interop+0.1.22.patch
+        echo "Patch applied successfully."
 
-        patch parseDeclaration.ts.temp < patches/react-native-css-interop+0.1.22.patch
-        cp parseDeclaration.ts.temp node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
-        
+    - name: Build Android APK
+      run: |
         # Run comprehensive patch verification AFTER prebuild
         echo "Running comprehensive patch verification after prebuild..."
         chmod +x verify-css-interop-patch.sh
