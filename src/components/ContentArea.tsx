@@ -82,6 +82,8 @@ export const ContentArea = forwardRef<ScrollView, ContentAreaProps>(
                   }`}
                   style={{ fontSize: fontSize, marginBottom: 16 }}
                 >
+                  {/* First-line indent: 4 non-breaking spaces so only the first line is indented */}
+                  <Text>{'\u00A0\u00A0\u00A0\u00A0'}</Text>
                   {paragraph.trim()}
                 </Text>
               </View>
