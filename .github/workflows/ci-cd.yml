@@ -72,11 +72,19 @@ jobs:
     - name: Create temp directory
       run: mkdir -p ~/temp
 
+    - name: Install dos2unix
+      run: sudo apt-get install -y dos2unix
+
     - name: Create native Android project and Build APK
       run: |
         # Create native Android project using Expo prebuild
         echo "Creating native Android project using Expo prebuild..."
         CI=1 npx expo prebuild --platform android --no-install
+        
+        # Convert line endings
+        echo "Converting line endings..."
+        dos2unix patches/react-native-css-interop+0.1.22.patch
+        dos2unix node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
         
         # Apply patch using the patch command
         echo "Applying patch directly..."
