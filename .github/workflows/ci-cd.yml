@@ -98,6 +98,24 @@ jobs:
         echo "Applying patches..."
         npx patch-package
         
+        # Verify patch was applied
+        echo "Verifying patch application..."
+        if grep -q "options: ParseDeclarationOptionsWithValueWarning" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts; then
+          echo "✓ Patch successfully applied"
+        else
+          echo "✗ Patch not applied, attempting to reapply..."
+          npx patch-package --reverse
+          npx patch-package
+          # Verify again
+          if grep -q "options: ParseDeclarationOptionsWithValueWarning" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts; then
+            echo "✓ Patch successfully applied on retry"
+          else
+            echo "✗ Patch failed to apply - showing file content for debugging"
+            head -20 node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
+            exit 1
+          fi
+        fi
+        
         # Force reinstall lightningcss for Linux
          echo "Force reinstalling lightningcss for Linux platform..."
          npm uninstall lightningcss && npm install lightningcss@^1.27.0 --legacy-peer-deps
@@ -110,6 +128,15 @@ jobs:
         if [ -f "android/gradlew" ]; then
           chmod +x android/gradlew
           echo "Made Gradle wrapper executable"
+        fi
+        
+        # Final verification that patch is still active before build
+        echo "Final patch verification before build..."
+        if grep -q "options: ParseDeclarationOptionsWithValueWarning" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts; then
+          echo "✓ Patch confirmed active before build"
+        else
+          echo "✗ Patch lost before build - reapplying..."
+          npx patch-package
         fi
         
         # Build Android APK using Gradle
