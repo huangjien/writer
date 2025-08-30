@@ -81,6 +81,9 @@ jobs:
         echo "Creating native Android project using Expo prebuild..."
         CI=1 npx expo prebuild --platform android --no-install
         
+        # Add a newline to the patch file to prevent "unexpectedly ends in middle of line" error
+        echo "" >> patches/react-native-css-interop+0.1.22.patch
+
         # Convert line endings
         echo "Converting line endings..."
         dos2unix patches/react-native-css-interop+0.1.22.patch
