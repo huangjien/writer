@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "2.5.2",
+  "version": "2.5.3",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -95,7 +95,11 @@
   "expo": {
     "doctor": {
       "reactNativeDirectoryCheck": {
-        "listUnknownPackages": false
+        "listUnknownPackages": false,
+        "exclude": [
+          "react-native-track-player",
+          "@react-native-community/audio-toolkit"
+        ]
       }
     }
   },
