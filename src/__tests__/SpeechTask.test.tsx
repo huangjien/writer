@@ -1,3 +1,16 @@
+// TypeScript global declarations
+declare global {
+  namespace NodeJS {
+    interface Global {
+      capturedTaskFunction: any;
+      mockDefineTaskCalls: any[];
+    }
+  }
+}
+
+// Make global available in this context
+declare const global: NodeJS.Global & typeof globalThis;
+
 import * as TaskManager from 'expo-task-manager';
 // Import the entire module to ensure the task is registered
 import '../components/SpeechTask';

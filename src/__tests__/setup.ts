@@ -1,3 +1,26 @@
+// TypeScript global declarations
+declare global {
+  namespace NodeJS {
+    interface Global {
+      __DEV__: boolean;
+      CONTENT_KEY: string;
+      showErrorToast: jest.Mock;
+      showInfoToast: jest.Mock;
+      window: any;
+      document: any;
+      navigator: any;
+      setTimeout: any;
+      clearTimeout: any;
+      setInterval: any;
+      clearInterval: any;
+      console: any;
+    }
+  }
+}
+
+// Make global available in this context
+declare const global: NodeJS.Global & typeof globalThis;
+
 // Mock React Native modules FIRST to ensure proper initialization
 jest.mock('react-native', () => {
   const React = require('react');
@@ -490,6 +513,43 @@ jest.mock('@react-native-segmented-control/segmented-control', () => ({
 
 jest.mock('react-native-screens', () => ({
   enableFreeze: jest.fn(),
+}));
+
+// Mock react-native-track-player
+jest.mock('react-native-track-player', () => ({
+  default: {
+    setupPlayer: jest.fn(() => Promise.resolve()),
+    updateOptions: jest.fn(() => Promise.resolve()),
+    addEventListener: jest.fn(() => ({ remove: jest.fn() })),
+    removeEventListener: jest.fn(),
+    play: jest.fn(() => Promise.resolve()),
+    pause: jest.fn(() => Promise.resolve()),
+    stop: jest.fn(() => Promise.resolve()),
+    skipToNext: jest.fn(() => Promise.resolve()),
+    skipToPrevious: jest.fn(() => Promise.resolve()),
+    getState: jest.fn(() => Promise.resolve('stopped')),
+  },
+  Event: {
+    RemotePlay: 'remote-play',
+    RemotePause: 'remote-pause',
+    RemoteStop: 'remote-stop',
+    RemoteNext: 'remote-next',
+    RemotePrevious: 'remote-previous',
+  },
+  State: {
+    None: 'none',
+    Stopped: 'stopped',
+    Paused: 'paused',
+    Playing: 'playing',
+    Buffering: 'buffering',
+  },
+  Capability: {
+    Play: 'play',
+    Pause: 'pause',
+    Stop: 'stop',
+    SkipToNext: 'skip-to-next',
+    SkipToPrevious: 'skip-to-previous',
+  },
 }));
 
 // Mock react-native-reanimated

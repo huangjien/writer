@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -126,7 +126,7 @@
       "\\.(css|less|scss|sass)$": "identity-obj-proxy"
     },
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-native|@react-native|expo|@expo)/)"
+      "node_modules/(?!(react-native|@react-native|expo|@expo|react-native-track-player)/)"
     ],
     "transform": {
       "^.+\\.(ts|tsx)$": [
