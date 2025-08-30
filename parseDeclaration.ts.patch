@@ -1,0 +1,30 @@
+diff --git a/node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts b/node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
+index bf095a5..cea0bf9 100644
+--- a/node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
++++ b/node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
+@@ -1560,7 +1560,7 @@ export function parseDeclaration(
+     case "aspect-ratio": {
+       return addStyleProp(
+         declaration.property,
+-        parseAspectRatio(declaration.value),
++        parseAspectRatio(declaration.value, parseOptions),
+       );
+     }
+     case "user-select": {
+@@ -2638,11 +2638,15 @@ function parseDisplay(
+ function parseAspectRatio(
+   // This is missing types
+   aspectRatio: any,
++  options: ParseDeclarationOptionsWithValueWarning,
+ ): RuntimeValueDescriptor {
+   if (aspectRatio.auto) {
+     return "auto";
+   } else {
+-    if (aspectRatio.ratio[0] === aspectRatio.ratio[1]) {
++    if (!aspectRatio.ratio || aspectRatio.ratio.length === 0) {
++      options.addValueWarning("undefined aspect ratio");
++      return 1;
++    } else if (aspectRatio.ratio[0] === aspectRatio.ratio[1]) {
+       return 1;
+     } else {
+       return aspectRatio.ratio.join(" / ");
