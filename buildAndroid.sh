@@ -21,7 +21,7 @@ echo "Cleaning previous builds..."
 
 # Build release APK
 echo "Building release APK..."
-./gradlew assembleRelease
+./gradlew assembleRelease --no-daemon
 
 # Check if build was successful
 if [ $? -ne 0 ]; then

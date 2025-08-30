@@ -88,21 +88,8 @@ jobs:
         echo "Force reinstalling lightningcss for Linux platform..."
         npm uninstall lightningcss && npm install lightningcss@^1.27.0 --legacy-peer-deps
         
-        # Rebuild native modules
-        echo "Rebuilding native modules..."
-        npm rebuild
-        
-        # Apply patches AFTER rebuild to ensure they stick
-        echo "Applying patches after rebuild..."
-        # First verify patch file exists
-        if [ -f "patches/react-native-css-interop+0.1.22.patch" ]; then
-          echo "✓ Patch file found"
-          cat patches/react-native-css-interop+0.1.22.patch | head -10
-        else
-          echo "✗ Patch file not found!"
-          ls -la patches/ || echo "Patches directory not found"
-          exit 1
-        fi
+        # Apply patches
+        echo "Applying patches..."
         npx patch-package
         
         # Run comprehensive patch verification
@@ -110,59 +97,23 @@ jobs:
         chmod +x verify-css-interop-patch.sh
         ./verify-css-interop-patch.sh
         
-        # Verify patch was applied
-        echo "Verifying patch application..."
-        if grep -q "options: ParseDeclarationOptionsWithValueWarning" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts; then
-          echo "✓ Patch successfully applied"
-        else
-          echo "✗ Patch not applied, attempting to reapply..."
-          npx patch-package --reverse
-          npx patch-package
-          # Verify again
-          if grep -q "options: ParseDeclarationOptionsWithValueWarning" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts; then
-            echo "✓ Patch successfully applied on retry"
-          else
-            echo "✗ Patch failed to apply - showing file content for debugging"
-            echo "Current parseAspectRatio function:"
-            grep -A 15 "function parseAspectRatio" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts || echo "Function not found"
-            echo "Current parseDeclaration aspect-ratio case:"
-            grep -A 5 -B 2 "aspect-ratio" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts || echo "Case not found"
-            exit 1
-          fi
-        fi
+        # Kill any running Metro bundler
+        echo "Killing any running Metro bundler processes..."
+        pkill -f "metro" || true
         
+        # Clear Metro cache before build
+        echo "Clearing Metro cache..."
+        rm -rf $TMPDIR/metro-cache
+        
+        # Log the entire file for absolute certainty
+        echo "Final content of parseDeclaration.ts before build:"
+        cat node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
+
         # Make Gradle wrapper executable
         if [ -f "android/gradlew" ]; then
           chmod +x android/gradlew
           echo "Made Gradle wrapper executable"
         fi
-        
-        # Final verification that patch is still active before build
-        echo "Final comprehensive patch verification before build..."
-        if ./verify-css-interop-patch.sh; then
-          echo "✓ Comprehensive verification passed - patch is active and correct"
-        else
-          echo "✗ Patch verification failed - attempting to reapply..."
-          npx patch-package
-          # Final verification after reapplication
-          if ./verify-css-interop-patch.sh; then
-            echo "✓ Patch successfully reapplied and verified before build"
-          else
-            echo "✗ Critical: Patch cannot be applied or verified - build will fail"
-            echo "Manual debugging information:"
-            ls -la node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts || echo "File not found"
-            echo "parseAspectRatio function signature:"
-            grep -A 5 "function parseAspectRatio" node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts || echo "Function not found"
-            exit 1
-          fi
-        fi
-        
-        # Clear Metro cache before build
-        echo "Clearing Metro cache..."
-        rm -rf /tmp/metro-cache
-        
-        echo "Final content of parseDeclaration.ts before build:"
-        sed -n '2640,2655p' node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
 
         # Build Android APK using Gradle
         echo "Building Android APK using Gradle..."
