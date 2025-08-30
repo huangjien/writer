@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "2.3.4",
+  "version": "2.3.5",
   "main": "expo-router/entry",
   "author": "Jien Huang",
   "description": "A writer app for iOS and Android",
@@ -79,7 +79,7 @@
     "@types/jest": "^30.0.0",
     "@types/react": "~19.0.10",
     "babel-plugin-module-resolver": "^5.0.2",
-    "babel-preset-expo": "^13.0.0",
+    "babel-preset-expo": "~13.0.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^30.0.2",

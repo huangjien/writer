@@ -82,6 +82,7 @@ export const ContentArea = forwardRef<ScrollView, ContentAreaProps>(
                   }`}
                   style={{ fontSize: fontSize, marginBottom: 16 }}
                 >
+                  {'    '}
                   {paragraph.trim()}
                 </Text>
               </View>
