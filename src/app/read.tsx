@@ -65,18 +65,15 @@ export default function Page() {
       setProgress(0);
       setSpeechProgress(0);
       setCurrentSentenceIndex(0);
+      // Stop any existing speech first
+      Speech.stop();
+      isSpeakingRef.current = false;
       // Longer delay to ensure speak function is recreated with new content
       setTimeout(() => {
         speak(0); // Start from beginning with fresh content
-      }, 200);
+      }, 300);
     }
   }, [content, shouldAutoPlay]);
-
-  // Additional effect to ensure speak function is recreated when content changes
-  useEffect(() => {
-    // This effect ensures the speak function closure is updated when content changes
-    // No action needed here, just triggering re-render
-  }, [content]);
 
   // Removed the speechProgress useEffect that was interfering with chunk-based progress updates
   // The speak() function now handles progress updates directly
@@ -123,6 +120,9 @@ export default function Page() {
       setSpeechProgress(currentProgress);
       setCurrentSentenceIndex(currentParagraphIndex); // Current paragraph index
 
+      // Update the global progress to match what we're speaking
+      setProgress(currentProgress);
+
       // Use Speech.speak directly instead of speakHook to avoid interference
       Speech.speak(contentToSpeak, {
         language: selectedLanguage,
@@ -143,6 +143,7 @@ export default function Page() {
           if (newProgress >= 1) {
             // Finished the entire content, go to next chapter
             setSpeechProgress(1);
+            setProgress(1);
             setStatus('stopped');
             setShouldAutoPlay(true); // Set flag for auto-play on next chapter
             navigateToChapter(next);
@@ -157,7 +158,7 @@ export default function Page() {
         },
       });
     },
-    [content, selectedLanguage, next, navigateToChapter] // Remove progress from deps to avoid infinite loops
+    [content, selectedLanguage, next, navigateToChapter, progress] // Include progress to ensure function updates
   );
 
   const stop = (source = 'unknown') => {
