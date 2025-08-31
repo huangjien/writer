@@ -3,6 +3,7 @@ const { useRef, useEffect, forwardRef } = React;
 import { View, Text, ScrollView } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { CONTENT_KEY } from '@/components/global';
+import { useThemeConfig } from '@/hooks/use-theme-config';
 
 interface ContentAreaProps {
   current: string | undefined;
@@ -46,8 +47,13 @@ export const ContentArea = forwardRef<ScrollView, ContentAreaProps>(
       }
     }, [currentParagraphIndex, isReading, scrollViewRef]);
 
+    const { theme } = useThemeConfig();
+
     return (
-      <View className='flex-1 bg-black'>
+      <View
+        className='flex-1'
+        style={{ backgroundColor: theme.colors.background }}
+      >
         <BlurView intensity={20} tint='dark' className='absolute inset-0 z-0' />
         <ScrollView
           ref={scrollViewRef}
@@ -76,8 +82,8 @@ export const ContentArea = forwardRef<ScrollView, ContentAreaProps>(
                 }}
               >
                 <Text
-                  className='text-white text-center py-6 px-4 font-bold'
-                  style={{ fontSize: fontSize }}
+                  className='text-center py-6 px-4 font-bold'
+                  style={{ fontSize: fontSize, color: theme.colors.text }}
                 >
                   {current &&
                     current
@@ -123,13 +129,15 @@ export const ContentArea = forwardRef<ScrollView, ContentAreaProps>(
                       }}
                     >
                       <Text
-                        className='text-white leading-relaxed p-4'
+                        className='leading-relaxed p-4'
                         style={{
                           fontSize: fontSize,
                           lineHeight: fontSize * 1.6,
                           paddingLeft: 20,
+                          color: theme.colors.text,
                         }}
                       >
+                        {'    '}
                         {paragraph.trim()}
                       </Text>
                     </View>
