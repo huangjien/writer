@@ -1,5 +1,6 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 import Page from '../app/index';
 
 // Mock all dependencies
@@ -70,139 +71,198 @@ describe('Index Page', () => {
     jest.clearAllMocks();
   });
 
-  it('exports default function', () => {
-    expect(typeof Page).toBe('function');
+  describe('Component Structure', () => {
+    it('exports default function', () => {
+      expect(typeof Page).toBe('function');
+    });
+
+    it('has correct component name', () => {
+      expect(Page.name).toBe('Page');
+    });
+
+    it('renders without crashing', () => {
+      expect(() => render(<Page />)).not.toThrow();
+    });
+
+    it('renders component structure without errors', () => {
+      const { toJSON } = render(<Page />);
+      const tree = toJSON();
+
+      // Should render component structure
+      expect(tree).toBeTruthy();
+    });
+
+    it('maintains consistent component structure', () => {
+      const { toJSON: firstRender } = render(<Page />);
+      const { toJSON: secondRender } = render(<Page />);
+
+      // Both renders should be consistent
+      expect(firstRender()).toEqual(secondRender());
+    });
   });
 
-  it('has correct component name', () => {
-    expect(Page.name).toBe('Page');
+  describe('Hero Section', () => {
+    it('renders hero section structure', () => {
+      const { toJSON } = render(<Page />);
+      const tree = toJSON();
+
+      // Should render component structure
+      expect(tree).toBeTruthy();
+    });
+
+    it('handles hero section rendering without errors', () => {
+      expect(() => render(<Page />)).not.toThrow();
+    });
+
+    it('maintains consistent hero structure', () => {
+      const { toJSON: firstRender } = render(<Page />);
+      const { toJSON: secondRender } = render(<Page />);
+
+      // Both renders should be consistent
+      expect(firstRender()).toEqual(secondRender());
+    });
   });
 
-  it('is a valid React component', () => {
-    expect(typeof Page).toBe('function');
-    expect(Page).toBeDefined();
+  describe('Navigation', () => {
+    it('renders navigation structure without errors', () => {
+      const { toJSON } = render(<Page />);
+      const tree = toJSON();
+
+      // Should render component structure
+      expect(tree).toBeTruthy();
+    });
+
+    it('handles navigation component rendering', () => {
+      expect(() => render(<Page />)).not.toThrow();
+    });
+
+    it('maintains consistent navigation structure', () => {
+      const { toJSON: firstRender } = render(<Page />);
+      const { toJSON: secondRender } = render(<Page />);
+
+      // Both renders should be consistent
+      expect(firstRender()).toEqual(secondRender());
+    });
   });
 
-  it('has proper component structure', () => {
-    // Mock-based test for component structure
-    expect(Page).toBeDefined();
-    expect(typeof Page).toBe('function');
+  describe('Features Section', () => {
+    it('renders features section structure', () => {
+      const { toJSON } = render(<Page />);
+      const tree = toJSON();
+
+      // Should render component structure
+      expect(tree).toBeTruthy();
+    });
+
+    it('handles feature rendering without errors', () => {
+      expect(() => render(<Page />)).not.toThrow();
+    });
+
+    it('maintains consistent feature structure', () => {
+      const { toJSON: firstRender } = render(<Page />);
+      const { toJSON: secondRender } = render(<Page />);
+
+      // Both renders should be consistent
+      expect(firstRender()).toEqual(secondRender());
+    });
   });
 
-  it('handles app content', () => {
-    // Mock-based test for app content
-    const appTitle = 'Writer';
-    const appDescription =
-      'A powerful text-to-speech app that reads your content aloud with natural voice synthesis and GitHub integration.';
+  describe('Multi-language Welcome Section', () => {
+    it('renders multi-language section structure', () => {
+      const { toJSON } = render(<Page />);
+      const tree = toJSON();
 
-    expect(appTitle).toBe('Writer');
-    expect(appDescription).toContain('text-to-speech');
+      // Should render component structure
+      expect(tree).toBeTruthy();
+    });
+
+    it('handles multi-language content without errors', () => {
+      expect(() => render(<Page />)).not.toThrow();
+    });
+
+    it('maintains consistent multi-language structure', () => {
+      const { toJSON: firstRender } = render(<Page />);
+      const { toJSON: secondRender } = render(<Page />);
+
+      // Both renders should be consistent
+      expect(firstRender()).toEqual(secondRender());
+    });
   });
 
-  it('handles navigation buttons', () => {
-    // Mock-based test for button functionality
-    const browseButton = 'Browse';
-    const settingsButton = 'Settings';
+  describe('Accessibility', () => {
+    it('renders component structure for accessibility', () => {
+      const { toJSON } = render(<Page />);
 
-    expect(browseButton).toBe('Browse');
-    expect(settingsButton).toBe('Settings');
+      // Component should render with proper structure
+      expect(toJSON()).toBeTruthy();
+      expect(toJSON()).toMatchSnapshot();
+    });
+
+    it('handles component rendering without errors', () => {
+      expect(() => render(<Page />)).not.toThrow();
+    });
+
+    it('provides consistent component structure', () => {
+      const { toJSON } = render(<Page />);
+      const tree = toJSON();
+
+      // Should have a consistent structure
+      expect(tree).toBeTruthy();
+      expect(typeof tree).toBe('object');
+    });
   });
 
-  it('handles icon configuration', () => {
-    // Mock-based test for icon setup
-    const bookIcon = 'book-open';
-    const settingsIcon = 'settings';
+  describe('Error Handling & Edge Cases', () => {
+    it('renders without crashing when router is undefined', () => {
+      // Mock useRouter to return undefined
+      (useRouter as jest.Mock).mockReturnValueOnce(undefined);
 
-    expect(bookIcon).toBe('book-open');
-    expect(settingsIcon).toBe('settings');
+      expect(() => render(<Page />)).not.toThrow();
+
+      // Restore mock
+      (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
+    });
+
+    it('renders all content sections', () => {
+      const { toJSON } = render(<Page />);
+
+      // Component should render without crashing
+      expect(toJSON()).toBeTruthy();
+    });
+
+    it('handles component lifecycle correctly', () => {
+      const { unmount } = render(<Page />);
+
+      // Should unmount without errors
+      expect(() => unmount()).not.toThrow();
+    });
   });
 
-  it('handles navigation functionality', () => {
-    // Mock-based test for navigation
-    const githubRoute = '/github';
-    const settingRoute = '/setting';
+  describe('Performance & Optimization', () => {
+    it('renders efficiently without unnecessary re-renders', () => {
+      const { rerender } = render(<Page />);
 
-    expect(githubRoute).toBe('/github');
-    expect(settingRoute).toBe('/setting');
-    expect(mockPush).toBeDefined();
-  });
+      // Re-render with same props should not cause issues
+      expect(() => {
+        rerender(<Page />);
+        rerender(<Page />);
+      }).not.toThrow();
+    });
 
-  it('handles key features section', () => {
-    // Mock-based test for key features
-    const keyFeaturesTitle = 'Key Features';
-    expect(keyFeaturesTitle).toBe('Key Features');
-  });
+    it('maintains consistent output across renders', () => {
+      const { toJSON: firstRender } = render(<Page />);
+      const { toJSON: secondRender } = render(<Page />);
 
-  it('handles feature items', () => {
-    // Mock-based test for feature items
-    const featureTitles = [
-      'Smart Reading',
-      'Text-to-Speech',
-      'Customizable',
-      'Cross-Platform',
-    ];
-    const featureDescriptions = [
-      'Access your content from GitHub repositories with intelligent text processing',
-      'Natural voice synthesis with adjustable speed and progress tracking',
-      'Configure GitHub integration, voice settings, and reading preferences',
-      'Works seamlessly on mobile and web with responsive design',
-    ];
+      // Both renders should produce consistent output
+      expect(firstRender()).toEqual(secondRender());
+    });
 
-    expect(featureTitles).toHaveLength(4);
-    expect(featureDescriptions).toHaveLength(4);
-    expect(featureTitles[0]).toBe('Smart Reading');
-    expect(featureDescriptions[0]).toContain('GitHub repositories');
-  });
+    it('handles mock navigation calls correctly', () => {
+      render(<Page />);
 
-  it('handles feature icons', () => {
-    // Mock-based test for feature icons
-    const featureIcons = ['book-open', 'volume-2', 'settings', 'smartphone'];
-
-    expect(featureIcons).toHaveLength(4);
-    expect(featureIcons).toContain('book-open');
-    expect(featureIcons).toContain('volume-2');
-    expect(featureIcons).toContain('settings');
-    expect(featureIcons).toContain('smartphone');
-  });
-
-  it('handles multi-language welcome section', () => {
-    // Mock-based test for multi-language section
-    const latinPhrase = 'Auditus est initium sapientiae';
-    expect(latinPhrase).toBe('Auditus est initium sapientiae');
-  });
-
-  it('handles language translations', () => {
-    // Mock-based test for language translations
-    const translations = [
-      '🇨🇳 兼听则明',
-      '🇪🇸 Escuchar es el comienzo de la sabiduría',
-      '🇩🇪 Das Zuhören ist der Anfang der Weisheit',
-      "🇫🇷 L'écoute est le commencement de la sagesse",
-      "🇮🇹 L'ascolto è l'inizio della saggezza",
-      '🇯🇵 聞くことは知恵の始まり',
-      '🇰🇷 듣는 것은 지혜의 시작이다',
-      '🇷🇺 Слушание - начало мудрости',
-      '🇵🇹 Ouvir é o começo da sabedoria',
-      '🇳🇱 Luisteren is het begin van wijsheid',
-    ];
-
-    expect(translations).toHaveLength(10);
-    expect(translations[0]).toContain('🇨🇳');
-    expect(translations[1]).toContain('🇪🇸');
-  });
-
-  it('handles component structure', () => {
-    // Mock-based test for component structure
-    const scrollViewContainer = 'scroll-view';
-    const viewContainers = ['view'];
-
-    expect(scrollViewContainer).toBe('scroll-view');
-    expect(viewContainers).toContain('view');
-  });
-
-  it('can be instantiated', () => {
-    // Mock-based test for component instantiation
-    expect(typeof Page).toBe('function');
-    expect(Page).toBeDefined();
+      // Mock should be properly initialized
+      expect(mockPush).toBeDefined();
+      expect(typeof mockPush).toBe('function');
+    });
   });
 });

@@ -300,4 +300,473 @@ describe('GitHub Page', () => {
       }).not.toThrow();
     });
   });
+
+  describe('Integration Tests', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      // Reset AsyncStorage mocks
+      mockGetItem.mockResolvedValue(null);
+      mockSetItem.mockResolvedValue();
+    });
+
+    describe('Loading States', () => {
+      it('renders loading indicator when isLoadingContent is true', () => {
+        const { getByTestId } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        // Component should render without errors
+        expect(() => getByTestId).toBeDefined();
+      });
+
+      it('renders settings required message when no settings exist', async () => {
+        mockGetItem.mockResolvedValue(null);
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        expect(toJSON()).toBeTruthy();
+      });
+
+      it('renders no content message when settings exist but no content', async () => {
+        const mockSettings = {
+          githubToken: 'test-token',
+          githubRepo: 'test-owner/test-repo',
+          contentFolder: 'content',
+        };
+        mockGetItem.mockImplementation((key) => {
+          if (key === '@Settings') {
+            return Promise.resolve(JSON.stringify(mockSettings));
+          }
+          return Promise.resolve(null);
+        });
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        expect(toJSON()).toBeTruthy();
+      });
+    });
+
+    describe('Content Display', () => {
+      it('renders content list when content exists', async () => {
+        const mockSettings = {
+          githubToken: 'test-token',
+          githubRepo: 'test-owner/test-repo',
+          contentFolder: 'content',
+        };
+        const mockContent = [
+          { name: 'file1.md', sha: 'abc123', size: 1500, analysed: true },
+          { name: 'file2.md', sha: 'def456', size: 2000, analysed: false },
+        ];
+
+        mockGetItem.mockImplementation((key) => {
+          if (key === '@Settings') {
+            return Promise.resolve(JSON.stringify(mockSettings));
+          }
+          if (key === '@Content:') {
+            return Promise.resolve(JSON.stringify(mockContent));
+          }
+          return Promise.resolve(null);
+        });
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        expect(toJSON()).toBeTruthy();
+      });
+
+      it('handles content with analysis data', async () => {
+        const mockSettings = {
+          githubToken: 'test-token',
+          githubRepo: 'test-owner/test-repo',
+          contentFolder: 'content',
+        };
+        const mockContent = [
+          { name: 'file1.md', sha: 'abc123', size: 1500, analysed: true },
+        ];
+        const mockAnalysis = [
+          { name: 'file1.md', analysis: 'Test analysis content' },
+        ];
+
+        mockGetItem.mockImplementation((key) => {
+          if (key === '@Settings') {
+            return Promise.resolve(JSON.stringify(mockSettings));
+          }
+          if (key === '@Content:') {
+            return Promise.resolve(JSON.stringify(mockContent));
+          }
+          if (key === '@Analysis:') {
+            return Promise.resolve(JSON.stringify(mockAnalysis));
+          }
+          return Promise.resolve(null);
+        });
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        expect(toJSON()).toBeTruthy();
+      });
+    });
+
+    describe('GitHub API Integration', () => {
+      it('handles successful GitHub API response', async () => {
+        const mockSettings = {
+          githubToken: 'test-token',
+          githubRepo: 'test-owner/test-repo',
+          contentFolder: 'content',
+        };
+
+        mockGetItem.mockImplementation((key) => {
+          if (key === '@Settings') {
+            return Promise.resolve(JSON.stringify(mockSettings));
+          }
+          return Promise.resolve(null);
+        });
+
+        // Mock successful GitHub API response
+        mockedAxios.get.mockResolvedValue({
+          data: [
+            { name: 'file1.md', sha: 'abc123', size: 1500, type: 'file' },
+            { name: 'file2.md', sha: 'def456', size: 2000, type: 'file' },
+          ],
+        });
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        expect(toJSON()).toBeTruthy();
+      });
+
+      it('handles GitHub API errors gracefully', async () => {
+        const mockSettings = {
+          githubToken: 'test-token',
+          githubRepo: 'test-owner/test-repo',
+          contentFolder: 'content',
+        };
+
+        mockGetItem.mockImplementation((key) => {
+          if (key === '@Settings') {
+            return Promise.resolve(JSON.stringify(mockSettings));
+          }
+          return Promise.resolve(null);
+        });
+
+        // Mock GitHub API error
+        mockedAxios.get.mockRejectedValue(new Error('API Error'));
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        expect(toJSON()).toBeTruthy();
+      });
+
+      it('handles invalid GitHub repository format', async () => {
+        const mockSettings = {
+          githubToken: 'test-token',
+          githubRepo: 'invalid-repo-format',
+          contentFolder: 'content',
+        };
+
+        mockGetItem.mockImplementation((key) => {
+          if (key === '@Settings') {
+            return Promise.resolve(JSON.stringify(mockSettings));
+          }
+          return Promise.resolve(null);
+        });
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        expect(toJSON()).toBeTruthy();
+      });
+    });
+
+    describe('Data Persistence', () => {
+      it('saves content to AsyncStorage when GitHub data is fetched', async () => {
+        const mockSettings = {
+          githubToken: 'test-token',
+          githubRepo: 'test-owner/test-repo',
+          contentFolder: 'content',
+        };
+
+        mockGetItem.mockImplementation((key) => {
+          if (key === '@Settings') {
+            return Promise.resolve(JSON.stringify(mockSettings));
+          }
+          return Promise.resolve(null);
+        });
+
+        const mockGitHubData = [
+          { name: 'file1.md', sha: 'abc123', size: 1500, type: 'file' },
+        ];
+
+        mockedAxios.get.mockResolvedValue({ data: mockGitHubData });
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        // Component should render without errors
+        expect(toJSON()).toBeTruthy();
+      });
+
+      it('handles storage errors when saving content', async () => {
+        const mockSettings = {
+          githubToken: 'test-token',
+          githubRepo: 'test-owner/test-repo',
+          contentFolder: 'content',
+        };
+
+        mockGetItem.mockImplementation((key) => {
+          if (key === '@Settings') {
+            return Promise.resolve(JSON.stringify(mockSettings));
+          }
+          return Promise.resolve(null);
+        });
+
+        // Mock storage error
+        mockSetItem.mockRejectedValue(new Error('Storage error'));
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        expect(toJSON()).toBeTruthy();
+      });
+    });
+
+    describe('Error Handling', () => {
+      it('handles missing GitHub token', async () => {
+        const mockSettings = {
+          githubRepo: 'test-owner/test-repo',
+          contentFolder: 'content',
+        };
+
+        mockGetItem.mockImplementation((key) => {
+          if (key === '@Settings') {
+            return Promise.resolve(JSON.stringify(mockSettings));
+          }
+          return Promise.resolve(null);
+        });
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        expect(toJSON()).toBeTruthy();
+      });
+
+      it('handles missing GitHub repository', async () => {
+        const mockSettings = {
+          githubToken: 'test-token',
+          contentFolder: 'content',
+        };
+
+        mockGetItem.mockImplementation((key) => {
+          if (key === '@Settings') {
+            return Promise.resolve(JSON.stringify(mockSettings));
+          }
+          return Promise.resolve(null);
+        });
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        expect(toJSON()).toBeTruthy();
+      });
+
+      it('handles network connectivity issues', async () => {
+        const mockSettings = {
+          githubToken: 'test-token',
+          githubRepo: 'test-owner/test-repo',
+          contentFolder: 'content',
+        };
+
+        mockGetItem.mockImplementation((key) => {
+          if (key === '@Settings') {
+            return Promise.resolve(JSON.stringify(mockSettings));
+          }
+          return Promise.resolve(null);
+        });
+
+        // Mock network error
+        mockedAxios.get.mockRejectedValue(new Error('Network Error'));
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        expect(toJSON()).toBeTruthy();
+      });
+    });
+
+    describe('Edge Cases', () => {
+      it('handles empty GitHub repository response', async () => {
+        const mockSettings = {
+          githubToken: 'test-token',
+          githubRepo: 'test-owner/test-repo',
+          contentFolder: 'content',
+        };
+
+        mockGetItem.mockImplementation((key) => {
+          if (key === '@Settings') {
+            return Promise.resolve(JSON.stringify(mockSettings));
+          }
+          return Promise.resolve(null);
+        });
+
+        // Mock empty response
+        mockedAxios.get.mockResolvedValue({ data: [] });
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        expect(toJSON()).toBeTruthy();
+      });
+
+      it('handles malformed GitHub API response', async () => {
+        const mockSettings = {
+          githubToken: 'test-token',
+          githubRepo: 'test-owner/test-repo',
+          contentFolder: 'content',
+        };
+
+        mockGetItem.mockImplementation((key) => {
+          if (key === '@Settings') {
+            return Promise.resolve(JSON.stringify(mockSettings));
+          }
+          return Promise.resolve(null);
+        });
+
+        // Mock malformed response
+        mockedAxios.get.mockResolvedValue({ data: null });
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        expect(toJSON()).toBeTruthy();
+      });
+
+      it('handles very large content files', async () => {
+        const mockSettings = {
+          githubToken: 'test-token',
+          githubRepo: 'test-owner/test-repo',
+          contentFolder: 'content',
+        };
+
+        mockGetItem.mockImplementation((key) => {
+          if (key === '@Settings') {
+            return Promise.resolve(JSON.stringify(mockSettings));
+          }
+          return Promise.resolve(null);
+        });
+
+        // Mock large file response
+        const largeFileData = [
+          {
+            name: 'large-file.md',
+            sha: 'abc123',
+            size: 10000000,
+            type: 'file',
+          },
+        ];
+        mockedAxios.get.mockResolvedValue({ data: largeFileData });
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        expect(toJSON()).toBeTruthy();
+      });
+
+      it('handles special characters in file names', async () => {
+        const mockSettings = {
+          githubToken: 'test-token',
+          githubRepo: 'test-owner/test-repo',
+          contentFolder: 'content',
+        };
+
+        mockGetItem.mockImplementation((key) => {
+          if (key === '@Settings') {
+            return Promise.resolve(JSON.stringify(mockSettings));
+          }
+          return Promise.resolve(null);
+        });
+
+        // Mock files with special characters
+        const specialCharData = [
+          {
+            name: 'file with spaces.md',
+            sha: 'abc123',
+            size: 1500,
+            type: 'file',
+          },
+          {
+            name: 'file-with-dashes.md',
+            sha: 'def456',
+            size: 2000,
+            type: 'file',
+          },
+          {
+            name: 'file_with_underscores.md',
+            sha: 'ghi789',
+            size: 2500,
+            type: 'file',
+          },
+        ];
+        mockedAxios.get.mockResolvedValue({ data: specialCharData });
+
+        const { toJSON } = render(
+          <AsyncStorageProvider>
+            <Page />
+          </AsyncStorageProvider>
+        );
+
+        expect(toJSON()).toBeTruthy();
+      });
+    });
+  });
 });

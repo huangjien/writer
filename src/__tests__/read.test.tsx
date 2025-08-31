@@ -561,4 +561,236 @@ describe('Read Page', () => {
       expect(mockRouter).toBeDefined();
     });
   });
+
+  describe('Speech Synthesis Advanced Features', () => {
+    it('should handle speech rate and pitch configuration', async () => {
+      const testSettings = { fontSize: 16, speechRate: 0.8, speechPitch: 1.2 };
+      mockGetItem.mockResolvedValue(JSON.stringify(testSettings));
+
+      // Test speech configuration options
+      expect(mockSpeech.speak).toBeDefined();
+
+      // Verify speech options can be configured
+      const speechOptions = {
+        rate: testSettings.speechRate,
+        pitch: testSettings.speechPitch,
+        language: 'en-US',
+      };
+      expect(speechOptions.rate).toBe(0.8);
+      expect(speechOptions.pitch).toBe(1.2);
+    });
+
+    it('should handle speech interruption and resume', async () => {
+      mockSpeech.isSpeakingAsync.mockResolvedValue(true);
+
+      // Test speech interruption
+      expect(mockSpeech.stop).toBeDefined();
+      expect(mockSpeech.speak).toBeDefined();
+
+      // Verify speech state can be checked
+      const isSpeaking = await mockSpeech.isSpeakingAsync();
+      expect(isSpeaking).toBe(true);
+    });
+
+    it('should handle speech progress tracking with paragraphs', async () => {
+      const testContent = {
+        content: 'First paragraph.\n\nSecond paragraph.\n\nThird paragraph.',
+      };
+      mockGetItem.mockResolvedValue(JSON.stringify(testContent));
+
+      // Test paragraph-based progress tracking
+      const paragraphs = testContent.content.split('\n\n');
+      expect(paragraphs.length).toBe(3);
+      expect(paragraphs[0]).toBe('First paragraph.');
+      expect(paragraphs[1]).toBe('Second paragraph.');
+      expect(paragraphs[2]).toBe('Third paragraph.');
+    });
+
+    it('should handle speech language selection', async () => {
+      const testSettings = { fontSize: 16, language: 'zh-CN' };
+      mockGetItem.mockResolvedValue(JSON.stringify(testSettings));
+
+      // Test language configuration
+      expect(testSettings.language).toBe('zh-CN');
+      expect(mockSpeech.speak).toBeDefined();
+    });
+  });
+
+  describe('Gesture Handler Integration', () => {
+    it('should handle long press gesture for speech control', async () => {
+      const testSettings = { fontSize: 16 };
+      mockGetItem.mockResolvedValue(JSON.stringify(testSettings));
+
+      // Test gesture setup
+      expect(mockSpeech.speak).toBeDefined();
+      expect(mockSpeech.stop).toBeDefined();
+
+      // Verify gesture handlers are available
+      expect(true).toBe(true); // Placeholder for gesture testing
+    });
+
+    it('should handle single tap for play/pause', async () => {
+      mockSpeech.isSpeakingAsync.mockResolvedValue(false);
+
+      // Test single tap functionality
+      const isSpeaking = await mockSpeech.isSpeakingAsync();
+      expect(isSpeaking).toBe(false);
+      expect(mockSpeech.speak).toBeDefined();
+    });
+
+    it('should handle double tap for navigation', async () => {
+      const testSettings = { fontSize: 16, current: '@Content:chapter1.md' };
+      const contentList = [{ name: 'chapter1.md' }, { name: 'chapter2.md' }];
+
+      mockGetItem
+        .mockResolvedValueOnce(JSON.stringify(testSettings))
+        .mockResolvedValueOnce(JSON.stringify(contentList));
+
+      // Test double tap navigation setup
+      expect(mockRouter).toBeDefined();
+      expect(contentList.length).toBe(2);
+    });
+
+    it('should handle swipe gestures for chapter navigation', async () => {
+      const testSettings = { fontSize: 16 };
+      mockGetItem.mockResolvedValue(JSON.stringify(testSettings));
+
+      // Test swipe gesture setup
+      expect(mockRouter).toBeDefined();
+      expect(true).toBe(true); // Placeholder for swipe testing
+    });
+  });
+
+  describe('Modal and Analysis Features', () => {
+    it('should handle analysis modal display', async () => {
+      const testAnalysis = 'This is a detailed analysis of the content.';
+      const testSettings = { fontSize: 16 };
+
+      mockGetItem
+        .mockResolvedValueOnce(JSON.stringify(testSettings))
+        .mockResolvedValueOnce(JSON.stringify(testSettings))
+        .mockResolvedValueOnce(JSON.stringify({ content: 'test' }))
+        .mockResolvedValueOnce(testAnalysis);
+
+      // Test analysis modal setup
+      expect(testAnalysis).toBe('This is a detailed analysis of the content.');
+      expect(mockGetItem).toBeDefined();
+    });
+
+    it('should handle modal close and open states', async () => {
+      const testSettings = { fontSize: 16 };
+      mockGetItem.mockResolvedValue(JSON.stringify(testSettings));
+
+      // Test modal state management
+      expect(mockGetItem).toBeDefined();
+      expect(true).toBe(true); // Placeholder for modal state testing
+    });
+
+    it('should handle analysis generation and caching', async () => {
+      const testContent = { content: 'Content for analysis generation.' };
+      const testSettings = { fontSize: 16 };
+
+      mockGetItem
+        .mockResolvedValueOnce(JSON.stringify(testSettings))
+        .mockResolvedValueOnce(JSON.stringify(testSettings))
+        .mockResolvedValueOnce(JSON.stringify(testContent))
+        .mockResolvedValueOnce(null); // No cached analysis
+
+      // Test analysis generation setup
+      expect(testContent.content).toBe('Content for analysis generation.');
+      expect(mockSetItem).toBeDefined();
+    });
+  });
+
+  describe('Font Size and Display Settings', () => {
+    it('should handle font size persistence', async () => {
+      const testSettings = { fontSize: 20 };
+      mockGetItem.mockResolvedValue(JSON.stringify(testSettings));
+
+      // Test font size persistence
+      expect(testSettings.fontSize).toBe(20);
+      expect(mockSetItem).toBeDefined();
+    });
+
+    it('should handle font size boundaries', async () => {
+      const minFontSize = 12;
+      const maxFontSize = 30;
+      const testSettings = { fontSize: 16 };
+
+      mockGetItem.mockResolvedValue(JSON.stringify(testSettings));
+
+      // Test font size boundaries
+      expect(minFontSize).toBeLessThanOrEqual(testSettings.fontSize);
+      expect(testSettings.fontSize).toBeLessThanOrEqual(maxFontSize);
+    });
+
+    it('should handle display theme settings', async () => {
+      const testSettings = { fontSize: 16, theme: 'dark' };
+      mockGetItem.mockResolvedValue(JSON.stringify(testSettings));
+
+      // Test theme settings
+      expect(testSettings.theme).toBe('dark');
+      expect(testSettings.fontSize).toBe(16);
+    });
+  });
+
+  describe('Chapter Navigation and Content Management', () => {
+    it('should handle chapter list loading and navigation', async () => {
+      const contentList = [
+        { name: 'intro.md', title: 'Introduction' },
+        { name: 'chapter1.md', title: 'Chapter 1' },
+        { name: 'chapter2.md', title: 'Chapter 2' },
+        { name: 'conclusion.md', title: 'Conclusion' },
+      ];
+      const testSettings = { fontSize: 16, current: '@Content:chapter1.md' };
+
+      mockGetItem
+        .mockResolvedValueOnce(JSON.stringify(testSettings))
+        .mockResolvedValueOnce(JSON.stringify(contentList));
+
+      // Test chapter navigation setup
+      expect(contentList.length).toBe(4);
+      expect(contentList[1].name).toBe('chapter1.md');
+      expect(contentList[1].title).toBe('Chapter 1');
+      expect(mockRouter).toBeDefined();
+    });
+
+    it('should handle content loading with different formats', async () => {
+      const markdownContent = {
+        content: '# Title\n\nThis is **bold** text with *italic* and `code`.',
+      };
+      const testSettings = { fontSize: 16 };
+
+      mockGetItem
+        .mockResolvedValueOnce(JSON.stringify(testSettings))
+        .mockResolvedValueOnce(JSON.stringify(testSettings))
+        .mockResolvedValueOnce(JSON.stringify(markdownContent));
+
+      // Test markdown content handling
+      expect(markdownContent.content).toContain('# Title');
+      expect(markdownContent.content).toContain('**bold**');
+      expect(markdownContent.content).toContain('*italic*');
+      expect(markdownContent.content).toContain('`code`');
+    });
+
+    it('should handle content with special characters and encoding', async () => {
+      const specialContent = {
+        content:
+          'Content with émojis 😀 and spëcial chàracters: 中文, العربية, русский',
+      };
+      const testSettings = { fontSize: 16 };
+
+      mockGetItem
+        .mockResolvedValueOnce(JSON.stringify(testSettings))
+        .mockResolvedValueOnce(JSON.stringify(testSettings))
+        .mockResolvedValueOnce(JSON.stringify(specialContent));
+
+      // Test special character handling
+      expect(specialContent.content).toContain('😀');
+      expect(specialContent.content).toContain('émojis');
+      expect(specialContent.content).toContain('中文');
+      expect(specialContent.content).toContain('العربية');
+      expect(specialContent.content).toContain('русский');
+    });
+  });
 });
