@@ -1,6 +1,7 @@
 import * as React from 'react';
 const { useRef, useEffect, forwardRef } = React;
 import { View, Text, ScrollView } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { CONTENT_KEY } from '@/components/global';
 
 interface ContentAreaProps {
@@ -46,49 +47,97 @@ export const ContentArea = forwardRef<ScrollView, ContentAreaProps>(
     }, [currentParagraphIndex, isReading, scrollViewRef]);
 
     return (
-      <View className='flex-1 py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6 bg-white dark:bg-black'>
-        <View className='m-2 p-2 items-start gap-4 text-left'>
-          <Text
-            className='text-black dark:text-white font-bold text-left justify-stretch text-pretty'
-            style={{ fontSize: fontSize }}
-          >
-            {current &&
-              current
-                .toString()
-                .replace('_', '  ')
-                .replace(CONTENT_KEY, '')
-                .replace('.md', '')}{' '}
-            &nbsp;&nbsp;
-            <Text className='text-xs leading-8 text-gray-500 dark:text-grey-300 '>
-              {content.length}
-            </Text>
-          </Text>
-
-          {content
-            .split(/\n\s*\n/)
-            .filter((p) => p.trim().length > 0)
-            .map((paragraph, index) => (
-              <View
-                key={index}
-                ref={(ref) => {
-                  paragraphRefs.current[index] = ref;
+      <View className='flex-1 bg-black'>
+        <BlurView intensity={20} tint='dark' className='absolute inset-0 z-0' />
+        <ScrollView
+          ref={scrollViewRef}
+          className='flex-grow relative z-10'
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingTop: top,
+            paddingBottom: 100,
+            paddingHorizontal: 16,
+          }}
+        >
+          <View className='py-4 md:py-8 lg:py-12 xl:py-16 px-4 md:px-6'>
+            <View className='m-2 p-2 items-start gap-4 text-left'>
+              <BlurView
+                intensity={40}
+                tint='dark'
+                className='rounded-2xl mb-8 overflow-hidden'
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  borderWidth: 1,
+                  borderColor: 'rgba(255, 255, 255, 0.2)',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 16,
                 }}
               >
                 <Text
-                  className={`text-black dark:text-white text-pretty ${
-                    isReading && index === currentParagraphIndex
-                      ? 'underline'
-                      : ''
-                  }`}
-                  style={{ fontSize: fontSize, marginBottom: 16 }}
+                  className='text-white text-center py-6 px-4 font-bold'
+                  style={{ fontSize: fontSize }}
                 >
-                  {/* First-line indent: 4 non-breaking spaces so only the first line is indented */}
-                  <Text>{'\u00A0\u00A0\u00A0\u00A0'}</Text>
-                  {paragraph.trim()}
+                  {current &&
+                    current
+                      .toString()
+                      .replace('_', '  ')
+                      .replace(CONTENT_KEY, '')
+                      .replace('.md', '')}{' '}
+                  &nbsp;&nbsp;
+                  <Text className='text-xs leading-8 text-gray-300'>
+                    {content.length}
+                  </Text>
                 </Text>
-              </View>
-            ))}
-        </View>
+              </BlurView>
+
+              {content
+                .split(/\n\s*\n/)
+                .filter((p) => p.trim().length > 0)
+                .map((paragraph, index) => (
+                  <BlurView
+                    key={index}
+                    intensity={30}
+                    tint='dark'
+                    className='rounded-xl mb-4 overflow-hidden'
+                    style={{
+                      backgroundColor:
+                        isReading && index === currentParagraphIndex
+                          ? 'rgba(59, 130, 246, 0.2)'
+                          : 'rgba(255, 255, 255, 0.05)',
+                      borderWidth: 1,
+                      borderColor:
+                        isReading && index === currentParagraphIndex
+                          ? 'rgba(59, 130, 246, 0.3)'
+                          : 'rgba(255, 255, 255, 0.1)',
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: 0.2,
+                      shadowRadius: 8,
+                    }}
+                  >
+                    <View
+                      ref={(ref) => {
+                        paragraphRefs.current[index] = ref;
+                      }}
+                    >
+                      <Text
+                        className='text-white leading-relaxed p-4'
+                        style={{
+                          fontSize: fontSize,
+                          lineHeight: fontSize * 1.6,
+                          paddingLeft: 20,
+                        }}
+                      >
+                        {paragraph.trim()}
+                      </Text>
+                    </View>
+                  </BlurView>
+                ))}
+            </View>
+          </View>
+        </ScrollView>
       </View>
     );
   }

@@ -288,6 +288,11 @@ jest.mock('expo-image', () => ({
   Image: 'Image',
 }));
 
+// Mock expo-blur to avoid ES module issues
+jest.mock('expo-blur', () => ({
+  BlurView: ({ children, ...props }: any) => children,
+}));
+
 // Mock expo-speech
 jest.mock('expo-speech', () => ({
   speak: jest.fn(),

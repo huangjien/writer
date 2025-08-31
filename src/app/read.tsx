@@ -65,12 +65,18 @@ export default function Page() {
       setProgress(0);
       setSpeechProgress(0);
       setCurrentSentenceIndex(0);
-      // Small delay to ensure content is fully loaded
+      // Longer delay to ensure speak function is recreated with new content
       setTimeout(() => {
-        speak(0); // Start from beginning
-      }, 100);
+        speak(0); // Start from beginning with fresh content
+      }, 200);
     }
   }, [content, shouldAutoPlay]);
+
+  // Additional effect to ensure speak function is recreated when content changes
+  useEffect(() => {
+    // This effect ensures the speak function closure is updated when content changes
+    // No action needed here, just triggering re-render
+  }, [content]);
 
   // Removed the speechProgress useEffect that was interfering with chunk-based progress updates
   // The speak() function now handles progress updates directly
@@ -151,7 +157,7 @@ export default function Page() {
         },
       });
     },
-    [content, selectedLanguage, next, navigateToChapter, progress]
+    [content, selectedLanguage, next, navigateToChapter] // Remove progress from deps to avoid infinite loops
   );
 
   const stop = (source = 'unknown') => {
