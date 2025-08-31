@@ -68,12 +68,15 @@ export default function Page() {
       // Stop any existing speech first
       Speech.stop();
       isSpeakingRef.current = false;
-      // Longer delay to ensure speak function is recreated with new content
+      // Longer delay to ensure content is fully loaded and state is updated
       setTimeout(() => {
-        speak(0); // Start from beginning with fresh content
-      }, 300);
+        // Ensure we're using the fresh content by calling speak with explicit progress
+        if (content && content.length > 0) {
+          speak(0); // Start from beginning with fresh content
+        }
+      }, 500); // Increased delay to ensure content is fully loaded
     }
-  }, [content, shouldAutoPlay]);
+  }, [content, shouldAutoPlay]); // Remove speak from dependencies to avoid circular reference
 
   // Removed the speechProgress useEffect that was interfering with chunk-based progress updates
   // The speak() function now handles progress updates directly
@@ -102,6 +105,12 @@ export default function Page() {
     (currentProgress = progress) => {
       // Prevent multiple simultaneous speech calls
       if (isSpeakingRef.current) {
+        return;
+      }
+
+      // Ensure we have content before proceeding
+      if (!content || content.length === 0) {
+        console.log('No content available for speech');
         return;
       }
 
@@ -158,7 +167,7 @@ export default function Page() {
         },
       });
     },
-    [content, selectedLanguage, next, navigateToChapter, progress] // Include progress to ensure function updates
+    [content, selectedLanguage, next, navigateToChapter] // Remove progress to prevent unnecessary recreations
   );
 
   const stop = (source = 'unknown') => {

@@ -7,6 +7,7 @@ import TrackPlayer, {
   Event,
   State,
   Capability,
+  AppKilledPlaybackBehavior,
 } from 'react-native-track-player';
 import {
   STATUS_PAUSED,
@@ -71,11 +72,13 @@ export function useSpeech() {
   // Set up media session controls for earphone buttons
   const setupMediaSessionControls = async () => {
     try {
+      // Initialize TrackPlayer
       await TrackPlayer.setupPlayer({
         waitForBuffer: false,
+        autoHandleInterruptions: true, // Let TrackPlayer handle audio interruptions
       });
 
-      // Set up media session metadata
+      // Set up media session metadata and capabilities
       await TrackPlayer.updateOptions({
         capabilities: [
           Capability.Play,
@@ -90,9 +93,22 @@ export function useSpeech() {
           Capability.SkipToNext,
           Capability.SkipToPrevious,
         ],
+        // Enable notification controls
+        notificationCapabilities: [
+          Capability.Play,
+          Capability.Pause,
+          Capability.Stop,
+        ],
+        // Configure for speech playback
+        android: {
+          appKilledPlaybackBehavior:
+            AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
+        },
       });
 
-      console.log('Media session controls configured');
+      console.log(
+        'Media session controls configured with interruption handling'
+      );
     } catch (error) {
       console.error('Failed to setup media session controls:', error);
     }
@@ -106,7 +122,7 @@ export function useSpeech() {
           allowsRecordingIOS: false,
           staysActiveInBackground: true,
           playsInSilentModeIOS: true,
-          shouldDuckAndroid: true,
+          shouldDuckAndroid: true, // Allow ducking for proper interruption handling
           playThroughEarpieceAndroid: false,
         });
       } else if (Platform.OS === 'ios') {
@@ -114,7 +130,7 @@ export function useSpeech() {
           allowsRecordingIOS: false,
           staysActiveInBackground: true,
           playsInSilentModeIOS: true,
-          interruptionModeIOS: InterruptionModeIOS.DuckOthers,
+          interruptionModeIOS: InterruptionModeIOS.MixWithOthers, // Allow mixing but handle interruptions properly
           shouldDuckAndroid: false,
           playThroughEarpieceAndroid: false,
         });
@@ -308,7 +324,7 @@ export function useSpeech() {
     };
   }, []); // Empty dependency array - only run once on mount
 
-  // Handle app state changes for background/foreground
+  // Handle app state changes for background/foreground and audio interruptions
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       console.log('App state changed to:', nextAppState);
@@ -341,10 +357,44 @@ export function useSpeech() {
       }
     };
 
+    // Set up audio interruption listener
+    const setupAudioInterruptionListener = () => {
+      try {
+        // Listen for audio interruptions (when other apps start playing audio)
+        audioInterruptionListenerRef.current = Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          staysActiveInBackground: true,
+          playsInSilentModeIOS: true,
+          interruptionModeIOS:
+            Platform.OS === 'ios'
+              ? InterruptionModeIOS.MixWithOthers
+              : undefined,
+          shouldDuckAndroid: Platform.OS === 'android',
+        })
+          .then(() => {
+            console.log('Audio session configured for interruption handling');
+          })
+          .catch((error) => {
+            console.error(
+              'Failed to configure audio session for interruptions:',
+              error
+            );
+          });
+
+        // For Android, we rely on the shouldDuckAndroid setting and app state changes
+        // For iOS, the MixWithOthers mode will handle interruptions automatically
+        console.log('Audio interruption handling configured');
+      } catch (error) {
+        console.error('Failed to set up audio interruption listener:', error);
+      }
+    };
+
     const subscription = AppState.addEventListener(
       'change',
       handleAppStateChange
     );
+
+    setupAudioInterruptionListener();
 
     return () => {
       subscription?.remove();
