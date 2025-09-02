@@ -10,6 +10,7 @@ import Modal from 'react-native-modal';
 import Markdown from 'react-native-markdown-display';
 import { Feather } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
+import { CONSTANTS } from '@/constants/appConstants';
 
 interface AnalysisModalProps {
   isVisible: boolean;
@@ -65,13 +66,13 @@ export function AnalysisModal({
                 heading1: {
                   color: 'rgba(255, 255, 255, 1)',
                   fontSize: fontSize * 1.5,
-                  fontWeight: '600',
+                  fontWeight: CONSTANTS.UI.FONT_WEIGHT.SEMI_BOLD,
                   marginBottom: 16,
                 },
                 heading2: {
                   color: 'rgba(255, 255, 255, 0.9)',
                   fontSize: fontSize * 1.3,
-                  fontWeight: '500',
+                  fontWeight: CONSTANTS.UI.FONT_WEIGHT.MEDIUM,
                   marginBottom: 12,
                 },
                 paragraph: {

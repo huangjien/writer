@@ -14,6 +14,7 @@ import {
   ANALYSIS_KEY,
   SETTINGS_KEY,
 } from '../components/global';
+import { CONSTANTS } from '../constants/appConstants';
 
 // Mock dependencies
 jest.mock('expo-router');
@@ -130,7 +131,8 @@ describe('Read Page', () => {
       left: 0,
       right: 0,
     });
-    (mockSpeech as any).maxSpeechInputLength = 4000;
+    (mockSpeech as any).maxSpeechInputLength =
+      CONSTANTS.CONTENT.MAX_SPEECH_INPUT_LENGTH;
     mockSpeech.isSpeakingAsync.mockResolvedValue(false);
     mockSpeech.speak.mockImplementation(() => Promise.resolve());
     mockSpeech.stop.mockImplementation(() => Promise.resolve());
@@ -250,11 +252,14 @@ describe('Read Page', () => {
       const longContent = 'a'.repeat(5000); // Exceeds maxSpeechInputLength
 
       mockGetItem.mockResolvedValue(JSON.stringify({ fontSize: 16 }));
-      (mockSpeech as any).maxSpeechInputLength = 4000;
+      (mockSpeech as any).maxSpeechInputLength =
+        CONSTANTS.CONTENT.MAX_SPEECH_INPUT_LENGTH;
 
       // Due to gesture handler rendering issues, we test the mock setup instead
       expect(longContent.length).toBe(5000);
-      expect((mockSpeech as any).maxSpeechInputLength).toBe(4000);
+      expect((mockSpeech as any).maxSpeechInputLength).toBe(
+        CONSTANTS.CONTENT.MAX_SPEECH_INPUT_LENGTH
+      );
       expect(
         longContent.length > (mockSpeech as any).maxSpeechInputLength
       ).toBe(true);

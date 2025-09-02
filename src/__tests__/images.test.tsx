@@ -110,9 +110,11 @@ describe('Images Module', () => {
       expect((images as any).nonExistentImage).toBeUndefined();
     });
 
-    it('should maintain referential equality on multiple imports', () => {
+    it('should maintain referential equality on multiple imports', async () => {
       // Re-import the module
-      const { images: reimportedImages } = require('../app/images');
+      const reimportedImages = await import('../app/images').then(
+        (m) => m.images
+      );
       expect(reimportedImages).toBe(images);
       expect(reimportedImages.logo).toBe(images.logo);
       expect(reimportedImages.wood).toBe(images.wood);

@@ -2,6 +2,7 @@ import { speechService, SpeechService } from '@/services/speechService';
 import * as Speech from 'expo-speech';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CONTENT_KEY, showErrorToast } from '@/components/global';
+import { CONSTANTS } from '@/constants/appConstants';
 
 // Mock dependencies
 jest.mock('expo-speech', () => ({
@@ -10,7 +11,7 @@ jest.mock('expo-speech', () => ({
   pause: jest.fn(),
   resume: jest.fn(),
   isSpeakingAsync: jest.fn(),
-  maxSpeechInputLength: 4000,
+  maxSpeechInputLength: 4000, // Use literal value to avoid circular dependency
 }));
 jest.mock('@react-native-async-storage/async-storage');
 jest.mock('@/components/global', () => ({

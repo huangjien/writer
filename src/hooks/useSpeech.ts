@@ -1,23 +1,33 @@
-import { useState, useEffect, useRef } from 'react';
-import { AppState, AppStateStatus, Platform } from 'react-native';
+import { useState, useRef, useEffect } from 'react';
 import * as Speech from 'expo-speech';
-import { Audio, InterruptionModeIOS, AVPlaybackStatus } from 'expo-av';
-import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
-import TrackPlayer, {
-  Event,
-  State,
-  Capability,
-  AppKilledPlaybackBehavior,
-} from 'react-native-track-player';
+import { CONSTANTS } from '@/constants/appConstants';
 import {
   STATUS_PAUSED,
   STATUS_PLAYING,
   STATUS_STOPPED,
 } from '@/components/global';
 
-export function useSpeech() {
+// Import extracted modules
+import { SpeechOptions, SpeechHookReturn } from './speech/types';
+import {
+  configureAudioSession,
+  enableKeepAwake,
+  disableKeepAwake,
+} from './speech/audioSession';
+import {
+  setupMediaSessionControls,
+  setupMediaSessionListeners,
+} from './speech/mediaSession';
+import { useAppStateHandler } from './speech/useAppStateHandler';
+import {
+  splitIntoSentences,
+  calculateProgress,
+  getCurrentSentence,
+} from './speech/sentenceProcessing';
+
+export function useSpeech(): SpeechHookReturn {
   const [status, setStatus] = useState(STATUS_STOPPED);
-  const [progress, setProgress] = useState(0); // Progress as percentage (0-1)
+  const [progress, setProgress] = useState(0);
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
 
   // Refs to maintain state across renders
@@ -25,469 +35,41 @@ export function useSpeech() {
   const totalContentLengthRef = useRef(0);
   const completedContentLengthRef = useRef(0);
   const isPausedRef = useRef(false);
-  const wasPlayingBeforeBackgroundRef = useRef(false);
-  const wasPlayingBeforeInterruptionRef = useRef(false);
-  const audioInterruptionListenerRef = useRef<any>(null);
-  const speechOptionsRef = useRef<{
-    language?: string;
-    pitch?: number;
-    rate?: number;
-    onDone?: () => void;
-  }>({});
+  const speechOptionsRef = useRef<SpeechOptions>({});
+  const originalTextRef = useRef('');
 
-  const enableKeepAwake = async () => {
-    await activateKeepAwakeAsync();
-  };
-
-  // Handle audio interruptions from other apps
-  const handleAudioInterruption = (interruptionStatus: any) => {
-    console.log('Audio interruption:', interruptionStatus);
-
-    if (interruptionStatus.shouldPause || interruptionStatus.shouldStop) {
-      // Another app is taking over audio focus
-      if (status === STATUS_PLAYING) {
-        console.log('Audio interrupted by another app, pausing playback');
-        wasPlayingBeforeInterruptionRef.current = true;
-        Speech.pause();
-        setStatus(STATUS_PAUSED);
-        isPausedRef.current = true;
-      }
-    } else if (interruptionStatus.shouldResume) {
-      // Audio focus returned, resume if we were playing before
-      if (wasPlayingBeforeInterruptionRef.current && status === STATUS_PAUSED) {
-        console.log('Audio focus returned, resuming playback');
-        wasPlayingBeforeInterruptionRef.current = false;
-        Speech.resume();
-        setStatus(STATUS_PLAYING);
-        isPausedRef.current = false;
-
-        // Continue with current sentence if needed
-        if (currentSentenceIndex < sentencesRef.current.length) {
-          speakCurrentSentence();
-        }
-      }
-    }
-  };
-
-  // Set up media session controls for earphone buttons
-  const setupMediaSessionControls = async () => {
-    try {
-      // Initialize TrackPlayer
-      await TrackPlayer.setupPlayer({
-        waitForBuffer: false,
-        autoHandleInterruptions: true, // Let TrackPlayer handle audio interruptions
-      });
-
-      // Set up media session metadata and capabilities
-      await TrackPlayer.updateOptions({
-        capabilities: [
-          Capability.Play,
-          Capability.Pause,
-          Capability.Stop,
-          Capability.SkipToNext,
-          Capability.SkipToPrevious,
-        ],
-        compactCapabilities: [
-          Capability.Play,
-          Capability.Pause,
-          Capability.SkipToNext,
-          Capability.SkipToPrevious,
-        ],
-        // Enable notification controls
-        notificationCapabilities: [
-          Capability.Play,
-          Capability.Pause,
-          Capability.Stop,
-        ],
-        // Configure for speech playback
-        android: {
-          appKilledPlaybackBehavior:
-            AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
-        },
-      });
-
-      console.log(
-        'Media session controls configured with interruption handling'
-      );
-    } catch (error) {
-      console.error('Failed to setup media session controls:', error);
-    }
-  };
-
-  // Configure audio session for background playback
-  const configureAudioSession = async () => {
-    try {
-      if (Platform.OS === 'android') {
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
-          staysActiveInBackground: true,
-          playsInSilentModeIOS: true,
-          shouldDuckAndroid: true, // Allow ducking for proper interruption handling
-          playThroughEarpieceAndroid: false,
-        });
-      } else if (Platform.OS === 'ios') {
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
-          staysActiveInBackground: true,
-          playsInSilentModeIOS: true,
-          interruptionModeIOS: InterruptionModeIOS.MixWithOthers, // Allow mixing but handle interruptions properly
-          shouldDuckAndroid: false,
-          playThroughEarpieceAndroid: false,
-        });
-      }
-
-      // Configure audio session to handle interruptions properly
-      await Audio.setIsEnabledAsync(true);
-
-      console.log(
-        'Audio session configured for background playback with interruption handling'
-      );
-    } catch (error) {
-      console.error('Failed to configure audio session:', error);
-    }
-  };
-
-  // Enhanced background audio handling for screen lock scenarios
-  const handleScreenLock = () => {
-    // When screen locks, ensure audio continues by maintaining keep awake
-    if (status === STATUS_PLAYING) {
-      console.log('Screen locked, maintaining audio playback');
-      enableKeepAwake();
-
-      // For Android, implement more aggressive recovery
-      if (Platform.OS === 'android') {
-        // Stop any current speech and restart to ensure continuity
-        Speech.stop();
-        setTimeout(() => {
-          if (status === STATUS_PLAYING && !isPausedRef.current) {
-            speakCurrentSentence();
-          }
-        }, 200);
-      } else {
-        // For iOS, try to continue current sentence if interrupted
-        if (
-          currentSentenceIndex < sentencesRef.current.length &&
-          !isPausedRef.current
-        ) {
-          setTimeout(() => {
-            if (status === STATUS_PLAYING) {
-              speakCurrentSentence();
-            }
-          }, 100);
-        }
-      }
-    }
-  };
-
-  // Monitor for potential speech interruptions and resume
-  const monitorSpeechContinuity = () => {
-    if (status === STATUS_PLAYING && !isPausedRef.current) {
-      // Check if we should be speaking but aren't
-      if (currentSentenceIndex < sentencesRef.current.length) {
-        const checkInterval = setInterval(async () => {
-          if (status === STATUS_PLAYING && !isPausedRef.current) {
-            try {
-              // Check if speech is actually running
-              const isSpeaking = await Speech.isSpeakingAsync();
-              if (!isSpeaking) {
-                console.log('Speech interrupted, restarting current sentence');
-                speakCurrentSentence();
-              }
-            } catch (error) {
-              console.log('Error checking speech status, restarting:', error);
-              speakCurrentSentence();
-            }
-            clearInterval(checkInterval);
-          } else {
-            clearInterval(checkInterval);
-          }
-        }, 1000);
-      }
-    }
-  };
-
-  // Keep awake effect
-  useEffect(() => {
-    if (status === STATUS_PLAYING) {
-      enableKeepAwake();
-    } else {
-      deactivateKeepAwake();
-    }
-  }, [status]);
-
-  // Handle app state changes for background/foreground
-  useEffect(() => {
-    const handleAppStateChange = (nextAppState: AppStateStatus) => {
-      if (nextAppState === 'background' || nextAppState === 'inactive') {
-        // App is going to background - save current playing state
-        wasPlayingBeforeBackgroundRef.current = status === STATUS_PLAYING;
-        console.log(
-          'App going to background, audio state saved:',
-          wasPlayingBeforeBackgroundRef.current
-        );
-
-        // Keep the device awake to maintain audio playback
-        if (status === STATUS_PLAYING) {
-          enableKeepAwake();
-          handleScreenLock();
-          // Start monitoring speech continuity for Android
-          if (Platform.OS === 'android') {
-            setTimeout(() => monitorSpeechContinuity(), 500);
-          }
-        }
-      } else if (nextAppState === 'active') {
-        // App is coming to foreground
-        console.log('App coming to foreground, restoring audio state');
-
-        // If we were playing before going to background, ensure we continue
-        if (
-          wasPlayingBeforeBackgroundRef.current &&
-          status !== STATUS_PLAYING &&
-          !isPausedRef.current
-        ) {
-          // Resume speech if it was interrupted
-          setStatus(STATUS_PLAYING);
-          if (currentSentenceIndex < sentencesRef.current.length) {
-            speakCurrentSentence();
-          }
-        }
-      }
-    };
-
-    const subscription = AppState.addEventListener(
-      'change',
-      handleAppStateChange
-    );
-
-    return () => {
-      subscription?.remove();
-    };
-  }, [status, currentSentenceIndex]);
-
-  // Initialize audio session and media controls once on mount
-  useEffect(() => {
-    configureAudioSession();
-    setupMediaSessionControls();
-
-    // Set up media session event listener for earphone buttons
-    const mediaSessionListener = TrackPlayer.addEventListener(
-      Event.RemotePlay,
-      () => {
-        console.log('Remote play button pressed');
-        if (status === STATUS_PAUSED) {
-          resume();
-        } else if (
-          status === STATUS_STOPPED &&
-          sentencesRef.current.length > 0
-        ) {
-          speak(sentencesRef.current.join(' '));
-        }
-      }
-    );
-    const pauseListener = TrackPlayer.addEventListener(
-      Event.RemotePause,
-      () => {
-        console.log('Remote pause button pressed');
-        if (status === STATUS_PLAYING) {
-          pause();
-        }
-      }
-    );
-    const stopListener = TrackPlayer.addEventListener(Event.RemoteStop, () => {
-      console.log('Remote stop button pressed');
-      stop();
-    });
-    const nextListener = TrackPlayer.addEventListener(Event.RemoteNext, () => {
-      console.log('Remote next button pressed');
-      if (currentSentenceIndex < sentencesRef.current.length - 1) {
-        setCurrentSentenceIndex((prev) => prev + 1);
-        speakCurrentSentence();
-      }
-    });
-    const previousListener = TrackPlayer.addEventListener(
-      Event.RemotePrevious,
-      () => {
-        console.log('Remote previous button pressed');
-        if (currentSentenceIndex > 0) {
-          setCurrentSentenceIndex((prev) => prev - 1);
-          speakCurrentSentence();
-        }
-      }
-    );
-
-    return () => {
-      mediaSessionListener?.remove();
-      pauseListener?.remove();
-      stopListener?.remove();
-      nextListener?.remove();
-      previousListener?.remove();
-    };
-  }, []); // Empty dependency array - only run once on mount
-
-  // Handle app state changes for background/foreground and audio interruptions
-  useEffect(() => {
-    const handleAppStateChange = (nextAppState: AppStateStatus) => {
-      console.log('App state changed to:', nextAppState);
-
-      if (nextAppState === 'background' || nextAppState === 'inactive') {
-        // App going to background, check if we should pause due to audio interruption
-        if (status === STATUS_PLAYING) {
-          console.log(
-            'App backgrounded while playing, checking for audio interruption'
-          );
-          // In a real scenario, we'd check if another app is using audio
-          // For now, we'll pause when app goes to background
-          wasPlayingBeforeInterruptionRef.current = true;
-          Speech.pause();
-          setStatus(STATUS_PAUSED);
-          isPausedRef.current = true;
-        }
-      } else if (nextAppState === 'active') {
-        // App coming back to foreground
-        if (
-          wasPlayingBeforeInterruptionRef.current &&
-          status === STATUS_PAUSED
-        ) {
-          console.log('App foregrounded, resuming playback');
-          wasPlayingBeforeInterruptionRef.current = false;
-          Speech.resume();
-          setStatus(STATUS_PLAYING);
-          isPausedRef.current = false;
-        }
-      }
-    };
-
-    // Set up audio interruption listener
-    const setupAudioInterruptionListener = () => {
-      try {
-        // Listen for audio interruptions (when other apps start playing audio)
-        audioInterruptionListenerRef.current = Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
-          staysActiveInBackground: true,
-          playsInSilentModeIOS: true,
-          interruptionModeIOS:
-            Platform.OS === 'ios'
-              ? InterruptionModeIOS.MixWithOthers
-              : undefined,
-          shouldDuckAndroid: Platform.OS === 'android',
-        })
-          .then(() => {
-            console.log('Audio session configured for interruption handling');
-          })
-          .catch((error) => {
-            console.error(
-              'Failed to configure audio session for interruptions:',
-              error
-            );
-          });
-
-        // For Android, we rely on the shouldDuckAndroid setting and app state changes
-        // For iOS, the MixWithOthers mode will handle interruptions automatically
-        console.log('Audio interruption handling configured');
-      } catch (error) {
-        console.error('Failed to set up audio interruption listener:', error);
-      }
-    };
-
-    const subscription = AppState.addEventListener(
-      'change',
-      handleAppStateChange
-    );
-
-    setupAudioInterruptionListener();
-
-    return () => {
-      subscription?.remove();
-      if (audioInterruptionListenerRef.current) {
-        audioInterruptionListenerRef.current = null;
-      }
-    };
-  }, [status]);
-
-  // Continuous monitoring for speech interruptions (especially for Android)
-  useEffect(() => {
-    let monitoringInterval: number | null = null;
-
-    if (status === STATUS_PLAYING && Platform.OS === 'android') {
-      monitoringInterval = setInterval(async () => {
-        if (status === STATUS_PLAYING && !isPausedRef.current) {
-          try {
-            const isSpeaking = await Speech.isSpeakingAsync();
-            if (
-              !isSpeaking &&
-              currentSentenceIndex < sentencesRef.current.length
-            ) {
-              console.log(
-                'Android: Speech stopped unexpectedly, recovering...'
-              );
-              // Restart current sentence
-              speakCurrentSentence();
-            }
-          } catch (error) {
-            console.log(
-              'Android: Error monitoring speech, attempting recovery:',
-              error
-            );
-            if (currentSentenceIndex < sentencesRef.current.length) {
-              speakCurrentSentence();
-            }
-          }
-        }
-      }, 2000); // Check every 2 seconds
-    }
-
-    return () => {
-      if (monitoringInterval) {
-        clearInterval(monitoringInterval);
-      }
-    };
-  }, [status, currentSentenceIndex]);
-
-  // Helper function to split content into sentences
-  const splitIntoSentences = (content: string): string[] => {
-    // Split by sentence endings, keeping the punctuation
-    const sentences = content
-      .split(/([.!?。！？]+)/)
-      .filter((s) => s.trim().length > 0);
-    const result: string[] = [];
-
-    for (let i = 0; i < sentences.length; i += 2) {
-      const sentence = sentences[i];
-      const punctuation = sentences[i + 1] || '';
-      if (sentence.trim()) {
-        result.push((sentence + punctuation).trim());
-      }
-    }
-
-    return result.length > 0 ? result : [content];
-  };
-
-  // Function to speak the current sentence
+  // Speak the current sentence
   const speakCurrentSentence = () => {
-    if (
-      isPausedRef.current ||
-      currentSentenceIndex >= sentencesRef.current.length
-    ) {
+    const currentSentence = getCurrentSentence(
+      sentencesRef.current,
+      currentSentenceIndex
+    );
+
+    if (!currentSentence) {
       return;
     }
 
-    const sentence = sentencesRef.current[currentSentenceIndex];
-    const options = speechOptionsRef.current;
+    console.log(
+      `Speaking sentence ${currentSentenceIndex + 1}/${sentencesRef.current.length}: ${currentSentence}`
+    );
 
-    Speech.speak(sentence, {
-      language: options.language,
-      pitch: options.pitch,
-      rate: options.rate,
+    Speech.speak(currentSentence, {
+      language: speechOptionsRef.current.language || 'en',
+      pitch: speechOptionsRef.current.pitch || 1.0,
+      rate: speechOptionsRef.current.rate || 1.0,
       onDone: () => {
-        if (!isPausedRef.current) {
+        if (!isPausedRef.current && status === STATUS_PLAYING) {
           // Update progress
-          completedContentLengthRef.current += sentence.length;
+          const completedText = sentencesRef.current
+            .slice(0, currentSentenceIndex + 1)
+            .join(' ');
+          completedContentLengthRef.current = completedText.length;
           const newProgress =
             totalContentLengthRef.current > 0
               ? completedContentLengthRef.current /
                 totalContentLengthRef.current
               : 0;
-          setProgress(Math.min(newProgress, 1));
+          setProgress(Math.min(1, newProgress));
 
           // Move to next sentence
           const nextIndex = currentSentenceIndex + 1;
@@ -499,38 +81,110 @@ export function useSpeech() {
           } else {
             setStatus(STATUS_STOPPED);
             setProgress(1);
-            options.onDone?.();
+            disableKeepAwake();
+            speechOptionsRef.current.onDone?.();
           }
         }
       },
     });
   };
 
-  const speak = (
-    content: string,
-    options?: {
-      language?: string;
-      pitch?: number;
-      rate?: number;
-      onDone?: () => void;
+  // App state handler for background/foreground behavior
+  const { monitorSpeechContinuity } = useAppStateHandler({
+    status,
+    currentSentenceIndex,
+    sentences: sentencesRef.current,
+    isPaused: isPausedRef.current,
+    onSpeakCurrentSentence: speakCurrentSentence,
+    onPause: () => {
+      setStatus(STATUS_PAUSED);
+      isPausedRef.current = true;
+    },
+    onResume: () => {
+      setStatus(STATUS_PLAYING);
+      isPausedRef.current = false;
+    },
+  });
+
+  // Initialize audio session and media controls on mount
+  useEffect(() => {
+    configureAudioSession();
+    setupMediaSessionControls();
+    setupMediaSessionListeners(
+      status,
+      sentencesRef.current,
+      currentSentenceIndex,
+      () => {
+        if (status === STATUS_PAUSED) {
+          resume();
+        }
+      },
+      () => {
+        if (status === STATUS_PLAYING) {
+          pause();
+        }
+      },
+      stop,
+      () => {
+        if (currentSentenceIndex < sentencesRef.current.length - 1) {
+          setCurrentSentenceIndex(currentSentenceIndex + 1);
+          if (status === STATUS_PLAYING) {
+            Speech.stop();
+            speakCurrentSentence();
+          }
+        }
+      },
+      () => {
+        if (currentSentenceIndex > 0) {
+          setCurrentSentenceIndex(currentSentenceIndex - 1);
+          if (status === STATUS_PLAYING) {
+            Speech.stop();
+            speakCurrentSentence();
+          }
+        }
+      }
+    );
+  }, []);
+
+  const speak = (content: string, options?: SpeechOptions) => {
+    // Validate input
+    if (
+      !content ||
+      typeof content !== 'string' ||
+      content.trim().length === 0
+    ) {
+      console.warn('Invalid content provided to speak function');
+      return;
     }
-  ) => {
+
+    if (content.length > CONSTANTS.CONTENT.MAX_SPEECH_INPUT_LENGTH) {
+      console.warn('Content too long for speech synthesis');
+      return;
+    }
+
     // Split content into sentences
     const sentences = splitIntoSentences(content);
 
-    // Store options in ref for resume functionality
-    speechOptionsRef.current = options || {};
+    if (sentences.length === 0) {
+      console.warn('No valid sentences found in content');
+      return;
+    }
 
-    // Initialize refs and state
+    // Store options and content in refs
+    speechOptionsRef.current = options || {};
     sentencesRef.current = sentences;
     totalContentLengthRef.current = content.length;
     completedContentLengthRef.current = 0;
     isPausedRef.current = false;
+    originalTextRef.current = content;
 
     // Reset state
     setCurrentSentenceIndex(0);
     setProgress(0);
     setStatus(STATUS_PLAYING);
+
+    // Enable keep awake for background playback
+    enableKeepAwake();
 
     // Start speaking the first sentence
     speakCurrentSentence();
@@ -546,6 +200,7 @@ export function useSpeech() {
     isPausedRef.current = false;
     completedContentLengthRef.current = 0;
     Speech.stop();
+    disableKeepAwake();
   };
 
   const pause = () => {

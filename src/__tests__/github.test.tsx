@@ -3,12 +3,13 @@ import { render } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { AsyncStorageProvider } from '../hooks/useAsyncStorage';
-import Page, {
+import Page from '../app/github';
+import {
   elementWithNameExists,
   loadSettingsFromStorage,
   loadExistingContentFromStorage,
   loadExistingAnalysisFromStorage,
-} from '../app/github';
+} from '../app/github/storageUtils';
 
 // Mock React Native components
 jest.mock('react-native', () => ({

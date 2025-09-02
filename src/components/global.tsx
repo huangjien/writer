@@ -1,6 +1,6 @@
 import Toast from 'react-native-root-toast';
+import { CONSTANTS } from '@/constants/appConstants';
 
-// components/global.tsx
 export const SETTINGS_KEY = '@Settings';
 export const CONTENT_KEY = '@Content:';
 export const ANALYSIS_KEY = '@Analysis:';
@@ -8,7 +8,7 @@ export const STATUS_PLAYING = 'playing';
 export const STATUS_PAUSED = 'paused';
 export const STATUS_STOPPED = 'stopped';
 export const EXPIRY_KEY = 'expiry';
-export const TIMEOUT = 1000 * 60 * 60 * 8;
+export const TIMEOUT = CONSTANTS.TIMING.SESSION_TIMEOUT;
 
 export const handleError = (err: any) => {
   showErrorToast(err.message);
@@ -22,7 +22,7 @@ export function showErrorToast(message: string) {
     shadowColor: 'red',
     animation: true,
     hideOnPress: false,
-    delay: 100,
+    delay: CONSTANTS.TIMING.TOAST_DELAY,
     duration: Toast.durations.LONG,
   });
 }
@@ -33,7 +33,7 @@ export function showInfoToast(message: string) {
     shadow: true,
     animation: true,
     hideOnPress: true,
-    delay: 100,
+    delay: CONSTANTS.TIMING.TOAST_DELAY,
     duration: Toast.durations.LONG,
   });
 }
