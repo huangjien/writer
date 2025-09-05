@@ -65,7 +65,8 @@ export const handleProgressChange = (
 export const handleContentChange = (
   status: string,
   contentLength: number,
-  speak: () => void
+  speak: (startProgress?: number) => void,
+  shouldAutoPlay: boolean = false
 ) => {
   try {
     // Input validation
@@ -91,13 +92,15 @@ export const handleContentChange = (
     }
 
     // This is used for switch to another chapter, if was reading before, then read new chapter
+    // Fixed: Always start from beginning (progress 0) when switching chapters
     if (
-      status === 'playing' &&
+      (status === 'playing' || shouldAutoPlay) &&
       contentLength > CONSTANTS.CONTENT.CONTENT_LENGTH_THRESHOLD
     ) {
       Speech.stop();
       sleep(CONSTANTS.TIMING.CHAPTER_SWITCH_DELAY).then(() => {
-        speak();
+        // Start from the beginning of the new chapter
+        speak(0);
       });
     }
   } catch (error) {

@@ -139,6 +139,7 @@ export const useReadingPage = (): UseReadingPageReturn => {
       speechState.status === 'stopped'
     ) {
       const timer = setTimeout(() => {
+        // Always start from current progress, which should be 0 for new chapters
         speak(progress);
       }, CONSTANTS.TIMING.CONTENT_LOAD_DELAY);
       return () => clearTimeout(timer);

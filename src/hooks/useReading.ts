@@ -127,6 +127,8 @@ export function useReading() {
               setProgress(0);
               setIsInitialLoad(false);
               data['progress'] = 0;
+              // Force immediate progress save for new chapter
+              setItem(SETTINGS_KEY, JSON.stringify(data));
             }
 
             data['current'] = post;

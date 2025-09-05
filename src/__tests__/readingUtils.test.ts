@@ -141,14 +141,14 @@ describe('readingUtils', () => {
       // Wait for the sleep promise to resolve
       await mockSleepPromise;
 
-      expect(mockSpeak).toHaveBeenCalled();
+      expect(mockSpeak).toHaveBeenCalledWith(0);
     });
 
-    it('should not do anything when status is not playing', () => {
+    it('should not do anything when status is not playing and shouldAutoPlay is false', () => {
       const status = 'paused';
       const contentLength = 100;
 
-      handleContentChange(status, contentLength, mockSpeak);
+      handleContentChange(status, contentLength, mockSpeak, false);
 
       expect(mockSpeech.stop).not.toHaveBeenCalled();
       expect(mockSleep).not.toHaveBeenCalled();
@@ -185,6 +185,21 @@ describe('readingUtils', () => {
 
       expect(mockSpeech.stop).toHaveBeenCalled();
       expect(mockSleep).toHaveBeenCalledWith(1000);
+    });
+
+    it('should trigger speech when shouldAutoPlay is true even if status is not playing', async () => {
+      const status = 'stopped';
+      const contentLength = 100;
+
+      handleContentChange(status, contentLength, mockSpeak, true);
+
+      expect(mockSpeech.stop).toHaveBeenCalled();
+      expect(mockSleep).toHaveBeenCalledWith(1000);
+
+      // Wait for the sleep promise to resolve
+      await mockSleepPromise;
+
+      expect(mockSpeak).toHaveBeenCalledWith(0);
     });
   });
 
