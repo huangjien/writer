@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Pre-commit hook: scan staged files for secrets; if none found, bump pubspec version.
+# To enable: run `git config core.hooksPath .githooks` in this repo.
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT"
+
+SECRETS_FOUND=0
+
+PATTERNS=(
+  # SSH and generic private keys
+  '-----BEGIN [A-Z ]*PRIVATE KEY-----'
+  '-----BEGIN OPENSSH PRIVATE KEY-----'
+  '-----BEGIN RSA PRIVATE KEY-----'
+  '-----BEGIN DSA PRIVATE KEY-----'
+  '-----BEGIN EC PRIVATE KEY-----'
+  '-----BEGIN PGP PRIVATE KEY BLOCK-----'
+  # AWS keys
+  'AKIA[0-9A-Z]{16}'
+  'aws_secret_access_key\s*[:=]\s*[A-Za-z0-9/+=]{40}'
+  # Google API keys
+  'AIza[0-9A-Za-z_\-]{35}'
+  # Generic API keys / secrets / passwords
+  'api[_-]?key\s*[:=]\s*["\''][A-Za-z0-9]{16,}["\'']'
+  'secret\s*[:=]\s*["\''][A-Za-z0-9/_+=-]{12,}["\'']'
+  'password\s*[:=]\s*["\''][^"\'\n]{8,}["\'']'
+  # JWTs
+  'eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}'
+  # Supabase keys
+  'SUPABASE_(ANON|SERVICE)_KEY'
+)
+
+is_text() {
+  local path="$1"
+  # Test staged content for binary; grep -Iq returns 0 for text
+  if git show ":$path" | grep -Iq .; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+scan_file_for_secrets() {
+  local path="$1"
+  for pat in "${PATTERNS[@]}"; do
+    if git show ":$path" | LC_ALL=C grep -E -i -n "$pat" >/dev/null; then
+      echo "[pre-commit] Potential secret found in '$path' matching pattern: $pat"
+      SECRETS_FOUND=1
+    fi
+  done
+}
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR)
+
+if [[ -z "$STAGED_FILES" ]]; then
+  # Nothing staged; skip version bump
+  exit 0
+fi
+
+while IFS= read -r file; do
+  [[ -z "$file" ]] && continue
+  if is_text "$file"; then
+    scan_file_for_secrets "$file"
+  fi
+done <<< "$STAGED_FILES"
+
+if [[ "$SECRETS_FOUND" -eq 1 ]]; then
+  echo "\n[pre-commit] Commit blocked due to potential secrets in staged changes."
+  echo "If this is a false positive, you may commit with --no-verify,"
+  echo "or adjust the hook patterns in .githooks/pre-commit."
+  exit 1
+fi
+
+# If pubspec.yaml is already staged, do not bump to avoid loops
+PUBSPEC_PATH="pubspec.yaml"
+if echo "$STAGED_FILES" | grep -qx "$PUBSPEC_PATH"; then
+  exit 0
+fi
+
+# Bump version in pubspec.yaml (increment build number if present, else patch)
+if [[ -f "$PUBSPEC_PATH" ]]; then
+  current_line=$(grep -E '^version:' "$PUBSPEC_PATH" || true)
+  if [[ -z "$current_line" ]]; then
+    # No version line; skip bump
+    exit 0
+  fi
+  current_version=${current_line#version: }
+  base=${current_version%%+*}
+  build=""
+  if [[ "$current_version" == *+* ]]; then
+    build=${current_version##*+}
+  fi
+  IFS='.' read -r major minor patch <<< "$base"
+  if [[ -n "$build" ]]; then
+    new_build=$((build + 1))
+    new_version="$major.$minor.$patch+$new_build"
+  else
+    new_patch=$((patch + 1))
+    new_version="$major.$minor.$new_patch"
+  fi
+  # Update the file in-place (macOS/BSD sed)
+  sed -i '' -E "s/^version:\s*.*/version: $new_version/" "$PUBSPEC_PATH"
+  echo "[pre-commit] pubspec.yaml version bumped to $new_version"
+  git add "$PUBSPEC_PATH"
+fi
+
+exit 0

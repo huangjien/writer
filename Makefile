@@ -1,0 +1,137 @@
+## Makefile for Novel Reader (Flutter)
+## Usage examples:
+##   make help
+##   make dev-web WEB_PORT=5500
+##   make dev-web SUPABASE_URL=https://your.supabase.co SUPABASE_ANON_KEY=xyz
+##   make dev-chrome SUPABASE_URL=... SUPABASE_ANON_KEY=...
+##   make deps
+##   make test
+##   make analyze
+##   make format
+##   make build-web SUPABASE_URL=... SUPABASE_ANON_KEY=...
+##   make serve-web-build WEB_PORT=8080
+
+FLUTTER := flutter
+
+# Optional configuration passed via make variables
+# Example: make dev-web SUPABASE_URL=... SUPABASE_ANON_KEY=...
+SUPABASE_URL ?=
+SUPABASE_ANON_KEY ?=
+WEB_PORT ?= 5500
+
+# Construct dart-define args only when variables are provided
+DF_ARGS := $(strip $(if $(SUPABASE_URL),--dart-define SUPABASE_URL=$(SUPABASE_URL)) \
+                 $(if $(SUPABASE_ANON_KEY),--dart-define SUPABASE_ANON_KEY=$(SUPABASE_ANON_KEY)))
+
+.PHONY: help dev-web dev-chrome macos deps test analyze lint format clean build-web serve-web-build env-print \
+        build-macos build-android build-ios build-windows build-linux build-ipa build-ipa-nocodesign install-hooks icons
+
+help:
+	@echo "Available targets:"
+	@echo "  help               - Show this help"
+	@echo "  dev-web            - Run development server on web-server (port $(WEB_PORT))"
+	@echo "  dev-chrome         - Run development in Chrome device"
+	@echo "  macos              - Run development on macOS device"
+	@echo "  deps               - Install pub dependencies"
+	@echo "  test               - Run unit/widget tests (with coverage summary)"
+	@echo "  analyze            - Run static analysis (Dart)"
+	@echo "  lint               - Run static analysis (alias of analyze)"
+	@echo "  format             - Format source files"
+	@echo "  clean              - Clean Flutter build outputs"
+	@echo "  build-web          - Build Flutter web app (release)"
+	@echo "  build-macos        - Build macOS release app"
+	@echo "  build-ios          - Build iOS release (no codesign)"
+	@echo "  build-ipa          - Build iOS IPA (requires signing)"
+	@echo "  build-ipa-nocodesign - Build iOS IPA without codesign (export-only)"
+	@echo "  build-android      - Build Android APK release"
+	@echo "  build-windows      - Build Windows release app"
+	@echo "  build-linux        - Build Linux release app"
+	@echo "  serve-web-build    - Serve built web assets locally (requires python3)"
+	@echo "  env-print          - Print Supabase env passed to dart-define"
+	@echo "  install-hooks      - Configure git to use .githooks/ as hooks path"
+
+dev-web:
+	$(FLUTTER) run -d web-server --web-port $(WEB_PORT) $(DF_ARGS)
+
+dev-chrome:
+	$(FLUTTER) run -d chrome $(DF_ARGS)
+
+macos:
+	$(FLUTTER) run -d macos $(DF_ARGS)
+
+deps:
+	$(FLUTTER) pub get
+
+icons:
+	$(FLUTTER) pub get
+	$(FLUTTER) pub run flutter_launcher_icons
+
+test:
+	$(FLUTTER) test --coverage --test-randomize-ordering-seed=random
+	@if [ -f coverage/lcov.info ]; then \
+		awk -F, '/^DA:/ { total++; if ($$2 > 0) hit++ } END { printf("Coverage: %.2f%% (%d/%d lines)\n", (hit/total)*100, hit, total) }' coverage/lcov.info; \
+		TOTAL_LIB_LINES=$$(find lib -name '*.dart' -print0 | xargs -0 wc -l | tail -n 1 | awk '{print $$1}'); \
+		awk -F, -v tot=$$TOTAL_LIB_LINES '/^DA:/ { if ($$2 > 0) hit++ } END { printf("Full-lines coverage: %.2f%% (%d/%d lines)\n", (hit/tot)*100, hit, tot) }' coverage/lcov.info; \
+	else \
+		echo "Coverage file not found; ensure --coverage succeeded."; \
+	fi
+	@# Optionally generate HTML report if genhtml is available
+	@command -v genhtml >/dev/null 2>&1 && genhtml -q -o coverage/html coverage/lcov.info >/dev/null 2>&1 || true
+
+analyze:
+	dart analyze
+
+lint:
+	@echo "Running formatter check (no changes allowed)..."
+	# Use output=show to avoid writing; suppress output to keep logs clean
+	dart format --output show --set-exit-if-changed lib test >/dev/null
+	@echo "Running analyzer with fatal infos..."
+	dart analyze --fatal-infos
+
+format:
+	dart format lib test
+
+clean:
+	$(FLUTTER) clean
+
+build-web:
+	$(FLUTTER) build web $(DF_ARGS)
+
+## Release builds (pass SUPABASE_URL/SUPABASE_ANON_KEY if needed)
+build-macos:
+	$(FLUTTER) build macos --release $(DF_ARGS)
+
+build-ios:
+	# Builds without code signing for portability; configure signing in Xcode if needed.
+	$(FLUTTER) build ios --release --no-codesign $(DF_ARGS)
+
+build-ipa:
+	$(FLUTTER) build ipa --release $(DF_ARGS)
+
+build-ipa-nocodesign:
+	$(FLUTTER) build ipa --release --no-codesign $(DF_ARGS)
+
+build-android:
+	$(FLUTTER) clean
+	node scripts/patch_isar.js
+	$(FLUTTER) build apk --release $(DF_ARGS)
+
+build-windows:
+	node scripts/patch_flutter_tts_windows_cmake.js
+	$(FLUTTER) build windows --release $(DF_ARGS)
+
+build-linux:
+	$(FLUTTER) build linux --release $(DF_ARGS)
+
+serve-web-build:
+	python3 -m http.server $(WEB_PORT) --directory build/web
+
+env-print:
+	@echo "SUPABASE_URL=$(SUPABASE_URL)"
+	@echo "SUPABASE_ANON_KEY=$(SUPABASE_ANON_KEY)"
+	@echo "DF_ARGS=$(DF_ARGS)"
+
+install-hooks:
+	git config core.hooksPath .githooks
+	ROOT_DIR=$$(git rev-parse --show-toplevel); \
+	chmod +x $$ROOT_DIR/.githooks/pre-commit || true

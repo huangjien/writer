@@ -1,0 +1,349 @@
+00:00 +0: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/chapter_reader_autonext_test.dart
+00:00 +0: /Users/huangjien/workspace/authorconsole/novel_reader/test/chapter_reader_autonext_test.dart: RBK-004 Chapter Auto-Next ChapterReader_autonext_chapter
+00:00 +0 ~1: /Users/huangjien/workspace/authorconsole/novel_reader/test/chapter_reader_autonext_test.dart: RBK-004 Chapter Auto-Next ChapterReader_autonext_progress_continuation
+00:00 +0 ~2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_shortcuts_play_toggle_test.dart
+00:00 +0 ~2: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_shortcuts_play_toggle_test.dart: RBK-002/003 Keyboard Space toggles Play/Stop Cozy_layout_space_toggles_play_stop
+[Reader] initState chapterId=c2 autoStartTts=false initialTtsIndex=0 currentIdx=1
+[ReaderBar] width=600.0 isRegular=false isDesktop=false kIsWeb=false showShortcutHints=false
+[ReaderBar] width=600.0 isRegular=false isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] Speak pressed
+[Reader] _startTts start
+[Reader] setLanguage locale=en-US
+[ReaderBar] width=600.0 isRegular=false isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:00 +1 ~2: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_shortcuts_play_toggle_test.dart: RBK-002/003 Keyboard Space toggles Play/Stop Regular_layout_space_toggles_play_stop
+[Reader] initState chapterId=c2 autoStartTts=false initialTtsIndex=0 currentIdx=1
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] Speak pressed
+[Reader] _startTts start
+[Reader] setLanguage locale=en-US
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:00 +2 ~2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/library_determinate_ring_row_golden_test.dart
+00:01 +2 ~2: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_determinate_ring_row_golden_test.dart: Golden: Determinate ring row (en)
+00:01 +3 ~2: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_determinate_ring_row_golden_test.dart: Golden: Determinate ring row (zh)
+00:01 +4 ~2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_focus_ring_golden_test.dart
+00:02 +4 ~2: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_focus_ring_golden_test.dart: RBK-007-A Focus Ring Golden ReaderAccessibility_focusRing_golden_compact_200
+00:02 +4 ~3: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_focus_ring_golden_test.dart: RBK-007-A Focus Ring Golden ReaderAccessibility_focusRing_golden_regular_100
+00:02 +4 ~4: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/chapter_reader_stop_snackbar_test.dart
+00:02 +4 ~4: /Users/huangjien/workspace/authorconsole/novel_reader/test/chapter_reader_stop_snackbar_test.dart: Stop shows snackbar when Supabase disabled
+00:02 +4 ~5: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/library_progress_ring_test.dart
+00:02 +4 ~5: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_progress_ring_test.dart: Mock fallback: 0% ring with Not started when Supabase disabled
+00:03 +5 ~5: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_progress_ring_test.dart: Supabase-backed: shows progress ring and continue text
+00:03 +6 ~5: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/library_empty_test.dart
+00:03 +6 ~5: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_empty_test.dart: Library shows empty state when no novels found
+00:04 +7 ~5: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_bar_golden_test.dart
+00:04 +7 ~5: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_bar_golden_test.dart: RBK-001 Compact Layout ReaderBarCompact_layout_golden
+[Reader] initState chapterId=c2 autoStartTts=false initialTtsIndex=0 currentIdx=1
+[ReaderBar] width=470.0 isRegular=false isDesktop=false kIsWeb=false showShortcutHints=false
+[ReaderBar] width=470.0 isRegular=false isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:04 +8 ~5: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_bar_golden_test.dart: RBK-001 Compact Layout ReaderBarCompact_tapTargets_200
+00:04 +8 ~6: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_bar_golden_test.dart: RBK-001 Compact Layout ReaderBarCompact_accessibility_sr
+00:04 +8 ~7: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_bar_golden_test.dart: RBK-002 Cozy Layout ReaderBarCozy_labels_density
+[Reader] initState chapterId=c2 autoStartTts=false initialTtsIndex=0 currentIdx=1
+[ReaderBar] width=600.0 isRegular=false isDesktop=false kIsWeb=false showShortcutHints=false
+[ReaderBar] width=600.0 isRegular=false isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:04 +9 ~7: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_bar_golden_test.dart: RBK-002 Cozy Layout ReaderBarCozy_shortcuts_space_r_v
+00:04 +9 ~8: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_bar_golden_test.dart: RBK-003 Regular Layout ReaderBarRegular_layout_golden
+[Reader] initState chapterId=c2 autoStartTts=false initialTtsIndex=0 currentIdx=1
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:04 +10 ~8: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_bar_golden_test.dart: RBK-003 Regular Layout ReaderBarRegular_progress_percentage
+[Reader] initState chapterId=c2 autoStartTts=false initialTtsIndex=0 currentIdx=1
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:04 +11 ~8: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/high_contrast_accessibility_test.dart
+00:05 +11 ~8: /Users/huangjien/workspace/authorconsole/novel_reader/test/high_contrast_accessibility_test.dart: RBK-008-A High Contrast Compliance HighContrast_200_contrast_aa
+00:05 +11 ~9: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/route_transitions_animation_test.dart
+00:05 +11 ~9: /Users/huangjien/workspace/authorconsole/novel_reader/test/route_transitions_animation_test.dart: FadeThrough animates on route change when motion allowed
+00:05 +12 ~9: /Users/huangjien/workspace/authorconsole/novel_reader/test/route_transitions_animation_test.dart: No animation on route change when Reduce Motion enabled
+00:05 +13 ~9: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/settings_tile_golden_test.dart
+00:06 +13 ~9: /Users/huangjien/workspace/authorconsole/novel_reader/test/settings_tile_golden_test.dart: Golden: Reduce Motion tile (en)
+[Settings] initState
+[Settings] Loading voices and locales...
+Error initializing TTS: MissingPluginException(No implementation found for method awaitSpeakCompletion on channel flutter_tts)
+[Settings] getVoices error: MissingPluginException(No implementation found for method getVoices on channel flutter_tts)
+#0      MethodChannel._invokeMethod (package:flutter/src/services/platform_channel.dart:365:7)
+<asynchronous suspension>
+#1      FlutterTts.getVoices (package:flutter_tts/flutter_tts.dart:522:20)
+<asynchronous suspension>
+#2      _SettingsScreenState._loadVoices (package:novel_reader/features/settings/settings_screen.dart:62:19)
+<asynchronous suspension>
+
+00:06 +14 ~9: /Users/huangjien/workspace/authorconsole/novel_reader/test/settings_tile_golden_test.dart: Golden: Reduce Motion tile (zh)
+[Settings] initState
+[Settings] Loading voices and locales...
+Error initializing TTS: MissingPluginException(No implementation found for method awaitSpeakCompletion on channel flutter_tts)
+[Settings] getVoices error: MissingPluginException(No implementation found for method getVoices on channel flutter_tts)
+#0      MethodChannel._invokeMethod (package:flutter/src/services/platform_channel.dart:365:7)
+<asynchronous suspension>
+#1      FlutterTts.getVoices (package:flutter_tts/flutter_tts.dart:522:20)
+<asynchronous suspension>
+#2      _SettingsScreenState._loadVoices (package:novel_reader/features/settings/settings_screen.dart:62:19)
+<asynchronous suspension>
+
+00:06 +15 ~9: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_accessibility_test.dart
+00:07 +15 ~9: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_accessibility_test.dart: RBK-007-A Screen Reader Announcements ReaderAccessibility_screenReader_roles_labels
+00:07 +15 ~10: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_accessibility_test.dart: RBK-007-A Screen Reader Announcements ReaderAccessibility_focus_order_stable
+00:07 +15 ~11: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/tts_locale_mapping_test.dart
+00:07 +15 ~11: /Users/huangjien/workspace/authorconsole/novel_reader/test/tts_locale_mapping_test.dart: Maps en locale to TTS en-US when no explicit voice
+[Reader] initState chapterId=c1 autoStartTts=false initialTtsIndex=0 currentIdx=0
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:07 +16 ~11: /Users/huangjien/workspace/authorconsole/novel_reader/test/tts_locale_mapping_test.dart: Maps zh locale to TTS zh-CN when no explicit voice
+[Reader] initState chapterId=c1 autoStartTts=false initialTtsIndex=0 currentIdx=0
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:07 +17 ~11: /Users/huangjien/workspace/authorconsole/novel_reader/test/tts_locale_mapping_test.dart: Changing appSettingsProvider from en to zh triggers TTS setLanguage zh-CN
+[Reader] initState chapterId=c1 autoStartTts=false initialTtsIndex=0 currentIdx=0
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:07 +18 ~11: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/library_determinate_ring_row_ellipsis_golden_test.dart
+00:08 +18 ~11: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_determinate_ring_row_ellipsis_golden_test.dart: Golden: Determinate ellipsis row (en)
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown while running async test code:
+Golden "goldens/library_determinate_ring_row_ellipsis_en.png": Pixel test failed, 3.09%, 2849px diff
+detected.
+Failure feedback can be found at /Users/huangjien/workspace/authorconsole/novel_reader/test/failures
+
+When the exception was thrown, this was the stack:
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+<asynchronous suspension>
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+<asynchronous suspension>
+<asynchronous suspension>
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:123:26)
+<asynchronous suspension>
+<asynchronous suspension>
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#6      main.<anonymous closure> (file:///Users/huangjien/workspace/authorconsole/novel_reader/test/library_determinate_ring_row_ellipsis_golden_test.dart:98:5)
+<asynchronous suspension>
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1059:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 3 frames from dart:async and package:stack_trace)
+
+The exception was caught asynchronously.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:08 +18 ~11 -1: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_determinate_ring_row_ellipsis_golden_test.dart: Golden: Determinate ellipsis row (en) [E]
+  Test failed. See exception logs above.
+  The test description was: Golden: Determinate ellipsis row (en)
+  
+00:08 +18 ~11 -1: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_determinate_ring_row_ellipsis_golden_test.dart: Golden: Determinate ellipsis row (zh)
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown while running async test code:
+Golden "goldens/library_determinate_ring_row_ellipsis_zh.png": Pixel test failed, 6.64%, 6115px diff
+detected.
+Failure feedback can be found at /Users/huangjien/workspace/authorconsole/novel_reader/test/failures
+
+When the exception was thrown, this was the stack:
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+<asynchronous suspension>
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+<asynchronous suspension>
+<asynchronous suspension>
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:123:26)
+<asynchronous suspension>
+<asynchronous suspension>
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#6      main.<anonymous closure> (file:///Users/huangjien/workspace/authorconsole/novel_reader/test/library_determinate_ring_row_ellipsis_golden_test.dart:177:5)
+<asynchronous suspension>
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1059:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 3 frames from dart:async and package:stack_trace)
+
+The exception was caught asynchronously.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:08 +18 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_determinate_ring_row_ellipsis_golden_test.dart: Golden: Determinate ellipsis row (zh) [E]
+  Test failed. See exception logs above.
+  The test description was: Golden: Determinate ellipsis row (zh)
+  
+00:08 +18 ~11 -2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_tooltip_contrast_test.dart
+00:09 +18 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_tooltip_contrast_test.dart: RBK-007-B Tooltip Non-Interference & Contrast ReaderAccessibility_tooltip_non_interference
+[Reader] initState chapterId=c2 autoStartTts=false initialTtsIndex=0 currentIdx=1
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:09 +19 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_tooltip_contrast_test.dart: RBK-007-B Tooltip Non-Interference & Contrast HighContrast_tooltip_aa
+00:09 +20 ~11 -2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/library_skeleton_loading_test.dart
+00:10 +20 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_skeleton_loading_test.dart: Library shows skeleton loading while fetching novels
+00:10 +21 ~11 -2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/library_nonempty_test.dart
+00:10 +21 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_nonempty_test.dart: Library shows list, search filter, and disabled download
+00:11 +22 ~11 -2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/library_delete_confirmation_test.dart
+00:11 +22 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_delete_confirmation_test.dart: When signed in, tapping remove shows confirm dialog and calls delete
+00:11 +23 ~11 -2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/tts_chunker_test.dart
+00:12 +23 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/tts_chunker_test.dart: chunkText returns empty list for empty or whitespace
+00:12 +24 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/tts_chunker_test.dart: chunkText splits on sentence boundaries and respects maxLen
+00:12 +25 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/tts_chunker_test.dart: chunkText handles very long single sentence exceeding maxLen
+00:12 +26 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/tts_chunker_test.dart: chunkText splits across punctuation: ! ? . and newlines
+00:12 +27 ~11 -2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/widget_test.dart
+00:12 +27 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/widget_test.dart: App smoke test: shows Library screen
+00:13 +28 ~11 -2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/page_transitions_theme_test.dart
+00:13 +28 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/page_transitions_theme_test.dart: Reduce Motion: uses NoAnimation PageTransitions builders
+00:13 +29 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/page_transitions_theme_test.dart: Motion allowed: uses FadeThrough PageTransitions builders
+00:13 +30 ~11 -2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/chapter_reader_localization_test.dart
+00:14 +30 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/chapter_reader_localization_test.dart: ChapterReaderScreen shows Speak label in zh locale
+[Reader] initState chapterId=c1 autoStartTts=false initialTtsIndex=0 currentIdx=0
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:14 +31 ~11 -2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_widget_test.dart
+00:14 +31 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_widget_test.dart: ChapterReaderScreen shows title, content, and Speak button
+[Reader] initState chapterId=ch-1 autoStartTts=false initialTtsIndex=0 currentIdx=0
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:15 +32 ~11 -2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/settings_ui_localization_test.dart
+00:15 +32 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/settings_ui_localization_test.dart: SettingsScreen shows localized Reduce Motion in en locale
+[Settings] initState
+[Settings] Loading voices and locales...
+00:16 +33 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/settings_ui_localization_test.dart: SettingsScreen shows localized Reduce Motion in zh locale
+[Settings] initState
+[Settings] Loading voices and locales...
+00:16 +34 ~11 -2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_navigation_test.dart
+00:16 +34 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_navigation_test.dart: ReaderScreen lists chapters and navigates to ChapterReaderScreen
+[Reader] initState chapterId=c1 autoStartTts=false initialTtsIndex=0 currentIdx=0
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:17 +35 ~11 -2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/library_sort_test.dart
+00:17 +35 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_sort_test.dart: Library sort by author changes order
+00:18 +36 ~11 -2: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/library_offline_ring_row_golden_test.dart
+00:18 +36 ~11 -2: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_offline_ring_row_golden_test.dart: Golden: Offline ring row (en)
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown while running async test code:
+Golden "goldens/library_offline_ring_row_en.png": Pixel test failed, 0.59%, 540px diff detected.
+Failure feedback can be found at /Users/huangjien/workspace/authorconsole/novel_reader/test/failures
+
+When the exception was thrown, this was the stack:
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+<asynchronous suspension>
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+<asynchronous suspension>
+<asynchronous suspension>
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:123:26)
+<asynchronous suspension>
+<asynchronous suspension>
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#6      main.<anonymous closure> (file:///Users/huangjien/workspace/authorconsole/novel_reader/test/library_offline_ring_row_golden_test.dart:38:5)
+<asynchronous suspension>
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1059:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 3 frames from dart:async and package:stack_trace)
+
+The exception was caught asynchronously.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:19 +36 ~11 -3: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_offline_ring_row_golden_test.dart: Golden: Offline ring row (en) [E]
+  Test failed. See exception logs above.
+  The test description was: Golden: Offline ring row (en)
+  
+00:19 +36 ~11 -3: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_offline_ring_row_golden_test.dart: Golden: Offline ring row (zh)
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown while running async test code:
+Golden "goldens/library_offline_ring_row_zh.png": Pixel test failed, 0.59%, 540px diff detected.
+Failure feedback can be found at /Users/huangjien/workspace/authorconsole/novel_reader/test/failures
+
+When the exception was thrown, this was the stack:
+#0      LocalFileComparator.compare (package:flutter_test/src/_goldens_io.dart:108:5)
+<asynchronous suspension>
+#1      MatchesGoldenFile.matchAsync.<anonymous closure> (package:flutter_test/src/_matchers_io.dart:124:32)
+<asynchronous suspension>
+<asynchronous suspension>
+#3      _expect.<anonymous closure> (package:matcher/src/expect/expect.dart:123:26)
+<asynchronous suspension>
+<asynchronous suspension>
+#5      expectLater.<anonymous closure> (package:flutter_test/src/widget_tester.dart:508:19)
+<asynchronous suspension>
+#6      main.<anonymous closure> (file:///Users/huangjien/workspace/authorconsole/novel_reader/test/library_offline_ring_row_golden_test.dart:70:5)
+<asynchronous suspension>
+#7      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#8      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1059:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 3 frames from dart:async and package:stack_trace)
+
+The exception was caught asynchronously.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:19 +36 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_offline_ring_row_golden_test.dart: Golden: Offline ring row (zh) [E]
+  Test failed. See exception logs above.
+  The test description was: Golden: Offline ring row (zh)
+  
+00:19 +36 ~11 -4: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/chapter_reader_progress_save_authenticated_test.dart
+00:19 +36 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/chapter_reader_progress_save_authenticated_test.dart: Supabase enabled and authenticated user: Stop triggers progress save
+00:19 +37 ~11 -4: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/progress_controller_test.dart
+00:19 +37 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/progress_controller_test.dart: ProgressController.save returns true on success
+00:19 +38 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/progress_controller_test.dart: ProgressController.save returns false on failure
+00:19 +39 ~11 -4: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/localizations_reduce_motion_test.dart
+00:20 +39 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/localizations_reduce_motion_test.dart: AppLocalizations reduceMotion keys English locale has reduceMotion keys
+00:20 +40 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/localizations_reduce_motion_test.dart: AppLocalizations reduceMotion keys Chinese locale has reduceMotion keys
+00:20 +41 ~11 -4: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/library_reduce_motion_semantics_test.dart
+00:20 +41 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_reduce_motion_semantics_test.dart: Progress ring uses zero-duration animation when reduce motion
+00:21 +42 ~11 -4: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/chapter_reader_progress_save_test.dart
+00:21 +42 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/chapter_reader_progress_save_test.dart: Supabase enabled but unauthenticated user: Stop does not call save
+00:21 +43 ~11 -4: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/library_continue_button_visibility_test.dart
+00:21 +43 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_continue_button_visibility_test.dart: Library Continue button hidden when no progress (en)
+00:22 +44 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_continue_button_visibility_test.dart: Library Continue button visible when progress present (en)
+00:22 +45 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_continue_button_visibility_test.dart: Library Continue button hidden when no progress (zh)
+00:22 +46 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_continue_button_visibility_test.dart: Library Continue button visible when progress present (zh)
+00:22 +47 ~11 -4: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/reduce_motion_reader_bar_test.dart
+00:22 +47 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/reduce_motion_reader_bar_test.dart: Reader bar AnimatedSwitcher honors Reduce Motion
+[Reader] initState chapterId=c1 autoStartTts=false initialTtsIndex=0 currentIdx=0
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:23 +48 ~11 -4: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_shortcuts_hint_visibility_test.dart
+00:23 +48 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_shortcuts_hint_visibility_test.dart: RBK-003 Shortcut hint visibility Regular desktop shows Rate (R) and Voice (V) labels
+[Reader] initState chapterId=c2 autoStartTts=false initialTtsIndex=0 currentIdx=1
+[ReaderBar] width=800.0 isRegular=true isDesktop=true kIsWeb=false showShortcutHints=true
+[ReaderBar] width=800.0 isRegular=true isDesktop=true kIsWeb=false showShortcutHints=true
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:24 +49 ~11 -4: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/tts_settings_test.dart
+00:24 +49 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/tts_settings_test.dart: TtsSettingsNotifier initialize loads defaults when no prefs set
+00:24 +50 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/tts_settings_test.dart: TtsSettingsNotifier initialize loads persisted values
+00:24 +51 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/tts_settings_test.dart: TtsSettingsNotifier setters update state and persist to SharedPreferences
+00:24 +52 ~11 -4: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/settings_reduce_motion_toggle_test.dart
+00:24 +52 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/settings_reduce_motion_toggle_test.dart: Toggling Reduce Motion switch updates provider state
+[Settings] initState
+[Settings] Loading voices and locales...
+00:25 +53 ~11 -4: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_paragraph_highlight_test.dart
+00:25 +53 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/reader_paragraph_highlight_test.dart: Reader paragraph highlighting follows TTS index Highlights first then second paragraph by initialTtsIndex
+[Reader] initState chapterId=c1 autoStartTts=false initialTtsIndex=0 currentIdx=0
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:26 +54 ~11 -4: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/library_remove_undo_test.dart
+00:26 +54 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_remove_undo_test.dart: Remove hides item and undo restores it (offline)
+00:27 +55 ~11 -4: loading /Users/huangjien/workspace/authorconsole/novel_reader/test/library_offline_progress_persistence_e2e_test.dart
+00:27 +55 ~11 -4: /Users/huangjien/workspace/authorconsole/novel_reader/test/library_offline_progress_persistence_e2e_test.dart: Offline: Stop shows not-saved snackbar and Library remains Not started
+[Reader] initState chapterId=chap-001-01 autoStartTts=false initialTtsIndex=0 currentIdx=0
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] Speak pressed
+[Reader] _startTts start
+[Reader] setLanguage locale=en-US
+[Reader] _startTts startIndex=0 chunks=1
+[Reader] speaking first chunk index=0 len=74
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] Stop pressed
+[ReaderBar] width=800.0 isRegular=true isDesktop=false kIsWeb=false showShortcutHints=false
+[Reader] dispose: cancelling autoStartRetry and stopping TTS
+00:28 +56 ~11 -4: Some tests failed.

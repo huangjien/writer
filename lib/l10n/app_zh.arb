@@ -1,0 +1,231 @@
+{
+  "helloWorld": "你好世界！",
+  "settings": "设置",
+  "appTitle": "写手",
+  "about": "关于",
+  "aboutDescription": "阅读和管理小说，支持 Supabase 云存储、离线模式和文本转语音播放。使用“文库”浏览、搜索并打开章节；登录以同步进度；在设置中调整主题、排版和动效。",
+  "aboutUsage": "用法",
+  "aboutUsageList": "• 文库：搜索并打开小说\n• 阅读器：浏览章节、切换 TTS\n• 设置：主题、排版和偏好\n• 登录：通过 Supabase 启用云同步",
+  "version": "版本",
+  "appLanguage": "应用语言",
+  "english": "英语",
+  "chinese": "中文",
+  "supabaseIntegrationInitialized": "Supabase 集成已初始化",
+  "configureEnvironment": "请配置您的环境变量以使用 Supabase",
+  "signedInAs": "已登录为 {email}",
+  "@signedInAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "guest": "访客",
+  "notSignedIn": "未登录",
+  "signIn": "登录",
+  "continueLabel": "继续",
+  "reload": "重新加载",
+  "signInToSync": "登录以在设备间同步进度。",
+  "currentProgress": "当前进度",
+  "loadingProgress": "正在加载进度...",
+  "recentlyRead": "最近阅读",
+  "noSupabase": "此版本未启用 Supabase。",
+  "errorLoadingProgress": "加载进度时出错",
+  "noProgress": "未找到进度",
+  "errorLoadingNovels": "加载小说时出错",
+  "loadingNovels": "正在加载小说…",
+  "titleLabel": "标题",
+  "authorLabel": "作者",
+  "noNovelsFound": "未找到小说。",
+  "myNovels": "我的小说",
+  "createNovel": "创建小说",
+  "create": "创建",
+  "errorLoadingChapters": "加载章节时出错",
+  "loadingChapter": "正在加载章节…",
+  "notStarted": "尚未开始",
+  "unknownNovel": "未知小说",
+  "unknownChapter": "未知章节",
+  "chapter": "章节",
+  "novel": "小说",
+  "chapterTitle": "章节标题",
+  "scrollOffset": "滚动偏移",
+  "ttsIndex": "TTS 索引",
+  "speechRate": "语速",
+  "volume": "音量",
+  "defaultTTSVoice": "默认 TTS 语音",
+  "defaultVoiceUpdated": "默认语音已更新",
+  "defaultLanguageSet": "默认语言已设置",
+  "searchByTitle": "按标题搜索…",
+  "chooseLanguage": "选择语言",
+  "email": "邮箱",
+  "password": "密码",
+  "signInWithGoogle": "使用 Google 登录",
+  "signInWithApple": "使用 Apple 登录",
+  "testVoice": "测试语音",
+  "reloadVoices": "重新加载语音",
+  "signOut": "退出登录",
+  "signedOut": "已退出登录",
+  "appSettings": "应用设置",
+  "supabaseSettings": "Supabase 设置",
+  "supabaseNotEnabled": "Supabase 未启用",
+  "supabaseNotEnabledDescription": "此版本未配置 Supabase。",
+  "authDisabledInBuild": "未配置 Supabase。本版本已禁用认证。",
+  "fetchFromSupabase": "从 Supabase 获取",
+  "fetchFromSupabaseDescription": "从 Supabase 获取最新的小说和进度。",
+  "confirmFetch": "确认获取",
+  "confirmFetchDescription": "这将覆盖您的本地数据。您确定吗？",
+  "cancel": "取消",
+  "fetch": "获取",
+  "downloadChapters": "下载章节",
+  "modeSupabase": "模式：Supabase",
+  "modeMockData": "模式：模拟数据",
+  "continueAtChapter": "继续阅读章节 • {title}",
+  "@continueAtChapter": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "error": "错误",
+  "ttsSettings": "TTS 设置",
+  "enableTTS": "启用 TTS",
+  "ttsVoice": "TTS 语音",
+  "loadingVoices": "正在加载语音...",
+  "selectVoice": "选择语音",
+  "ttsLanguage": "TTS 语言",
+  "loadingLanguages": "正在加载语言...",
+  "selectLanguage": "选择语言",
+  "ttsSpeechRate": "语速",
+  "ttsSpeechVolume": "音量",
+  "ttsSpeechPitch": "音高",
+  "novelsAndProgress": "小说和进度",
+  "novels": "小说",
+  "progress": "进度",
+  "novelsAndProgressSummary": "小说: {count}, 进度: {progress}",
+  "@novelsAndProgressSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "progress": {
+        "type": "String"
+      }
+    }
+  }
+  ,
+  "chapters": "章节",
+  "noChaptersFound": "未找到章节。",
+  "indexLabel": "第 {index} 章",
+  "@indexLabel": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "stopTTS": "停止 TTS",
+  "speak": "朗读",
+  "supabaseProgressNotSaved": "未配置 Supabase；进度未保存",
+  "progressSaved": "进度已保存",
+  "errorSavingProgress": "保存进度时出错",
+  "autoplayBlocked": "自动播放被阻止。点击“继续”开始。",
+  "autoplayBlockedInline": "浏览器阻止了自动播放。点击“继续”开始阅读。",
+  "reachedLastChapter": "已到最后一章",
+  "ttsError": "TTS 错误：{msg}",
+  "@ttsError": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "themeMode": "主题模式",
+  "system": "跟随系统",
+  "light": "浅色",
+  "dark": "深色",
+  "colorTheme": "配色主题",
+  "themeLight": "浅色",
+  "themeSepia": "仿古纸",
+  "themeHighContrast": "高对比"
+  ,
+  "themeDefault": "默认",
+  "themeSolarized": "Solarized",
+  "themeSolarizedTan": "Solarized Tan",
+  "themeNord": "Nord",
+  "themeNordFrost": "Nord Frost",
+  "themeNordSnowstorm": "Nord Snowstorm",
+  "separateDarkPalette": "使用独立深色配色",
+  "lightPalette": "浅色配色",
+  "darkPalette": "深色配色",
+  "typographyPreset": "阅读排版",
+  "typographyComfortable": "舒适",
+  "typographyCompact": "紧凑",
+  "typographySerifLike": "仿衬线"
+  ,
+  "fontPack": "字体方案",
+  "separateTypographyPresets": "为浅色/深色使用独立排版",
+  "typographyLight": "浅色排版",
+  "typographyDark": "深色排版",
+  "readerBundles": "阅读主题预设",
+  "bundleNordCalm": "Nord Calm",
+  "bundleSolarizedFocus": "Solarized Focus",
+  "bundleHighContrastReadability": "高对比可读性"
+  ,
+  "customFontFamily": "自定义字体",
+  "commonFonts": "常见字体",
+  "readerFontSize": "阅读字体大小",
+  "textScale": "文字缩放",
+  "readerBackgroundDepth": "阅读背景深度",
+  "depthLow": "浅",
+  "depthMedium": "中",
+  "depthHigh": "深",
+  "select": "选择",
+  "clear": "清除",
+  "reduceMotion": "减少动效",
+  "reduceMotionDescription": "为舒适体验尽量减少动画"
+  ,
+  "gesturesEnabled": "启用手势",
+  "gesturesEnabledDescription": "在阅读器中启用滑动和点击手势",
+  "readerSwipeSensitivity": "阅读器滑动灵敏度",
+  "readerSwipeSensitivityDescription": "调整用于章节导航的最小滑动速度",
+  "remove": "移除",
+  "removedFromLibrary": "已从文库中移除",
+  "undo": "撤销",
+  "confirmDelete": "确认删除",
+  "confirmDeleteDescription": "将从 Supabase 删除“{title}”。是否确认？",
+  "@confirmDeleteDescription": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "delete": "删除"
+  ,
+  "reachedFirstChapter": "已到第一章",
+  "previousChapter": "上一章",
+  "nextChapter": "下一章",
+  "performanceSettings": "性能设置",
+  "prefetchNextChapter": "预取下一章",
+  "prefetchNextChapterDescription": "预加载下一章以减少等待。",
+  "clearOfflineCache": "清除离线缓存",
+  "offlineCacheCleared": "离线缓存已清除"
+  ,
+  "edit": "编辑",
+  "exitEdit": "退出编辑",
+  "enterEditMode": "进入编辑模式",
+  "exitEditMode": "退出编辑模式",
+  "chapterContent": "章节内容",
+  "save": "保存",
+  "createNextChapter": "创建下一章",
+  "enterChapterTitle": "输入章节标题",
+  "enterChapterContent": "输入章节内容"
+  ,
+  "discardChangesTitle": "放弃更改？",
+  "discardChangesMessage": "你有未保存的更改。是否要放弃？",
+  "keepEditing": "继续编辑",
+  "discardChanges": "放弃更改",
+  "saveAndExit": "保存并退出",
+  "descriptionLabel": "描述",
+  "coverUrlLabel": "封面链接",
+  "invalidCoverUrl": "请输入有效的 http(s) 链接且不包含空格。"
+}

@@ -1,0 +1,558 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Chinese (`zh`).
+class AppLocalizationsZh extends AppLocalizations {
+  AppLocalizationsZh([String locale = 'zh']) : super(locale);
+
+  @override
+  String get helloWorld => '你好世界！';
+
+  @override
+  String get settings => '设置';
+
+  @override
+  String get appTitle => '写手';
+
+  @override
+  String get about => '关于';
+
+  @override
+  String get aboutDescription =>
+      '阅读和管理小说，支持 Supabase 云存储、离线模式和文本转语音播放。使用“文库”浏览、搜索并打开章节；登录以同步进度；在设置中调整主题、排版和动效。';
+
+  @override
+  String get aboutUsage => '用法';
+
+  @override
+  String get aboutUsageList =>
+      '• 文库：搜索并打开小说\n• 阅读器：浏览章节、切换 TTS\n• 设置：主题、排版和偏好\n• 登录：通过 Supabase 启用云同步';
+
+  @override
+  String get version => '版本';
+
+  @override
+  String get appLanguage => '应用语言';
+
+  @override
+  String get english => '英语';
+
+  @override
+  String get chinese => '中文';
+
+  @override
+  String get supabaseIntegrationInitialized => 'Supabase 集成已初始化';
+
+  @override
+  String get configureEnvironment => '请配置您的环境变量以使用 Supabase';
+
+  @override
+  String signedInAs(String email) {
+    return '已登录为 $email';
+  }
+
+  @override
+  String get guest => '访客';
+
+  @override
+  String get notSignedIn => '未登录';
+
+  @override
+  String get signIn => '登录';
+
+  @override
+  String get continueLabel => '继续';
+
+  @override
+  String get reload => '重新加载';
+
+  @override
+  String get signInToSync => '登录以在设备间同步进度。';
+
+  @override
+  String get currentProgress => '当前进度';
+
+  @override
+  String get loadingProgress => '正在加载进度...';
+
+  @override
+  String get recentlyRead => '最近阅读';
+
+  @override
+  String get noSupabase => '此版本未启用 Supabase。';
+
+  @override
+  String get errorLoadingProgress => '加载进度时出错';
+
+  @override
+  String get noProgress => '未找到进度';
+
+  @override
+  String get errorLoadingNovels => '加载小说时出错';
+
+  @override
+  String get loadingNovels => '正在加载小说…';
+
+  @override
+  String get titleLabel => '标题';
+
+  @override
+  String get authorLabel => '作者';
+
+  @override
+  String get noNovelsFound => '未找到小说。';
+
+  @override
+  String get myNovels => '我的小说';
+
+  @override
+  String get createNovel => '创建小说';
+
+  @override
+  String get create => '创建';
+
+  @override
+  String get errorLoadingChapters => '加载章节时出错';
+
+  @override
+  String get loadingChapter => '正在加载章节…';
+
+  @override
+  String get notStarted => '尚未开始';
+
+  @override
+  String get unknownNovel => '未知小说';
+
+  @override
+  String get unknownChapter => '未知章节';
+
+  @override
+  String get chapter => '章节';
+
+  @override
+  String get novel => '小说';
+
+  @override
+  String get chapterTitle => '章节标题';
+
+  @override
+  String get scrollOffset => '滚动偏移';
+
+  @override
+  String get ttsIndex => 'TTS 索引';
+
+  @override
+  String get speechRate => '语速';
+
+  @override
+  String get volume => '音量';
+
+  @override
+  String get defaultTTSVoice => '默认 TTS 语音';
+
+  @override
+  String get defaultVoiceUpdated => '默认语音已更新';
+
+  @override
+  String get defaultLanguageSet => '默认语言已设置';
+
+  @override
+  String get searchByTitle => '按标题搜索…';
+
+  @override
+  String get chooseLanguage => '选择语言';
+
+  @override
+  String get email => '邮箱';
+
+  @override
+  String get password => '密码';
+
+  @override
+  String get signInWithGoogle => '使用 Google 登录';
+
+  @override
+  String get signInWithApple => '使用 Apple 登录';
+
+  @override
+  String get testVoice => '测试语音';
+
+  @override
+  String get reloadVoices => '重新加载语音';
+
+  @override
+  String get signOut => '退出登录';
+
+  @override
+  String get signedOut => '已退出登录';
+
+  @override
+  String get appSettings => '应用设置';
+
+  @override
+  String get supabaseSettings => 'Supabase 设置';
+
+  @override
+  String get supabaseNotEnabled => 'Supabase 未启用';
+
+  @override
+  String get supabaseNotEnabledDescription => '此版本未配置 Supabase。';
+
+  @override
+  String get authDisabledInBuild => '未配置 Supabase。本版本已禁用认证。';
+
+  @override
+  String get fetchFromSupabase => '从 Supabase 获取';
+
+  @override
+  String get fetchFromSupabaseDescription => '从 Supabase 获取最新的小说和进度。';
+
+  @override
+  String get confirmFetch => '确认获取';
+
+  @override
+  String get confirmFetchDescription => '这将覆盖您的本地数据。您确定吗？';
+
+  @override
+  String get cancel => '取消';
+
+  @override
+  String get fetch => '获取';
+
+  @override
+  String get downloadChapters => '下载章节';
+
+  @override
+  String get modeSupabase => '模式：Supabase';
+
+  @override
+  String get modeMockData => '模式：模拟数据';
+
+  @override
+  String continueAtChapter(String title) {
+    return '继续阅读章节 • $title';
+  }
+
+  @override
+  String get error => '错误';
+
+  @override
+  String get ttsSettings => 'TTS 设置';
+
+  @override
+  String get enableTTS => '启用 TTS';
+
+  @override
+  String get ttsVoice => 'TTS 语音';
+
+  @override
+  String get loadingVoices => '正在加载语音...';
+
+  @override
+  String get selectVoice => '选择语音';
+
+  @override
+  String get ttsLanguage => 'TTS 语言';
+
+  @override
+  String get loadingLanguages => '正在加载语言...';
+
+  @override
+  String get selectLanguage => '选择语言';
+
+  @override
+  String get ttsSpeechRate => '语速';
+
+  @override
+  String get ttsSpeechVolume => '音量';
+
+  @override
+  String get ttsSpeechPitch => '音高';
+
+  @override
+  String get novelsAndProgress => '小说和进度';
+
+  @override
+  String get novels => '小说';
+
+  @override
+  String get progress => '进度';
+
+  @override
+  String novelsAndProgressSummary(int count, String progress) {
+    return '小说: $count, 进度: $progress';
+  }
+
+  @override
+  String get chapters => '章节';
+
+  @override
+  String get noChaptersFound => '未找到章节。';
+
+  @override
+  String indexLabel(int index) {
+    return '第 $index 章';
+  }
+
+  @override
+  String get stopTTS => '停止 TTS';
+
+  @override
+  String get speak => '朗读';
+
+  @override
+  String get supabaseProgressNotSaved => '未配置 Supabase；进度未保存';
+
+  @override
+  String get progressSaved => '进度已保存';
+
+  @override
+  String get errorSavingProgress => '保存进度时出错';
+
+  @override
+  String get autoplayBlocked => '自动播放被阻止。点击“继续”开始。';
+
+  @override
+  String get autoplayBlockedInline => '浏览器阻止了自动播放。点击“继续”开始阅读。';
+
+  @override
+  String get reachedLastChapter => '已到最后一章';
+
+  @override
+  String ttsError(String msg) {
+    return 'TTS 错误：$msg';
+  }
+
+  @override
+  String get themeMode => '主题模式';
+
+  @override
+  String get system => '跟随系统';
+
+  @override
+  String get light => '浅色';
+
+  @override
+  String get dark => '深色';
+
+  @override
+  String get colorTheme => '配色主题';
+
+  @override
+  String get themeLight => '浅色';
+
+  @override
+  String get themeSepia => '仿古纸';
+
+  @override
+  String get themeHighContrast => '高对比';
+
+  @override
+  String get themeDefault => '默认';
+
+  @override
+  String get themeSolarized => 'Solarized';
+
+  @override
+  String get themeSolarizedTan => 'Solarized Tan';
+
+  @override
+  String get themeNord => 'Nord';
+
+  @override
+  String get themeNordFrost => 'Nord Frost';
+
+  @override
+  String get themeNordSnowstorm => 'Nord Snowstorm';
+
+  @override
+  String get separateDarkPalette => '使用独立深色配色';
+
+  @override
+  String get lightPalette => '浅色配色';
+
+  @override
+  String get darkPalette => '深色配色';
+
+  @override
+  String get typographyPreset => '阅读排版';
+
+  @override
+  String get typographyComfortable => '舒适';
+
+  @override
+  String get typographyCompact => '紧凑';
+
+  @override
+  String get typographySerifLike => '仿衬线';
+
+  @override
+  String get fontPack => '字体方案';
+
+  @override
+  String get separateTypographyPresets => '为浅色/深色使用独立排版';
+
+  @override
+  String get typographyLight => '浅色排版';
+
+  @override
+  String get typographyDark => '深色排版';
+
+  @override
+  String get readerBundles => '阅读主题预设';
+
+  @override
+  String get bundleNordCalm => 'Nord Calm';
+
+  @override
+  String get bundleSolarizedFocus => 'Solarized Focus';
+
+  @override
+  String get bundleHighContrastReadability => '高对比可读性';
+
+  @override
+  String get customFontFamily => '自定义字体';
+
+  @override
+  String get commonFonts => '常见字体';
+
+  @override
+  String get readerFontSize => '阅读字体大小';
+
+  @override
+  String get textScale => '文字缩放';
+
+  @override
+  String get readerBackgroundDepth => '阅读背景深度';
+
+  @override
+  String get depthLow => '浅';
+
+  @override
+  String get depthMedium => '中';
+
+  @override
+  String get depthHigh => '深';
+
+  @override
+  String get select => '选择';
+
+  @override
+  String get clear => '清除';
+
+  @override
+  String get reduceMotion => '减少动效';
+
+  @override
+  String get reduceMotionDescription => '为舒适体验尽量减少动画';
+
+  @override
+  String get gesturesEnabled => '启用手势';
+
+  @override
+  String get gesturesEnabledDescription => '在阅读器中启用滑动和点击手势';
+
+  @override
+  String get readerSwipeSensitivity => '阅读器滑动灵敏度';
+
+  @override
+  String get readerSwipeSensitivityDescription => '调整用于章节导航的最小滑动速度';
+
+  @override
+  String get remove => '移除';
+
+  @override
+  String get removedFromLibrary => '已从文库中移除';
+
+  @override
+  String get undo => '撤销';
+
+  @override
+  String get confirmDelete => '确认删除';
+
+  @override
+  String confirmDeleteDescription(String title) {
+    return '将从 Supabase 删除“$title”。是否确认？';
+  }
+
+  @override
+  String get delete => '删除';
+
+  @override
+  String get reachedFirstChapter => '已到第一章';
+
+  @override
+  String get previousChapter => '上一章';
+
+  @override
+  String get nextChapter => '下一章';
+
+  @override
+  String get performanceSettings => '性能设置';
+
+  @override
+  String get prefetchNextChapter => '预取下一章';
+
+  @override
+  String get prefetchNextChapterDescription => '预加载下一章以减少等待。';
+
+  @override
+  String get clearOfflineCache => '清除离线缓存';
+
+  @override
+  String get offlineCacheCleared => '离线缓存已清除';
+
+  @override
+  String get edit => '编辑';
+
+  @override
+  String get exitEdit => '退出编辑';
+
+  @override
+  String get enterEditMode => '进入编辑模式';
+
+  @override
+  String get exitEditMode => '退出编辑模式';
+
+  @override
+  String get chapterContent => '章节内容';
+
+  @override
+  String get save => '保存';
+
+  @override
+  String get createNextChapter => '创建下一章';
+
+  @override
+  String get enterChapterTitle => '输入章节标题';
+
+  @override
+  String get enterChapterContent => '输入章节内容';
+
+  @override
+  String get discardChangesTitle => '放弃更改？';
+
+  @override
+  String get discardChangesMessage => '你有未保存的更改。是否要放弃？';
+
+  @override
+  String get keepEditing => '继续编辑';
+
+  @override
+  String get discardChanges => '放弃更改';
+
+  @override
+  String get saveAndExit => '保存并退出';
+
+  @override
+  String get descriptionLabel => '描述';
+
+  @override
+  String get coverUrlLabel => '封面链接';
+
+  @override
+  String get invalidCoverUrl => '请输入有效的 http(s) 链接且不包含空格。';
+}

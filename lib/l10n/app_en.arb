@@ -1,0 +1,231 @@
+{
+  "helloWorld": "Hello World!",
+  "settings": "Settings",
+  "appTitle": "Novel Reader",
+  "about": "About",
+  "aboutDescription": "Read and manage novels, with Supabase-backed storage, offline support, and Text-To-Speech playback. Use the Library to browse, search, and open chapters; sign in to sync progress; adjust settings for theme, typography, and motion.",
+  "aboutUsage": "Usage",
+  "aboutUsageList": "• Library: search and open novels\n• Reader: navigate chapters, toggle TTS\n• Settings: theme, typography, and preferences\n• Sign In: enable cloud sync via Supabase",
+  "version": "Version",
+  "appLanguage": "App Language",
+  "english": "English",
+  "chinese": "Chinese",
+  "supabaseIntegrationInitialized": "Supabase integration initialized",
+  "configureEnvironment": "Please configure your environment variables to use Supabase",
+  "signedInAs": "Signed in as {email}",
+  "@signedInAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "guest": "Guest",
+  "notSignedIn": "Not signed in",
+  "signIn": "Sign In",
+  "continueLabel": "Continue",
+  "reload": "Reload",
+  "signInToSync": "Sign in to sync progress across devices.",
+  "currentProgress": "Current Progress",
+  "loadingProgress": "Loading progress...",
+  "recentlyRead": "Recently Read",
+  "noSupabase": "Supabase is not enabled in this build.",
+  "errorLoadingProgress": "Error loading progress",
+  "noProgress": "No progress found",
+  "errorLoadingNovels": "Error loading novels",
+  "loadingNovels": "Loading novels…",
+  "titleLabel": "Title",
+  "authorLabel": "Author",
+  "noNovelsFound": "No novels found.",
+  "myNovels": "My Novels",
+  "createNovel": "Create Novel",
+  "create": "Create",
+  "errorLoadingChapters": "Error loading chapters",
+  "loadingChapter": "Loading chapter…",
+  "notStarted": "Not started",
+  "unknownNovel": "Unknown Novel",
+  "unknownChapter": "Unknown chapter",
+  "chapter": "Chapter",
+  "novel": "Novel",
+  "chapterTitle": "Chapter Title",
+  "scrollOffset": "Scroll Offset",
+  "ttsIndex": "TTS Index",
+  "speechRate": "Speech Rate",
+  "volume": "Volume",
+  "defaultTTSVoice": "Default TTS Voice",
+  "defaultVoiceUpdated": "Default voice updated",
+  "defaultLanguageSet": "Default language set",
+  "searchByTitle": "Search by title…",
+  "chooseLanguage": "Choose Language",
+  "email": "Email",
+  "password": "Password",
+  "signInWithGoogle": "Sign in with Google",
+  "signInWithApple": "Sign in with Apple",
+  "testVoice": "Test Voice",
+  "reloadVoices": "Reload Voices",
+  "signOut": "Sign Out",
+  "signedOut": "Signed Out",
+  "appSettings": "App Settings",
+  "supabaseSettings": "Supabase Settings",
+  "supabaseNotEnabled": "Supabase not enabled",
+  "supabaseNotEnabledDescription": "Supabase is not configured for this build.",
+  "authDisabledInBuild": "Supabase is not configured. Authentication is disabled in this build.",
+  "fetchFromSupabase": "Fetch from Supabase",
+  "fetchFromSupabaseDescription": "Fetch latest novels and progress from Supabase.",
+  "confirmFetch": "Confirm Fetch",
+  "confirmFetchDescription": "This will overwrite your local data. Are you sure?",
+  "cancel": "Cancel",
+  "fetch": "Fetch",
+  "downloadChapters": "Download chapters",
+  "modeSupabase": "Mode: Supabase",
+  "modeMockData": "Mode: Mock data",
+  "continueAtChapter": "Continue at chapter • {title}",
+  "@continueAtChapter": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "error": "Error",
+  "ttsSettings": "TTS Settings",
+  "enableTTS": "Enable TTS",
+  "ttsVoice": "TTS Voice",
+  "loadingVoices": "Loading voices...",
+  "selectVoice": "Select a voice",
+  "ttsLanguage": "TTS Language",
+  "loadingLanguages": "Loading languages...",
+  "selectLanguage": "Select a language",
+  "ttsSpeechRate": "Speech Rate",
+  "ttsSpeechVolume": "Speech Volume",
+  "ttsSpeechPitch": "Speech Pitch",
+  "novelsAndProgress": "Novels and Progress",
+  "novels": "Novels",
+  "progress": "Progress",
+  "novelsAndProgressSummary": "Novels: {count}, Progress: {progress}",
+  "@novelsAndProgressSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "progress": {
+        "type": "String"
+      }
+    }
+  }
+  ,
+  "chapters": "Chapters",
+  "noChaptersFound": "No chapters found.",
+  "indexLabel": "Index {index}",
+  "@indexLabel": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "stopTTS": "Stop TTS",
+  "speak": "Speak",
+  "supabaseProgressNotSaved": "Supabase not configured; progress not saved",
+  "progressSaved": "Progress saved",
+  "errorSavingProgress": "Error saving progress",
+  "autoplayBlocked": "Auto-play blocked. Tap Continue to start.",
+  "autoplayBlockedInline": "Auto-play is blocked by the browser. Tap Continue to start reading.",
+  "reachedLastChapter": "Reached last chapter",
+  "ttsError": "TTS error: {msg}",
+  "@ttsError": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "themeMode": "Theme Mode",
+  "system": "System",
+  "light": "Light",
+  "dark": "Dark",
+  "colorTheme": "Color Theme",
+  "themeLight": "Light",
+  "themeSepia": "Sepia",
+  "themeHighContrast": "High Contrast"
+  ,
+  "themeDefault": "Default",
+  "themeSolarized": "Solarized",
+  "themeSolarizedTan": "Solarized Tan",
+  "themeNord": "Nord",
+  "themeNordFrost": "Nord Frost",
+  "themeNordSnowstorm": "Nord Snowstorm",
+  "separateDarkPalette": "Use separate dark palette",
+  "lightPalette": "Light Palette",
+  "darkPalette": "Dark Palette",
+  "typographyPreset": "Typography Preset",
+  "typographyComfortable": "Comfortable",
+  "typographyCompact": "Compact",
+  "typographySerifLike": "Serif-like"
+  ,
+  "fontPack": "Font Pack",
+  "separateTypographyPresets": "Use separate typography for light/dark",
+  "typographyLight": "Light Typography",
+  "typographyDark": "Dark Typography",
+  "readerBundles": "Reader Theme Bundles",
+  "bundleNordCalm": "Nord Calm",
+  "bundleSolarizedFocus": "Solarized Focus",
+  "bundleHighContrastReadability": "High Contrast Readability"
+  ,
+  "customFontFamily": "Custom Font Family",
+  "commonFonts": "Common Fonts",
+  "readerFontSize": "Reader Font Size",
+  "textScale": "Text Scale",
+  "readerBackgroundDepth": "Reader Background Depth",
+  "depthLow": "Low",
+  "depthMedium": "Medium",
+  "depthHigh": "High",
+  "select": "Select",
+  "clear": "Clear",
+  "reduceMotion": "Reduce motion",
+  "reduceMotionDescription": "Minimize animations for motion comfort"
+  ,
+  "gesturesEnabled": "Enable touch gestures",
+  "gesturesEnabledDescription": "Enable swipe and tap gestures in the reader",
+  "readerSwipeSensitivity": "Reader swipe sensitivity",
+  "readerSwipeSensitivityDescription": "Adjust minimum swipe velocity for chapter navigation",
+  "remove": "Remove",
+  "removedFromLibrary": "Removed from Library",
+  "undo": "Undo",
+  "confirmDelete": "Confirm Delete",
+  "confirmDeleteDescription": "This will delete '{title}' from Supabase. Are you sure?",
+  "@confirmDeleteDescription": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "delete": "Delete"
+  ,
+  "reachedFirstChapter": "Reached first chapter",
+  "previousChapter": "Previous chapter",
+  "nextChapter": "Next chapter",
+  "performanceSettings": "Performance Settings",
+  "prefetchNextChapter": "Prefetch next chapter",
+  "prefetchNextChapterDescription": "Preload the next chapter to reduce waiting.",
+  "clearOfflineCache": "Clear offline cache",
+  "offlineCacheCleared": "Offline cache cleared"
+  ,
+  "edit": "Edit",
+  "exitEdit": "Exit Edit",
+  "enterEditMode": "Enter Edit Mode",
+  "exitEditMode": "Exit Edit Mode",
+  "chapterContent": "Chapter Content",
+  "save": "Save",
+  "createNextChapter": "Create Next Chapter",
+  "enterChapterTitle": "Enter chapter title",
+  "enterChapterContent": "Enter chapter content"
+  ,
+  "discardChangesTitle": "Discard changes?",
+  "discardChangesMessage": "You have unsaved changes. Do you want to discard them?",
+  "keepEditing": "Keep editing",
+  "discardChanges": "Discard changes",
+  "saveAndExit": "Save & Exit",
+  "descriptionLabel": "Description",
+  "coverUrlLabel": "Cover URL",
+  "invalidCoverUrl": "Enter a valid http(s) URL without spaces."
+}

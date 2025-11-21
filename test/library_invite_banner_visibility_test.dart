@@ -1,0 +1,61 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:novel_reader/features/library/library_screen.dart';
+import 'package:novel_reader/state/providers.dart';
+import 'package:novel_reader/state/novel_providers.dart';
+import 'package:novel_reader/l10n/app_localizations.dart';
+import 'package:novel_reader/models/novel.dart';
+
+void main() {
+  testWidgets('Invite banner shows when Supabase enabled and session is null', (
+    tester,
+  ) async {
+    final novels = [
+      const Novel(
+        id: 'n1',
+        title: 'Alpha',
+        description: '',
+        author: 'Zed',
+        coverUrl: null,
+        languageCode: 'en',
+        isPublic: true,
+      ),
+    ];
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          supabaseEnabledProvider.overrideWithValue(true),
+          supabaseSessionProvider.overrideWithValue(null),
+          // Use mock novels to avoid actual supabase queries in test
+          novelsProvider.overrideWith((ref) async => novels),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const LibraryScreen(),
+        ),
+      ),
+    );
+
+    // Banner is shown via post-frame callback
+    await tester.pump();
+
+    // Expect a single MaterialBanner with the sign-in prompt (scoped to banner)
+    final bannerFinder = find.byType(MaterialBanner);
+    expect(bannerFinder, findsOneWidget);
+    final bannerContentFinder = find.descendant(
+      of: bannerFinder,
+      matching: find.text(
+        AppLocalizations.of(tester.element(bannerFinder))!.signInToSync,
+      ),
+    );
+    expect(bannerContentFinder, findsOneWidget);
+
+    // Pump again; banner should not duplicate
+    await tester.pump();
+    expect(bannerFinder, findsOneWidget);
+  });
+}
