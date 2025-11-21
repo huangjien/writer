@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chapter_cache.dart';
 import '../models/novel.dart';
+import '../models/character.dart';
+import '../models/scene.dart';
+import '../models/template.dart';
 
 class LocalStorageRepository {
   Future<void> saveChapter(ChapterCache chapter) async {
@@ -89,5 +92,95 @@ class LocalStorageRepository {
       }
     } catch (_) {}
     return <Novel>[];
+  }
+
+  Future<void> saveCharacterForm(String novelId, Character character) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      'character_form_$novelId',
+      jsonEncode(character.toMap()),
+    );
+  }
+
+  Future<Character?> getCharacterForm(String novelId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('character_form_$novelId');
+    if (raw == null) return null;
+    try {
+      final decoded = jsonDecode(raw) as Map<String, dynamic>;
+      return Character.fromMap(decoded);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> saveSceneForm(String novelId, Scene scene) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('scene_form_$novelId', jsonEncode(scene.toMap()));
+  }
+
+  Future<Scene?> getSceneForm(String novelId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('scene_form_$novelId');
+    if (raw == null) return null;
+    try {
+      final decoded = jsonDecode(raw) as Map<String, dynamic>;
+      return Scene.fromMap(decoded);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> saveCharacterTemplateForm(
+    String novelId,
+    TemplateItem item,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      'character_template_form_$novelId',
+      jsonEncode(item.toMap()),
+    );
+  }
+
+  Future<TemplateItem?> getCharacterTemplateForm(String novelId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('character_template_form_$novelId');
+    if (raw == null) return null;
+    try {
+      final decoded = jsonDecode(raw) as Map<String, dynamic>;
+      return TemplateItem.fromMap(decoded);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> saveSceneTemplateForm(String novelId, TemplateItem item) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      'scene_template_form_$novelId',
+      jsonEncode(item.toMap()),
+    );
+  }
+
+  Future<TemplateItem?> getSceneTemplateForm(String novelId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('scene_template_form_$novelId');
+    if (raw == null) return null;
+    try {
+      final decoded = jsonDecode(raw) as Map<String, dynamic>;
+      return TemplateItem.fromMap(decoded);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> saveSummaryText(String novelId, String text) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('summary_form_$novelId', text);
+  }
+
+  Future<String?> getSummaryText(String novelId) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('summary_form_$novelId');
   }
 }

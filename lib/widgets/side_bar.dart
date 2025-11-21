@@ -14,7 +14,7 @@ class SideBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final novelAsync = ref.watch(novelProvider(novelId));
     final roleAsync = ref.watch(editRoleProvider(novelId));
-    final isOwner = roleAsync.asData?.value == EditRole.owner;
+    final isOwner = roleAsync.valueOrNull == EditRole.owner;
     final title = novelAsync.asData?.value?.title ?? 'Navigation';
     return SizedBox(
       width: 260,

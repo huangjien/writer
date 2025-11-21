@@ -1,4 +1,4 @@
-# Novel Reader
+# Writer
 
 A Flutter application for reading novels with Supabase-backed storage, localization, and Text-To-Speech (TTS) support.
 
@@ -38,7 +38,7 @@ A Flutter application for reading novels with Supabase-backed storage, localizat
   - Chapter files named `<number>_<title>.md` inside a `chapters/` folder.
   - Example: `001_Beginning.md`, `002_Chapter Two.md`, etc.
 - Usage:
-  - `cd novel_reader`
+  - `cd writer`
   - `npm run import-novel -- --novel-title "Your Novel" --author "Author Name" --dir "/absolute/path/to/novel" --lang "zh-CN"`
   - Requires `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in the environment (service role key is required to bypass RLS for inserts).
 - Notes:
@@ -110,7 +110,7 @@ A Flutter application for reading novels with Supabase-backed storage, localizat
 - Workflow: `.github/workflows/ci.yml`
   - Triggers on push, pull_request, and manual dispatch.
   - Sets up Flutter (stable), caches pub packages, runs `make lint`, and executes tests.
-  - Builds and publishes installers to GitHub Releases using the version from `novel_reader/package.json`:
+  - Builds and publishes installers to GitHub Releases using the version from `writer/package.json`:
     - Android: `app-release.apk` and `app-release.aab`.
     - iOS: unsigned `.ipa` when available; otherwise zips `Runner.app` as a fallback.
     - macOS: zipped `.app` bundle.

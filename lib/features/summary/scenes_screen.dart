@@ -4,24 +4,55 @@ import 'package:novel_reader/state/novel_providers.dart';
 import 'package:novel_reader/state/mock_providers.dart';
 import 'package:novel_reader/state/supabase_config.dart';
 import 'package:novel_reader/models/novel.dart';
+import '../../main.dart';
+import '../../models/scene.dart';
 
-class ScenesScreen extends ConsumerWidget {
+class ScenesScreen extends ConsumerStatefulWidget {
   const ScenesScreen({super.key, required this.novelId});
 
   final String novelId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ScenesScreen> createState() => _ScenesScreenState();
+}
+
+class _ScenesScreenState extends ConsumerState<ScenesScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
+  final _locationController = TextEditingController();
+  final _summaryController = TextEditingController();
+  bool _saving = false;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final repo = ref.read(localStorageRepositoryProvider);
+    final item = await repo.getSceneForm(widget.novelId);
+    if (item != null) {
+      _titleController.text = item.title;
+      _locationController.text = item.location ?? '';
+      _summaryController.text = item.summary ?? '';
+    }
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _locationController.dispose();
+    _summaryController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Scenes'),
-        actions: [
-          Tooltip(
-            message: 'Create',
-            child: IconButton(icon: const Icon(Icons.add), onPressed: () {}),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Scenes'), actions: const []),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -29,7 +60,7 @@ class ScenesScreen extends ConsumerWidget {
           children: [
             if (supabaseEnabled)
               ref
-                  .watch(novelProvider(novelId))
+                  .watch(novelProvider(widget.novelId))
                   .when(
                     data: (novel) => _NovelHeader(novel: novel),
                     loading: () => const _LoadingTile(label: 'Loading novel…'),
@@ -40,7 +71,9 @@ class ScenesScreen extends ConsumerWidget {
                   .watch(mockNovelsProvider)
                   .when(
                     data: (novels) {
-                      final matches = novels.where((n) => n.id == novelId);
+                      final matches = novels.where(
+                        (n) => n.id == widget.novelId,
+                      );
                       final novel = matches.isNotEmpty ? matches.first : null;
                       return _NovelHeader(novel: novel);
                     },
@@ -48,7 +81,89 @@ class ScenesScreen extends ConsumerWidget {
                     error: (e, _) => _ErrorTile(label: 'Error: $e'),
                   ),
             const SizedBox(height: 16),
-            const Text('No scenes found.'),
+            Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(labelText: 'Title'),
+                    validator: (v) =>
+                        v == null || v.trim().isEmpty ? 'Required' : null,
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _locationController,
+                    decoration: const InputDecoration(labelText: 'Location'),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _summaryController,
+                    decoration: const InputDecoration(labelText: 'Summary'),
+                    maxLines: 5,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: _saving
+                            ? null
+                            : () async {
+                                final ok =
+                                    _formKey.currentState?.validate() ?? false;
+                                if (!ok) return;
+                                setState(() {
+                                  _saving = true;
+                                  _error = null;
+                                });
+                                try {
+                                  final repo = ref.read(
+                                    localStorageRepositoryProvider,
+                                  );
+                                  await repo.saveSceneForm(
+                                    widget.novelId,
+                                    Scene(
+                                      novelId: widget.novelId,
+                                      title: _titleController.text.trim(),
+                                      location:
+                                          _locationController.text
+                                              .trim()
+                                              .isEmpty
+                                          ? null
+                                          : _locationController.text.trim(),
+                                      summary:
+                                          _summaryController.text.trim().isEmpty
+                                          ? null
+                                          : _summaryController.text.trim(),
+                                    ),
+                                  );
+                                  if (!context.mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Saved')),
+                                  );
+                                } catch (e) {
+                                  setState(() => _error = e.toString());
+                                } finally {
+                                  if (mounted) setState(() => _saving = false);
+                                }
+                              },
+                        child: const Text('Save'),
+                      ),
+                      const SizedBox(width: 12),
+                      if (_error != null)
+                        Expanded(
+                          child: Text(
+                            _error!,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(color: Colors.redAccent),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

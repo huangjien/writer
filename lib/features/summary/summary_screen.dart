@@ -5,17 +5,53 @@ import 'package:novel_reader/state/mock_providers.dart';
 import 'package:novel_reader/state/supabase_config.dart';
 import 'package:novel_reader/models/novel.dart';
 import 'package:novel_reader/models/chapter.dart';
+import '../../main.dart';
 
-class SummaryScreen extends ConsumerWidget {
+class SummaryScreen extends ConsumerStatefulWidget {
   const SummaryScreen({super.key, required this.novelId});
 
   final String novelId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SummaryScreen> createState() => _SummaryScreenState();
+}
+
+class _SummaryScreenState extends ConsumerState<SummaryScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _summaryController = TextEditingController();
+  bool _saving = false;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final local = ref.read(localStorageRepositoryProvider);
+    final cached = await local.getSummaryText(widget.novelId);
+    if (cached != null) {
+      _summaryController.text = cached;
+    } else {
+      final novel = await ref.read(novelProvider(widget.novelId).future);
+      final desc = novel?.description ?? '';
+      _summaryController.text = desc;
+    }
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _summaryController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final chaptersAsync = supabaseEnabled
-        ? ref.watch(chaptersProvider(novelId))
-        : ref.watch(mockChaptersProvider(novelId));
+        ? ref.watch(chaptersProvider(widget.novelId))
+        : ref.watch(mockChaptersProvider(widget.novelId));
 
     return Scaffold(
       appBar: AppBar(title: const Text('Summary')),
@@ -26,7 +62,7 @@ class SummaryScreen extends ConsumerWidget {
           children: [
             if (supabaseEnabled)
               ref
-                  .watch(novelProvider(novelId))
+                  .watch(novelProvider(widget.novelId))
                   .when(
                     data: (novel) => _NovelHeader(novel: novel),
                     loading: () => const _LoadingTile(label: 'Loading novel…'),
@@ -38,7 +74,9 @@ class SummaryScreen extends ConsumerWidget {
                   .when(
                     data: (novels) {
                       Novel? novel;
-                      final matches = novels.where((n) => n.id == novelId);
+                      final matches = novels.where(
+                        (n) => n.id == widget.novelId,
+                      );
                       if (matches.isNotEmpty) {
                         novel = matches.first;
                       } else {
@@ -49,6 +87,80 @@ class SummaryScreen extends ConsumerWidget {
                     loading: () => const _LoadingTile(label: 'Loading novel…'),
                     error: (e, _) => _ErrorTile(label: 'Error: $e'),
                   ),
+            const SizedBox(height: 16),
+            Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    controller: _summaryController,
+                    decoration: const InputDecoration(
+                      labelText: 'Novel Summary',
+                    ),
+                    minLines: 4,
+                    maxLines: null,
+                    validator: (v) =>
+                        v == null || v.trim().isEmpty ? 'Required' : null,
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: _saving
+                            ? null
+                            : () async {
+                                final ok =
+                                    _formKey.currentState?.validate() ?? false;
+                                if (!ok) return;
+                                setState(() {
+                                  _saving = true;
+                                  _error = null;
+                                });
+                                try {
+                                  final local = ref.read(
+                                    localStorageRepositoryProvider,
+                                  );
+                                  await local.saveSummaryText(
+                                    widget.novelId,
+                                    _summaryController.text.trim(),
+                                  );
+                                  if (supabaseEnabled) {
+                                    final repo = ref.read(
+                                      novelRepositoryProvider,
+                                    );
+                                    await repo.updateNovelMetadata(
+                                      widget.novelId,
+                                      description: _summaryController.text
+                                          .trim(),
+                                    );
+                                  }
+                                  if (!context.mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Saved')),
+                                  );
+                                } catch (e) {
+                                  setState(() => _error = e.toString());
+                                } finally {
+                                  if (mounted) setState(() => _saving = false);
+                                }
+                              },
+                        child: const Text('Save'),
+                      ),
+                      const SizedBox(width: 12),
+                      if (_error != null)
+                        Expanded(
+                          child: Text(
+                            _error!,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(color: Colors.redAccent),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 16),
             chaptersAsync.when(
               data: (chapters) => _ChaptersSummary(chapters: chapters),

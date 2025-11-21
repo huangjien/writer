@@ -93,14 +93,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: 'character-templates',
             name: 'characterTemplates',
             builder: (context, state) {
-              return const CharacterTemplatesScreen();
+              final novelId = state.pathParameters['id']!;
+              return CharacterTemplatesScreen(novelId: novelId);
             },
           ),
           GoRoute(
             path: 'scene-templates',
             name: 'sceneTemplates',
             builder: (context, state) {
-              return const SceneTemplatesScreen();
+              final novelId = state.pathParameters['id']!;
+              return SceneTemplatesScreen(novelId: novelId);
             },
           ),
           GoRoute(
