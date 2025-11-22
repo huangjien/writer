@@ -596,8 +596,6 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
     );
   }
 
-  
-
   void _showAutoplayPrompt() {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(

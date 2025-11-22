@@ -70,7 +70,9 @@ class FakeTtsDriver implements TtsDriver {
 }
 
 void main() {
-  testWidgets('tryAutoStart sets blocked and invokes prompt when no progress', (tester) async {
+  testWidgets('tryAutoStart sets blocked and invokes prompt when no progress', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues(const {});
     final prefs = await SharedPreferences.getInstance();
     WidgetRef? captured;
