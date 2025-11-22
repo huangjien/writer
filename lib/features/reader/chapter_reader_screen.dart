@@ -387,11 +387,14 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
 
                       final denom = _speaking
                           ? (_ttsTotalLen > 0
-                              ? _ttsTotalLen.toDouble()
-                              : (_content?.length ?? 1).toDouble())
+                                ? _ttsTotalLen.toDouble()
+                                : (_content?.length ?? 1).toDouble())
                           : (_content?.length ?? 1).toDouble();
-                      final num = _speaking ? _ttsIndex.toDouble() : (_scrollProgress * denom);
-                      final barProgress = (denom > 0 ? (num / denom) : 0.0).clamp(0.0, 1.0);
+                      final num = _speaking
+                          ? _ttsIndex.toDouble()
+                          : (_scrollProgress * denom);
+                      final barProgress = (denom > 0 ? (num / denom) : 0.0)
+                          .clamp(0.0, 1.0);
 
                       return ReaderBottomBarShell(
                         canEdit: canEdit,
