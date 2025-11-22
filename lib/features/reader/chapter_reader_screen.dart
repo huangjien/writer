@@ -23,6 +23,7 @@ import 'widgets/reader_body.dart';
 import 'logic/progress_saver.dart';
 import 'logic/reader_navigation.dart';
 import 'logic/edit_mode.dart';
+import 'logic/reader_playback_controller.dart';
 
 class ChapterReaderScreen extends ConsumerStatefulWidget {
   const ChapterReaderScreen({
@@ -58,13 +59,10 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
   );
   final _controller = ScrollController();
   late final TtsDriver _ttsDriver;
+  late final ReaderPlaybackController _playback;
   bool _speaking = false;
   int _ttsIndex = 0;
-  Timer? _autoStartRetry;
-  int _autoStartAttempts = 0;
-  static const int _maxAutoStartAttempts = 5;
   bool _autoplayBlocked = false;
-  bool _autoplaySnackShown = false;
   double _scrollProgress = 0.0;
   bool _editMode = false;
   bool _discardDialogOpen = false;
@@ -81,6 +79,7 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
   void initState() {
     super.initState();
     _ttsDriver = ref.read(ttsDriverProvider);
+    _playback = ReaderPlaybackController(_ttsDriver, ref);
     _mediaChannel.setMethodCallHandler((call) async {
       switch (call.method) {
         case 'play':
@@ -254,7 +253,7 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
   void _onPlayStopPressed() async {
     final l10n = AppLocalizations.of(context)!;
     if (_speaking) {
-      await _ttsDriver.stop();
+      await _playback.stop();
       if (!mounted) return;
       setState(() {
         _speaking = false;
@@ -541,17 +540,9 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
     if (optimistic && mounted) {
       setState(() => _speaking = true);
     }
-    final current = ref.read(ttsSettingsProvider);
-    final appLocale = ref.read(appSettingsProvider);
-    final mapped = switch (appLocale.languageCode) {
-      'zh' => 'zh-CN',
-      'en' => 'en-US',
-      _ => 'en-US',
-    };
-    await _ttsDriver.configure(
-      voiceName: current.voiceName,
-      voiceLocale: current.voiceLocale,
-      defaultLocale: mapped,
+    await _playback.start(
+      content: _content ?? '',
+      startIndex: _ttsIndex,
       onProgress: (i) {
         if (!mounted) return;
         setState(() => _ttsIndex = i);
@@ -570,55 +561,42 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
           SnackBar(content: Text(AppLocalizations.of(context)!.ttsError(msg))),
         );
       },
-      onAllComplete: _onTtsComplete,
+      onComplete: _onTtsComplete,
     );
-    await _ttsDriver.setRate(current.rate);
-    await _ttsDriver.setVolume(current.volume);
-    await _ttsDriver.start(content: _content ?? '', startIndex: _ttsIndex);
   }
 
   void _tryAutoStartTts() {
-    _autoStartAttempts = 0;
-    _autoStartRetry?.cancel();
-    _startTts(optimistic: false);
-    _scheduleAutoStartRetry();
+    _playback.tryAutoStart(
+      content: _content ?? '',
+      startIndex: _ttsIndex,
+      setAutoplayBlocked: (b) {
+        if (!mounted) return;
+        setState(() => _autoplayBlocked = b);
+      },
+      showAutoplayPrompt: _showAutoplayPrompt,
+      onProgress: (i) {
+        if (!mounted) return;
+        setState(() => _ttsIndex = i);
+      },
+      onStart: () {
+        if (!mounted) return;
+        setState(() => _speaking = true);
+      },
+      onCancel: () {
+        if (!mounted) return;
+        setState(() => _speaking = false);
+      },
+      onError: (msg) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.ttsError(msg))),
+        );
+      },
+      onComplete: _onTtsComplete,
+    );
   }
 
-  void _scheduleAutoStartRetry() {
-    _autoStartRetry?.cancel();
-    final delays = <Duration>[
-      const Duration(seconds: 1),
-      const Duration(seconds: 2),
-      const Duration(seconds: 4),
-      const Duration(seconds: 8),
-      const Duration(seconds: 8),
-    ];
-    final idx = _autoStartAttempts.clamp(0, delays.length - 1);
-    final delay = delays[idx];
-    _autoStartRetry = Timer(delay, () {
-      if (!mounted) return;
-      final hasProgress = _ttsIndex > 0;
-      if (_speaking || hasProgress) {
-        _autoStartRetry?.cancel();
-        if (_autoplayBlocked) setState(() => _autoplayBlocked = false);
-        return;
-      }
-      _autoStartAttempts += 1;
-      if (_autoStartAttempts >= 1 && !_autoplayBlocked) {
-        setState(() => _autoplayBlocked = true);
-        if (!_autoplaySnackShown) {
-          _autoplaySnackShown = true;
-          _showAutoplayPrompt();
-        }
-      }
-      if (_autoStartAttempts > _maxAutoStartAttempts) {
-        _autoStartRetry?.cancel();
-        return;
-      }
-      _startTts(optimistic: false);
-      _scheduleAutoStartRetry();
-    });
-  }
+  
 
   void _showAutoplayPrompt() {
     if (!mounted) return;
@@ -639,7 +617,7 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
 
   @override
   void dispose() {
-    _autoStartRetry?.cancel();
+    _playback.dispose();
     _controller.dispose();
     _ttsDriver.stop();
     super.dispose();
