@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../state/app_settings.dart';
 import '../../../state/tts_settings.dart';
 import 'tts_driver.dart';
+import '../tts_chunker.dart';
 
 typedef ProgressCb = void Function(int index);
 typedef FlagCb = void Function();
@@ -18,6 +19,17 @@ class ReaderPlaybackController {
   int _index = 0;
   final int _maxAttempts = 5;
   bool _gotDriverProgress = false;
+  int _totalLen = 0;
+
+  int computeTotalLen(String content, int startIndex) {
+    final base = startIndex.clamp(0, content.length);
+    final remaining = content.substring(base);
+    final chunks = chunkText(remaining);
+    final spokenLen = chunks.fold<int>(0, (sum, s) => sum + s.length);
+    return base + spokenLen;
+  }
+
+  int get totalLen => _totalLen;
 
   ReaderPlaybackController(this._driver, this._ref);
 
@@ -29,6 +41,7 @@ class ReaderPlaybackController {
     required FlagCb onCancel,
     required ErrorCb onError,
     required FlagCb onComplete,
+    bool enableFallback = true,
   }) async {
     final current = _ref.read(ttsSettingsProvider);
     final appLocale = _ref.read(appSettingsProvider);
@@ -64,22 +77,28 @@ class ReaderPlaybackController {
     );
     await _driver.setRate(current.rate);
     await _driver.setVolume(current.volume);
+    _totalLen = computeTotalLen(content, startIndex);
     await _driver.start(content: content, startIndex: startIndex);
 
     _progressFallback?.cancel();
-    _progressFallback = Timer.periodic(const Duration(seconds: 1), (t) {
-      if (!_speaking || _gotDriverProgress) {
-        t.cancel();
-        return;
-      }
-      final next = _index + 12;
-      final maxLen = content.length;
-      _index = next > maxLen ? maxLen : next;
+    if (enableFallback) {
+      _speaking = true;
+      _index = startIndex;
       onProgress(_index);
-      if (_index >= maxLen) {
-        t.cancel();
-      }
-    });
+      _progressFallback = Timer.periodic(const Duration(seconds: 1), (t) {
+        if (!_speaking || _gotDriverProgress) {
+          t.cancel();
+          return;
+        }
+        final next = _index + 12;
+        final maxLen = content.length;
+        _index = next > maxLen ? maxLen : next;
+        onProgress(_index);
+        if (_index >= maxLen) {
+          t.cancel();
+        }
+      });
+    }
   }
 
   void tryAutoStart({
@@ -103,6 +122,7 @@ class ReaderPlaybackController {
       onCancel: onCancel,
       onError: onError,
       onComplete: onComplete,
+      enableFallback: false,
     );
     _scheduleAutoStartRetry(
       content: content,

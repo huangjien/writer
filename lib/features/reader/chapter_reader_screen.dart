@@ -62,6 +62,7 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
   late final ReaderPlaybackController _playback;
   bool _speaking = false;
   int _ttsIndex = 0;
+  int _ttsTotalLen = 0;
   bool _autoplayBlocked = false;
   double _scrollProgress = 0.0;
   bool _editMode = false;
@@ -384,12 +385,13 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
                               content: _content,
                             );
 
-                      final barProgress =
-                          _speaking && (_content?.isNotEmpty ?? false)
-                          ? (_content!.isNotEmpty
-                                ? (_ttsIndex / _content!.length).clamp(0.0, 1.0)
-                                : 0.0)
-                          : _scrollProgress;
+                      final denom = _speaking
+                          ? (_ttsTotalLen > 0
+                              ? _ttsTotalLen.toDouble()
+                              : (_content?.length ?? 1).toDouble())
+                          : (_content?.length ?? 1).toDouble();
+                      final num = _speaking ? _ttsIndex.toDouble() : (_scrollProgress * denom);
+                      final barProgress = (denom > 0 ? (num / denom) : 0.0).clamp(0.0, 1.0);
 
                       return ReaderBottomBarShell(
                         canEdit: canEdit,
@@ -540,6 +542,7 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
     if (optimistic && mounted) {
       setState(() => _speaking = true);
     }
+    _ttsTotalLen = _playback.computeTotalLen(_content ?? '', _ttsIndex);
     await _playback.start(
       content: _content ?? '',
       startIndex: _ttsIndex,
