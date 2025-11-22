@@ -63,6 +63,7 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
   bool _speaking = false;
   int _ttsIndex = 0;
   int _ttsTotalLen = 0;
+  int? _progressDenomLockedIndex;
   bool _autoplayBlocked = false;
   double _scrollProgress = 0.0;
   bool _editMode = false;
@@ -206,6 +207,7 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
       _currentIdx = res.currentIdx;
       _ttsIndex = 0;
       _speaking = false;
+      _progressDenomLockedIndex = null;
       _controller.jumpTo(0);
     });
     _tryAutoStartTts();
@@ -302,7 +304,10 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
 
   Future<void> _onTtsComplete() async {
     if (!mounted) return;
-    setState(() => _speaking = false);
+    setState(() {
+      _speaking = false;
+      _progressDenomLockedIndex = _ttsDriver.index;
+    });
     await _loadNextChapter();
   }
 
@@ -386,13 +391,17 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
                             );
 
                       final denom = _speaking
-                          ? (_ttsTotalLen > 0
-                                ? _ttsTotalLen.toDouble()
-                                : (_content?.length ?? 1).toDouble())
-                          : (_content?.length ?? 1).toDouble();
-                      final num = _speaking
+                          ? (_progressDenomLockedIndex?.toDouble() ??
+                              (_ttsTotalLen > 0
+                                  ? _ttsTotalLen.toDouble()
+                                  : (_content?.length ?? 1).toDouble()))
+                          : (_progressDenomLockedIndex?.toDouble() ??
+                              (_content?.length ?? 1).toDouble());
+                      final num = (_progressDenomLockedIndex != null)
                           ? _ttsIndex.toDouble()
-                          : (_scrollProgress * denom);
+                          : (_speaking
+                              ? _ttsIndex.toDouble()
+                              : (_scrollProgress * denom));
                       final barProgress = (denom > 0 ? (num / denom) : 0.0)
                           .clamp(0.0, 1.0);
 
@@ -545,6 +554,7 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
     if (optimistic && mounted) {
       setState(() => _speaking = true);
     }
+    _progressDenomLockedIndex = null;
     _ttsTotalLen = _playback.computeTotalLen(_content ?? '', _ttsIndex);
     await _playback.start(
       content: _content ?? '',
