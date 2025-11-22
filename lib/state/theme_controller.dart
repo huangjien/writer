@@ -5,19 +5,20 @@ import '../theme/themes.dart';
 import '../theme/reader_typography.dart';
 import '../theme/font_packs.dart';
 import '../theme/reader_background.dart';
+import 'theme_prefs.dart';
 
-const String _prefThemeMode = 'theme_mode';
-const String _prefLightTheme = 'light_theme';
-const String _prefDarkTheme = 'dark_theme';
-const String _prefSeparateDark = 'use_separate_dark_palette';
-const String _prefTypographyPreset = 'reader_typography_preset';
-const String _prefSeparateTypography = 'use_separate_typography';
-const String _prefTypographyPresetLight = 'reader_typography_preset_light';
-const String _prefTypographyPresetDark = 'reader_typography_preset_dark';
-const String _prefFontPack = 'reader_font_pack';
-const String _prefCustomFontFamily = 'reader_custom_font_family';
-const String _prefFontScale = 'reader_font_scale';
-const String _prefReaderBgDepth = 'reader_background_depth';
+const String _prefThemeMode = prefThemeMode;
+const String _prefLightTheme = prefLightTheme;
+const String _prefDarkTheme = prefDarkTheme;
+const String _prefSeparateDark = prefSeparateDark;
+const String _prefTypographyPreset = prefTypographyPreset;
+const String _prefSeparateTypography = prefSeparateTypography;
+const String _prefTypographyPresetLight = prefTypographyPresetLight;
+const String _prefTypographyPresetDark = prefTypographyPresetDark;
+const String _prefFontPack = prefFontPack;
+const String _prefCustomFontFamily = prefCustomFontFamily;
+const String _prefFontScale = prefFontScale;
+const String _prefReaderBgDepth = prefReaderBgDepth;
 
 class ThemeState {
   final ThemeMode mode;
@@ -85,20 +86,20 @@ class ThemeController extends StateNotifier<ThemeState> {
   ThemeController(this._prefs) : super(_initialState(_prefs));
 
   static ThemeState _initialState(SharedPreferences prefs) {
-    final mode = _decodeMode(prefs.getString(_prefThemeMode));
+    final mode = decodeMode(prefs.getString(_prefThemeMode));
     // Default to Sepia when no prior preference exists
     final unified = prefs.containsKey(_prefLightTheme)
-        ? _decodeFamily(prefs.getString(_prefLightTheme))
+        ? decodeFamily(prefs.getString(_prefLightTheme))
         : AppThemeFamily.sepia;
-    final preset = _decodePreset(prefs.getString(_prefTypographyPreset));
+    final preset = decodePreset(prefs.getString(_prefTypographyPreset));
     final separate = prefs.getBool(_prefSeparateDark) ?? false;
     final separateTypo = prefs.getBool(_prefSeparateTypography) ?? false;
     // Use nullable decode to allow fallback to unified preset when unset
     final presetLight =
-        _tryDecodePreset(prefs.getString(_prefTypographyPresetLight)) ?? preset;
+        tryDecodePreset(prefs.getString(_prefTypographyPresetLight)) ?? preset;
     final presetDark =
-        _tryDecodePreset(prefs.getString(_prefTypographyPresetDark)) ?? preset;
-    final fontPack = _decodeFontPack(prefs.getString(_prefFontPack));
+        tryDecodePreset(prefs.getString(_prefTypographyPresetDark)) ?? preset;
+    final fontPack = decodeFontPack(prefs.getString(_prefFontPack));
     // Default primary font family to Consolas when unset
     final rawFamily = prefs.getString(_prefCustomFontFamily);
     final customFontFamily = () {
@@ -107,10 +108,10 @@ class ThemeController extends StateNotifier<ThemeState> {
       return v;
     }();
     final fontScale = prefs.getDouble(_prefFontScale) ?? 1.0;
-    final readerBgDepth = _decodeBgDepth(prefs.getString(_prefReaderBgDepth));
+    final readerBgDepth = decodeBgDepth(prefs.getString(_prefReaderBgDepth));
     final famLight = unified;
     final famDark = separate
-        ? _decodeFamily(prefs.getString(_prefDarkTheme))
+        ? decodeFamily(prefs.getString(_prefDarkTheme))
         : unified;
     return ThemeState(
       mode: mode,
@@ -132,12 +133,12 @@ class ThemeController extends StateNotifier<ThemeState> {
   final SharedPreferences _prefs;
 
   void setMode(ThemeMode mode) {
-    _prefs.setString(_prefThemeMode, _encodeMode(mode));
+    _prefs.setString(_prefThemeMode, encodeMode(mode));
     state = state.copyWith(mode: mode);
   }
 
   void setFamily(AppThemeFamily family) {
-    _prefs.setString(_prefLightTheme, _encodeFamily(family));
+    _prefs.setString(_prefLightTheme, encodeFamily(family));
     // Update unified selection and both palettes when not separate
     state = state.copyWith(
       family: family,
@@ -145,7 +146,7 @@ class ThemeController extends StateNotifier<ThemeState> {
       familyDark: state.hasSeparateDark ? state.familyDark : family,
     );
     if (!state.hasSeparateDark) {
-      _prefs.setString(_prefDarkTheme, _encodeFamily(family));
+      _prefs.setString(_prefDarkTheme, encodeFamily(family));
     }
   }
 
@@ -177,17 +178,17 @@ class ThemeController extends StateNotifier<ThemeState> {
   }
 
   void setFamilyLight(AppThemeFamily family) {
-    _prefs.setString(_prefLightTheme, _encodeFamily(family));
+    _prefs.setString(_prefLightTheme, encodeFamily(family));
     state = state.copyWith(familyLight: family, family: family);
   }
 
   void setFamilyDark(AppThemeFamily family) {
-    _prefs.setString(_prefDarkTheme, _encodeFamily(family));
+    _prefs.setString(_prefDarkTheme, encodeFamily(family));
     state = state.copyWith(familyDark: family);
   }
 
   void setPreset(ReaderTypographyPreset preset) {
-    _prefs.setString(_prefTypographyPreset, _encodePreset(preset));
+    _prefs.setString(_prefTypographyPreset, encodePreset(preset));
     state = state.copyWith(
       preset: preset,
       presetLight: preset,
@@ -200,8 +201,8 @@ class ThemeController extends StateNotifier<ThemeState> {
     state = state.copyWith(hasSeparateTypography: separate);
     // When disabling separate typography, align light/dark to unified preset
     if (!separate) {
-      _prefs.setString(_prefTypographyPresetLight, _encodePreset(state.preset));
-      _prefs.setString(_prefTypographyPresetDark, _encodePreset(state.preset));
+      _prefs.setString(_prefTypographyPresetLight, encodePreset(state.preset));
+      _prefs.setString(_prefTypographyPresetDark, encodePreset(state.preset));
       state = state.copyWith(
         presetLight: state.preset,
         presetDark: state.preset,
@@ -210,168 +211,23 @@ class ThemeController extends StateNotifier<ThemeState> {
   }
 
   void setPresetLight(ReaderTypographyPreset preset) {
-    _prefs.setString(_prefTypographyPresetLight, _encodePreset(preset));
+    _prefs.setString(_prefTypographyPresetLight, encodePreset(preset));
     state = state.copyWith(presetLight: preset);
   }
 
   void setPresetDark(ReaderTypographyPreset preset) {
-    _prefs.setString(_prefTypographyPresetDark, _encodePreset(preset));
+    _prefs.setString(_prefTypographyPresetDark, encodePreset(preset));
     state = state.copyWith(presetDark: preset);
   }
 
   void setFontPack(ReaderFontPack pack) {
-    _prefs.setString(_prefFontPack, _encodeFontPack(pack));
+    _prefs.setString(_prefFontPack, encodeFontPack(pack));
     state = state.copyWith(fontPack: pack);
   }
 
   void setReaderBackgroundDepth(ReaderBackgroundDepth depth) {
-    _prefs.setString(_prefReaderBgDepth, _encodeBgDepth(depth));
+    _prefs.setString(_prefReaderBgDepth, encodeBgDepth(depth));
     state = state.copyWith(readerBgDepth: depth);
-  }
-
-  static ThemeMode _decodeMode(String? raw) {
-    switch (raw) {
-      case 'light':
-        return ThemeMode.light;
-      case 'dark':
-        return ThemeMode.dark;
-      case 'system':
-      default:
-        return ThemeMode.system;
-    }
-  }
-
-  static String _encodeMode(ThemeMode mode) {
-    switch (mode) {
-      case ThemeMode.light:
-        return 'light';
-      case ThemeMode.dark:
-        return 'dark';
-      case ThemeMode.system:
-        return 'system';
-    }
-  }
-
-  static AppThemeFamily _decodeFamily(String? raw) {
-    switch (raw) {
-      case 'sepia':
-        return AppThemeFamily.sepia;
-      case 'highContrast':
-        return AppThemeFamily.highContrast;
-      case 'solarized':
-        return AppThemeFamily.solarized;
-      case 'solarizedTan':
-        return AppThemeFamily.solarizedTan;
-      case 'nord':
-        return AppThemeFamily.nord;
-      case 'nordFrost':
-        return AppThemeFamily.nordFrost;
-      case 'nordSnowstorm':
-        return AppThemeFamily.nordSnowstorm;
-      case 'light':
-      default:
-        return AppThemeFamily.defaultFamily;
-    }
-  }
-
-  static String _encodeFamily(AppThemeFamily family) {
-    switch (family) {
-      case AppThemeFamily.defaultFamily:
-        return 'light';
-      case AppThemeFamily.sepia:
-        return 'sepia';
-      case AppThemeFamily.highContrast:
-        return 'highContrast';
-      case AppThemeFamily.solarized:
-        return 'solarized';
-      case AppThemeFamily.solarizedTan:
-        return 'solarizedTan';
-      case AppThemeFamily.nord:
-        return 'nord';
-      case AppThemeFamily.nordFrost:
-        return 'nordFrost';
-      case AppThemeFamily.nordSnowstorm:
-        return 'nordSnowstorm';
-    }
-  }
-
-  static ReaderTypographyPreset _decodePreset(String? raw) {
-    switch (raw) {
-      case 'comfortable':
-        return ReaderTypographyPreset.comfortable;
-      case 'compact':
-        return ReaderTypographyPreset.compact;
-      case 'serifLike':
-        return ReaderTypographyPreset.serifLike;
-      case 'system':
-      default:
-        return ReaderTypographyPreset.system;
-    }
-  }
-
-  // Returns null if raw is null, allowing callers to apply fallback logic
-  static ReaderTypographyPreset? _tryDecodePreset(String? raw) {
-    if (raw == null) return null;
-    return _decodePreset(raw);
-  }
-
-  static String _encodePreset(ReaderTypographyPreset preset) {
-    switch (preset) {
-      case ReaderTypographyPreset.system:
-        return 'system';
-      case ReaderTypographyPreset.comfortable:
-        return 'comfortable';
-      case ReaderTypographyPreset.compact:
-        return 'compact';
-      case ReaderTypographyPreset.serifLike:
-        return 'serifLike';
-    }
-  }
-
-  static ReaderFontPack _decodeFontPack(String? raw) {
-    switch (raw) {
-      case 'inter':
-        return ReaderFontPack.inter;
-      case 'merriweather':
-        return ReaderFontPack.merriweather;
-      case 'system':
-      default:
-        return ReaderFontPack.system;
-    }
-  }
-
-  static String _encodeFontPack(ReaderFontPack pack) {
-    switch (pack) {
-      case ReaderFontPack.system:
-        return 'system';
-      case ReaderFontPack.inter:
-        return 'inter';
-      case ReaderFontPack.merriweather:
-        return 'merriweather';
-    }
-  }
-
-  static ReaderBackgroundDepth _decodeBgDepth(String? raw) {
-    switch (raw) {
-      case 'low':
-        return ReaderBackgroundDepth.low;
-      case 'high':
-        return ReaderBackgroundDepth.high;
-      case 'medium':
-      default:
-        return ReaderBackgroundDepth.medium;
-    }
-  }
-
-  static String _encodeBgDepth(ReaderBackgroundDepth depth) {
-    switch (depth) {
-      case ReaderBackgroundDepth.low:
-        return 'low';
-      case ReaderBackgroundDepth.medium:
-        return 'medium';
-      case ReaderBackgroundDepth.high:
-        return 'high';
-    }
   }
 }
 

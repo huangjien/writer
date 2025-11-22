@@ -1,0 +1,162 @@
+import 'package:flutter/material.dart';
+import '../theme/reader_background.dart';
+import '../theme/themes.dart';
+import '../theme/reader_typography.dart';
+import '../theme/font_packs.dart';
+
+const String prefThemeMode = 'theme_mode';
+const String prefLightTheme = 'light_theme';
+const String prefDarkTheme = 'dark_theme';
+const String prefSeparateDark = 'use_separate_dark_palette';
+const String prefTypographyPreset = 'reader_typography_preset';
+const String prefSeparateTypography = 'use_separate_typography';
+const String prefTypographyPresetLight = 'reader_typography_preset_light';
+const String prefTypographyPresetDark = 'reader_typography_preset_dark';
+const String prefFontPack = 'reader_font_pack';
+const String prefCustomFontFamily = 'reader_custom_font_family';
+const String prefFontScale = 'reader_font_scale';
+const String prefReaderBgDepth = 'reader_background_depth';
+
+ThemeMode decodeMode(String? raw) {
+  switch (raw) {
+    case 'light':
+      return ThemeMode.light;
+    case 'dark':
+      return ThemeMode.dark;
+    case 'system':
+    default:
+      return ThemeMode.system;
+  }
+}
+
+String encodeMode(ThemeMode mode) {
+  switch (mode) {
+    case ThemeMode.light:
+      return 'light';
+    case ThemeMode.dark:
+      return 'dark';
+    case ThemeMode.system:
+      return 'system';
+  }
+}
+
+AppThemeFamily decodeFamily(String? raw) {
+  switch (raw) {
+    case 'sepia':
+      return AppThemeFamily.sepia;
+    case 'highContrast':
+      return AppThemeFamily.highContrast;
+    case 'solarized':
+      return AppThemeFamily.solarized;
+    case 'solarizedTan':
+      return AppThemeFamily.solarizedTan;
+    case 'nord':
+      return AppThemeFamily.nord;
+    case 'nordFrost':
+      return AppThemeFamily.nordFrost;
+    case 'nordSnowstorm':
+      return AppThemeFamily.nordSnowstorm;
+    case 'light':
+    default:
+      return AppThemeFamily.defaultFamily;
+  }
+}
+
+String encodeFamily(AppThemeFamily family) {
+  switch (family) {
+    case AppThemeFamily.defaultFamily:
+      return 'light';
+    case AppThemeFamily.sepia:
+      return 'sepia';
+    case AppThemeFamily.highContrast:
+      return 'highContrast';
+    case AppThemeFamily.solarized:
+      return 'solarized';
+    case AppThemeFamily.solarizedTan:
+      return 'solarizedTan';
+    case AppThemeFamily.nord:
+      return 'nord';
+    case AppThemeFamily.nordFrost:
+      return 'nordFrost';
+    case AppThemeFamily.nordSnowstorm:
+      return 'nordSnowstorm';
+  }
+}
+
+ReaderTypographyPreset decodePreset(String? raw) {
+  switch (raw) {
+    case 'comfortable':
+      return ReaderTypographyPreset.comfortable;
+    case 'compact':
+      return ReaderTypographyPreset.compact;
+    case 'serifLike':
+      return ReaderTypographyPreset.serifLike;
+    case 'system':
+    default:
+      return ReaderTypographyPreset.system;
+  }
+}
+
+ReaderTypographyPreset? tryDecodePreset(String? raw) {
+  if (raw == null) return null;
+  return decodePreset(raw);
+}
+
+String encodePreset(ReaderTypographyPreset preset) {
+  switch (preset) {
+    case ReaderTypographyPreset.system:
+      return 'system';
+    case ReaderTypographyPreset.comfortable:
+      return 'comfortable';
+    case ReaderTypographyPreset.compact:
+      return 'compact';
+    case ReaderTypographyPreset.serifLike:
+      return 'serifLike';
+  }
+}
+
+ReaderFontPack decodeFontPack(String? raw) {
+  switch (raw) {
+    case 'inter':
+      return ReaderFontPack.inter;
+    case 'merriweather':
+      return ReaderFontPack.merriweather;
+    case 'system':
+    default:
+      return ReaderFontPack.system;
+  }
+}
+
+String encodeFontPack(ReaderFontPack pack) {
+  switch (pack) {
+    case ReaderFontPack.system:
+      return 'system';
+    case ReaderFontPack.inter:
+      return 'inter';
+    case ReaderFontPack.merriweather:
+      return 'merriweather';
+  }
+}
+
+ReaderBackgroundDepth decodeBgDepth(String? raw) {
+  switch (raw) {
+    case 'low':
+      return ReaderBackgroundDepth.low;
+    case 'high':
+      return ReaderBackgroundDepth.high;
+    case 'medium':
+    default:
+      return ReaderBackgroundDepth.medium;
+  }
+}
+
+String encodeBgDepth(ReaderBackgroundDepth depth) {
+  switch (depth) {
+    case ReaderBackgroundDepth.low:
+      return 'low';
+    case ReaderBackgroundDepth.medium:
+      return 'medium';
+    case ReaderBackgroundDepth.high:
+      return 'high';
+  }
+}

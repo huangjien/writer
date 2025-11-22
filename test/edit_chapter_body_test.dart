@@ -1,0 +1,80 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:novel_reader/l10n/app_localizations.dart';
+import 'package:novel_reader/models/chapter.dart';
+import 'package:novel_reader/features/reader/widgets/edit_chapter_body.dart';
+import 'package:novel_reader/features/reader/widgets/preview_panel.dart';
+import 'package:novel_reader/state/edit_permissions.dart';
+import 'package:novel_reader/repositories/chapter_repository.dart';
+import 'helpers/fake_chapter_port.dart';
+
+void main() {
+  testWidgets('EditChapterBody shows form and owner metadata', (tester) async {
+    final chapter = const Chapter(
+      id: 'c1',
+      novelId: 'n1',
+      idx: 1,
+      title: 'One',
+      content: 'Alpha\nBeta',
+    );
+    final app = ProviderScope(
+      overrides: [
+        editRoleProvider.overrideWith((ref, novelId) async => EditRole.owner),
+        chapterRepositoryProvider.overrideWithValue(FakeChapterPort()),
+      ],
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: EditChapterBody(
+            novelId: 'n1',
+            current: chapter,
+            previewMode: false,
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(app);
+    await tester.pump();
+
+    expect(find.byType(TextFormField), findsNWidgets(2));
+    expect(find.text('Chapter Title'), findsOneWidget);
+    expect(find.text('Chapter Content'), findsOneWidget);
+    expect(find.byType(Scrollable), findsWidgets);
+  });
+
+  testWidgets('EditChapterBody shows PreviewPanel when previewMode true', (
+    tester,
+  ) async {
+    final chapter = const Chapter(
+      id: 'c1',
+      novelId: 'n1',
+      idx: 1,
+      title: 'One',
+      content: 'Alpha\nBeta',
+    );
+    final app = ProviderScope(
+      overrides: [
+        chapterRepositoryProvider.overrideWithValue(FakeChapterPort()),
+      ],
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: EditChapterBody(
+            novelId: 'n1',
+            current: chapter,
+            previewMode: true,
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(app);
+    await tester.pump();
+
+    expect(find.byType(PreviewPanel), findsOneWidget);
+  });
+}

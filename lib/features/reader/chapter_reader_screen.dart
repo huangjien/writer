@@ -1,35 +1,30 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart'
-    show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/chapter.dart';
-import '../../models/user_progress.dart';
 import '../../repositories/chapter_repository.dart';
 import '../../state/app_settings.dart';
 import '../../state/chapter_edit_controller.dart';
 import '../../state/edit_permissions.dart';
 import '../../state/motion_settings.dart';
 import '../../state/performance_settings.dart';
-import '../../state/progress_notifier.dart';
-import '../../state/progress_providers.dart';
 import '../../state/providers.dart';
-import '../../state/supabase_config.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../state/tts_settings.dart';
-import '../../theme/design_tokens.dart';
 import '../../theme/reader_background.dart';
 import '../../state/theme_controller.dart';
-import 'widgets/reader_bottom_bar.dart';
-import 'widgets/reader_edit_actions.dart';
-import 'widgets/reader_paragraphs.dart';
+// removed unused imports after refactor
 import 'widgets/edit_chapter_body.dart';
 import 'logic/edit_discard_dialog.dart';
 import 'logic/tts_driver.dart';
 import '../../widgets/side_bar.dart';
+import 'widgets/reader_bottom_bar_shell.dart';
+import 'widgets/reader_app_bar.dart';
+import 'widgets/reader_shortcuts_wrapper.dart';
+import 'widgets/reader_body.dart';
+import 'logic/progress_saver.dart';
 
 class ChapterReaderScreen extends ConsumerStatefulWidget {
   const ChapterReaderScreen({
@@ -268,38 +263,35 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
       setState(() {
         _speaking = false;
       });
-      if (!supabaseEnabled) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.supabaseProgressNotSaved)));
-      } else {
-        final client = Supabase.instance.client;
-        final user = client.auth.currentUser;
-        if (user == null) {
+      final status = await saveReaderProgress(
+        ref: ref,
+        novelId: widget.novelId,
+        chapterId: _chapterId,
+        scrollOffset: _controller.hasClients ? _controller.offset : 0.0,
+        ttsIndex: _ttsIndex,
+      );
+      if (!mounted) return;
+      switch (status) {
+        case SaveStatus.notEnabled:
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.supabaseProgressNotSaved)),
+          );
+          break;
+        case SaveStatus.noUser:
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(l10n.signInToSync)));
-        } else {
-          final offset = _controller.hasClients ? _controller.offset : 0.0;
-          final progress = UserProgress(
-            userId: user.id,
-            novelId: widget.novelId,
-            chapterId: _chapterId,
-            scrollOffset: offset,
-            ttsCharIndex: _ttsIndex,
-            updatedAt: DateTime.now(),
-          );
-          final ok = await ref
-              .read(progressControllerProvider.notifier)
-              .save(progress);
-          if (!mounted) return;
-          final snack = ok
-              ? SnackBar(content: Text(l10n.progressSaved))
-              : SnackBar(content: Text(l10n.errorSavingProgress));
-          ScaffoldMessenger.of(context).showSnackBar(snack);
-          ref.invalidate(lastProgressProvider(widget.novelId));
-          ref.invalidate(latestUserProgressProvider);
-        }
+          break;
+        case SaveStatus.saved:
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.progressSaved)));
+          break;
+        case SaveStatus.error:
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.errorSavingProgress)));
+          break;
       }
     } else {
       setState(() => _autoplayBlocked = false);
@@ -347,106 +339,29 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
       backgroundColor: bgColor,
       appBar: _fullScreen
           ? null
-          : AppBar(
-              title: Text(_title),
-              leading: Tooltip(
-                message: MaterialLocalizations.of(context).backButtonTooltip,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: _onBackPressed,
-                ),
-              ),
-              actions: [
-                Builder(
-                  builder: (context) => IconButton(
-                    icon: const Icon(Icons.menu_open),
-                    onPressed: () => Scaffold.of(context).openEndDrawer(),
-                    tooltip: 'Menu',
-                  ),
-                ),
-              ],
-            ),
+          : ReaderAppBar(title: _title, onBack: _onBackPressed),
       endDrawer: _fullScreen ? null : SideBar(novelId: widget.novelId),
       body: _editMode
           ? _buildEditBody(context)
-          : (() {
-              final listView = ListView(
-                controller: _controller,
-                padding: const EdgeInsets.all(16),
-                children: [
-                  if (_autoplayBlocked)
-                    Card(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerHighest,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.info_outline),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                AppLocalizations.of(
-                                  context,
-                                )!.autoplayBlockedInline,
-                              ),
-                            ),
-                            Tooltip(
-                              message: AppLocalizations.of(
-                                context,
-                              )!.continueLabel,
-                              child: IconButton(
-                                icon: const Icon(Icons.play_arrow),
-                                onPressed: () async {
-                                  setState(() => _autoplayBlocked = false);
-                                  await _startTts();
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  const SizedBox(height: 12),
-                  ...ReaderParagraphs.build(
-                    _content ?? '',
-                    _ttsIndex,
-                    Theme.of(context).textTheme,
-                    Theme.of(context).colorScheme,
-                  ),
-                  const SizedBox(height: 24),
-                  const SizedBox(height: 12),
-                ],
-              );
-              final enableGestures =
-                  (defaultTargetPlatform == TargetPlatform.android ||
-                      defaultTargetPlatform == TargetPlatform.iOS) &&
-                  motion.gesturesEnabled;
-              if (!enableGestures) return listView;
-              return GestureDetector(
-                onTap: () {
-                  if (_editMode || _discardDialogOpen) return;
-                  setState(() => _fullScreen = !_fullScreen);
-                },
-                onDoubleTap: () {
-                  if (_editMode || _discardDialogOpen) return;
-                  _onPlayStopPressed();
-                },
-                onHorizontalDragEnd: (details) {
-                  if (_editMode || _discardDialogOpen) return;
-                  final v = details.primaryVelocity ?? 0.0;
-                  final min = motion.swipeMinVelocity;
-                  if (v.abs() < min) return;
-                  if (v > 0) {
-                    _onPrevPressed();
-                  } else if (v < 0) {
-                    _onNextPressed();
-                  }
-                },
-                child: listView,
-              );
-            })(),
+          : ReaderBody(
+              controller: _controller,
+              content: _content,
+              ttsIndex: _ttsIndex,
+              autoplayBlocked: _autoplayBlocked,
+              onAutoplayContinue: () async {
+                setState(() => _autoplayBlocked = false);
+                await _startTts();
+              },
+              gesturesEnabled: motion.gesturesEnabled,
+              swipeMinVelocity: motion.swipeMinVelocity,
+              editMode: _editMode,
+              discardDialogOpen: _discardDialogOpen,
+              onToggleFullScreen: () =>
+                  setState(() => _fullScreen = !_fullScreen),
+              onPlayStop: _onPlayStopPressed,
+              onPrev: _onPrevPressed,
+              onNext: _onNextPressed,
+            ),
       bottomNavigationBar: _fullScreen
           ? null
           : SafeArea(
@@ -458,42 +373,21 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
                   height: kToolbarHeight,
                   child: LayoutBuilder(
                     builder: (context, constraints) {
-                      const double compactWidth = 480.0;
-                      const double cozyWidth = 720.0;
                       final double maxW = constraints.maxWidth;
-                      final bool isCompact = maxW < compactWidth;
-                      final bool isRegular = maxW >= cozyWidth;
-                      final double spacing = isRegular ? Spacing.m : Spacing.s;
-                      final double iconSize = 24.0;
-                      final bool showPercent = !isCompact;
-                      final bool isWideForEdit = maxW >= 900.0;
                       final editPerms = ref.watch(
                         editPermissionsProvider(widget.novelId),
                       );
                       final bool canEdit = editPerms.asData?.value ?? false;
 
-                      Widget? editActions;
-                      if (_editMode) {
-                        final current = _allChapters.isNotEmpty
-                            ? _allChapters[_currentIdx]
-                            : Chapter(
-                                id: _chapterId,
-                                novelId: widget.novelId,
-                                idx: _currentIdx + 1,
-                                title: _title,
-                                content: _content,
-                              );
-                        editActions = ReaderEditActions(
-                          current: current,
-                          previewMode: _previewMode,
-                          onTogglePreview: () =>
-                              setState(() => _previewMode = !_previewMode),
-                          isCompact: isCompact,
-                          isWideForEdit: isWideForEdit,
-                          spacing: spacing,
-                          iconSize: iconSize,
-                        );
-                      }
+                      final current = _allChapters.isNotEmpty
+                          ? _allChapters[_currentIdx]
+                          : Chapter(
+                              id: _chapterId,
+                              novelId: widget.novelId,
+                              idx: _currentIdx + 1,
+                              title: _title,
+                              content: _content,
+                            );
 
                       final barProgress =
                           _speaking && (_content?.isNotEmpty ?? false)
@@ -501,13 +395,11 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
                                 ? (_ttsIndex / _content!.length).clamp(0.0, 1.0)
                                 : 0.0)
                           : _scrollProgress;
-                      return ReaderBottomBar(
+
+                      return ReaderBottomBarShell(
                         canEdit: canEdit,
                         editMode: _editMode,
                         speaking: _speaking,
-                        iconSize: iconSize,
-                        spacing: spacing,
-                        showPercent: showPercent,
                         scrollProgress: barProgress,
                         onEditToggle: _onEditTogglePressed,
                         onPrev: _onPrevPressed,
@@ -515,7 +407,11 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
                         onPlayStop: _onPlayStopPressed,
                         onOpenTtsSettings: _openSettingsForTts,
                         reduceMotion: motion.reduceMotion,
-                        editActions: editActions,
+                        maxWidth: maxW,
+                        current: current,
+                        previewMode: _previewMode,
+                        onTogglePreview: () =>
+                            setState(() => _previewMode = !_previewMode),
                       );
                     },
                   ),
@@ -524,61 +420,16 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
             ),
     );
 
-    final Map<ShortcutActivator, Intent> shortcutsMap =
-        (_editMode || _discardDialogOpen)
-        ? <ShortcutActivator, Intent>{}
-        : <ShortcutActivator, Intent>{
-            const SingleActivator(LogicalKeyboardKey.space):
-                const _ToggleSpeakIntent(),
-            const SingleActivator(LogicalKeyboardKey.arrowLeft):
-                const _PrevIntent(),
-            const SingleActivator(LogicalKeyboardKey.arrowRight):
-                const _NextIntent(),
-            const SingleActivator(LogicalKeyboardKey.keyR):
-                const _OpenRateIntent(),
-            const SingleActivator(LogicalKeyboardKey.keyV):
-                const _OpenVoiceIntent(),
-          };
-    return Shortcuts(
-      shortcuts: shortcutsMap,
-      child: Actions(
-        actions: <Type, Action<Intent>>{
-          _ToggleSpeakIntent: CallbackAction<Intent>(
-            onInvoke: (_) {
-              _onPlayStopPressed();
-              return null;
-            },
-          ),
-          _PrevIntent: CallbackAction<Intent>(
-            onInvoke: (_) {
-              _loadPrevChapter();
-              return null;
-            },
-          ),
-          _NextIntent: CallbackAction<Intent>(
-            onInvoke: (_) {
-              _loadNextChapter();
-              return null;
-            },
-          ),
-          _OpenRateIntent: CallbackAction<Intent>(
-            onInvoke: (_) {
-              _openSettingsForTts();
-              return null;
-            },
-          ),
-          _OpenVoiceIntent: CallbackAction<Intent>(
-            onInvoke: (_) {
-              _openSettingsForTts();
-              return null;
-            },
-          ),
-        },
-        child: Focus(
-          key: const ValueKey('reader_bar_focus'),
-          autofocus: true,
-          child: readerScaffold,
-        ),
+    return ReaderShortcutsWrapper(
+      disabled: _editMode || _discardDialogOpen,
+      onToggleSpeak: _onPlayStopPressed,
+      onPrev: _loadPrevChapter,
+      onNext: _loadNextChapter,
+      onOpenSettings: _openSettingsForTts,
+      child: Focus(
+        key: const ValueKey('reader_bar_focus'),
+        autofocus: true,
+        child: readerScaffold,
       ),
     );
   }
@@ -802,24 +653,4 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
     _ttsDriver.stop();
     super.dispose();
   }
-}
-
-class _ToggleSpeakIntent extends Intent {
-  const _ToggleSpeakIntent();
-}
-
-class _PrevIntent extends Intent {
-  const _PrevIntent();
-}
-
-class _NextIntent extends Intent {
-  const _NextIntent();
-}
-
-class _OpenRateIntent extends Intent {
-  const _OpenRateIntent();
-}
-
-class _OpenVoiceIntent extends Intent {
-  const _OpenVoiceIntent();
 }
