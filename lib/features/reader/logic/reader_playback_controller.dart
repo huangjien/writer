@@ -12,10 +12,12 @@ class ReaderPlaybackController {
   final TtsDriver _driver;
   final WidgetRef _ref;
   Timer? _autoStartRetry;
+  Timer? _progressFallback;
   int _attempts = 0;
   bool _speaking = false;
   int _index = 0;
   final int _maxAttempts = 5;
+  bool _gotDriverProgress = false;
 
   ReaderPlaybackController(this._driver, this._ref);
 
@@ -35,6 +37,7 @@ class ReaderPlaybackController {
       'en' => 'en-US',
       _ => 'en-US',
     };
+    _gotDriverProgress = false;
     await _driver.configure(
       voiceName: current.voiceName,
       voiceLocale: current.voiceLocale,
@@ -42,6 +45,8 @@ class ReaderPlaybackController {
       onProgress: (i) {
         _index = i;
         _speaking = true;
+        _gotDriverProgress = true;
+        _progressFallback?.cancel();
         onProgress(i);
       },
       onStart: () {
@@ -60,6 +65,21 @@ class ReaderPlaybackController {
     await _driver.setRate(current.rate);
     await _driver.setVolume(current.volume);
     await _driver.start(content: content, startIndex: startIndex);
+
+    _progressFallback?.cancel();
+    _progressFallback = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (!_speaking || _gotDriverProgress) {
+        t.cancel();
+        return;
+      }
+      final next = _index + 12;
+      final maxLen = content.length;
+      _index = next > maxLen ? maxLen : next;
+      onProgress(_index);
+      if (_index >= maxLen) {
+        t.cancel();
+      }
+    });
   }
 
   void tryAutoStart({
@@ -161,9 +181,11 @@ class ReaderPlaybackController {
     await _driver.stop();
     _speaking = false;
     _index = 0;
+    _progressFallback?.cancel();
   }
 
   void dispose() {
     _autoStartRetry?.cancel();
+    _progressFallback?.cancel();
   }
 }
