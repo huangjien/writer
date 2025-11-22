@@ -6,6 +6,8 @@ import '../theme/reader_typography.dart';
 import '../theme/font_packs.dart';
 import '../theme/reader_background.dart';
 import 'theme_prefs.dart';
+import '../shared/strings.dart';
+import '../shared/math.dart';
 
 const String _prefThemeMode = prefThemeMode;
 const String _prefLightTheme = prefLightTheme;
@@ -100,13 +102,8 @@ class ThemeController extends StateNotifier<ThemeState> {
     final presetDark =
         tryDecodePreset(prefs.getString(_prefTypographyPresetDark)) ?? preset;
     final fontPack = decodeFontPack(prefs.getString(_prefFontPack));
-    // Default primary font family to Consolas when unset
     final rawFamily = prefs.getString(_prefCustomFontFamily);
-    final customFontFamily = () {
-      final v = rawFamily?.trim();
-      if (v == null || v.isEmpty) return 'Consolas';
-      return v;
-    }();
+    final customFontFamily = trimOrDefault(rawFamily, 'Consolas');
     final fontScale = prefs.getDouble(_prefFontScale) ?? 1.0;
     final readerBgDepth = decodeBgDepth(prefs.getString(_prefReaderBgDepth));
     final famLight = unified;
@@ -151,8 +148,8 @@ class ThemeController extends StateNotifier<ThemeState> {
   }
 
   void setCustomFontFamily(String? family) {
-    final value = family?.trim();
-    if (value == null || value.isEmpty) {
+    final value = trimToNull(family);
+    if (value == null) {
       _prefs.remove(_prefCustomFontFamily);
       state = state.copyWith(customFontFamily: null);
     } else {
@@ -162,8 +159,7 @@ class ThemeController extends StateNotifier<ThemeState> {
   }
 
   void setFontScale(double scale) {
-    // Clamp to reasonable range
-    final clamped = scale.clamp(0.8, 3.2);
+    final clamped = clampDouble(scale, 0.8, 3.2);
     _prefs.setDouble(_prefFontScale, clamped);
     state = state.copyWith(fontScale: clamped);
   }

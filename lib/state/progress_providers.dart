@@ -1,13 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'providers.dart';
 
 import '../models/user_progress.dart';
 import '../repositories/progress_repository.dart';
 import '../repositories/progress_port.dart';
 
-final progressRepositoryProvider = Provider<ProgressPort>(
-  (ref) => ProgressRepository(Supabase.instance.client),
-);
+final progressRepositoryProvider = Provider<ProgressPort>((ref) {
+  final client = ref.watch(supabaseClientProvider);
+  return ProgressRepository(client);
+});
 
 final lastProgressProvider = FutureProvider.family<UserProgress?, String>((
   ref,

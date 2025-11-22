@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user_progress.dart';
 import '../repositories/progress_port.dart';
-import '../repositories/progress_repository.dart';
-import 'providers.dart';
+import 'progress_providers.dart';
+export 'progress_providers.dart' show progressRepositoryProvider;
 
 class ProgressController extends StateNotifier<AsyncValue<void>> {
   ProgressController(this._repo) : super(const AsyncData(null));
@@ -21,10 +21,7 @@ class ProgressController extends StateNotifier<AsyncValue<void>> {
   }
 }
 
-final progressRepositoryProvider = Provider<ProgressPort>((ref) {
-  final client = ref.watch(supabaseClientProvider);
-  return ProgressRepository(client);
-});
+// Use shared progressRepositoryProvider from progress_providers.dart
 
 final progressControllerProvider =
     StateNotifierProvider<ProgressController, AsyncValue<void>>((ref) {

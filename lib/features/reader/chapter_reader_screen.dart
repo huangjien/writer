@@ -5,13 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/chapter.dart';
-import '../../repositories/chapter_repository.dart';
 import '../../state/app_settings.dart';
-import '../../state/chapter_edit_controller.dart';
 import '../../state/edit_permissions.dart';
 import '../../state/motion_settings.dart';
-import '../../state/performance_settings.dart';
-import '../../state/providers.dart';
 import '../../state/tts_settings.dart';
 import '../../theme/reader_background.dart';
 import '../../state/theme_controller.dart';
@@ -25,6 +21,8 @@ import 'widgets/reader_app_bar.dart';
 import 'widgets/reader_shortcuts_wrapper.dart';
 import 'widgets/reader_body.dart';
 import 'logic/progress_saver.dart';
+import 'logic/reader_navigation.dart';
+import 'logic/edit_mode.dart';
 
 class ChapterReaderScreen extends ConsumerStatefulWidget {
   const ChapterReaderScreen({
@@ -190,8 +188,8 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
 
   Future<void> _loadNextChapter() async {
     if (!mounted) return;
-    final nextIdx = _currentIdx + 1;
-    if (nextIdx >= _allChapters.length) {
+    final res = computeNext(_allChapters, _currentIdx, widget.novelId);
+    if (res == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -201,24 +199,27 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
       }
       return;
     }
-    final Chapter next = _allChapters[nextIdx];
     setState(() {
-      _chapterId = next.id;
-      _title = next.title ?? 'Chapter ${next.idx}';
-      _content = next.content;
-      _currentIdx = nextIdx;
+      _chapterId = res.chapterId;
+      _title = res.title;
+      _content = res.content;
+      _currentIdx = res.currentIdx;
       _ttsIndex = 0;
       _speaking = false;
       _controller.jumpTo(0);
     });
     _tryAutoStartTts();
-    await _prefetchNextIfEnabled(fromIdx: nextIdx);
+    await prefetchNextIfEnabled(
+      context: context,
+      all: _allChapters,
+      fromIdx: res.currentIdx,
+    );
   }
 
   Future<void> _loadPrevChapter() async {
     if (!mounted) return;
-    final prevIdx = _currentIdx - 1;
-    if (prevIdx < 0) {
+    final res = computePrev(_allChapters, _currentIdx, widget.novelId);
+    if (res == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -228,12 +229,11 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
       }
       return;
     }
-    final Chapter prev = _allChapters[prevIdx];
     setState(() {
-      _chapterId = prev.id;
-      _title = prev.title ?? 'Chapter ${prev.idx}';
-      _content = prev.content;
-      _currentIdx = prevIdx;
+      _chapterId = res.chapterId;
+      _title = res.title;
+      _content = res.content;
+      _currentIdx = res.currentIdx;
       _ttsIndex = 0;
       _speaking = false;
       _controller.jumpTo(0);
@@ -243,15 +243,11 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
   Future<void> _prefetchNextIfEnabled({required int fromIdx}) async {
     if (!mounted) return;
     try {
-      final container = ProviderScope.containerOf(context, listen: false);
-      final perf = container.read(performanceSettingsProvider);
-      final supEnabled = container.read(supabaseEnabledProvider);
-      if (!perf.prefetchNextChapter || !supEnabled) return;
-      final idx = fromIdx + 1;
-      if (idx >= _allChapters.length) return;
-      final next = _allChapters[idx];
-      final repo = container.read(chapterRepositoryProvider);
-      await repo.getChapter(next);
+      await prefetchNextIfEnabled(
+        context: context,
+        all: _allChapters,
+        fromIdx: fromIdx,
+      );
     } catch (_) {}
   }
 
@@ -461,12 +457,7 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
             title: _title,
             content: _content,
           );
-    try {
-      final state = ref.read(chapterEditControllerProvider(current));
-      return state.isDirty;
-    } catch (_) {
-      return false;
-    }
+    return isEditDirty(ref, current);
   }
 
   Future<DiscardDecision?> _showDiscardDialog() async {
@@ -480,7 +471,7 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
             title: _title,
             content: _content,
           );
-    final result = await showDiscardDialog(
+    final result = await showDiscardDialogBridge(
       context: context,
       ref: ref,
       current: current,

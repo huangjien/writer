@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:novel_reader/l10n/app_localizations.dart';
 import 'package:novel_reader/state/novel_providers.dart';
+import 'package:novel_reader/shared/strings.dart';
 import 'package:novel_reader/state/edit_permissions.dart';
 
 class NovelMetadataEditor extends ConsumerStatefulWidget {
@@ -75,7 +76,7 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
 
   String? _validateCoverUrl(String? raw) {
     final l10n = AppLocalizations.of(context)!;
-    final value = raw?.trim() ?? '';
+    final value = trimOrEmpty(raw);
     if (value.isEmpty) return null; // optional field
     if (value.length > 2048) return l10n.invalidCoverUrl;
     if (value.contains(' ')) return l10n.invalidCoverUrl;

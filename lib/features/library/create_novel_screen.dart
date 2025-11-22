@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
+import '../../shared/strings.dart';
 import '../../state/providers.dart';
 import '../../state/novel_providers.dart';
 
@@ -33,7 +34,7 @@ class _CreateNovelScreenState extends ConsumerState<CreateNovelScreen> {
 
   String? _validateCoverUrl(String? raw) {
     final l10n = AppLocalizations.of(context)!;
-    final value = raw?.trim() ?? '';
+    final value = trimOrEmpty(raw);
     if (value.isEmpty) return null; // optional field
     if (value.length > 2048) return l10n.invalidCoverUrl;
     if (value.contains(' ')) return l10n.invalidCoverUrl;
@@ -54,18 +55,10 @@ class _CreateNovelScreenState extends ConsumerState<CreateNovelScreen> {
     try {
       final repo = ref.read(novelRepositoryProvider);
       final novel = await repo.createNovel(
-        title: _titleController.text.trim().isEmpty
-            ? 'Untitled'
-            : _titleController.text.trim(),
-        author: _authorController.text.trim().isEmpty
-            ? null
-            : _authorController.text.trim(),
-        description: _descriptionController.text.trim().isEmpty
-            ? null
-            : _descriptionController.text.trim(),
-        coverUrl: _coverUrlController.text.trim().isEmpty
-            ? null
-            : _coverUrlController.text.trim(),
+        title: trimOrDefault(_titleController.text, 'Untitled'),
+        author: trimToNull(_authorController.text),
+        description: trimToNull(_descriptionController.text),
+        coverUrl: trimToNull(_coverUrlController.text),
         languageCode: _languageCode,
         isPublic: true,
       );
@@ -115,8 +108,7 @@ class _CreateNovelScreenState extends ConsumerState<CreateNovelScreen> {
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(labelText: l10n.titleLabel),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? l10n.titleLabel : null,
+                validator: (v) => isBlank(v) ? l10n.titleLabel : null,
               ),
               const SizedBox(height: 12),
               TextFormField(

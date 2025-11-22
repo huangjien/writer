@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../shared/strings.dart';
 
 /// Optional font packs for reader UI.
 enum ReaderFontPack { system, inter, merriweather }
@@ -59,8 +60,8 @@ ThemeData applyFontPackOrCustom(
   ReaderFontPack pack,
   String? customFamily,
 ) {
-  final family = customFamily?.trim();
-  if (family != null && family.isNotEmpty) {
+  final family = trimToNull(customFamily);
+  if (family != null) {
     // Apply specified fontFamily with graceful monospace fallbacks across the TextTheme.
     final withFamily = _applyFamilyWithFallback(base.textTheme, family);
     return base.copyWith(textTheme: withFamily);
