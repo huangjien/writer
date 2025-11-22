@@ -64,6 +64,7 @@ class TtsDriver {
             _consumedLength += _chunks[_chunkIndex].length;
             _index = _baseStart + _consumedLength;
           }
+          onProgress?.call(_index);
           _chunkIndex++;
           if (_chunkIndex < _chunks.length) {
             final part = _chunks[_chunkIndex];
