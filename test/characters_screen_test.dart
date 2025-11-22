@@ -6,15 +6,25 @@ import 'package:novel_reader/features/summary/characters_screen.dart';
 import 'package:novel_reader/state/mock_providers.dart';
 import 'package:novel_reader/state/novel_providers.dart';
 import 'package:novel_reader/models/novel.dart';
-import 'package:novel_reader/models/character.dart';
 import 'package:novel_reader/main.dart';
 import 'package:novel_reader/repositories/local_storage_repository.dart';
 
 class CapturingLocalRepo extends LocalStorageRepository {
-  Character? lastCharacter;
+  Map<String, dynamic>? lastNote;
   @override
-  Future<void> saveCharacterForm(String novelId, Character character) async {
-    lastCharacter = character;
+  Future<void> saveCharacterNoteForm(
+    String novelId, {
+    String? title,
+    String? summaries,
+    String? synopses,
+    String languageCode = 'en',
+  }) async {
+    lastNote = {
+      'title': title,
+      'character_summaries': summaries,
+      'character_synopses': synopses,
+      'language_code': languageCode,
+    };
   }
 }
 
@@ -48,24 +58,27 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Required validation for Name.
+    // Required validation for Title.
+    await tester.ensureVisible(find.text('Save'));
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(find.text('Required'), findsOneWidget);
 
     // Fill fields and save.
-    final nameField = find.widgetWithText(TextFormField, 'Name');
-    final roleField = find.widgetWithText(TextFormField, 'Role');
-    final bioField = find.widgetWithText(TextFormField, 'Bio');
-    await tester.enterText(nameField, 'Alice');
-    await tester.enterText(roleField, 'Protagonist');
-    await tester.enterText(bioField, 'Brave and curious.');
+    final titleField = find.widgetWithText(TextFormField, 'Title');
+    final summariesField = find.widgetWithText(TextFormField, 'Summaries');
+    final synopsesField = find.widgetWithText(TextFormField, 'Synopses');
+    await tester.enterText(titleField, 'Alice');
+    await tester.enterText(summariesField, 'Short bio');
+    await tester.enterText(synopsesField, 'Long synopsis');
+    await tester.ensureVisible(find.text('Save'));
     await tester.tap(find.text('Save'));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    expect(repo.lastCharacter?.name, 'Alice');
-    expect(repo.lastCharacter?.role, 'Protagonist');
-    expect(repo.lastCharacter?.bio, 'Brave and curious.');
+    expect(repo.lastNote?['title'], 'Alice');
+    expect(repo.lastNote?['character_summaries'], 'Short bio');
+    expect(repo.lastNote?['character_synopses'], 'Long synopsis');
+    expect(repo.lastNote?['language_code'], 'en');
     expect(find.text('Saved'), findsOneWidget);
   });
 }

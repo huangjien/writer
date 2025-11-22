@@ -144,12 +144,12 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(l10n.appTitle),
-              const SizedBox(width: Spacing.s),
+              const SizedBox(width: Spacing.xs),
               const Icon(Icons.info_outline, size: 16),
-              const SizedBox(width: Spacing.s - 2),
+              const SizedBox(width: Spacing.xs),
               Text(
                 isSupabaseEnabled ? l10n.modeSupabase : l10n.modeMockData,
-                style: const TextStyle(color: Colors.black54),
+                style: const TextStyle(color: Colors.black54, fontSize: 12),
               ),
             ],
           ),
@@ -214,7 +214,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                 title: Text(
                   l10n.recentlyRead,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -223,7 +223,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                   SizedBox(height: 150, child: RecentChapters()),
                 ],
               ),
-              const SizedBox(height: Spacing.m),
+              const SizedBox(height: Spacing.s),
             ],
             LibrarySearchBar(
               controller: _searchController,

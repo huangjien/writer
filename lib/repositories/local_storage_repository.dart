@@ -114,6 +114,35 @@ class LocalStorageRepository {
     }
   }
 
+  Future<void> saveCharacterNoteForm(
+    String novelId, {
+    String? title,
+    String? summaries,
+    String? synopses,
+    String languageCode = 'en',
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final payload = {
+      'title': title,
+      'character_summaries': summaries,
+      'character_synopses': synopses,
+      'language_code': languageCode,
+    };
+    await prefs.setString('character_note_form_$novelId', jsonEncode(payload));
+  }
+
+  Future<Map<String, dynamic>?> getCharacterNoteForm(String novelId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('character_note_form_$novelId');
+    if (raw == null) return null;
+    try {
+      final decoded = jsonDecode(raw) as Map<String, dynamic>;
+      return decoded;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> saveSceneForm(String novelId, Scene scene) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('scene_form_$novelId', jsonEncode(scene.toMap()));
