@@ -19,6 +19,10 @@ SUPABASE_URL ?=
 SUPABASE_ANON_KEY ?=
 WEB_PORT ?= 5500
 
+# Default TAG to version from package.json if not provided
+PACKAGE_VERSION := $(shell node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
+TAG ?= v$(PACKAGE_VERSION)
+
 # Construct dart-define args only when variables are provided
 DF_ARGS := $(strip $(if $(SUPABASE_URL),--dart-define SUPABASE_URL=$(SUPABASE_URL)) \
                  $(if $(SUPABASE_ANON_KEY),--dart-define SUPABASE_ANON_KEY=$(SUPABASE_ANON_KEY)))
@@ -49,6 +53,7 @@ help:
 	@echo "  serve-web-build    - Serve built web assets locally (requires python3)"
 	@echo "  env-print          - Print Supabase env passed to dart-define"
 	@echo "  install-hooks      - Configure git to use .githooks/ as hooks path"
+	@echo "  publish-release    - Publish release to GitHub (defaults to version in package.json)"
 
 dev-web:
 	$(FLUTTER) run -d web-server --web-port $(WEB_PORT) $(DF_ARGS)
@@ -139,3 +144,32 @@ install-hooks:
 	git config core.hooksPath .githooks
 	ROOT_DIR=$$(git rev-parse --show-toplevel); \
 	chmod +x $$ROOT_DIR/.githooks/pre-commit || true
+
+publish-release:
+	@command -v gh >/dev/null 2>&1 || { echo >&2 "GitHub CLI (gh) is not installed. Aborting."; exit 1; }
+	@echo "Creating GitHub release $(TAG)..."
+	gh release create $(TAG) --generate-notes
+	@echo "Processing build artifacts..."
+	@# Upload macOS App
+	@if [ -d "build/macos/Build/Products/Release" ]; then \
+		APP_PATH=$$(find build/macos/Build/Products/Release -name "*.app" | head -n 1); \
+		if [ -n "$$APP_PATH" ]; then \
+			APP_NAME=$$(basename "$$APP_PATH"); \
+			echo "Zipping $$APP_NAME..."; \
+			cd build/macos/Build/Products/Release && \
+			zip -r "$${APP_NAME%.*}-macos-$(TAG).zip" "$$APP_NAME" && \
+			gh release upload $(TAG) "$${APP_NAME%.*}-macos-$(TAG).zip"; \
+		fi \
+	fi
+	@# Upload Android APK
+	@if [ -f "build/app/outputs/flutter-apk/app-release.apk" ]; then \
+		echo "Uploading Android APK..."; \
+		cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/novel-reader-android-$(TAG).apk && \
+		gh release upload $(TAG) build/app/outputs/flutter-apk/novel-reader-android-$(TAG).apk; \
+	fi
+	@# Upload iOS IPA
+	@if [ -f "build/ios/ipa/novel_reader.ipa" ]; then \
+		echo "Uploading iOS IPA..."; \
+		cp build/ios/ipa/novel_reader.ipa build/ios/ipa/novel-reader-ios-$(TAG).ipa && \
+		gh release upload $(TAG) build/ios/ipa/novel-reader-ios-$(TAG).ipa; \
+	fi

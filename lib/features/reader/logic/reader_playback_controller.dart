@@ -14,17 +14,12 @@ class ReaderPlaybackController {
   final TtsDriver _driver;
   final WidgetRef _ref;
   Timer? _autoStartRetry;
-  Timer? _progressFallback;
   int _attempts = 0;
   bool _speaking = false;
   int _index = 0;
   final int _maxAttempts = 5;
-  bool _gotDriverProgress = false;
   int _totalLen = 0;
-  DateTime _lastProgressAt = DateTime.fromMillisecondsSinceEpoch(0);
-  bool _sessionActive = false;
   int _lastIndex = 0;
-  DateTime _lastIndexAt = DateTime.fromMillisecondsSinceEpoch(0);
 
   @visibleForTesting
   DateTime Function() nowProvider = () => DateTime.now();
@@ -50,7 +45,6 @@ class ReaderPlaybackController {
     required FlagCb onCancel,
     required ErrorCb onError,
     required FlagCb onComplete,
-    bool enableFallback = true,
   }) async {
     final current = _ref.read(ttsSettingsProvider);
     final appLocale = _ref.read(appSettingsProvider);
@@ -59,8 +53,6 @@ class ReaderPlaybackController {
       'en' => 'en-US',
       _ => 'en-US',
     };
-    _gotDriverProgress = false;
-    _sessionActive = true;
     await _driver.configure(
       voiceName: current.voiceName,
       voiceLocale: current.voiceLocale,
@@ -68,13 +60,10 @@ class ReaderPlaybackController {
       onProgress: (i) {
         _index = i;
         _speaking = true;
-        _gotDriverProgress = true;
-        _lastProgressAt = nowProvider();
         onProgress(i);
         onVisualProgress?.call(i);
         if (_lastIndex != _index) {
           _lastIndex = _index;
-          _lastIndexAt = nowProvider();
         }
       },
       onStart: () {
@@ -83,7 +72,6 @@ class ReaderPlaybackController {
       },
       onCancel: () {
         _speaking = false;
-        _sessionActive = false;
         onCancel();
       },
       onError: (msg) {
@@ -96,68 +84,8 @@ class ReaderPlaybackController {
     _totalLen = computeTotalLen(content, startIndex);
     await _driver.start(content: content, startIndex: startIndex);
 
-    _progressFallback?.cancel();
-    if (enableFallback) {
-      _index = startIndex;
-      onVisualProgress?.call(_index);
-      _lastProgressAt = nowProvider();
-      _progressFallback = Timer.periodic(const Duration(milliseconds: 500), (
-        t,
-      ) {
-        if (!_sessionActive) {
-          t.cancel();
-          return;
-        }
-        final now = nowProvider();
-        final staleMs = now.difference(_lastProgressAt).inMilliseconds;
-        final shouldTick = !_gotDriverProgress || staleMs >= 1200;
-        if (!shouldTick) return;
-        if (staleMs >= 2000 && !_driver.speaking) {
-          final maxLen = _totalLen > 0 ? _totalLen : content.length;
-          _index = maxLen;
-          onProgress(maxLen);
-          _speaking = false;
-          _sessionActive = false;
-          try {
-            _driver.stop();
-          } catch (_) {}
-          onComplete();
-          t.cancel();
-          return;
-        }
-        final next = _index + 12;
-        final maxLen = _totalLen > 0 ? _totalLen : content.length;
-        _index = next > maxLen ? maxLen : next;
-        onVisualProgress?.call(_index);
-        if (_lastIndex != _index) {
-          _lastIndex = _index;
-          _lastIndexAt = nowProvider();
-        }
-        final stagnantMs = now.difference(_lastIndexAt).inMilliseconds;
-        if (stagnantMs >= 3000 &&
-            (_index >= (maxLen - 24) || (_index.toDouble() / maxLen) >= 0.95)) {
-          onProgress(maxLen);
-          _speaking = false;
-          _sessionActive = false;
-          try {
-            _driver.stop();
-          } catch (_) {}
-          onComplete();
-          t.cancel();
-          return;
-        }
-        if (_index >= maxLen) {
-          onProgress(maxLen);
-          _speaking = false;
-          _sessionActive = false;
-          try {
-            _driver.stop();
-          } catch (_) {}
-          onComplete();
-          t.cancel();
-        }
-      });
-    }
+    _index = startIndex;
+    onVisualProgress?.call(_index);
   }
 
   void tryAutoStart({
@@ -183,7 +111,6 @@ class ReaderPlaybackController {
       onCancel: onCancel,
       onError: onError,
       onComplete: onComplete,
-      enableFallback: true,
     );
     _scheduleAutoStartRetry(
       content: content,
@@ -221,9 +148,8 @@ class ReaderPlaybackController {
     final idx = _attempts.clamp(0, delays.length - 1);
     final delay = delays[idx];
     _autoStartRetry = Timer(delay, () {
-      final hasRealProgress = _gotDriverProgress;
       final started = _speaking;
-      if (started || hasRealProgress) {
+      if (started) {
         _autoStartRetry?.cancel();
         setAutoplayBlocked(false);
         return;
@@ -266,13 +192,9 @@ class ReaderPlaybackController {
     await _driver.stop();
     _speaking = false;
     _index = 0;
-    _sessionActive = false;
-    _progressFallback?.cancel();
   }
 
   void dispose() {
     _autoStartRetry?.cancel();
-    _progressFallback?.cancel();
-    _sessionActive = false;
   }
 }
