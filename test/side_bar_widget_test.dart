@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novel_reader/widgets/side_bar.dart';
-import 'package:novel_reader/state/novel_providers.dart';
-import 'package:novel_reader/state/edit_permissions.dart';
-import 'package:novel_reader/models/novel.dart';
+import 'package:writer/widgets/side_bar.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/edit_permissions.dart';
+import 'package:writer/models/novel.dart';
 
 void main() {
   testWidgets('SideBar renders navigation items and novel title', (

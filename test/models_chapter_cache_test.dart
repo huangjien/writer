@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/models/chapter_cache.dart';
+import 'package:writer/models/chapter_cache.dart';
 
 void main() {
   test('ChapterCache toJson/fromJson roundtrip', () {

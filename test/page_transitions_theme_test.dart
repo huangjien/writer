@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:novel_reader/app.dart';
-import 'package:novel_reader/routing/app_router.dart';
-import 'package:novel_reader/state/motion_settings.dart';
-import 'package:novel_reader/theme/no_animation_transitions.dart';
-import 'package:novel_reader/theme/fade_through_page_transitions.dart';
+import 'package:writer/app.dart';
+import 'package:writer/routing/app_router.dart';
+import 'package:writer/state/motion_settings.dart';
+import 'package:writer/theme/no_animation_transitions.dart';
+import 'package:writer/theme/fade_through_page_transitions.dart';
 
 class _TestMotionSettingsNotifier extends MotionSettingsNotifier {
   _TestMotionSettingsNotifier(bool reduceMotion) : super.lazy() {

@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:novel_reader/features/reader/reader_screen.dart';
-import 'package:novel_reader/models/chapter.dart';
-import 'package:novel_reader/state/chapter_edit_controller.dart';
-import 'package:novel_reader/repositories/chapter_repository.dart';
-import 'package:novel_reader/state/edit_permissions.dart';
+import 'package:writer/features/reader/reader_screen.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/state/chapter_edit_controller.dart';
+import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/state/edit_permissions.dart';
 
 import 'helpers/test_utils.dart';
 import 'helpers/fake_chapter_port.dart';

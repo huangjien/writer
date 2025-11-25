@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
-import 'package:novel_reader/features/settings/widgets/palette_settings_section.dart';
-import 'package:novel_reader/state/theme_controller.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/features/settings/widgets/palette_settings_section.dart';
+import 'package:writer/state/theme_controller.dart';
 
 void main() {
   setUp(() async {

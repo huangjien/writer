@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:novel_reader/repositories/chapter_repository.dart';
-import 'package:novel_reader/repositories/local_storage_repository.dart';
-import 'package:novel_reader/models/chapter.dart';
-import 'package:novel_reader/models/chapter_cache.dart';
+import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/models/chapter_cache.dart';
 
 void main() {
   setUp(() async {

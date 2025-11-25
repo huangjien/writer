@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:novel_reader/main.dart';
-import 'package:novel_reader/repositories/local_storage_repository.dart';
-import 'package:novel_reader/state/supabase_config.dart';
+import 'package:writer/main.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/state/supabase_config.dart';
 
 void main() {
   test('localStorageRepositoryProvider provides LocalStorageRepository', () {

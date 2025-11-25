@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:novel_reader/models/chapter.dart';
-import 'package:novel_reader/state/motion_settings.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/state/motion_settings.dart';
 import 'helpers/test_utils.dart';
-import 'package:novel_reader/features/reader/chapter_reader_screen.dart';
+import 'package:writer/features/reader/chapter_reader_screen.dart';
 
 void main() {
   setUp(() async {

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:novel_reader/features/about/about_screen.dart';
+import 'package:writer/features/about/about_screen.dart';
 import 'helpers/test_utils.dart';
 
 void main() {
@@ -12,7 +12,7 @@ void main() {
 
   testWidgets('AboutScreen shows version from package.json', (tester) async {
     TestWidgetsFlutterBinding.ensureInitialized();
-    const pkgJson = '{"name":"novel_reader","version":"1.3.1"}';
+    const pkgJson = '{"name":"writer","version":"1.3.1"}';
     tester.binding.defaultBinaryMessenger.setMockMessageHandler(
       'flutter/assets',
       (ByteData? message) async {

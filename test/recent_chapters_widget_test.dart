@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novel_reader/widgets/recent_chapters.dart';
-import 'package:novel_reader/state/novel_providers.dart';
-import 'package:novel_reader/models/novel.dart';
-import 'package:novel_reader/models/chapter.dart';
-import 'package:novel_reader/models/user_progress.dart';
-import 'package:novel_reader/models/recent_progress_details.dart';
+import 'package:writer/widgets/recent_chapters.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/models/user_progress.dart';
+import 'package:writer/models/recent_progress_details.dart';
 
 void main() {
   testWidgets('RecentChapters shows list of recent items', (tester) async {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/features/reader/widgets/preview_panel.dart';
+import 'package:writer/features/reader/widgets/preview_panel.dart';
 
 void main() {
   testWidgets('PreviewPanel renders diff rows and cells', (tester) async {

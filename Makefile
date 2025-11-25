@@ -1,4 +1,4 @@
-## Makefile for Novel Reader (Flutter)
+## Makefile for Writer (Flutter)
 ## Usage examples:
 ##   make help
 ##   make dev-web WEB_PORT=5500
@@ -164,12 +164,12 @@ publish-release:
 	@# Upload Android APK
 	@if [ -f "build/app/outputs/flutter-apk/app-release.apk" ]; then \
 		echo "Uploading Android APK..."; \
-		cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/novel-reader-android-$(TAG).apk && \
-		gh release upload $(TAG) build/app/outputs/flutter-apk/novel-reader-android-$(TAG).apk; \
+		cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/writer-android-$(TAG).apk && \
+		gh release upload $(TAG) build/app/outputs/flutter-apk/writer-android-$(TAG).apk; \
 	fi
 	@# Upload iOS IPA
-	@if [ -f "build/ios/ipa/novel_reader.ipa" ]; then \
+	@if [ -f "build/ios/ipa/writer.ipa" ]; then \
 		echo "Uploading iOS IPA..."; \
-		cp build/ios/ipa/novel_reader.ipa build/ios/ipa/novel-reader-ios-$(TAG).ipa && \
-		gh release upload $(TAG) build/ios/ipa/novel-reader-ios-$(TAG).ipa; \
+		cp build/ios/ipa/writer.ipa build/ios/ipa/writer-ios-$(TAG).ipa && \
+		gh release upload $(TAG) build/ios/ipa/writer-ios-$(TAG).ipa; \
 	fi

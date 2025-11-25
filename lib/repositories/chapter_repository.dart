@@ -1,7 +1,7 @@
-import 'package:novel_reader/main.dart';
+import 'package:writer/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:novel_reader/state/supabase_config.dart';
+import 'package:writer/state/supabase_config.dart';
 
 import '../models/chapter.dart';
 import '../models/chapter_cache.dart';

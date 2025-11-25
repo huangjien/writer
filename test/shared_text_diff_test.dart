@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/shared/text_diff.dart';
+import 'package:writer/shared/text_diff.dart';
 
 void main() {
   group('splitWords', () {

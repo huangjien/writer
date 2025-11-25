@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
-import 'package:novel_reader/models/chapter.dart';
-import 'package:novel_reader/features/reader/widgets/reader_edit_actions.dart';
-import 'package:novel_reader/repositories/chapter_port.dart';
-import 'package:novel_reader/repositories/chapter_repository.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/features/reader/widgets/reader_edit_actions.dart';
+import 'package:writer/repositories/chapter_port.dart';
+import 'package:writer/repositories/chapter_repository.dart';
 
 class CapturingChapterPort implements ChapterPort {
   bool saved = false;

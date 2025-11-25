@@ -4,13 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
-import 'package:novel_reader/state/app_settings.dart';
-import 'package:novel_reader/state/progress_notifier.dart';
-import 'package:novel_reader/repositories/progress_port.dart';
-import 'package:novel_reader/state/supabase_config.dart';
-import 'package:novel_reader/features/reader/reader_screen.dart';
-import 'package:novel_reader/models/user_progress.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/progress_notifier.dart';
+import 'package:writer/repositories/progress_port.dart';
+import 'package:writer/state/supabase_config.dart';
+import 'package:writer/features/reader/reader_screen.dart';
+import 'package:writer/models/user_progress.dart';
 
 class CapturingProgressPort implements ProgressPort {
   int saveCalls = 0;

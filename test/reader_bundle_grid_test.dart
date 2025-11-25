@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
-import 'package:novel_reader/features/settings/widgets/reader_bundle_grid.dart';
-import 'package:novel_reader/theme/reader_bundles.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/features/settings/widgets/reader_bundle_grid.dart';
+import 'package:writer/theme/reader_bundles.dart';
 
 void main() {
   testWidgets('ReaderBundleGrid shows bundles and calls onApply', (

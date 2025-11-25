@@ -5,10 +5,10 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
-import 'package:novel_reader/state/app_settings.dart';
-import 'package:novel_reader/state/theme_controller.dart';
-import 'package:novel_reader/theme/themes.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/theme_controller.dart';
+import 'package:writer/theme/themes.dart';
 
 /// Builds a ProviderScope with common overrides for app/theme.
 Future<ProviderScope> buildAppScope({

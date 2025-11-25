@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novel_reader/state/edit_permissions.dart';
+import 'package:writer/state/edit_permissions.dart';
 
 void main() {
   group('editPermissionsProvider maps role to canEdit', () {

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novel_reader/features/library/library_providers.dart';
+import 'package:writer/features/library/library_providers.dart';
 
 void main() {
   test('library providers have expected defaults and update', () async {

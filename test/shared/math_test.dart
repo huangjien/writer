@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/shared/math.dart';
+import 'package:writer/shared/math.dart';
 
 void main() {
   group('Math Utilities', () {

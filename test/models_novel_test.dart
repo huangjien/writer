@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/models/novel.dart';
+import 'package:writer/models/novel.dart';
 
 void main() {
   test('Novel.fromMap applies defaults', () {

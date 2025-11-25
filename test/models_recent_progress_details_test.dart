@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/models/recent_progress_details.dart';
-import 'package:novel_reader/models/user_progress.dart';
-import 'package:novel_reader/models/novel.dart';
-import 'package:novel_reader/models/chapter.dart';
+import 'package:writer/models/recent_progress_details.dart';
+import 'package:writer/models/user_progress.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/models/chapter.dart';
 
 void main() {
   test('RecentProgressDetails holds references', () {

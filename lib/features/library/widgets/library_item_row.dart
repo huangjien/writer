@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../models/novel.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import '../../../theme/design_tokens.dart';
 import '../../../state/motion_settings.dart';
 import '../../../state/novel_providers.dart';

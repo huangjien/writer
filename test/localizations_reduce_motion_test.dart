@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 void main() {
   group('AppLocalizations reduceMotion keys', () {

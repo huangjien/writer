@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/repositories/chapter_port.dart';
-import 'package:novel_reader/models/chapter.dart';
+import 'package:writer/repositories/chapter_port.dart';
+import 'package:writer/models/chapter.dart';
 
 class _FakeChapterPort implements ChapterPort {
   @override

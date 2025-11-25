@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novel_reader/state/mock_providers.dart';
+import 'package:writer/state/mock_providers.dart';
 
 void main() {
   test('mock providers return data', () async {

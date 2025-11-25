@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:novel_reader/state/theme_controller.dart';
+import 'package:writer/state/theme_controller.dart';
 import 'widgets/reader_bundle_grid.dart';
 import 'widgets/performance_section.dart';
 import 'widgets/typography_settings_section.dart';
@@ -9,11 +9,11 @@ import 'widgets/supabase_section.dart';
 import 'widgets/app_settings_section.dart';
 import 'widgets/palette_settings_section.dart';
 import 'widgets/tts_settings_container.dart';
-import 'package:novel_reader/theme/reader_bundles.dart';
-import 'package:novel_reader/state/progress_providers.dart';
-import 'package:novel_reader/state/supabase_config.dart';
+import 'package:writer/theme/reader_bundles.dart';
+import 'package:writer/state/progress_providers.dart';
+import 'package:writer/state/supabase_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/features/reader/widgets/reader_bottom_bar.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
+import 'package:writer/features/reader/widgets/reader_bottom_bar.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('ReaderBottomBar shows progress percent', (tester) async {

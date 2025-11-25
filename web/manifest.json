@@ -1,6 +1,6 @@
 {
-    "name": "novel_reader",
-    "short_name": "novel_reader",
+    "name": "writer",
+    "short_name": "writer",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

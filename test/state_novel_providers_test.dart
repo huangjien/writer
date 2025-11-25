@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:novel_reader/state/novel_providers.dart';
-import 'package:novel_reader/models/novel.dart';
-import 'package:novel_reader/models/chapter.dart';
-import 'package:novel_reader/main.dart' as app_main;
-import 'package:novel_reader/repositories/novel_repository.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/main.dart' as app_main;
+import 'package:writer/repositories/novel_repository.dart';
 
 class FakeNovelRepository extends NovelRepository {
   FakeNovelRepository() : super(SupabaseClient('http://example.com', 'anon'));

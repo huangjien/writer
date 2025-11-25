@@ -3,11 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:novel_reader/l10n/app_localizations.dart';
-import 'package:novel_reader/features/library/create_novel_screen.dart';
-import 'package:novel_reader/models/novel.dart';
-import 'package:novel_reader/state/providers.dart';
-import 'package:novel_reader/repositories/novel_repository.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/features/library/create_novel_screen.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/repositories/novel_repository.dart';
 
 class CapturingNovelRepository extends NovelRepository {
   String? lastTitle;

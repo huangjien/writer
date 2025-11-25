@@ -75,7 +75,7 @@ A Flutter application for reading novels with Supabase-backed storage, localizat
 - Android
   - The project patches `isar_flutter_libs` Gradle (`scripts/patch_isar.js`) to set `compileSdkVersion 36` and fix resource linking errors (e.g., `android:attr/lStar`).
   - If you run `flutter pub upgrade` and the plugin cache changes, the Makefile pre-step re-applies the patch before Android builds.
-  - Package name/namespace: update `android/app/build.gradle.kts` (`namespace`) and `AndroidManifest.xml` before publishing. Current namespace: `com.example.novel_reader`.
+  - Package name/namespace: update `android/app/build.gradle.kts` (`namespace`) and `AndroidManifest.xml` before publishing. Current namespace: `com.example.writer`.
 - iOS
   - Xcode 16 requires installing the iOS platform runtime (e.g., iPhoneOS 26.0). Install from `Xcode → Settings → Platforms`.
   - For device builds and App Store distribution, configure signing in `Runner.xcworkspace` and use `build-ipa`.

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/repositories/progress_port.dart';
-import 'package:novel_reader/models/user_progress.dart';
+import 'package:writer/repositories/progress_port.dart';
+import 'package:writer/models/user_progress.dart';
 
 class _FakeProgressPort implements ProgressPort {
   UserProgress? last;

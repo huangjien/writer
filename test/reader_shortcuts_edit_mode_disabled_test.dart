@@ -5,15 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:novel_reader/features/reader/reader_screen.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
-import 'package:novel_reader/models/chapter.dart';
-import 'package:novel_reader/repositories/chapter_port.dart';
-import 'package:novel_reader/repositories/chapter_repository.dart';
-import 'package:novel_reader/state/chapter_edit_controller.dart';
-import 'package:novel_reader/state/theme_controller.dart';
-import 'package:novel_reader/theme/themes.dart';
-import 'package:novel_reader/state/edit_permissions.dart';
+import 'package:writer/features/reader/reader_screen.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/repositories/chapter_port.dart';
+import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/state/chapter_edit_controller.dart';
+import 'package:writer/state/theme_controller.dart';
+import 'package:writer/theme/themes.dart';
+import 'package:writer/state/edit_permissions.dart';
 
 import 'helpers/test_utils.dart';
 

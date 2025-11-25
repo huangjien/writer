@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:novel_reader/features/reader/novel_metadata_editor.dart';
-import 'package:novel_reader/models/novel.dart';
-import 'package:novel_reader/state/novel_providers.dart';
-import 'package:novel_reader/repositories/novel_repository.dart';
+import 'package:writer/features/reader/novel_metadata_editor.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/repositories/novel_repository.dart';
 import 'helpers/test_utils.dart';
 
 class CapturingNovelRepository extends NovelRepository {

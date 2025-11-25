@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novel_reader/app.dart';
-import 'package:novel_reader/state/app_settings.dart';
-import 'package:novel_reader/state/theme_controller.dart';
-import 'package:novel_reader/l10n/app_localizations_en.dart';
+import 'package:writer/app.dart';
+import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/theme_controller.dart';
+import 'package:writer/l10n/app_localizations_en.dart';
 
 void main() {
   testWidgets('App boots to Library with localized title', (tester) async {

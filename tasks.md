@@ -37,8 +37,8 @@ If this plan looks good, we’ll proceed through each stage, confirming key deci
 - Enable web (optional): `flutter config --enable-web`
 - Create project in your workspace:
     - `cd /Users/huangjien/workspace/authorconsole`
-    - `flutter create novel_reader`
-    - `cd novel_reader`
+    - `flutter create writer`
+    - `cd writer`
 - Run in browser (fastest to preview): `flutter run -d chrome`
 
 Tell me if you want me to run these commands for you now. Otherwise, once you’ve completed Stage 1, say “Stage 1 done” and we’ll proceed.

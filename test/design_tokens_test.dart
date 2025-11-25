@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/theme/design_tokens.dart';
+import 'package:writer/theme/design_tokens.dart';
 
 void main() {
   test('Design tokens provide spacing and radii', () {

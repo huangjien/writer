@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:novel_reader/models/chapter.dart';
-import 'package:novel_reader/state/theme_controller.dart';
-import 'package:novel_reader/theme/themes.dart';
-import 'package:novel_reader/features/reader/reader_screen.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/state/theme_controller.dart';
+import 'package:writer/theme/themes.dart';
+import 'package:writer/features/reader/reader_screen.dart';
 import 'helpers/test_utils.dart';
 
 void main() {

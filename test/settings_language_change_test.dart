@@ -3,10 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:novel_reader/features/settings/settings_screen.dart';
-import 'package:novel_reader/state/app_settings.dart';
-import 'package:novel_reader/state/theme_controller.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
+import 'package:writer/features/settings/settings_screen.dart';
+import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/theme_controller.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 void main() {
   setUp(() async {

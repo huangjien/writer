@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/features/reader/logic/tts_driver.dart';
+import 'package:writer/features/reader/logic/tts_driver.dart';
 
 void main() {
   test('TtsDriver start with empty content does not speak', () async {

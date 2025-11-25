@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:animations/animations.dart';
 
-import 'package:novel_reader/app.dart';
-import 'package:novel_reader/routing/app_router.dart';
-import 'package:novel_reader/state/motion_settings.dart';
+import 'package:writer/app.dart';
+import 'package:writer/routing/app_router.dart';
+import 'package:writer/state/motion_settings.dart';
 
 class _TestMotionSettingsNotifier extends MotionSettingsNotifier {
   _TestMotionSettingsNotifier(bool reduceMotion) : super.lazy() {

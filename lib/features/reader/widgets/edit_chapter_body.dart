@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import '../../../models/chapter.dart';
 import '../../../state/chapter_edit_controller.dart';
 import '../widgets/preview_panel.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/models/character_note.dart';
+import 'package:writer/models/character_note.dart';
 
 void main() {
   test('CharacterNote.fromRow maps supabase row', () {

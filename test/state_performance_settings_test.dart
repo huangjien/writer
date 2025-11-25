@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:novel_reader/state/performance_settings.dart';
+import 'package:writer/state/performance_settings.dart';
 
 void main() {
   setUp(() async {

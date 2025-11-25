@@ -1,4 +1,4 @@
-import 'package:novel_reader/models/chapter_cache.dart';
+import 'package:writer/models/chapter_cache.dart';
 
 class Chapter {
   final String id;

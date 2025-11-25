@@ -5,17 +5,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:novel_reader/l10n/app_localizations.dart';
-import 'package:novel_reader/models/novel.dart';
-import 'package:novel_reader/models/chapter.dart';
-import 'package:novel_reader/models/user_progress.dart';
-import 'package:novel_reader/features/library/widgets/library_item_row.dart';
-import 'package:novel_reader/features/library/library_providers.dart'
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/models/user_progress.dart';
+import 'package:writer/features/library/widgets/library_item_row.dart';
+import 'package:writer/features/library/library_providers.dart'
     as lib_providers;
-import 'package:novel_reader/state/novel_providers.dart';
-import 'package:novel_reader/state/progress_providers.dart';
-import 'package:novel_reader/repositories/chapter_repository.dart';
-import 'package:novel_reader/repositories/novel_repository.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/progress_providers.dart';
+import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/repositories/novel_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FakeNovelRepository implements NovelRepository {

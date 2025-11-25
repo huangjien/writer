@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
-import 'package:novel_reader/state/app_settings.dart';
-import 'package:novel_reader/features/reader/reader_screen.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/app_settings.dart';
+import 'package:writer/features/reader/reader_screen.dart';
 
 void main() {
   testWidgets('ChapterReaderScreen shows title, content, and Speak button', (

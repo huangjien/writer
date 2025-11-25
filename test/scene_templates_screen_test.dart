@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:novel_reader/features/summary/scene_templates_screen.dart';
-import 'package:novel_reader/main.dart';
-import 'package:novel_reader/repositories/local_storage_repository.dart';
-import 'package:novel_reader/models/template.dart';
+import 'package:writer/features/summary/scene_templates_screen.dart';
+import 'package:writer/main.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/models/template.dart';
 
 class CapturingLocalRepo extends LocalStorageRepository {
   TemplateItem? lastItem;

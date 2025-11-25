@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novel_reader/state/novel_providers.dart';
-import 'package:novel_reader/state/mock_providers.dart';
-import 'package:novel_reader/state/supabase_config.dart';
-import 'package:novel_reader/models/novel.dart';
-import 'package:novel_reader/models/chapter.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/mock_providers.dart';
+import 'package:writer/state/supabase_config.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/models/chapter.dart';
 import '../../main.dart';
 
 class SummaryScreen extends ConsumerStatefulWidget {

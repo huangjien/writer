@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/models/scene.dart';
+import 'package:writer/models/scene.dart';
 
 void main() {
   test('Scene toMap/fromMap roundtrip', () {

@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.huangjien.novel"
+    namespace = "com.huangjien.writer"
     // Use Flutter-managed SDK versions for consistency and proper dependency resolution
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         // Application ID updated to match final namespace.
-        applicationId = "com.huangjien.novel"
+        applicationId = "com.huangjien.writer"
         // Align with Flutter’s configured SDK versions
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:novel_reader/shared/text_diff.dart';
+import 'package:writer/shared/text_diff.dart';
 
 class PreviewPanel extends StatelessWidget {
   const PreviewPanel({

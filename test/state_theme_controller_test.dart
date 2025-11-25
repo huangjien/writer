@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:novel_reader/state/theme_controller.dart';
-import 'package:novel_reader/theme/themes.dart';
-import 'package:novel_reader/theme/reader_typography.dart';
+import 'package:writer/state/theme_controller.dart';
+import 'package:writer/theme/themes.dart';
+import 'package:writer/theme/reader_typography.dart';
 
 void main() {
   setUp(() async {

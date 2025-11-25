@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
-import 'package:novel_reader/features/settings/widgets/performance_section.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/features/settings/widgets/performance_section.dart';
 
 void main() {
   testWidgets('PerformanceSection renders prefetch and clear cache controls', (

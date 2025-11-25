@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novel_reader/state/edit_permissions.dart';
-import 'package:novel_reader/state/providers.dart';
+import 'package:writer/state/edit_permissions.dart';
+import 'package:writer/state/providers.dart';
 
 void main() {
   test('edit role is none when Supabase disabled', () async {

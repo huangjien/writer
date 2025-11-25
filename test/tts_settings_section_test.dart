@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
-import 'package:novel_reader/features/settings/widgets/tts_settings_section.dart';
-import 'package:novel_reader/state/tts_settings.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/features/settings/widgets/tts_settings_section.dart';
+import 'package:writer/state/tts_settings.dart';
 
 void main() {
   testWidgets('TtsSettingsSection renders voice, language, rate, and volume', (

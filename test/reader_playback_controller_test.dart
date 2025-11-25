@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novel_reader/features/reader/logic/reader_playback_controller.dart';
-import 'package:novel_reader/features/reader/logic/tts_driver.dart';
-import 'package:novel_reader/state/app_settings.dart';
+import 'package:writer/features/reader/logic/reader_playback_controller.dart';
+import 'package:writer/features/reader/logic/tts_driver.dart';
+import 'package:writer/state/app_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Use real AppSettingsNotifier with mock SharedPreferences

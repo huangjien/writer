@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import 'package:novel_reader/theme/themes.dart';
-import 'package:novel_reader/theme/reader_typography.dart';
-import 'package:novel_reader/theme/font_packs.dart';
+import 'package:writer/theme/themes.dart';
+import 'package:writer/theme/reader_typography.dart';
+import 'package:writer/theme/font_packs.dart';
 
 void main() {
   test('Theme functions produce non-null ThemeData', () {

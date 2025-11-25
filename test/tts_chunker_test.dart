@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/features/reader/tts_chunker.dart';
+import 'package:writer/features/reader/tts_chunker.dart';
 
 void main() {
   group('chunkText', () {

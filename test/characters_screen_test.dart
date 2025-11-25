@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:novel_reader/features/summary/characters_screen.dart';
-import 'package:novel_reader/state/mock_providers.dart';
-import 'package:novel_reader/state/novel_providers.dart';
-import 'package:novel_reader/models/novel.dart';
-import 'package:novel_reader/main.dart';
-import 'package:novel_reader/repositories/local_storage_repository.dart';
+import 'package:writer/features/summary/characters_screen.dart';
+import 'package:writer/state/mock_providers.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/main.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
 
 class CapturingLocalRepo extends LocalStorageRepository {
   Map<String, dynamic>? lastNote;

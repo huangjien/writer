@@ -3,12 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:novel_reader/features/library/library_providers.dart'
+import 'package:writer/features/library/library_providers.dart'
     as lib_providers;
-import 'package:novel_reader/features/library/library_screen.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
-import 'package:novel_reader/repositories/chapter_repository.dart';
-import 'package:novel_reader/models/chapter.dart';
+import 'package:writer/features/library/library_screen.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/models/chapter.dart';
 // No Supabase imports; use a pure fake repository to avoid timers.
 
 // A minimal fake to avoid Supabase and background timers in tests.

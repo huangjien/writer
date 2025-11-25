@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/models/chapter.dart';
-import 'package:novel_reader/models/chapter_cache.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/models/chapter_cache.dart';
 
 void main() {
   test('Chapter.fromJson decodes fields', () {

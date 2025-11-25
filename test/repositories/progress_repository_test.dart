@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:novel_reader/models/user_progress.dart';
-import 'package:novel_reader/repositories/progress_repository.dart';
+import 'package:writer/models/user_progress.dart';
+import 'package:writer/repositories/progress_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../shared/supabase_fakes.dart';

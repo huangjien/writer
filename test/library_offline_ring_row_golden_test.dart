@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:novel_reader/features/library/library_screen.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
+import 'package:writer/features/library/library_screen.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import 'helpers/test_utils.dart';
 
 void main() {

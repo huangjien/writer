@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/theme/reader_typography.dart';
+import 'package:writer/theme/reader_typography.dart';
 
 void main() {
   group('ReaderTypography', () {

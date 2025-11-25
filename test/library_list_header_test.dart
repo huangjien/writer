@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
-import 'package:novel_reader/features/library/widgets/library_list_header.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/features/library/widgets/library_list_header.dart';
 
 void main() {
   testWidgets('LibraryListHeader shows count and changes sort', (tester) async {

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
-import 'package:novel_reader/features/settings/widgets/app_settings_section.dart';
-import 'package:novel_reader/state/app_settings.dart';
-import 'package:novel_reader/state/theme_controller.dart';
-import 'package:novel_reader/state/motion_settings.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/features/settings/widgets/app_settings_section.dart';
+import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/theme_controller.dart';
+import 'package:writer/state/motion_settings.dart';
 
 void main() {
   setUp(() async {

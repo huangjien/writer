@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novel_reader/routing/app_router.dart';
-import 'package:novel_reader/state/providers.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
+import 'package:writer/routing/app_router.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('Summary screen shows for novel route', (tester) async {

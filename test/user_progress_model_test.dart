@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:novel_reader/models/user_progress.dart';
+import 'package:writer/models/user_progress.dart';
 
 void main() {
   group('UserProgress', () {

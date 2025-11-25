@@ -1,4 +1,4 @@
-package com.huangjien.novel
+package com.huangjien.writer
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -18,18 +18,18 @@ class MainActivity : FlutterActivity() {
   private lateinit var channel: MethodChannel
 
   private val notificationId = 1001
-  private val channelId = "novel_reader_playback"
+  private val channelId = "writer_playback"
 
   override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
     super.configureFlutterEngine(flutterEngine)
     channel = MethodChannel(
       flutterEngine.dartExecutor.binaryMessenger,
-      "com.huangjien.novel/media_control",
+      "com.huangjien.writer/media_control",
     )
 
     createNotificationChannel()
 
-    mediaSession = MediaSessionCompat(this, "NovelReader")
+    mediaSession = MediaSessionCompat(this, "Writer")
     val stateBuilder = PlaybackStateCompat.Builder()
       .setActions(
         PlaybackStateCompat.ACTION_PLAY or

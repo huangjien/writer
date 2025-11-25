@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:novel_reader/l10n/app_localizations.dart';
-import 'package:novel_reader/features/auth/sign_in_screen.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/features/auth/sign_in_screen.dart';
 
 void main() {
   testWidgets('SignInScreen shows disabled message when Supabase disabled', (

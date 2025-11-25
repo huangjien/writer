@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:novel_reader/features/library/library_screen.dart';
-import 'package:novel_reader/state/mock_providers.dart';
-import 'package:novel_reader/models/novel.dart';
-import 'package:novel_reader/l10n/app_localizations.dart';
+import 'package:writer/features/library/library_screen.dart';
+import 'package:writer/state/mock_providers.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('Library shows skeleton loading while fetching novels', (

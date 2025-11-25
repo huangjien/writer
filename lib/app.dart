@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novel_reader/state/app_settings.dart';
-import 'package:novel_reader/state/theme_controller.dart';
-import 'package:novel_reader/theme/themes.dart';
-import 'package:novel_reader/theme/reader_typography.dart';
-import 'package:novel_reader/theme/font_packs.dart';
-import 'package:novel_reader/theme/reader_background.dart';
-import 'package:novel_reader/state/motion_settings.dart';
-import 'package:novel_reader/theme/no_animation_transitions.dart';
-import 'package:novel_reader/theme/fade_through_page_transitions.dart';
+import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/theme_controller.dart';
+import 'package:writer/theme/themes.dart';
+import 'package:writer/theme/reader_typography.dart';
+import 'package:writer/theme/font_packs.dart';
+import 'package:writer/theme/reader_background.dart';
+import 'package:writer/state/motion_settings.dart';
+import 'package:writer/theme/no_animation_transitions.dart';
+import 'package:writer/theme/fade_through_page_transitions.dart';
 import 'routing/app_router.dart';
 import 'l10n/app_localizations.dart';
 
