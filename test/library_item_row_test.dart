@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:novel_reader/l10n/app_localizations.dart';
@@ -13,12 +15,81 @@ import 'package:novel_reader/features/library/library_providers.dart'
 import 'package:novel_reader/state/novel_providers.dart';
 import 'package:novel_reader/state/progress_providers.dart';
 import 'package:novel_reader/repositories/chapter_repository.dart';
+import 'package:novel_reader/repositories/novel_repository.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class FakeNovelRepository implements NovelRepository {
+  final Set<String> deletedNovels = {};
+
+  @override
+  SupabaseClient get client => throw UnimplementedError();
+
+  @override
+  Future<void> deleteNovel(String novelId) async {
+    deletedNovels.add(novelId);
+  }
+
+  @override
+  Future<List<Novel>> fetchPublicNovels() async => [];
+
+  @override
+  Future<List<Chapter>> fetchChaptersByNovel(String novelId) async => [];
+
+  @override
+  Future<Novel> createNovel({
+    required String title,
+    String? author,
+    String? description,
+    String? coverUrl,
+    String languageCode = 'en',
+    bool isPublic = true,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Novel?> getNovel(String novelId) async => null;
+
+  @override
+  Future<Chapter?> getChapter(String chapterId) async => null;
+
+  @override
+  Future<void> updateNovelMetadata(
+    String novelId, {
+    String? title,
+    String? description,
+    String? coverUrl,
+    String? languageCode,
+    bool? isPublic,
+  }) async {}
+
+  @override
+  Future<void> addContributor({
+    required String novelId,
+    required String userId,
+  }) async {}
+
+  @override
+  Future<List<Novel>> fetchMemberNovels({
+    int limit = 50,
+    int offset = 0,
+  }) async => [];
+
+  @override
+  Future<void> addContributorByEmail({
+    required String novelId,
+    required String email,
+  }) async {}
+}
 
 class TestChapterRepository implements ChapterRepository {
   TestChapterRepository();
 
+  final List<String> calls = [];
+
   @override
   Future<List<Chapter>> getChapters(String novelId) async {
+    calls.add('getChapters($novelId)');
     return <Chapter>[
       Chapter(id: 'c1', novelId: novelId, idx: 1, title: 'One', content: 'x'),
       Chapter(id: 'c2', novelId: novelId, idx: 2, title: 'Two', content: 'y'),
@@ -27,6 +98,7 @@ class TestChapterRepository implements ChapterRepository {
 
   @override
   Future<Chapter> getChapter(Chapter chapter) async {
+    calls.add('getChapter(${chapter.id})');
     return chapter;
   }
 
@@ -251,5 +323,307 @@ void main() {
       await tester.pumpAndSettle();
     });
     expect(downloadButton, findsOneWidget);
+  });
+
+  testWidgets('Remove action (Supabase + SignedIn) shows dialog and deletes', (
+    tester,
+  ) async {
+    const n = Novel(
+      id: 'n5',
+      title: 'Delta',
+      author: null,
+      description: null,
+      coverUrl: null,
+      languageCode: 'en',
+      isPublic: true,
+    );
+
+    final fakeRepo = FakeNovelRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [novelRepositoryProvider.overrideWithValue(fakeRepo)],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: Consumer(
+              builder: (context, ref, _) {
+                // Watch provider to verify state changes
+                final removedIds = ref.watch(
+                  lib_providers.removedNovelIdsProvider,
+                );
+                return Column(
+                  children: [
+                    LibraryItemRow(
+                      novel: n,
+                      isSupabaseEnabled: true,
+                      isSignedIn: true,
+                      canRemove: true,
+                      canDownload: false,
+                    ),
+                    Text('Removed count: ${removedIds.length}'),
+                    if (removedIds.contains(n.id)) const Text('Novel Removed'),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Find and tap remove button
+    final removeBtn = find.byKey(const Key('removeButton_n5'));
+    expect(removeBtn, findsOneWidget);
+    await tester.tap(removeBtn);
+    await tester.pumpAndSettle();
+
+    // Verify dialog appears
+    expect(find.text('Confirm Delete'), findsOneWidget);
+    expect(find.text('Delete'), findsOneWidget);
+
+    // Confirm deletion
+    await tester.tap(find.text('Delete'));
+    await tester.pumpAndSettle(); // Wait for async delete and snackbar
+
+    // Verify deleteNovel called
+    expect(fakeRepo.deletedNovels, contains('n5'));
+
+    // Verify provider updated
+    expect(find.text('Novel Removed'), findsOneWidget);
+
+    // Verify SnackBar
+    expect(find.text('Removed from Library'), findsOneWidget);
+    expect(find.text('Undo'), findsOneWidget);
+
+    // Test Undo
+    await tester.tap(find.text('Undo'));
+    await tester.pumpAndSettle();
+
+    // Verify provider reverted
+    expect(find.text('Novel Removed'), findsNothing);
+  });
+
+  testWidgets('Remove action (Local) deletes immediately without dialog', (
+    tester,
+  ) async {
+    const n = Novel(
+      id: 'n6',
+      title: 'Epsilon',
+      author: null,
+      description: null,
+      coverUrl: null,
+      languageCode: 'en',
+      isPublic: true,
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: Consumer(
+              builder: (context, ref, _) {
+                final removedIds = ref.watch(
+                  lib_providers.removedNovelIdsProvider,
+                );
+                return Column(
+                  children: [
+                    LibraryItemRow(
+                      novel: n,
+                      isSupabaseEnabled: false, // Local mode
+                      isSignedIn: false,
+                      canRemove: true,
+                      canDownload: false,
+                    ),
+                    if (removedIds.contains(n.id)) const Text('Novel Removed'),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Find and tap remove button
+    final removeBtn = find.byKey(const Key('removeButton_n6'));
+    await tester.tap(removeBtn);
+    await tester.pumpAndSettle();
+
+    // Verify NO dialog
+    expect(find.text('Confirm Delete'), findsNothing);
+
+    // Verify provider updated immediately
+    expect(find.text('Novel Removed'), findsOneWidget);
+
+    // Verify SnackBar
+    expect(find.text('Removed from Library'), findsOneWidget);
+
+    // Test Undo
+    await tester.tap(find.text('Undo'));
+    await tester.pump(); // Start animation
+    await tester.pumpAndSettle(); // Finish animation
+
+    expect(find.text('Novel Removed'), findsNothing);
+  });
+
+  testWidgets('Shortcuts trigger actions', (tester) async {
+    const n = Novel(
+      id: 'n7',
+      title: 'Zeta',
+      author: null,
+      description: null,
+      coverUrl: null,
+      languageCode: 'en',
+      isPublic: true,
+    );
+
+    final repo = TestChapterRepository();
+
+    final progress = UserProgress(
+      userId: 'u',
+      novelId: 'n7',
+      chapterId: 'c1',
+      scrollOffset: 0,
+      ttsCharIndex: 0,
+      updatedAt: DateTime.now(),
+    );
+
+    final router = GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => Scaffold(
+            body: Consumer(
+              builder: (context, ref, _) {
+                final removedIds = ref.watch(
+                  lib_providers.removedNovelIdsProvider,
+                );
+                return Column(
+                  children: [
+                    LibraryItemRow(
+                      novel: n,
+                      isSupabaseEnabled: true,
+                      isSignedIn: true,
+                      canRemove: true,
+                      canDownload: true,
+                    ),
+                    if (removedIds.contains(n.id)) const Text('Novel Removed'),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/novel/:novelId/chapters/:chapterId',
+          builder: (context, state) =>
+              Text('Chapter ${state.pathParameters['chapterId']}'),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          chapterRepositoryProvider.overrideWithValue(repo),
+          lib_providers.downloadFeatureFlagProvider.overrideWithValue(true),
+          lastProgressProvider.overrideWith((ref, id) async => progress),
+          chaptersProvider.overrideWith((ref, id) async => []),
+        ],
+        child: MaterialApp.router(
+          routerConfig: router,
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // 1. Test Download Shortcut (D)
+    // Find the Focus widget that wraps the ListTile
+    final focusFinder = find.byWidgetPredicate(
+      (widget) => widget is Focus && widget.child is ListTile,
+    );
+    expect(focusFinder, findsOneWidget);
+
+    // Find the child ListTile to get the context inside the Focus widget
+    final listTileFinder = find.descendant(
+      of: focusFinder,
+      matching: find.byType(ListTile),
+    );
+    final listTileElement = tester.element(listTileFinder);
+
+    // Request focus using the node found from the child's context
+    final focusNode = Focus.of(listTileElement);
+    focusNode.requestFocus();
+    await tester.pump();
+    expect(focusNode.hasFocus, isTrue, reason: 'ListTile should have focus');
+
+    // Send 'D'
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyD);
+    await tester.pump(); // Trigger action
+
+    // Wait for async operations
+    await tester.pumpAndSettle();
+
+    // Check if repo was called
+    expect(repo.calls, contains('getChapters(n7)'));
+    expect(repo.calls, contains('getChapter(c1)'));
+
+    // 2. Test Continue Shortcut (Enter)
+    // Focus should still be there, but request again just in case
+    focusNode.requestFocus();
+    await tester.pump();
+
+    // Send 'Enter'
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+
+    // Should navigate to chapter screen
+    expect(find.text('Chapter c1'), findsOneWidget);
+
+    // Navigate back to reset for next test
+    router.go('/');
+    await tester.pumpAndSettle();
+
+    // 3. Test Remove Shortcut (Delete)
+    // We need to re-acquire focus because we navigated away and back
+    // Re-find widgets as the tree has been rebuilt
+    final focusFinder2 = find.byWidgetPredicate(
+      (widget) => widget is Focus && widget.child is ListTile,
+    );
+    final listTileFinder2 = find.descendant(
+      of: focusFinder2,
+      matching: find.byType(ListTile),
+    );
+    final listTileElement2 = tester.element(listTileFinder2);
+    final focusNode2 = Focus.of(listTileElement2);
+
+    focusNode2.requestFocus();
+    await tester.pump();
+
+    // Send 'Delete'
+    await tester.sendKeyEvent(LogicalKeyboardKey.delete);
+    await tester.pumpAndSettle();
+
+    // Should show dialog (since isSupabaseEnabled=true)
+    expect(find.text('Confirm Delete'), findsOneWidget);
+
+    // Cancel deletion to finish test cleanly (or confirm)
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
   });
 }

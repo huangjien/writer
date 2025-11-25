@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/user_progress.dart';
@@ -7,6 +8,12 @@ import '../../../state/supabase_config.dart';
 
 enum SaveStatus { notEnabled, noUser, saved, error }
 
+@visibleForTesting
+User? Function()? mockGetUser;
+
+@visibleForTesting
+bool? mockSupabaseEnabled;
+
 Future<SaveStatus> saveReaderProgress({
   required WidgetRef ref,
   required String novelId,
@@ -14,9 +21,25 @@ Future<SaveStatus> saveReaderProgress({
   required double scrollOffset,
   required int ttsIndex,
 }) async {
-  if (!supabaseEnabled) return SaveStatus.notEnabled;
-  final client = Supabase.instance.client;
-  final user = client.auth.currentUser;
+  final enabled = mockSupabaseEnabled ?? supabaseEnabled;
+  if (!enabled) return SaveStatus.notEnabled;
+
+  User? user;
+  if (mockGetUser != null) {
+    user = mockGetUser!();
+  } else {
+    try {
+      user = Supabase.instance.client.auth.currentUser;
+    } catch (_) {
+      // If we are testing with enabled=true but Supabase not init, return error or handle gracefully
+      if (mockSupabaseEnabled == true) {
+        // Fallback if we forgot to mock user in test
+        return SaveStatus.error;
+      }
+      rethrow;
+    }
+  }
+
   if (user == null) return SaveStatus.noUser;
   final progress = UserProgress(
     userId: user.id,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../state/app_settings.dart';
 import '../../../state/tts_settings.dart';
@@ -24,6 +25,9 @@ class ReaderPlaybackController {
   bool _sessionActive = false;
   int _lastIndex = 0;
   DateTime _lastIndexAt = DateTime.fromMillisecondsSinceEpoch(0);
+
+  @visibleForTesting
+  DateTime Function() nowProvider = () => DateTime.now();
 
   int computeTotalLen(String content, int startIndex) {
     final base = startIndex.clamp(0, content.length);
@@ -65,12 +69,12 @@ class ReaderPlaybackController {
         _index = i;
         _speaking = true;
         _gotDriverProgress = true;
-        _lastProgressAt = DateTime.now();
+        _lastProgressAt = nowProvider();
         onProgress(i);
         onVisualProgress?.call(i);
         if (_lastIndex != _index) {
           _lastIndex = _index;
-          _lastIndexAt = DateTime.now();
+          _lastIndexAt = nowProvider();
         }
       },
       onStart: () {
@@ -96,7 +100,7 @@ class ReaderPlaybackController {
     if (enableFallback) {
       _index = startIndex;
       onVisualProgress?.call(_index);
-      _lastProgressAt = DateTime.now();
+      _lastProgressAt = nowProvider();
       _progressFallback = Timer.periodic(const Duration(milliseconds: 500), (
         t,
       ) {
@@ -104,7 +108,7 @@ class ReaderPlaybackController {
           t.cancel();
           return;
         }
-        final now = DateTime.now();
+        final now = nowProvider();
         final staleMs = now.difference(_lastProgressAt).inMilliseconds;
         final shouldTick = !_gotDriverProgress || staleMs >= 1200;
         if (!shouldTick) return;
@@ -127,7 +131,7 @@ class ReaderPlaybackController {
         onVisualProgress?.call(_index);
         if (_lastIndex != _index) {
           _lastIndex = _index;
-          _lastIndexAt = DateTime.now();
+          _lastIndexAt = nowProvider();
         }
         final stagnantMs = now.difference(_lastIndexAt).inMilliseconds;
         if (stagnantMs >= 3000 &&

@@ -3,10 +3,89 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:novel_reader/features/reader/logic/progress_saver.dart';
-import 'package:novel_reader/state/supabase_config.dart';
+import 'package:novel_reader/models/user_progress.dart';
+import 'package:novel_reader/repositories/progress_port.dart';
+import 'package:novel_reader/state/progress_providers.dart';
+
+// Fake User class
+class FakeUser extends User {
+  FakeUser({required super.id})
+    : super(
+        appMetadata: {},
+        userMetadata: {},
+        aud: 'aud',
+        createdAt: DateTime.now().toIso8601String(),
+      );
+}
+
+// Fake ProgressPort
+class FakeProgressPort implements ProgressPort {
+  bool shouldSucceed = true;
+  UserProgress? lastSaved;
+
+  @override
+  Future<void> upsertProgress(UserProgress progress) async {
+    if (!shouldSucceed) throw Exception('Failed to save');
+    lastSaved = progress;
+  }
+
+  @override
+  Future<UserProgress?> lastProgressForNovel(String novelId) async {
+    return null;
+  }
+
+  @override
+  Future<UserProgress?> latestProgressForUser() async {
+    return null;
+  }
+}
 
 void main() {
-  testWidgets('returns notEnabled when Supabase disabled', (tester) async {
+  setUp(() {
+    mockSupabaseEnabled = null;
+    mockGetUser = null;
+  });
+
+  tearDown(() {
+    mockSupabaseEnabled = null;
+    mockGetUser = null;
+  });
+
+  testWidgets('returns notEnabled when Supabase disabled (default)', (
+    tester,
+  ) async {
+    WidgetRef? captured;
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          home: Consumer(
+            builder: (context, ref, _) {
+              captured = ref;
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final status = await tester.runAsync(() async {
+      return saveReaderProgress(
+        ref: captured!,
+        novelId: 'n-1',
+        chapterId: 'c-1',
+        scrollOffset: 10.0,
+        ttsIndex: 0,
+      );
+    });
+    expect(status, SaveStatus.notEnabled);
+  });
+
+  testWidgets('returns notEnabled when Supabase disabled explicitly', (
+    tester,
+  ) async {
+    mockSupabaseEnabled = false;
+
     WidgetRef? captured;
     await tester.pumpWidget(
       ProviderScope(
@@ -35,8 +114,8 @@ void main() {
   });
 
   testWidgets('returns noUser when enabled and no auth user', (tester) async {
-    if (!supabaseEnabled) return;
-    await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
+    mockSupabaseEnabled = true;
+    mockGetUser = () => null;
 
     WidgetRef? captured;
     await tester.pumpWidget(
@@ -63,27 +142,127 @@ void main() {
       );
     });
     expect(status, SaveStatus.noUser);
-  }, skip: !supabaseEnabled);
+  });
 
-  testWidgets(
-    'returns saved when enabled and save succeeds with user',
-    (tester) async {
-      if (!supabaseEnabled) return;
-      await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
+  testWidgets('returns saved when enabled and save succeeds with user', (
+    tester,
+  ) async {
+    mockSupabaseEnabled = true;
+    final user = FakeUser(id: 'u1');
+    mockGetUser = () => user;
 
-      // This test requires an authenticated user; the SDK does not allow
-      // setting it without network calls, so keep it skipped unless env provides
-      // a pre-authenticated session.
-      expect(true, isTrue);
-    },
-    skip: !supabaseEnabled,
-  );
+    final fakePort = FakeProgressPort();
+    fakePort.shouldSucceed = true;
+
+    WidgetRef? captured;
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [progressRepositoryProvider.overrideWithValue(fakePort)],
+        child: MaterialApp(
+          home: Consumer(
+            builder: (context, ref, _) {
+              captured = ref;
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final status = await tester.runAsync(() async {
+      return saveReaderProgress(
+        ref: captured!,
+        novelId: 'n-3',
+        chapterId: 'c-3',
+        scrollOffset: 100.0,
+        ttsIndex: 50,
+      );
+    });
+
+    expect(status, SaveStatus.saved);
+    expect(fakePort.lastSaved, isNotNull);
+    expect(fakePort.lastSaved!.userId, 'u1');
+    expect(fakePort.lastSaved!.novelId, 'n-3');
+    expect(fakePort.lastSaved!.chapterId, 'c-3');
+    expect(fakePort.lastSaved!.scrollOffset, 100.0);
+    expect(fakePort.lastSaved!.ttsCharIndex, 50);
+  });
 
   testWidgets('returns error when enabled and save fails with user', (
     tester,
   ) async {
-    if (!supabaseEnabled) return;
-    await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
-    expect(true, isTrue);
-  }, skip: !supabaseEnabled);
+    mockSupabaseEnabled = true;
+    final user = FakeUser(id: 'u2');
+    mockGetUser = () => user;
+
+    final fakePort = FakeProgressPort();
+    fakePort.shouldSucceed = false;
+
+    WidgetRef? captured;
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [progressRepositoryProvider.overrideWithValue(fakePort)],
+        child: MaterialApp(
+          home: Consumer(
+            builder: (context, ref, _) {
+              captured = ref;
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final status = await tester.runAsync(() async {
+      return saveReaderProgress(
+        ref: captured!,
+        novelId: 'n-4',
+        chapterId: 'c-4',
+        scrollOffset: 20.0,
+        ttsIndex: 10,
+      );
+    });
+
+    expect(status, SaveStatus.error);
+    expect(fakePort.lastSaved, isNull);
+  });
+
+  testWidgets(
+    'handles Supabase.instance exception gracefully when enabled but not init',
+    (tester) async {
+      // This tests the catch block in the refactored code when mockGetUser is not set
+      mockSupabaseEnabled = true;
+      mockGetUser = null; // Forces access to Supabase.instance
+
+      WidgetRef? captured;
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Consumer(
+              builder: (context, ref, _) {
+                captured = ref;
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final status = await tester.runAsync(() async {
+        return saveReaderProgress(
+          ref: captured!,
+          novelId: 'n-5',
+          chapterId: 'c-5',
+          scrollOffset: 0.0,
+          ttsIndex: 0,
+        );
+      });
+
+      // According to our logic: if mockSupabaseEnabled is true, catch block returns SaveStatus.error
+      expect(status, SaveStatus.error);
+    },
+  );
 }
