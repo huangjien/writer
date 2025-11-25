@@ -62,6 +62,7 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
   late final ReaderPlaybackController _playback;
   bool _speaking = false;
   int _ttsIndex = 0;
+  int _ttsIndexVisual = 0;
   int _ttsTotalLen = 0;
   int? _progressDenomLockedIndex;
   bool _autoplayBlocked = false;
@@ -206,11 +207,14 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
       _content = res.content;
       _currentIdx = res.currentIdx;
       _ttsIndex = 0;
+      _ttsIndexVisual = 0;
       _speaking = false;
+      _autoplayBlocked = false;
       _progressDenomLockedIndex = null;
       _controller.jumpTo(0);
     });
-    _tryAutoStartTts();
+    await _startTts(optimistic: true);
+    if (!mounted) return;
     await prefetchNextIfEnabled(
       context: context,
       all: _allChapters,
@@ -390,18 +394,19 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
                               content: _content,
                             );
 
-                      final denom = _speaking
-                          ? (_progressDenomLockedIndex?.toDouble() ??
-                                (_ttsTotalLen > 0
+                      final baseLen = (_content?.length ?? 1).toDouble();
+                      final denom =
+                          _progressDenomLockedIndex?.toDouble() ??
+                          (_speaking
+                              ? (_ttsTotalLen > 0
                                     ? _ttsTotalLen.toDouble()
-                                    : (_content?.length ?? 1).toDouble()))
-                          : (_progressDenomLockedIndex?.toDouble() ??
-                                (_content?.length ?? 1).toDouble());
-                      final num = (_progressDenomLockedIndex != null)
-                          ? _ttsIndex.toDouble()
-                          : (_speaking
-                                ? _ttsIndex.toDouble()
-                                : (_scrollProgress * denom));
+                                    : baseLen)
+                              : baseLen);
+                      final num =
+                          (_progressDenomLockedIndex != null ||
+                              _ttsIndexVisual > 0)
+                          ? _ttsIndexVisual.toDouble()
+                          : (_scrollProgress * denom);
                       final barProgress = (denom > 0 ? (num / denom) : 0.0)
                           .clamp(0.0, 1.0);
 
@@ -563,6 +568,13 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
         if (!mounted) return;
         setState(() => _ttsIndex = i);
       },
+      onVisualProgress: (i) {
+        if (!mounted) return;
+        setState(() {
+          _ttsIndexVisual = i;
+          if (!_speaking) _speaking = true;
+        });
+      },
       onStart: () {
         if (!mounted) return;
         setState(() => _speaking = true);
@@ -588,11 +600,19 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
       setAutoplayBlocked: (b) {
         if (!mounted) return;
         setState(() => _autoplayBlocked = b);
+        if (b) _showAutoplayPrompt();
       },
       showAutoplayPrompt: _showAutoplayPrompt,
       onProgress: (i) {
         if (!mounted) return;
         setState(() => _ttsIndex = i);
+      },
+      onVisualProgress: (i) {
+        if (!mounted) return;
+        setState(() {
+          _ttsIndexVisual = i;
+          if (!_speaking) _speaking = true;
+        });
       },
       onStart: () {
         if (!mounted) return;
@@ -610,6 +630,15 @@ class _ChapterReaderScreenState extends ConsumerState<ChapterReaderScreen> {
       },
       onComplete: _onTtsComplete,
     );
+    final startSnapshot = _ttsIndex;
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (!mounted) return;
+      final noRealStart = !_speaking && _ttsIndex == startSnapshot;
+      if (noRealStart) {
+        setState(() => _autoplayBlocked = true);
+        _showAutoplayPrompt();
+      }
+    });
   }
 
   void _showAutoplayPrompt() {
