@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:async';
@@ -17,6 +16,7 @@ class TtsDriver {
   bool _completedHandled = false;
   int _baseStart = 0;
   int _consumedLength = 0;
+  Completer<void>? _chunkCompleter;
 
   TtsDriver({FlutterTts? tts}) : _tts = tts;
 
@@ -67,16 +67,26 @@ class TtsDriver {
         _tts!.setCancelHandler(() {
           _speaking = false;
           _onCancel?.call();
+          if (_chunkCompleter != null && !_chunkCompleter!.isCompleted) {
+            _chunkCompleter!.complete();
+          }
         });
         _tts!.setErrorHandler((msg) {
           _onError?.call(msg ?? '');
+          if (_chunkCompleter != null && !_chunkCompleter!.isCompleted) {
+            _chunkCompleter!.completeError(msg ?? 'Unknown error');
+          }
         });
-        // We use await speak() in a loop, so we don't need completion handler to drive chunks.
-        // We can leave it empty or remove it.
-        _tts!.setCompletionHandler(() {});
+        // Use manual completion handler to drive chunks
+        _tts!.setCompletionHandler(() {
+          if (_chunkCompleter != null && !_chunkCompleter!.isCompleted) {
+            _chunkCompleter!.complete();
+          }
+        });
       } catch (_) {}
       try {
-        await _tts!.awaitSpeakCompletion(!kIsWeb);
+        // Disable awaitSpeakCompletion to use manual flow
+        await _tts!.awaitSpeakCompletion(false);
       } catch (_) {}
       _configured = true;
     }
@@ -133,13 +143,30 @@ class TtsDriver {
       final part = _chunks[i];
 
       try {
+        _chunkCompleter = Completer();
+        // speak returns immediately (mostly) when awaitSpeakCompletion is false
         await _tts?.speak(part);
+
+        // Wait for completion handler with a safety timeout
+        // Calculate timeout based on length (conservative estimate: 1s per 5 chars + 5s base)
+        final timeoutMs = 5000 + (part.length * 200);
+        await _chunkCompleter!.future.timeout(
+          Duration(milliseconds: timeoutMs),
+          onTimeout: () {
+            // If timeout, we assume finished or stuck.
+            // We could try to proceed.
+          },
+        );
       } catch (e) {
         if (!_speaking) break;
-        _onError?.call(e.toString());
-        // If error occurs, stop speaking to prevent endless loop of errors
-        _speaking = false;
-        break;
+        // _onError?.call(e.toString()); // Error might be already handled by handler
+        // If critical error, stop. But for timeout we continue.
+        if (e is! TimeoutException) {
+          _speaking = false;
+          break;
+        }
+      } finally {
+        _chunkCompleter = null;
       }
 
       if (!_speaking) break;
