@@ -6,7 +6,9 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/tts_settings.dart';
 
 void main() {
-  testWidgets('TtsSettingsSection renders correctly', (WidgetTester tester) async {
+  testWidgets('TtsSettingsSection renders correctly', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [

@@ -7,21 +7,23 @@ import 'package:writer/state/performance_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('PerformanceSection renders correctly', (WidgetTester tester) async {
+  testWidgets('PerformanceSection renders correctly', (
+    WidgetTester tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          performanceSettingsProvider.overrideWith((_) => PerformanceSettingsNotifier(prefs)),
+          performanceSettingsProvider.overrideWith(
+            (_) => PerformanceSettingsNotifier(prefs),
+          ),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: PerformanceSection(),
-          ),
+          home: Scaffold(body: PerformanceSection()),
         ),
       ),
     );

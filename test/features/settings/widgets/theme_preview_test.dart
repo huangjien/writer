@@ -5,7 +5,9 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/theme/themes.dart';
 
 void main() {
-  testWidgets('ThemePreviewGrid renders correctly', (WidgetTester tester) async {
+  testWidgets('ThemePreviewGrid renders correctly', (
+    WidgetTester tester,
+  ) async {
     AppThemeFamily? selectedFamily;
 
     await tester.pumpWidget(

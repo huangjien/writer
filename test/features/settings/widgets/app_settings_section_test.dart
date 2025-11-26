@@ -9,7 +9,9 @@ import 'package:writer/state/theme_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('AppSettingsSection renders correctly', (WidgetTester tester) async {
+  testWidgets('AppSettingsSection renders correctly', (
+    WidgetTester tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
 
@@ -18,14 +20,14 @@ void main() {
         overrides: [
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
-          motionSettingsProvider.overrideWith((_) => MotionSettingsNotifier(prefs)),
+          motionSettingsProvider.overrideWith(
+            (_) => MotionSettingsNotifier(prefs),
+          ),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: AppSettingsSection(),
-          ),
+          home: Scaffold(body: AppSettingsSection()),
         ),
       ),
     );

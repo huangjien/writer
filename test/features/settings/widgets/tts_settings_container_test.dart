@@ -8,7 +8,9 @@ import 'package:writer/state/tts_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('TtsSettingsContainer renders correctly', (WidgetTester tester) async {
+  testWidgets('TtsSettingsContainer renders correctly', (
+    WidgetTester tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
 
@@ -21,9 +23,7 @@ void main() {
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: TtsSettingsContainer(),
-          ),
+          home: Scaffold(body: TtsSettingsContainer()),
         ),
       ),
     );

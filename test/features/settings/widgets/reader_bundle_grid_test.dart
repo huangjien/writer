@@ -5,7 +5,9 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/theme/reader_bundles.dart';
 
 void main() {
-  testWidgets('ReaderBundleGrid renders correctly', (WidgetTester tester) async {
+  testWidgets('ReaderBundleGrid renders correctly', (
+    WidgetTester tester,
+  ) async {
     ReaderThemeBundleId? appliedBundle;
 
     await tester.pumpWidget(

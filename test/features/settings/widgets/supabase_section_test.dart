@@ -6,15 +6,15 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/supabase_config.dart';
 
 void main() {
-  testWidgets('SupabaseSection renders correctly when Supabase is disabled', (WidgetTester tester) async {
+  testWidgets('SupabaseSection renders correctly when Supabase is disabled', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       const ProviderScope(
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: SupabaseSection(user: null),
-          ),
+          home: Scaffold(body: SupabaseSection(user: null)),
         ),
       ),
     );
@@ -22,7 +22,9 @@ void main() {
     await tester.pumpAndSettle();
 
     if (!supabaseEnabled) {
-      final l10n = AppLocalizations.of(tester.element(find.byType(SupabaseSection)))!;
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(SupabaseSection)),
+      )!;
       expect(find.text(l10n.supabaseNotEnabled), findsOneWidget);
     }
   });

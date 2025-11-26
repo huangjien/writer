@@ -7,7 +7,9 @@ import 'package:writer/state/theme_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('TypographySettingsSection renders correctly', (WidgetTester tester) async {
+  testWidgets('TypographySettingsSection renders correctly', (
+    WidgetTester tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
 
@@ -19,9 +21,7 @@ void main() {
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: TypographySettingsSection(),
-          ),
+          home: Scaffold(body: TypographySettingsSection()),
         ),
       ),
     );
