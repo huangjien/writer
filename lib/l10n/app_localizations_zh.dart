@@ -555,4 +555,37 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get invalidCoverUrl => '请输入有效的 http(s) 链接且不包含空格。';
+
+  @override
+  String get navigation => '导航';
+
+  @override
+  String get home => '主页';
+
+  @override
+  String get chapterIndex => '章节索引';
+
+  @override
+  String get summary => '摘要';
+
+  @override
+  String get characters => '角色';
+
+  @override
+  String get scenes => '场景';
+
+  @override
+  String get characterTemplates => '角色模板';
+
+  @override
+  String get sceneTemplates => '场景模板';
+
+  @override
+  String get updateNovel => '更新小说';
+
+  @override
+  String get deleteNovel => '删除小说';
+
+  @override
+  String get deleteNovelConfirmation => '这将永久删除该小说。要继续吗？';
 }

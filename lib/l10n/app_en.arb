@@ -227,5 +227,16 @@
   "saveAndExit": "Save & Exit",
   "descriptionLabel": "Description",
   "coverUrlLabel": "Cover URL",
-  "invalidCoverUrl": "Enter a valid http(s) URL without spaces."
+  "invalidCoverUrl": "Enter a valid http(s) URL without spaces.",
+  "navigation": "Navigation",
+  "home": "Home",
+  "chapterIndex": "Chapter Index",
+  "summary": "Summary",
+  "characters": "Characters",
+  "scenes": "Scenes",
+  "characterTemplates": "Character Templates",
+  "sceneTemplates": "Scene Templates",
+  "updateNovel": "Update Novel",
+  "deleteNovel": "Delete Novel",
+  "deleteNovelConfirmation": "This will permanently delete the novel. Continue?"
 }

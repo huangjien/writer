@@ -227,5 +227,16 @@
   "saveAndExit": "保存并退出",
   "descriptionLabel": "描述",
   "coverUrlLabel": "封面链接",
-  "invalidCoverUrl": "请输入有效的 http(s) 链接且不包含空格。"
+  "invalidCoverUrl": "请输入有效的 http(s) 链接且不包含空格。",
+  "navigation": "导航",
+  "home": "主页",
+  "chapterIndex": "章节索引",
+  "summary": "摘要",
+  "characters": "角色",
+  "scenes": "场景",
+  "characterTemplates": "角色模板",
+  "sceneTemplates": "场景模板",
+  "updateNovel": "更新小说",
+  "deleteNovel": "删除小说",
+  "deleteNovelConfirmation": "这将永久删除该小说。要继续吗？"
 }

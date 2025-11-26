@@ -1165,6 +1165,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter a valid http(s) URL without spaces.'**
   String get invalidCoverUrl;
+
+  /// No description provided for @navigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Navigation'**
+  String get navigation;
+
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// No description provided for @chapterIndex.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter Index'**
+  String get chapterIndex;
+
+  /// No description provided for @summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get summary;
+
+  /// No description provided for @characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Characters'**
+  String get characters;
+
+  /// No description provided for @scenes.
+  ///
+  /// In en, this message translates to:
+  /// **'Scenes'**
+  String get scenes;
+
+  /// No description provided for @characterTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Character Templates'**
+  String get characterTemplates;
+
+  /// No description provided for @sceneTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Scene Templates'**
+  String get sceneTemplates;
+
+  /// No description provided for @updateNovel.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Novel'**
+  String get updateNovel;
+
+  /// No description provided for @deleteNovel.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Novel'**
+  String get deleteNovel;
+
+  /// No description provided for @deleteNovelConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete the novel. Continue?'**
+  String get deleteNovelConfirmation;
 }
 
 class _AppLocalizationsDelegate

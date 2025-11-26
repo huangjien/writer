@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/widgets/side_bar.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/edit_permissions.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';
 
 void main() {
@@ -37,8 +38,10 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: const MaterialApp(
-          home: Scaffold(body: SideBar(novelId: 'novel-1')),
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(body: SideBar(novelId: 'novel-1')),
         ),
       ),
     );

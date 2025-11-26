@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../state/novel_providers.dart';
 import '../state/edit_permissions.dart';
 import '../features/reader/novel_metadata_editor.dart';
+import '../l10n/app_localizations.dart';
 
 class SideBar extends ConsumerWidget {
   final String novelId;
@@ -12,10 +13,11 @@ class SideBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final novelAsync = ref.watch(novelProvider(novelId));
     final roleAsync = ref.watch(editRoleProvider(novelId));
     final isOwner = roleAsync.valueOrNull == EditRole.owner;
-    final title = novelAsync.asData?.value?.title ?? 'Navigation';
+    final title = novelAsync.asData?.value?.title ?? l10n.navigation;
     return SizedBox(
       width: 260,
       child: Drawer(
@@ -42,14 +44,14 @@ class SideBar extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.home),
-              title: const Text('Home'),
+              title: Text(l10n.home),
               onTap: () {
                 context.go('/');
               },
             ),
             ListTile(
               leading: const Icon(Icons.list),
-              title: const Text('Chapter Index'),
+              title: Text(l10n.chapterIndex),
               onTap: () {
                 context.go('/novel/$novelId');
               },
@@ -57,35 +59,35 @@ class SideBar extends ConsumerWidget {
             const Divider(),
             ListTile(
               leading: const Icon(Icons.summarize),
-              title: const Text('Summary'),
+              title: Text(l10n.summary),
               onTap: () {
                 context.go('/novel/$novelId/summary');
               },
             ),
             ListTile(
               leading: const Icon(Icons.person),
-              title: const Text('Characters'),
+              title: Text(l10n.characters),
               onTap: () {
                 context.go('/novel/$novelId/characters');
               },
             ),
             ListTile(
               leading: const Icon(Icons.movie_creation_outlined),
-              title: const Text('Scenes'),
+              title: Text(l10n.scenes),
               onTap: () {
                 context.go('/novel/$novelId/scenes');
               },
             ),
             ListTile(
               leading: const Icon(Icons.assignment_ind_outlined),
-              title: const Text('Character Templates'),
+              title: Text(l10n.characterTemplates),
               onTap: () {
                 context.go('/novel/$novelId/character-templates');
               },
             ),
             ListTile(
               leading: const Icon(Icons.assignment_outlined),
-              title: const Text('Scene Templates'),
+              title: Text(l10n.sceneTemplates),
               onTap: () {
                 context.go('/novel/$novelId/scene-templates');
               },
@@ -94,7 +96,7 @@ class SideBar extends ConsumerWidget {
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.edit),
-                title: const Text('Update Novel'),
+                title: Text(l10n.updateNovel),
                 onTap: () {
                   Navigator.of(context).pop();
                   try {
@@ -103,7 +105,7 @@ class SideBar extends ConsumerWidget {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => Scaffold(
-                          appBar: AppBar(title: const Text('Update Novel')),
+                          appBar: AppBar(title: Text(l10n.updateNovel)),
                           body: NovelMetadataEditor(novelId: novelId),
                         ),
                       ),
@@ -113,23 +115,21 @@ class SideBar extends ConsumerWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.delete),
-                title: const Text('Delete Novel'),
+                title: Text(l10n.deleteNovel),
                 onTap: () async {
                   final confirmed = await showDialog<bool>(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      title: const Text('Delete Novel'),
-                      content: const Text(
-                        'This will permanently delete the novel. Continue?',
-                      ),
+                      title: Text(l10n.deleteNovel),
+                      content: Text(l10n.deleteNovelConfirmation),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(ctx).pop(false),
-                          child: const Text('Cancel'),
+                          child: Text(l10n.cancel),
                         ),
                         FilledButton(
                           onPressed: () => Navigator.of(ctx).pop(true),
-                          child: const Text('Delete'),
+                          child: Text(l10n.delete),
                         ),
                       ],
                     ),

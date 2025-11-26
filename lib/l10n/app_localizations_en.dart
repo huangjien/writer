@@ -569,4 +569,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invalidCoverUrl => 'Enter a valid http(s) URL without spaces.';
+
+  @override
+  String get navigation => 'Navigation';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get chapterIndex => 'Chapter Index';
+
+  @override
+  String get summary => 'Summary';
+
+  @override
+  String get characters => 'Characters';
+
+  @override
+  String get scenes => 'Scenes';
+
+  @override
+  String get characterTemplates => 'Character Templates';
+
+  @override
+  String get sceneTemplates => 'Scene Templates';
+
+  @override
+  String get updateNovel => 'Update Novel';
+
+  @override
+  String get deleteNovel => 'Delete Novel';
+
+  @override
+  String get deleteNovelConfirmation =>
+      'This will permanently delete the novel. Continue?';
 }
