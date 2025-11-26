@@ -14,10 +14,17 @@ class TtsDriver {
   bool _speaking = false;
   int _index = 0;
   List<String> _chunks = const [];
-  int _chunkIndex = 0;
   bool _completedHandled = false;
   int _baseStart = 0;
   int _consumedLength = 0;
+
+  TtsDriver({FlutterTts? tts}) : _tts = tts;
+
+  TtsProgress? _onProgress;
+  TtsFlag? _onStart;
+  TtsFlag? _onCancel;
+  TtsError? _onError;
+  TtsFlag? _onAllComplete;
 
   bool get speaking => _speaking;
   int get index => _index;
@@ -32,6 +39,12 @@ class TtsDriver {
     TtsError? onError,
     TtsFlag? onAllComplete,
   }) async {
+    _onProgress = onProgress;
+    _onStart = onStart;
+    _onCancel = onCancel;
+    _onError = onError;
+    _onAllComplete = onAllComplete;
+
     _tts ??= FlutterTts();
     if (!_configured) {
       try {
@@ -44,39 +57,23 @@ class TtsDriver {
           if (start != null) {
             _index = _baseStart + _consumedLength + start;
             _speaking = true;
-            onProgress?.call(_index);
+            _onProgress?.call(_index);
           }
         });
         _tts!.setStartHandler(() {
           _speaking = true;
-          onStart?.call();
+          _onStart?.call();
         });
         _tts!.setCancelHandler(() {
           _speaking = false;
-          onCancel?.call();
+          _onCancel?.call();
         });
         _tts!.setErrorHandler((msg) {
-          onError?.call(msg ?? '');
+          _onError?.call(msg ?? '');
         });
-        _tts!.setCompletionHandler(() {
-          if (!_speaking) return;
-          if (_chunkIndex < _chunks.length) {
-            _consumedLength += _chunks[_chunkIndex].length;
-            _index = _baseStart + _consumedLength;
-          }
-          onProgress?.call(_index);
-          _chunkIndex++;
-          if (_chunkIndex < _chunks.length) {
-            final part = _chunks[_chunkIndex];
-            _tts!.speak(part);
-          } else {
-            if (!_completedHandled) {
-              _completedHandled = true;
-              _speaking = false;
-              onAllComplete?.call();
-            }
-          }
-        });
+        // We use await speak() in a loop, so we don't need completion handler to drive chunks.
+        // We can leave it empty or remove it.
+        _tts!.setCompletionHandler(() {});
       } catch (_) {}
       try {
         await _tts!.awaitSpeakCompletion(!kIsWeb);
@@ -112,7 +109,7 @@ class TtsDriver {
   Future<void> start({
     required String content,
     required int startIndex,
-    int chunkMaxLen = 1200,
+    int chunkMaxLen = 500,
   }) async {
     _speaking = true;
     _completedHandled = false;
@@ -120,12 +117,47 @@ class TtsDriver {
     _consumedLength = 0;
     final remaining = content.substring(_baseStart);
     _chunks = chunkText(remaining, maxLen: chunkMaxLen);
-    _chunkIndex = 0;
     if (_chunks.isEmpty) {
       _speaking = false;
+      _onAllComplete?.call();
       return;
     }
-    await _tts?.speak(_chunks[_chunkIndex]);
+
+    // Do not await the loop; let it run in background
+    _processChunks();
+  }
+
+  Future<void> _processChunks() async {
+    for (var i = 0; i < _chunks.length; i++) {
+      if (!_speaking) break;
+      final part = _chunks[i];
+
+      try {
+        await _tts?.speak(part);
+      } catch (e) {
+        if (!_speaking) break;
+        _onError?.call(e.toString());
+        // If error occurs, stop speaking to prevent endless loop of errors
+        _speaking = false;
+        break;
+      }
+
+      if (!_speaking) break;
+
+      // Update progress at end of chunk
+      _consumedLength += part.length;
+      _index = _baseStart + _consumedLength;
+      _onProgress?.call(_index);
+    }
+
+    if (_speaking) {
+      // Finished all chunks naturally
+      _speaking = false;
+      if (!_completedHandled) {
+        _completedHandled = true;
+        _onAllComplete?.call();
+      }
+    }
   }
 
   Future<void> stop() async {
@@ -134,7 +166,6 @@ class TtsDriver {
     } catch (_) {}
     _speaking = false;
     _chunks = const [];
-    _chunkIndex = 0;
   }
 
   Future<void> pause() async {

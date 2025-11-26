@@ -23,9 +23,9 @@ PATTERNS=(
   # Google API keys
   'AIza[0-9A-Za-z_\-]{35}'
   # Generic API keys / secrets / passwords
-  'api[_-]?key\s*[:=]\s*["\''][A-Za-z0-9]{16,}["\'']'
-  'secret\s*[:=]\s*["\''][A-Za-z0-9/_+=-]{12,}["\'']'
-  'password\s*[:=]\s*["\''][^"\'\n]{8,}["\'']'
+  'api[_-]?key\s*[:=]\s*["'\''"][A-Za-z0-9]{16,}["'\''"]'
+  'secret\s*[:=]\s*["'\''"][A-Za-z0-9/_+=-]{12,}["'\''"]'
+  'password\s*[:=]\s*["'\''"][^"'\''\n]{8,}["'\''"]'
   # JWTs
   'eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}'
   # Supabase keys
@@ -45,7 +45,7 @@ is_text() {
 scan_file_for_secrets() {
   local path="$1"
   for pat in "${PATTERNS[@]}"; do
-    if git show ":$path" | LC_ALL=C grep -E -i -n "$pat" >/dev/null; then
+    if git show ":$path" | LC_ALL=C grep -E -i -n -- "$pat" >/dev/null; then
       echo "[pre-commit] Potential secret found in '$path' matching pattern: $pat"
       SECRETS_FOUND=1
     fi
@@ -73,8 +73,26 @@ if [[ "$SECRETS_FOUND" -eq 1 ]]; then
   exit 1
 fi
 
+PUBSPEC_PATH="writer/pubspec.yaml"
+PACKAGE_JSON_PATH="writer/package.json"
+
+# Sync version from package.json to pubspec.yaml if package.json is staged
+if echo "$STAGED_FILES" | grep -qx "$PACKAGE_JSON_PATH"; then
+  if [[ -f "$PACKAGE_JSON_PATH" ]]; then
+    # Extract version: "version": "1.2.3" -> 1.2.3
+    NEW_VERSION=$(grep -E '^\s*"version":' "$PACKAGE_JSON_PATH" | head -n 1 | sed -E 's/.*"version": "([^"]+)".*/\1/')
+    if [[ -n "$NEW_VERSION" ]]; then
+      echo "[pre-commit] Syncing pubspec.yaml version to $NEW_VERSION from package.json"
+      # Update pubspec.yaml
+      sed -i '' -E "s/^version:\s*.*/version: $NEW_VERSION/" "$PUBSPEC_PATH"
+      git add "$PUBSPEC_PATH"
+      # Exit early as we have handled the version update
+      exit 0
+    fi
+  fi
+fi
+
 # If pubspec.yaml is already staged, do not bump to avoid loops
-PUBSPEC_PATH="pubspec.yaml"
 if echo "$STAGED_FILES" | grep -qx "$PUBSPEC_PATH"; then
   exit 0
 fi

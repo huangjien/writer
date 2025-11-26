@@ -38,17 +38,23 @@ void main() {
     Object? error,
   }) async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           if (isLoading)
-             mockChaptersProvider(novelId).overrideWith((ref) => Future.any([])), // Never completes
+            mockChaptersProvider(
+              novelId,
+            ).overrideWith((ref) => Future.any([])), // Never completes
           if (error != null)
-             mockChaptersProvider(novelId).overrideWith((ref) => Future.error(error)),
+            mockChaptersProvider(
+              novelId,
+            ).overrideWith((ref) => Future.error(error)),
           if (!isLoading && error == null)
-             mockChaptersProvider(novelId).overrideWith((ref) => Future.value(chapters)),
+            mockChaptersProvider(
+              novelId,
+            ).overrideWith((ref) => Future.value(chapters)),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -60,20 +66,20 @@ void main() {
   }
 
   testWidgets('ReaderScreen shows loading indicator initially', (tester) async {
-    // We can't easily simulate "loading then done" with FutureProvider overrides in one pump 
+    // We can't easily simulate "loading then done" with FutureProvider overrides in one pump
     // without using a Completer or just simulating "stuck in loading".
     // Or we can just rely on the fact that FutureProvider is async.
-    
+
     final prefs = await SharedPreferences.getInstance();
-    
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
-           mockChaptersProvider(novelId).overrideWith((ref) async {
-             await Future.delayed(const Duration(milliseconds: 100));
-             return mockChapters;
-           }),
+          appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
+          mockChaptersProvider(novelId).overrideWith((ref) async {
+            await Future.delayed(const Duration(milliseconds: 100));
+            return mockChapters;
+          }),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -85,7 +91,7 @@ void main() {
 
     // Should be loading initially
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    
+
     // Finish loading
     await tester.pumpAndSettle();
     expect(find.byType(CircularProgressIndicator), findsNothing);
@@ -104,7 +110,9 @@ void main() {
     expect(find.text('Second Chapter'), findsOneWidget);
   });
 
-  testWidgets('ReaderScreen shows empty state when no chapters', (tester) async {
+  testWidgets('ReaderScreen shows empty state when no chapters', (
+    tester,
+  ) async {
     await pumpReaderScreen(tester, chapters: []);
     await tester.pumpAndSettle();
 
@@ -122,7 +130,9 @@ void main() {
     expect(find.text('Error: Network Error'), findsOneWidget);
   });
 
-  testWidgets('Tapping a chapter navigates to ChapterReaderScreen', (tester) async {
+  testWidgets('Tapping a chapter navigates to ChapterReaderScreen', (
+    tester,
+  ) async {
     await pumpReaderScreen(tester, chapters: mockChapters);
     await tester.pumpAndSettle();
 
@@ -134,37 +144,42 @@ void main() {
     // ChapterReaderScreen title is usually the chapter title.
     // In the code: title: c.title ?? '${l10n.chapter} ${c.idx}'
     // For first chapter: "First Chapter"
-    
+
     // We look for the title in the AppBar or body of ChapterReaderScreen.
     // Note: ChapterReaderScreen also uses a Scaffold/AppBar likely.
     expect(find.text('First Chapter'), findsOneWidget);
-    
+
     // Also verify content is present to be sure
     expect(find.text('Content 1'), findsOneWidget);
   });
-  
-  testWidgets('ReaderScreen with chapterId renders ChapterReaderScreen directly', (tester) async {
-    final prefs = await SharedPreferences.getInstance();
-    
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
-          mockChaptersProvider(novelId).overrideWith((ref) => Future.value(mockChapters)),
-        ],
-        child: const MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          // Pass chapterId to render ChapterReaderScreen directly
-          home: ReaderScreen(novelId: novelId, chapterId: 'chap-2'),
+
+  testWidgets(
+    'ReaderScreen with chapterId renders ChapterReaderScreen directly',
+    (tester) async {
+      final prefs = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
+            mockChaptersProvider(
+              novelId,
+            ).overrideWith((ref) => Future.value(mockChapters)),
+          ],
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            // Pass chapterId to render ChapterReaderScreen directly
+            home: ReaderScreen(novelId: novelId, chapterId: 'chap-2'),
+          ),
         ),
-      ),
-    );
-    
-    await tester.pumpAndSettle();
-    
-    // Should show second chapter directly
-    expect(find.text('Second Chapter'), findsOneWidget);
-    expect(find.text('Content 2'), findsOneWidget);
-  });
+      );
+
+      await tester.pumpAndSettle();
+
+      // Should show second chapter directly
+      expect(find.text('Second Chapter'), findsOneWidget);
+      expect(find.text('Content 2'), findsOneWidget);
+    },
+  );
 }
