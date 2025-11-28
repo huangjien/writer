@@ -67,6 +67,9 @@ macos:
 deps:
 	$(FLUTTER) pub get
 
+upgrade:
+	$(FLUTTER) pub upgrade
+
 icons:
 	$(FLUTTER) pub get
 	$(FLUTTER) pub run flutter_launcher_icons

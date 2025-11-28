@@ -40,7 +40,7 @@ dependencies:
   go_router: any
   flutter_riverpod: ^2.6.1
   flutter_tts: ^4.2.3
-  package_info_plus: ^8.3.1
+  package_info_plus: ^9.0.0
   shared_preferences: ^2.5.3
   intl: any
   isar: any
