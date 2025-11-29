@@ -53,6 +53,27 @@ A Flutter application for reading novels with Supabase-backed storage, localizat
 ## Tests
 - Run tests with coverage summary: `make test`
 
+### Attach Supabase token to backend requests
+- Obtain the access token from the current Supabase session:
+  - `final token = Supabase.instance.client.auth.currentSession?.accessToken;`
+- Send it in the `Authorization` header (`Bearer` scheme) when calling the backend:
+
+```dart
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
+
+Future<http.Response> callBackend(Uri url) async {
+  final token = Supabase.instance.client.auth.currentSession?.accessToken;
+  final headers = {
+    if (token != null) 'Authorization': 'Bearer $token',
+    'Content-Type': 'application/json',
+  };
+  return http.get(url, headers: headers);
+}
+```
+
+- The backend verifies this token via Supabase (`/auth/verify`). Requests without a token or with an invalid token receive `401 Unauthorized`.
+
 ## Build Targets
 - Web (release): `make build-web SUPABASE_URL=... SUPABASE_ANON_KEY=...`
 - Serve built web: `make serve-web-build WEB_PORT=8080`
