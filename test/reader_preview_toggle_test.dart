@@ -34,7 +34,10 @@ void main() {
       prefs: prefs,
       themeController: themeController,
       extraOverrides: [
-        editRoleProvider.overrideWith((ref, novelId) async => EditRole.owner),
+        editRoleProvider.overrideWith(
+          (ref, novelId) async => EditRole.contributor,
+        ),
+        editPermissionsProvider('n1').overrideWith((ref) async => true),
         chapterRepositoryProvider.overrideWithValue(FakeChapterPort()),
       ],
       child: materialAppFor(

@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/app.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
+import 'package:writer/state/providers.dart';
 
 void main() {
   testWidgets('App smoke test with ProviderScope overrides mirrors main()', (
@@ -19,6 +20,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          supabaseEnabledProvider.overrideWith((_) => false),
           appSettingsProvider.overrideWith((_) => appSettings),
           themeControllerProvider.overrideWith((_) => themeController),
         ],

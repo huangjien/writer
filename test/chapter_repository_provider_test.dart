@@ -8,7 +8,16 @@ void main() {
     if (!supabaseEnabled) {
       final container = ProviderContainer();
       addTearDown(container.dispose);
-      expect(() => container.read(chapterRepositoryProvider), throwsStateError);
+      expect(
+        () => container.read(chapterRepositoryProvider),
+        throwsA(
+          predicate(
+            (e) =>
+                e.toString().contains('Supabase is not enabled') ||
+                e.toString().contains('ProviderException'),
+          ),
+        ),
+      );
     }
   });
 }

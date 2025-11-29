@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TtsSettings {
@@ -32,14 +32,17 @@ class TtsSettingsNotifier extends StateNotifier<TtsSettings> {
   static const _keyRate = 'tts_rate';
   static const _keyVolume = 'tts_volume';
 
-  TtsSettingsNotifier() : super(const TtsSettings());
+  final SharedPreferences _prefs;
 
-  Future<void> initialize() async {
-    final prefs = await SharedPreferences.getInstance();
-    final name = prefs.getString(_keyVoiceName);
-    final locale = prefs.getString(_keyVoiceLocale);
-    final rate = prefs.getDouble(_keyRate) ?? 0.45;
-    final volume = prefs.getDouble(_keyVolume) ?? 1.0;
+  TtsSettingsNotifier(this._prefs) : super(const TtsSettings()) {
+    _initialize();
+  }
+
+  void _initialize() {
+    final name = _prefs.getString(_keyVoiceName);
+    final locale = _prefs.getString(_keyVoiceLocale);
+    final rate = _prefs.getDouble(_keyRate) ?? 0.45;
+    final volume = _prefs.getDouble(_keyVolume) ?? 1.0;
     state = TtsSettings(
       voiceName: name,
       voiceLocale: locale,
@@ -50,34 +53,27 @@ class TtsSettingsNotifier extends StateNotifier<TtsSettings> {
 
   Future<void> setVoice({required String name, required String locale}) async {
     state = TtsSettings(voiceName: name, voiceLocale: locale);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyVoiceName, name);
-    await prefs.setString(_keyVoiceLocale, locale);
+    await _prefs.setString(_keyVoiceName, name);
+    await _prefs.setString(_keyVoiceLocale, locale);
   }
 
   Future<void> setLocale(String locale) async {
     state = state.copyWith(voiceLocale: locale);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyVoiceLocale, locale);
+    await _prefs.setString(_keyVoiceLocale, locale);
   }
 
   Future<void> setRate(double rate) async {
     state = state.copyWith(rate: rate);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setDouble(_keyRate, rate);
+    await _prefs.setDouble(_keyRate, rate);
   }
 
   Future<void> setVolume(double volume) async {
     state = state.copyWith(volume: volume);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setDouble(_keyVolume, volume);
+    await _prefs.setDouble(_keyVolume, volume);
   }
 }
 
 final ttsSettingsProvider =
     StateNotifierProvider<TtsSettingsNotifier, TtsSettings>((ref) {
-      final notifier = TtsSettingsNotifier();
-      // Fire and forget initialization; consumers will get updated state once loaded
-      notifier.initialize();
-      return notifier;
+      throw UnimplementedError('Must be overridden');
     });

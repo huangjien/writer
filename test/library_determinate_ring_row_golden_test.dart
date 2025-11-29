@@ -9,6 +9,7 @@ import 'package:writer/models/user_progress.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/state/mock_providers.dart';
+import 'package:writer/state/providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'helpers/test_utils.dart';
 
@@ -43,6 +44,7 @@ void main() {
       prefs: prefs,
       child: ProviderScope(
         overrides: [
+          supabaseEnabledProvider.overrideWith((ref) => false),
           mockNovelsProvider.overrideWith(
             (ref) async => [
               const Novel(
@@ -161,6 +163,7 @@ void main() {
       prefs: prefs,
       child: ProviderScope(
         overrides: [
+          supabaseEnabledProvider.overrideWith((ref) => false),
           mockNovelsProvider.overrideWith(
             (ref) async => [
               const Novel(

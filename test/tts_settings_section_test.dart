@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/features/settings/widgets/tts_settings_section.dart';
 import 'package:writer/state/tts_settings.dart';
@@ -9,6 +10,8 @@ void main() {
   testWidgets('TtsSettingsSection renders voice, language, rate, and volume', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final voices = [
       {'identifier': 'en-US-1', 'name': 'English Voice 1', 'locale': 'en-US'},
       {'identifier': 'en-US-2', 'name': 'English Voice 2', 'locale': 'en-US'},
@@ -17,7 +20,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier()),
+          ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
         ],
         child: MaterialApp(
           locale: const Locale('en'),

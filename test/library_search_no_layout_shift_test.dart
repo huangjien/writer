@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/state/mock_providers.dart';
+import 'package:writer/state/providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';
 
@@ -43,7 +44,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [mockNovelsProvider.overrideWith((ref) async => novels)],
+        overrides: [
+          supabaseEnabledProvider.overrideWith((_) => false),
+          mockNovelsProvider.overrideWith((ref) async => novels),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,

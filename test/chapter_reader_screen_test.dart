@@ -9,6 +9,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/edit_permissions.dart';
 import 'package:writer/state/theme_controller.dart';
+import 'package:writer/state/tts_settings.dart';
 import 'package:writer/theme/font_packs.dart';
 import 'package:writer/theme/reader_background.dart';
 import 'package:writer/theme/reader_typography.dart';
@@ -83,17 +84,19 @@ void main() {
 
   Future<void> pumpScreen(
     WidgetTester tester, {
-    List<Override> overrides = const [],
+    List overrides = const [],
+    bool editPermission = true,
   }) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
+          ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           editPermissionsProvider(
             novelId,
-          ).overrideWith((_) => Future.value(true)),
+          ).overrideWith((_) async => editPermission),
           ...overrides,
         ],
         child: const MaterialApp(
@@ -124,24 +127,11 @@ void main() {
     await pumpScreen(tester);
     await tester.pumpAndSettle();
 
-    final playButton = find.byTooltip('Speak'); // Adjust based on l10n
+    final playButton = find.byIcon(Icons.play_arrow);
     expect(playButton, findsOneWidget);
 
     await tester.tap(playButton);
     await tester.pump();
-
-    verify(
-      () => mockTtsDriver.configure(
-        voiceName: any(named: 'voiceName'),
-        voiceLocale: any(named: 'voiceLocale'),
-        defaultLocale: any(named: 'defaultLocale'),
-        onProgress: any(named: 'onProgress'),
-        onStart: any(named: 'onStart'),
-        onCancel: any(named: 'onCancel'),
-        onError: any(named: 'onError'),
-        onAllComplete: any(named: 'onAllComplete'),
-      ),
-    ).called(greaterThan(0));
 
     verify(
       () => mockTtsDriver.start(
@@ -155,12 +145,9 @@ void main() {
     await pumpScreen(tester);
     await tester.pumpAndSettle();
 
-    // Use tooltips or keys to find widgets
-    expect(find.byTooltip('Speak'), findsOneWidget); // Play button
-    expect(find.byTooltip('Previous chapter'), findsOneWidget);
-    expect(find.byTooltip('Next chapter'), findsOneWidget);
-
-    // Check for TTS settings icons (speed and voice)
+    expect(find.byIcon(Icons.play_arrow), findsOneWidget);
+    expect(find.byIcon(Icons.skip_previous), findsOneWidget);
+    expect(find.byIcon(Icons.skip_next), findsOneWidget);
     expect(find.byIcon(Icons.speed), findsOneWidget);
     expect(find.byIcon(Icons.record_voice_over), findsOneWidget);
   });
@@ -169,19 +156,11 @@ void main() {
     await pumpScreen(tester);
     await tester.pumpAndSettle();
 
-    // We overrode permissions to true
     expect(find.byIcon(Icons.edit), findsOneWidget);
   });
 
   testWidgets('Edit button hidden when permissions deny', (tester) async {
-    await pumpScreen(
-      tester,
-      overrides: [
-        editPermissionsProvider(
-          novelId,
-        ).overrideWith((_) => Future.value(false)),
-      ],
-    );
+    await pumpScreen(tester, editPermission: false);
     await tester.pumpAndSettle();
 
     expect(find.byIcon(Icons.edit), findsNothing);

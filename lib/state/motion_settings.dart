@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String _prefReduceMotion = 'reduce_motion_enabled';
@@ -56,21 +56,21 @@ class MotionSettingsNotifier extends StateNotifier<MotionSettings> {
     );
   }
 
-  void setReduceMotion(bool value) async {
+  Future<void> setReduceMotion(bool value) async {
     state = state.copyWith(reduceMotion: value);
     final prefs = _prefs ?? await SharedPreferences.getInstance();
     _prefs = prefs;
     await prefs.setBool(_prefReduceMotion, value);
   }
 
-  void setSwipeMinVelocity(double value) async {
+  Future<void> setSwipeMinVelocity(double value) async {
     state = state.copyWith(swipeMinVelocity: value);
     final prefs = _prefs ?? await SharedPreferences.getInstance();
     _prefs = prefs;
     await prefs.setDouble(_prefSwipeMinVelocity, value);
   }
 
-  void setGesturesEnabled(bool value) async {
+  Future<void> setGesturesEnabled(bool value) async {
     state = state.copyWith(gesturesEnabled: value);
     final prefs = _prefs ?? await SharedPreferences.getInstance();
     _prefs = prefs;

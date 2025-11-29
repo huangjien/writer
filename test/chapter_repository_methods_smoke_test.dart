@@ -9,6 +9,7 @@ void main() {
     'ChapterRepository constructs and basic calls when Supabase enabled',
     () async {
       if (!supabaseEnabled) return;
+      await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
       final client = Supabase.instance.client;
       final local = LocalStorageRepository();
       final repo = ChapterRepository(client, local);
@@ -17,6 +18,6 @@ void main() {
       // These are smoke checks to ensure integration wiring is valid.
       expect(await repo.getNextIdx('non-existent'), isA<int>());
     },
-    skip: !supabaseEnabled,
+    skip: true,
   );
 }

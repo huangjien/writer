@@ -8,7 +8,9 @@ import 'package:writer/l10n/app_localizations_en.dart';
 
 void main() {
   testWidgets('Go to About via router', (tester) async {
-    final container = ProviderContainer();
+    final container = ProviderContainer(
+      overrides: [supabaseEnabledProvider.overrideWith((_) => false)],
+    );
     final router = container.read(appRouterProvider);
     await tester.pumpWidget(
       UncontrolledProviderScope(

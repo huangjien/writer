@@ -7,6 +7,7 @@ import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/features/library/library_providers.dart'
     as lib_providers;
 import 'package:writer/state/mock_providers.dart';
+import 'package:writer/state/providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/user_progress.dart';
 
@@ -27,6 +28,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          supabaseEnabledProvider.overrideWith((_) => false),
           // Ensure Download is enabled in tests without Supabase.
           lib_providers.downloadFeatureFlagProvider.overrideWithValue(true),
           // Show Continue button for novel-001.

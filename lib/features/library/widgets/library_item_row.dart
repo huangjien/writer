@@ -312,7 +312,7 @@ class LibraryItemRow extends ConsumerWidget {
                     await repo.deleteNovel(n.id);
                     ref
                         .read(removedNovelIdsProvider.notifier)
-                        .update((state) => {...state, n.id});
+                        .update((state) => <String>{...state, n.id});
                     ref.invalidate(novelsProvider);
                     if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -324,7 +324,7 @@ class LibraryItemRow extends ConsumerWidget {
                             ref.read(removedNovelIdsProvider.notifier).update((
                               state,
                             ) {
-                              final next = {...state};
+                              final next = <String>{...state};
                               next.remove(n.id);
                               return next;
                             });
@@ -342,7 +342,7 @@ class LibraryItemRow extends ConsumerWidget {
               } else {
                 ref
                     .read(removedNovelIdsProvider.notifier)
-                    .update((state) => {...state, n.id});
+                    .update((state) => <String>{...state, n.id});
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(l10n.removedFromLibrary),
@@ -352,7 +352,7 @@ class LibraryItemRow extends ConsumerWidget {
                         ref.read(removedNovelIdsProvider.notifier).update((
                           state,
                         ) {
-                          final next = {...state};
+                          final next = <String>{...state};
                           next.remove(n.id);
                           return next;
                         });
@@ -396,7 +396,7 @@ class LibraryItemRow extends ConsumerWidget {
             onInvoke: (_) {
               if (!canDownload) return null;
               final notifier = ref.read(downloadStateProvider.notifier);
-              notifier.update((state) => {...state, n.id: true});
+              notifier.update((state) => <String, bool>{...state, n.id: true});
               () async {
                 try {
                   final chapterRepository = ref.read(chapterRepositoryProvider);
@@ -405,7 +405,9 @@ class LibraryItemRow extends ConsumerWidget {
                     await chapterRepository.getChapter(chapter);
                   }
                 } finally {
-                  notifier.update((state) => {...state, n.id: false});
+                  notifier.update(
+                    (state) => <String, bool>{...state, n.id: false},
+                  );
                 }
               }();
               return null;
@@ -450,7 +452,7 @@ class LibraryItemRow extends ConsumerWidget {
                       await repo.deleteNovel(n.id);
                       ref
                           .read(removedNovelIdsProvider.notifier)
-                          .update((state) => {...state, n.id});
+                          .update((state) => <String>{...state, n.id});
                       ref.invalidate(novelsProvider);
                       if (!context.mounted) return null;
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -461,7 +463,7 @@ class LibraryItemRow extends ConsumerWidget {
                             onPressed: () {
                               ref.read(removedNovelIdsProvider.notifier).update(
                                 (state) {
-                                  final next = {...state};
+                                  final next = <String>{...state};
                                   next.remove(n.id);
                                   return next;
                                 },
@@ -480,7 +482,7 @@ class LibraryItemRow extends ConsumerWidget {
                 } else {
                   ref
                       .read(removedNovelIdsProvider.notifier)
-                      .update((state) => {...state, n.id});
+                      .update((state) => <String>{...state, n.id});
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -491,7 +493,7 @@ class LibraryItemRow extends ConsumerWidget {
                             ref.read(removedNovelIdsProvider.notifier).update((
                               state,
                             ) {
-                              final next = {...state};
+                              final next = <String>{...state};
                               next.remove(n.id);
                               return next;
                             });

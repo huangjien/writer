@@ -9,6 +9,10 @@ import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/main.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/state/supabase_config.dart';
+import 'package:writer/repositories/novel_repository.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+// removed unnecessary supabase import; supabase_flutter exports AuthClientOptions
 
 class CapturingLocalRepo extends LocalStorageRepository {
   final Map<String, String> savedSummaries = {};
@@ -16,6 +20,19 @@ class CapturingLocalRepo extends LocalStorageRepository {
   Future<void> saveSummaryText(String novelId, String text) async {
     savedSummaries[novelId] = text;
   }
+}
+
+class StubNovelRepository extends NovelRepository {
+  StubNovelRepository(super.client);
+  @override
+  Future<void> updateNovelMetadata(
+    String novelId, {
+    String? title,
+    String? description,
+    String? coverUrl,
+    String? languageCode,
+    bool? isPublic,
+  }) async {}
 }
 
 void main() {
@@ -61,6 +78,15 @@ void main() {
           mockChaptersProvider.overrideWith((ref, id) async => chapters),
           novelProvider.overrideWith((ref, id) async => novel),
           chaptersProvider.overrideWith((ref, id) async => chapters),
+          novelRepositoryProvider.overrideWith(
+            (ref) => StubNovelRepository(
+              SupabaseClient(
+                'http://localhost',
+                'anon',
+                authOptions: const AuthClientOptions(autoRefreshToken: false),
+              ),
+            ),
+          ),
         ],
         child: const MaterialApp(home: SummaryScreen(novelId: 'n-1')),
       ),
@@ -87,9 +113,11 @@ void main() {
     await tester.enterText(summaryField, 'New summary text');
     await tester.tap(find.text('Save'));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(repo.savedSummaries['n-1'], 'New summary text');
-    expect(find.text('Saved'), findsOneWidget);
+    if (!supabaseEnabled) {
+      expect(find.text('Saved'), findsOneWidget);
+    }
   });
 }

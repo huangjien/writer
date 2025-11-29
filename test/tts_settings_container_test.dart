@@ -17,7 +17,7 @@ void main() {
   ) async {
     final prefs = await SharedPreferences.getInstance();
     final app = AppSettingsNotifier(prefs);
-    final tts = TtsSettingsNotifier();
+    final tts = TtsSettingsNotifier(prefs);
 
     await tester.pumpWidget(
       ProviderScope(

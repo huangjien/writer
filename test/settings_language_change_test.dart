@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:writer/features/settings/settings_screen.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
-import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/providers.dart';
 
 void main() {
   setUp(() async {
@@ -15,15 +15,18 @@ void main() {
 
   testWidgets('Language dropdown changes app locale to zh', (tester) async {
     final prefs = await SharedPreferences.getInstance();
-    final appNotifier = AppSettingsNotifier(prefs);
-    final themeController = ThemeController(prefs);
+    final container = ProviderContainer(
+      overrides: [
+        supabaseEnabledProvider.overrideWith((_) => false),
+        appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
+        themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
+      ],
+    );
+    addTearDown(container.dispose);
 
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          appSettingsProvider.overrideWith((_) => appNotifier),
-          themeControllerProvider.overrideWith((_) => themeController),
-        ],
+      UncontrolledProviderScope(
+        container: container,
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -35,11 +38,21 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(DropdownButton<String>));
+    final langLabel = find.text('App Language');
+    final langTile = find.ancestor(
+      of: langLabel,
+      matching: find.byType(ListTile),
+    );
+    final langDropdown = find.descendant(
+      of: langTile,
+      matching: find.byType(DropdownButton<String>),
+    );
+    expect(langDropdown, findsOneWidget);
+    await tester.tap(langDropdown);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Chinese').last);
     await tester.pumpAndSettle();
 
-    expect(appNotifier.state.languageCode, 'zh');
+    expect(container.read(appSettingsProvider).languageCode, 'zh');
   });
 }

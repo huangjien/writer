@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/themes.dart';
 import '../theme/reader_typography.dart';
@@ -129,13 +129,13 @@ class ThemeController extends StateNotifier<ThemeState> {
 
   final SharedPreferences _prefs;
 
-  void setMode(ThemeMode mode) {
-    _prefs.setString(_prefThemeMode, encodeMode(mode));
+  Future<void> setMode(ThemeMode mode) async {
+    await _prefs.setString(_prefThemeMode, encodeMode(mode));
     state = state.copyWith(mode: mode);
   }
 
-  void setFamily(AppThemeFamily family) {
-    _prefs.setString(_prefLightTheme, encodeFamily(family));
+  Future<void> setFamily(AppThemeFamily family) async {
+    await _prefs.setString(_prefLightTheme, encodeFamily(family));
     // Update unified selection and both palettes when not separate
     state = state.copyWith(
       family: family,
@@ -143,29 +143,29 @@ class ThemeController extends StateNotifier<ThemeState> {
       familyDark: state.hasSeparateDark ? state.familyDark : family,
     );
     if (!state.hasSeparateDark) {
-      _prefs.setString(_prefDarkTheme, encodeFamily(family));
+      await _prefs.setString(_prefDarkTheme, encodeFamily(family));
     }
   }
 
-  void setCustomFontFamily(String? family) {
+  Future<void> setCustomFontFamily(String? family) async {
     final value = trimToNull(family);
     if (value == null) {
-      _prefs.remove(_prefCustomFontFamily);
+      await _prefs.remove(_prefCustomFontFamily);
       state = state.copyWith(customFontFamily: null);
     } else {
-      _prefs.setString(_prefCustomFontFamily, value);
+      await _prefs.setString(_prefCustomFontFamily, value);
       state = state.copyWith(customFontFamily: value);
     }
   }
 
-  void setFontScale(double scale) {
+  Future<void> setFontScale(double scale) async {
     final clamped = clampDouble(scale, 0.8, 3.2);
-    _prefs.setDouble(_prefFontScale, clamped);
+    await _prefs.setDouble(_prefFontScale, clamped);
     state = state.copyWith(fontScale: clamped);
   }
 
-  void setSeparateDark(bool separate) {
-    _prefs.setBool(_prefSeparateDark, separate);
+  Future<void> setSeparateDark(bool separate) async {
+    await _prefs.setBool(_prefSeparateDark, separate);
     state = state.copyWith(
       hasSeparateDark: separate,
       // When enabling separate, keep current dark; when disabling, align to unified
@@ -173,18 +173,18 @@ class ThemeController extends StateNotifier<ThemeState> {
     );
   }
 
-  void setFamilyLight(AppThemeFamily family) {
-    _prefs.setString(_prefLightTheme, encodeFamily(family));
+  Future<void> setFamilyLight(AppThemeFamily family) async {
+    await _prefs.setString(_prefLightTheme, encodeFamily(family));
     state = state.copyWith(familyLight: family, family: family);
   }
 
-  void setFamilyDark(AppThemeFamily family) {
-    _prefs.setString(_prefDarkTheme, encodeFamily(family));
+  Future<void> setFamilyDark(AppThemeFamily family) async {
+    await _prefs.setString(_prefDarkTheme, encodeFamily(family));
     state = state.copyWith(familyDark: family);
   }
 
-  void setPreset(ReaderTypographyPreset preset) {
-    _prefs.setString(_prefTypographyPreset, encodePreset(preset));
+  Future<void> setPreset(ReaderTypographyPreset preset) async {
+    await _prefs.setString(_prefTypographyPreset, encodePreset(preset));
     state = state.copyWith(
       preset: preset,
       presetLight: preset,
@@ -192,13 +192,19 @@ class ThemeController extends StateNotifier<ThemeState> {
     );
   }
 
-  void setSeparateTypography(bool separate) {
-    _prefs.setBool(_prefSeparateTypography, separate);
+  Future<void> setSeparateTypography(bool separate) async {
+    await _prefs.setBool(_prefSeparateTypography, separate);
     state = state.copyWith(hasSeparateTypography: separate);
     // When disabling separate typography, align light/dark to unified preset
     if (!separate) {
-      _prefs.setString(_prefTypographyPresetLight, encodePreset(state.preset));
-      _prefs.setString(_prefTypographyPresetDark, encodePreset(state.preset));
+      await _prefs.setString(
+        _prefTypographyPresetLight,
+        encodePreset(state.preset),
+      );
+      await _prefs.setString(
+        _prefTypographyPresetDark,
+        encodePreset(state.preset),
+      );
       state = state.copyWith(
         presetLight: state.preset,
         presetDark: state.preset,
@@ -206,23 +212,23 @@ class ThemeController extends StateNotifier<ThemeState> {
     }
   }
 
-  void setPresetLight(ReaderTypographyPreset preset) {
-    _prefs.setString(_prefTypographyPresetLight, encodePreset(preset));
+  Future<void> setPresetLight(ReaderTypographyPreset preset) async {
+    await _prefs.setString(_prefTypographyPresetLight, encodePreset(preset));
     state = state.copyWith(presetLight: preset);
   }
 
-  void setPresetDark(ReaderTypographyPreset preset) {
-    _prefs.setString(_prefTypographyPresetDark, encodePreset(preset));
+  Future<void> setPresetDark(ReaderTypographyPreset preset) async {
+    await _prefs.setString(_prefTypographyPresetDark, encodePreset(preset));
     state = state.copyWith(presetDark: preset);
   }
 
-  void setFontPack(ReaderFontPack pack) {
-    _prefs.setString(_prefFontPack, encodeFontPack(pack));
+  Future<void> setFontPack(ReaderFontPack pack) async {
+    await _prefs.setString(_prefFontPack, encodeFontPack(pack));
     state = state.copyWith(fontPack: pack);
   }
 
-  void setReaderBackgroundDepth(ReaderBackgroundDepth depth) {
-    _prefs.setString(_prefReaderBgDepth, encodeBgDepth(depth));
+  Future<void> setReaderBackgroundDepth(ReaderBackgroundDepth depth) async {
+    await _prefs.setString(_prefReaderBgDepth, encodeBgDepth(depth));
     state = state.copyWith(readerBgDepth: depth);
   }
 }

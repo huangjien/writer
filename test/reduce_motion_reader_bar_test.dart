@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/features/reader/reader_screen.dart';
+import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/motion_settings.dart';
 
 void main() {
@@ -28,10 +29,14 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('reduce_motion_enabled', true);
     final motion = MotionSettingsNotifier(prefs);
+    final appSettings = AppSettingsNotifier(prefs);
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [motionSettingsProvider.overrideWith((_) => motion)],
+        overrides: [
+          motionSettingsProvider.overrideWith((_) => motion),
+          appSettingsProvider.overrideWith((_) => appSettings),
+        ],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,

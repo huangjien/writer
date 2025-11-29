@@ -10,6 +10,7 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/user_progress.dart';
 import 'package:writer/state/mock_providers.dart';
+import 'package:writer/state/providers.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/l10n/app_localizations.dart';
@@ -80,6 +81,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          supabaseEnabledProvider.overrideWith((_) => false),
           appSettingsProvider.overrideWith((_) => appNotifier),
           themeControllerProvider.overrideWith((_) => themeController),
           mockNovelsProvider.overrideWith((ref) async => novels),
@@ -199,6 +201,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          supabaseEnabledProvider.overrideWith((_) => false),
           appSettingsProvider.overrideWith((_) => appNotifier),
           themeControllerProvider.overrideWith((_) => themeController),
           mockNovelsProvider.overrideWith((ref) async => novels),

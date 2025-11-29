@@ -26,7 +26,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('My Novels'), findsOneWidget);
-  });
+  }, skip: supabaseEnabled);
 
   testWidgets(
     'shows enabled tiles when Supabase enabled and no user',
@@ -46,7 +46,7 @@ void main() {
 
       expect(find.text('Fetch from Supabase'), findsOneWidget);
       expect(
-        find.text('Fetch latest data from your Supabase project.'),
+        find.text('Fetch latest novels and progress from Supabase.'),
         findsOneWidget,
       );
       expect(find.text('My Novels'), findsOneWidget);

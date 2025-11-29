@@ -1,8 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:writer/models/novel.dart';
-import 'package:writer/repositories/novel_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:writer/repositories/novel_repository.dart';
 
 import '../shared/supabase_fakes.dart';
 
@@ -15,91 +14,169 @@ class MockGoTrueClient extends Mock implements GoTrueClient {}
 class MockUser extends Mock implements User {}
 
 void main() {
-  late MockSupabaseClient mockClient;
-  late MockSupabaseQueryBuilder mockQueryBuilder;
-  late NovelRepository repository;
-
-  setUpAll(() {
-    registerFallbackValue((List<Map<String, dynamic>> _) {});
-    registerFallbackValue((Map<String, dynamic> _) {});
-    registerFallbackValue((dynamic _) {});
-    registerFallbackValue((Object error, StackTrace stackTrace) {});
-  });
+  late MockSupabaseClient client;
+  late MockSupabaseQueryBuilder qb;
+  late MockGoTrueClient auth;
+  late MockUser user;
+  late NovelRepository repo;
 
   setUp(() {
-    mockClient = MockSupabaseClient();
-    mockQueryBuilder = MockSupabaseQueryBuilder();
-    repository = NovelRepository(mockClient);
-
-    // Default setups
-    when(() => mockClient.from(any())).thenAnswer((_) => mockQueryBuilder);
+    client = MockSupabaseClient();
+    qb = MockSupabaseQueryBuilder();
+    auth = MockGoTrueClient();
+    user = MockUser();
+    repo = NovelRepository(client);
+    when(() => client.from(any())).thenAnswer((_) => qb);
+    when(() => client.auth).thenReturn(auth);
   });
 
-  group('NovelRepository', () {
-    test('fetchPublicNovels returns list of novels', () async {
-      final novelsData = [
-        {
-          'id': '1',
-          'title': 'Test Novel',
-          'author': 'Author',
-          'description': 'Desc',
-          'cover_url': null,
-          'language_code': 'en',
-          'is_public': true,
-          'owner_id': 'owner1',
-          'created_at': DateTime.now().toIso8601String(),
-          'updated_at': DateTime.now().toIso8601String(),
-        },
-      ];
-
-      when(
-        () => mockQueryBuilder.select(any()),
-      ).thenAnswer((_) => FakePostgrestFilterBuilder(novelsData));
-
-      final result = await repository.fetchPublicNovels();
-
-      expect(result, isA<List<Novel>>());
-      expect(result.length, 1);
-      expect(result.first.id, '1');
-      expect(result.first.title, 'Test Novel');
+  test('updateNovelMetadata only updates provided fields', () async {
+    final captured = <Map<String, dynamic>>[];
+    when(() => qb.update(any())).thenAnswer((inv) {
+      captured.add(inv.positionalArguments.first as Map<String, dynamic>);
+      return FakePostgrestFilterBuilder(null);
     });
+    await repo.updateNovelMetadata('n1', title: 'T', languageCode: 'zh');
 
-    test('getNovel returns novel when found', () async {
-      final novelData = {
-        'id': '1',
-        'title': 'Test Novel',
-        'author': 'Author',
-        'description': 'Desc',
+    expect(captured.single.keys.toSet(), {'title', 'language_code'});
+    verify(() => qb.update(any())).called(1);
+  });
+
+  test('addContributorByEmail calls rpc with parameters', () async {
+    when(
+      () => client.rpc(any(), params: any(named: 'params')),
+    ).thenAnswer((_) => FakePostgrestFilterBuilder(<Map<String, dynamic>>[]));
+    await repo.addContributorByEmail(novelId: 'n1', email: 'user@example.com');
+    verify(
+      () => client.rpc(
+        'add_contributor_by_email',
+        params: {'p_novel_id': 'n1', 'p_email': 'user@example.com'},
+      ),
+    ).called(1);
+  });
+
+  test('fetchMemberNovels maps list result', () async {
+    final rows = [
+      {
+        'id': 'n1',
+        'title': 'A',
+        'author': 'X',
+        'description': null,
         'cover_url': null,
         'language_code': 'en',
         'is_public': true,
-        'owner_id': 'owner1',
-        'created_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
-      };
+      },
+      {
+        'id': 'n2',
+        'title': 'B',
+        'author': null,
+        'description': null,
+        'cover_url': null,
+        'language_code': 'en',
+        'is_public': true,
+      },
+    ];
+    when(
+      () => client.rpc(any(), params: any(named: 'params')),
+    ).thenAnswer((_) => FakePostgrestFilterBuilder(rows));
+    final list = await repo.fetchMemberNovels(limit: 10, offset: 0);
+    expect(list.map((n) => n.id).toList(), ['n1', 'n2']);
+    verify(
+      () => client.rpc('member_novels', params: {'p_limit': 10, 'p_offset': 0}),
+    ).called(1);
+  });
 
-      // select() returns a list of maps usually, then single() extracts one
-      // If the query returns a list containing one item:
-      when(
-        () => mockQueryBuilder.select(any()),
-      ).thenAnswer((_) => FakePostgrestFilterBuilder([novelData]));
+  test('getNovel returns mapped object and null on empty', () async {
+    when(() => qb.select()).thenAnswer(
+      (_) => FakePostgrestFilterBuilder([
+        {
+          'id': 'n3',
+          'title': 'T',
+          'author': 'A',
+          'description': null,
+          'cover_url': null,
+          'language_code': 'en',
+          'is_public': true,
+        },
+      ]),
+    );
+    final n = await repo.getNovel('n3');
+    expect(n!.id, 'n3');
 
-      final result = await repository.getNovel('1');
+    when(
+      () => qb.select(),
+    ).thenAnswer((_) => FakePostgrestFilterBuilder(<Map<String, dynamic>>[]));
+    final none = await repo.getNovel('nX');
+    expect(none, isNull);
+  });
 
-      expect(result, isNotNull);
-      expect(result!.id, '1');
-      expect(result.title, 'Test Novel');
-    });
+  test('fetchPublicNovels and fetchChaptersByNovel use select chain', () async {
+    when(() => client.from('novels')).thenAnswer((_) => qb);
+    when(() => qb.select()).thenAnswer(
+      (_) => FakePostgrestFilterBuilder([
+        {
+          'id': 'n1',
+          'title': 'A',
+          'author': null,
+          'description': null,
+          'cover_url': null,
+          'language_code': 'en',
+          'is_public': true,
+        },
+      ]),
+    );
+    final novels = await repo.fetchPublicNovels();
+    expect(novels.length, 1);
 
-    test('deleteNovel calls delete', () async {
-      when(
-        () => mockQueryBuilder.delete(),
-      ).thenAnswer((_) => FakePostgrestFilterBuilder(null));
+    final chaptersRows = [
+      {'id': 'c1', 'novel_id': 'n1', 'title': 'T', 'idx': 1},
+      {'id': 'c2', 'novel_id': 'n1', 'title': null, 'idx': 2},
+    ];
+    when(() => client.from('chapters')).thenAnswer((_) => qb);
+    when(
+      () => qb.select(),
+    ).thenAnswer((_) => FakePostgrestFilterBuilder(chaptersRows));
+    final chapters = await repo.fetchChaptersByNovel('n1');
+    expect(chapters.map((c) => c.id).toList(), ['c1', 'c2']);
+  });
 
-      await repository.deleteNovel('1');
+  test('createNovel builds insert payload and returns mapped novel', () async {
+    when(() => auth.currentUser).thenReturn(user);
+    when(() => user.id).thenReturn('owner1');
+    final singleMap = {
+      'id': 'n9',
+      'title': 'New',
+      'author': null,
+      'description': null,
+      'cover_url': null,
+      'language_code': 'en',
+      'is_public': true,
+    };
+    when(
+      () => qb.insert(any()),
+    ).thenAnswer((_) => FakePostgrestFilterBuilder([singleMap]));
+    when(
+      () => qb.select(),
+    ).thenAnswer((_) => FakePostgrestFilterBuilder([singleMap]));
+    final created = await repo.createNovel(title: 'New');
+    expect(created.id, 'n9');
+    verify(() => qb.insert(any())).called(1);
+  });
 
-      verify(() => mockClient.from('novels')).called(1);
-      verify(() => mockQueryBuilder.delete()).called(1);
-    });
+  test('deleteNovel and addContributor issue correct operations', () async {
+    when(() => client.from('novel_contributors')).thenAnswer((_) => qb);
+    when(
+      () => qb.insert(any()),
+    ).thenAnswer((_) => FakePostgrestFilterBuilder(null));
+    await repo.addContributor(novelId: 'n1', userId: 'u1');
+    verify(
+      () =>
+          qb.insert({'novel_id': 'n1', 'user_id': 'u1', 'role': 'contributor'}),
+    ).called(1);
+
+    when(() => client.from('novels')).thenAnswer((_) => qb);
+    when(() => qb.delete()).thenAnswer((_) => FakePostgrestFilterBuilder(null));
+    await repo.deleteNovel('n1');
+    verify(() => qb.delete()).called(1);
   });
 }

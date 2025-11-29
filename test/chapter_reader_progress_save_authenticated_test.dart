@@ -3,14 +3,25 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:writer/features/reader/logic/progress_saver.dart' as saver;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/progress_notifier.dart';
 import 'package:writer/repositories/progress_port.dart';
-import 'package:writer/state/supabase_config.dart';
 import 'package:writer/features/reader/reader_screen.dart';
 import 'package:writer/models/user_progress.dart';
+import 'package:writer/features/reader/state/reader_session_notifier.dart';
+
+class FakeUser extends User {
+  FakeUser({required super.id})
+    : super(
+        appMetadata: {},
+        userMetadata: {},
+        aud: 'aud',
+        createdAt: DateTime.now().toIso8601String(),
+      );
+}
 
 class CapturingProgressPort implements ProgressPort {
   int saveCalls = 0;
@@ -46,19 +57,9 @@ void main() {
   testWidgets(
     'Supabase enabled and authenticated user: Stop triggers progress save',
     (tester) async {
-      // Gate this test so it runs only when supabase is enabled.
-      if (!supabaseEnabled) {
-        return; // skip when not enabled
-      }
-
-      // Initialize Supabase so Supabase.instance.client is available.
-      await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
-      final client = Supabase.instance.client;
-      final currentUser = client.auth.currentUser;
-      if (currentUser == null) {
-        // If not authenticated, skip safely. This test assumes an authenticated session.
-        return;
-      }
+      saver.mockSupabaseEnabled = true;
+      final currentUser = FakeUser(id: 'auth-001');
+      saver.mockGetUser = () => currentUser;
 
       final prefs = await SharedPreferences.getInstance();
       final appNotifier = AppSettingsNotifier(prefs);
@@ -86,20 +87,20 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      expect(find.byTooltip('Speak'), findsOneWidget);
-
-      // Start TTS, then stop to trigger auto-save.
-      await tester.tap(find.byTooltip('Speak'));
-      await tester.pump();
-      expect(find.byTooltip('Stop TTS'), findsOneWidget);
-      await tester.tap(find.byTooltip('Stop TTS'));
-      await tester.pumpAndSettle();
+      final element = tester.element(find.byTooltip('Speak'));
+      final container = ProviderScope.containerOf(element, listen: false);
+      final notifier = container.read(readerSessionProvider.notifier);
+      final current = container.read(readerSessionProvider);
+      notifier.state = current.copyWith(speaking: true);
+      await notifier.playStop(0.0);
 
       // With an authenticated user, save should be called once.
       expect(fakeRepo.saveCalls, 1);
       expect(fakeRepo.lastSaved, isNotNull);
       expect(fakeRepo.lastSaved!.userId, currentUser.id);
       expect(fakeRepo.lastSaved!.novelId, 'n1');
+      saver.mockSupabaseEnabled = null;
+      saver.mockGetUser = null;
     },
   );
 }

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/tts_settings.dart';
 import 'package:writer/features/reader/reader_screen.dart';
 
 void main() {
@@ -37,7 +38,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [appSettingsProvider.overrideWith((_) => appNotifier)],
+        overrides: [
+          appSettingsProvider.overrideWith((_) => appNotifier),
+          ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
+        ],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -77,7 +81,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [appSettingsProvider.overrideWith((_) => appNotifier)],
+        overrides: [
+          appSettingsProvider.overrideWith((_) => appNotifier),
+          ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
+        ],
         child: MaterialApp(
           locale: const Locale('zh'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -114,7 +121,10 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [appSettingsProvider.overrideWith((_) => appNotifier)],
+          overrides: [
+            appSettingsProvider.overrideWith((_) => appNotifier),
+            ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
+          ],
           child: MaterialApp(
             locale: const Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,

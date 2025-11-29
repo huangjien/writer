@@ -34,7 +34,7 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
 
       final themeController = ThemeController(prefs);
-      themeController.setFamily(AppThemeFamily.defaultFamily);
+      await themeController.setFamily(AppThemeFamily.defaultFamily);
 
       final chapters = <Chapter>[
         const Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'One'),
@@ -99,7 +99,7 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
 
       final themeController = ThemeController(prefs);
-      themeController.setFamily(AppThemeFamily.defaultFamily);
+      await themeController.setFamily(AppThemeFamily.defaultFamily);
 
       final chapters = <Chapter>[
         const Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'One'),
@@ -151,7 +151,7 @@ void main() {
 
       // Use default theme family; width 800 -> Regular layout
       final themeController = ThemeController(prefs);
-      themeController.setFamily(AppThemeFamily.defaultFamily);
+      await themeController.setFamily(AppThemeFamily.defaultFamily);
 
       final chapters = <Chapter>[
         const Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'One'),
@@ -197,7 +197,7 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
 
       final themeController = ThemeController(prefs);
-      themeController.setFamily(AppThemeFamily.defaultFamily);
+      await themeController.setFamily(AppThemeFamily.defaultFamily);
 
       final chapters = <Chapter>[
         const Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'One'),

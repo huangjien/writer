@@ -12,7 +12,7 @@ typedef ErrorCb = void Function(String message);
 
 class ReaderPlaybackController {
   final TtsDriver _driver;
-  final WidgetRef _ref;
+  final Ref _ref;
   Timer? _autoStartRetry;
   int _attempts = 0;
   bool _speaking = false;

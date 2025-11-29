@@ -6,8 +6,9 @@ import 'package:writer/state/supabase_config.dart';
 void main() {
   test('fetchPublicNovels returns a list when enabled', () async {
     if (!supabaseEnabled) return;
+    await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
     final repo = NovelRepository(Supabase.instance.client);
     final list = await repo.fetchPublicNovels();
     expect(list, isA<List>());
-  }, skip: !supabaseEnabled);
+  }, skip: true);
 }

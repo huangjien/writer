@@ -33,12 +33,14 @@ class FakePostgrestTransformBuilder<T> extends Fake
 
   @override
   PostgrestTransformBuilder<PostgrestMap> single() {
-    if (_data is List && (_data as List).isNotEmpty) {
-      return FakePostgrestTransformBuilder(
-        (_data as List).first as PostgrestMap,
-      );
+    if (_data is List) {
+      final list = (_data as List);
+      if (list.isNotEmpty) {
+        return FakePostgrestTransformBuilder(list.first as PostgrestMap);
+      }
+      return FakePostgrestTransformBuilder(<String, dynamic>{});
     }
-    throw StateError('List is empty or not a list');
+    return FakePostgrestTransformBuilder(_data as PostgrestMap);
   }
 }
 
@@ -73,21 +75,28 @@ class FakePostgrestFilterBuilder<T> extends Fake
 
   @override
   PostgrestTransformBuilder<PostgrestMap> single() {
-    if (_data is List && (_data as List).isNotEmpty) {
-      return FakePostgrestTransformBuilder(
-        (_data as List).first as PostgrestMap,
-      );
+    if (_data is List) {
+      final list = (_data as List);
+      if (list.isNotEmpty) {
+        return FakePostgrestTransformBuilder(list.first as PostgrestMap);
+      }
+      return FakePostgrestTransformBuilder(<String, dynamic>{});
     }
-    // If it's already a map, just return a builder with it? No, usually single() is called on a list builder.
-    // But T could be PostgrestList.
-    if (_data is Map) {
-      return FakePostgrestTransformBuilder(_data as PostgrestMap);
-    }
-    throw StateError('Cannot call single() on empty list or invalid type');
+    return FakePostgrestTransformBuilder(_data as PostgrestMap);
   }
 
   @override
   PostgrestTransformBuilder<T> limit(int count, {String? referencedTable}) {
     return FakePostgrestTransformBuilder(_data);
+  }
+
+  @override
+  PostgrestTransformBuilder<PostgrestList> select([String columns = '*']) {
+    final list = _data is List
+        ? (_data as List).cast<Map<String, dynamic>>()
+        : _data is Map
+        ? <Map<String, dynamic>>[_data as Map<String, dynamic>]
+        : <Map<String, dynamic>>[];
+    return FakePostgrestTransformBuilder<PostgrestList>(list);
   }
 }

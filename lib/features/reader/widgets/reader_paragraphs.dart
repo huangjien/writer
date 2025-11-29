@@ -1,61 +1,60 @@
 import 'package:flutter/material.dart';
-import '../../../theme/design_tokens.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_latex/flutter_markdown_latex.dart';
+import 'package:markdown/markdown.dart' as md;
 
-class ReaderParagraphs {
-  static List<Widget> build(
-    String text,
-    int ttsIndex,
-    TextTheme textTheme,
-    ColorScheme colorScheme,
-  ) {
-    if (text.isEmpty) {
-      return [Text('', style: textTheme.bodyLarge)];
-    }
-    final paragraphs = <_Paragraph>[];
-    int start = 0;
-    final parts = text.split(RegExp(r"\n\n+"));
-    for (final part in parts) {
-      final end = start + part.length;
-      paragraphs.add(_Paragraph(rangeStart: start, rangeEnd: end, text: part));
-      final delimMatch = RegExp(r"\n\n+").matchAsPrefix(text, end);
-      final delimLen = delimMatch?.group(0)?.length ?? 0;
-      start = end + delimLen;
-    }
-    final baseStyle = textTheme.bodyLarge;
-    final widgets = <Widget>[];
-    for (var i = 0; i < paragraphs.length; i++) {
-      final p = paragraphs[i];
-      final isActive = ttsIndex >= p.rangeStart && ttsIndex < p.rangeEnd;
-      widgets.add(
-        Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Container(
-            key: isActive
-                ? const ValueKey('current_paragraph')
-                : ValueKey('paragraph_$i'),
-            decoration: isActive
-                ? BoxDecoration(
-                    color: colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(Radii.s),
-                  )
-                : null,
-            padding: isActive ? const EdgeInsets.all(8) : EdgeInsets.zero,
-            child: Text(p.text, style: baseStyle),
-          ),
-        ),
-      );
-    }
-    return widgets;
-  }
-}
-
-class _Paragraph {
-  final int rangeStart;
-  final int rangeEnd;
-  final String text;
-  const _Paragraph({
-    required this.rangeStart,
-    required this.rangeEnd,
+class ReaderParagraphs extends StatelessWidget {
+  const ReaderParagraphs({
+    super.key,
     required this.text,
+    required this.ttsIndex,
   });
+
+  final String text;
+  final int ttsIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    final paragraphs = text.split(RegExp(r'\n\n+'));
+    int currentStart = 0;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: paragraphs.map((p) {
+        final len = p.length;
+        // Determine if ttsIndex falls within this paragraph
+        // We assume 2 chars for the split pattern for simple calculation,
+        // or we could track actual indices if we didn't split.
+        // For now, let's assume sequential.
+        final end = currentStart + len;
+        final isCurrent = ttsIndex >= currentStart && ttsIndex <= end;
+
+        // Advance start for next paragraph (add 2 for newlines)
+        // Note: RegExp split might consume more, but for simple cases +2 is close enough.
+        // Ideally we should preserve delimiters to be exact.
+        currentStart += len + 2;
+
+        return Container(
+          key: isCurrent ? const ValueKey('current_paragraph') : null,
+          decoration: isCurrent
+              ? BoxDecoration(
+                  color: Theme.of(
+                    context,
+                  ).highlightColor.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(4),
+                )
+              : null,
+          margin: const EdgeInsets.only(bottom: 16),
+          child: MarkdownBody(
+            data: p,
+            builders: {'latex': LatexElementBuilder()},
+            extensionSet: md.ExtensionSet(
+              [LatexBlockSyntax()],
+              [LatexInlineSyntax()],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
 }

@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../models/chapter.dart';
 import '../repositories/chapter_repository.dart';
 import '../repositories/chapter_port.dart';

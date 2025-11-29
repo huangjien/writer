@@ -9,6 +9,7 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/user_progress.dart';
 import 'package:writer/state/mock_providers.dart';
+import 'package:writer/state/providers.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
 
@@ -37,6 +38,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          supabaseEnabledProvider.overrideWith((_) => false),
           // Override both real and mock providers to ensure deterministic behavior.
           novelsProvider.overrideWith((ref) async => novels),
           chaptersProvider.overrideWith(
@@ -106,6 +108,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          supabaseEnabledProvider.overrideWith((_) => false),
           novelsProvider.overrideWith((ref) async => novels),
           chaptersProvider.overrideWith(
             (ref, novelId) async => [
@@ -202,6 +205,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          supabaseEnabledProvider.overrideWith((_) => false),
           novelsProvider.overrideWith((ref) async => novels),
           chaptersProvider.overrideWith(
             (ref, novelId) async => const [
@@ -270,6 +274,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          supabaseEnabledProvider.overrideWith((_) => false),
           novelsProvider.overrideWith((ref) async => novels),
           chaptersProvider.overrideWith(
             (ref, novelId) async => [

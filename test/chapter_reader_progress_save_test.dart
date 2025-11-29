@@ -8,6 +8,7 @@ import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/progress_notifier.dart';
 import 'package:writer/repositories/progress_port.dart';
 import 'package:writer/state/supabase_config.dart';
+import 'package:writer/features/reader/logic/progress_saver.dart' as saver;
 import 'package:writer/features/reader/reader_screen.dart';
 import 'package:writer/models/user_progress.dart';
 
@@ -47,6 +48,8 @@ void main() {
       if (!supabaseEnabled) {
         return; // skip when not enabled
       }
+      saver.mockSupabaseEnabled = true;
+      saver.mockGetUser = () => null;
 
       final prefs = await SharedPreferences.getInstance();
       final appNotifier = AppSettingsNotifier(prefs);
@@ -83,6 +86,9 @@ void main() {
 
       // Without an authenticated user, save should not be called.
       expect(fakeRepo.saveCalls, 0);
+      saver.mockSupabaseEnabled = null;
+      saver.mockGetUser = null;
     },
+    skip: supabaseEnabled,
   );
 }

@@ -27,7 +27,7 @@ TAG ?= v$(PACKAGE_VERSION)
 DF_ARGS := $(strip $(if $(SUPABASE_URL),--dart-define SUPABASE_URL=$(SUPABASE_URL)) \
                  $(if $(SUPABASE_ANON_KEY),--dart-define SUPABASE_ANON_KEY=$(SUPABASE_ANON_KEY)))
 
-.PHONY: help dev-web dev-chrome macos deps test analyze lint format clean build-web serve-web-build env-print \
+.PHONY: help dev-web dev-chrome macos deps test test-expanded analyze lint format clean build-web serve-web-build env-print \
         build-macos build-android build-ios build-windows build-linux build-ipa build-ipa-nocodesign install-hooks icons
 
 help:
@@ -38,6 +38,7 @@ help:
 	@echo "  macos              - Run development on macOS device"
 	@echo "  deps               - Install pub dependencies"
 	@echo "  test               - Run unit/widget tests (with coverage summary)"
+	@echo "  test-expanded      - Run tests with expanded reporter and coverage summary"
 	@echo "  analyze            - Run static analysis (Dart)"
 	@echo "  lint               - Run static analysis (alias of analyze)"
 	@echo "  format             - Format source files"
@@ -75,7 +76,23 @@ icons:
 	$(FLUTTER) pub run flutter_launcher_icons
 
 test:
-	$(FLUTTER) test --coverage --test-randomize-ordering-seed=random
+	$(FLUTTER) test --coverage --test-randomize-ordering-seed=random -j 1
+	@if [ -f coverage/lcov.info ]; then \
+		awk -F, '/^DA:/ { total++; if ($$2 > 0) hit++ } END { printf("Coverage: %.2f%% (%d/%d lines)\n", (hit/total)*100, hit, total) }' coverage/lcov.info; \
+		TOTAL_LIB_LINES=$$(find lib -name '*.dart' -print0 | xargs -0 wc -l | tail -n 1 | awk '{print $$1}'); \
+		awk -F, -v tot=$$TOTAL_LIB_LINES '/^DA:/ { if ($$2 > 0) hit++ } END { printf("Full-lines coverage: %.2f%% (%d/%d lines)\n", (hit/tot)*100, hit, tot) }' coverage/lcov.info; \
+		if command -v genhtml >/dev/null 2>&1; then \
+			genhtml -o coverage/html coverage/lcov.info; \
+			echo "HTML coverage: coverage/html/index.html"; \
+		else \
+			echo "genhtml not found; install lcov to generate HTML coverage."; \
+		fi; \
+	else \
+		echo "Coverage file not found; ensure --coverage succeeded."; \
+	fi
+
+test-expanded:
+	$(FLUTTER) test $(DF_ARGS) --coverage -r expanded --test-randomize-ordering-seed=random -j 1
 	@if [ -f coverage/lcov.info ]; then \
 		awk -F, '/^DA:/ { total++; if ($$2 > 0) hit++ } END { printf("Coverage: %.2f%% (%d/%d lines)\n", (hit/total)*100, hit, total) }' coverage/lcov.info; \
 		TOTAL_LIB_LINES=$$(find lib -name '*.dart' -print0 | xargs -0 wc -l | tail -n 1 | awk '{print $$1}'); \

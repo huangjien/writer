@@ -10,6 +10,7 @@ import 'package:writer/models/user_progress.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/mock_providers.dart';
+import 'package:writer/state/providers.dart';
 import 'package:writer/state/supabase_config.dart';
 
 void main() {
@@ -34,6 +35,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            supabaseEnabledProvider.overrideWith((ref) => false),
             // In Supabase-disabled mode, LibraryScreen consumes mock providers.
             mockNovelsProvider.overrideWith((ref) async => novels),
             mockChaptersProvider.overrideWith((ref, novelId) async {
@@ -111,6 +113,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          supabaseSessionProvider.overrideWith((_) => null),
           // Force Library to use Supabase-backed providers by overriding them directly.
           novelsProvider.overrideWith((ref) async => novels),
           chaptersProvider.overrideWith((ref, novelId) async {

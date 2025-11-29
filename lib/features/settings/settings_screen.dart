@@ -11,7 +11,7 @@ import 'widgets/palette_settings_section.dart';
 import 'widgets/tts_settings_container.dart';
 import 'package:writer/theme/reader_bundles.dart';
 import 'package:writer/state/progress_providers.dart';
-import 'package:writer/state/supabase_config.dart';
+import 'package:writer/state/providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/l10n/app_localizations.dart';
 
@@ -38,7 +38,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final user = supabaseEnabled
+    final isSupabaseEnabled = ref.watch(supabaseEnabledProvider);
+    final user = isSupabaseEnabled
         ? Supabase.instance.client.auth.currentUser
         : null;
 
@@ -46,7 +47,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       appBar: AppBar(
         title: Text(l10n.settings),
         actions: [
-          if (supabaseEnabled)
+          if (isSupabaseEnabled)
             IconButton(
               icon: Icon(user == null ? Icons.login : Icons.logout),
               onPressed: () async {

@@ -45,12 +45,7 @@ class ReaderBody extends StatelessWidget {
         if (autoplayBlocked)
           AutoplayBlockedCard(onContinue: onAutoplayContinue),
         const SizedBox(height: 12),
-        ...ReaderParagraphs.build(
-          content ?? '',
-          ttsIndex,
-          Theme.of(context).textTheme,
-          Theme.of(context).colorScheme,
-        ),
+        ReaderParagraphs(text: content ?? '', ttsIndex: ttsIndex),
         const SizedBox(height: 24),
         const SizedBox(height: 12),
       ],

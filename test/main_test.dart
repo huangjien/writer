@@ -13,7 +13,13 @@ void main() {
     expect(repo, isA<LocalStorageRepository>());
   });
 
-  test('supabaseEnabled is false in default test environment', () {
-    expect(supabaseEnabled, isFalse);
+  test('supabaseEnabled reflects dart-define gating', () {
+    final hasUrl = supabaseUrl.isNotEmpty;
+    final hasKey = supabaseAnonKey.isNotEmpty;
+    if (hasUrl && hasKey) {
+      expect(supabaseEnabled, isTrue);
+    } else {
+      expect(supabaseEnabled, isFalse);
+    }
   });
 }

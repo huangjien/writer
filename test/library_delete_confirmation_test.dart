@@ -5,14 +5,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/providers.dart';
+import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/supabase_config.dart';
 import 'package:writer/models/novel.dart';
+import 'package:writer/models/user_progress.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/novel_repository.dart';
+import 'package:writer/models/chapter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+// Flutter-specific options for Supabase.initialize
 
 class FakeNovelRepository extends NovelRepository {
-  FakeNovelRepository() : super(Supabase.instance.client);
+  FakeNovelRepository()
+    : super(
+        SupabaseClient(
+          supabaseUrl,
+          supabaseAnonKey,
+          authOptions: const AuthClientOptions(autoRefreshToken: false),
+        ),
+      );
   bool called = false;
   String? deletedId;
   @override
@@ -36,8 +47,8 @@ Session _fakeSession() {
       'role': 'authenticated',
       'email': 'user@example.com',
       'phone': '',
-      'app_metadata': {},
-      'user_metadata': {},
+      'app_metadata': <String, dynamic>{},
+      'user_metadata': <String, dynamic>{},
       'created_at': '2024-01-01T00:00:00Z',
       'updated_at': '2024-01-01T00:00:00Z',
     },
@@ -55,8 +66,7 @@ void main() {
 
       SharedPreferences.setMockInitialValues({});
 
-      // Initialize Supabase client (no network operations are required here).
-      await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
+      // Supabase is initialized in flutter_test_config when enabled.
 
       final novels = <Novel>[
         const Novel(
@@ -88,8 +98,18 @@ void main() {
             supabaseSessionProvider.overrideWith((ref) => _fakeSession()),
             // Override novels fetch to return our fixture list.
             novelsProvider.overrideWith((ref) async => novels),
+            // Ensure library union resolves without network.
+            memberNovelsProvider.overrideWith((ref) async => const <Novel>[]),
             // Override repository to capture delete calls.
             novelRepositoryProvider.overrideWith((ref) => fakeRepo),
+            // Avoid network-backed providers that can hang during settle.
+            lastProgressProvider.overrideWith((ref, novelId) async => null),
+            chaptersProvider.overrideWith(
+              (ref, novelId) async => const <Chapter>[],
+            ),
+            recentUserProgressProvider.overrideWith(
+              (ref) => Stream.value(const <UserProgress>[]),
+            ),
           ],
           child: MaterialApp(
             locale: const Locale('en'),
@@ -100,8 +120,8 @@ void main() {
         ),
       );
 
-      await tester.pump(const Duration(milliseconds: 100));
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 150));
+      await tester.pump(const Duration(milliseconds: 150));
 
       // Tap remove on the first tile.
       final deleteButtons = find.byIcon(Icons.delete_outline);
@@ -122,7 +142,7 @@ void main() {
 
       // Confirm deletion.
       await tester.tap(find.text('Delete'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Repository called and item hidden locally with SnackBar.
       expect(fakeRepo.called, isTrue);
@@ -135,7 +155,7 @@ void main() {
 
       // Undo restores visibility.
       await tester.tap(find.text('Undo'));
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(find.text('2 / 2 Novels'), findsOneWidget);
       expect(find.text('Quiet City Nights'), findsOneWidget);
     },

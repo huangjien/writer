@@ -1,7 +1,8 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:writer/state/chapter_edit_controller.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/repositories/chapter_port.dart';
+import 'package:writer/state/chapter_edit_controller.dart';
 
 class FakeChapterRepo implements ChapterPort {
   Chapter? lastUpdated;
@@ -65,46 +66,86 @@ void main() {
     content: 'C',
   );
 
+  ProviderContainer makeContainer(FakeChapterRepo repo) {
+    final container = ProviderContainer(
+      overrides: [
+        chapterEditControllerProvider(
+          initial,
+        ).overrideWith((ref) => ChapterEditController(initial, repo)),
+      ],
+    );
+    addTearDown(container.dispose);
+    return container;
+  }
+
   test('setTitle and setContent mark state dirty', () async {
     final repo = FakeChapterRepo();
-    final ctrl = ChapterEditController(initial, repo);
-    ctrl.setTitle('New');
-    ctrl.setContent('Body');
-    expect(ctrl.state.title, 'New');
-    expect(ctrl.state.content, 'Body');
-    expect(ctrl.state.isDirty, true);
+    final container = makeContainer(repo);
+    final notifier = container.read(
+      chapterEditControllerProvider(initial).notifier,
+    );
+
+    notifier.setTitle('New');
+    notifier.setContent('Body');
+
+    final state = container.read(chapterEditControllerProvider(initial));
+    expect(state.title, 'New');
+    expect(state.content, 'Body');
+    expect(state.isDirty, true);
   });
 
   test('save success resets dirty and isSaving', () async {
     final repo = FakeChapterRepo();
-    final ctrl = ChapterEditController(initial, repo);
-    final ok = await ctrl.save();
+    final container = makeContainer(repo);
+    final notifier = container.read(
+      chapterEditControllerProvider(initial).notifier,
+    );
+
+    final ok = await notifier.save();
     expect(ok, true);
-    expect(ctrl.state.isSaving, false);
-    expect(ctrl.state.isDirty, false);
+
+    final state = container.read(chapterEditControllerProvider(initial));
+    expect(state.isSaving, false);
+    expect(state.isDirty, false);
     expect(repo.lastUpdated?.id, 'c1');
   });
 
   test('save failure sets errorMessage', () async {
     final repo = FakeChapterRepo()..throwOnUpdate = true;
-    final ctrl = ChapterEditController(initial, repo);
-    final ok = await ctrl.save();
+    final container = makeContainer(repo);
+    final notifier = container.read(
+      chapterEditControllerProvider(initial).notifier,
+    );
+
+    final ok = await notifier.save();
     expect(ok, false);
-    expect(ctrl.state.errorMessage?.isNotEmpty, true);
+
+    final state = container.read(chapterEditControllerProvider(initial));
+    expect(state.errorMessage?.isNotEmpty, true);
   });
 
   test('createNextChapter success returns created chapter', () async {
     final repo = FakeChapterRepo()..nextIdx = 3;
-    final ctrl = ChapterEditController(initial, repo);
-    final created = await ctrl.createNextChapter(defaultTitle: 'Chapter 3');
+    final container = makeContainer(repo);
+    final notifier = container.read(
+      chapterEditControllerProvider(initial).notifier,
+    );
+
+    final created = await notifier.createNextChapter(defaultTitle: 'Chapter 3');
     expect(created?.idx, 3);
-    expect(ctrl.state.isSaving, false);
+
+    final state = container.read(chapterEditControllerProvider(initial));
+    expect(state.isSaving, false);
   });
 
   test('deleteCurrentChapter success returns true', () async {
     final repo = FakeChapterRepo();
-    final ctrl = ChapterEditController(initial, repo);
-    final ok = await ctrl.deleteCurrentChapter();
+    final container = makeContainer(repo);
+    final notifier = container.read(
+      chapterEditControllerProvider(initial).notifier,
+    );
+
+    final ok = await notifier.deleteCurrentChapter();
     expect(ok, true);
     expect(repo.lastDeletedId, 'c1');
   });

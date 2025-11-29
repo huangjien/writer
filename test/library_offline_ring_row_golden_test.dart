@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'helpers/test_utils.dart';
+import 'package:writer/state/providers.dart';
 
 void main() {
   setUp(() async {
@@ -33,6 +34,7 @@ void main() {
 
     final app = await buildAppScope(
       prefs: prefs,
+      extraOverrides: [supabaseEnabledProvider.overrideWith((_) => false)],
       child: MaterialApp(
         locale: const Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -105,6 +107,7 @@ void main() {
 
     final app = await buildAppScope(
       prefs: prefs,
+      extraOverrides: [supabaseEnabledProvider.overrideWith((_) => false)],
       child: MaterialApp(
         locale: const Locale('zh'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,

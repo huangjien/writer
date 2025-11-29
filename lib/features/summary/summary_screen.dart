@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/mock_providers.dart';
-import 'package:writer/state/supabase_config.dart';
+// Supabase gating is read via provider for testability
+import 'package:writer/state/providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
 import '../../main.dart';
@@ -34,8 +35,16 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
     if (cached != null) {
       _summaryController.text = cached;
     } else {
-      final novel = await ref.read(novelProvider(widget.novelId).future);
-      final desc = novel?.description ?? '';
+      final isSupabaseEnabled = ref.read(supabaseEnabledProvider);
+      Novel? resolved;
+      if (isSupabaseEnabled) {
+        resolved = await ref.read(novelProvider(widget.novelId).future);
+      } else {
+        final novels = await ref.read(mockNovelsProvider.future);
+        final matches = novels.where((n) => n.id == widget.novelId);
+        resolved = matches.isNotEmpty ? matches.first : null;
+      }
+      final desc = resolved?.description ?? '';
       _summaryController.text = desc;
     }
     setState(() {});
@@ -49,18 +58,19 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final chaptersAsync = supabaseEnabled
+    final isSupabaseEnabled = ref.watch(supabaseEnabledProvider);
+    final chaptersAsync = isSupabaseEnabled
         ? ref.watch(chaptersProvider(widget.novelId))
         : ref.watch(mockChaptersProvider(widget.novelId));
 
     return Scaffold(
       appBar: AppBar(title: const Text('Summary')),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (supabaseEnabled)
+            if (isSupabaseEnabled)
               ref
                   .watch(novelProvider(widget.novelId))
                   .when(
@@ -125,7 +135,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                                     widget.novelId,
                                     _summaryController.text.trim(),
                                   );
-                                  if (supabaseEnabled) {
+                                  if (isSupabaseEnabled) {
                                     final repo = ref.read(
                                       novelRepositoryProvider,
                                     );
@@ -152,6 +162,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                         Expanded(
                           child: Text(
                             _error!,
+                            maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(color: Colors.redAccent),
                           ),
@@ -296,7 +307,9 @@ class _LoadingTile extends StatelessWidget {
       children: [
         const CircularProgressIndicator(strokeWidth: 2),
         const SizedBox(width: 8),
-        Text(label),
+        Expanded(
+          child: Text(label, maxLines: 2, overflow: TextOverflow.ellipsis),
+        ),
       ],
     );
   }
@@ -311,7 +324,9 @@ class _ErrorTile extends StatelessWidget {
       children: [
         const Icon(Icons.warning_amber_rounded, size: 16),
         const SizedBox(width: 8),
-        Text(label),
+        Expanded(
+          child: Text(label, maxLines: 2, overflow: TextOverflow.ellipsis),
+        ),
       ],
     );
   }

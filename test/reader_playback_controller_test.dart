@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/reader/logic/reader_playback_controller.dart';
 import 'package:writer/features/reader/logic/tts_driver.dart';
 import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/tts_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Use real AppSettingsNotifier with mock SharedPreferences
@@ -82,22 +83,25 @@ class FakeTtsDriver implements TtsDriver {
   void emitComplete() => _onAllComplete?.call();
 }
 
+final refProvider = Provider((ref) => ref);
+
 void main() {
   testWidgets('tryAutoStart sets blocked and invokes prompt when no progress', (
     tester,
   ) async {
     SharedPreferences.setMockInitialValues(const {});
     final prefs = await SharedPreferences.getInstance();
-    WidgetRef? captured;
+    Ref? captured;
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
+          ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
         ],
         child: MaterialApp(
           home: Consumer(
             builder: (context, ref, _) {
-              captured = ref;
+              captured = ref.read(refProvider);
               return const SizedBox.shrink();
             },
           ),
@@ -132,16 +136,17 @@ void main() {
   testWidgets('progress unblocks autoplay and cancels retries', (tester) async {
     SharedPreferences.setMockInitialValues(const {});
     final prefs = await SharedPreferences.getInstance();
-    WidgetRef? captured;
+    Ref? captured;
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
+          ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
         ],
         child: MaterialApp(
           home: Consumer(
             builder: (context, ref, _) {
-              captured = ref;
+              captured = ref.read(refProvider);
               return const SizedBox.shrink();
             },
           ),

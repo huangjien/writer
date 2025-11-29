@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String _appLanguageKey = 'app_language';
@@ -10,8 +10,8 @@ class AppSettingsNotifier extends StateNotifier<Locale> {
 
   final SharedPreferences _prefs;
 
-  void setLanguage(String languageCode) {
-    _prefs.setString(_appLanguageKey, languageCode);
+  Future<void> setLanguage(String languageCode) async {
+    await _prefs.setString(_appLanguageKey, languageCode);
     state = Locale(languageCode);
   }
 }

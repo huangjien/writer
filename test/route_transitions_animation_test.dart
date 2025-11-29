@@ -3,18 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:animations/animations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:writer/app.dart';
 import 'package:writer/routing/app_router.dart';
 import 'package:writer/state/motion_settings.dart';
 
-class _TestMotionSettingsNotifier extends MotionSettingsNotifier {
-  _TestMotionSettingsNotifier(bool reduceMotion) : super.lazy() {
-    state = state.copyWith(reduceMotion: reduceMotion);
-  }
-}
-
-ProviderScope _buildScope({required bool reduceMotion}) {
+Future<ProviderScope> _buildScope({required bool reduceMotion}) async {
   final router = GoRouter(
     routes: [
       GoRoute(
@@ -30,11 +25,16 @@ ProviderScope _buildScope({required bool reduceMotion}) {
     ],
   );
 
+  SharedPreferences.setMockInitialValues({
+    'reduce_motion_enabled': reduceMotion,
+  });
+  final prefs = await SharedPreferences.getInstance();
+
   return ProviderScope(
     overrides: [
       appRouterProvider.overrideWithValue(router),
       motionSettingsProvider.overrideWith(
-        (ref) => _TestMotionSettingsNotifier(reduceMotion),
+        (ref) => MotionSettingsNotifier(prefs),
       ),
     ],
     child: const App(),
@@ -45,7 +45,8 @@ void main() {
   testWidgets('FadeThrough animates on route change when motion allowed', (
     tester,
   ) async {
-    await tester.pumpWidget(_buildScope(reduceMotion: false));
+    final scope = await _buildScope(reduceMotion: false);
+    await tester.pumpWidget(scope);
     await tester.pumpAndSettle();
 
     // Navigate to settings
@@ -70,7 +71,8 @@ void main() {
   testWidgets('No animation on route change when Reduce Motion enabled', (
     tester,
   ) async {
-    await tester.pumpWidget(_buildScope(reduceMotion: true));
+    final scope = await _buildScope(reduceMotion: true);
+    await tester.pumpWidget(scope);
     await tester.pumpAndSettle();
 
     final container = ProviderScope.containerOf(

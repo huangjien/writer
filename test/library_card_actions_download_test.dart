@@ -9,6 +9,7 @@ import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/models/chapter.dart';
+import 'package:writer/state/providers.dart';
 // No Supabase imports; use a pure fake repository to avoid timers.
 
 // A minimal fake to avoid Supabase and background timers in tests.
@@ -68,6 +69,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          supabaseEnabledProvider.overrideWith((_) => false),
           lib_providers.downloadFeatureFlagProvider.overrideWithValue(true),
           chapterRepositoryProvider.overrideWithValue(repo),
         ],

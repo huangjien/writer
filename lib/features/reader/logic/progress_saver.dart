@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/user_progress.dart';
 import '../../../state/progress_providers.dart';
 import '../../../state/progress_notifier.dart';
-import '../../../state/supabase_config.dart';
+import '../../../state/providers.dart';
 
 enum SaveStatus { notEnabled, noUser, saved, error }
 
@@ -15,13 +15,15 @@ User? Function()? mockGetUser;
 bool? mockSupabaseEnabled;
 
 Future<SaveStatus> saveReaderProgress({
-  required WidgetRef ref,
+  required Ref ref,
   required String novelId,
   required String chapterId,
   required double scrollOffset,
   required int ttsIndex,
 }) async {
-  final enabled = mockSupabaseEnabled ?? supabaseEnabled;
+  final bool enabled = mockSupabaseEnabled != null
+      ? mockSupabaseEnabled!
+      : ref.read(supabaseEnabledProvider);
   if (!enabled) return SaveStatus.notEnabled;
 
   User? user;

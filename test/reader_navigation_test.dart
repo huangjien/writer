@@ -7,6 +7,8 @@ import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/mock_providers.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/features/reader/reader_screen.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/supabase_config.dart';
 
 void main() {
   testWidgets(
@@ -36,7 +38,12 @@ void main() {
         ProviderScope(
           overrides: [
             appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
-            mockChaptersProvider.overrideWith((ref, novelId) async => chapters),
+            if (supabaseEnabled)
+              chaptersProvider.overrideWith((ref, novelId) async => chapters)
+            else
+              mockChaptersProvider.overrideWith(
+                (ref, novelId) async => chapters,
+              ),
           ],
           child: MaterialApp(
             locale: const Locale('en'),

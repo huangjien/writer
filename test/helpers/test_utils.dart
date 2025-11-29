@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
+import 'package:writer/state/tts_settings.dart';
 import 'package:writer/theme/themes.dart';
 
 /// Builds a ProviderScope with common overrides for app/theme.
@@ -15,16 +16,19 @@ Future<ProviderScope> buildAppScope({
   SharedPreferences? prefs,
   AppSettingsNotifier? appSettings,
   ThemeController? themeController,
-  List<Override>? extraOverrides,
+  TtsSettingsNotifier? ttsSettings,
+  List? extraOverrides,
   required Widget child,
 }) async {
   final p = prefs ?? await SharedPreferences.getInstance();
   final app = appSettings ?? AppSettingsNotifier(p);
   final theme = themeController ?? ThemeController(p);
+  final tts = ttsSettings ?? TtsSettingsNotifier(p);
   return ProviderScope(
     overrides: [
       appSettingsProvider.overrideWith((_) => app),
       themeControllerProvider.overrideWith((_) => theme),
+      ttsSettingsProvider.overrideWith((_) => tts),
       ...?extraOverrides,
     ],
     child: child,

@@ -7,6 +7,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/mock_providers.dart';
+import 'package:writer/state/novel_providers.dart';
 
 void main() {
   const novelId = 'novel-001';
@@ -47,12 +48,22 @@ void main() {
             mockChaptersProvider(
               novelId,
             ).overrideWith((ref) => Future.any([])), // Never completes
+          if (isLoading)
+            chaptersProvider(novelId).overrideWith((ref) => Future.any([])),
           if (error != null)
             mockChaptersProvider(
               novelId,
             ).overrideWith((ref) => Future.error(error)),
+          if (error != null)
+            chaptersProvider(
+              novelId,
+            ).overrideWith((ref) => Future.error(error)),
           if (!isLoading && error == null)
             mockChaptersProvider(
+              novelId,
+            ).overrideWith((ref) => Future.value(chapters)),
+          if (!isLoading && error == null)
+            chaptersProvider(
               novelId,
             ).overrideWith((ref) => Future.value(chapters)),
         ],
@@ -77,6 +88,10 @@ void main() {
         overrides: [
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           mockChaptersProvider(novelId).overrideWith((ref) async {
+            await Future.delayed(const Duration(milliseconds: 100));
+            return mockChapters;
+          }),
+          chaptersProvider(novelId).overrideWith((ref) async {
             await Future.delayed(const Duration(milliseconds: 100));
             return mockChapters;
           }),
@@ -163,6 +178,9 @@ void main() {
           overrides: [
             appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
             mockChaptersProvider(
+              novelId,
+            ).overrideWith((ref) => Future.value(mockChapters)),
+            chaptersProvider(
               novelId,
             ).overrideWith((ref) => Future.value(mockChapters)),
           ],

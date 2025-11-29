@@ -18,7 +18,7 @@ void main() {
       ProviderScope(
         overrides: [
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
-          ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier()),
+          ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

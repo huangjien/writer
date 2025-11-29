@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/state/mock_providers.dart';
+import 'package:writer/state/providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
 
 void main() {
@@ -11,6 +12,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          supabaseEnabledProvider.overrideWith((_) => false),
           // Force empty novels list
           mockNovelsProvider.overrideWith((ref) async => []),
         ],
