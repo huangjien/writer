@@ -85,7 +85,7 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
     for (var line in lines) {
       final trimmed = line.trim();
       if (trimmed.isNotEmpty) {
-        formattedLines.add('\u3000\u3000$trimmed');
+        formattedLines.add(trimmed);
       }
     }
 

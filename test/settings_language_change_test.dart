@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/settings/settings_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/providers.dart';
 
@@ -20,6 +21,7 @@ void main() {
         supabaseEnabledProvider.overrideWith((_) => false),
         appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
         themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
+        aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
       ],
     );
     addTearDown(container.dispose);

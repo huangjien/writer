@@ -161,11 +161,8 @@ void main() {
     notifier.formatContent();
 
     final state = container.read(chapterEditControllerProvider(initial));
-    // Expect 2 full-width spaces indentation and double newlines
-    expect(
-      state.content,
-      '\u3000\u3000Line 1\n\n\u3000\u3000Line 2\n\n\u3000\u3000Line 3',
-    );
+    // Expect no indentation and double newlines
+    expect(state.content, 'Line 1\n\nLine 2\n\nLine 3');
     expect(state.isDirty, true);
   });
 }

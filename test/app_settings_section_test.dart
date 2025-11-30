@@ -7,6 +7,7 @@ import 'package:writer/features/settings/widgets/app_settings_section.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/motion_settings.dart';
+import 'package:writer/state/ai_service_settings.dart';
 
 void main() {
   setUp(() async {
@@ -25,6 +26,7 @@ void main() {
           appSettingsProvider.overrideWith((_) => app),
           themeControllerProvider.overrideWith((_) => theme),
           motionSettingsProvider.overrideWith((_) => motion),
+          aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
         ],
         child: MaterialApp(
           locale: const Locale('en'),

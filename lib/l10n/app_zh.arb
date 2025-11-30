@@ -239,5 +239,17 @@
   "updateNovel": "更新小说",
   "deleteNovel": "删除小说",
   "deleteNovelConfirmation": "这将永久删除该小说。要继续吗？",
-  "format": "格式化"
+  "format": "格式化",
+  "aiServiceUrl": "AI 服务地址",
+  "aiServiceUrlDescription": "AI 功能的后端服务地址",
+  "aiAssistant": "AI 助手",
+  "aiChatHint": "输入您的消息...",
+  "aiChatEmpty": "询问我关于本章或小说的任何问题",
+  "aiThinking": "AI 正在思考...",
+  "send": "发送",
+  "resetToDefault": "重置为默认值",
+  "invalidUrl": "请输入有效的 http(s) 链接且不包含空格。",
+  "urlTooLong": "URL 必须少于 2048 个字符。",
+  "urlContainsSpaces": "URL 不能包含空格。",
+  "urlInvalidScheme": "URL 必须以 http:// 或 https:// 开头。"
 }

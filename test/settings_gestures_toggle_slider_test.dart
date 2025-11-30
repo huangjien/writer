@@ -7,6 +7,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/motion_settings.dart';
+import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/features/settings/widgets/app_settings_section.dart';
 
@@ -27,6 +28,7 @@ void main() {
         motionSettingsProvider.overrideWith(
           (_) => MotionSettingsNotifier(null),
         ),
+        aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
       ],
     );
     addTearDown(container.dispose);
@@ -72,6 +74,7 @@ void main() {
         motionSettingsProvider.overrideWith(
           (_) => MotionSettingsNotifier(null),
         ),
+        aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
       ],
     );
     addTearDown(container.dispose);

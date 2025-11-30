@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../state/ai_service_settings.dart';
 import '../../../state/app_settings.dart';
 import '../../../state/motion_settings.dart';
 import '../../../state/theme_controller.dart';
@@ -8,6 +9,78 @@ import '../../../theme/themes.dart';
 
 class AppSettingsSection extends ConsumerWidget {
   const AppSettingsSection({super.key});
+
+  void _showAiServiceUrlDialog(BuildContext context, WidgetRef ref) {
+    final currentUrl = ref.read(aiServiceProvider);
+    final controller = TextEditingController(text: currentUrl);
+    String? validationError;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text(AppLocalizations.of(context)!.aiServiceUrl),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: 'http://localhost:5600/',
+              labelText: 'URL',
+              errorText: validationError,
+            ),
+            keyboardType: TextInputType.url,
+            onChanged: (value) {
+              setState(() {
+                validationError = _validateAiServiceUrl(value, context);
+              });
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                ref.read(aiServiceProvider.notifier).resetToDefault();
+                controller.text = 'http://localhost:5600/';
+                setState(() {
+                  validationError = null;
+                });
+              },
+              child: Text(AppLocalizations.of(context)!.resetToDefault),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(AppLocalizations.of(context)!.cancel),
+            ),
+            TextButton(
+              onPressed: validationError == null
+                  ? () {
+                      final newUrl = controller.text.trim();
+                      if (newUrl.isNotEmpty) {
+                        ref
+                            .read(aiServiceProvider.notifier)
+                            .setAiServiceUrl(newUrl);
+                      }
+                      Navigator.of(context).pop();
+                    }
+                  : null,
+              child: Text(AppLocalizations.of(context)!.save),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String? _validateAiServiceUrl(String? raw, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final value = (raw ?? '').trim();
+    if (value.isEmpty) return null; // Allow empty for optional reset
+    if (value.length > 2048) return l10n.urlTooLong;
+    if (value.contains(' ')) return l10n.urlContainsSpaces;
+    final lower = value.toLowerCase();
+    final hasValidScheme =
+        lower.startsWith('http://') || lower.startsWith('https://');
+    if (!hasValidScheme) return l10n.urlInvalidScheme;
+    return null;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -70,6 +143,30 @@ class AppSettingsSection extends ConsumerWidget {
               ),
             ],
           ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.computer),
+          title: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.aiServiceUrl),
+                    Text(
+                      l10n.aiServiceUrlDescription,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () => _showAiServiceUrlDialog(context, ref),
+              ),
+            ],
+          ),
+          subtitle: Text(ref.watch(aiServiceProvider)),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),

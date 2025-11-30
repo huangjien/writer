@@ -9,6 +9,8 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/features/settings/settings_screen.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
+import 'package:writer/state/ai_service_settings.dart';
+import 'package:writer/state/motion_settings.dart';
 
 void main() {
   setUp(() async {
@@ -32,6 +34,10 @@ void main() {
         overrides: [
           appSettingsProvider.overrideWith((_) => appNotifier),
           themeControllerProvider.overrideWith((_) => themeController),
+          aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
+          motionSettingsProvider.overrideWith(
+            (_) => MotionSettingsNotifier(null),
+          ),
         ],
         child: MaterialApp(
           locale: const Locale('en'),
@@ -61,6 +67,10 @@ void main() {
         overrides: [
           appSettingsProvider.overrideWith((_) => appNotifier),
           themeControllerProvider.overrideWith((_) => themeController),
+          aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
+          motionSettingsProvider.overrideWith(
+            (_) => MotionSettingsNotifier(null),
+          ),
         ],
         child: MaterialApp(
           locale: const Locale('zh'),

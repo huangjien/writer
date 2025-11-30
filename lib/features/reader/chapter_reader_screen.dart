@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/features/ai_chat/widgets/ai_chat_sidebar.dart';
+import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 
 import '../../models/chapter.dart';
 import '../../state/edit_permissions.dart';
@@ -276,36 +278,48 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
             content: state.content,
           );
 
+    final isAiChatOpen = ref.watch(aiChatUiProvider);
+
     final readerScaffold = Scaffold(
       backgroundColor: bgColor,
       appBar: state.fullScreen
           ? null
           : ReaderAppBar(title: state.title, onBack: _onBackPressed),
       endDrawer: state.fullScreen ? null : SideBar(novelId: widget.novelId),
-      body: state.editMode
-          ? EditChapterBody(
-              novelId: widget.novelId,
-              current: current,
-              previewMode: state.previewMode,
-            )
-          : ReaderBody(
-              controller: _controller,
-              content: state.content,
-              ttsIndex: state.ttsIndex,
-              autoplayBlocked: state.autoplayBlocked,
-              onAutoplayContinue: () async {
-                notifier.setAutoplayBlocked(false);
-                await notifier.startTts();
-              },
-              gesturesEnabled: motion.gesturesEnabled,
-              swipeMinVelocity: motion.swipeMinVelocity,
-              editMode: state.editMode,
-              discardDialogOpen: state.discardDialogOpen,
-              onToggleFullScreen: notifier.toggleFullScreen,
-              onPlayStop: _onPlayStopPressed,
-              onPrev: _onPrevPressed,
-              onNext: _onNextPressed,
-            ),
+      body: Row(
+        children: [
+          // Main content
+          Expanded(
+            child: state.editMode
+                ? EditChapterBody(
+                    novelId: widget.novelId,
+                    current: current,
+                    previewMode: state.previewMode,
+                  )
+                : ReaderBody(
+                    controller: _controller,
+                    content: state.content,
+                    ttsIndex: state.ttsIndex,
+                    autoplayBlocked: state.autoplayBlocked,
+                    onAutoplayContinue: () async {
+                      notifier.setAutoplayBlocked(false);
+                      await notifier.startTts();
+                    },
+                    gesturesEnabled: motion.gesturesEnabled,
+                    swipeMinVelocity: motion.swipeMinVelocity,
+                    editMode: state.editMode,
+                    discardDialogOpen: state.discardDialogOpen,
+                    onToggleFullScreen: notifier.toggleFullScreen,
+                    onPlayStop: _onPlayStopPressed,
+                    onPrev: _onPrevPressed,
+                    onNext: _onNextPressed,
+                  ),
+          ),
+          // AI Chat Sidebar
+          if (isAiChatOpen && !state.fullScreen)
+            const SizedBox(width: 350, child: AiChatSidebar()),
+        ],
+      ),
       bottomNavigationBar: state.fullScreen
           ? null
           : SafeArea(

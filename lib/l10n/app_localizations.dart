@@ -1237,6 +1237,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Format'**
   String get format;
+
+  /// No description provided for @aiServiceUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Service URL'**
+  String get aiServiceUrl;
+
+  /// No description provided for @aiServiceUrlDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Backend service URL for AI features'**
+  String get aiServiceUrlDescription;
+
+  /// No description provided for @aiAssistant.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Assistant'**
+  String get aiAssistant;
+
+  /// No description provided for @aiChatHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your message...'**
+  String get aiChatHint;
+
+  /// No description provided for @aiChatEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask me anything about this chapter or novel'**
+  String get aiChatEmpty;
+
+  /// No description provided for @aiThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'AI is thinking...'**
+  String get aiThinking;
+
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// No description provided for @resetToDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to Default'**
+  String get resetToDefault;
+
+  /// No description provided for @invalidUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid http(s) URL without spaces.'**
+  String get invalidUrl;
+
+  /// No description provided for @urlTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'URL must be 2048 characters or less.'**
+  String get urlTooLong;
+
+  /// No description provided for @urlContainsSpaces.
+  ///
+  /// In en, this message translates to:
+  /// **'URL cannot contain spaces.'**
+  String get urlContainsSpaces;
+
+  /// No description provided for @urlInvalidScheme.
+  ///
+  /// In en, this message translates to:
+  /// **'URL must start with http:// or https://.'**
+  String get urlInvalidScheme;
 }
 
 class _AppLocalizationsDelegate

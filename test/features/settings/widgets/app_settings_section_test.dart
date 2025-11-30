@@ -6,6 +6,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/state/theme_controller.dart';
+import 'package:writer/state/ai_service_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -23,6 +24,7 @@ void main() {
           motionSettingsProvider.overrideWith(
             (_) => MotionSettingsNotifier(prefs),
           ),
+          aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

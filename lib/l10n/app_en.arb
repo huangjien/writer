@@ -239,5 +239,17 @@
   "updateNovel": "Update Novel",
   "deleteNovel": "Delete Novel",
   "deleteNovelConfirmation": "This will permanently delete the novel. Continue?",
-  "format": "Format"
+  "format": "Format",
+  "aiServiceUrl": "AI Service URL",
+  "aiServiceUrlDescription": "Backend service URL for AI features",
+  "aiAssistant": "AI Assistant",
+  "aiChatHint": "Type your message...",
+  "aiChatEmpty": "Ask me anything about this chapter or novel",
+  "aiThinking": "AI is thinking...",
+  "send": "Send",
+  "resetToDefault": "Reset to Default",
+  "invalidUrl": "Enter a valid http(s) URL without spaces.",
+  "urlTooLong": "URL must be 2048 characters or less.",
+  "urlContainsSpaces": "URL cannot contain spaces.",
+  "urlInvalidScheme": "URL must start with http:// or https://."
 }

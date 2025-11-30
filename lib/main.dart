@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
+import 'state/ai_service_settings.dart';
 import 'state/supabase_config.dart';
 import 'repositories/local_storage_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,6 +23,7 @@ void main() async {
   final appSettings = AppSettingsNotifier(prefs);
   final themeController = ThemeController(prefs);
   final ttsSettings = TtsSettingsNotifier(prefs);
+  final aiService = AiServiceNotifier(prefs);
 
   runApp(
     ProviderScope(
@@ -29,6 +31,7 @@ void main() async {
         appSettingsProvider.overrideWith((_) => appSettings),
         themeControllerProvider.overrideWith((_) => themeController),
         ttsSettingsProvider.overrideWith((_) => ttsSettings),
+        aiServiceProvider.overrideWith((_) => aiService),
       ],
       child: const App(),
     ),

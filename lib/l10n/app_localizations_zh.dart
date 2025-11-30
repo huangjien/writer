@@ -591,4 +591,40 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get format => '格式化';
+
+  @override
+  String get aiServiceUrl => 'AI 服务地址';
+
+  @override
+  String get aiServiceUrlDescription => 'AI 功能的后端服务地址';
+
+  @override
+  String get aiAssistant => 'AI 助手';
+
+  @override
+  String get aiChatHint => '输入您的消息...';
+
+  @override
+  String get aiChatEmpty => '询问我关于本章或小说的任何问题';
+
+  @override
+  String get aiThinking => 'AI 正在思考...';
+
+  @override
+  String get send => '发送';
+
+  @override
+  String get resetToDefault => '重置为默认值';
+
+  @override
+  String get invalidUrl => '请输入有效的 http(s) 链接且不包含空格。';
+
+  @override
+  String get urlTooLong => 'URL 必须少于 2048 个字符。';
+
+  @override
+  String get urlContainsSpaces => 'URL 不能包含空格。';
+
+  @override
+  String get urlInvalidScheme => 'URL 必须以 http:// 或 https:// 开头。';
 }

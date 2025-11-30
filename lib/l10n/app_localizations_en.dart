@@ -606,4 +606,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get format => 'Format';
+
+  @override
+  String get aiServiceUrl => 'AI Service URL';
+
+  @override
+  String get aiServiceUrlDescription => 'Backend service URL for AI features';
+
+  @override
+  String get aiAssistant => 'AI Assistant';
+
+  @override
+  String get aiChatHint => 'Type your message...';
+
+  @override
+  String get aiChatEmpty => 'Ask me anything about this chapter or novel';
+
+  @override
+  String get aiThinking => 'AI is thinking...';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get resetToDefault => 'Reset to Default';
+
+  @override
+  String get invalidUrl => 'Enter a valid http(s) URL without spaces.';
+
+  @override
+  String get urlTooLong => 'URL must be 2048 characters or less.';
+
+  @override
+  String get urlContainsSpaces => 'URL cannot contain spaces.';
+
+  @override
+  String get urlInvalidScheme => 'URL must start with http:// or https://.';
 }
