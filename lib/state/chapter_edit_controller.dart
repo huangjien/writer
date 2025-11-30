@@ -76,6 +76,25 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
     state = state.copyWith(content: content, isDirty: true);
   }
 
+  void formatContent() {
+    if (state.content.isEmpty) return;
+
+    final lines = state.content.split('\n');
+    final formattedLines = <String>[];
+
+    for (var line in lines) {
+      final trimmed = line.trim();
+      if (trimmed.isNotEmpty) {
+        formattedLines.add('\u3000\u3000$trimmed');
+      }
+    }
+
+    final newContent = formattedLines.join('\n\n');
+    if (newContent != state.content) {
+      state = state.copyWith(content: newContent, isDirty: true);
+    }
+  }
+
   Future<bool> save() async {
     state = state.copyWith(
       isSaving: true,

@@ -6,6 +6,7 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/features/reader/widgets/reader_edit_actions.dart';
 import 'package:writer/repositories/chapter_port.dart';
 import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/state/chapter_edit_controller.dart';
 
 class CapturingChapterPort implements ChapterPort {
   bool saved = false;
@@ -56,8 +57,13 @@ void main() {
       content: 'Alpha',
     );
 
-    final app = ProviderScope(
+    final container = ProviderContainer(
       overrides: [chapterRepositoryProvider.overrideWithValue(port)],
+    );
+    addTearDown(container.dispose);
+
+    final app = UncontrolledProviderScope(
+      container: container,
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -78,6 +84,19 @@ void main() {
     await tester.pumpWidget(app);
     await tester.pumpAndSettle();
 
+    // Save should be disabled initially
+    await tester.tap(find.byIcon(Icons.save));
+    await tester.pump();
+    expect(port.saved, isFalse);
+
+    // Make dirty
+    final controller = container.read(
+      chapterEditControllerProvider(current).notifier,
+    );
+    controller.setContent('New content');
+    await tester.pump();
+
+    // Now save should work
     await tester.tap(find.byIcon(Icons.save));
     await tester.pump();
     expect(port.saved, isTrue);

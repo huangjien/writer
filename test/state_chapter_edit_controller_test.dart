@@ -149,4 +149,23 @@ void main() {
     expect(ok, true);
     expect(repo.lastDeletedId, 'c1');
   });
+
+  test('formatContent formats text correctly', () async {
+    final repo = FakeChapterRepo();
+    final container = makeContainer(repo);
+    final notifier = container.read(
+      chapterEditControllerProvider(initial).notifier,
+    );
+
+    notifier.setContent('Line 1\nLine 2\n\nLine 3');
+    notifier.formatContent();
+
+    final state = container.read(chapterEditControllerProvider(initial));
+    // Expect 2 full-width spaces indentation and double newlines
+    expect(
+      state.content,
+      '\u3000\u3000Line 1\n\n\u3000\u3000Line 2\n\n\u3000\u3000Line 3',
+    );
+    expect(state.isDirty, true);
+  });
 }

@@ -603,4 +603,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteNovelConfirmation =>
       'This will permanently delete the novel. Continue?';
+
+  @override
+  String get format => 'Format';
 }

@@ -588,4 +588,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deleteNovelConfirmation => '这将永久删除该小说。要继续吗？';
+
+  @override
+  String get format => '格式化';
 }

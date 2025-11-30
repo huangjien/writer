@@ -58,7 +58,7 @@ void main() {
     ) async {
       // Compact layout to avoid toolbar overflow and use icon controls
       tester.view.devicePixelRatio = 1.0;
-      tester.view.physicalSize = const Size(420, 800);
+      tester.view.physicalSize = const Size(800, 600);
       addTearDown(() {
         tester.view.resetPhysicalSize();
         tester.view.resetDevicePixelRatio();
@@ -140,7 +140,7 @@ void main() {
     ) async {
       // Compact layout to avoid toolbar overflow and use icon controls
       tester.view.devicePixelRatio = 1.0;
-      tester.view.physicalSize = const Size(420, 800);
+      tester.view.physicalSize = const Size(800, 600);
       addTearDown(() {
         tester.view.resetPhysicalSize();
         tester.view.resetDevicePixelRatio();
@@ -221,7 +221,7 @@ void main() {
     ) async {
       // Compact layout to avoid overflow and use icon-based Edit toggle
       tester.view.devicePixelRatio = 1.0;
-      tester.view.physicalSize = const Size(420, 800);
+      tester.view.physicalSize = const Size(800, 600);
       addTearDown(() {
         tester.view.resetPhysicalSize();
         tester.view.resetDevicePixelRatio();

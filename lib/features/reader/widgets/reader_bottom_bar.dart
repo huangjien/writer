@@ -111,22 +111,23 @@ class ReaderBottomBar extends StatelessWidget {
             if (editActions != null) editActions!,
           ],
           const Spacer(),
-          Flexible(
-            child: Row(
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(Radii.s),
-                    child: LinearProgressIndicator(value: scrollProgress),
+          if (!editMode)
+            Flexible(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(Radii.s),
+                      child: LinearProgressIndicator(value: scrollProgress),
+                    ),
                   ),
-                ),
-                if (showPercent) ...[
-                  SizedBox(width: spacing),
-                  Text('${(scrollProgress * 100).round()}%'),
+                  if (showPercent) ...[
+                    SizedBox(width: spacing),
+                    Text('${(scrollProgress * 100).round()}%'),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
           SizedBox(width: spacing),
           if (!editMode) ...[
             Semantics(

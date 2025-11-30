@@ -49,7 +49,9 @@ class ReaderEditActions extends ConsumerWidget {
     final Widget saveBtn = IconButton(
       icon: const Icon(Icons.save),
       iconSize: iconSize,
-      onPressed: disabled ? null : () => controller.save(),
+      onPressed: (disabled || !editState.isDirty)
+          ? null
+          : () => controller.save(),
     );
     final Widget createBtn = IconButton(
       icon: const Icon(Icons.add),
@@ -61,9 +63,16 @@ class ReaderEditActions extends ConsumerWidget {
       iconSize: iconSize,
       onPressed: disabled ? null : () => controller.deleteCurrentChapter(),
     );
+    final Widget formatBtn = IconButton(
+      icon: const Icon(Icons.format_align_left),
+      iconSize: iconSize,
+      onPressed: disabled ? null : () => controller.formatContent(),
+    );
     return Row(
       children: [
         Tooltip(message: 'Review', child: previewBtn),
+        SizedBox(width: spacing),
+        Tooltip(message: l10n.format, child: formatBtn),
         SizedBox(width: spacing),
         Tooltip(message: l10n.save, child: saveBtn),
         SizedBox(width: spacing),

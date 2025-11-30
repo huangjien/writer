@@ -1231,6 +1231,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This will permanently delete the novel. Continue?'**
   String get deleteNovelConfirmation;
+
+  /// No description provided for @format.
+  ///
+  /// In en, this message translates to:
+  /// **'Format'**
+  String get format;
 }
 
 class _AppLocalizationsDelegate

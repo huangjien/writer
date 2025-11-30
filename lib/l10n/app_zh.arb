@@ -238,5 +238,6 @@
   "sceneTemplates": "场景模板",
   "updateNovel": "更新小说",
   "deleteNovel": "删除小说",
-  "deleteNovelConfirmation": "这将永久删除该小说。要继续吗？"
+  "deleteNovelConfirmation": "这将永久删除该小说。要继续吗？",
+  "format": "格式化"
 }

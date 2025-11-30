@@ -238,5 +238,6 @@
   "sceneTemplates": "Scene Templates",
   "updateNovel": "Update Novel",
   "deleteNovel": "Delete Novel",
-  "deleteNovelConfirmation": "This will permanently delete the novel. Continue?"
+  "deleteNovelConfirmation": "This will permanently delete the novel. Continue?",
+  "format": "Format"
 }

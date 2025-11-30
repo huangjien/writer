@@ -165,4 +165,38 @@ void main() {
 
     expect(find.byIcon(Icons.edit), findsNothing);
   });
+
+  testWidgets('Progress bar visible in view mode', (tester) async {
+    await pumpScreen(tester);
+    await tester.pumpAndSettle();
+
+    // Progress bar should be visible
+    expect(find.byType(LinearProgressIndicator), findsOneWidget);
+  });
+
+  testWidgets('Shows snackbar when reaching last chapter', (tester) async {
+    await pumpScreen(tester);
+    await tester.pumpAndSettle();
+
+    // Tap next chapter button
+    await tester.tap(find.byIcon(Icons.skip_next));
+    await tester.pumpAndSettle();
+
+    // Should show snackbar
+    expect(find.byType(SnackBar), findsOneWidget);
+    expect(find.text('Reached last chapter'), findsOneWidget);
+  });
+
+  testWidgets('Shows snackbar when reaching first chapter', (tester) async {
+    await pumpScreen(tester);
+    await tester.pumpAndSettle();
+
+    // Tap previous chapter button
+    await tester.tap(find.byIcon(Icons.skip_previous));
+    await tester.pumpAndSettle();
+
+    // Should show snackbar
+    expect(find.byType(SnackBar), findsOneWidget);
+    expect(find.text('Reached first chapter'), findsOneWidget);
+  });
 }
