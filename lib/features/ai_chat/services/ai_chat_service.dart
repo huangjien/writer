@@ -10,18 +10,30 @@ class AiChatService {
 
   Future<String> sendMessage(String message) async {
     try {
+      final url = baseUrl.endsWith('/')
+          ? '${baseUrl}agents/qa'
+          : '$baseUrl/agents/qa';
       final response = await http.post(
-        Uri.parse('${baseUrl}api/chat'),
+        Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'message': message,
-          'timestamp': DateTime.now().toIso8601String(),
-        }),
+        body: jsonEncode({'question': message}),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['response'] ?? 'No response from AI service';
+        if (data is Map && data.containsKey('answer')) {
+          final v = data['answer'];
+          return v is String ? v : 'No response from AI service';
+        }
+        if (data is Map && data.containsKey('reply')) {
+          final v = data['reply'];
+          return v is String ? v : 'No response from AI service';
+        }
+        if (data is Map && data.containsKey('response')) {
+          final v = data['response'];
+          return v is String ? v : 'No response from AI service';
+        }
+        return 'No response from AI service';
       } else {
         throw Exception('Failed to get response: ${response.statusCode}');
       }
@@ -36,7 +48,16 @@ class AiChatService {
           ? '${baseUrl}health'
           : '$baseUrl/health';
       final response = await http.get(Uri.parse(healthUrl));
-      return response.statusCode == 200;
+      if (response.statusCode != 200) return false;
+      try {
+        final data = jsonDecode(response.body);
+        if (data is Map && data['ai'] is Map) {
+          final ai = data['ai'] as Map;
+          final ok = ai['access_ok'];
+          if (ok is bool) return ok;
+        }
+      } catch (_) {}
+      return true;
     } catch (e) {
       return false;
     }

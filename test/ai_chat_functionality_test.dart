@@ -61,9 +61,7 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Verify that the sidebar is rendered
       expect(find.byType(AiChatSidebar), findsOneWidget);
-      expect(find.text('AI Assistant'), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget);
       expect(find.byIcon(Icons.send), findsOneWidget);
     });

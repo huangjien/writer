@@ -286,10 +286,9 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
           ? null
           : ReaderAppBar(title: state.title, onBack: _onBackPressed),
       endDrawer: state.fullScreen ? null : SideBar(novelId: widget.novelId),
-      body: Row(
+      body: Stack(
         children: [
-          // Main content
-          Expanded(
+          Positioned.fill(
             child: state.editMode
                 ? EditChapterBody(
                     novelId: widget.novelId,
@@ -315,12 +314,34 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
                     onNext: _onNextPressed,
                   ),
           ),
-          // AI Chat Sidebar
           if (isAiChatOpen && !state.fullScreen)
-            const SizedBox(width: 350, child: AiChatSidebar()),
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  try {
+                    ref.read(aiChatUiProvider.notifier).closeSidebar();
+                  } catch (_) {}
+                },
+                child: Container(color: const Color(0x00000000)),
+              ),
+            ),
+          if (isAiChatOpen && !state.fullScreen)
+            Align(
+              alignment: Alignment.centerRight,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final w = constraints.maxWidth * 0.8;
+                  return SizedBox(
+                    width: w,
+                    child: AiChatSidebar(width: w),
+                  );
+                },
+              ),
+            ),
         ],
       ),
-      bottomNavigationBar: state.fullScreen
+      bottomNavigationBar: state.fullScreen || isAiChatOpen
           ? null
           : SafeArea(
               top: false,

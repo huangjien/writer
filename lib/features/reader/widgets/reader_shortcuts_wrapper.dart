@@ -1,8 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 import '../logic/reader_shortcuts.dart';
 
-class ReaderShortcutsWrapper extends StatelessWidget {
+class ReaderShortcutsWrapper extends ConsumerWidget {
   const ReaderShortcutsWrapper({
     super.key,
     required this.disabled,
@@ -21,19 +23,21 @@ class ReaderShortcutsWrapper extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final chatOpen = ref.watch(aiChatUiProvider);
     final Map<ShortcutActivator, Intent> shortcutsMap = disabled
         ? <ShortcutActivator, Intent>{}
         : <ShortcutActivator, Intent>{
-            const SingleActivator(LogicalKeyboardKey.space):
-                const ToggleSpeakIntent(),
+            if (!chatOpen)
+              const SingleActivator(LogicalKeyboardKey.space):
+                  const ToggleSpeakIntent(),
             const SingleActivator(LogicalKeyboardKey.arrowLeft):
                 const PrevIntent(),
             const SingleActivator(LogicalKeyboardKey.arrowRight):
                 const NextIntent(),
-            const SingleActivator(LogicalKeyboardKey.keyR):
+            const SingleActivator(LogicalKeyboardKey.keyR, control: true):
                 const OpenRateIntent(),
-            const SingleActivator(LogicalKeyboardKey.keyV):
+            const SingleActivator(LogicalKeyboardKey.keyV, control: true):
                 const OpenVoiceIntent(),
           };
     return Shortcuts(
