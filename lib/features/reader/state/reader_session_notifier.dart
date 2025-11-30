@@ -12,6 +12,7 @@ import '../logic/reader_playback_controller.dart';
 import '../logic/tts_driver.dart';
 import '../logic/progress_saver.dart';
 import 'reader_session_state.dart';
+import '../../../models/chapter.dart';
 
 final readerSessionProvider =
     StateNotifierProvider.autoDispose<
@@ -239,4 +240,20 @@ class ReaderSessionNotifier extends StateNotifier<ReaderSessionState> {
   }
 
   // Cleanup is registered via ref.onDispose in the constructor.
+  void jumpToCreated(Chapter created) {
+    final list = [...state.allChapters, created];
+    final idx = list.length - 1;
+    state = state.copyWith(
+      allChapters: list,
+      currentIdx: idx,
+      chapterId: created.id,
+      title: created.title ?? 'Chapter ${created.idx}',
+      content: created.content,
+      ttsIndex: 0,
+      ttsIndexVisual: 0,
+      speaking: false,
+      autoplayBlocked: false,
+      progressDenomLockedIndex: null,
+    );
+  }
 }

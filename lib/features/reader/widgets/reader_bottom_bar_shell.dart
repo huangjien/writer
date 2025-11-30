@@ -21,6 +21,7 @@ class ReaderBottomBarShell extends StatelessWidget {
     this.current,
     required this.previewMode,
     required this.onTogglePreview,
+    required this.onCreated,
   });
 
   final bool canEdit;
@@ -37,6 +38,7 @@ class ReaderBottomBarShell extends StatelessWidget {
   final Chapter? current;
   final bool previewMode;
   final VoidCallback onTogglePreview;
+  final void Function(Chapter created) onCreated;
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +57,7 @@ class ReaderBottomBarShell extends StatelessWidget {
         current: current!,
         previewMode: previewMode,
         onTogglePreview: onTogglePreview,
+        onCreated: onCreated,
         isCompact: isCompact,
         isWideForEdit: isWideForEdit,
         spacing: spacing,

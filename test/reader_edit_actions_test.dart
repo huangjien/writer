@@ -72,6 +72,7 @@ void main() {
             current: current,
             previewMode: false,
             onTogglePreview: _noop,
+            onCreated: (_) {},
             isCompact: true,
             isWideForEdit: false,
             spacing: 8,

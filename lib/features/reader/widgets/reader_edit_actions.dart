@@ -10,6 +10,7 @@ class ReaderEditActions extends ConsumerWidget {
     required this.current,
     required this.previewMode,
     required this.onTogglePreview,
+    required this.onCreated,
     required this.isCompact,
     required this.isWideForEdit,
     required this.spacing,
@@ -19,6 +20,7 @@ class ReaderEditActions extends ConsumerWidget {
   final Chapter current;
   final bool previewMode;
   final VoidCallback onTogglePreview;
+  final void Function(Chapter created) onCreated;
   final bool isCompact;
   final bool isWideForEdit;
   final double spacing;
@@ -56,7 +58,13 @@ class ReaderEditActions extends ConsumerWidget {
     final Widget createBtn = IconButton(
       icon: const Icon(Icons.add),
       iconSize: iconSize,
-      onPressed: disabled ? null : () => controller.createNextChapter(),
+      onPressed: disabled
+          ? null
+          : () => controller.createNextChapter().then((created) {
+              if (created != null) {
+                onCreated(created);
+              }
+            }),
     );
     final Widget deleteBtn = IconButton(
       icon: const Icon(Icons.delete),

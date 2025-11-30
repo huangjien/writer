@@ -390,6 +390,9 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
                         current: current,
                         previewMode: state.previewMode,
                         onTogglePreview: notifier.togglePreviewMode,
+                        onCreated: (created) {
+                          notifier.jumpToCreated(created);
+                        },
                       );
                     },
                   ),
