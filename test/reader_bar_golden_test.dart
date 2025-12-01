@@ -62,10 +62,7 @@ void main() {
       await tester.pumpWidget(app);
       await tester.pumpAndSettle();
 
-      final bar = find.ancestor(
-        of: find.byIcon(Icons.skip_next),
-        matching: find.byType(SafeArea),
-      );
+      final bar = find.byKey(const ValueKey('reader_bottom_bar'));
       expect(bar, findsOneWidget);
 
       await expectLater(
@@ -180,10 +177,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Capture the bottom SafeArea containing the reader bar.
-      final bar = find.ancestor(
-        of: find.byIcon(Icons.skip_next),
-        matching: find.byType(SafeArea),
-      );
+      final bar = find.byKey(const ValueKey('reader_bottom_bar'));
       expect(bar, findsOneWidget);
 
       await expectLater(

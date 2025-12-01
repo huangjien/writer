@@ -68,6 +68,7 @@ class ReaderBottomBarShell extends StatelessWidget {
     }
 
     return ReaderBottomBar(
+      key: const ValueKey('reader_bottom_bar'),
       canEdit: canEdit,
       editMode: editMode,
       speaking: speaking,
