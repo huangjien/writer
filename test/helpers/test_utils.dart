@@ -67,8 +67,10 @@ double contrastRatio(Color a, Color b) {
 }
 
 class TolerantGoldenComparator extends LocalFileComparator {
-  TolerantGoldenComparator(super.testFile, {this.pixelDiffTolerance = 0.01});
+  TolerantGoldenComparator(super.testFile, {this.pixelDiffTolerance = 0.01})
+    : _base = testFile;
   final double pixelDiffTolerance;
+  final Uri _base;
 
   @override
   Future<bool> compare(Uint8List imageBytes, Uri golden) async {
@@ -123,7 +125,12 @@ class TolerantGoldenComparator extends LocalFileComparator {
   }
 
   String _resolveGoldenPath(Uri golden) {
-    final root = Directory.current.path;
-    return '$root/test/${golden.path}';
+    final resolved = _base.resolveUri(golden).toFilePath();
+    if (File(resolved).existsSync()) return resolved;
+    final cwd = Directory.current.path;
+    final candidateTest = '$cwd/test/${golden.path}';
+    if (File(candidateTest).existsSync()) return candidateTest;
+    final candidateRoot = '$cwd/${golden.path}';
+    return candidateRoot;
   }
 }
