@@ -341,13 +341,13 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
             ),
         ],
       ),
-      bottomNavigationBar: state.fullScreen || isAiChatOpen
+      bottomNavigationBar: state.fullScreen
           ? null
           : SafeArea(
               top: false,
               child: Material(
                 color: Theme.of(context).colorScheme.surface,
-                elevation: 2,
+                elevation: 0,
                 child: SizedBox(
                   height: kToolbarHeight,
                   child: LayoutBuilder(

@@ -12,6 +12,7 @@ class ReaderBottomBar extends StatelessWidget {
     required this.iconSize,
     required this.spacing,
     required this.showPercent,
+    required this.showTtsControls,
     required this.scrollProgress,
     required this.onEditToggle,
     required this.onPrev,
@@ -28,6 +29,7 @@ class ReaderBottomBar extends StatelessWidget {
   final double iconSize;
   final double spacing;
   final bool showPercent;
+  final bool showTtsControls;
   final double scrollProgress;
   final VoidCallback onEditToggle;
   final VoidCallback onPrev;
@@ -41,7 +43,7 @@ class ReaderBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
+      padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
       child: Row(
         children: [
           if (canEdit) ...[
@@ -129,7 +131,7 @@ class ReaderBottomBar extends StatelessWidget {
               ),
             ),
           SizedBox(width: spacing),
-          if (!editMode) ...[
+          if (!editMode && showTtsControls) ...[
             Semantics(
               button: true,
               label: l10n.ttsSpeechRate,

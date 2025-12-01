@@ -17,6 +17,7 @@ void main() {
             iconSize: 20,
             spacing: 8,
             showPercent: true,
+            showTtsControls: true,
             scrollProgress: 0.42,
             onEditToggle: voidFn,
             onPrev: voidFn,
