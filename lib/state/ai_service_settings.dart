@@ -2,7 +2,10 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String _aiServiceUrlKey = 'ai_service_url';
-const String _defaultAiServiceUrl = 'http://localhost:5600/';
+const String _defaultAiServiceUrl = String.fromEnvironment(
+  'AI_SERVICE_URL',
+  defaultValue: 'http://localhost:5600/',
+);
 
 class AiServiceNotifier extends StateNotifier<String> {
   AiServiceNotifier(this._prefs)

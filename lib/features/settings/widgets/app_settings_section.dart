@@ -38,7 +38,7 @@ class AppSettingsSection extends ConsumerWidget {
             TextButton(
               onPressed: () {
                 ref.read(aiServiceProvider.notifier).resetToDefault();
-                controller.text = 'http://localhost:5600/';
+                controller.text = ref.read(aiServiceProvider);
                 setState(() {
                   validationError = null;
                 });
