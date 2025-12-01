@@ -26,9 +26,11 @@ TAG ?= v$(PACKAGE_VERSION)
 # Construct dart-define args only when variables are provided
 DF_ARGS := $(strip $(if $(SUPABASE_URL),--dart-define SUPABASE_URL=$(SUPABASE_URL)) \
                  $(if $(SUPABASE_ANON_KEY),--dart-define SUPABASE_ANON_KEY=$(SUPABASE_ANON_KEY)))
+IMAGE ?= writer-web:latest
 
 .PHONY: help dev-web dev-chrome macos deps test test-expanded analyze lint format clean build-web serve-web-build env-print \
-        build-macos build-android build-ios build-windows build-linux build-ipa build-ipa-nocodesign install-hooks icons
+        build-macos build-android build-ios build-windows build-linux build-ipa build-ipa-nocodesign install-hooks icons \
+        docker-build-web docker-push-web
 
 help:
 	@echo "Available targets:"
@@ -125,6 +127,12 @@ clean:
 
 build-web:
 	$(FLUTTER) build web $(DF_ARGS)
+
+docker-build-web:
+	docker build -t $(IMAGE) .
+
+docker-push-web:
+	docker push $(IMAGE)
 
 ## Release builds (pass SUPABASE_URL/SUPABASE_ANON_KEY if needed)
 build-macos:
