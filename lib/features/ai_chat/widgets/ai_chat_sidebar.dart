@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_latex/flutter_markdown_latex.dart';
+import 'package:markdown/markdown.dart' as md;
 
 class AiChatSidebar extends ConsumerStatefulWidget {
   const AiChatSidebar({super.key, this.width});
@@ -216,13 +219,29 @@ class _ChatMessageBubble extends StatelessWidget {
             100.0,
             constraints.maxWidth,
           );
+          final textColor = isUser
+              ? Theme.of(context).colorScheme.onPrimary
+              : Theme.of(context).colorScheme.onSurface;
+          final base = MarkdownStyleSheet.fromTheme(Theme.of(context));
+          final sheet = base.copyWith(
+            p:
+                (base.p?.copyWith(color: textColor)) ??
+                TextStyle(color: textColor),
+            code:
+                (base.code?.copyWith(color: textColor)) ??
+                TextStyle(color: textColor),
+            a:
+                (base.a?.copyWith(color: textColor)) ??
+                TextStyle(color: textColor),
+          );
           final bubbleText = SelectionArea(
-            child: Text(
-              message.content,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: isUser
-                    ? Theme.of(context).colorScheme.onPrimary
-                    : Theme.of(context).colorScheme.onSurface,
+            child: MarkdownBody(
+              data: message.content,
+              styleSheet: sheet,
+              builders: {'latex': LatexElementBuilder()},
+              extensionSet: md.ExtensionSet(
+                [LatexBlockSyntax()],
+                [LatexInlineSyntax()],
               ),
             ),
           );
