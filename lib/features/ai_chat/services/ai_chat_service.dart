@@ -84,7 +84,9 @@ class AiChatService {
   }
 
   Future<Map<String, dynamic>?> verifyUser() async {
-    final url = baseUrl.endsWith('/') ? '${baseUrl}auth/verify' : '$baseUrl/auth/verify';
+    final url = baseUrl.endsWith('/')
+        ? '${baseUrl}auth/verify'
+        : '$baseUrl/auth/verify';
     final headers = {
       'Content-Type': 'application/json',
       if (supabaseEnabled)
