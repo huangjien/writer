@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/state/ai_service_settings.dart';
+import 'package:writer/state/supabase_config.dart';
 
 class AiChatService {
   final String baseUrl;
@@ -13,9 +15,16 @@ class AiChatService {
       final url = baseUrl.endsWith('/')
           ? '${baseUrl}agents/qa'
           : '$baseUrl/agents/qa';
+      final headers = {
+        'Content-Type': 'application/json',
+        if (supabaseEnabled)
+          if (Supabase.instance.client.auth.currentSession?.accessToken != null)
+            'Authorization':
+                'Bearer ${Supabase.instance.client.auth.currentSession!.accessToken}',
+      };
       final response = await http.post(
         Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
         body: jsonEncode({'question': message}),
       );
 
@@ -34,9 +43,14 @@ class AiChatService {
           return v is String ? v : 'No response from AI service';
         }
         return 'No response from AI service';
-      } else {
-        throw Exception('Failed to get response: ${response.statusCode}');
       }
+      if (response.statusCode == 401) {
+        return 'Sign in required to use AI service';
+      }
+      if (response.statusCode == 403) {
+        return 'Feature not available for your plan';
+      }
+      throw Exception('Failed to get response: ${response.statusCode}');
     } catch (e) {
       throw Exception('Failed to connect to AI service: $e');
     }
@@ -47,7 +61,13 @@ class AiChatService {
       final healthUrl = baseUrl.endsWith('/')
           ? '${baseUrl}health'
           : '$baseUrl/health';
-      final response = await http.get(Uri.parse(healthUrl));
+      final headers = {
+        if (supabaseEnabled)
+          if (Supabase.instance.client.auth.currentSession?.accessToken != null)
+            'Authorization':
+                'Bearer ${Supabase.instance.client.auth.currentSession!.accessToken}',
+      };
+      final response = await http.get(Uri.parse(healthUrl), headers: headers);
       if (response.statusCode != 200) return false;
       try {
         final data = jsonDecode(response.body);
@@ -60,6 +80,25 @@ class AiChatService {
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  Future<Map<String, dynamic>?> verifyUser() async {
+    final url = baseUrl.endsWith('/') ? '${baseUrl}auth/verify' : '$baseUrl/auth/verify';
+    final headers = {
+      'Content-Type': 'application/json',
+      if (supabaseEnabled)
+        if (Supabase.instance.client.auth.currentSession?.accessToken != null)
+          'Authorization':
+              'Bearer ${Supabase.instance.client.auth.currentSession!.accessToken}',
+    };
+    final response = await http.get(Uri.parse(url), headers: headers);
+    if (response.statusCode != 200) return null;
+    try {
+      final data = jsonDecode(response.body);
+      return data is Map<String, dynamic> ? data : null;
+    } catch (_) {
+      return null;
     }
   }
 }
