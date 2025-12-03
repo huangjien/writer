@@ -103,18 +103,26 @@ final aiChatUiProvider = StateNotifierProvider<AiChatUiNotifier, bool>((ref) {
 
 class AiServiceStatusNotifier extends StateNotifier<bool> {
   AiServiceStatusNotifier(this._aiChatService) : super(false) {
-    _checkHealth();
-    _timer = Timer.periodic(const Duration(seconds: 30), (_) => _checkHealth());
+    _checkAndSchedule(initial: true);
   }
 
   final AiChatService _aiChatService;
   Timer? _timer;
+  final Duration _okInterval = const Duration(minutes: 8);
+  final Duration _failInterval = const Duration(minutes: 2);
 
-  Future<void> _checkHealth() async {
+  void _scheduleNext(Duration delay) {
+    _timer?.cancel();
+    _timer = Timer(delay, () => _checkAndSchedule());
+  }
+
+  Future<void> _checkAndSchedule({bool initial = false}) async {
     final isHealthy = await _aiChatService.checkHealth();
     if (mounted) {
       state = isHealthy;
     }
+    final next = isHealthy ? _okInterval : _failInterval;
+    _scheduleNext(initial ? next : next);
   }
 
   @override

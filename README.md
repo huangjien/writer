@@ -50,6 +50,12 @@ A Flutter application for reading novels with Supabase-backed storage, localizat
 - Chrome device: `make dev-chrome SUPABASE_URL=... SUPABASE_ANON_KEY=...`
 - macOS device: `make macos SUPABASE_URL=... SUPABASE_ANON_KEY=...`
 
+### AI service URL
+- The app reads a default backend AI service URL from `AI_SERVICE_URL` at build time and stores the value in preferences:
+  - Default: `http://localhost:5600/`
+  - Override at build/run: `--dart-define=AI_SERVICE_URL=https://your-backend.example.com/`
+- The URL can be edited at runtime in Settings → App Settings → AI Service URL.
+
 ## Tests
 - Run tests with coverage summary: `make test`
 
@@ -72,7 +78,25 @@ Future<http.Response> callBackend(Uri url) async {
 }
 ```
 
-- The backend verifies this token via Supabase (`/auth/verify`). Requests without a token or with an invalid token receive `401 Unauthorized`.
+- The app attaches this token automatically for AI calls and health checks; if a session exists but no token is present, it refreshes the session before retrying.
+- The backend verifies this token via Supabase (`/auth/verify`). Requests without a token or with an invalid token receive `401 Unauthorized`. Premium-only routes return `403 Forbidden` for non-premium users.
+
+### Gated endpoints
+- `POST /agents/qa` requires authentication.
+- `POST /agents/respond` requires authentication and a premium plan.
+
+### Health polling
+- The app polls `/health` adaptively:
+  - Healthy → next check after 8 minutes
+  - Unhealthy → next check after 2 minutes
+  - Implementation: `lib/features/ai_chat/state/ai_chat_providers.dart`.
+
+### Troubleshooting 401
+- Ensure backend is configured with the same project as the writer build:
+  - `SUPABASE_URL` must match the token `iss` project domain.
+  - `SUPABASE_ANON_KEY` must be set server-side; backend sends `Authorization` and `apikey` to Supabase.
+- Verify with curl:
+  - `curl -H "Authorization: Bearer $TOKEN" -H "apikey: $SUPABASE_ANON_KEY" http://localhost:5600/auth/verify`
 
 ## Build Targets
 - Web (release): `make build-web SUPABASE_URL=... SUPABASE_ANON_KEY=...`
