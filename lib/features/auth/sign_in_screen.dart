@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:go_router/go_router.dart';
 import '../../state/supabase_config.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -26,7 +27,16 @@ class _SignInScreenState extends State<SignInScreen> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
-      if (mounted) Navigator.of(context).pop();
+      if (!mounted) return;
+      try {
+        await Supabase.instance.client.auth.refreshSession();
+      } catch (_) {}
+      if (!mounted) return;
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      } else {
+        context.go('/settings');
+      }
     } catch (e) {
       setState(() => _error = e.toString());
     } finally {

@@ -15,12 +15,20 @@ class AiChatService {
       final url = baseUrl.endsWith('/')
           ? '${baseUrl}agents/qa'
           : '$baseUrl/agents/qa';
+      String? token;
+      if (supabaseEnabled) {
+        final client = Supabase.instance.client;
+        token = client.auth.currentSession?.accessToken;
+        if (token == null && client.auth.currentUser != null) {
+          try {
+            await client.auth.refreshSession();
+            token = client.auth.currentSession?.accessToken;
+          } catch (_) {}
+        }
+      }
       final headers = {
         'Content-Type': 'application/json',
-        if (supabaseEnabled)
-          if (Supabase.instance.client.auth.currentSession?.accessToken != null)
-            'Authorization':
-                'Bearer ${Supabase.instance.client.auth.currentSession!.accessToken}',
+        if (token != null) 'Authorization': 'Bearer $token',
       };
       final response = await http.post(
         Uri.parse(url),
@@ -61,12 +69,18 @@ class AiChatService {
       final healthUrl = baseUrl.endsWith('/')
           ? '${baseUrl}health'
           : '$baseUrl/health';
-      final headers = {
-        if (supabaseEnabled)
-          if (Supabase.instance.client.auth.currentSession?.accessToken != null)
-            'Authorization':
-                'Bearer ${Supabase.instance.client.auth.currentSession!.accessToken}',
-      };
+      String? token;
+      if (supabaseEnabled) {
+        final client = Supabase.instance.client;
+        token = client.auth.currentSession?.accessToken;
+        if (token == null && client.auth.currentUser != null) {
+          try {
+            await client.auth.refreshSession();
+            token = client.auth.currentSession?.accessToken;
+          } catch (_) {}
+        }
+      }
+      final headers = {if (token != null) 'Authorization': 'Bearer $token'};
       final response = await http.get(Uri.parse(healthUrl), headers: headers);
       if (response.statusCode != 200) return false;
       try {
@@ -87,12 +101,20 @@ class AiChatService {
     final url = baseUrl.endsWith('/')
         ? '${baseUrl}auth/verify'
         : '$baseUrl/auth/verify';
+    String? token;
+    if (supabaseEnabled) {
+      final client = Supabase.instance.client;
+      token = client.auth.currentSession?.accessToken;
+      if (token == null && client.auth.currentUser != null) {
+        try {
+          await client.auth.refreshSession();
+          token = client.auth.currentSession?.accessToken;
+        } catch (_) {}
+      }
+    }
     final headers = {
       'Content-Type': 'application/json',
-      if (supabaseEnabled)
-        if (Supabase.instance.client.auth.currentSession?.accessToken != null)
-          'Authorization':
-              'Bearer ${Supabase.instance.client.auth.currentSession!.accessToken}',
+      if (token != null) 'Authorization': 'Bearer $token',
     };
     final response = await http.get(Uri.parse(url), headers: headers);
     if (response.statusCode != 200) return null;

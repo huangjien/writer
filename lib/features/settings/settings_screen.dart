@@ -52,7 +52,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               icon: Icon(user == null ? Icons.login : Icons.logout),
               onPressed: () async {
                 if (user == null) {
-                  context.go('/settings/login');
+                  context.push('/auth');
                 } else {
                   await Supabase.instance.client.auth.signOut();
                   setState(() {});
