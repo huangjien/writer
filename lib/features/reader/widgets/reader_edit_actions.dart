@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../state/chapter_edit_controller.dart';
 import '../../../models/chapter.dart';
+import 'package:go_router/go_router.dart';
 
 class ReaderEditActions extends ConsumerWidget {
   const ReaderEditActions({
@@ -69,7 +70,51 @@ class ReaderEditActions extends ConsumerWidget {
     final Widget deleteBtn = IconButton(
       icon: const Icon(Icons.delete),
       iconSize: iconSize,
-      onPressed: disabled ? null : () => controller.deleteCurrentChapter(),
+      onPressed: disabled
+          ? null
+          : () async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text(l10n.confirmDelete),
+                    content: Text(
+                      l10n.confirmDeleteDescription(
+                        current.title ?? 'Chapter ${current.idx}',
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: Text(l10n.cancel),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: Text(l10n.delete),
+                      ),
+                    ],
+                  );
+                },
+              );
+              if (confirmed == true) {
+                final ok = await controller.deleteCurrentChapter();
+                if (ok && context.mounted) {
+                  final dest = '/novel/${current.novelId}';
+                  bool navigated = false;
+                  try {
+                    GoRouter.of(context).go(dest);
+                    navigated = true;
+                  } catch (_) {}
+                  if (!navigated) {
+                    final nav = Navigator.of(context);
+                    if (nav.canPop()) {
+                      nav.pop();
+                      navigated = true;
+                    }
+                  }
+                }
+              }
+            },
     );
     final Widget formatBtn = IconButton(
       icon: const Icon(Icons.format_align_left),

@@ -115,7 +115,7 @@ class App extends ConsumerWidget {
     }
 
     return MaterialApp.router(
-      title: 'Novel Reader',
+      title: 'Writer',
       theme: applyMotion(themeLight),
       darkTheme: applyMotion(themeDark),
       themeMode: themeState.mode,

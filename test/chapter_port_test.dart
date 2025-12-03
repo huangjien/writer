@@ -33,6 +33,12 @@ class _FakeChapterPort implements ChapterPort {
 
   @override
   Future<void> updateChapter(Chapter chapter) async {}
+
+  @override
+  Future<void> updateChapterIdx(String chapterId, int newIdx) async {}
+
+  @override
+  Future<void> bulkShiftIdx(String novelId, int fromIdx, int delta) async {}
 }
 
 void main() {

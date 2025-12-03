@@ -11,6 +11,7 @@ class FakeChapterRepo implements ChapterPort {
   bool throwOnUpdate = false;
   bool throwOnCreate = false;
   bool throwOnDelete = false;
+  List<Chapter> chapters = [];
 
   @override
   Future<Chapter> createChapter({
@@ -42,12 +43,44 @@ class FakeChapterRepo implements ChapterPort {
 
   @override
   Future<List<Chapter>> getChapters(String novelId) async {
-    return [];
+    return chapters;
   }
 
   @override
   Future<int> getNextIdx(String novelId) async {
     return nextIdx;
+  }
+
+  @override
+  Future<void> updateChapterIdx(String chapterId, int newIdx) async {
+    final i = chapters.indexWhere((c) => c.id == chapterId);
+    if (i >= 0) {
+      final c = chapters[i];
+      chapters[i] = Chapter(
+        id: c.id,
+        novelId: c.novelId,
+        idx: newIdx,
+        title: c.title,
+        content: c.content,
+      );
+    }
+  }
+
+  @override
+  Future<void> bulkShiftIdx(String novelId, int fromIdx, int delta) async {
+    chapters = chapters
+        .map(
+          (c) => c.idx >= fromIdx
+              ? Chapter(
+                  id: c.id,
+                  novelId: c.novelId,
+                  idx: c.idx + delta,
+                  title: c.title,
+                  content: c.content,
+                )
+              : c,
+        )
+        .toList();
   }
 
   @override
@@ -138,6 +171,66 @@ void main() {
     expect(state.isSaving, false);
   });
 
+  test(
+    'changeIndexFromFloat reorders by rounding and shifting up range',
+    () async {
+      final repo = FakeChapterRepo();
+      final initialHigh = const Chapter(
+        id: 'c118',
+        novelId: 'n1',
+        idx: 118,
+        title: 'Old 118',
+        content: null,
+      );
+      repo.chapters = [
+        initialHigh,
+        const Chapter(
+          id: 'c15',
+          novelId: 'n1',
+          idx: 15,
+          title: 't',
+          content: null,
+        ),
+        const Chapter(
+          id: 'c16',
+          novelId: 'n1',
+          idx: 16,
+          title: 't',
+          content: null,
+        ),
+        const Chapter(
+          id: 'c117',
+          novelId: 'n1',
+          idx: 117,
+          title: 't',
+          content: null,
+        ),
+      ];
+      final container = ProviderContainer(
+        overrides: [
+          chapterEditControllerProvider(
+            initialHigh,
+          ).overrideWith((ref) => ChapterEditController(initialHigh, repo)),
+        ],
+      );
+      addTearDown(container.dispose);
+      final notifier = container.read(
+        chapterEditControllerProvider(initialHigh).notifier,
+      );
+
+      final ok = await notifier.changeIndexFromFloat(14.5);
+      expect(ok, true);
+      final c15 = repo.chapters.firstWhere((c) => c.id == 'c15');
+      final c16 = repo.chapters.firstWhere((c) => c.id == 'c16');
+      final c117 = repo.chapters.firstWhere((c) => c.id == 'c117');
+      final moved = repo.chapters.firstWhere((c) => c.id == 'c118');
+      expect(moved.idx, 15);
+      expect(c15.idx, 16);
+      expect(c16.idx, 17);
+      expect(c117.idx, 118);
+    },
+  );
+
   test('deleteCurrentChapter success returns true', () async {
     final repo = FakeChapterRepo();
     final container = makeContainer(repo);
@@ -165,4 +258,71 @@ void main() {
     expect(state.content, 'Line 1\n\nLine 2\n\nLine 3');
     expect(state.isDirty, true);
   });
+  test(
+    'deleteCurrentChapter normalizes indices to contiguous sequence',
+    () async {
+      final repo = FakeChapterRepo();
+      final toDelete = const Chapter(
+        id: 'c121',
+        novelId: 'n1',
+        idx: 121,
+        title: 'Del',
+        content: null,
+      );
+      repo.chapters = [
+        const Chapter(
+          id: 'c1',
+          novelId: 'n1',
+          idx: 1,
+          title: 't',
+          content: null,
+        ),
+        const Chapter(
+          id: 'c14',
+          novelId: 'n1',
+          idx: 14,
+          title: 't',
+          content: null,
+        ),
+        const Chapter(
+          id: 'c16',
+          novelId: 'n1',
+          idx: 16,
+          title: 't',
+          content: null,
+        ),
+        const Chapter(
+          id: 'c17',
+          novelId: 'n1',
+          idx: 17,
+          title: 't',
+          content: null,
+        ),
+        const Chapter(
+          id: 'c118',
+          novelId: 'n1',
+          idx: 118,
+          title: 't',
+          content: null,
+        ),
+      ];
+      final container = ProviderContainer(
+        overrides: [
+          chapterEditControllerProvider(
+            toDelete,
+          ).overrideWith((ref) => ChapterEditController(toDelete, repo)),
+        ],
+      );
+      addTearDown(container.dispose);
+      final notifier = container.read(
+        chapterEditControllerProvider(toDelete).notifier,
+      );
+      final ok = await notifier.deleteCurrentChapter();
+      expect(ok, true);
+      final normalized = repo.chapters..sort((a, b) => a.idx.compareTo(b.idx));
+      for (int i = 0; i < normalized.length; i++) {
+        expect(normalized[i].idx, i + 1);
+      }
+    },
+  );
 }

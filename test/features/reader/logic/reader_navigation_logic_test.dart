@@ -21,6 +21,8 @@ class CapturingChapterRepo implements ChapterPort {
   @override
   Future<void> updateChapter(Chapter chapter) async {}
   @override
+  Future<void> updateChapterIdx(String chapterId, int newIdx) async {}
+  @override
   Future<int> getNextIdx(String novelId) async => 1;
   @override
   Future<Chapter> createChapter({
@@ -40,6 +42,9 @@ class CapturingChapterRepo implements ChapterPort {
 
   @override
   Future<void> deleteChapter(String chapterId) async {}
+
+  @override
+  Future<void> bulkShiftIdx(String novelId, int fromIdx, int delta) async {}
 }
 
 void main() {

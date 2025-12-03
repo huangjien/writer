@@ -298,6 +298,23 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get enterFloatIndexHint => '输入小数索引以重新定位';
+
+  @override
+  String indexOutOfRange(int min, int max) {
+    return '索引必须在 $min-$max 之间';
+  }
+
+  @override
+  String get indexUnchanged => '索引未变化';
+
+  @override
+  String get roundingBefore => '总是前插';
+
+  @override
+  String get roundingAfter => '总是后插';
+
+  @override
   String get stopTTS => '停止 TTS';
 
   @override

@@ -44,6 +44,12 @@ class CapturingChapterPort implements ChapterPort {
   Future<void> deleteChapter(String chapterId) async {
     deleted = true;
   }
+
+  @override
+  Future<void> updateChapterIdx(String chapterId, int newIdx) async {}
+
+  @override
+  Future<void> bulkShiftIdx(String novelId, int fromIdx, int delta) async {}
 }
 
 void main() {
@@ -107,6 +113,8 @@ void main() {
     expect(port.created, isTrue);
 
     await tester.tap(find.byIcon(Icons.delete));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(TextButton, 'Delete'));
     await tester.pump();
     expect(port.deleted, isTrue);
   });

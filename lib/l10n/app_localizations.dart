@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Novel Reader'**
+  /// **'Writer'**
   String get appTitle;
 
   /// No description provided for @about.
@@ -655,6 +655,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Index {index}'**
   String indexLabel(int index);
+
+  /// No description provided for @enterFloatIndexHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter decimal index to reposition'**
+  String get enterFloatIndexHint;
+
+  /// No description provided for @indexOutOfRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Index must be between {min} and {max}'**
+  String indexOutOfRange(int min, int max);
+
+  /// No description provided for @indexUnchanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Index unchanged'**
+  String get indexUnchanged;
+
+  /// No description provided for @roundingBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'Always before'**
+  String get roundingBefore;
+
+  /// No description provided for @roundingAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'Always after'**
+  String get roundingAfter;
 
   /// No description provided for @stopTTS.
   ///

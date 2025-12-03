@@ -31,10 +31,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(MaterialApp), findsOneWidget);
-    expect(find.text('Novel Reader'), findsWidgets);
+    expect(find.text('Writer'), findsWidgets);
 
     final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
-    expect(materialApp.title, 'Novel Reader');
+    expect(materialApp.title, 'Writer');
     expect(
       materialApp.supportedLocales.map((l) => l.languageCode).toSet(),
       containsAll({'en', 'zh'}),

@@ -88,6 +88,44 @@ class ChapterRepository implements ChapterPort {
   }
 
   @override
+  Future<void> updateChapterIdx(String chapterId, int newIdx) async {
+    await _client.from('chapters').update({'idx': newIdx}).eq('id', chapterId);
+    try {
+      final cached = await _localStorage.getChapter(chapterId);
+      if (cached != null) {
+        await _localStorage.saveChapter(
+          ChapterCache(
+            chapterId: cached.chapterId,
+            novelId: cached.novelId,
+            idx: newIdx,
+            title: cached.title,
+            content: cached.content,
+            lastUpdated: DateTime.now(),
+          ),
+        );
+      }
+    } catch (_) {}
+  }
+
+  @override
+  Future<void> bulkShiftIdx(String novelId, int fromIdx, int delta) async {
+    final rows =
+        await _client
+                .from('chapters')
+                .select('id, idx')
+                .eq('novel_id', novelId)
+                .gte('idx', fromIdx)
+                .order('idx', ascending: true)
+            as List<dynamic>;
+    for (final row in rows) {
+      final id = (row as Map<String, dynamic>)['id'] as String;
+      final idx = (row)['idx'] as int;
+      final newIdx = idx + delta;
+      await updateChapterIdx(id, newIdx);
+    }
+  }
+
+  @override
   Future<int> getNextIdx(String novelId) async {
     final res = await _client
         .from('chapters')

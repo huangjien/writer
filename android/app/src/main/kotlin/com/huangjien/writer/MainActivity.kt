@@ -112,7 +112,7 @@ class MainActivity : FlutterActivity() {
 
     val builder = NotificationCompat.Builder(this, channelId)
       .setSmallIcon(android.R.drawable.ic_media_play)
-      .setContentTitle("Novel Reader")
+      .setContentTitle("Writer")
       .setContentText("Text-to-speech playback")
       .setOngoing(isPlaying)
       .setShowWhen(false)

@@ -1,7 +1,7 @@
 {
   "helloWorld": "Hello World!",
   "settings": "Settings",
-  "appTitle": "Novel Reader",
+  "appTitle": "Writer",
   "about": "About",
   "aboutDescription": "Read and manage novels, with Supabase-backed storage, offline support, and Text-To-Speech playback. Use the Library to browse, search, and open chapters; sign in to sync progress; adjust settings for theme, typography, and motion.",
   "aboutUsage": "Usage",
@@ -124,6 +124,17 @@
       }
     }
   },
+  "enterFloatIndexHint": "Enter decimal index to reposition",
+  "indexOutOfRange": "Index must be between {min} and {max}",
+  "@indexOutOfRange": {
+    "placeholders": {
+      "min": {"type": "int"},
+      "max": {"type": "int"}
+    }
+  },
+  "indexUnchanged": "Index unchanged",
+  "roundingBefore": "Always before",
+  "roundingAfter": "Always after",
   "stopTTS": "Stop TTS",
   "speak": "Speak",
   "supabaseProgressNotSaved": "Supabase not configured; progress not saved",

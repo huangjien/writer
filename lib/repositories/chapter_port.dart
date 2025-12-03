@@ -6,6 +6,8 @@ abstract class ChapterPort {
   Future<List<Chapter>> getChapters(String novelId);
   Future<Chapter> getChapter(Chapter chapter);
   Future<void> updateChapter(Chapter chapter);
+  Future<void> updateChapterIdx(String chapterId, int newIdx);
+  Future<void> bulkShiftIdx(String novelId, int fromIdx, int delta);
   Future<int> getNextIdx(String novelId);
   Future<Chapter> createChapter({
     required String novelId,

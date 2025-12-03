@@ -5,6 +5,8 @@ import '../repositories/chapter_port.dart';
 
 enum EditRequest { idle, saving, creating, deleting }
 
+enum IndexRoundingMode { before, after }
+
 class ChapterEditState {
   final String chapterId;
   final String novelId;
@@ -156,6 +158,62 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
     }
   }
 
+  Future<bool> changeIndexFromFloat(
+    double target, {
+    IndexRoundingMode mode = IndexRoundingMode.after,
+  }) async {
+    state = state.copyWith(
+      isSaving: true,
+      request: EditRequest.saving,
+      errorMessage: null,
+    );
+    try {
+      final newIdx = mode == IndexRoundingMode.after
+          ? target.ceil()
+          : target.floor();
+      final oldIdx = state.idx;
+      if (newIdx == oldIdx) {
+        state = state.copyWith(isSaving: false, request: EditRequest.idle);
+        return true;
+      }
+      final chapters = await _repo.getChapters(state.novelId);
+      final maxIdx = chapters.isEmpty
+          ? oldIdx
+          : chapters.map((c) => c.idx).reduce((a, b) => a > b ? a : b);
+      final tempIdx = maxIdx + 1;
+      await _repo.updateChapterIdx(state.chapterId, tempIdx);
+      if (newIdx < oldIdx) {
+        final impacted =
+            chapters.where((c) => c.idx >= newIdx && c.idx < oldIdx).toList()
+              ..sort((a, b) => b.idx.compareTo(a.idx));
+        for (final c in impacted) {
+          await _repo.updateChapterIdx(c.id, c.idx + 1);
+        }
+      } else {
+        final impacted =
+            chapters.where((c) => c.idx > oldIdx && c.idx <= newIdx).toList()
+              ..sort((a, b) => a.idx.compareTo(b.idx));
+        for (final c in impacted) {
+          await _repo.updateChapterIdx(c.id, c.idx - 1);
+        }
+      }
+      await _repo.updateChapterIdx(state.chapterId, newIdx);
+      state = state.copyWith(
+        idx: newIdx,
+        isSaving: false,
+        request: EditRequest.idle,
+      );
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        isSaving: false,
+        request: EditRequest.idle,
+        errorMessage: e.toString(),
+      );
+      return false;
+    }
+  }
+
   Future<bool> deleteCurrentChapter() async {
     state = state.copyWith(
       isSaving: true,
@@ -163,7 +221,9 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
       errorMessage: null,
     );
     try {
+      final novelId = state.novelId;
       await _repo.deleteChapter(state.chapterId);
+      await _normalizeIndices(novelId);
       state = state.copyWith(
         isSaving: false,
         request: EditRequest.idle,
@@ -177,6 +237,36 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
         errorMessage: e.toString(),
       );
       return false;
+    }
+  }
+
+  Future<void> _normalizeIndices(String novelId) async {
+    final chapters = await _repo.getChapters(novelId);
+    if (chapters.isEmpty) return;
+    chapters.sort((a, b) => a.idx.compareTo(b.idx));
+    final stagingBase = chapters.length + 102400;
+    for (int i = 0; i < chapters.length; i++) {
+      final c = chapters[i];
+      await _repo.updateChapterIdx(c.id, stagingBase + i).catchError((_) {});
+    }
+    for (int i = 0; i < chapters.length; i++) {
+      final c = chapters[i];
+      await _repo.updateChapterIdx(c.id, i + 1).catchError((_) {});
+    }
+    final verify = await _repo.getChapters(novelId);
+    verify.sort((a, b) => a.idx.compareTo(b.idx));
+    bool ok = true;
+    for (int i = 0; i < verify.length; i++) {
+      if (verify[i].idx != i + 1) {
+        ok = false;
+        break;
+      }
+    }
+    if (!ok) {
+      for (int i = 0; i < verify.length; i++) {
+        final c = verify[i];
+        await _repo.updateChapterIdx(c.id, i + 1).catchError((_) {});
+      }
     }
   }
 }

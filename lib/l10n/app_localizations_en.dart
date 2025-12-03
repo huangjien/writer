@@ -15,7 +15,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
-  String get appTitle => 'Novel Reader';
+  String get appTitle => 'Writer';
 
   @override
   String get about => 'About';
@@ -302,6 +302,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String indexLabel(int index) {
     return 'Index $index';
   }
+
+  @override
+  String get enterFloatIndexHint => 'Enter decimal index to reposition';
+
+  @override
+  String indexOutOfRange(int min, int max) {
+    return 'Index must be between $min and $max';
+  }
+
+  @override
+  String get indexUnchanged => 'Index unchanged';
+
+  @override
+  String get roundingBefore => 'Always before';
+
+  @override
+  String get roundingAfter => 'Always after';
 
   @override
   String get stopTTS => 'Stop TTS';

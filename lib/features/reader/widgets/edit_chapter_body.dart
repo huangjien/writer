@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../repositories/chapter_repository.dart';
 import '../../../models/chapter.dart';
 import '../../../state/chapter_edit_controller.dart';
 import '../widgets/preview_panel.dart';
@@ -65,6 +66,64 @@ class EditChapterBody extends ConsumerWidget {
               alignLabelWithHint: true,
             ),
             onChanged: controller.setContent,
+          ),
+          const SizedBox(height: 12),
+          Builder(
+            builder: (context) {
+              final idxController = TextEditingController(
+                text: editState.idx.toString(),
+              );
+              final messenger = ScaffoldMessenger.of(context);
+              Future<void> submitWithMode(IndexRoundingMode mode) async {
+                final raw = idxController.text;
+                final v = double.tryParse(raw.trim());
+                if (v == null) return;
+                final repo = ref.read(chapterRepositoryProvider);
+                int maxIdx;
+                try {
+                  final next = await repo.getNextIdx(novelId);
+                  maxIdx = next - 1;
+                } catch (_) {
+                  maxIdx = editState.idx;
+                }
+                if (maxIdx < 1) maxIdx = 1;
+                final minIdx = 1;
+                final newIdx = mode == IndexRoundingMode.after
+                    ? v.ceil()
+                    : v.floor();
+                if (newIdx == editState.idx) {
+                  messenger.showSnackBar(
+                    SnackBar(content: Text(l10n.indexUnchanged)),
+                  );
+                  return;
+                }
+                if (newIdx < minIdx || newIdx > maxIdx) {
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.indexOutOfRange(minIdx, maxIdx)),
+                    ),
+                  );
+                  return;
+                }
+                final ok = await controller.changeIndexFromFloat(v, mode: mode);
+                if (ok) {
+                  idxController.text = newIdx.toString();
+                }
+              }
+
+              return TextFormField(
+                controller: idxController,
+                decoration: InputDecoration(
+                  labelText: l10n.indexLabel(editState.idx),
+                  hintText: l10n.enterFloatIndexHint,
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                onFieldSubmitted: (raw) =>
+                    submitWithMode(IndexRoundingMode.after),
+              );
+            },
           ),
         ],
         const SizedBox(height: 16),

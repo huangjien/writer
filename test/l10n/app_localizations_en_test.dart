@@ -6,7 +6,7 @@ void main() {
   test('Basic en strings', () async {
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
     expect(l10n.settings, 'Settings');
-    expect(l10n.appTitle, 'Novel Reader');
+    expect(l10n.appTitle, 'Writer');
     expect(l10n.supabaseSettings, 'Supabase Settings');
     expect(l10n.supabaseNotEnabled, 'Supabase not enabled');
     expect(l10n.fetchFromSupabase, 'Fetch from Supabase');

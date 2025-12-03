@@ -39,7 +39,7 @@ void main() {
     await tester.pumpWidget(app);
     await tester.pump();
 
-    expect(find.byType(TextFormField), findsNWidgets(2));
+    expect(find.byType(TextFormField), findsNWidgets(3));
     expect(find.text('Chapter Title'), findsOneWidget);
     expect(find.text('Chapter Content'), findsOneWidget);
     expect(find.byType(Scrollable), findsWidgets);
