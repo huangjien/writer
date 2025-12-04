@@ -125,6 +125,46 @@ class AiChatService {
       return null;
     }
   }
+
+  Future<List<double>?> embed(String input, {String? model}) async {
+    final url = baseUrl.endsWith('/')
+        ? '${baseUrl}vectors/embed'
+        : '$baseUrl/vectors/embed';
+    String? token;
+    if (supabaseEnabled) {
+      final client = Supabase.instance.client;
+      token = client.auth.currentSession?.accessToken;
+      if (token == null && client.auth.currentUser != null) {
+        try {
+          await client.auth.refreshSession();
+          token = client.auth.currentSession?.accessToken;
+        } catch (_) {}
+      }
+    }
+    final headers = {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+    final body = {'input': input, if (model != null) 'model': model};
+    final res = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+    if (res.statusCode >= 400) return null;
+    try {
+      final data = jsonDecode(res.body);
+      if (data is Map && data['vector'] is List) {
+        final v = (data['vector'] as List)
+            .map((e) => (e as num).toDouble())
+            .toList();
+        return v;
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
 }
 
 final aiChatServiceProvider = Provider<AiChatService>((ref) {

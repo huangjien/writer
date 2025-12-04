@@ -9,6 +9,7 @@ import 'widgets/supabase_section.dart';
 import 'widgets/app_settings_section.dart';
 import 'widgets/palette_settings_section.dart';
 import 'widgets/tts_settings_container.dart';
+import 'widgets/ai_configurations_section.dart';
 import 'package:writer/theme/reader_bundles.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
@@ -92,6 +93,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               controller.setPreset(def.preset);
             },
           ),
+          const Divider(),
+          const AiConfigurationsSection(),
           const Divider(),
           // Performance Settings
           const PerformanceSection(),

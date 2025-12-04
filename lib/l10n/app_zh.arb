@@ -263,4 +263,7 @@
   "urlTooLong": "URL 必须少于 2048 个字符。",
   "urlContainsSpaces": "URL 不能包含空格。",
   "urlInvalidScheme": "URL 必须以 http:// 或 https:// 开头。"
+  ,
+  "embeddingUpdated": "嵌入已更新",
+  "embeddingFailed": "嵌入失败"
 }

@@ -1,7 +1,10 @@
 import 'package:flutter_riverpod/legacy.dart';
+import 'dart:async';
 import '../models/chapter.dart';
 import '../repositories/chapter_repository.dart';
 import '../repositories/chapter_port.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 
 enum EditRequest { idle, saving, creating, deleting }
 
@@ -17,6 +20,8 @@ class ChapterEditState {
   final bool isSaving;
   final String? errorMessage;
   final EditRequest request;
+  final bool embeddingInFlight;
+  final String? embeddingStatus;
 
   const ChapterEditState({
     required this.chapterId,
@@ -28,6 +33,8 @@ class ChapterEditState {
     this.isSaving = false,
     this.errorMessage,
     this.request = EditRequest.idle,
+    this.embeddingInFlight = false,
+    this.embeddingStatus,
   });
 
   ChapterEditState copyWith({
@@ -40,6 +47,8 @@ class ChapterEditState {
     bool? isSaving,
     String? errorMessage,
     EditRequest? request,
+    bool? embeddingInFlight,
+    String? embeddingStatus,
   }) {
     return ChapterEditState(
       chapterId: chapterId ?? this.chapterId,
@@ -51,15 +60,21 @@ class ChapterEditState {
       isSaving: isSaving ?? this.isSaving,
       errorMessage: errorMessage,
       request: request ?? this.request,
+      embeddingInFlight: embeddingInFlight ?? this.embeddingInFlight,
+      embeddingStatus: embeddingStatus,
     );
   }
 }
 
 class ChapterEditController extends StateNotifier<ChapterEditState> {
   final ChapterPort _repo;
+  final AiChatService _ai;
+  Timer? _embedTimer;
+  String? _lastEmbeddedContentHash;
 
-  ChapterEditController(Chapter initial, this._repo)
-    : super(
+  ChapterEditController(Chapter initial, this._repo, [AiChatService? ai])
+    : _ai = ai ?? AiChatService('http://localhost:5600/'),
+      super(
         ChapterEditState(
           chapterId: initial.id,
           novelId: initial.novelId,
@@ -112,6 +127,7 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
         content: state.content,
       );
       await _repo.updateChapter(updated);
+      _scheduleEmbedding();
       state = state.copyWith(
         isSaving: false,
         request: EditRequest.idle,
@@ -126,6 +142,10 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
       );
       return false;
     }
+  }
+
+  void clearEmbeddingStatus() {
+    state = state.copyWith(embeddingStatus: null);
   }
 
   Future<Chapter?> createNextChapter({String? defaultTitle}) async {
@@ -269,10 +289,86 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
       }
     }
   }
+
+  void _scheduleEmbedding() {
+    final text = state.content.trim();
+    if (text.isEmpty) return;
+    final hash = text.hashCode.toString();
+    if (_lastEmbeddedContentHash == hash) {
+      return;
+    }
+    _embedTimer?.cancel();
+    var delay = const Duration(seconds: 2);
+    assert(() {
+      delay = Duration.zero;
+      return true;
+    }());
+    if (delay == Duration.zero) {
+      scheduleMicrotask(() {
+        if (!mounted) return;
+        final latest = state.content.trim();
+        if (latest.isEmpty) return;
+        final latestHash = latest.hashCode.toString();
+        state = state.copyWith(embeddingInFlight: true, embeddingStatus: null);
+        _startEmbedding(latest, latestHash);
+      });
+      return;
+    }
+    _embedTimer = Timer(delay, () {
+      if (!mounted) return;
+      final latest = state.content.trim();
+      if (latest.isEmpty) return;
+      final latestHash = latest.hashCode.toString();
+      state = state.copyWith(embeddingInFlight: true, embeddingStatus: null);
+      _startEmbedding(latest, latestHash);
+    });
+  }
+
+  void _startEmbedding(String latest, String latestHash) {
+    Future(() async {
+      try {
+        final vec = await _ai.embed(latest);
+        if (vec != null && vec.isNotEmpty) {
+          await Supabase.instance.client.rpc(
+            'upsert_chapter_embedding',
+            params: {'p_chapter_id': state.chapterId, 'p_embedding': vec},
+          );
+          if (mounted) {
+            _lastEmbeddedContentHash = latestHash;
+            state = state.copyWith(
+              embeddingInFlight: false,
+              embeddingStatus: 'embedding_updated',
+            );
+          }
+        } else {
+          if (mounted) {
+            state = state.copyWith(
+              embeddingInFlight: false,
+              embeddingStatus: 'embedding_failed',
+            );
+          }
+        }
+      } catch (_) {
+        if (mounted) {
+          state = state.copyWith(
+            embeddingInFlight: false,
+            embeddingStatus: 'embedding_failed',
+          );
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _embedTimer?.cancel();
+    super.dispose();
+  }
 }
 
 final chapterEditControllerProvider = StateNotifierProvider.autoDispose
     .family<ChapterEditController, ChapterEditState, Chapter>((ref, initial) {
       final repo = ref.watch(chapterRepositoryProvider);
-      return ChapterEditController(initial, repo);
+      final ai = ref.watch(aiChatServiceProvider);
+      return ChapterEditController(initial, repo, ai);
     });
