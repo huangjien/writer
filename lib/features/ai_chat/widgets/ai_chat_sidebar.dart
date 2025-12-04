@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:flutter_markdown_latex/flutter_markdown_latex.dart';
-import 'package:markdown/markdown.dart' as md;
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 class AiChatSidebar extends ConsumerStatefulWidget {
   const AiChatSidebar({super.key, this.width});
@@ -235,15 +233,7 @@ class _ChatMessageBubble extends StatelessWidget {
                 TextStyle(color: textColor),
           );
           final bubbleText = SelectionArea(
-            child: MarkdownBody(
-              data: message.content,
-              styleSheet: sheet,
-              builders: {'latex': LatexElementBuilder()},
-              extensionSet: md.ExtensionSet(
-                [LatexBlockSyntax()],
-                [LatexInlineSyntax()],
-              ),
-            ),
+            child: MarkdownBody(data: message.content, styleSheet: sheet),
           );
           final bubble = ConstrainedBox(
             constraints: BoxConstraints(maxWidth: maxW),

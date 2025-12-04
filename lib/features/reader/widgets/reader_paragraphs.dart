@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:flutter_markdown_latex/flutter_markdown_latex.dart';
-import 'package:markdown/markdown.dart' as md;
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 class ReaderParagraphs extends StatelessWidget {
   const ReaderParagraphs({
@@ -45,14 +43,7 @@ class ReaderParagraphs extends StatelessWidget {
                 )
               : null,
           margin: const EdgeInsets.only(bottom: 16),
-          child: MarkdownBody(
-            data: p,
-            builders: {'latex': LatexElementBuilder()},
-            extensionSet: md.ExtensionSet(
-              [LatexBlockSyntax()],
-              [LatexInlineSyntax()],
-            ),
-          ),
+          child: MarkdownBody(data: p),
         );
       }).toList(),
     );
