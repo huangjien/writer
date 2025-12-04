@@ -27,11 +27,14 @@ class FakeLocalRepo extends LocalStorageRepository {
   Future<List<CharacterNote>> listCharacterNotes(String novelId) async {
     return items.where((e) => e.novelId == novelId).toList();
   }
+
   @override
   Future<void> deleteCharacterNoteByIdx(String novelId, int idx) async {
     deletedNovelId = novelId;
     deletedIdx = idx;
-    items = items.where((e) => !(e.novelId == novelId && e.idx == idx)).toList();
+    items = items
+        .where((e) => !(e.novelId == novelId && e.idx == idx))
+        .toList();
   }
 }
 

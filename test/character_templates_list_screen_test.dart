@@ -26,6 +26,7 @@ class FakeLocalRepo extends LocalStorageRepository {
   Future<List<CharacterTemplateRow>> listCharacterTemplates() async {
     return items;
   }
+
   @override
   Future<void> deleteCharacterTemplate(String id) async {
     deletedId = id;
@@ -38,7 +39,9 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('CharacterTemplatesListScreen renders and deletes item', (tester) async {
+  testWidgets('CharacterTemplatesListScreen renders and deletes item', (
+    tester,
+  ) async {
     final repo = FakeLocalRepo();
     await tester.pumpWidget(
       ProviderScope(
