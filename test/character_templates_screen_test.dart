@@ -65,11 +65,14 @@ void main() {
 
     // Fill fields and save.
     final nameField = find.widgetWithText(TextFormField, 'Template Name');
-    
+
     // Description field is only visible in Edit tab.
     // Note: The hint text is "Enter description in Markdown..."
-    final descField = find.widgetWithText(TextFormField, 'Enter description in Markdown...');
-    
+    final descField = find.widgetWithText(
+      TextFormField,
+      'Enter description in Markdown...',
+    );
+
     await tester.enterText(nameField, 'Hero Archetype');
     await tester.enterText(descField, 'Brave protagonist setup');
     await tester.tap(find.text('Save'));
@@ -102,7 +105,7 @@ void main() {
     );
 
     await tester.pumpAndSettle();
-    
+
     // Switch to Edit tab to verify text field content later
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
@@ -136,7 +139,10 @@ void main() {
     expect(remoteRepo.queryName, 'Harry Potter');
 
     // Verify description filled in Edit tab
-    final descField = find.widgetWithText(TextFormField, 'Enter description in Markdown...');
+    final descField = find.widgetWithText(
+      TextFormField,
+      'Enter description in Markdown...',
+    );
     final descText =
         (tester.widget(descField) as TextFormField).controller!.text;
 
