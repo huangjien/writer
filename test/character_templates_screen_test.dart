@@ -54,6 +54,10 @@ void main() {
 
     await tester.pumpAndSettle();
 
+    // Switch to Edit tab first because Preview is now default
+    await tester.tap(find.text('Edit'));
+    await tester.pumpAndSettle();
+
     // Required validation for Template Name.
     await tester.tap(find.text('Save'));
     await tester.pump();
@@ -61,7 +65,11 @@ void main() {
 
     // Fill fields and save.
     final nameField = find.widgetWithText(TextFormField, 'Template Name');
-    final descField = find.widgetWithText(TextFormField, 'Description');
+    
+    // Description field is only visible in Edit tab.
+    // Note: The hint text is "Enter description in Markdown..."
+    final descField = find.widgetWithText(TextFormField, 'Enter description in Markdown...');
+    
     await tester.enterText(nameField, 'Hero Archetype');
     await tester.enterText(descField, 'Brave protagonist setup');
     await tester.tap(find.text('Save'));
@@ -94,6 +102,10 @@ void main() {
     );
 
     await tester.pumpAndSettle();
+    
+    // Switch to Edit tab to verify text field content later
+    await tester.tap(find.text('Edit'));
+    await tester.pumpAndSettle();
 
     final retrieveBtnFinder = find.widgetWithIcon(IconButton, Icons.download);
     expect(retrieveBtnFinder, findsOneWidget);
@@ -123,8 +135,8 @@ void main() {
     // Verify repo called
     expect(remoteRepo.queryName, 'Harry Potter');
 
-    // Verify description filled
-    final descField = find.widgetWithText(TextFormField, 'Description');
+    // Verify description filled in Edit tab
+    final descField = find.widgetWithText(TextFormField, 'Enter description in Markdown...');
     final descText =
         (tester.widget(descField) as TextFormField).controller!.text;
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import '../../main.dart';
 import '../../models/template.dart';
 import '../../repositories/remote_repository.dart';
@@ -19,10 +20,13 @@ class CharacterTemplatesScreen extends ConsumerStatefulWidget {
 }
 
 class _CharacterTemplatesScreenState
-    extends ConsumerState<CharacterTemplatesScreen> {
+    extends ConsumerState<CharacterTemplatesScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descController = TextEditingController();
+  late TabController _tabController;
+
   bool _saving = false;
   bool _retrieving = false;
   String? _error;
@@ -30,6 +34,8 @@ class _CharacterTemplatesScreenState
   @override
   void initState() {
     super.initState();
+    // Default to Preview (index 0)
+    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
     _load();
   }
 
@@ -48,13 +54,14 @@ class _CharacterTemplatesScreenState
         _descController.text = item.description ?? '';
       }
     }
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _descController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -131,10 +138,7 @@ class _CharacterTemplatesScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Character Templates'),
-        actions: const [],
-      ),
+      appBar: AppBar(title: const Text('Character Templates')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -178,11 +182,46 @@ class _CharacterTemplatesScreenState
                 ],
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _descController,
-                decoration: const InputDecoration(labelText: 'Description'),
-                maxLines: 15,
-                minLines: 5,
+              TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'Preview'),
+                  Tab(text: 'Edit'),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    // Preview Mode (now first)
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      child: Markdown(
+                        data: _descController.text,
+                        selectable: true,
+                      ),
+                    ),
+                    // Edit Mode (now second)
+                    TextFormField(
+                      controller: _descController,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter description in Markdown...',
+                        border: OutlineInputBorder(),
+                      ),
+                      maxLines: null,
+                      expands: true,
+                      textAlignVertical: TextAlignVertical.top,
+                      onChanged: (_) => setState(
+                        () {},
+                      ), // Rebuild to update preview when switching back
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
               Row(
