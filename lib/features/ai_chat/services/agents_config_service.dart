@@ -7,7 +7,8 @@ import 'package:writer/state/supabase_config.dart';
 
 class AgentsConfigService {
   final String baseUrl;
-  AgentsConfigService(this.baseUrl);
+  final http.Client? _client;
+  AgentsConfigService(this.baseUrl, {http.Client? client}) : _client = client;
 
   Future<Map<String, dynamic>?> getEffective(String agentType) async {
     final url = baseUrl.endsWith('/')
@@ -28,7 +29,10 @@ class AgentsConfigService {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
-    final res = await http.get(Uri.parse(url), headers: headers);
+    final res = await (_client ?? http.Client()).get(
+      Uri.parse(url),
+      headers: headers,
+    );
     if (res.statusCode >= 400) return null;
     try {
       final data = jsonDecode(res.body);
@@ -57,7 +61,10 @@ class AgentsConfigService {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
-    final res = await http.get(Uri.parse(url), headers: headers);
+    final res = await (_client ?? http.Client()).get(
+      Uri.parse(url),
+      headers: headers,
+    );
     if (res.statusCode >= 400) return [];
     try {
       final data = jsonDecode(res.body);
@@ -90,7 +97,7 @@ class AgentsConfigService {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
-    final res = await http.post(
+    final res = await (_client ?? http.Client()).post(
       Uri.parse(url),
       headers: headers,
       body: jsonEncode(payload),
@@ -126,7 +133,7 @@ class AgentsConfigService {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
-    final res = await http.put(
+    final res = await (_client ?? http.Client()).put(
       Uri.parse(url),
       headers: headers,
       body: jsonEncode(payload),
@@ -159,7 +166,10 @@ class AgentsConfigService {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
-    final res = await http.delete(Uri.parse(url), headers: headers);
+    final res = await (_client ?? http.Client()).delete(
+      Uri.parse(url),
+      headers: headers,
+    );
     return res.statusCode < 400;
   }
 }

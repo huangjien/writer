@@ -13,7 +13,7 @@ import 'package:writer/repositories/local_storage_repository.dart';
 class CapturingLocalRepo extends LocalStorageRepository {
   Scene? lastScene;
   @override
-  Future<void> saveSceneForm(String novelId, Scene scene) async {
+  Future<void> saveSceneForm(String novelId, Scene scene, {int? idx}) async {
     lastScene = scene;
   }
 }

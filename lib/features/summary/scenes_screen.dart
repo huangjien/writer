@@ -8,9 +8,10 @@ import '../../main.dart';
 import '../../models/scene.dart';
 
 class ScenesScreen extends ConsumerStatefulWidget {
-  const ScenesScreen({super.key, required this.novelId});
+  const ScenesScreen({super.key, required this.novelId, this.idx});
 
   final String novelId;
+  final int? idx;
 
   @override
   ConsumerState<ScenesScreen> createState() => _ScenesScreenState();
@@ -32,7 +33,7 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
 
   Future<void> _load() async {
     final repo = ref.read(localStorageRepositoryProvider);
-    final item = await repo.getSceneForm(widget.novelId);
+    final item = await repo.getSceneForm(widget.novelId, idx: widget.idx);
     if (item != null) {
       _titleController.text = item.title;
       _locationController.text = item.location ?? '';
@@ -121,6 +122,9 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
                                   final repo = ref.read(
                                     localStorageRepositoryProvider,
                                   );
+                                  final useIdx =
+                                      widget.idx ??
+                                      await repo.nextSceneIdx(widget.novelId);
                                   await repo.saveSceneForm(
                                     widget.novelId,
                                     Scene(
@@ -137,6 +141,7 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
                                           ? null
                                           : _summaryController.text.trim(),
                                     ),
+                                    idx: useIdx,
                                   );
                                   if (!context.mounted) return;
                                   ScaffoldMessenger.of(context).showSnackBar(

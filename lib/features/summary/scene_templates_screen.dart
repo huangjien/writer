@@ -4,8 +4,13 @@ import '../../main.dart';
 import '../../models/template.dart';
 
 class SceneTemplatesScreen extends ConsumerStatefulWidget {
-  const SceneTemplatesScreen({super.key, required this.novelId});
+  const SceneTemplatesScreen({
+    super.key,
+    required this.novelId,
+    this.templateId,
+  });
   final String novelId;
+  final String? templateId;
 
   @override
   ConsumerState<SceneTemplatesScreen> createState() =>
@@ -27,10 +32,18 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen> {
 
   Future<void> _load() async {
     final repo = ref.read(localStorageRepositoryProvider);
-    final item = await repo.getSceneTemplateForm(widget.novelId);
-    if (item != null) {
-      _nameController.text = item.name;
-      _descController.text = item.description ?? '';
+    if (widget.templateId != null) {
+      final row = await repo.getSceneTemplateById(widget.templateId!);
+      if (row != null) {
+        _nameController.text = row.title ?? '';
+        _descController.text = row.sceneSummaries ?? '';
+      }
+    } else {
+      final item = await repo.getSceneTemplateForm(widget.novelId);
+      if (item != null) {
+        _nameController.text = item.name;
+        _descController.text = item.description ?? '';
+      }
     }
     setState(() {});
   }
@@ -83,17 +96,28 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen> {
                               final repo = ref.read(
                                 localStorageRepositoryProvider,
                               );
-                              await repo.saveSceneTemplateForm(
-                                widget.novelId,
-                                TemplateItem(
-                                  novelId: widget.novelId,
-                                  name: _nameController.text.trim(),
-                                  description:
-                                      _descController.text.trim().isEmpty
+                              if (widget.templateId != null) {
+                                await repo.updateSceneTemplate(
+                                  widget.templateId!,
+                                  title: _nameController.text.trim(),
+                                  summaries: _descController.text.trim().isEmpty
                                       ? null
                                       : _descController.text.trim(),
-                                ),
-                              );
+                                  languageCode: 'en',
+                                );
+                              } else {
+                                await repo.saveSceneTemplateForm(
+                                  widget.novelId,
+                                  TemplateItem(
+                                    novelId: widget.novelId,
+                                    name: _nameController.text.trim(),
+                                    description:
+                                        _descController.text.trim().isEmpty
+                                        ? null
+                                        : _descController.text.trim(),
+                                  ),
+                                );
+                              }
                               if (!context.mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('Saved')),

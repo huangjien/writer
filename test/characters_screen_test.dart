@@ -18,6 +18,7 @@ class CapturingLocalRepo extends LocalStorageRepository {
     String? summaries,
     String? synopses,
     String languageCode = 'en',
+    int? idx,
   }) async {
     lastNote = {
       'title': title,

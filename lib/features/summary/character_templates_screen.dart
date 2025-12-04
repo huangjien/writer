@@ -4,8 +4,13 @@ import '../../main.dart';
 import '../../models/template.dart';
 
 class CharacterTemplatesScreen extends ConsumerStatefulWidget {
-  const CharacterTemplatesScreen({super.key, required this.novelId});
+  const CharacterTemplatesScreen({
+    super.key,
+    required this.novelId,
+    this.templateId,
+  });
   final String novelId;
+  final String? templateId;
 
   @override
   ConsumerState<CharacterTemplatesScreen> createState() =>
@@ -28,10 +33,18 @@ class _CharacterTemplatesScreenState
 
   Future<void> _load() async {
     final repo = ref.read(localStorageRepositoryProvider);
-    final item = await repo.getCharacterTemplateForm(widget.novelId);
-    if (item != null) {
-      _nameController.text = item.name;
-      _descController.text = item.description ?? '';
+    if (widget.templateId != null) {
+      final row = await repo.getCharacterTemplateById(widget.templateId!);
+      if (row != null) {
+        _nameController.text = row.title ?? '';
+        _descController.text = row.characterSummaries ?? '';
+      }
+    } else {
+      final item = await repo.getCharacterTemplateForm(widget.novelId);
+      if (item != null) {
+        _nameController.text = item.name;
+        _descController.text = item.description ?? '';
+      }
     }
     setState(() {});
   }
@@ -87,17 +100,28 @@ class _CharacterTemplatesScreenState
                               final repo = ref.read(
                                 localStorageRepositoryProvider,
                               );
-                              await repo.saveCharacterTemplateForm(
-                                widget.novelId,
-                                TemplateItem(
-                                  novelId: widget.novelId,
-                                  name: _nameController.text.trim(),
-                                  description:
-                                      _descController.text.trim().isEmpty
+                              if (widget.templateId != null) {
+                                await repo.updateCharacterTemplate(
+                                  widget.templateId!,
+                                  title: _nameController.text.trim(),
+                                  summaries: _descController.text.trim().isEmpty
                                       ? null
                                       : _descController.text.trim(),
-                                ),
-                              );
+                                  languageCode: 'en',
+                                );
+                              } else {
+                                await repo.saveCharacterTemplateForm(
+                                  widget.novelId,
+                                  TemplateItem(
+                                    novelId: widget.novelId,
+                                    name: _nameController.text.trim(),
+                                    description:
+                                        _descController.text.trim().isEmpty
+                                        ? null
+                                        : _descController.text.trim(),
+                                  ),
+                                );
+                              }
                               if (!context.mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('Saved')),

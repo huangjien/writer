@@ -7,8 +7,9 @@ import 'package:writer/state/supabase_config.dart';
 
 class AiChatService {
   final String baseUrl;
+  final http.Client? _client;
 
-  AiChatService(this.baseUrl);
+  AiChatService(this.baseUrl, {http.Client? client}) : _client = client;
 
   Future<String> sendMessage(String message) async {
     try {
@@ -30,7 +31,7 @@ class AiChatService {
         'Content-Type': 'application/json',
         if (token != null) 'Authorization': 'Bearer $token',
       };
-      final response = await http.post(
+      final response = await (_client ?? http.Client()).post(
         Uri.parse(url),
         headers: headers,
         body: jsonEncode({'question': message}),
@@ -81,7 +82,10 @@ class AiChatService {
         }
       }
       final headers = {if (token != null) 'Authorization': 'Bearer $token'};
-      final response = await http.get(Uri.parse(healthUrl), headers: headers);
+      final response = await (_client ?? http.Client()).get(
+        Uri.parse(healthUrl),
+        headers: headers,
+      );
       if (response.statusCode != 200) return false;
       try {
         final data = jsonDecode(response.body);
@@ -116,7 +120,10 @@ class AiChatService {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
-    final response = await http.get(Uri.parse(url), headers: headers);
+    final response = await (_client ?? http.Client()).get(
+      Uri.parse(url),
+      headers: headers,
+    );
     if (response.statusCode != 200) return null;
     try {
       final data = jsonDecode(response.body);
@@ -146,7 +153,7 @@ class AiChatService {
       if (token != null) 'Authorization': 'Bearer $token',
     };
     final body = {'input': input, if (model != null) 'model': model};
-    final res = await http.post(
+    final res = await (_client ?? http.Client()).post(
       Uri.parse(url),
       headers: headers,
       body: jsonEncode(body),

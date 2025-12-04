@@ -9,8 +9,12 @@ import '../features/auth/sign_in_screen.dart';
 import '../features/library/my_novels_screen.dart';
 import '../features/about/about_screen.dart';
 import '../features/summary/summary_screen.dart';
+import '../features/summary/characters_list_screen.dart';
+import '../features/summary/scenes_list_screen.dart';
 import '../features/summary/characters_screen.dart';
 import '../features/summary/scenes_screen.dart';
+import '../features/summary/character_templates_list_screen.dart';
+import '../features/summary/scene_templates_list_screen.dart';
 import '../features/summary/character_templates_screen.dart';
 import '../features/summary/scene_templates_screen.dart';
 import '../features/reader/novel_metadata_editor.dart';
@@ -78,32 +82,114 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             name: 'characters',
             builder: (context, state) {
               final novelId = state.pathParameters['id']!;
-              return CharactersScreen(novelId: novelId);
+              return CharactersListScreen(novelId: novelId);
             },
+            routes: [
+              GoRoute(
+                path: 'new',
+                name: 'charactersNew',
+                builder: (context, state) {
+                  final novelId = state.pathParameters['id']!;
+                  return CharactersScreen(novelId: novelId);
+                },
+              ),
+              GoRoute(
+                path: ':idx',
+                name: 'charactersEdit',
+                builder: (context, state) {
+                  final novelId = state.pathParameters['id']!;
+                  final idx = int.tryParse(state.pathParameters['idx'] ?? '');
+                  return CharactersScreen(novelId: novelId, idx: idx);
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: 'scenes',
             name: 'scenes',
             builder: (context, state) {
               final novelId = state.pathParameters['id']!;
-              return ScenesScreen(novelId: novelId);
+              return ScenesListScreen(novelId: novelId);
             },
+            routes: [
+              GoRoute(
+                path: 'new',
+                name: 'scenesNew',
+                builder: (context, state) {
+                  final novelId = state.pathParameters['id']!;
+                  return ScenesScreen(novelId: novelId);
+                },
+              ),
+              GoRoute(
+                path: ':idx',
+                name: 'scenesEdit',
+                builder: (context, state) {
+                  final novelId = state.pathParameters['id']!;
+                  final idx = int.tryParse(state.pathParameters['idx'] ?? '');
+                  return ScenesScreen(novelId: novelId, idx: idx);
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: 'character-templates',
             name: 'characterTemplates',
             builder: (context, state) {
               final novelId = state.pathParameters['id']!;
-              return CharacterTemplatesScreen(novelId: novelId);
+              return CharacterTemplatesListScreen(novelId: novelId);
             },
+            routes: [
+              GoRoute(
+                path: 'new',
+                name: 'characterTemplatesNew',
+                builder: (context, state) {
+                  final novelId = state.pathParameters['id']!;
+                  return CharacterTemplatesScreen(novelId: novelId);
+                },
+              ),
+              GoRoute(
+                path: ':tid',
+                name: 'characterTemplatesEdit',
+                builder: (context, state) {
+                  final novelId = state.pathParameters['id']!;
+                  final tid = state.pathParameters['tid']!;
+                  return CharacterTemplatesScreen(
+                    novelId: novelId,
+                    templateId: tid,
+                  );
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: 'scene-templates',
             name: 'sceneTemplates',
             builder: (context, state) {
               final novelId = state.pathParameters['id']!;
-              return SceneTemplatesScreen(novelId: novelId);
+              return SceneTemplatesListScreen(novelId: novelId);
             },
+            routes: [
+              GoRoute(
+                path: 'new',
+                name: 'sceneTemplatesNew',
+                builder: (context, state) {
+                  final novelId = state.pathParameters['id']!;
+                  return SceneTemplatesScreen(novelId: novelId);
+                },
+              ),
+              GoRoute(
+                path: ':tid',
+                name: 'sceneTemplatesEdit',
+                builder: (context, state) {
+                  final novelId = state.pathParameters['id']!;
+                  final tid = state.pathParameters['tid']!;
+                  return SceneTemplatesScreen(
+                    novelId: novelId,
+                    templateId: tid,
+                  );
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: 'edit',

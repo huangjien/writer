@@ -7,9 +7,10 @@ import 'package:writer/models/novel.dart';
 import '../../main.dart';
 
 class CharactersScreen extends ConsumerStatefulWidget {
-  const CharactersScreen({super.key, required this.novelId});
+  const CharactersScreen({super.key, required this.novelId, this.idx});
 
   final String novelId;
+  final int? idx;
 
   @override
   ConsumerState<CharactersScreen> createState() => _CharactersScreenState();
@@ -32,7 +33,10 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
 
   Future<void> _load() async {
     final repo = ref.read(localStorageRepositoryProvider);
-    final data = await repo.getCharacterNoteForm(widget.novelId);
+    final data = await repo.getCharacterNoteForm(
+      widget.novelId,
+      idx: widget.idx,
+    );
     if (data != null) {
       _titleController.text = (data['title'] as String?) ?? '';
       _summariesController.text =
@@ -156,6 +160,11 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                                     final repo = ref.read(
                                       localStorageRepositoryProvider,
                                     );
+                                    final useIdx =
+                                        widget.idx ??
+                                        await repo.nextCharacterIdx(
+                                          widget.novelId,
+                                        );
                                     await repo.saveCharacterNoteForm(
                                       widget.novelId,
                                       title: _titleController.text.trim(),
@@ -172,6 +181,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                                           ? null
                                           : _synopsesController.text.trim(),
                                       languageCode: _languageCode,
+                                      idx: useIdx,
                                     );
                                     if (!context.mounted) {
                                       return;
