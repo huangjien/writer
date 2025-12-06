@@ -13,24 +13,40 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
   });
 
-  testWidgets('ReaderScreen shows chapters list and refresh spinner toggles', (tester) async {
+  testWidgets('ReaderScreen shows chapters list and refresh spinner toggles', (
+    tester,
+  ) async {
     final scope = await buildAppScope(
-      child: materialAppFor(
-        home: const ReaderScreen(novelId: 'novel-001'),
-      ),
+      child: materialAppFor(home: const ReaderScreen(novelId: 'novel-001')),
       extraOverrides: [
-        mockNovelsProvider.overrideWith((ref) async => [
-              const Novel(
-                id: 'novel-001',
-                title: 'N1',
-                languageCode: 'en',
-                isPublic: true,
-              ),
-            ]),
-        mockChaptersProvider.overrideWith((ref, id) async => const [
-              Chapter(id: 'c1', novelId: 'novel-001', idx: 1, title: 'T1', content: 'A'),
-              Chapter(id: 'c2', novelId: 'novel-001', idx: 2, title: 'T2', content: 'B'),
-            ]),
+        mockNovelsProvider.overrideWith(
+          (ref) async => [
+            const Novel(
+              id: 'novel-001',
+              title: 'N1',
+              languageCode: 'en',
+              isPublic: true,
+            ),
+          ],
+        ),
+        mockChaptersProvider.overrideWith(
+          (ref, id) async => const [
+            Chapter(
+              id: 'c1',
+              novelId: 'novel-001',
+              idx: 1,
+              title: 'T1',
+              content: 'A',
+            ),
+            Chapter(
+              id: 'c2',
+              novelId: 'novel-001',
+              idx: 2,
+              title: 'T2',
+              content: 'B',
+            ),
+          ],
+        ),
       ],
     );
 
@@ -46,16 +62,32 @@ void main() {
     expect(find.byType(ListTile), findsWidgets);
   });
 
-  testWidgets('ReaderScreen with chapterId pushes ChapterReaderScreen', (tester) async {
+  testWidgets('ReaderScreen with chapterId pushes ChapterReaderScreen', (
+    tester,
+  ) async {
     final scope = await buildAppScope(
       child: materialAppFor(
         home: const ReaderScreen(novelId: 'novel-001', chapterId: 'c2'),
       ),
       extraOverrides: [
-        mockChaptersProvider.overrideWith((ref, id) async => const [
-              Chapter(id: 'c1', novelId: 'novel-001', idx: 1, title: 'T1', content: 'A'),
-              Chapter(id: 'c2', novelId: 'novel-001', idx: 2, title: 'T2', content: 'B'),
-            ]),
+        mockChaptersProvider.overrideWith(
+          (ref, id) async => const [
+            Chapter(
+              id: 'c1',
+              novelId: 'novel-001',
+              idx: 1,
+              title: 'T1',
+              content: 'A',
+            ),
+            Chapter(
+              id: 'c2',
+              novelId: 'novel-001',
+              idx: 2,
+              title: 'T2',
+              content: 'B',
+            ),
+          ],
+        ),
       ],
     );
 

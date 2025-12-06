@@ -131,5 +131,4 @@ void main() {
       expect(ttsSettings.state, isA<TtsSettings>());
     });
   });
-
 }

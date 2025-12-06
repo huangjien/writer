@@ -10,7 +10,11 @@ void main() {
 
   test('save/get CharacterTemplateForm persists locally', () async {
     final repo = LocalStorageRepository();
-    final item = TemplateItem(novelId: 'n1', name: 'Hero', description: 'Brave');
+    final item = TemplateItem(
+      novelId: 'n1',
+      name: 'Hero',
+      description: 'Brave',
+    );
     await repo.saveCharacterTemplateForm('n1', item);
     final got = await repo.getCharacterTemplateForm('n1');
     expect(got?.name, 'Hero');
@@ -19,7 +23,11 @@ void main() {
 
   test('save/get SceneTemplateForm persists locally', () async {
     final repo = LocalStorageRepository();
-    final item = TemplateItem(novelId: 'n1', name: 'Forest', description: 'Dark');
+    final item = TemplateItem(
+      novelId: 'n1',
+      name: 'Forest',
+      description: 'Dark',
+    );
     await repo.saveSceneTemplateForm('n1', item);
     final got = await repo.getSceneTemplateForm('n1');
     expect(got?.name, 'Forest');
@@ -38,11 +46,14 @@ void main() {
     expect(rows, isEmpty);
   });
 
-  test('getCharacterTemplateById returns null when supabase disabled', () async {
-    final repo = LocalStorageRepository();
-    final row = await repo.getCharacterTemplateById('x');
-    expect(row, isNull);
-  });
+  test(
+    'getCharacterTemplateById returns null when supabase disabled',
+    () async {
+      final repo = LocalStorageRepository();
+      final row = await repo.getCharacterTemplateById('x');
+      expect(row, isNull);
+    },
+  );
 
   test('getSceneTemplateById returns null when supabase disabled', () async {
     final repo = LocalStorageRepository();

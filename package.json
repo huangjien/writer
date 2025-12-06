@@ -1,6 +1,6 @@
 {
   "name": "writer",
-  "version": "1.5.8",
+  "version": "1.5.9",
   "description": "A novel writer app",
   "scripts": {
     "postinstall": "node scripts/patch_isar.js",
