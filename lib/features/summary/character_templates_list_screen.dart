@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations_en.dart';
 import '../../main.dart';
 import '../../models/character_template_row.dart';
 
@@ -44,9 +46,10 @@ class _CharacterTemplatesListScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Character Templates'),
+        title: Text(l10n.characterTemplates),
         actions: [
           if (_loading)
             const Padding(
@@ -61,14 +64,14 @@ class _CharacterTemplatesListScreenState
             IconButton(
               onPressed: _load,
               icon: const Icon(Icons.refresh),
-              tooltip: 'Refresh',
+              tooltip: l10n.refreshTooltip,
             ),
           IconButton(
             onPressed: () => context.push(
               '/novel/${widget.novelId}/character-templates/new',
             ),
             icon: const Icon(Icons.add),
-            tooltip: 'New',
+            tooltip: l10n.newLabel,
           ),
         ],
       ),
@@ -80,7 +83,7 @@ class _CharacterTemplatesListScreenState
               padding: const EdgeInsets.all(16),
               itemBuilder: (ctx, i) {
                 final it = _items[i];
-                final title = it.title ?? 'Untitled';
+                final title = it.title ?? l10n.untitled;
                 final subtitle =
                     (it.characterSummaries ?? it.characterSynopses ?? '')
                         .replaceAll('**', '');
@@ -110,18 +113,16 @@ class _CharacterTemplatesListScreenState
                           final ok = await showDialog<bool>(
                             context: context,
                             builder: (d) => AlertDialog(
-                              title: const Text('Delete Template'),
-                              content: const Text(
-                                'Are you sure you want to delete this item?',
-                              ),
+                              title: Text(l10n.deleteTemplateTitle),
+                              content: Text(l10n.confirmDeleteGeneric),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(d, false),
-                                  child: const Text('Cancel'),
+                                  child: Text(l10n.cancel),
                                 ),
                                 FilledButton(
                                   onPressed: () => Navigator.pop(d, true),
-                                  child: const Text('Delete'),
+                                  child: Text(l10n.delete),
                                 ),
                               ],
                             ),

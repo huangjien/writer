@@ -4,6 +4,8 @@ import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/mock_providers.dart';
 import 'package:writer/state/supabase_config.dart';
 import 'package:writer/models/novel.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations_en.dart';
 import '../../main.dart';
 
 class CharactersScreen extends ConsumerStatefulWidget {
@@ -58,8 +60,9 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
     return Scaffold(
-      appBar: AppBar(title: const Text('Characters'), actions: const []),
+      appBar: AppBar(title: Text(l10n.characters), actions: const []),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -71,9 +74,8 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                     .watch(novelProvider(widget.novelId))
                     .when(
                       data: (novel) => _NovelHeader(novel: novel),
-                      loading: () =>
-                          const _LoadingTile(label: 'Loading novel…'),
-                      error: (e, _) => _ErrorTile(label: 'Error: $e'),
+                      loading: () => _LoadingTile(label: l10n.loadingNovels),
+                      error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
                     )
               else
                 ref
@@ -86,9 +88,8 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                         final novel = matches.isNotEmpty ? matches.first : null;
                         return _NovelHeader(novel: novel);
                       },
-                      loading: () =>
-                          const _LoadingTile(label: 'Loading novel…'),
-                      error: (e, _) => _ErrorTile(label: 'Error: $e'),
+                      loading: () => _LoadingTile(label: l10n.loadingNovels),
+                      error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
                     ),
               const SizedBox(height: 16),
               Form(
@@ -98,26 +99,30 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                   children: [
                     TextFormField(
                       controller: _titleController,
-                      decoration: const InputDecoration(labelText: 'Title'),
+                      decoration: InputDecoration(labelText: l10n.titleLabel),
                       validator: (v) =>
-                          v == null || v.trim().isEmpty ? 'Required' : null,
+                          v == null || v.trim().isEmpty ? l10n.required : null,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _summariesController,
-                      decoration: const InputDecoration(labelText: 'Summaries'),
+                      decoration: InputDecoration(
+                        labelText: l10n.summariesLabel,
+                      ),
                       maxLines: 3,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _synopsesController,
-                      decoration: const InputDecoration(labelText: 'Synopses'),
+                      decoration: InputDecoration(
+                        labelText: l10n.synopsesLabel,
+                      ),
                       maxLines: 5,
                     ),
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        const Expanded(child: Text('Language')),
+                        Expanded(child: Text(l10n.chooseLanguage)),
                         DropdownButton<String>(
                           value: _languageCode,
                           onChanged: (code) {
@@ -126,14 +131,14 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                             }
                             setState(() => _languageCode = code);
                           },
-                          items: const [
+                          items: [
                             DropdownMenuItem(
                               value: 'en',
-                              child: Text('English'),
+                              child: Text(l10n.english),
                             ),
                             DropdownMenuItem(
                               value: 'zh',
-                              child: Text('Chinese'),
+                              child: Text(l10n.chinese),
                             ),
                           ],
                         ),
@@ -187,7 +192,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                                       return;
                                     }
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Saved')),
+                                      SnackBar(content: Text(l10n.saved)),
                                     );
                                   } catch (e) {
                                     setState(() => _error = e.toString());
@@ -197,7 +202,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                                     }
                                   }
                                 },
-                          child: const Text('Save'),
+                          child: Text(l10n.save),
                         ),
                         const SizedBox(width: 12),
                         if (_error != null)
@@ -227,7 +232,8 @@ class _NovelHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = novel?.title ?? 'Unknown Novel';
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+    final title = novel?.title ?? l10n.unknownNovel;
     final author = novel?.author;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -1351,6 +1351,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Embedding failed'**
   String get embeddingFailed;
+
+  /// No description provided for @saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get saved;
+
+  /// No description provided for @required.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get required;
+
+  /// No description provided for @summariesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Summaries'**
+  String get summariesLabel;
+
+  /// No description provided for @synopsesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Synopses'**
+  String get synopsesLabel;
+
+  /// No description provided for @locationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get locationLabel;
+
+  /// No description provided for @languageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Language: {code}'**
+  String languageLabel(String code);
+
+  /// No description provided for @publicLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Public'**
+  String get publicLabel;
+
+  /// No description provided for @privateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get privateLabel;
+
+  /// No description provided for @chaptersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapters: {count}'**
+  String chaptersCount(int count);
+
+  /// No description provided for @avgWordsPerChapter.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg words/chapter: {avg}'**
+  String avgWordsPerChapter(int avg);
+
+  /// No description provided for @chapterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter {idx}'**
+  String chapterLabel(int idx);
+
+  /// No description provided for @chapterWithTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter {idx}: {title}'**
+  String chapterWithTitle(int idx, String title);
+
+  /// No description provided for @refreshTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refreshTooltip;
+
+  /// No description provided for @untitled.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled'**
+  String get untitled;
+
+  /// No description provided for @newLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get newLabel;
+
+  /// No description provided for @deleteSceneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Scene'**
+  String get deleteSceneTitle;
+
+  /// No description provided for @deleteCharacterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Character'**
+  String get deleteCharacterTitle;
+
+  /// No description provided for @deleteTemplateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Template'**
+  String get deleteTemplateTitle;
+
+  /// No description provided for @confirmDeleteGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this item?'**
+  String get confirmDeleteGeneric;
+
+  /// No description provided for @novelMetadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Novel Metadata'**
+  String get novelMetadata;
+
+  /// No description provided for @contributorEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Contributor Email'**
+  String get contributorEmailLabel;
+
+  /// No description provided for @contributorEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter user email to add as contributor'**
+  String get contributorEmailHint;
+
+  /// No description provided for @addContributor.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Contributor'**
+  String get addContributor;
+
+  /// No description provided for @contributorAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Contributor added'**
+  String get contributorAdded;
 }
 
 class _AppLocalizationsDelegate

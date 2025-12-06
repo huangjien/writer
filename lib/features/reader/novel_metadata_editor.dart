@@ -123,7 +123,7 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
           shrinkWrap: true,
           children: [
             Text(
-              'Novel Metadata',
+              l10n.novelMetadata,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
@@ -171,7 +171,7 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                       if (isOwner) ...[
                         SwitchListTile(
                           value: _isPublic,
-                          title: const Text('Public'),
+                          title: Text(l10n.publicLabel),
                           onChanged: (v) => setState(() => _isPublic = v),
                         ),
                         const SizedBox(height: 12),
@@ -202,9 +202,9 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                       if (isOwner) ...[
                         TextFormField(
                           controller: _contributorEmailController,
-                          decoration: const InputDecoration(
-                            labelText: 'Contributor Email',
-                            hintText: 'Enter user email to add as contributor',
+                          decoration: InputDecoration(
+                            labelText: l10n.contributorEmailLabel,
+                            hintText: l10n.contributorEmailHint,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -212,7 +212,7 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                           alignment: Alignment.centerLeft,
                           child: OutlinedButton.icon(
                             icon: const Icon(Icons.person_add_alt_1),
-                            label: const Text('Add Contributor'),
+                            label: Text(l10n.addContributor),
                             onPressed: () async {
                               final email = _contributorEmailController.text
                                   .trim();
@@ -225,15 +225,15 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                                 );
                                 if (!context.mounted) return;
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Contributor added'),
+                                  SnackBar(
+                                    content: Text(l10n.contributorAdded),
                                   ),
                                 );
                                 _contributorEmailController.clear();
                               } catch (e) {
                                 if (!context.mounted) return;
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Error: $e')),
+                                  SnackBar(content: Text('${l10n.error}: $e')),
                                 );
                               }
                             },

@@ -650,4 +650,86 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get embeddingFailed => '嵌入失败';
+
+  @override
+  String get saved => '已保存';
+
+  @override
+  String get required => '必填';
+
+  @override
+  String get summariesLabel => '概要';
+
+  @override
+  String get synopsesLabel => '梗概';
+
+  @override
+  String get locationLabel => '地点';
+
+  @override
+  String languageLabel(String code) {
+    return '语言：$code';
+  }
+
+  @override
+  String get publicLabel => '公开';
+
+  @override
+  String get privateLabel => '私密';
+
+  @override
+  String chaptersCount(int count) {
+    return '章节：$count';
+  }
+
+  @override
+  String avgWordsPerChapter(int avg) {
+    return '平均每章字数：$avg';
+  }
+
+  @override
+  String chapterLabel(int idx) {
+    return '第$idx章';
+  }
+
+  @override
+  String chapterWithTitle(int idx, String title) {
+    return '第$idx章：$title';
+  }
+
+  @override
+  String get refreshTooltip => '刷新';
+
+  @override
+  String get untitled => '未命名';
+
+  @override
+  String get newLabel => '新建';
+
+  @override
+  String get deleteSceneTitle => '删除场景';
+
+  @override
+  String get deleteCharacterTitle => '删除角色';
+
+  @override
+  String get deleteTemplateTitle => '删除模板';
+
+  @override
+  String get confirmDeleteGeneric => '确定要删除此项吗？';
+
+  @override
+  String get novelMetadata => '小说元数据';
+
+  @override
+  String get contributorEmailLabel => '协作者邮箱';
+
+  @override
+  String get contributorEmailHint => '输入用户邮箱以添加为协作者';
+
+  @override
+  String get addContributor => '添加协作者';
+
+  @override
+  String get contributorAdded => '协作者已添加';
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations_en.dart';
 import '../../main.dart';
 import '../../models/scene_note.dart';
 
@@ -42,9 +44,10 @@ class _ScenesListScreenState extends ConsumerState<ScenesListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scenes'),
+        title: Text(l10n.scenes),
         actions: [
           if (_loading)
             const Padding(
@@ -59,13 +62,13 @@ class _ScenesListScreenState extends ConsumerState<ScenesListScreen> {
             IconButton(
               onPressed: _load,
               icon: const Icon(Icons.refresh),
-              tooltip: 'Refresh',
+              tooltip: l10n.refreshTooltip,
             ),
           IconButton(
             onPressed: () =>
                 context.push('/novel/${widget.novelId}/scenes/new'),
             icon: const Icon(Icons.add),
-            tooltip: 'New',
+            tooltip: l10n.newLabel,
           ),
         ],
       ),
@@ -77,7 +80,7 @@ class _ScenesListScreenState extends ConsumerState<ScenesListScreen> {
               padding: const EdgeInsets.all(16),
               itemBuilder: (ctx, i) {
                 final it = _items[i];
-                final title = it.title ?? 'Untitled';
+                final title = it.title ?? l10n.untitled;
                 final subtitle = it.sceneSummaries ?? it.sceneSynopses ?? '';
                 return ListTile(
                   title: Text(title),
@@ -105,18 +108,16 @@ class _ScenesListScreenState extends ConsumerState<ScenesListScreen> {
                           final ok = await showDialog<bool>(
                             context: context,
                             builder: (d) => AlertDialog(
-                              title: const Text('Delete Scene'),
-                              content: const Text(
-                                'Are you sure you want to delete this item?',
-                              ),
+                              title: Text(l10n.deleteSceneTitle),
+                              content: Text(l10n.confirmDeleteGeneric),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(d, false),
-                                  child: const Text('Cancel'),
+                                  child: Text(l10n.cancel),
                                 ),
                                 FilledButton(
                                   onPressed: () => Navigator.pop(d, true),
-                                  child: const Text('Delete'),
+                                  child: Text(l10n.delete),
                                 ),
                               ],
                             ),

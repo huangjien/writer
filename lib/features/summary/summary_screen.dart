@@ -6,6 +6,8 @@ import 'package:writer/state/mock_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations_en.dart';
 import '../../main.dart';
 
 class SummaryScreen extends ConsumerStatefulWidget {
@@ -64,9 +66,10 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
         ? ref.watch(chaptersProvider(widget.novelId))
         : ref.watch(mockChaptersProvider(widget.novelId));
 
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Summary'),
+        title: Text(l10n.summary),
         actions: [
           if (_refreshing)
             const Padding(
@@ -90,7 +93,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                 if (mounted) setState(() => _refreshing = false);
               },
               icon: const Icon(Icons.refresh),
-              tooltip: 'Refresh',
+              tooltip: l10n.refreshTooltip,
             ),
         ],
       ),
@@ -104,8 +107,8 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                   .watch(novelProvider(widget.novelId))
                   .when(
                     data: (novel) => _NovelHeader(novel: novel),
-                    loading: () => const _LoadingTile(label: 'Loading novel…'),
-                    error: (e, _) => _ErrorTile(label: 'Error: $e'),
+                    loading: () => _LoadingTile(label: l10n.loadingNovels),
+                    error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
                   )
             else
               ref
@@ -123,8 +126,8 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                       }
                       return _NovelHeader(novel: novel);
                     },
-                    loading: () => const _LoadingTile(label: 'Loading novel…'),
-                    error: (e, _) => _ErrorTile(label: 'Error: $e'),
+                    loading: () => _LoadingTile(label: l10n.loadingNovels),
+                    error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
                   ),
             const SizedBox(height: 16),
             Form(
@@ -134,13 +137,13 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                 children: [
                   TextFormField(
                     controller: _summaryController,
-                    decoration: const InputDecoration(
-                      labelText: 'Novel Summary',
+                    decoration: InputDecoration(
+                      labelText: l10n.descriptionLabel,
                     ),
                     minLines: 4,
                     maxLines: null,
                     validator: (v) =>
-                        v == null || v.trim().isEmpty ? 'Required' : null,
+                        v == null || v.trim().isEmpty ? l10n.required : null,
                   ),
                   const SizedBox(height: 12),
                   Row(
@@ -176,7 +179,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                                   }
                                   if (!context.mounted) return;
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Saved')),
+                                    SnackBar(content: Text(l10n.saved)),
                                   );
                                 } catch (e) {
                                   setState(() => _error = e.toString());
@@ -184,7 +187,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                                   if (mounted) setState(() => _saving = false);
                                 }
                               },
-                        child: const Text('Save'),
+                        child: Text(l10n.save),
                       ),
                       const SizedBox(width: 12),
                       if (_error != null)
@@ -204,8 +207,8 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
             const SizedBox(height: 16),
             chaptersAsync.when(
               data: (chapters) => _ChaptersSummary(chapters: chapters),
-              loading: () => const _LoadingTile(label: 'Loading chapters…'),
-              error: (e, _) => _ErrorTile(label: 'Error: $e'),
+              loading: () => _LoadingTile(label: l10n.loadingChapter),
+              error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
             ),
           ],
         ),
@@ -220,7 +223,8 @@ class _NovelHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = novel?.title ?? 'Unknown Novel';
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+    final title = novel?.title ?? l10n.unknownNovel;
     final author = novel?.author;
     final description = novel?.description;
     final language = novel?.languageCode;
@@ -248,11 +252,11 @@ class _NovelHeader extends StatelessWidget {
           children: [
             const Icon(Icons.language, size: 16),
             const SizedBox(width: 6),
-            Text('Language: ${language ?? 'en'}'),
+            Text(l10n.languageLabel(language ?? 'en')),
             const SizedBox(width: 12),
             const Icon(Icons.lock_open, size: 16),
             const SizedBox(width: 6),
-            Text(isPublic ? 'Public' : 'Private'),
+            Text(isPublic ? l10n.publicLabel : l10n.privateLabel),
           ],
         ),
       ],
@@ -273,8 +277,9 @@ class _ChaptersSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
     if (chapters.isEmpty) {
-      return const Text('No chapters found.');
+      return Text(l10n.noChaptersFound);
     }
     final count = chapters.length;
     final sample = chapters.take(5).toList();
@@ -291,19 +296,19 @@ class _ChaptersSummary extends StatelessWidget {
           children: [
             const Icon(Icons.list, size: 16),
             const SizedBox(width: 6),
-            Text('Chapters: $count'),
+            Text(l10n.chaptersCount(count)),
             const SizedBox(width: 12),
             const Icon(Icons.text_snippet, size: 16),
             const SizedBox(width: 6),
-            Text('Avg words/chapter: $avgWords'),
+            Text(l10n.avgWordsPerChapter(avgWords)),
           ],
         ),
         const SizedBox(height: 12),
         ...sample.map((c) {
           final title = c.title?.trim();
           final label = title == null || title.isEmpty
-              ? 'Chapter ${c.idx}'
-              : 'Chapter ${c.idx}: $title';
+              ? l10n.chapterLabel(c.idx)
+              : l10n.chapterWithTitle(c.idx, title);
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Column(

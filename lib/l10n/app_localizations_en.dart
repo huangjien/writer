@@ -665,4 +665,87 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get embeddingFailed => 'Embedding failed';
+
+  @override
+  String get saved => 'Saved';
+
+  @override
+  String get required => 'Required';
+
+  @override
+  String get summariesLabel => 'Summaries';
+
+  @override
+  String get synopsesLabel => 'Synopses';
+
+  @override
+  String get locationLabel => 'Location';
+
+  @override
+  String languageLabel(String code) {
+    return 'Language: $code';
+  }
+
+  @override
+  String get publicLabel => 'Public';
+
+  @override
+  String get privateLabel => 'Private';
+
+  @override
+  String chaptersCount(int count) {
+    return 'Chapters: $count';
+  }
+
+  @override
+  String avgWordsPerChapter(int avg) {
+    return 'Avg words/chapter: $avg';
+  }
+
+  @override
+  String chapterLabel(int idx) {
+    return 'Chapter $idx';
+  }
+
+  @override
+  String chapterWithTitle(int idx, String title) {
+    return 'Chapter $idx: $title';
+  }
+
+  @override
+  String get refreshTooltip => 'Refresh';
+
+  @override
+  String get untitled => 'Untitled';
+
+  @override
+  String get newLabel => 'New';
+
+  @override
+  String get deleteSceneTitle => 'Delete Scene';
+
+  @override
+  String get deleteCharacterTitle => 'Delete Character';
+
+  @override
+  String get deleteTemplateTitle => 'Delete Template';
+
+  @override
+  String get confirmDeleteGeneric =>
+      'Are you sure you want to delete this item?';
+
+  @override
+  String get novelMetadata => 'Novel Metadata';
+
+  @override
+  String get contributorEmailLabel => 'Contributor Email';
+
+  @override
+  String get contributorEmailHint => 'Enter user email to add as contributor';
+
+  @override
+  String get addContributor => 'Add Contributor';
+
+  @override
+  String get contributorAdded => 'Contributor added';
 }

@@ -265,5 +265,44 @@
   "urlInvalidScheme": "URL 必须以 http:// 或 https:// 开头。"
   ,
   "embeddingUpdated": "嵌入已更新",
-  "embeddingFailed": "嵌入失败"
+  "embeddingFailed": "嵌入失败",
+  "saved": "已保存",
+  "required": "必填",
+  "summariesLabel": "概要",
+  "synopsesLabel": "梗概",
+  "locationLabel": "地点",
+  "languageLabel": "语言：{code}",
+  "@languageLabel": {
+    "placeholders": {"code": {"type": "String"}}
+  },
+  "publicLabel": "公开",
+  "privateLabel": "私密",
+  "chaptersCount": "章节：{count}",
+  "@chaptersCount": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "avgWordsPerChapter": "平均每章字数：{avg}",
+  "@avgWordsPerChapter": {
+    "placeholders": {"avg": {"type": "int"}}
+  },
+  "chapterLabel": "第{idx}章",
+  "@chapterLabel": {
+    "placeholders": {"idx": {"type": "int"}}
+  },
+  "chapterWithTitle": "第{idx}章：{title}",
+  "@chapterWithTitle": {
+    "placeholders": {"idx": {"type": "int"}, "title": {"type": "String"}}
+  },
+  "refreshTooltip": "刷新",
+  "untitled": "未命名",
+  "newLabel": "新建",
+  "deleteSceneTitle": "删除场景",
+  "deleteCharacterTitle": "删除角色",
+  "deleteTemplateTitle": "删除模板",
+  "confirmDeleteGeneric": "确定要删除此项吗？",
+  "novelMetadata": "小说元数据",
+  "contributorEmailLabel": "协作者邮箱",
+  "contributorEmailHint": "输入用户邮箱以添加为协作者",
+  "addContributor": "添加协作者",
+  "contributorAdded": "协作者已添加"
 }

@@ -56,7 +56,7 @@ void main() {
     // Fill fields and save.
     final titleField = find.widgetWithText(TextFormField, 'Title');
     final locField = find.widgetWithText(TextFormField, 'Location');
-    final sumField = find.widgetWithText(TextFormField, 'Summary');
+    final sumField = find.widgetWithText(TextFormField, 'Description');
     await tester.enterText(titleField, 'Opening Scene');
     await tester.enterText(locField, 'Forest');
     await tester.enterText(sumField, 'Introduces the journey.');

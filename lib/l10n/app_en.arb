@@ -264,5 +264,44 @@
   "urlContainsSpaces": "URL cannot contain spaces.",
   "urlInvalidScheme": "URL must start with http:// or https://.",
   "embeddingUpdated": "Embedding updated",
-  "embeddingFailed": "Embedding failed"
+  "embeddingFailed": "Embedding failed",
+  "saved": "Saved",
+  "required": "Required",
+  "summariesLabel": "Summaries",
+  "synopsesLabel": "Synopses",
+  "locationLabel": "Location",
+  "languageLabel": "Language: {code}",
+  "@languageLabel": {
+    "placeholders": {"code": {"type": "String"}}
+  },
+  "publicLabel": "Public",
+  "privateLabel": "Private",
+  "chaptersCount": "Chapters: {count}",
+  "@chaptersCount": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "avgWordsPerChapter": "Avg words/chapter: {avg}",
+  "@avgWordsPerChapter": {
+    "placeholders": {"avg": {"type": "int"}}
+  },
+  "chapterLabel": "Chapter {idx}",
+  "@chapterLabel": {
+    "placeholders": {"idx": {"type": "int"}}
+  },
+  "chapterWithTitle": "Chapter {idx}: {title}",
+  "@chapterWithTitle": {
+    "placeholders": {"idx": {"type": "int"}, "title": {"type": "String"}}
+  },
+  "refreshTooltip": "Refresh",
+  "untitled": "Untitled",
+  "newLabel": "New",
+  "deleteSceneTitle": "Delete Scene",
+  "deleteCharacterTitle": "Delete Character",
+  "deleteTemplateTitle": "Delete Template",
+  "confirmDeleteGeneric": "Are you sure you want to delete this item?",
+  "novelMetadata": "Novel Metadata",
+  "contributorEmailLabel": "Contributor Email",
+  "contributorEmailHint": "Enter user email to add as contributor",
+  "addContributor": "Add Contributor",
+  "contributorAdded": "Contributor added"
 }
