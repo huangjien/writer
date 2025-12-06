@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
-import '../../state/supabase_config.dart';
+import '../../state/providers.dart';
 import '../../l10n/app_localizations.dart';
 
-class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+class SignInScreen extends ConsumerStatefulWidget {
+  final GoTrueClient? authClient;
+
+  const SignInScreen({super.key, this.authClient});
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
+  ConsumerState<SignInScreen> createState() => _SignInScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _SignInScreenState extends ConsumerState<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _loading = false;
@@ -23,13 +26,14 @@ class _SignInScreenState extends State<SignInScreen> {
       _error = null;
     });
     try {
-      await Supabase.instance.client.auth.signInWithPassword(
+      final auth = widget.authClient ?? Supabase.instance.client.auth;
+      await auth.signInWithPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
       if (!mounted) return;
       try {
-        await Supabase.instance.client.auth.refreshSession();
+        await auth.refreshSession();
       } catch (_) {}
       if (!mounted) return;
       if (Navigator.of(context).canPop()) {
@@ -54,7 +58,8 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    if (!supabaseEnabled) {
+    final enabled = ref.watch(supabaseEnabledProvider);
+    if (!enabled) {
       return Scaffold(
         body: Center(
           child: Padding(

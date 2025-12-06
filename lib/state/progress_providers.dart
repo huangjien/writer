@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'providers.dart';
 
 import '../models/user_progress.dart';
@@ -22,7 +21,7 @@ final lastProgressProvider = FutureProvider.family<UserProgress?, String>((
 final latestUserProgressProvider = StreamProvider.autoDispose<UserProgress?>((
   ref,
 ) {
-  final client = Supabase.instance.client;
+  final client = ref.watch(supabaseClientProvider);
   final userId = client.auth.currentUser?.id;
   if (userId == null) return Stream.value(null);
   return client
@@ -36,7 +35,7 @@ final latestUserProgressProvider = StreamProvider.autoDispose<UserProgress?>((
 
 final recentUserProgressProvider =
     StreamProvider.autoDispose<List<UserProgress>>((ref) {
-      final client = Supabase.instance.client;
+      final client = ref.watch(supabaseClientProvider);
       final userId = client.auth.currentUser?.id;
       if (userId == null) return Stream.value([]);
       return client

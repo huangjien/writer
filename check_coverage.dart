@@ -26,7 +26,7 @@ void main() async {
     }
   }
 
-  print('Files with coverage < 80%:');
+  print('Files with coverage < 85%:');
   print('--------------------------------------------------');
   
   final sortedFiles = files.entries.toList()
@@ -42,7 +42,7 @@ void main() async {
     final percentage = total == 0 ? 0.0 : (hit / total) * 100;
     
     // Filter out generated files or files that shouldn't be tested if necessary
-    if (percentage < 80.0 && !entry.key.endsWith('.g.dart') && !entry.key.endsWith('.freezed.dart')) {
+    if (percentage < 85.0 && !entry.key.endsWith('.g.dart') && !entry.key.endsWith('.freezed.dart')) {
       print('${percentage.toStringAsFixed(1)}% ($hit/$total) - ${entry.key}');
     }
   }

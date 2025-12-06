@@ -1,0 +1,113 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:writer/l10n/app_localizations_zh.dart';
+
+void main() {
+  group('AppLocalizationsZh Tests', () {
+    test('loads Chinese localizations', () {
+      final localizations = AppLocalizationsZh();
+      expect(localizations.helloWorld, '你好世界！');
+      expect(localizations.settings, '设置');
+      expect(localizations.appTitle, '写手');
+    });
+
+    test('matches English keys', () {
+      final zh = AppLocalizationsZh();
+
+      // We can't iterate keys easily in Dart without reflection,
+      // but we can check critical keys manually to ensure consistency.
+      expect(zh.helloWorld.isNotEmpty, true);
+      expect(zh.settings.isNotEmpty, true);
+      expect(zh.appTitle.isNotEmpty, true);
+      expect(zh.about.isNotEmpty, true);
+      expect(zh.aboutDescription.isNotEmpty, true);
+      expect(zh.aboutUsage.isNotEmpty, true);
+      expect(zh.aboutUsageList.isNotEmpty, true);
+      expect(zh.version.isNotEmpty, true);
+      expect(zh.appLanguage.isNotEmpty, true);
+      expect(zh.english.isNotEmpty, true);
+      expect(zh.chinese.isNotEmpty, true);
+      expect(zh.supabaseIntegrationInitialized.isNotEmpty, true);
+      expect(zh.configureEnvironment.isNotEmpty, true);
+      expect(zh.signedInAs('test').contains('test'), true);
+      expect(zh.guest.isNotEmpty, true);
+      expect(zh.notSignedIn.isNotEmpty, true);
+      expect(zh.signIn.isNotEmpty, true);
+      expect(zh.continueLabel.isNotEmpty, true);
+      expect(zh.reload.isNotEmpty, true);
+      expect(zh.signInToSync.isNotEmpty, true);
+      expect(zh.currentProgress.isNotEmpty, true);
+      expect(zh.loadingProgress.isNotEmpty, true);
+      expect(zh.recentlyRead.isNotEmpty, true);
+      expect(zh.noSupabase.isNotEmpty, true);
+      expect(zh.errorLoadingProgress.isNotEmpty, true);
+      expect(zh.noProgress.isNotEmpty, true);
+      expect(zh.errorLoadingNovels.isNotEmpty, true);
+      expect(zh.loadingNovels.isNotEmpty, true);
+      expect(zh.titleLabel.isNotEmpty, true);
+      expect(zh.authorLabel.isNotEmpty, true);
+      expect(zh.noNovelsFound.isNotEmpty, true);
+      expect(zh.myNovels.isNotEmpty, true);
+      expect(zh.createNovel.isNotEmpty, true);
+      expect(zh.create.isNotEmpty, true);
+      expect(zh.errorLoadingChapters.isNotEmpty, true);
+      expect(zh.loadingChapter.isNotEmpty, true);
+      expect(zh.notStarted.isNotEmpty, true);
+      expect(zh.unknownNovel.isNotEmpty, true);
+      expect(zh.unknownChapter.isNotEmpty, true);
+      expect(zh.chapter.isNotEmpty, true);
+      expect(zh.novel.isNotEmpty, true);
+      expect(zh.chapterTitle.isNotEmpty, true);
+      expect(zh.scrollOffset.isNotEmpty, true);
+      expect(zh.ttsIndex.isNotEmpty, true);
+      expect(zh.speechRate.isNotEmpty, true);
+      expect(zh.volume.isNotEmpty, true);
+      expect(zh.defaultTTSVoice.isNotEmpty, true);
+      expect(zh.defaultVoiceUpdated.isNotEmpty, true);
+      expect(zh.defaultLanguageSet.isNotEmpty, true);
+      expect(zh.searchByTitle.isNotEmpty, true);
+      expect(zh.chooseLanguage.isNotEmpty, true);
+      expect(zh.email.isNotEmpty, true);
+      expect(zh.password.isNotEmpty, true);
+      expect(zh.signInWithGoogle.isNotEmpty, true);
+      expect(zh.signInWithApple.isNotEmpty, true);
+      expect(zh.testVoice.isNotEmpty, true);
+      expect(zh.reloadVoices.isNotEmpty, true);
+      expect(zh.signOut.isNotEmpty, true);
+      expect(zh.signedOut.isNotEmpty, true);
+      expect(zh.appSettings.isNotEmpty, true);
+      expect(zh.supabaseSettings.isNotEmpty, true);
+      expect(zh.supabaseNotEnabled.isNotEmpty, true);
+      expect(zh.supabaseNotEnabledDescription.isNotEmpty, true);
+      expect(zh.authDisabledInBuild.isNotEmpty, true);
+      expect(zh.fetchFromSupabase.isNotEmpty, true);
+      expect(zh.fetchFromSupabaseDescription.isNotEmpty, true);
+      expect(zh.confirmFetch.isNotEmpty, true);
+      expect(zh.confirmFetchDescription.isNotEmpty, true);
+      expect(zh.cancel.isNotEmpty, true);
+      expect(zh.fetch.isNotEmpty, true);
+      expect(zh.downloadChapters.isNotEmpty, true);
+      expect(zh.modeSupabase.isNotEmpty, true);
+      expect(zh.modeMockData.isNotEmpty, true);
+      expect(zh.continueAtChapter('T').contains('T'), true);
+      expect(zh.error.isNotEmpty, true);
+      expect(zh.ttsSettings.isNotEmpty, true);
+      expect(zh.enableTTS.isNotEmpty, true);
+      expect(zh.ttsVoice.isNotEmpty, true);
+      expect(zh.loadingVoices.isNotEmpty, true);
+      expect(zh.selectVoice.isNotEmpty, true);
+      expect(zh.ttsLanguage.isNotEmpty, true);
+      expect(zh.loadingLanguages.isNotEmpty, true);
+      expect(zh.selectLanguage.isNotEmpty, true);
+      expect(zh.ttsSpeechRate.isNotEmpty, true);
+      expect(zh.ttsSpeechVolume.isNotEmpty, true);
+      expect(zh.ttsSpeechPitch.isNotEmpty, true);
+      expect(zh.novelsAndProgress.isNotEmpty, true);
+      expect(zh.novels.isNotEmpty, true);
+      expect(zh.progress.isNotEmpty, true);
+      expect(zh.novelsAndProgressSummary(1, 'P').contains('1'), true);
+      expect(zh.chapters.isNotEmpty, true);
+      expect(zh.noChaptersFound.isNotEmpty, true);
+      expect(zh.indexLabel(1).contains('1'), true);
+    });
+  });
+}

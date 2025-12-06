@@ -5,7 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../state/novel_providers.dart';
 import '../../../state/progress_providers.dart';
-import '../../../state/supabase_config.dart';
+import '../../../state/providers.dart';
 
 class SupabaseSection extends ConsumerWidget {
   const SupabaseSection({super.key, required this.user});
@@ -14,6 +14,7 @@ class SupabaseSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final enabled = ref.watch(supabaseEnabledProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -21,7 +22,7 @@ class SupabaseSection extends ConsumerWidget {
           l10n.supabaseSettings,
           style: Theme.of(context).textTheme.titleLarge,
         ),
-        if (!supabaseEnabled) ...[
+        if (!enabled) ...[
           ListTile(
             title: Text(l10n.supabaseNotEnabled),
             subtitle: Text(l10n.supabaseNotEnabledDescription),

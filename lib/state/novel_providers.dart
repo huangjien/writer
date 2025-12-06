@@ -32,10 +32,8 @@ final libraryNovelsProvider = FutureProvider<List<Novel>>((ref) async {
   ref.watch(authStateProvider);
   final local = ref.watch(localStorageRepositoryProvider);
   final public = await ref.watch(novelsProvider.future);
-  List<Novel> member;
-  try {
-    member = await ref.watch(memberNovelsProvider.future);
-  } catch (_) {
+  final memberAsync = ref.watch(memberNovelsProvider);
+  if (memberAsync.hasError) {
     final cached = await local.getLibraryNovels();
     if (cached.isNotEmpty) {
       final byId = <String, Novel>{};
@@ -49,6 +47,7 @@ final libraryNovelsProvider = FutureProvider<List<Novel>>((ref) async {
     }
     return public;
   }
+  final member = await ref.watch(memberNovelsProvider.future);
   final byId = <String, Novel>{};
   for (final n in public) {
     byId[n.id] = n;

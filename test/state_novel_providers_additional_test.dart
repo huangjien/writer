@@ -20,6 +20,7 @@ class CapturingLocalRepo extends LocalStorageRepository {
 
 void main() {
   setUp(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
     SharedPreferences.setMockInitialValues({});
   });
   test(
@@ -28,7 +29,10 @@ void main() {
       final cache = CapturingLocalRepo();
       final container = ProviderContainer(
         overrides: [
-          authStateProvider.overrideWith((ref) => const Stream.empty()),
+          authStateProvider.overrideWith(
+            (ref) =>
+                Stream.value(AuthState(AuthChangeEvent.initialSession, null)),
+          ),
           app_main.localStorageRepositoryProvider.overrideWith((_) => cache),
           novelsProvider.overrideWith(
             (ref) async => const [
@@ -58,9 +62,13 @@ void main() {
           ),
         ],
       );
+      final sub1 = container.listen(novelsProvider, (prev, _) {});
+      final sub2 = container.listen(memberNovelsProvider, (prev, _) {});
       final union = await container.read(libraryNovelsProvider.future);
       expect(union.map((n) => n.id).toSet(), {'n1', 'n2'});
       expect(cache.lastSaved?.length, 2);
+      sub1.close();
+      sub2.close();
     },
   );
 
