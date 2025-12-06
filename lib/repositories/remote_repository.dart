@@ -21,7 +21,7 @@ class RemoteRepository {
 
   RemoteRepository(this.baseUrl, {http.Client? client}) : _client = client;
 
-  Future<Map<String, dynamic>?> fetchCharacterProfile(String name) async {
+  Future<String?> fetchCharacterProfile(String name) async {
     final url = baseUrl.endsWith('/')
         ? '${baseUrl}characters/profile'
         : '$baseUrl/characters/profile';
@@ -51,10 +51,10 @@ class RemoteRepository {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
         if (data is Map<String, dynamic> &&
             data.containsKey('character_profile')) {
-          return data['character_profile'] as Map<String, dynamic>;
+          return data['character_profile'] as String;
         }
       }
     } catch (_) {

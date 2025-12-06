@@ -73,38 +73,7 @@ class _CharacterTemplatesScreenState
       final profile = await repo.fetchCharacterProfile(name);
 
       if (profile != null) {
-        final buffer = StringBuffer();
-
-        void addSection(String title, dynamic content) {
-          if (content == null) return;
-          buffer.writeln('### $title');
-          if (content is Map) {
-            content.forEach((k, v) {
-              buffer.writeln('- **$k**: $v');
-            });
-          } else if (content is List) {
-            for (final item in content) {
-              buffer.writeln('- $item');
-            }
-          } else {
-            buffer.writeln(content.toString());
-          }
-          buffer.writeln();
-        }
-
-        if (profile['archetype'] != null) {
-          buffer.writeln('**Archetype:** ${profile['archetype']}');
-          buffer.writeln();
-        }
-
-        addSection('Role', profile['role_in_story']);
-        addSection('Core Identity', profile['core_identity']);
-        addSection('Backstory', profile['backstory']);
-        addSection('Personality', profile['personality']);
-        addSection('Conflict', profile['conflict']);
-        addSection('Relationships', profile['relationships']);
-
-        _descController.text = buffer.toString().trim();
+        _descController.text = profile.trim();
 
         if (mounted) {
           ScaffoldMessenger.of(

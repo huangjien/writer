@@ -17,9 +17,9 @@ void main() {
       registerFallbackValue(Uri.parse('http://test.api/characters/profile'));
     });
 
-    test('fetchCharacterProfile returns map on success', () async {
+    test('fetchCharacterProfile returns string on success', () async {
       final responseBody = jsonEncode({
-        'character_profile': {'name': 'Test Char', 'archetype': 'Hero'},
+        'character_profile': '# Test Profile\nThis is a markdown profile.',
       });
 
       when(
@@ -33,8 +33,8 @@ void main() {
       final result = await repo.fetchCharacterProfile('Test Char');
 
       expect(result, isNotNull);
-      expect(result!['name'], 'Test Char');
-      expect(result['archetype'], 'Hero');
+      expect(result, contains('# Test Profile'));
+      expect(result, contains('markdown profile'));
 
       verify(
         () => client.post(

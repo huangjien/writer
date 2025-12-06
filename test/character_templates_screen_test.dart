@@ -23,11 +23,11 @@ class MockRemoteRepo extends RemoteRepository {
   MockRemoteRepo() : super('http://mock');
 
   String? queryName;
-  Map<String, dynamic>? mockResponse;
+  String? mockResponse;
   bool shouldFail = false;
 
   @override
-  Future<Map<String, dynamic>?> fetchCharacterProfile(String name) async {
+  Future<String?> fetchCharacterProfile(String name) async {
     queryName = name;
     // Add small delay to ensure UI can render loading state
     await Future.delayed(const Duration(milliseconds: 50));
@@ -86,11 +86,11 @@ void main() {
   testWidgets('CharacterTemplatesScreen retrieves profile', (tester) async {
     final localRepo = CapturingLocalRepo();
     final remoteRepo = MockRemoteRepo();
-    remoteRepo.mockResponse = {
-      'archetype': 'The Hero',
-      'role_in_story': 'Protagonist',
-      'core_identity': {'goal': 'Save the world'},
-    };
+    remoteRepo.mockResponse = '''
+### Archetype: The Hero
+- **Role**: Protagonist
+- **Goal**: Save the world
+''';
 
     await tester.pumpWidget(
       ProviderScope(
@@ -146,10 +146,9 @@ void main() {
     final descText =
         (tester.widget(descField) as TextFormField).controller!.text;
 
-    expect(descText, contains('**Archetype:** The Hero'));
-    expect(descText, contains('### Role'));
+    expect(descText, contains('### Archetype: The Hero'));
     expect(descText, contains('Protagonist'));
-    expect(descText, contains('**goal**: Save the world'));
+    expect(descText, contains('Save the world'));
     expect(find.text('Profile retrieved'), findsOneWidget);
   });
 
