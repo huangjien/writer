@@ -22,6 +22,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   final _summaryController = TextEditingController();
   bool _saving = false;
   String? _error;
+  bool _refreshing = false;
 
   @override
   void initState() {
@@ -64,7 +65,35 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
         : ref.watch(mockChaptersProvider(widget.novelId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Summary')),
+      appBar: AppBar(
+        title: const Text('Summary'),
+        actions: [
+          if (_refreshing)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else
+            IconButton(
+              onPressed: () async {
+                setState(() => _refreshing = true);
+                final enabled = ref.read(supabaseEnabledProvider);
+                if (enabled) {
+                  ref.invalidate(novelProvider(widget.novelId));
+                  ref.invalidate(chaptersProvider(widget.novelId));
+                }
+                await _load();
+                if (mounted) setState(() => _refreshing = false);
+              },
+              icon: const Icon(Icons.refresh),
+              tooltip: 'Refresh',
+            ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

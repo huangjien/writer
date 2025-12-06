@@ -10,24 +10,31 @@ import '../../models/chapter.dart';
 import 'chapter_reader_screen.dart' as cr;
 import '../../state/supabase_config.dart';
 
-class ReaderScreen extends ConsumerWidget {
+class ReaderScreen extends ConsumerStatefulWidget {
   const ReaderScreen({super.key, required this.novelId, this.chapterId});
 
   final String novelId;
   final String? chapterId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ReaderScreen> createState() => _ReaderScreenState();
+}
+
+class _ReaderScreenState extends ConsumerState<ReaderScreen> {
+  bool _refreshing = false;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final chaptersAsync = supabaseEnabled
-        ? ref.watch(chaptersProvider(novelId))
-        : ref.watch(mockChaptersProvider(novelId));
+        ? ref.watch(chaptersProvider(widget.novelId))
+        : ref.watch(mockChaptersProvider(widget.novelId));
 
-    if (chapterId != null) {
+    if (widget.chapterId != null) {
       return chaptersAsync.when(
         data: (chapters) {
           final chapter = chapters.firstWhere(
-            (c) => c.id == chapterId,
+            (c) => c.id == widget.chapterId,
             orElse: () => chapters.first,
           );
           final chapterIndex = chapters.indexOf(chapter);
@@ -36,7 +43,7 @@ class ReaderScreen extends ConsumerWidget {
             chapterId: chapter.id,
             title: chapter.title ?? 'Chapter ${chapter.idx}',
             content: chapter.content,
-            novelId: novelId,
+            novelId: widget.novelId,
             allChapters: chapters,
             currentIdx: chapterIndex,
           );
@@ -52,6 +59,31 @@ class ReaderScreen extends ConsumerWidget {
         title: Text(l10n.chapters),
         automaticallyImplyLeading: false,
         actions: [
+          if (_refreshing)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              tooltip: 'Refresh',
+              onPressed: () async {
+                setState(() => _refreshing = true);
+                if (supabaseEnabled) {
+                  ref.invalidate(chaptersProvider(widget.novelId));
+                  await ref.read(chaptersProvider(widget.novelId).future);
+                } else {
+                  ref.invalidate(mockChaptersProvider(widget.novelId));
+                  await ref.read(mockChaptersProvider(widget.novelId).future);
+                }
+                if (mounted) setState(() => _refreshing = false);
+              },
+            ),
           Builder(
             builder: (context) => IconButton(
               icon: const Icon(Icons.menu_open),
@@ -61,7 +93,7 @@ class ReaderScreen extends ConsumerWidget {
           ),
         ],
       ),
-      endDrawer: SideBar(novelId: novelId),
+      endDrawer: SideBar(novelId: widget.novelId),
       body: Padding(
         padding: const EdgeInsets.all(Spacing.l),
         child: chaptersAsync.when(
@@ -98,7 +130,9 @@ class ReaderScreen extends ConsumerWidget {
                           ),
                     onTap: () {
                       try {
-                        context.push('/novel/$novelId/chapters/${c.id}');
+                        context.push(
+                          '/novel/${widget.novelId}/chapters/${c.id}',
+                        );
                       } catch (_) {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -106,7 +140,7 @@ class ReaderScreen extends ConsumerWidget {
                               chapterId: c.id,
                               title: c.title ?? '${l10n.chapter} ${c.idx}',
                               content: c.content,
-                              novelId: novelId,
+                              novelId: widget.novelId,
                               allChapters: chapters,
                               currentIdx: index,
                             ),

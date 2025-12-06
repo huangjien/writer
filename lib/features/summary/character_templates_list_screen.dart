@@ -48,6 +48,21 @@ class _CharacterTemplatesListScreenState
       appBar: AppBar(
         title: const Text('Character Templates'),
         actions: [
+          if (_loading)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else
+            IconButton(
+              onPressed: _load,
+              icon: const Icon(Icons.refresh),
+              tooltip: 'Refresh',
+            ),
           IconButton(
             onPressed: () => context.push(
               '/novel/${widget.novelId}/character-templates/new',
