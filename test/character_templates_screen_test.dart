@@ -17,6 +17,12 @@ class CapturingLocalRepo extends LocalStorageRepository {
   ) async {
     lastItem = item;
   }
+
+  @override
+  Future<TemplateItem?> getCharacterTemplateForm(String novelId) async {
+    // Return null to simulate "new" character (clean form)
+    return null;
+  }
 }
 
 class MockRemoteRepo extends RemoteRepository {

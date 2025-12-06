@@ -83,8 +83,12 @@ class App extends ConsumerWidget {
     final motion = ref.watch(motionSettingsProvider);
 
     ThemeData applyMotion(ThemeData base) {
+      final withFont = base.copyWith(
+        textTheme: base.textTheme.apply(fontFamily: 'NotoSansSC'),
+      );
+
       if (motion.reduceMotion) {
-        return base.copyWith(
+        return withFont.copyWith(
           splashFactory: NoSplash.splashFactory,
           pageTransitionsTheme: const PageTransitionsTheme(
             builders: {
@@ -100,7 +104,7 @@ class App extends ConsumerWidget {
       }
 
       // Apply Material FadeThrough transitions when motion is allowed.
-      return base.copyWith(
+      return withFont.copyWith(
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: {
             TargetPlatform.android: FadeThroughPageTransitionsBuilder(),
