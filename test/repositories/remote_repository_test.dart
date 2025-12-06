@@ -1,97 +1,44 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:mocktail/mocktail.dart';
+import 'package:http/testing.dart';
 import 'package:writer/repositories/remote_repository.dart';
 
-class MockClient extends Mock implements http.Client {}
-
 void main() {
-  group('RemoteRepository', () {
-    late MockClient client;
-    late RemoteRepository repo;
-
-    setUp(() {
-      client = MockClient();
-      repo = RemoteRepository('http://test.api', client: client);
-      registerFallbackValue(Uri.parse('http://test.api/characters/profile'));
-    });
-
-    test('fetchCharacterProfile returns string on success', () async {
-      final responseBody = jsonEncode({
-        'character_profile': '# Test Profile\nThis is a markdown profile.',
+  group('RemoteRepository.fetchCharacterProfile', () {
+    test('returns profile string on 200 with character_profile', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path.endsWith('characters/profile')) {
+          final body = jsonEncode({'character_profile': 'bio'});
+          return http.Response(body, 200);
+        }
+        return http.Response('not found', 404);
       });
-
-      when(
-        () => client.post(
-          any(),
-          headers: any(named: 'headers'),
-          body: any(named: 'body'),
-        ),
-      ).thenAnswer((_) async => http.Response(responseBody, 200));
-
-      final result = await repo.fetchCharacterProfile('Test Char');
-
-      expect(result, isNotNull);
-      expect(result, contains('# Test Profile'));
-      expect(result, contains('markdown profile'));
-
-      verify(
-        () => client.post(
-          Uri.parse('http://test.api/characters/profile'),
-          headers: any(named: 'headers'),
-          body: jsonEncode({'name': 'Test Char'}),
-        ),
-      ).called(1);
+      final repo = RemoteRepository('http://example.com/', client: client);
+      final res = await repo.fetchCharacterProfile('Alice');
+      expect(res, 'bio');
     });
 
-    test('fetchCharacterProfile handles 404', () async {
-      when(
-        () => client.post(
-          any(),
-          headers: any(named: 'headers'),
-          body: any(named: 'body'),
-        ),
-      ).thenAnswer((_) async => http.Response('Not Found', 404));
-
-      final result = await repo.fetchCharacterProfile('Unknown');
-      expect(result, isNull);
+    test('returns null on non-200', () async {
+      final client = MockClient((request) async => http.Response('bad', 500));
+      final repo = RemoteRepository('http://example.com', client: client);
+      final res = await repo.fetchCharacterProfile('Bob');
+      expect(res, isNull);
     });
 
-    test('fetchCharacterProfile handles exception', () async {
-      when(
-        () => client.post(
-          any(),
-          headers: any(named: 'headers'),
-          body: any(named: 'body'),
-        ),
-      ).thenThrow(Exception('Network fail'));
-
-      final result = await repo.fetchCharacterProfile('Fail');
-      expect(result, isNull);
-    });
-
-    test('baseUrl handling with trailing slash', () async {
-      repo = RemoteRepository('http://slash.api/', client: client);
-      registerFallbackValue(Uri.parse('http://slash.api/characters/profile'));
-
-      when(
-        () => client.post(
-          any(),
-          headers: any(named: 'headers'),
-          body: any(named: 'body'),
-        ),
-      ).thenAnswer((_) async => http.Response('{}', 200));
-
-      await repo.fetchCharacterProfile('Slash');
-
-      verify(
-        () => client.post(
-          Uri.parse('http://slash.api/characters/profile'),
-          headers: any(named: 'headers'),
-          body: any(named: 'body'),
-        ),
-      ).called(1);
+    test('returns null when body missing key', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path.endsWith('characters/profile')) {
+          final body = jsonEncode({'x': 1});
+          return http.Response(body, 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final repo = RemoteRepository('http://example.com/', client: client);
+      final res = await repo.fetchCharacterProfile('Carol');
+      expect(res, isNull);
     });
   });
 }

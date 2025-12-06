@@ -64,6 +64,11 @@ class FakePostgrestFilterBuilder<T> extends Fake
   }
 
   @override
+  PostgrestFilterBuilder<T> gte(String column, Object value) {
+    return this;
+  }
+
+  @override
   PostgrestTransformBuilder<T> order(
     String column, {
     bool ascending = true,

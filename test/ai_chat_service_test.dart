@@ -19,6 +19,43 @@ void main() {
       expect(reply, 'ok');
     });
 
+    test('sendMessage supports reply and response fields', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path.endsWith('agents/qa')) {
+          return http.Response(jsonEncode({'reply': 'r1'}), 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService('http://example.com/', client: client);
+      final reply = await svc.sendMessage('hi');
+      expect(reply, 'r1');
+
+      final client2 = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path.endsWith('agents/qa')) {
+          return http.Response(jsonEncode({'response': 'r2'}), 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final svc2 = AiChatService('http://example.com/', client: client2);
+      final reply2 = await svc2.sendMessage('hi');
+      expect(reply2, 'r2');
+    });
+
+    test('sendMessage returns fallback when field type is wrong', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path.endsWith('agents/qa')) {
+          return http.Response(jsonEncode({'answer': 123}), 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService('http://example.com/', client: client);
+      final reply = await svc.sendMessage('hi');
+      expect(reply, 'No response from AI service');
+    });
+
     test('sendMessage handles 401 and 403', () async {
       final client401 = MockClient(
         (request) async => http.Response('unauth', 401),
@@ -62,6 +99,18 @@ void main() {
       expect(ok, isTrue);
     });
 
+    test('checkHealth true on 200 with unparsable body', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'GET' && request.url.path.endsWith('health')) {
+          return http.Response('ok', 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService('http://example.com/', client: client);
+      final ok = await svc.checkHealth();
+      expect(ok, isTrue);
+    });
+
     test('verifyUser returns parsed map on 200', () async {
       final client = MockClient((request) async {
         if (request.method == 'GET' &&
@@ -74,6 +123,19 @@ void main() {
       final res = await svc.verifyUser();
       expect(res, isNotNull);
       expect(res?['user'], 'u1');
+    });
+
+    test('verifyUser returns null on non-200 or non-map body', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'GET' &&
+            request.url.path.endsWith('auth/verify')) {
+          return http.Response(jsonEncode(['not-a-map']), 200);
+        }
+        return http.Response('bad', 500);
+      });
+      final svc = AiChatService('http://example.com', client: client);
+      final res = await svc.verifyUser();
+      expect(res, isNull);
     });
 
     test('embed returns vector list', () async {
@@ -92,6 +154,46 @@ void main() {
       final svc = AiChatService('http://example.com/', client: client);
       final vec = await svc.embed('text');
       expect(vec, [1.0, 2.5, 3.0]);
+    });
+
+    test('embed returns null on error or invalid payload', () async {
+      final clientErr = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path.endsWith('vectors/embed')) {
+          return http.Response('bad', 400);
+        }
+        return http.Response('not found', 404);
+      });
+      final svcErr = AiChatService('http://example.com/', client: clientErr);
+      final vecErr = await svcErr.embed('x');
+      expect(vecErr, isNull);
+
+      final clientInvalid = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path.endsWith('vectors/embed')) {
+          return http.Response(jsonEncode({'vector': 'oops'}), 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final svcInvalid = AiChatService(
+        'http://example.com',
+        client: clientInvalid,
+      );
+      final vecInvalid = await svcInvalid.embed('x');
+      expect(vecInvalid, isNull);
+    });
+
+    test('sendMessage handles baseUrl without trailing slash', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path.endsWith('agents/qa')) {
+          return http.Response(jsonEncode({'answer': 'ok'}), 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService('http://example.com', client: client);
+      final reply = await svc.sendMessage('hi');
+      expect(reply, 'ok');
     });
   });
 }
