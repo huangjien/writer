@@ -67,7 +67,8 @@ class _CharacterTemplatesListScreenState
                 final it = _items[i];
                 final title = it.title ?? 'Untitled';
                 final subtitle =
-                    it.characterSummaries ?? it.characterSynopses ?? '';
+                    (it.characterSummaries ?? it.characterSynopses ?? '')
+                        .replaceAll('**', '');
                 return ListTile(
                   title: Text(title),
                   subtitle: subtitle.isEmpty

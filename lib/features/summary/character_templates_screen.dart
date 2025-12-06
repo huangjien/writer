@@ -47,12 +47,6 @@ class _CharacterTemplatesScreenState
         _nameController.text = row.title ?? '';
         _descController.text = row.characterSummaries ?? '';
       }
-    } else {
-      final item = await repo.getCharacterTemplateForm(widget.novelId);
-      if (item != null) {
-        _nameController.text = item.name;
-        _descController.text = item.description ?? '';
-      }
     }
     if (mounted) setState(() {});
   }
