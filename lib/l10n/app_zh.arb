@@ -305,4 +305,13 @@
   "contributorEmailHint": "输入用户邮箱以添加为协作者",
   "addContributor": "添加协作者",
   "contributorAdded": "协作者已添加"
+  ,
+  "pdf": "PDF",
+  "generatingPdf": "正在生成 PDF…",
+  "pdfFailed": "生成 PDF 失败",
+  "tableOfContents": "目录",
+  "byAuthor": "作者：{name}",
+  "@byAuthor": {"placeholders": {"name": {"type": "String"}}},
+  "pageOfTotal": "第{page}/{total}页",
+  "@pageOfTotal": {"placeholders": {"page": {"type": "int"}, "total": {"type": "int"}}}
 }

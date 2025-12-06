@@ -748,4 +748,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contributorAdded => 'Contributor added';
+
+  @override
+  String get pdf => 'PDF';
+
+  @override
+  String get generatingPdf => 'Generating PDF…';
+
+  @override
+  String get pdfFailed => 'Failed to generate PDF';
+
+  @override
+  String get tableOfContents => 'Table of Contents';
+
+  @override
+  String byAuthor(String name) {
+    return 'by $name';
+  }
+
+  @override
+  String pageOfTotal(int page, int total) {
+    return 'Page $page of $total';
+  }
 }

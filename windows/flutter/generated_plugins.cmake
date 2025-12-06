@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   app_links
   flutter_tts
+  printing
   url_launcher_windows
 )
 

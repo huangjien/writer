@@ -732,4 +732,26 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get contributorAdded => '协作者已添加';
+
+  @override
+  String get pdf => 'PDF';
+
+  @override
+  String get generatingPdf => '正在生成 PDF…';
+
+  @override
+  String get pdfFailed => '生成 PDF 失败';
+
+  @override
+  String get tableOfContents => '目录';
+
+  @override
+  String byAuthor(String name) {
+    return '作者：$name';
+  }
+
+  @override
+  String pageOfTotal(int page, int total) {
+    return '第$page/$total页';
+  }
 }

@@ -304,4 +304,13 @@
   "contributorEmailHint": "Enter user email to add as contributor",
   "addContributor": "Add Contributor",
   "contributorAdded": "Contributor added"
+  ,
+  "pdf": "PDF",
+  "generatingPdf": "Generating PDF…",
+  "pdfFailed": "Failed to generate PDF",
+  "tableOfContents": "Table of Contents",
+  "byAuthor": "by {name}",
+  "@byAuthor": {"placeholders": {"name": {"type": "String"}}},
+  "pageOfTotal": "Page {page} of {total}",
+  "@pageOfTotal": {"placeholders": {"page": {"type": "int"}, "total": {"type": "int"}}}
 }

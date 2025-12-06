@@ -1495,6 +1495,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Contributor added'**
   String get contributorAdded;
+
+  /// No description provided for @pdf.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF'**
+  String get pdf;
+
+  /// No description provided for @generatingPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating PDF…'**
+  String get generatingPdf;
+
+  /// No description provided for @pdfFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to generate PDF'**
+  String get pdfFailed;
+
+  /// No description provided for @tableOfContents.
+  ///
+  /// In en, this message translates to:
+  /// **'Table of Contents'**
+  String get tableOfContents;
+
+  /// No description provided for @byAuthor.
+  ///
+  /// In en, this message translates to:
+  /// **'by {name}'**
+  String byAuthor(String name);
+
+  /// No description provided for @pageOfTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page} of {total}'**
+  String pageOfTotal(int page, int total);
 }
 
 class _AppLocalizationsDelegate
