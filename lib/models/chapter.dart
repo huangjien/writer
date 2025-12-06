@@ -6,6 +6,7 @@ class Chapter {
   final int idx;
   final String? title;
   final String? content;
+  final String? sha;
 
   const Chapter({
     required this.id,
@@ -13,6 +14,7 @@ class Chapter {
     required this.idx,
     this.title,
     this.content,
+    this.sha,
   });
 
   factory Chapter.fromJson(Map<String, dynamic> json) {
@@ -22,6 +24,7 @@ class Chapter {
       idx: json['idx'],
       title: json['title'],
       content: json['content'],
+      sha: json['sha'],
     );
   }
 
@@ -32,6 +35,7 @@ class Chapter {
       idx: cache.idx,
       title: cache.title,
       content: cache.content,
+      sha: null,
     );
   }
 
@@ -41,6 +45,7 @@ class Chapter {
     int? idx,
     String? title,
     String? content,
+    String? sha,
   }) {
     return Chapter(
       id: id ?? this.id,
@@ -48,6 +53,7 @@ class Chapter {
       idx: idx ?? this.idx,
       title: title ?? this.title,
       content: content ?? this.content,
+      sha: sha ?? this.sha,
     );
   }
 }

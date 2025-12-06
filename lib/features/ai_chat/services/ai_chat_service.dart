@@ -172,6 +172,53 @@ class AiChatService {
       return null;
     }
   }
+
+  Future<Map<String, dynamic>?> betaEvaluateChapter({
+    required String novelId,
+    required String chapterId,
+    required String content,
+    String language = 'en',
+  }) async {
+    final url = baseUrl.endsWith('/')
+        ? '${baseUrl}beta/evaluate'
+        : '$baseUrl/beta/evaluate';
+    String? token;
+    if (supabaseEnabled) {
+      final client = Supabase.instance.client;
+      token = client.auth.currentSession?.accessToken;
+      if (token == null && client.auth.currentUser != null) {
+        try {
+          await client.auth.refreshSession();
+          token = client.auth.currentSession?.accessToken;
+        } catch (_) {}
+      }
+    }
+    final headers = {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+    final body = {
+      'novel_id': novelId,
+      'chapter_id': chapterId,
+      'content': content,
+      'language': language,
+    };
+    final res = await (_client ?? http.Client()).post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+    if (res.statusCode >= 400) return null;
+    try {
+      final data = jsonDecode(res.body);
+      if (data is Map && data['evaluation'] is Map) {
+        return (data['evaluation'] as Map).cast<String, dynamic>();
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
 }
 
 final aiChatServiceProvider = Provider<AiChatService>((ref) {

@@ -1064,6 +1064,30 @@ abstract class AppLocalizations {
   /// **'Next chapter'**
   String get nextChapter;
 
+  /// No description provided for @betaEvaluate.
+  ///
+  /// In en, this message translates to:
+  /// **'Beta'**
+  String get betaEvaluate;
+
+  /// No description provided for @betaEvaluating.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending for beta evaluation…'**
+  String get betaEvaluating;
+
+  /// No description provided for @betaEvaluationReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Beta evaluation ready'**
+  String get betaEvaluationReady;
+
+  /// No description provided for @betaEvaluationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Beta evaluation failed'**
+  String get betaEvaluationFailed;
+
   /// No description provided for @performanceSettings.
   ///
   /// In en, this message translates to:

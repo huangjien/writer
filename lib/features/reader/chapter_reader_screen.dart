@@ -6,6 +6,9 @@ import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/features/ai_chat/widgets/ai_chat_sidebar.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
+import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
+import 'package:writer/state/supabase_config.dart';
+import 'widgets/beta_evaluation/beta_evaluation_dialog.dart';
 
 import '../../models/chapter.dart';
 import '../../state/edit_permissions.dart';
@@ -247,6 +250,50 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     context.push('/settings');
   }
 
+  Future<void> _onBetaEvaluatePressed() async {
+    final state = ref.read(readerSessionProvider);
+    final l10n = AppLocalizations.of(context)!;
+    if ((state.content ?? '').trim().isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.betaEvaluationFailed)));
+      return;
+    }
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.betaEvaluating)));
+    try {
+      final service = ref.read(aiChatServiceProvider);
+      final eval = await service.betaEvaluateChapter(
+        novelId: widget.novelId,
+        chapterId: state.chapterId,
+        content: state.content ?? '',
+        language: Localizations.localeOf(context).languageCode,
+      );
+      if (!mounted) return;
+      if (eval == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.betaEvaluationFailed)));
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.betaEvaluationReady)));
+      await showDialog(
+        context: context,
+        builder: (context) {
+          return BetaEvaluationDialog(evaluation: eval);
+        },
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.betaEvaluationFailed)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(readerSessionProvider);
@@ -428,6 +475,8 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
                         onCreated: (created) {
                           notifier.jumpToCreated(created);
                         },
+                        onBetaEvaluate: _onBetaEvaluatePressed,
+                        showBeta: supabaseEnabled,
                       );
                     },
                   ),

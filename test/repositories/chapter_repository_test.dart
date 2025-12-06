@@ -75,7 +75,7 @@ void main() {
       final chap = Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
       final res = await repo.getChapter(chap);
       expect(res.content, 'cached');
-      verifyNever(() => mockQuery.select('content'));
+      verifyNever(() => mockQuery.select('content, sha'));
     });
 
     test(
@@ -83,15 +83,16 @@ void main() {
       () async {
         when(() => mockLocal.getChapter('c1')).thenAnswer((_) async => null);
         final row = [
-          {'content': 'remote'},
+          {'content': 'remote', 'sha': 'abc'},
         ];
         when(
-          () => mockQuery.select('content'),
+          () => mockQuery.select('content, sha'),
         ).thenAnswer((_) => FakePostgrestFilterBuilder(row));
 
         final chap = Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
         final res = await repo.getChapter(chap);
         expect(res.content, 'remote');
+        expect(res.sha, 'abc');
         verify(() => mockLocal.saveChapter(any())).called(1);
       },
     );

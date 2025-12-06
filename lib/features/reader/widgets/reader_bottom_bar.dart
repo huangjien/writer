@@ -21,6 +21,8 @@ class ReaderBottomBar extends StatelessWidget {
     required this.onOpenTtsSettings,
     required this.reduceMotion,
     this.editActions,
+    this.onBetaEvaluate,
+    this.showBeta = false,
   });
 
   final bool canEdit;
@@ -38,6 +40,8 @@ class ReaderBottomBar extends StatelessWidget {
   final VoidCallback onOpenTtsSettings;
   final bool reduceMotion;
   final Widget? editActions;
+  final VoidCallback? onBetaEvaluate;
+  final bool showBeta;
 
   @override
   Widget build(BuildContext context) {
@@ -113,6 +117,21 @@ class ReaderBottomBar extends StatelessWidget {
             if (editActions != null) editActions!,
           ],
           const Spacer(),
+          if (!editMode && showBeta && onBetaEvaluate != null) ...[
+            Semantics(
+              button: true,
+              label: l10n.betaEvaluate,
+              child: Tooltip(
+                message: l10n.betaEvaluate,
+                child: IconButton(
+                  icon: const Icon(Icons.science),
+                  iconSize: iconSize,
+                  onPressed: onBetaEvaluate,
+                ),
+              ),
+            ),
+            SizedBox(width: spacing),
+          ],
           if (!editMode)
             Flexible(
               child: Row(

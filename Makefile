@@ -77,10 +77,10 @@ icons:
 	$(FLUTTER) pub get
 	$(FLUTTER) pub run flutter_launcher_icons
 
-	test:
-		$(FLUTTER) test --coverage --test-randomize-ordering-seed=random -j 1
-		@if [ -f coverage/lcov.info ]; then \
-			awk -F, '/^DA:/ { total++; if ($$2 > 0) hit++ } END { printf("Coverage: %.2f%% (%d/%d lines)\n", (hit/total)*100, hit, total) }' coverage/lcov.info; \
+test:
+	$(FLUTTER) test --coverage --test-randomize-ordering-seed=random -j 1
+	@if [ -f coverage/lcov.info ]; then \
+		awk -F, '/^DA:/ { total++; if ($$2 > 0) hit++ } END { printf("Coverage: %.2f%% (%d/%d lines)\n", (hit/total)*100, hit, total) }' coverage/lcov.info; \
 			TOTAL_LIB_LINES=$$(find lib -name '*.dart' -print0 | xargs -0 wc -l | tail -n 1 | awk '{print $$1}'); \
 			awk -F, -v tot=$$TOTAL_LIB_LINES '/^DA:/ { if ($$2 > 0) hit++ } END { printf("Full-lines coverage: %.2f%% (%d/%d lines)\n", (hit/tot)*100, hit, tot) }' coverage/lcov.info; \
 			if command -v genhtml >/dev/null 2>&1; then \

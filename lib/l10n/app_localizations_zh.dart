@@ -508,6 +508,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get nextChapter => '下一章';
 
   @override
+  String get betaEvaluate => '内测';
+
+  @override
+  String get betaEvaluating => '正在发送到内测评审…';
+
+  @override
+  String get betaEvaluationReady => '内测评审结果已返回';
+
+  @override
+  String get betaEvaluationFailed => '内测评审失败';
+
+  @override
   String get performanceSettings => '性能设置';
 
   @override

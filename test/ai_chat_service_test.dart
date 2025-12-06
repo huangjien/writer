@@ -195,5 +195,55 @@ void main() {
       final reply = await svc.sendMessage('hi');
       expect(reply, 'ok');
     });
+    test('betaEvaluateChapter returns evaluation map', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path.endsWith('beta/evaluate')) {
+          final body = jsonDecode(request.body);
+          expect(body['language'], 'en');
+          return http.Response(
+            jsonEncode({
+              'chapter_sha': 'abc',
+              'evaluation': {'score': 10},
+            }),
+            200,
+          );
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService('http://example.com/', client: client);
+      final res = await svc.betaEvaluateChapter(
+        novelId: 'n1',
+        chapterId: 'c1',
+        content: 'txt',
+      );
+      expect(res, {'score': 10});
+    });
+
+    test('betaEvaluateChapter sends language', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path.endsWith('beta/evaluate')) {
+          final body = jsonDecode(request.body);
+          expect(body['language'], 'zh');
+          return http.Response(
+            jsonEncode({
+              'chapter_sha': 'abc',
+              'evaluation': {'score': 10},
+            }),
+            200,
+          );
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService('http://example.com/', client: client);
+      final res = await svc.betaEvaluateChapter(
+        novelId: 'n1',
+        chapterId: 'c1',
+        content: 'txt',
+        language: 'zh',
+      );
+      expect(res, {'score': 10});
+    });
   });
 }

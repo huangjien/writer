@@ -22,6 +22,8 @@ class ReaderBottomBarShell extends StatelessWidget {
     required this.previewMode,
     required this.onTogglePreview,
     required this.onCreated,
+    this.onBetaEvaluate,
+    this.showBeta = false,
   });
 
   final bool canEdit;
@@ -39,6 +41,8 @@ class ReaderBottomBarShell extends StatelessWidget {
   final bool previewMode;
   final VoidCallback onTogglePreview;
   final void Function(Chapter created) onCreated;
+  final VoidCallback? onBetaEvaluate;
+  final bool showBeta;
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +88,8 @@ class ReaderBottomBarShell extends StatelessWidget {
       onOpenTtsSettings: onOpenTtsSettings,
       reduceMotion: reduceMotion,
       editActions: editActions,
+      onBetaEvaluate: onBetaEvaluate,
+      showBeta: showBeta,
     );
   }
 }

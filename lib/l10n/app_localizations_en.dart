@@ -520,6 +520,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nextChapter => 'Next chapter';
 
   @override
+  String get betaEvaluate => 'Beta';
+
+  @override
+  String get betaEvaluating => 'Sending for beta evaluation…';
+
+  @override
+  String get betaEvaluationReady => 'Beta evaluation ready';
+
+  @override
+  String get betaEvaluationFailed => 'Beta evaluation failed';
+
+  @override
   String get performanceSettings => 'Performance Settings';
 
   @override

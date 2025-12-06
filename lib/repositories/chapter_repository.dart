@@ -7,6 +7,8 @@ import '../models/chapter.dart';
 import '../models/chapter_cache.dart';
 import 'chapter_port.dart';
 import 'local_storage_repository.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
 final chapterRepositoryProvider = Provider<ChapterPort>((ref) {
   if (!supabaseEnabled) {
@@ -29,7 +31,7 @@ class ChapterRepository implements ChapterPort {
   Future<List<Chapter>> getChapters(String novelId) async {
     final response = await _client
         .from('chapters')
-        .select('id, novel_id, title, idx')
+        .select('id, novel_id, title, idx, sha')
         .eq('novel_id', novelId)
         .order('idx', ascending: true);
 
@@ -45,11 +47,14 @@ class ChapterRepository implements ChapterPort {
 
     final response = await _client
         .from('chapters')
-        .select('content')
+        .select('content, sha')
         .eq('id', chapter.id)
         .single();
 
-    final newChapter = chapter.copyWith(content: response['content']);
+    final newChapter = chapter.copyWith(
+      content: response['content'],
+      sha: response['sha'],
+    );
 
     await _localStorage.saveChapter(
       ChapterCache(
@@ -67,9 +72,18 @@ class ChapterRepository implements ChapterPort {
 
   @override
   Future<void> updateChapter(Chapter chapter) async {
+    String? sha;
+    if (chapter.content != null) {
+      final bytes = utf8.encode(chapter.content!);
+      sha = sha256.convert(bytes).toString();
+    }
     await _client
         .from('chapters')
-        .update({'title': chapter.title, 'content': chapter.content})
+        .update({
+          'title': chapter.title,
+          'content': chapter.content,
+          if (sha != null) 'sha': sha,
+        })
         .eq('id', chapter.id);
 
     // Update local cache to keep offline in sync
@@ -151,6 +165,7 @@ class ChapterRepository implements ChapterPort {
       'idx': idx,
       'title': title,
       'content': content ?? '',
+      'sha': sha256.convert(utf8.encode(content ?? '')).toString(),
       'language_code': 'en',
     };
     final res = await _client.from('chapters').insert(insert).select().single();
