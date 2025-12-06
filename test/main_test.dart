@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:writer/main.dart';
+import 'package:writer/main.dart' as app_main;
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/state/supabase_config.dart';
 import 'package:writer/state/app_settings.dart';
@@ -15,7 +15,7 @@ void main() {
   test('localStorageRepositoryProvider provides LocalStorageRepository', () {
     final container = ProviderContainer();
     addTearDown(container.dispose);
-    final repo = container.read(localStorageRepositoryProvider);
+    final repo = container.read(app_main.localStorageRepositoryProvider);
     expect(repo, isA<LocalStorageRepository>());
   });
 
@@ -131,4 +131,5 @@ void main() {
       expect(ttsSettings.state, isA<TtsSettings>());
     });
   });
+
 }
