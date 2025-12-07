@@ -13,7 +13,11 @@ void main() {
   group('Character templates offline', () {
     test('save/get character template form via local storage', () async {
       final repo = LocalStorageRepository();
-      final item = TemplateItem(novelId: 'n1', name: 'Hero', description: 'Brave');
+      final item = TemplateItem(
+        novelId: 'n1',
+        name: 'Hero',
+        description: 'Brave',
+      );
       await repo.saveCharacterTemplateForm('n1', item);
       final got = await repo.getCharacterTemplateForm('n1');
       expect(got, isNotNull);
@@ -35,7 +39,11 @@ void main() {
   group('Scene templates offline', () {
     test('save/get scene template form via local storage', () async {
       final repo = LocalStorageRepository();
-      final item = TemplateItem(novelId: 'n1', name: 'Battle', description: 'Epic');
+      final item = TemplateItem(
+        novelId: 'n1',
+        name: 'Battle',
+        description: 'Epic',
+      );
       await repo.saveSceneTemplateForm('n1', item);
       final got = await repo.getSceneTemplateForm('n1');
       expect(got, isNotNull);

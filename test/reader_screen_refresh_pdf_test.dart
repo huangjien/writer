@@ -12,35 +12,53 @@ import 'package:writer/state/novel_providers.dart';
 void main() {
   const novelId = 'n1';
   final mockChapters = [
-    const Chapter(id: 'c1', novelId: novelId, idx: 1, title: 'T1', content: 'B1'),
-    const Chapter(id: 'c2', novelId: novelId, idx: 2, title: 'T2', content: 'B2'),
+    const Chapter(
+      id: 'c1',
+      novelId: novelId,
+      idx: 1,
+      title: 'T1',
+      content: 'B1',
+    ),
+    const Chapter(
+      id: 'c2',
+      novelId: novelId,
+      idx: 2,
+      title: 'T2',
+      content: 'B2',
+    ),
   ];
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  Future<void> pumpWithOverrides(WidgetTester tester,
-      {required List<Chapter> chapters, bool throwOnLoad = false}) async {
+  Future<void> pumpWithOverrides(
+    WidgetTester tester, {
+    required List<Chapter> chapters,
+    bool throwOnLoad = false,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           if (throwOnLoad)
-            mockChaptersProvider(novelId)
-                .overrideWith((ref) => Future.error('err')),
+            mockChaptersProvider(
+              novelId,
+            ).overrideWith((ref) => Future.error('err')),
           if (throwOnLoad)
-            chaptersProvider(novelId)
-                .overrideWith((ref) => Future.error('err')),
+            chaptersProvider(
+              novelId,
+            ).overrideWith((ref) => Future.error('err')),
           if (!throwOnLoad)
-            mockChaptersProvider(novelId)
-                .overrideWith((ref) => Future.value(chapters)),
+            mockChaptersProvider(
+              novelId,
+            ).overrideWith((ref) => Future.value(chapters)),
           if (!throwOnLoad)
-            chaptersProvider(novelId)
-                .overrideWith((ref) => Future.value(chapters)),
-          novelProvider(novelId)
-              .overrideWith((ref) => Future.value(null)),
+            chaptersProvider(
+              novelId,
+            ).overrideWith((ref) => Future.value(chapters)),
+          novelProvider(novelId).overrideWith((ref) => Future.value(null)),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -58,10 +76,12 @@ void main() {
         overrides: [
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           // Initial load resolves quickly
-          mockChaptersProvider(novelId)
-              .overrideWith((ref) => Future.value(mockChapters)),
-          chaptersProvider(novelId)
-              .overrideWith((ref) => Future.value(mockChapters)),
+          mockChaptersProvider(
+            novelId,
+          ).overrideWith((ref) => Future.value(mockChapters)),
+          chaptersProvider(
+            novelId,
+          ).overrideWith((ref) => Future.value(mockChapters)),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -92,7 +112,9 @@ void main() {
     expect(find.byType(SnackBar), findsOneWidget);
   });
 
-  testWidgets('semantics labels include chapter index and title', (tester) async {
+  testWidgets('semantics labels include chapter index and title', (
+    tester,
+  ) async {
     await pumpWithOverrides(tester, chapters: mockChapters);
     await tester.pumpAndSettle();
     expect(find.text('Chapter 1'), findsOneWidget);
