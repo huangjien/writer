@@ -18,6 +18,10 @@ import '../features/summary/scene_templates_list_screen.dart';
 import '../features/summary/character_templates_screen.dart';
 import '../features/summary/scene_templates_screen.dart';
 import '../features/reader/novel_metadata_editor.dart';
+import '../screens/prompts_list_screen.dart';
+import '../screens/prompt_form_screen.dart';
+import '../models/prompt.dart';
+import '../state/providers.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -26,6 +30,29 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/',
         name: 'library',
         builder: (context, state) => const LibraryScreen(),
+      ),
+      GoRoute(
+        path: '/prompts',
+        name: 'prompts',
+        builder: (context, state) {
+          final svc = ref.watch(promptsServiceProvider);
+          final isAdmin = ref.watch(isAdminProvider);
+          return PromptsListScreen(service: svc, isAdmin: isAdmin);
+        },
+      ),
+      GoRoute(
+        path: '/prompt_form',
+        name: 'promptForm',
+        builder: (context, state) {
+          final svc = ref.watch(promptsServiceProvider);
+          final initial = state.extra is Prompt ? state.extra as Prompt? : null;
+          final isAdmin = ref.watch(isAdminProvider);
+          return PromptFormScreen(
+            service: svc,
+            initial: initial,
+            isAdmin: isAdmin,
+          );
+        },
       ),
       GoRoute(
         path: '/auth',

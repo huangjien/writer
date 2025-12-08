@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'state/app_settings.dart';
 import 'state/theme_controller.dart';
 import 'state/tts_settings.dart';
+import 'state/admin_settings.dart';
 
 final localStorageRepositoryProvider = Provider<LocalStorageRepository>((ref) {
   return LocalStorageRepository();
@@ -24,6 +25,7 @@ void main() async {
   final themeController = ThemeController(prefs);
   final ttsSettings = TtsSettingsNotifier(prefs);
   final aiService = AiServiceNotifier(prefs);
+  final adminMode = AdminModeNotifier(prefs);
 
   runApp(
     ProviderScope(
@@ -32,6 +34,7 @@ void main() async {
         themeControllerProvider.overrideWith((_) => themeController),
         ttsSettingsProvider.overrideWith((_) => ttsSettings),
         aiServiceProvider.overrideWith((_) => aiService),
+        adminModeProvider.overrideWith((_) => adminMode),
       ],
       child: const App(),
     ),
