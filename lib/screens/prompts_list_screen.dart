@@ -28,11 +28,8 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
   List<Prompt> _items = [];
   bool _loading = false;
   String? _error;
-  final _keyCtrl = TextEditingController();
-  final _langCtrl = TextEditingController();
   final _searchCtrl = TextEditingController();
   Timer? _searchTimer;
-  String _groupBy = 'None';
   late bool _showPublic;
 
   @override
@@ -94,29 +91,11 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
   }
 
   List<Prompt> _filtered(List<Prompt> src) {
-    final kq = _keyCtrl.text.trim().toLowerCase();
-    final lq = _langCtrl.text.trim().toLowerCase();
-    return src.where((p) {
-      final okKey = kq.isEmpty || p.promptKey.toLowerCase().contains(kq);
-      final okLang = lq.isEmpty || p.language.toLowerCase().contains(lq);
-      return okKey && okLang;
-    }).toList();
+    return src;
   }
 
   Map<String, List<Prompt>> _group(List<Prompt> src) {
-    final g = <String, List<Prompt>>{};
-    if (_groupBy == 'Language') {
-      for (final p in src) {
-        g.putIfAbsent(p.language, () => []).add(p);
-      }
-    } else if (_groupBy == 'Key') {
-      for (final p in src) {
-        g.putIfAbsent(p.promptKey, () => []).add(p);
-      }
-    } else {
-      g['All'] = src;
-    }
-    return g;
+    return {'All': src};
   }
 
   String _preview(String s) {
@@ -309,34 +288,6 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
               },
             ),
           ],
-          SizedBox(
-            width: 260,
-            child: TextField(
-              controller: _keyCtrl,
-              decoration: InputDecoration(labelText: l10n.filterByKey),
-              onChanged: (_) => setState(() {}),
-            ),
-          ),
-          SizedBox(
-            width: 160,
-            child: TextField(
-              controller: _langCtrl,
-              decoration: InputDecoration(labelText: l10n.language),
-              onChanged: (_) => setState(() {}),
-            ),
-          ),
-          DropdownButton<String>(
-            value: _groupBy,
-            items: [
-              DropdownMenuItem(value: 'None', child: Text(l10n.groupNone)),
-              DropdownMenuItem(
-                value: 'Language',
-                child: Text(l10n.groupLanguage),
-              ),
-              DropdownMenuItem(value: 'Key', child: Text(l10n.groupKey)),
-            ],
-            onChanged: (v) => setState(() => _groupBy = v ?? 'None'),
-          ),
           ElevatedButton(
             onPressed: _createPromptDialog,
             child: Text(l10n.newPrompt),
@@ -469,8 +420,6 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
 
   @override
   void dispose() {
-    _keyCtrl.dispose();
-    _langCtrl.dispose();
     _searchCtrl.dispose();
     _searchTimer?.cancel();
     super.dispose();
