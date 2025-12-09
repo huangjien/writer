@@ -32,7 +32,13 @@ final promptsServiceProvider = Provider<PromptsService>((ref) {
   } catch (_) {
     baseUrl = 'http://localhost:5600/';
   }
-  return PromptsService(baseUrl: baseUrl);
+  String? token;
+  final enabled = ref.watch(supabaseEnabledProvider);
+  if (enabled) {
+    final session = ref.watch(supabaseSessionProvider);
+    token = session?.accessToken;
+  }
+  return PromptsService(baseUrl: baseUrl, authToken: token);
 });
 
 final isAdminProvider = Provider<bool>((ref) {

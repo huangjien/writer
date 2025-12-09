@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'package:http/http.dart' as http;
 
 import '../models/prompt.dart';
 
@@ -17,9 +17,15 @@ class PromptsService {
   String? authToken;
   Duration timeout;
   bool _loading = false;
+  final http.Client? _client;
 
-  PromptsService({required this.baseUrl, this.authToken, Duration? timeout})
-    : timeout = timeout ?? const Duration(seconds: 30);
+  PromptsService({
+    required this.baseUrl,
+    this.authToken,
+    Duration? timeout,
+    http.Client? client,
+  }) : timeout = timeout ?? const Duration(seconds: 30),
+       _client = client;
 
   bool get isLoading => _loading;
   void setAuthToken(String? token) => authToken = token;
@@ -43,22 +49,36 @@ class PromptsService {
     Map<String, dynamic>? json,
   }) async {
     _loading = true;
-    final client = HttpClient();
-    client.connectionTimeout = timeout;
     try {
       final uri = _buildUri(path, query);
-      final req = await client.openUrl(method, uri);
+      final headers = <String, String>{'Content-Type': 'application/json'};
       if (authToken != null && authToken!.isNotEmpty) {
-        req.headers.add('Authorization', 'Bearer $authToken');
+        headers['Authorization'] = 'Bearer $authToken';
       }
-      req.headers.add('Content-Type', 'application/json');
-      if (json != null) {
-        final payload = utf8.encode(jsonEncode(json));
-        req.add(payload);
+      final client = _client ?? http.Client();
+      http.Response res;
+      switch (method.toUpperCase()) {
+        case 'GET':
+          res = await client.get(uri, headers: headers).timeout(timeout);
+          break;
+        case 'POST':
+          res = await client
+              .post(uri, headers: headers, body: jsonEncode(json))
+              .timeout(timeout);
+          break;
+        case 'PATCH':
+          res = await client
+              .patch(uri, headers: headers, body: jsonEncode(json))
+              .timeout(timeout);
+          break;
+        case 'DELETE':
+          res = await client.delete(uri, headers: headers).timeout(timeout);
+          break;
+        default:
+          throw ApiException(0, 'Unsupported method');
       }
-      final resp = await req.close();
-      final body = await resp.transform(utf8.decoder).join();
-      final status = resp.statusCode;
+      final status = res.statusCode;
+      final body = res.body;
       if (status >= 400) {
         throw ApiException(status, body.isEmpty ? 'Request failed' : body);
       }
@@ -71,18 +91,31 @@ class PromptsService {
       throw ApiException(0, e.toString());
     } finally {
       _loading = false;
-      client.close();
     }
   }
 
   Future<List<Prompt>> fetchPrompts({bool? isPublic}) async {
     final data = await _send(
       'GET',
-      isPublic == true ? '/prompts/public' : '/prompts',
+      isPublic == true ? '/prompts/public' : '/prompts/',
     );
     final list = (data is Map && data['items'] is List)
         ? (data['items'] as List)
         : (data is List ? data : []);
+    return list
+        .map((e) => Prompt.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
+  }
+
+  Future<List<Prompt>> searchPrompts(String query, {bool? isPublic}) async {
+    final q = <String, dynamic>{'q': query};
+    if (isPublic != null) {
+      q['is_public'] = isPublic;
+    }
+    final data = await _send('GET', '/prompts/search', query: q);
+    final list = (data is Map && data['items'] is List)
+        ? (data['items'] as List)
+        : [];
     return list
         .map((e) => Prompt.fromJson(Map<String, dynamic>.from(e)))
         .toList();
@@ -101,7 +134,7 @@ class PromptsService {
   }) async {
     final data = await _send(
       'POST',
-      isPublic ? '/prompts/public' : '/prompts',
+      isPublic ? '/prompts/public' : '/prompts/',
       json: {'prompt_key': promptKey, 'language': language, 'content': content},
     );
     return Prompt.fromJson(Map<String, dynamic>.from(data));

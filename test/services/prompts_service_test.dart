@@ -1,73 +1,14 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:writer/services/prompts_service.dart';
 
-class FakeHttpHeaders implements HttpHeaders {
-  final Map<String, List<String>> _headers = {};
-  @override
-  void add(String name, Object value, {bool preserveHeaderCase = false}) {
-    final key = name.toLowerCase();
-    _headers.putIfAbsent(key, () => []).add(value.toString());
-  }
-
-  @override
-  String? value(String name) {
-    final key = name.toLowerCase();
-    final list = _headers[key];
-    return list == null || list.isEmpty ? null : list.last;
-  }
-
-  @override
-  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
-
-class FakeHttpClientResponse extends Stream<List<int>>
-    implements HttpClientResponse {
-  @override
-  final int statusCode;
-  final String body;
-  FakeHttpClientResponse(this.statusCode, this.body);
-  @override
-  StreamSubscription<List<int>> listen(
-    void Function(List<int> event)? onData, {
-    Function? onError,
-    void Function()? onDone,
-    bool? cancelOnError,
-  }) {
-    final data = utf8.encode(body);
-    final stream = Stream<List<int>>.fromIterable([data]);
-    return stream.listen(
-      onData,
-      onError: onError,
-      onDone: onDone,
-      cancelOnError: cancelOnError,
-    );
-  }
-
-  @override
-  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
-
-class FakeHttpClientRequest implements HttpClientRequest {
-  @override
-  final String method;
-  @override
-  final Uri uri;
-  @override
-  final FakeHttpHeaders headers = FakeHttpHeaders();
-  final List<int> _buffer = [];
-  FakeHttpClientRequest(this.method, this.uri);
-  @override
-  void add(List<int> data) {
-    _buffer.addAll(data);
-  }
-
-  @override
-  Future<HttpClientResponse> close() async {
-    final path = uri.path;
-    if (method == 'GET' && path == '/prompts') {
+MockClient _mockClient() {
+  return MockClient((request) async {
+    final m = request.method;
+    final path = request.url.path;
+    if (m == 'GET' && (path == '/prompts' || path == '/prompts/')) {
       final items = [
         {
           'id': '1',
@@ -78,12 +19,9 @@ class FakeHttpClientRequest implements HttpClientRequest {
           'is_public': false,
         },
       ];
-      return FakeHttpClientResponse(
-        HttpStatus.ok,
-        jsonEncode({'items': items}),
-      );
+      return http.Response(jsonEncode({'items': items}), 200);
     }
-    if (method == 'GET' && path == '/prompts/public') {
+    if (m == 'GET' && path == '/prompts/public') {
       final items = [
         {
           'id': '2',
@@ -94,9 +32,9 @@ class FakeHttpClientRequest implements HttpClientRequest {
           'is_public': true,
         },
       ];
-      return FakeHttpClientResponse(HttpStatus.ok, jsonEncode(items));
+      return http.Response(jsonEncode(items), 200);
     }
-    if (method == 'GET' && path.startsWith('/prompts/')) {
+    if (m == 'GET' && path.startsWith('/prompts/')) {
       final id = path.split('/').last;
       final data = {
         'id': id,
@@ -106,10 +44,10 @@ class FakeHttpClientRequest implements HttpClientRequest {
         'content': 'X',
         'is_public': false,
       };
-      return FakeHttpClientResponse(HttpStatus.ok, jsonEncode(data));
+      return http.Response(jsonEncode(data), 200);
     }
-    if (method == 'POST' && path == '/prompts') {
-      final data = jsonDecode(utf8.decode(_buffer)) as Map<String, dynamic>;
+    if (m == 'POST' && (path == '/prompts' || path == '/prompts/')) {
+      final data = jsonDecode(request.body) as Map<String, dynamic>;
       final created = {
         'id': 'new',
         'user_id': 'u1',
@@ -118,14 +56,14 @@ class FakeHttpClientRequest implements HttpClientRequest {
         'content': data['content'],
         'is_public': false,
       };
-      return FakeHttpClientResponse(HttpStatus.ok, jsonEncode(created));
+      return http.Response(jsonEncode(created), 200);
     }
-    if (method == 'POST' && path == '/prompts/public') {
-      final auth = headers.value('authorization');
+    if (m == 'POST' && path == '/prompts/public') {
+      final auth = request.headers['authorization'];
       if (auth == null || !auth.startsWith('Bearer ')) {
-        return FakeHttpClientResponse(HttpStatus.forbidden, 'Forbidden');
+        return http.Response('Forbidden', 403);
       }
-      final data = jsonDecode(utf8.decode(_buffer)) as Map<String, dynamic>;
+      final data = jsonDecode(request.body) as Map<String, dynamic>;
       final created = {
         'id': 'pub',
         'user_id': null,
@@ -134,11 +72,11 @@ class FakeHttpClientRequest implements HttpClientRequest {
         'content': data['content'],
         'is_public': true,
       };
-      return FakeHttpClientResponse(HttpStatus.ok, jsonEncode(created));
+      return http.Response(jsonEncode(created), 200);
     }
-    if (method == 'PATCH' && path.startsWith('/prompts/')) {
+    if (m == 'PATCH' && path.startsWith('/prompts/')) {
       final id = path.split('/').last;
-      final data = jsonDecode(utf8.decode(_buffer)) as Map<String, dynamic>;
+      final data = jsonDecode(request.body) as Map<String, dynamic>;
       final updated = {
         'id': id,
         'user_id': 'u1',
@@ -147,49 +85,18 @@ class FakeHttpClientRequest implements HttpClientRequest {
         'content': data['content'],
         'is_public': false,
       };
-      return FakeHttpClientResponse(HttpStatus.ok, jsonEncode(updated));
+      return http.Response(jsonEncode(updated), 200);
     }
-    if (method == 'DELETE' && path.startsWith('/prompts/')) {
-      return FakeHttpClientResponse(
-        HttpStatus.ok,
-        jsonEncode({'deleted': true}),
-      );
+    if (m == 'DELETE' && path.startsWith('/prompts/')) {
+      return http.Response(jsonEncode({'deleted': true}), 200);
     }
-    return FakeHttpClientResponse(HttpStatus.notFound, 'Not found');
-  }
-
-  @override
-  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
-
-class FakeHttpClient implements HttpClient {
-  @override
-  Duration? connectionTimeout;
-  @override
-  Future<HttpClientRequest> openUrl(String method, Uri url) async {
-    return FakeHttpClientRequest(method, url);
-  }
-
-  @override
-  void close({bool force = false}) {}
-  @override
-  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
-
-class FakeOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return FakeHttpClient();
-  }
+    return http.Response('Not found', 404);
+  });
 }
 
 void main() {
-  setUp(() {
-    HttpOverrides.global = FakeOverrides();
-  });
-
   test('fetchPrompts returns items and public list', () async {
-    final svc = PromptsService(baseUrl: 'http://any');
+    final svc = PromptsService(baseUrl: 'http://any', client: _mockClient());
     final list1 = await svc.fetchPrompts();
     expect(list1.length, 1);
     expect(list1.first.promptKey, 'system.beta.male');
@@ -200,7 +107,11 @@ void main() {
   });
 
   test('get/create/update/delete prompt', () async {
-    final svc = PromptsService(baseUrl: 'http://any', authToken: 't');
+    final svc = PromptsService(
+      baseUrl: 'http://any',
+      authToken: 't',
+      client: _mockClient(),
+    );
     final p = await svc.getPrompt('123');
     expect(p.id, '123');
 
@@ -229,7 +140,7 @@ void main() {
   });
 
   test('public create without auth throws ApiException', () async {
-    final svc = PromptsService(baseUrl: 'http://any');
+    final svc = PromptsService(baseUrl: 'http://any', client: _mockClient());
     try {
       await svc.createPrompt(
         promptKey: 'system.beta.male',

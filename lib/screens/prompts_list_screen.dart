@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 import '../models/prompt.dart';
 import '../services/prompts_service.dart';
@@ -29,6 +30,8 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
   String? _error;
   final _keyCtrl = TextEditingController();
   final _langCtrl = TextEditingController();
+  final _searchCtrl = TextEditingController();
+  Timer? _searchTimer;
   String _groupBy = 'None';
   late bool _showPublic;
 
@@ -46,6 +49,34 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
     });
     try {
       final data = await widget.service.fetchPrompts(
+        isPublic: _showPublic ? true : null,
+      );
+      setState(() {
+        _items = data;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _search() async {
+    final q = _searchCtrl.text.trim();
+    if (q.isEmpty) {
+      return _load();
+    }
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final data = await widget.service.searchPrompts(
+        q,
         isPublic: _showPublic ? true : null,
       );
       setState(() {
@@ -152,9 +183,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
       final key = keyCtrl.text.trim();
       final lang = langCtrl.text.trim();
       final content = contentCtrl.text.trim();
-      if (!Prompt.isValidPromptKey(key) ||
-          !Prompt.isValidLanguage(lang) ||
-          content.isEmpty) {
+      if (content.isEmpty) {
         setState(() {
           _error = l10n.invalidInput;
         });
@@ -163,7 +192,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
       try {
         await widget.service.createPrompt(
           promptKey: key,
-          language: lang,
+          language: lang.isNotEmpty ? lang : 'en',
           content: content,
           isPublic: makePublic,
         );
@@ -253,6 +282,21 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
         spacing: 12,
         runSpacing: 12,
         children: [
+          SizedBox(
+            width: 320,
+            child: TextField(
+              controller: _searchCtrl,
+              decoration: const InputDecoration(labelText: 'Search'),
+              onChanged: (_) {
+                _searchTimer?.cancel();
+                _searchTimer = Timer(
+                  const Duration(milliseconds: 300),
+                  _search,
+                );
+              },
+              onSubmitted: (_) => _search(),
+            ),
+          ),
           if (widget.isAdmin) ...[
             Text(l10n.viewPublic),
             Switch(
@@ -421,5 +465,14 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
               ],
             ),
     );
+  }
+
+  @override
+  void dispose() {
+    _keyCtrl.dispose();
+    _langCtrl.dispose();
+    _searchCtrl.dispose();
+    _searchTimer?.cancel();
+    super.dispose();
   }
 }
