@@ -6,7 +6,6 @@ import 'package:writer/features/settings/settings_screen.dart';
 import 'package:writer/features/settings/widgets/app_settings_section.dart';
 import 'package:writer/features/settings/widgets/palette_settings_section.dart';
 import 'package:writer/features/settings/widgets/tts_settings_container.dart';
-import 'package:writer/features/settings/widgets/ai_configurations_section.dart';
 import 'package:writer/features/settings/widgets/supabase_section.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
@@ -52,10 +51,7 @@ void main() {
     await tester.scrollUntilVisible(palette, 500, scrollable: scrollable);
     expect(palette, findsOneWidget);
 
-    // AI
-    final ai = find.byType(AiConfigurationsSection);
-    await tester.scrollUntilVisible(ai, 500, scrollable: scrollable);
-    expect(ai, findsOneWidget);
+    // AI Configurations section removed; ensure other sections still render
 
     // Supabase
     final supabase = find.byType(SupabaseSection);
