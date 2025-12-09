@@ -7,6 +7,7 @@ import 'package:writer/main.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/models/template.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class CapturingLocalRepo extends LocalStorageRepository {
   TemplateItem? lastItem;
@@ -53,6 +54,8 @@ void main() {
       ProviderScope(
         overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
         child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: CharacterTemplatesScreen(novelId: 'n-1'),
         ),
       ),
@@ -105,6 +108,8 @@ void main() {
           remoteRepositoryProvider.overrideWith((_) => remoteRepo),
         ],
         child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: CharacterTemplatesScreen(novelId: 'n-1'),
         ),
       ),
@@ -168,6 +173,8 @@ void main() {
       ProviderScope(
         overrides: [remoteRepositoryProvider.overrideWith((_) => remoteRepo)],
         child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: CharacterTemplatesScreen(novelId: 'n-1'),
         ),
       ),

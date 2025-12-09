@@ -50,6 +50,13 @@ class SideBar extends ConsumerWidget {
               },
             ),
             ListTile(
+              leading: const Icon(Icons.text_snippet),
+              title: Text(l10n.prompts),
+              onTap: () {
+                context.go('/prompts');
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.list),
               title: Text(l10n.chapterIndex),
               onTap: () {

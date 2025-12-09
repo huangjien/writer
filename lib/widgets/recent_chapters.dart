@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 import '../state/novel_providers.dart';
 
@@ -13,7 +14,9 @@ class RecentChapters extends ConsumerWidget {
     return recentProgressDetails.when(
       data: (detailsList) {
         if (detailsList.isEmpty) {
-          return const Center(child: Text('No recent chapters'));
+          return Center(
+            child: Text(AppLocalizations.of(context)!.noRecentChapters),
+          );
         }
         return ListView.builder(
           itemCount: detailsList.length,
@@ -22,7 +25,7 @@ class RecentChapters extends ConsumerWidget {
             return ListTile(
               title: Text(details.novel.title),
               subtitle: Text(
-                'Chapter: ${details.chapter.title}\nLast read: ${details.userProgress.updatedAt}',
+                '${AppLocalizations.of(context)!.chapter}: ${details.chapter.title}\n${AppLocalizations.of(context)!.lastRead}: ${details.userProgress.updatedAt}',
               ),
               onTap: () {
                 try {
@@ -40,7 +43,8 @@ class RecentChapters extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(child: Text('Error: $error')),
+      error: (error, stack) =>
+          Center(child: Text('${AppLocalizations.of(context)!.error}: $error')),
     );
   }
 }

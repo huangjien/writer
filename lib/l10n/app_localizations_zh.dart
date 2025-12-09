@@ -667,6 +667,47 @@ class AppLocalizationsZh extends AppLocalizations {
   String get saved => '已保存';
 
   @override
+  String get close => '关闭';
+
+  @override
+  String get copy => '复制';
+
+  @override
+  String get copiedToClipboard => '已复制到剪贴板';
+
+  @override
+  String showingCachedPublicData(String msg) {
+    return '$msg — 显示缓存/公共数据';
+  }
+
+  @override
+  String get menu => '菜单';
+
+  @override
+  String get aiServiceUnavailable => 'AI 服务不可用';
+
+  @override
+  String get aiConfigurations => 'AI 配置';
+
+  @override
+  String get modelLabel => '模型';
+
+  @override
+  String get temperatureLabel => '温度';
+
+  @override
+  String get saveFailed => '保存失败';
+
+  @override
+  String get saveMyVersion => '保存我的版本';
+
+  @override
+  String get resetToPublic => '重置为公开';
+
+  @override
+  String get resetFailed => '重置失败';
+
+  @override
   String get required => '必填';
 
   @override
@@ -744,6 +785,123 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get contributorAdded => '协作者已添加';
+
+  @override
+  String get prompts => '提示';
+
+  @override
+  String get tools => '工具';
+
+  @override
+  String get preview => '预览';
+
+  @override
+  String get actions => '操作';
+
+  @override
+  String get promptKey => '提示键';
+
+  @override
+  String get language => '语言';
+
+  @override
+  String get filterByKey => '按键筛选';
+
+  @override
+  String get viewPublic => '查看公开';
+
+  @override
+  String get groupNone => '不分组';
+
+  @override
+  String get groupLanguage => '按语言分组';
+
+  @override
+  String get groupKey => '按键分组';
+
+  @override
+  String get newPrompt => '新建提示';
+
+  @override
+  String get editPrompt => '编辑提示';
+
+  @override
+  String get makePublic => '设为公开';
+
+  @override
+  String get noPrompts => '没有提示';
+
+  @override
+  String get confirm => '确认';
+
+  @override
+  String get lastRead => '上次阅读';
+
+  @override
+  String get noRecentChapters => '没有最近章节';
+
+  @override
+  String get failedToLoadConfig => '配置加载失败';
+
+  @override
+  String makePublicPromptConfirm(String promptKey, String language) {
+    return '将提示 "$promptKey"（$language）设为公开？';
+  }
+
+  @override
+  String get aiServiceUrlHint => '输入 AI 服务 URL（http/https）';
+
+  @override
+  String get urlLabel => '链接';
+
+  @override
+  String get systemFont => '系统字体';
+
+  @override
+  String get fontInter => 'Inter';
+
+  @override
+  String get fontMerriweather => 'Merriweather';
+
+  @override
+  String get content => '内容';
+
+  @override
+  String get invalidKey => '无效的键';
+
+  @override
+  String get invalidLanguage => '无效的语言';
+
+  @override
+  String get invalidInput => '输入无效';
+
+  @override
+  String charsCount(int count) {
+    return '字符数：$count';
+  }
+
+  @override
+  String deletePromptConfirm(String promptKey, String language) {
+    return '删除提示 "$promptKey"（$language）？';
+  }
+
+  @override
+  String get profileRetrieved => '人物资料已获取';
+
+  @override
+  String get noProfileFound => '未找到资料';
+
+  @override
+  String get templateName => '模板名称';
+
+  @override
+  String get retrieveProfile => '获取资料';
+
+  @override
+  String get previewLabel => '预览';
+
+  @override
+  String get markdownHint => '输入 Markdown…';
 
   @override
   String get pdf => 'PDF';

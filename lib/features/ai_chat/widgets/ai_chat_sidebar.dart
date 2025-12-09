@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 class AiChatSidebar extends ConsumerStatefulWidget {
@@ -49,6 +50,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
     }
 
+    final l10n = AppLocalizations.of(context)!;
     return Stack(
       children: [
         Container(
@@ -105,7 +107,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'AI is thinking...',
+                        l10n.aiThinking,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(
                             context,
@@ -123,7 +125,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
                       child: TextField(
                         controller: _textController,
                         decoration: InputDecoration(
-                          hintText: 'Type your message...',
+                          hintText: l10n.aiChatHint,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
                             borderSide: BorderSide(
@@ -176,7 +178,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
                               }
                             },
                       color: Theme.of(context).colorScheme.primary,
-                      tooltip: 'Send message',
+                      tooltip: l10n.send,
                     ),
                   ],
                 ),
@@ -192,7 +194,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
             onPressed: () {
               ref.read(aiChatUiProvider.notifier).closeSidebar();
             },
-            tooltip: 'Close',
+            tooltip: l10n.close,
           ),
         ),
       ],
@@ -207,6 +209,7 @@ class _ChatMessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isUser = message.isUser;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -297,12 +300,12 @@ class _ChatMessageBubble extends StatelessWidget {
                       Clipboard.setData(ClipboardData(text: message.content));
                       try {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Copied to clipboard')),
+                          SnackBar(content: Text(l10n.copiedToClipboard)),
                         );
                       } catch (_) {}
                     },
                     icon: const Icon(Icons.copy),
-                    tooltip: 'Copy',
+                    tooltip: l10n.copy,
                   ),
                 ),
               ],

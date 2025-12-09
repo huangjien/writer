@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/settings/widgets/ai_configurations_section.dart';
 import 'package:writer/features/ai_chat/services/agents_config_service.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class MockAgentsConfigService extends AgentsConfigService {
   MockAgentsConfigService() : super('http://mock');
@@ -42,8 +43,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [agentsConfigServiceProvider.overrideWithValue(mockService)],
-        child: const MaterialApp(
-          home: Scaffold(
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(
             body: SingleChildScrollView(child: AiConfigurationsSection()),
           ),
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../state/agents_config_providers.dart';
 import '../../ai_chat/services/agents_config_service.dart';
+import '../../../l10n/app_localizations.dart';
 
 class AiConfigurationsSection extends ConsumerWidget {
   const AiConfigurationsSection({super.key});
@@ -9,11 +10,12 @@ class AiConfigurationsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final types = const ['respond', 'qa', 'embedding'];
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'AI Configurations',
+          l10n.aiConfigurations,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 8),
@@ -44,6 +46,7 @@ class _AgentTypePanelState extends ConsumerState<_AgentTypePanel> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final eff = ref.watch(effectiveAgentConfigProvider(widget.type));
     final list = ref.watch(agentConfigsListProvider(widget.type));
     return Card(
@@ -66,13 +69,13 @@ class _AgentTypePanelState extends ConsumerState<_AgentTypePanel> {
                   children: [
                     TextField(
                       controller: _modelController,
-                      decoration: const InputDecoration(labelText: 'Model'),
+                      decoration: InputDecoration(labelText: l10n.modelLabel),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: _tempController,
-                      decoration: const InputDecoration(
-                        labelText: 'Temperature',
+                      decoration: InputDecoration(
+                        labelText: l10n.temperatureLabel,
                       ),
                       keyboardType: TextInputType.numberWithOptions(
                         decimal: true,
@@ -103,7 +106,9 @@ class _AgentTypePanelState extends ConsumerState<_AgentTypePanel> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  created == null ? 'Save failed' : 'Saved',
+                                  created == null
+                                      ? l10n.saveFailed
+                                      : l10n.saved,
                                 ),
                               ),
                             );
@@ -114,7 +119,7 @@ class _AgentTypePanelState extends ConsumerState<_AgentTypePanel> {
                               agentConfigsListProvider(widget.type),
                             );
                           },
-                          child: const Text('Save My Version'),
+                          child: Text(l10n.saveMyVersion),
                         ),
                         const SizedBox(width: 12),
                         list.when(
@@ -140,8 +145,8 @@ class _AgentTypePanelState extends ConsumerState<_AgentTypePanel> {
                                         SnackBar(
                                           content: Text(
                                             ok
-                                                ? 'Reset to public'
-                                                : 'Reset failed',
+                                                ? l10n.resetToPublic
+                                                : l10n.resetFailed,
                                           ),
                                         ),
                                       );
@@ -154,7 +159,7 @@ class _AgentTypePanelState extends ConsumerState<_AgentTypePanel> {
                                         agentConfigsListProvider(widget.type),
                                       );
                                     },
-                              child: const Text('Reset to Public'),
+                              child: Text(l10n.resetToPublic),
                             );
                           },
                           loading: () => const SizedBox.shrink(),
@@ -166,7 +171,8 @@ class _AgentTypePanelState extends ConsumerState<_AgentTypePanel> {
                 );
               },
               loading: () => const LinearProgressIndicator(),
-              error: (e, st) => const Text('Failed to load config'),
+              error: (e, st) =>
+                  Text(AppLocalizations.of(context)!.failedToLoadConfig),
             ),
           ],
         ),

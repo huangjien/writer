@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/prompt.dart';
 import '../services/prompts_service.dart';
+import '../l10n/app_localizations.dart';
 
 const _keys = [
   'system.beta.male',
@@ -50,21 +51,25 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
 
   String? _validateKey(String? v) {
     final s = v?.trim() ?? '';
-    if (s.isEmpty) return 'Required';
-    if (!Prompt.isValidPromptKey(s)) return 'Invalid key';
+    if (s.isEmpty) return AppLocalizations.of(context)!.required;
+    if (!Prompt.isValidPromptKey(s)) {
+      return AppLocalizations.of(context)!.invalidKey;
+    }
     return null;
   }
 
   String? _validateLang(String? v) {
     final s = v?.trim() ?? '';
-    if (s.isEmpty) return 'Required';
-    if (!Prompt.isValidLanguage(s)) return 'Invalid language';
+    if (s.isEmpty) return AppLocalizations.of(context)!.required;
+    if (!Prompt.isValidLanguage(s)) {
+      return AppLocalizations.of(context)!.invalidLanguage;
+    }
     return null;
   }
 
   String? _validateContent(String? v) {
     final s = v?.trim() ?? '';
-    if (s.isEmpty) return 'Required';
+    if (s.isEmpty) return AppLocalizations.of(context)!.required;
     return null;
   }
 
@@ -125,8 +130,9 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
   @override
   Widget build(BuildContext context) {
     final preview = _contentCtrl.text;
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: Text(_isEdit ? 'Edit Prompt' : 'New Prompt')),
+      appBar: AppBar(title: Text(_isEdit ? l10n.editPrompt : l10n.newPrompt)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -147,9 +153,7 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                           ? null
                           : (v) => setState(() => _key = v ?? _key),
                       validator: _isEdit ? null : _validateKey,
-                      decoration: const InputDecoration(
-                        labelText: 'Prompt Key',
-                      ),
+                      decoration: InputDecoration(labelText: l10n.promptKey),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -166,14 +170,14 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                           ? null
                           : (v) => setState(() => _lang = v ?? _lang),
                       validator: _isEdit ? null : _validateLang,
-                      decoration: const InputDecoration(labelText: 'Language'),
+                      decoration: InputDecoration(labelText: l10n.language),
                     ),
                   ),
                   const SizedBox(width: 12),
                   if (widget.isAdmin)
                     Row(
                       children: [
-                        const Text('Public'),
+                        Text(l10n.publicLabel),
                         Switch(
                           value: _isPublic,
                           onChanged: (v) => setState(() => _isPublic = v),
@@ -190,22 +194,22 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                   expands: true,
                   onChanged: (_) => setState(() {}),
                   validator: _validateContent,
-                  decoration: const InputDecoration(labelText: 'Content'),
+                  decoration: InputDecoration(labelText: l10n.content),
                 ),
               ),
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Text('Chars: ${_contentCtrl.text.length}'),
+                  Text(l10n.charsCount(_contentCtrl.text.length)),
                   const Spacer(),
                   TextButton(
                     onPressed: _saving ? null : () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+                    child: Text(l10n.cancel),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: _saving ? null : _save,
-                    child: const Text('Save'),
+                    child: Text(l10n.save),
                   ),
                 ],
               ),

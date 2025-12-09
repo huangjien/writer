@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -10,16 +11,16 @@ class AppDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(color: Colors.blue),
+          DrawerHeader(
+            decoration: const BoxDecoration(color: Colors.blue),
             child: Text(
-              'Tools',
-              style: TextStyle(color: Colors.white, fontSize: 20),
+              AppLocalizations.of(context)!.tools,
+              style: const TextStyle(color: Colors.white, fontSize: 20),
             ),
           ),
           ListTile(
             leading: const Icon(Icons.text_snippet),
-            title: const Text('Prompts'),
+            title: Text(AppLocalizations.of(context)!.prompts),
             onTap: () {
               Navigator.pop(context);
               context.go('/prompts');

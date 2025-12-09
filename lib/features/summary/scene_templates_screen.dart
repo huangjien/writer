@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../main.dart';
 import '../../models/template.dart';
+import '../../l10n/app_localizations.dart';
 
 class SceneTemplatesScreen extends ConsumerStatefulWidget {
   const SceneTemplatesScreen({
@@ -57,8 +58,9 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Scene Templates'), actions: const []),
+      appBar: AppBar(title: Text(l10n.sceneTemplates), actions: const []),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -68,14 +70,14 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Template Name'),
+                decoration: InputDecoration(labelText: l10n.templateName),
                 validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Required' : null,
+                    v == null || v.trim().isEmpty ? l10n.required : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _descController,
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(labelText: l10n.descriptionLabel),
                 maxLines: 5,
               ),
               const SizedBox(height: 16),
@@ -120,7 +122,7 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen> {
                               }
                               if (!context.mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Saved')),
+                                SnackBar(content: Text(l10n.saved)),
                               );
                             } catch (e) {
                               setState(() => _error = e.toString());
@@ -128,7 +130,7 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen> {
                               if (mounted) setState(() => _saving = false);
                             }
                           },
-                    child: const Text('Save'),
+                    child: Text(l10n.save),
                   ),
                   const SizedBox(width: 12),
                   if (_error != null)

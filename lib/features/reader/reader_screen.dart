@@ -54,7 +54,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
         },
         loading: () =>
             const Scaffold(body: Center(child: CircularProgressIndicator())),
-        error: (e, _) => Scaffold(body: Center(child: Text('Error: $e'))),
+        error: (e, _) =>
+            Scaffold(body: Center(child: Text('${l10n.error}: $e'))),
       );
     }
 
@@ -75,7 +76,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
           else
             IconButton(
               icon: const Icon(Icons.refresh),
-              tooltip: 'Refresh',
+              tooltip: l10n.refreshTooltip,
               onPressed: () async {
                 setState(() => _refreshing = true);
                 if (supabaseEnabled) {
@@ -142,7 +143,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                               pw.Spacer(),
                               pw.Center(
                                 child: pw.Text(
-                                  novel?.title ?? 'Novel',
+                                  novel?.title ?? l10n.novel,
                                   style: pw.TextStyle(
                                     fontSize: 32,
                                     fontWeight: pw.FontWeight.bold,
@@ -173,7 +174,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                             alignment: pw.Alignment.centerLeft,
                             padding: const pw.EdgeInsets.only(bottom: 8),
                             child: pw.Text(
-                              novel?.title ?? 'Novel',
+                              novel?.title ?? l10n.novel,
                               style: const pw.TextStyle(fontSize: 12),
                             ),
                           ),
@@ -221,7 +222,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                             content.add(
                               pw.Header(
                                 level: 0,
-                                text: novel?.title ?? 'Novel',
+                                text: novel?.title ?? l10n.novel,
                               ),
                             );
                             for (final c in withContent) {
@@ -262,7 +263,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
             builder: (context) => IconButton(
               icon: const Icon(Icons.menu_open),
               onPressed: () => Scaffold.of(context).openEndDrawer(),
-              tooltip: 'Menu',
+              tooltip: l10n.menu,
             ),
           ),
         ],

@@ -6,6 +6,7 @@ import 'package:writer/features/summary/scene_templates_screen.dart';
 import 'package:writer/main.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/models/template.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class CapturingLocalRepo extends LocalStorageRepository {
   TemplateItem? lastItem;
@@ -25,7 +26,11 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
-        child: const MaterialApp(home: SceneTemplatesScreen(novelId: 'n-1')),
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: SceneTemplatesScreen(novelId: 'n-1'),
+        ),
       ),
     );
 

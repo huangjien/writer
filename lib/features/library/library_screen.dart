@@ -121,7 +121,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
           final msg = l10n.errorLoadingNovels;
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('$msg — showing cached/public data')),
+              SnackBar(content: Text(l10n.showingCachedPublicData(msg))),
             );
           }
         }
@@ -184,7 +184,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
             ),
           IconButton(
             icon: const Icon(Icons.info_outline),
-            tooltip: 'About',
+            tooltip: l10n.about,
             onPressed: () => context.push('/about'),
           ),
           IconButton(

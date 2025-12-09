@@ -5,6 +5,7 @@ import 'package:writer/models/prompt.dart';
 import 'package:writer/services/prompts_service.dart';
 import 'package:writer/screens/prompts_list_screen.dart';
 import 'package:writer/screens/prompt_form_screen.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class FakePromptsService extends PromptsService {
   FakePromptsService() : super(baseUrl: 'http://test');
@@ -113,7 +114,11 @@ void main() {
       ),
     ];
     await tester.pumpWidget(
-      MaterialApp(home: PromptsListScreen(service: svc, isAdmin: true)),
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PromptsListScreen(service: svc, isAdmin: true),
+      ),
     );
     await tester.pump();
     expect(find.text('Prompts'), findsOneWidget);
@@ -126,7 +131,13 @@ void main() {
   testWidgets('PromptsListScreen error handling', (tester) async {
     final svc = FakePromptsService();
     svc.throwOnFetch = true;
-    await tester.pumpWidget(MaterialApp(home: PromptsListScreen(service: svc)));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PromptsListScreen(service: svc),
+      ),
+    );
     await tester.pump();
     expect(find.textContaining('ApiException'), findsOneWidget);
   });
@@ -135,7 +146,11 @@ void main() {
     final svc = FakePromptsService();
     svc.prompts = [];
     await tester.pumpWidget(
-      MaterialApp(home: PromptsListScreen(service: svc, isAdmin: true)),
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PromptsListScreen(service: svc, isAdmin: true),
+      ),
     );
     await tester.pump();
     expect(svc.lastFetchIsPublic, anyOf(isNull, isFalse));
@@ -157,11 +172,17 @@ void main() {
       ),
     ];
     await tester.pumpWidget(
-      MaterialApp(home: PromptsListScreen(service: svc, isAdmin: true)),
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PromptsListScreen(service: svc, isAdmin: true),
+      ),
     );
-    await tester.pump();
-    await tester.ensureVisible(find.byIcon(Icons.public));
-    await tester.tap(find.byIcon(Icons.public));
+    await tester.pumpAndSettle();
+    final publicIcon = find.byIcon(Icons.public);
+    expect(publicIcon, findsOneWidget);
+    await tester.ensureVisible(publicIcon);
+    await tester.tap(publicIcon);
     await tester.pump();
     await tester.tap(find.text('Confirm'));
     await tester.pump();
@@ -171,7 +192,11 @@ void main() {
   testWidgets('New Prompt dialog creates public when admin', (tester) async {
     final svc = FakePromptsService();
     await tester.pumpWidget(
-      MaterialApp(home: PromptsListScreen(service: svc, isAdmin: true)),
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PromptsListScreen(service: svc, isAdmin: true),
+      ),
     );
     await tester.pump();
     await tester.tap(find.widgetWithText(ElevatedButton, 'New Prompt'));
@@ -197,7 +222,13 @@ void main() {
 
   testWidgets('PromptFormScreen validates content required', (tester) async {
     final svc = FakePromptsService();
-    await tester.pumpWidget(MaterialApp(home: PromptFormScreen(service: svc)));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PromptFormScreen(service: svc),
+      ),
+    );
     await tester.pump();
     await tester.tap(find.text('Save'));
     await tester.pump();
@@ -207,7 +238,11 @@ void main() {
   testWidgets('PromptFormScreen create calls service', (tester) async {
     final svc = FakePromptsService();
     await tester.pumpWidget(
-      MaterialApp(home: PromptFormScreen(service: svc, isAdmin: true)),
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PromptFormScreen(service: svc, isAdmin: true),
+      ),
     );
     await tester.pump();
     await tester.enterText(find.byType(TextFormField), 'Y');
@@ -228,6 +263,8 @@ void main() {
     );
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: PromptFormScreen(service: svc, initial: initial),
       ),
     );

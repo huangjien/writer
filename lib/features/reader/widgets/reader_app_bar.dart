@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class ReaderAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const ReaderAppBar({super.key, required this.title, required this.onBack});
@@ -15,6 +16,7 @@ class ReaderAppBar extends ConsumerWidget implements PreferredSizeWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isAiServiceAvailable = ref.watch(aiServiceStatusProvider);
 
+    final l10n = AppLocalizations.of(context)!;
     return AppBar(
       title: Text(title),
       leading: Tooltip(
@@ -34,14 +36,14 @@ class ReaderAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 }
               : null,
           tooltip: isAiServiceAvailable
-              ? 'AI Assistant'
-              : 'AI Service Unavailable',
+              ? l10n.aiAssistant
+              : l10n.aiServiceUnavailable,
         ),
         Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu_open),
             onPressed: () => Scaffold.of(context).openEndDrawer(),
-            tooltip: 'Menu',
+            tooltip: l10n.menu,
           ),
         ),
       ],

@@ -20,6 +20,7 @@ import 'package:writer/features/summary/scene_templates_list_screen.dart';
 import 'package:writer/features/summary/character_templates_screen.dart';
 import 'package:writer/features/summary/scene_templates_screen.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('AppRouter routes return correct widgets', (tester) async {
@@ -58,7 +59,13 @@ void main() {
       expect(widget, isA<T>(), reason: 'Route $name did not return $T');
     }
 
-    await tester.pumpWidget(Container()); // Provide a context
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Container(),
+      ),
+    );
 
     // Verify top-level routes
     verifyRoute<LibraryScreen>('library');

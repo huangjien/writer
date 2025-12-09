@@ -682,6 +682,47 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saved => 'Saved';
 
   @override
+  String get close => 'Close';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get copiedToClipboard => 'Copied to clipboard';
+
+  @override
+  String showingCachedPublicData(String msg) {
+    return '$msg — showing cached/public data';
+  }
+
+  @override
+  String get menu => 'Menu';
+
+  @override
+  String get aiServiceUnavailable => 'AI Service Unavailable';
+
+  @override
+  String get aiConfigurations => 'AI Configurations';
+
+  @override
+  String get modelLabel => 'Model';
+
+  @override
+  String get temperatureLabel => 'Temperature';
+
+  @override
+  String get saveFailed => 'Save failed';
+
+  @override
+  String get saveMyVersion => 'Save My Version';
+
+  @override
+  String get resetToPublic => 'Reset to public';
+
+  @override
+  String get resetFailed => 'Reset failed';
+
+  @override
   String get required => 'Required';
 
   @override
@@ -760,6 +801,123 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contributorAdded => 'Contributor added';
+
+  @override
+  String get prompts => 'Prompts';
+
+  @override
+  String get tools => 'Tools';
+
+  @override
+  String get preview => 'Preview';
+
+  @override
+  String get actions => 'Actions';
+
+  @override
+  String get promptKey => 'Prompt Key';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get filterByKey => 'Filter by key';
+
+  @override
+  String get viewPublic => 'View public';
+
+  @override
+  String get groupNone => 'None';
+
+  @override
+  String get groupLanguage => 'Language';
+
+  @override
+  String get groupKey => 'Key';
+
+  @override
+  String get newPrompt => 'New Prompt';
+
+  @override
+  String get editPrompt => 'Edit Prompt';
+
+  @override
+  String get makePublic => 'Make Public';
+
+  @override
+  String get noPrompts => 'No prompts found';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get lastRead => 'Last read';
+
+  @override
+  String get noRecentChapters => 'No recent chapters';
+
+  @override
+  String get failedToLoadConfig => 'Failed to load config';
+
+  @override
+  String makePublicPromptConfirm(String promptKey, String language) {
+    return 'Make public "$promptKey" ($language)?';
+  }
+
+  @override
+  String get aiServiceUrlHint => 'Enter AI service URL (http/https)';
+
+  @override
+  String get urlLabel => 'URL';
+
+  @override
+  String get systemFont => 'System Font';
+
+  @override
+  String get fontInter => 'Inter';
+
+  @override
+  String get fontMerriweather => 'Merriweather';
+
+  @override
+  String get content => 'Content';
+
+  @override
+  String get invalidKey => 'Invalid key';
+
+  @override
+  String get invalidLanguage => 'Invalid language';
+
+  @override
+  String get invalidInput => 'Invalid input';
+
+  @override
+  String charsCount(int count) {
+    return 'Characters: $count';
+  }
+
+  @override
+  String deletePromptConfirm(String promptKey, String language) {
+    return 'Delete prompt "$promptKey" ($language)?';
+  }
+
+  @override
+  String get profileRetrieved => 'Profile retrieved';
+
+  @override
+  String get noProfileFound => 'No profile found';
+
+  @override
+  String get templateName => 'Template Name';
+
+  @override
+  String get retrieveProfile => 'Retrieve profile';
+
+  @override
+  String get previewLabel => 'Preview';
+
+  @override
+  String get markdownHint => 'Enter description in Markdown...';
 
   @override
   String get pdf => 'PDF';

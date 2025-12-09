@@ -926,6 +926,12 @@ abstract class AppLocalizations {
   /// **'Common Fonts'**
   String get commonFonts;
 
+  String get aiServiceUrlHint;
+  String get urlLabel;
+  String get systemFont;
+  String get fontInter;
+  String get fontMerriweather;
+
   /// No description provided for @readerFontSize.
   ///
   /// In en, this message translates to:
@@ -1153,6 +1159,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save'**
   String get save;
+
+  String get close;
+  String get copy;
+  String get copiedToClipboard;
+  String showingCachedPublicData(String msg);
+  String get menu;
+  String get aiServiceUnavailable;
+  String get aiConfigurations;
+  String get modelLabel;
+  String get temperatureLabel;
+  String get saveFailed;
+  String get saveMyVersion;
+  String get resetToPublic;
+  String get resetFailed;
+
+  String get prompts;
+  String get tools;
+  String get preview;
+  String get actions;
+  String get promptKey;
+  String get language;
+  String get filterByKey;
+  String get viewPublic;
+  String get groupNone;
+  String get groupLanguage;
+  String get groupKey;
+  String get newPrompt;
+  String get editPrompt;
+  String get makePublic;
+  String get noPrompts;
+  String get confirm;
+  String get lastRead;
+  String get noRecentChapters;
+  String get failedToLoadConfig;
+  String makePublicPromptConfirm(String promptKey, String language);
+
+  String get content;
+  String get invalidKey;
+  String get invalidLanguage;
+  String get invalidInput;
+  String charsCount(int count);
+  String deletePromptConfirm(String promptKey, String language);
+  String get profileRetrieved;
+  String get noProfileFound;
+  String get templateName;
+  String get retrieveProfile;
+  String get previewLabel;
+  String get markdownHint;
 
   /// No description provided for @createNextChapter.
   ///

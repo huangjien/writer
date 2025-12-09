@@ -23,8 +23,8 @@ class AppSettingsSection extends ConsumerWidget {
           content: TextField(
             controller: controller,
             decoration: InputDecoration(
-              hintText: 'http://localhost:5600/',
-              labelText: 'URL',
+              hintText: AppLocalizations.of(context)!.aiServiceUrlHint,
+              labelText: AppLocalizations.of(context)!.urlLabel,
               errorText: validationError,
             ),
             keyboardType: TextInputType.url,

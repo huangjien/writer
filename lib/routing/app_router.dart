@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import '../features/library/library_screen.dart';
 import '../features/library/create_novel_screen.dart';
 import '../features/settings/settings_screen.dart';
@@ -224,7 +225,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) {
               final novelId = state.pathParameters['id']!;
               return Scaffold(
-                appBar: AppBar(title: const Text('Update Novel')),
+                appBar: AppBar(
+                  title: Text(AppLocalizations.of(context)!.updateNovel),
+                ),
                 body: NovelMetadataEditor(novelId: novelId),
               );
             },

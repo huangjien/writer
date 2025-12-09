@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import '../../main.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/template.dart';
 import '../../repositories/remote_repository.dart';
 
@@ -76,15 +77,19 @@ class _CharacterTemplatesScreenState
         _descController.text = profile.trim();
 
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Profile retrieved')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.profileRetrieved),
+            ),
+          );
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('No profile found')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.noProfileFound),
+            ),
+          );
         }
       }
     } catch (e) {
@@ -100,8 +105,9 @@ class _CharacterTemplatesScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Character Templates')),
+      appBar: AppBar(title: Text(l10n.characterTemplates)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -115,8 +121,8 @@ class _CharacterTemplatesScreenState
                   Expanded(
                     child: TextFormField(
                       controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Template Name',
+                      decoration: InputDecoration(
+                        labelText: l10n.templateName,
                         hintText: 'e.g. Harry Potter',
                       ),
                       validator: (v) =>
@@ -139,7 +145,7 @@ class _CharacterTemplatesScreenState
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.download),
-                      tooltip: 'Retrieve Profile',
+                      tooltip: l10n.retrieveProfile,
                     ),
                   ),
                 ],
@@ -147,9 +153,9 @@ class _CharacterTemplatesScreenState
               const SizedBox(height: 12),
               TabBar(
                 controller: _tabController,
-                tabs: const [
-                  Tab(text: 'Preview'),
-                  Tab(text: 'Edit'),
+                tabs: [
+                  Tab(text: l10n.previewLabel),
+                  Tab(text: l10n.edit),
                 ],
               ),
               const SizedBox(height: 8),
@@ -172,8 +178,8 @@ class _CharacterTemplatesScreenState
                     // Edit Mode (now second)
                     TextFormField(
                       controller: _descController,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter description in Markdown...',
+                      decoration: InputDecoration(
+                        hintText: l10n.markdownHint,
                         border: OutlineInputBorder(),
                       ),
                       maxLines: null,
@@ -228,7 +234,7 @@ class _CharacterTemplatesScreenState
                               }
                               if (!context.mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Saved')),
+                                SnackBar(content: Text(l10n.saved)),
                               );
                             } catch (e) {
                               setState(() => _error = e.toString());
@@ -236,7 +242,7 @@ class _CharacterTemplatesScreenState
                               if (mounted) setState(() => _saving = false);
                             }
                           },
-                    child: const Text('Save'),
+                    child: Text(l10n.save),
                   ),
                   const SizedBox(width: 12),
                   if (_error != null)

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/prompt.dart';
 import '../services/prompts_service.dart';
 import 'package:go_router/go_router.dart';
+import '../l10n/app_localizations.dart';
 
 const int _previewLen = 50;
 
@@ -97,11 +98,12 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
     final langCtrl = TextEditingController();
     final contentCtrl = TextEditingController();
     bool makePublic = _showPublic;
+    final l10n = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('New Prompt'),
+          title: Text(l10n.newPrompt),
           content: SizedBox(
             width: 400,
             child: Column(
@@ -109,21 +111,21 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
               children: [
                 TextField(
                   controller: keyCtrl,
-                  decoration: const InputDecoration(labelText: 'Prompt Key'),
+                  decoration: InputDecoration(labelText: l10n.promptKey),
                 ),
                 TextField(
                   controller: langCtrl,
-                  decoration: const InputDecoration(labelText: 'Language'),
+                  decoration: InputDecoration(labelText: l10n.language),
                 ),
                 TextField(
                   controller: contentCtrl,
-                  decoration: const InputDecoration(labelText: 'Content'),
+                  decoration: InputDecoration(labelText: l10n.content),
                   maxLines: 6,
                 ),
                 if (widget.isAdmin)
                   Row(
                     children: [
-                      const Text('Public'),
+                      Text(l10n.publicLabel),
                       Switch(
                         value: makePublic,
                         onChanged: (v) => setState(() => makePublic = v),
@@ -136,11 +138,11 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Save'),
+              child: Text(l10n.save),
             ),
           ],
         );
@@ -154,7 +156,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
           !Prompt.isValidLanguage(lang) ||
           content.isEmpty) {
         setState(() {
-          _error = 'Invalid input';
+          _error = l10n.invalidInput;
         });
         return;
       }
@@ -175,19 +177,20 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
   }
 
   Future<void> _makePublic(Prompt p) async {
+    final l10n = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Make Public'),
-        content: Text('Make ${p.promptKey} (${p.language}) public?'),
+        title: Text(l10n.makePublic),
+        content: Text(l10n.makePublicPromptConfirm(p.promptKey, p.language)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Confirm'),
+            child: Text(l10n.confirm),
           ),
         ],
       ),
@@ -210,19 +213,20 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
   }
 
   Future<void> _deletePrompt(Prompt p) async {
+    final l10n = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Prompt'),
-        content: Text('Delete ${p.promptKey} (${p.language})?'),
+        title: Text(l10n.delete),
+        content: Text(l10n.deletePromptConfirm(p.promptKey, p.language)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -240,6 +244,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
   }
 
   Widget _filters() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Wrap(
@@ -249,7 +254,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
         runSpacing: 12,
         children: [
           if (widget.isAdmin) ...[
-            const Text('View Public'),
+            Text(l10n.viewPublic),
             Switch(
               value: _showPublic,
               onChanged: (v) async {
@@ -264,7 +269,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
             width: 260,
             child: TextField(
               controller: _keyCtrl,
-              decoration: const InputDecoration(labelText: 'Filter by key'),
+              decoration: InputDecoration(labelText: l10n.filterByKey),
               onChanged: (_) => setState(() {}),
             ),
           ),
@@ -272,25 +277,25 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
             width: 160,
             child: TextField(
               controller: _langCtrl,
-              decoration: const InputDecoration(labelText: 'Language'),
+              decoration: InputDecoration(labelText: l10n.language),
               onChanged: (_) => setState(() {}),
             ),
           ),
           DropdownButton<String>(
             value: _groupBy,
-            items: const [
-              DropdownMenuItem(value: 'None', child: Text('Group: None')),
+            items: [
+              DropdownMenuItem(value: 'None', child: Text(l10n.groupNone)),
               DropdownMenuItem(
                 value: 'Language',
-                child: Text('Group: Language'),
+                child: Text(l10n.groupLanguage),
               ),
-              DropdownMenuItem(value: 'Key', child: Text('Group: Key')),
+              DropdownMenuItem(value: 'Key', child: Text(l10n.groupKey)),
             ],
             onChanged: (v) => setState(() => _groupBy = v ?? 'None'),
           ),
           ElevatedButton(
             onPressed: _createPromptDialog,
-            child: const Text('New Prompt'),
+            child: Text(l10n.newPrompt),
           ),
         ],
       ),
@@ -298,12 +303,13 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
   }
 
   DataTable _table(List<Prompt> src) {
+    final l10n = AppLocalizations.of(context)!;
     return DataTable(
-      columns: const [
-        DataColumn(label: Text('Prompt Key')),
-        DataColumn(label: Text('Language')),
-        DataColumn(label: Text('Preview')),
-        DataColumn(label: Text('Actions')),
+      columns: [
+        DataColumn(label: Text(l10n.promptKey)),
+        DataColumn(label: Text(l10n.language)),
+        DataColumn(label: Text(l10n.preview)),
+        DataColumn(label: Text(l10n.actions)),
       ],
       rows: src
           .map(
@@ -316,13 +322,13 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
                       const SizedBox(width: 8),
                       if (p.isPublic)
                         Chip(
-                          label: Text('Public'),
+                          label: Text(l10n.publicLabel),
                           backgroundColor: Colors.greenAccent.withValues(
                             alpha: 0.2,
                           ),
                         )
                       else
-                        Chip(label: const Text('Private')),
+                        Chip(label: Text(l10n.privateLabel)),
                     ],
                   ),
                 ),
@@ -340,15 +346,18 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
                             context.push('/prompt_form', extra: p);
                           }
                         },
+                        tooltip: l10n.editPrompt,
                       ),
                       if (widget.isAdmin && !p.isPublic)
                         IconButton(
                           icon: const Icon(Icons.public),
                           onPressed: () => _makePublic(p),
+                          tooltip: l10n.makePublic,
                         ),
                       IconButton(
                         icon: const Icon(Icons.delete),
                         onPressed: () => _deletePrompt(p),
+                        tooltip: l10n.delete,
                       ),
                     ],
                   ),
@@ -364,11 +373,16 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
   Widget build(BuildContext context) {
     final filtered = _filtered(_items);
     final grouped = _group(filtered);
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Prompts'),
+        title: Text(l10n.prompts),
         actions: [
-          IconButton(onPressed: _load, icon: const Icon(Icons.refresh)),
+          IconButton(
+            onPressed: _load,
+            icon: const Icon(Icons.refresh),
+            tooltip: l10n.refreshTooltip,
+          ),
         ],
       ),
       body: _loading
@@ -383,7 +397,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
                       grouped.isEmpty ||
                           (grouped.length == 1 &&
                               (grouped.values.first.isEmpty))
-                      ? const Center(child: Text('No prompts'))
+                      ? Center(child: Text(l10n.noPrompts))
                       : ListView(
                           children: grouped.entries.map((e) {
                             final title = e.key;

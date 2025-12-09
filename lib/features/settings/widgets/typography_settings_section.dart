@@ -62,18 +62,18 @@ class TypographySettingsSection extends ConsumerWidget {
                     ref.read(themeControllerProvider.notifier).setFontPack(fp);
                   }
                 },
-                items: const [
+                items: [
                   DropdownMenuItem(
                     value: ReaderFontPack.system,
-                    child: Text('System'),
+                    child: Text(l10n.systemFont),
                   ),
                   DropdownMenuItem(
                     value: ReaderFontPack.inter,
-                    child: Text('Inter'),
+                    child: Text(l10n.fontInter),
                   ),
                   DropdownMenuItem(
                     value: ReaderFontPack.merriweather,
-                    child: Text('Merriweather'),
+                    child: Text(l10n.fontMerriweather),
                   ),
                 ],
               ),
