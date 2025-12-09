@@ -354,6 +354,7 @@
   "makePublicPromptConfirm": "将提示 \"{promptKey}\"（{language}）设为公开？",
   "@makePublicPromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}}
   ,
+  "templateNameExists": "模板名称已存在",
   "aiServiceUrlHint": "输入 AI 服务 URL（http/https）",
   "urlLabel": "链接",
   "systemFont": "系统字体",

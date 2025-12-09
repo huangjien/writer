@@ -210,6 +210,7 @@ class _CharacterTemplatesScreenState
                               final repo = ref.read(
                                 localStorageRepositoryProvider,
                               );
+
                               if (widget.templateId != null) {
                                 await repo.updateCharacterTemplate(
                                   widget.templateId!,
@@ -237,7 +238,15 @@ class _CharacterTemplatesScreenState
                                 SnackBar(content: Text(l10n.saved)),
                               );
                             } catch (e) {
-                              setState(() => _error = e.toString());
+                              final msg =
+                                  e.toString().contains(
+                                    'Duplicate template name',
+                                  )
+                                  ? AppLocalizations.of(
+                                      context,
+                                    )!.templateNameExists
+                                  : e.toString();
+                              setState(() => _error = msg);
                             } finally {
                               if (mounted) setState(() => _saving = false);
                             }

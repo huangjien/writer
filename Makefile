@@ -30,7 +30,7 @@ IMAGE ?= writer-web:latest
 
 .PHONY: help dev-web dev-chrome macos deps test test-expanded analyze lint format clean build-web serve-web-build env-print \
         build-macos build-android build-ios build-windows build-linux build-ipa build-ipa-nocodesign install-hooks icons \
-        docker-build-web docker-push-web
+        docker-build-web docker-push-web ci
 
 help:
 	@echo "Available targets:"
@@ -57,6 +57,7 @@ help:
 	@echo "  env-print          - Print Supabase env passed to dart-define"
 	@echo "  install-hooks      - Configure git to use .githooks/ as hooks path"
 	@echo "  publish-release    - Publish release to GitHub (defaults to version in package.json)"
+	@echo "  ci                 - Mirror Writer CI locally (deps, icons, lint, tests)"
 
 dev-web:
 	$(FLUTTER) run -d web-server --web-port $(WEB_PORT) $(DF_ARGS)
@@ -76,6 +77,12 @@ upgrade:
 icons:
 	$(FLUTTER) pub get
 	$(FLUTTER) pub run flutter_launcher_icons
+
+ci:
+	$(FLUTTER) pub get
+	$(FLUTTER) pub run flutter_launcher_icons
+	$(MAKE) lint
+	$(FLUTTER) test --test-randomize-ordering-seed=random -j 1
 
 test:
 	$(FLUTTER) test --coverage --test-randomize-ordering-seed=random -j 1

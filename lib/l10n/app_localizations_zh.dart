@@ -911,6 +911,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get markdownHint => 'Enter description in Markdown...';
 
   @override
+  String get templateNameExists => '模板名称已存在';
+
+  @override
   String get aiServiceUrlHint => '输入 AI 服务 URL（http/https）';
 
   @override

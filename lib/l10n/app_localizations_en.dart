@@ -927,6 +927,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get markdownHint => 'Enter description in Markdown...';
 
   @override
+  String get templateNameExists => 'Template name already exists';
+
+  @override
   String get aiServiceUrlHint => 'Enter AI service URL (http/https)';
 
   @override

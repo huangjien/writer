@@ -368,6 +368,7 @@
   "previewLabel": "Preview",
   "markdownHint": "Enter description in Markdown..."
   ,
+  "templateNameExists": "Template name already exists",
   "aiServiceUrlHint": "Enter AI service URL (http/https)",
   "urlLabel": "URL",
   "systemFont": "System Font",

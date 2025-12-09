@@ -1589,7 +1589,7 @@ abstract class AppLocalizations {
   /// No description provided for @aiServiceUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'AI service unavailable'**
+  /// **'AI Service Unavailable'**
   String get aiServiceUnavailable;
 
   /// No description provided for @aiConfigurations.
@@ -1619,7 +1619,7 @@ abstract class AppLocalizations {
   /// No description provided for @saveMyVersion.
   ///
   /// In en, this message translates to:
-  /// **'Save my version'**
+  /// **'Save My Version'**
   String get saveMyVersion;
 
   /// No description provided for @resetToPublic.
@@ -1825,6 +1825,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter description in Markdown...'**
   String get markdownHint;
+
+  /// No description provided for @templateNameExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Template name already exists'**
+  String get templateNameExists;
 
   /// No description provided for @aiServiceUrlHint.
   ///

@@ -297,6 +297,25 @@ class LocalStorageRepository {
     String novelId,
     TemplateItem item,
   ) async {
+    if (supabaseEnabled) {
+      final client = Supabase.instance.client;
+      final uid = client.auth.currentUser?.id;
+      final existing = await (uid != null
+          ? client
+                .from('character_templates')
+                .select('id')
+                .eq('created_by', uid)
+                .ilike('title', item.name.trim())
+                .limit(1)
+          : client
+                .from('character_templates')
+                .select('id')
+                .ilike('title', item.name.trim())
+                .limit(1));
+      if ((existing as List).isNotEmpty) {
+        throw Exception('Duplicate template name');
+      }
+    }
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
       'character_template_form_$novelId',
@@ -584,6 +603,26 @@ class LocalStorageRepository {
   }) async {
     if (!supabaseEnabled) return;
     final client = Supabase.instance.client;
+    if (title != null && title.trim().isNotEmpty) {
+      final uid = client.auth.currentUser?.id;
+      final existing = await (uid != null
+          ? client
+                .from('character_templates')
+                .select('id')
+                .eq('created_by', uid)
+                .ilike('title', title.trim())
+                .neq('id', id)
+                .limit(1)
+          : client
+                .from('character_templates')
+                .select('id')
+                .ilike('title', title.trim())
+                .neq('id', id)
+                .limit(1));
+      if ((existing as List).isNotEmpty) {
+        throw Exception('Duplicate template name');
+      }
+    }
     await client
         .from('character_templates')
         .update({
