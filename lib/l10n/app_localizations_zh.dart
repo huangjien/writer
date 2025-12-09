@@ -667,47 +667,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get saved => '已保存';
 
   @override
-  String get close => '关闭';
-
-  @override
-  String get copy => '复制';
-
-  @override
-  String get copiedToClipboard => '已复制到剪贴板';
-
-  @override
-  String showingCachedPublicData(String msg) {
-    return '$msg — 显示缓存/公共数据';
-  }
-
-  @override
-  String get menu => '菜单';
-
-  @override
-  String get aiServiceUnavailable => 'AI 服务不可用';
-
-  @override
-  String get aiConfigurations => 'AI 配置';
-
-  @override
-  String get modelLabel => '模型';
-
-  @override
-  String get temperatureLabel => '温度';
-
-  @override
-  String get saveFailed => '保存失败';
-
-  @override
-  String get saveMyVersion => '保存我的版本';
-
-  @override
-  String get resetToPublic => '重置为公开';
-
-  @override
-  String get resetFailed => '重置失败';
-
-  @override
   String get required => '必填';
 
   @override
@@ -787,6 +746,69 @@ class AppLocalizationsZh extends AppLocalizations {
   String get contributorAdded => '协作者已添加';
 
   @override
+  String get pdf => 'PDF';
+
+  @override
+  String get generatingPdf => '正在生成 PDF…';
+
+  @override
+  String get pdfFailed => '生成 PDF 失败';
+
+  @override
+  String get tableOfContents => '目录';
+
+  @override
+  String byAuthor(String name) {
+    return '作者：$name';
+  }
+
+  @override
+  String pageOfTotal(int page, int total) {
+    return '第$page/$total页';
+  }
+
+  @override
+  String get close => '关闭';
+
+  @override
+  String get copy => '复制';
+
+  @override
+  String get copiedToClipboard => '已复制到剪贴板';
+
+  @override
+  String showingCachedPublicData(String msg) {
+    return '$msg — 显示缓存/公共数据';
+  }
+
+  @override
+  String get menu => '菜单';
+
+  @override
+  String get aiServiceUnavailable => 'AI 服务不可用';
+
+  @override
+  String get aiConfigurations => 'AI 配置';
+
+  @override
+  String get modelLabel => '模型';
+
+  @override
+  String get temperatureLabel => '温度';
+
+  @override
+  String get saveFailed => '保存失败';
+
+  @override
+  String get saveMyVersion => '保存我的版本';
+
+  @override
+  String get resetToPublic => '重置为公开';
+
+  @override
+  String get resetFailed => '重置失败';
+
+  @override
   String get prompts => '提示';
 
   @override
@@ -845,8 +867,48 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String makePublicPromptConfirm(String promptKey, String language) {
-    return '将提示 "$promptKey"（$language）设为公开？';
+    return '将提示 \"$promptKey\"（$language）设为公开？';
   }
+
+  @override
+  String get content => 'Content';
+
+  @override
+  String get invalidKey => 'Invalid key';
+
+  @override
+  String get invalidLanguage => 'Invalid language';
+
+  @override
+  String get invalidInput => 'Invalid input';
+
+  @override
+  String charsCount(int count) {
+    return 'Characters: $count';
+  }
+
+  @override
+  String deletePromptConfirm(String promptKey, String language) {
+    return 'Delete prompt \"$promptKey\" ($language)?';
+  }
+
+  @override
+  String get profileRetrieved => 'Profile retrieved';
+
+  @override
+  String get noProfileFound => 'No profile found';
+
+  @override
+  String get templateName => 'Template Name';
+
+  @override
+  String get retrieveProfile => 'Retrieve profile';
+
+  @override
+  String get previewLabel => 'Preview';
+
+  @override
+  String get markdownHint => 'Enter description in Markdown...';
 
   @override
   String get aiServiceUrlHint => '输入 AI 服务 URL（http/https）';
@@ -862,66 +924,4 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get fontMerriweather => 'Merriweather';
-
-  @override
-  String get content => '内容';
-
-  @override
-  String get invalidKey => '无效的键';
-
-  @override
-  String get invalidLanguage => '无效的语言';
-
-  @override
-  String get invalidInput => '输入无效';
-
-  @override
-  String charsCount(int count) {
-    return '字符数：$count';
-  }
-
-  @override
-  String deletePromptConfirm(String promptKey, String language) {
-    return '删除提示 "$promptKey"（$language）？';
-  }
-
-  @override
-  String get profileRetrieved => '人物资料已获取';
-
-  @override
-  String get noProfileFound => '未找到资料';
-
-  @override
-  String get templateName => '模板名称';
-
-  @override
-  String get retrieveProfile => '获取资料';
-
-  @override
-  String get previewLabel => '预览';
-
-  @override
-  String get markdownHint => '输入 Markdown…';
-
-  @override
-  String get pdf => 'PDF';
-
-  @override
-  String get generatingPdf => '正在生成 PDF…';
-
-  @override
-  String get pdfFailed => '生成 PDF 失败';
-
-  @override
-  String get tableOfContents => '目录';
-
-  @override
-  String byAuthor(String name) {
-    return '作者：$name';
-  }
-
-  @override
-  String pageOfTotal(int page, int total) {
-    return '第$page/$total页';
-  }
 }

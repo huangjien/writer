@@ -682,47 +682,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saved => 'Saved';
 
   @override
-  String get close => 'Close';
-
-  @override
-  String get copy => 'Copy';
-
-  @override
-  String get copiedToClipboard => 'Copied to clipboard';
-
-  @override
-  String showingCachedPublicData(String msg) {
-    return '$msg — showing cached/public data';
-  }
-
-  @override
-  String get menu => 'Menu';
-
-  @override
-  String get aiServiceUnavailable => 'AI Service Unavailable';
-
-  @override
-  String get aiConfigurations => 'AI Configurations';
-
-  @override
-  String get modelLabel => 'Model';
-
-  @override
-  String get temperatureLabel => 'Temperature';
-
-  @override
-  String get saveFailed => 'Save failed';
-
-  @override
-  String get saveMyVersion => 'Save My Version';
-
-  @override
-  String get resetToPublic => 'Reset to public';
-
-  @override
-  String get resetFailed => 'Reset failed';
-
-  @override
   String get required => 'Required';
 
   @override
@@ -803,6 +762,69 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contributorAdded => 'Contributor added';
 
   @override
+  String get pdf => 'PDF';
+
+  @override
+  String get generatingPdf => 'Generating PDF…';
+
+  @override
+  String get pdfFailed => 'Failed to generate PDF';
+
+  @override
+  String get tableOfContents => 'Table of Contents';
+
+  @override
+  String byAuthor(String name) {
+    return 'by $name';
+  }
+
+  @override
+  String pageOfTotal(int page, int total) {
+    return 'Page $page of $total';
+  }
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get copiedToClipboard => 'Copied to clipboard';
+
+  @override
+  String showingCachedPublicData(String msg) {
+    return '$msg — showing cached/public data';
+  }
+
+  @override
+  String get menu => 'Menu';
+
+  @override
+  String get aiServiceUnavailable => 'AI Service Unavailable';
+
+  @override
+  String get aiConfigurations => 'AI Configurations';
+
+  @override
+  String get modelLabel => 'Model';
+
+  @override
+  String get temperatureLabel => 'Temperature';
+
+  @override
+  String get saveFailed => 'Save failed';
+
+  @override
+  String get saveMyVersion => 'Save My Version';
+
+  @override
+  String get resetToPublic => 'Reset to public';
+
+  @override
+  String get resetFailed => 'Reset failed';
+
+  @override
   String get prompts => 'Prompts';
 
   @override
@@ -861,23 +883,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String makePublicPromptConfirm(String promptKey, String language) {
-    return 'Make public "$promptKey" ($language)?';
+    return 'Make public \"$promptKey\" ($language)?';
   }
-
-  @override
-  String get aiServiceUrlHint => 'Enter AI service URL (http/https)';
-
-  @override
-  String get urlLabel => 'URL';
-
-  @override
-  String get systemFont => 'System Font';
-
-  @override
-  String get fontInter => 'Inter';
-
-  @override
-  String get fontMerriweather => 'Merriweather';
 
   @override
   String get content => 'Content';
@@ -898,7 +905,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String deletePromptConfirm(String promptKey, String language) {
-    return 'Delete prompt "$promptKey" ($language)?';
+    return 'Delete prompt \"$promptKey\" ($language)?';
   }
 
   @override
@@ -920,24 +927,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get markdownHint => 'Enter description in Markdown...';
 
   @override
-  String get pdf => 'PDF';
+  String get aiServiceUrlHint => 'Enter AI service URL (http/https)';
 
   @override
-  String get generatingPdf => 'Generating PDF…';
+  String get urlLabel => 'URL';
 
   @override
-  String get pdfFailed => 'Failed to generate PDF';
+  String get systemFont => 'System Font';
 
   @override
-  String get tableOfContents => 'Table of Contents';
+  String get fontInter => 'Inter';
 
   @override
-  String byAuthor(String name) {
-    return 'by $name';
-  }
-
-  @override
-  String pageOfTotal(int page, int total) {
-    return 'Page $page of $total';
-  }
+  String get fontMerriweather => 'Merriweather';
 }

@@ -926,12 +926,6 @@ abstract class AppLocalizations {
   /// **'Common Fonts'**
   String get commonFonts;
 
-  String get aiServiceUrlHint;
-  String get urlLabel;
-  String get systemFont;
-  String get fontInter;
-  String get fontMerriweather;
-
   /// No description provided for @readerFontSize.
   ///
   /// In en, this message translates to:
@@ -1159,54 +1153,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save'**
   String get save;
-
-  String get close;
-  String get copy;
-  String get copiedToClipboard;
-  String showingCachedPublicData(String msg);
-  String get menu;
-  String get aiServiceUnavailable;
-  String get aiConfigurations;
-  String get modelLabel;
-  String get temperatureLabel;
-  String get saveFailed;
-  String get saveMyVersion;
-  String get resetToPublic;
-  String get resetFailed;
-
-  String get prompts;
-  String get tools;
-  String get preview;
-  String get actions;
-  String get promptKey;
-  String get language;
-  String get filterByKey;
-  String get viewPublic;
-  String get groupNone;
-  String get groupLanguage;
-  String get groupKey;
-  String get newPrompt;
-  String get editPrompt;
-  String get makePublic;
-  String get noPrompts;
-  String get confirm;
-  String get lastRead;
-  String get noRecentChapters;
-  String get failedToLoadConfig;
-  String makePublicPromptConfirm(String promptKey, String language);
-
-  String get content;
-  String get invalidKey;
-  String get invalidLanguage;
-  String get invalidInput;
-  String charsCount(int count);
-  String deletePromptConfirm(String promptKey, String language);
-  String get profileRetrieved;
-  String get noProfileFound;
-  String get templateName;
-  String get retrieveProfile;
-  String get previewLabel;
-  String get markdownHint;
 
   /// No description provided for @createNextChapter.
   ///
@@ -1609,6 +1555,306 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Page {page} of {total}'**
   String pageOfTotal(int page, int total);
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @copiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get copiedToClipboard;
+
+  /// No description provided for @showingCachedPublicData.
+  ///
+  /// In en, this message translates to:
+  /// **'{msg} — showing cached/public data'**
+  String showingCachedPublicData(String msg);
+
+  /// No description provided for @menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menu;
+
+  /// No description provided for @aiServiceUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'AI service unavailable'**
+  String get aiServiceUnavailable;
+
+  /// No description provided for @aiConfigurations.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Configurations'**
+  String get aiConfigurations;
+
+  /// No description provided for @modelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Model'**
+  String get modelLabel;
+
+  /// No description provided for @temperatureLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperature'**
+  String get temperatureLabel;
+
+  /// No description provided for @saveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Save failed'**
+  String get saveFailed;
+
+  /// No description provided for @saveMyVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Save my version'**
+  String get saveMyVersion;
+
+  /// No description provided for @resetToPublic.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to public'**
+  String get resetToPublic;
+
+  /// No description provided for @resetFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset failed'**
+  String get resetFailed;
+
+  /// No description provided for @prompts.
+  ///
+  /// In en, this message translates to:
+  /// **'Prompts'**
+  String get prompts;
+
+  /// No description provided for @tools.
+  ///
+  /// In en, this message translates to:
+  /// **'Tools'**
+  String get tools;
+
+  /// No description provided for @preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get preview;
+
+  /// No description provided for @actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actions;
+
+  /// No description provided for @promptKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Prompt Key'**
+  String get promptKey;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @filterByKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by key'**
+  String get filterByKey;
+
+  /// No description provided for @viewPublic.
+  ///
+  /// In en, this message translates to:
+  /// **'View public'**
+  String get viewPublic;
+
+  /// No description provided for @groupNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get groupNone;
+
+  /// No description provided for @groupLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get groupLanguage;
+
+  /// No description provided for @groupKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Key'**
+  String get groupKey;
+
+  /// No description provided for @newPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'New Prompt'**
+  String get newPrompt;
+
+  /// No description provided for @editPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Prompt'**
+  String get editPrompt;
+
+  /// No description provided for @makePublic.
+  ///
+  /// In en, this message translates to:
+  /// **'Make Public'**
+  String get makePublic;
+
+  /// No description provided for @noPrompts.
+  ///
+  /// In en, this message translates to:
+  /// **'No prompts found'**
+  String get noPrompts;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @lastRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Last read'**
+  String get lastRead;
+
+  /// No description provided for @noRecentChapters.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent chapters'**
+  String get noRecentChapters;
+
+  /// No description provided for @failedToLoadConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load config'**
+  String get failedToLoadConfig;
+
+  /// No description provided for @makePublicPromptConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Make public \"{promptKey}\" ({language})?'**
+  String makePublicPromptConfirm(String promptKey, String language);
+
+  /// No description provided for @content.
+  ///
+  /// In en, this message translates to:
+  /// **'Content'**
+  String get content;
+
+  /// No description provided for @invalidKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid key'**
+  String get invalidKey;
+
+  /// No description provided for @invalidLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid language'**
+  String get invalidLanguage;
+
+  /// No description provided for @invalidInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid input'**
+  String get invalidInput;
+
+  /// No description provided for @charsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Characters: {count}'**
+  String charsCount(int count);
+
+  /// No description provided for @deletePromptConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete prompt \"{promptKey}\" ({language})?'**
+  String deletePromptConfirm(String promptKey, String language);
+
+  /// No description provided for @profileRetrieved.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile retrieved'**
+  String get profileRetrieved;
+
+  /// No description provided for @noProfileFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No profile found'**
+  String get noProfileFound;
+
+  /// No description provided for @templateName.
+  ///
+  /// In en, this message translates to:
+  /// **'Template Name'**
+  String get templateName;
+
+  /// No description provided for @retrieveProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Retrieve profile'**
+  String get retrieveProfile;
+
+  /// No description provided for @previewLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get previewLabel;
+
+  /// No description provided for @markdownHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter description in Markdown...'**
+  String get markdownHint;
+
+  /// No description provided for @aiServiceUrlHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter AI service URL (http/https)'**
+  String get aiServiceUrlHint;
+
+  /// No description provided for @urlLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get urlLabel;
+
+  /// No description provided for @systemFont.
+  ///
+  /// In en, this message translates to:
+  /// **'System Font'**
+  String get systemFont;
+
+  /// No description provided for @fontInter.
+  ///
+  /// In en, this message translates to:
+  /// **'Inter'**
+  String get fontInter;
+
+  /// No description provided for @fontMerriweather.
+  ///
+  /// In en, this message translates to:
+  /// **'Merriweather'**
+  String get fontMerriweather;
 }
 
 class _AppLocalizationsDelegate
