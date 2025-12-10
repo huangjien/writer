@@ -99,22 +99,26 @@ ci:
 	$(FLUTTER) test --test-randomize-ordering-seed=random -j 1
 
 test:
-	$(FLUTTER) test --coverage --test-randomize-ordering-seed=random -j 1
-	@if [ -f coverage/lcov.info ]; then \
+	@START=$$(date +%s); \
+	$(FLUTTER) test --coverage --test-randomize-ordering-seed=random -j 1; \
+	if [ -f coverage/lcov.info ]; then \
 		awk -F, '/^DA:/ { total++; if ($$2 > 0) hit++ } END { printf("Coverage: %.2f%% (%d/%d lines)\n", (hit/total)*100, hit, total) }' coverage/lcov.info; \
-			TOTAL_LIB_LINES=$$(find lib -name '*.dart' -print0 | xargs -0 wc -l | tail -n 1 | awk '{print $$1}'); \
-			awk -F, -v tot=$$TOTAL_LIB_LINES '/^DA:/ { if ($$2 > 0) hit++ } END { printf("Full-lines coverage: %.2f%% (%d/%d lines)\n", (hit/tot)*100, hit, tot) }' coverage/lcov.info; \
-			if command -v genhtml >/dev/null 2>&1; then \
-				genhtml -o coverage/html coverage/lcov.info; \
-				echo "HTML coverage: coverage/html/index.html"; \
-			else \
-				echo "genhtml not found; install lcov to generate HTML coverage."; \
-			fi; \
+		TOTAL_LIB_LINES=$$(find lib -name '*.dart' -print0 | xargs -0 wc -l | tail -n 1 | awk '{print $$1}'); \
+		awk -F, -v tot=$$TOTAL_LIB_LINES '/^DA:/ { if ($$2 > 0) hit++ } END { printf("Full-lines coverage: %.2f%% (%d/%d lines)\n", (hit/tot)*100, hit, tot) }' coverage/lcov.info; \
+		if command -v genhtml >/dev/null 2>&1; then \
+			genhtml -o coverage/html coverage/lcov.info; \
+			echo "HTML coverage: coverage/html/index.html"; \
 		else \
-			echo "Coverage file not found; ensure --coverage succeeded."; \
-		fi
-		@echo "Checking per-file coverage (<85%)..."
-		dart check_coverage.dart
+			echo "genhtml not found; install lcov to generate HTML coverage."; \
+		fi; \
+	else \
+		echo "Coverage file not found; ensure --coverage succeeded."; \
+	fi; \
+	echo "Checking per-file coverage (<85%)..."; \
+	dart check_coverage.dart; \
+	END=$$(date +%s); \
+	ELAPSED=$$((END-START)); \
+	printf "make test duration: %dm %ds\n" $$((ELAPSED/60)) $$((ELAPSED%60))
 
 test-expanded:
 	$(FLUTTER) test $(DF_ARGS) --coverage -r expanded --test-randomize-ordering-seed=random -j 1
