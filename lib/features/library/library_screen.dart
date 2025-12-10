@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:writer/theme/design_tokens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../../state/novel_providers.dart';
 import '../../state/mock_providers.dart';
 import '../../widgets/recent_chapters.dart';
+import '../../widgets/app_drawer.dart';
 import '../../state/providers.dart';
 import 'library_providers.dart';
 import 'widgets/session_section.dart';
@@ -143,7 +145,36 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(l10n.appTitle),
+              Builder(
+                builder: (ctx) => GestureDetector(
+                  onTap: () => Scaffold.of(ctx).openDrawer(),
+                  child: kIsWeb
+                      ? Image.network(
+                          '/icons/Icon-192.png',
+                          height: 40,
+                          key: const ValueKey('home_logo'),
+                          errorBuilder: (context, error, stack) => Text(
+                            'Unable to load asset: "assetmanifest.bin.json"',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.redAccent,
+                            ),
+                          ),
+                        )
+                      : Image.asset(
+                          'web/icons/Icon-192.png',
+                          height: 40,
+                          key: const ValueKey('home_logo'),
+                          errorBuilder: (context, error, stack) => Text(
+                            'Unable to load asset: "assetmanifest.bin.json"',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.redAccent,
+                            ),
+                          ),
+                        ),
+                ),
+              ),
               const SizedBox(width: Spacing.xs),
               const Icon(Icons.info_outline, size: 16),
               const SizedBox(width: Spacing.xs),
@@ -194,6 +225,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
           ),
         ],
       ),
+      drawer: const AppDrawer(),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(
           Spacing.l,

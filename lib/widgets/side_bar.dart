@@ -92,20 +92,6 @@ class SideBar extends ConsumerWidget {
                 context.go('/novel/$novelId/scenes');
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.assignment_ind_outlined),
-              title: Text(l10n.characterTemplates),
-              onTap: () {
-                context.go('/novel/$novelId/character-templates');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.assignment_outlined),
-              title: Text(l10n.sceneTemplates),
-              onTap: () {
-                context.go('/novel/$novelId/scene-templates');
-              },
-            ),
             if (isOwner) ...[
               const Divider(),
               ListTile(

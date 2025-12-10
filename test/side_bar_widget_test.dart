@@ -81,8 +81,8 @@ void main() {
     expect(find.text('Summary'), findsOneWidget);
     expect(find.text('Characters'), findsOneWidget);
     expect(find.text('Scenes'), findsOneWidget);
-    expect(find.text('Character Templates'), findsOneWidget);
-    expect(find.text('Scene Templates'), findsOneWidget);
+    expect(find.text('Character Templates'), findsNothing);
+    expect(find.text('Scene Templates'), findsNothing);
     // Owner actions
     // Scroll to bottom to ensure actions are visible
     await tester.drag(find.byType(ListView), const Offset(0, -500));
