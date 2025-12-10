@@ -256,6 +256,23 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
     }
   }
 
+  DateTime? _lastRowTapAt;
+  String? _lastRowTapId;
+
+  void _onRowTap(Prompt p) {
+    final now = DateTime.now();
+    if (_lastRowTapId == p.id &&
+        _lastRowTapAt != null &&
+        now.difference(_lastRowTapAt!) < const Duration(milliseconds: 300)) {
+      context.push('/prompt_form', extra: p);
+      _lastRowTapAt = null;
+      _lastRowTapId = null;
+    } else {
+      _lastRowTapAt = now;
+      _lastRowTapId = p.id;
+    }
+  }
+
   Widget _filters() {
     final l10n = AppLocalizations.of(context)!;
     return Padding(
@@ -319,18 +336,27 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
                       const SizedBox(width: 8),
                       if (p.isPublic)
                         Chip(
-                          label: Text(l10n.publicLabel),
+                          label: Text(
+                            l10n.publicLabel,
+                            style: Theme.of(context).textTheme.labelSmall,
+                          ),
                           backgroundColor: Colors.greenAccent.withValues(
                             alpha: 0.2,
                           ),
                         )
                       else
-                        Chip(label: Text(l10n.privateLabel)),
+                        Chip(
+                          label: Text(
+                            l10n.privateLabel,
+                            style: Theme.of(context).textTheme.labelSmall,
+                          ),
+                        ),
                     ],
                   ),
+                  onTap: () => _onRowTap(p),
                 ),
-                DataCell(Text(p.language)),
-                DataCell(Text(_preview(p.content))),
+                DataCell(Text(p.language), onTap: () => _onRowTap(p)),
+                DataCell(Text(_preview(p.content)), onTap: () => _onRowTap(p)),
                 DataCell(
                   Row(
                     children: [

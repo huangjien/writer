@@ -13,6 +13,7 @@ import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -43,19 +44,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         : null;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.settings), actions: const []),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.home),
+          tooltip: l10n.home,
+          onPressed: () => context.go('/'),
+        ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(l10n.settings),
+            if (user != null) ...[
+              const SizedBox(width: 12),
+              Flexible(
+                child: Text(
+                  l10n.signedInAs(user.email!),
+                  style: Theme.of(context).textTheme.bodySmall,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ],
+        ),
+        actions: const [],
+      ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 16),
         children: [
-          if (user != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 24),
-              child: Text(
-                l10n.signedInAs(user.email!),
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-            ),
           const AppSettingsSection(),
           const PaletteSettingsSection(),
           const TypographySettingsSection(),
