@@ -48,17 +48,19 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Required validation for Title.
+    final locField = find.widgetWithText(TextFormField, 'Location');
+    await tester.enterText(locField, 'X');
+    await tester.pump();
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(find.text('Required'), findsOneWidget);
 
     // Fill fields and save.
     final titleField = find.widgetWithText(TextFormField, 'Title');
-    final locField = find.widgetWithText(TextFormField, 'Location');
+    final locField2 = find.widgetWithText(TextFormField, 'Location');
     final sumField = find.widgetWithText(TextFormField, 'Description');
     await tester.enterText(titleField, 'Opening Scene');
-    await tester.enterText(locField, 'Forest');
+    await tester.enterText(locField2, 'Forest');
     await tester.enterText(sumField, 'Introduces the journey.');
     await tester.tap(find.text('Save'));
     await tester.pump();

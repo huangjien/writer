@@ -36,7 +36,9 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Required validation for Template Name.
+    final descFieldPre = find.widgetWithText(TextFormField, 'Description');
+    await tester.enterText(descFieldPre, 'X');
+    await tester.pump();
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(find.text('Required'), findsOneWidget);

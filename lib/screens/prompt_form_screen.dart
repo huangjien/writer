@@ -37,6 +37,7 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
   bool _isPublic = false;
   bool _saving = false;
   String? _error;
+  bool _isDirty = false;
 
   bool get _isEdit => widget.initial != null;
 
@@ -47,6 +48,26 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
     _key = widget.initial?.promptKey ?? _keys.first;
     _lang = widget.initial?.language ?? _langs.first;
     _contentCtrl = TextEditingController(text: widget.initial?.content ?? '');
+    _isDirty = false;
+    _contentCtrl.addListener(_updateDirty);
+  }
+
+  void _updateDirty() {
+    final initialContent = widget.initial?.content ?? '';
+    final contentChanged = _contentCtrl.text.trim() != initialContent.trim();
+    final keyChanged = _key != (widget.initial?.promptKey ?? _keys.first);
+    final langChanged = _lang != (widget.initial?.language ?? _langs.first);
+    final publicChanged =
+        _isPublic != (widget.initial?.isPublic ?? widget.defaultPublic);
+    final dirty =
+        contentChanged ||
+        (!_isEdit && (keyChanged || langChanged)) ||
+        publicChanged;
+    if (dirty != _isDirty) {
+      setState(() {
+        _isDirty = dirty;
+      });
+    }
   }
 
   String? _validateKey(String? v) {
@@ -151,7 +172,10 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                           .toList(),
                       onChanged: _isEdit
                           ? null
-                          : (v) => setState(() => _key = v ?? _key),
+                          : (v) {
+                              setState(() => _key = v ?? _key);
+                              _updateDirty();
+                            },
                       validator: _isEdit ? null : _validateKey,
                       decoration: InputDecoration(labelText: l10n.promptKey),
                     ),
@@ -168,7 +192,10 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                           .toList(),
                       onChanged: _isEdit
                           ? null
-                          : (v) => setState(() => _lang = v ?? _lang),
+                          : (v) {
+                              setState(() => _lang = v ?? _lang);
+                              _updateDirty();
+                            },
                       validator: _isEdit ? null : _validateLang,
                       decoration: InputDecoration(labelText: l10n.language),
                     ),
@@ -180,7 +207,10 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                         Text(l10n.publicLabel),
                         Switch(
                           value: _isPublic,
-                          onChanged: (v) => setState(() => _isPublic = v),
+                          onChanged: (v) {
+                            setState(() => _isPublic = v);
+                            _updateDirty();
+                          },
                         ),
                       ],
                     ),
@@ -192,7 +222,7 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                   controller: _contentCtrl,
                   maxLines: null,
                   expands: true,
-                  onChanged: (_) => setState(() {}),
+                  onChanged: (_) => _updateDirty(),
                   validator: _validateContent,
                   decoration: InputDecoration(labelText: l10n.content),
                 ),
@@ -208,7 +238,7 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
-                    onPressed: _saving ? null : _save,
+                    onPressed: (_saving || !_isDirty) ? null : _save,
                     child: Text(l10n.save),
                   ),
                 ],

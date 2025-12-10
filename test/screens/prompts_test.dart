@@ -246,6 +246,7 @@ void main() {
     );
     await tester.pump();
     await tester.enterText(find.byType(TextFormField), 'Y');
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(svc.createCalled, isTrue);
@@ -270,8 +271,40 @@ void main() {
     );
     await tester.pump();
     await tester.enterText(find.byType(TextFormField), 'B');
+    await tester.pumpAndSettle();
+    final saveButton = find.widgetWithText(ElevatedButton, 'Save');
+    final btn = tester.widget<ElevatedButton>(saveButton);
+    expect(btn.onPressed, isNotNull);
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(svc.updateCalled, isTrue);
+  });
+
+  testWidgets('PromptFormScreen save disabled until changes', (tester) async {
+    final svc = FakePromptsService();
+    final initial = Prompt(
+      id: '1',
+      userId: 'u1',
+      promptKey: 'system.beta.male',
+      language: 'en',
+      content: 'A',
+      isPublic: false,
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PromptFormScreen(service: svc, initial: initial),
+      ),
+    );
+    await tester.pump();
+    final saveButton = find.widgetWithText(ElevatedButton, 'Save');
+    expect(saveButton, findsOneWidget);
+    final btn = tester.widget<ElevatedButton>(saveButton);
+    expect(btn.onPressed, isNull);
+    await tester.enterText(find.byType(TextFormField), 'B');
+    await tester.pump();
+    final btn2 = tester.widget<ElevatedButton>(saveButton);
+    expect(btn2.onPressed, isNotNull);
   });
 }

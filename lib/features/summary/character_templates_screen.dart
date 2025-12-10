@@ -31,6 +31,9 @@ class _CharacterTemplatesScreenState
   bool _saving = false;
   bool _retrieving = false;
   String? _error;
+  bool _isDirty = false;
+  String _baseName = '';
+  String _baseDesc = '';
 
   @override
   void initState() {
@@ -49,6 +52,9 @@ class _CharacterTemplatesScreenState
         _descController.text = row.characterSummaries ?? '';
       }
     }
+    _baseName = _nameController.text;
+    _baseDesc = _descController.text;
+    _isDirty = false;
     if (mounted) setState(() {});
   }
 
@@ -127,7 +133,12 @@ class _CharacterTemplatesScreenState
                       ),
                       validator: (v) =>
                           v == null || v.trim().isEmpty ? 'Required' : null,
-                      onChanged: (_) => setState(() {}),
+                      onChanged: (_) {
+                        final dirty =
+                            _nameController.text.trim() != _baseName.trim() ||
+                            _descController.text.trim() != _baseDesc.trim();
+                        if (dirty != _isDirty) setState(() => _isDirty = dirty);
+                      },
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -185,9 +196,12 @@ class _CharacterTemplatesScreenState
                       maxLines: null,
                       expands: true,
                       textAlignVertical: TextAlignVertical.top,
-                      onChanged: (_) => setState(
-                        () {},
-                      ), // Rebuild to update preview when switching back
+                      onChanged: (_) {
+                        final dirty =
+                            _nameController.text.trim() != _baseName.trim() ||
+                            _descController.text.trim() != _baseDesc.trim();
+                        if (dirty != _isDirty) setState(() => _isDirty = dirty);
+                      },
                     ),
                   ],
                 ),
@@ -196,7 +210,7 @@ class _CharacterTemplatesScreenState
               Row(
                 children: [
                   ElevatedButton(
-                    onPressed: _saving
+                    onPressed: (_saving || !_isDirty)
                         ? null
                         : () async {
                             final ok =

@@ -27,6 +27,12 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
   String _languageCode = 'en';
   bool _isPublic = true;
   final _contributorEmailController = TextEditingController();
+  bool _isDirty = false;
+  String _baseTitle = '';
+  String _baseDescription = '';
+  String _baseCoverUrl = '';
+  String _baseLanguageCode = 'en';
+  bool _baseIsPublic = true;
 
   @override
   void dispose() {
@@ -136,6 +142,12 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                   _languageCode = novel.languageCode;
                   _isPublic = novel.isPublic;
                   _initialized = true;
+                  _baseTitle = novel.title;
+                  _baseDescription = novel.description ?? '';
+                  _baseCoverUrl = novel.coverUrl ?? '';
+                  _baseLanguageCode = novel.languageCode;
+                  _baseIsPublic = novel.isPublic;
+                  _isDirty = false;
                 }
                 return Form(
                   key: _formKey,
@@ -145,7 +157,19 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                       TextFormField(
                         controller: _titleController,
                         decoration: InputDecoration(labelText: l10n.titleLabel),
-                        onChanged: (_) => _recomputeFormValidity(),
+                        onChanged: (_) {
+                          _recomputeFormValidity();
+                          final dirty =
+                              _titleController.text.trim() !=
+                                  _baseTitle.trim() ||
+                              _descriptionController.text.trim() !=
+                                  _baseDescription.trim() ||
+                              (_coverUrlController.text.trim() !=
+                                  _baseCoverUrl.trim());
+                          if (dirty != _isDirty) {
+                            setState(() => _isDirty = dirty);
+                          }
+                        },
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
@@ -156,7 +180,19 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                           labelText: l10n.descriptionLabel,
                           alignLabelWithHint: true,
                         ),
-                        onChanged: (_) => _recomputeFormValidity(),
+                        onChanged: (_) {
+                          _recomputeFormValidity();
+                          final dirty =
+                              _titleController.text.trim() !=
+                                  _baseTitle.trim() ||
+                              _descriptionController.text.trim() !=
+                                  _baseDescription.trim() ||
+                              (_coverUrlController.text.trim() !=
+                                  _baseCoverUrl.trim());
+                          if (dirty != _isDirty) {
+                            setState(() => _isDirty = dirty);
+                          }
+                        },
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
@@ -165,14 +201,39 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                           labelText: l10n.coverUrlLabel,
                         ),
                         validator: _validateCoverUrl,
-                        onChanged: _onCoverChanged,
+                        onChanged: (s) {
+                          _onCoverChanged(s);
+                          final dirty =
+                              _titleController.text.trim() !=
+                                  _baseTitle.trim() ||
+                              _descriptionController.text.trim() !=
+                                  _baseDescription.trim() ||
+                              (_coverUrlController.text.trim() !=
+                                  _baseCoverUrl.trim());
+                          if (dirty != _isDirty) {
+                            setState(() => _isDirty = dirty);
+                          }
+                        },
                       ),
                       const SizedBox(height: 12),
                       if (isOwner) ...[
                         SwitchListTile(
                           value: _isPublic,
                           title: Text(l10n.publicLabel),
-                          onChanged: (v) => setState(() => _isPublic = v),
+                          onChanged: (v) {
+                            setState(() => _isPublic = v);
+                            final dirty =
+                                _titleController.text.trim() !=
+                                    _baseTitle.trim() ||
+                                _descriptionController.text.trim() !=
+                                    _baseDescription.trim() ||
+                                (_coverUrlController.text.trim() !=
+                                    _baseCoverUrl.trim()) ||
+                                (_isPublic != _baseIsPublic);
+                            if (dirty != _isDirty) {
+                              setState(() => _isDirty = dirty);
+                            }
+                          },
                         ),
                         const SizedBox(height: 12),
                       ],
@@ -184,6 +245,17 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                             onChanged: (code) {
                               if (code == null) return;
                               setState(() => _languageCode = code);
+                              final dirty =
+                                  _titleController.text.trim() !=
+                                      _baseTitle.trim() ||
+                                  _descriptionController.text.trim() !=
+                                      _baseDescription.trim() ||
+                                  (_coverUrlController.text.trim() !=
+                                      _baseCoverUrl.trim()) ||
+                                  (_languageCode != _baseLanguageCode);
+                              if (dirty != _isDirty) {
+                                setState(() => _isDirty = dirty);
+                              }
                             },
                             items: [
                               DropdownMenuItem(
@@ -262,7 +334,9 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                               'Save button longPress: saving=$_saving coverValid=$_coverValid',
                             );
                           },
-                          onPressed: (_saving || !_coverValid) ? null : _save,
+                          onPressed: (_saving || !_coverValid || !_isDirty)
+                              ? null
+                              : _save,
                         ),
                       ),
                     ],

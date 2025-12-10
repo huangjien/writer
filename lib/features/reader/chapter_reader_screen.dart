@@ -101,6 +101,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     'com.huangjien.novel/media_control',
   );
   final _controller = ScrollController();
+  bool _betaLoading = false;
 
   @override
   void initState() {
@@ -251,12 +252,18 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
   }
 
   Future<void> _onBetaEvaluatePressed() async {
+    setState(() {
+      _betaLoading = true;
+    });
     final state = ref.read(readerSessionProvider);
     final l10n = AppLocalizations.of(context)!;
     if ((state.content ?? '').trim().isEmpty) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.betaEvaluationFailed)));
+      setState(() {
+        _betaLoading = false;
+      });
       return;
     }
     ScaffoldMessenger.of(
@@ -275,6 +282,9 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(l10n.betaEvaluationFailed)));
+        setState(() {
+          _betaLoading = false;
+        });
         return;
       }
       ScaffoldMessenger.of(
@@ -291,6 +301,11 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.betaEvaluationFailed)));
+    }
+    if (mounted) {
+      setState(() {
+        _betaLoading = false;
+      });
     }
   }
 
@@ -477,6 +492,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
                         },
                         onBetaEvaluate: _onBetaEvaluatePressed,
                         showBeta: supabaseEnabled,
+                        betaLoading: _betaLoading,
                       );
                     },
                   ),

@@ -24,6 +24,7 @@ class ReaderBottomBarShell extends StatelessWidget {
     required this.onCreated,
     this.onBetaEvaluate,
     this.showBeta = false,
+    this.betaLoading = false,
   });
 
   final bool canEdit;
@@ -43,6 +44,7 @@ class ReaderBottomBarShell extends StatelessWidget {
   final void Function(Chapter created) onCreated;
   final VoidCallback? onBetaEvaluate;
   final bool showBeta;
+  final bool betaLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +92,7 @@ class ReaderBottomBarShell extends StatelessWidget {
       editActions: editActions,
       onBetaEvaluate: onBetaEvaluate,
       showBeta: showBeta,
+      betaLoading: betaLoading,
     );
   }
 }

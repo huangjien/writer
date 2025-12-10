@@ -24,6 +24,9 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen> {
   final _descController = TextEditingController();
   bool _saving = false;
   String? _error;
+  bool _isDirty = false;
+  String _baseName = '';
+  String _baseDesc = '';
 
   @override
   void initState() {
@@ -46,6 +49,9 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen> {
         _descController.text = item.description ?? '';
       }
     }
+    _baseName = _nameController.text;
+    _baseDesc = _descController.text;
+    _isDirty = false;
     setState(() {});
   }
 
@@ -73,18 +79,30 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen> {
                 decoration: InputDecoration(labelText: l10n.templateName),
                 validator: (v) =>
                     v == null || v.trim().isEmpty ? l10n.required : null,
+                onChanged: (_) {
+                  final dirty =
+                      _nameController.text.trim() != _baseName.trim() ||
+                      _descController.text.trim() != _baseDesc.trim();
+                  if (dirty != _isDirty) setState(() => _isDirty = dirty);
+                },
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _descController,
                 decoration: InputDecoration(labelText: l10n.descriptionLabel),
                 maxLines: 5,
+                onChanged: (_) {
+                  final dirty =
+                      _nameController.text.trim() != _baseName.trim() ||
+                      _descController.text.trim() != _baseDesc.trim();
+                  if (dirty != _isDirty) setState(() => _isDirty = dirty);
+                },
               ),
               const SizedBox(height: 16),
               Row(
                 children: [
                   ElevatedButton(
-                    onPressed: _saving
+                    onPressed: (_saving || !_isDirty)
                         ? null
                         : () async {
                             final ok =

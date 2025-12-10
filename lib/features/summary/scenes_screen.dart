@@ -26,6 +26,10 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
   final _summaryController = TextEditingController();
   bool _saving = false;
   String? _error;
+  bool _isDirty = false;
+  String _baseTitle = '';
+  String _baseLocation = '';
+  String _baseSummary = '';
 
   @override
   void initState() {
@@ -41,6 +45,10 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
       _locationController.text = item.location ?? '';
       _summaryController.text = item.summary ?? '';
     }
+    _baseTitle = _titleController.text;
+    _baseLocation = _locationController.text;
+    _baseSummary = _summaryController.text;
+    _isDirty = false;
     setState(() {});
   }
 
@@ -95,11 +103,27 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
                     decoration: InputDecoration(labelText: l10n.titleLabel),
                     validator: (v) =>
                         v == null || v.trim().isEmpty ? l10n.required : null,
+                    onChanged: (_) {
+                      final dirty =
+                          _titleController.text.trim() != _baseTitle.trim() ||
+                          _locationController.text.trim() !=
+                              _baseLocation.trim() ||
+                          _summaryController.text.trim() != _baseSummary.trim();
+                      if (dirty != _isDirty) setState(() => _isDirty = dirty);
+                    },
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _locationController,
                     decoration: InputDecoration(labelText: l10n.locationLabel),
+                    onChanged: (_) {
+                      final dirty =
+                          _titleController.text.trim() != _baseTitle.trim() ||
+                          _locationController.text.trim() !=
+                              _baseLocation.trim() ||
+                          _summaryController.text.trim() != _baseSummary.trim();
+                      if (dirty != _isDirty) setState(() => _isDirty = dirty);
+                    },
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
@@ -108,12 +132,20 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
                       labelText: l10n.descriptionLabel,
                     ),
                     maxLines: 5,
+                    onChanged: (_) {
+                      final dirty =
+                          _titleController.text.trim() != _baseTitle.trim() ||
+                          _locationController.text.trim() !=
+                              _baseLocation.trim() ||
+                          _summaryController.text.trim() != _baseSummary.trim();
+                      if (dirty != _isDirty) setState(() => _isDirty = dirty);
+                    },
                   ),
                   const SizedBox(height: 16),
                   Row(
                     children: [
                       ElevatedButton(
-                        onPressed: _saving
+                        onPressed: (_saving || !_isDirty)
                             ? null
                             : () async {
                                 final ok =

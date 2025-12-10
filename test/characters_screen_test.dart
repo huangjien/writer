@@ -59,7 +59,9 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Required validation for Title.
+    final summariesFieldPre = find.widgetWithText(TextFormField, 'Summaries');
+    await tester.enterText(summariesFieldPre, 'X');
+    await tester.pump();
     await tester.ensureVisible(find.text('Save'));
     await tester.tap(find.text('Save'));
     await tester.pump();

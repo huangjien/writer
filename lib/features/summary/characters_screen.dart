@@ -26,6 +26,11 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
   String _languageCode = 'en';
   bool _saving = false;
   String? _error;
+  bool _isDirty = false;
+  String _baseTitle = '';
+  String _baseSummaries = '';
+  String _baseSynopses = '';
+  String _baseLanguageCode = 'en';
 
   @override
   void initState() {
@@ -47,6 +52,11 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
       final lc = (data['language_code'] as String?) ?? 'en';
       _languageCode = lc;
     }
+    _baseTitle = _titleController.text;
+    _baseSummaries = _summariesController.text;
+    _baseSynopses = _synopsesController.text;
+    _baseLanguageCode = _languageCode;
+    _isDirty = false;
     setState(() {});
   }
 
@@ -102,6 +112,16 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                       decoration: InputDecoration(labelText: l10n.titleLabel),
                       validator: (v) =>
                           v == null || v.trim().isEmpty ? l10n.required : null,
+                      onChanged: (_) {
+                        final dirty =
+                            _titleController.text.trim() != _baseTitle.trim() ||
+                            _summariesController.text.trim() !=
+                                _baseSummaries.trim() ||
+                            _synopsesController.text.trim() !=
+                                _baseSynopses.trim() ||
+                            _languageCode != _baseLanguageCode;
+                        if (dirty != _isDirty) setState(() => _isDirty = dirty);
+                      },
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -110,6 +130,16 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                         labelText: l10n.summariesLabel,
                       ),
                       maxLines: 3,
+                      onChanged: (_) {
+                        final dirty =
+                            _titleController.text.trim() != _baseTitle.trim() ||
+                            _summariesController.text.trim() !=
+                                _baseSummaries.trim() ||
+                            _synopsesController.text.trim() !=
+                                _baseSynopses.trim() ||
+                            _languageCode != _baseLanguageCode;
+                        if (dirty != _isDirty) setState(() => _isDirty = dirty);
+                      },
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -118,6 +148,16 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                         labelText: l10n.synopsesLabel,
                       ),
                       maxLines: 5,
+                      onChanged: (_) {
+                        final dirty =
+                            _titleController.text.trim() != _baseTitle.trim() ||
+                            _summariesController.text.trim() !=
+                                _baseSummaries.trim() ||
+                            _synopsesController.text.trim() !=
+                                _baseSynopses.trim() ||
+                            _languageCode != _baseLanguageCode;
+                        if (dirty != _isDirty) setState(() => _isDirty = dirty);
+                      },
                     ),
                     const SizedBox(height: 12),
                     Row(
@@ -130,6 +170,17 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                               return;
                             }
                             setState(() => _languageCode = code);
+                            final dirty =
+                                _titleController.text.trim() !=
+                                    _baseTitle.trim() ||
+                                _summariesController.text.trim() !=
+                                    _baseSummaries.trim() ||
+                                _synopsesController.text.trim() !=
+                                    _baseSynopses.trim() ||
+                                _languageCode != _baseLanguageCode;
+                            if (dirty != _isDirty) {
+                              setState(() => _isDirty = dirty);
+                            }
                           },
                           items: [
                             DropdownMenuItem(
@@ -148,7 +199,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                     Row(
                       children: [
                         ElevatedButton(
-                          onPressed: _saving
+                          onPressed: (_saving || !_isDirty)
                               ? null
                               : () async {
                                   final ok =

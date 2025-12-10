@@ -111,6 +111,7 @@ void main() {
 
     // Save a new summary.
     await tester.enterText(summaryField, 'New summary text');
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Save'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
@@ -119,5 +120,38 @@ void main() {
     if (!supabaseEnabled) {
       expect(find.text('Saved'), findsOneWidget);
     }
+  });
+
+  testWidgets('SummaryScreen save disabled until changes', (tester) async {
+    final repo = CapturingLocalRepo();
+    final novel = const Novel(
+      id: 'n-1',
+      title: 'Test Novel',
+      author: 'Author',
+      description: 'Existing description',
+      coverUrl: null,
+      languageCode: 'en',
+      isPublic: true,
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          localStorageRepositoryProvider.overrideWith((_) => repo),
+          mockNovelsProvider.overrideWith((ref) async => [novel]),
+          novelProvider.overrideWith((ref, id) async => novel),
+        ],
+        child: const MaterialApp(home: SummaryScreen(novelId: 'n-1')),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final saveButton = find.widgetWithText(ElevatedButton, 'Save');
+    expect(saveButton, findsOneWidget);
+    final btn = tester.widget<ElevatedButton>(saveButton);
+    expect(btn.onPressed, isNull);
+    final summaryField = find.byType(TextFormField);
+    await tester.enterText(summaryField, 'Changed');
+    await tester.pump();
+    final btn2 = tester.widget<ElevatedButton>(saveButton);
+    expect(btn2.onPressed, isNotNull);
   });
 }

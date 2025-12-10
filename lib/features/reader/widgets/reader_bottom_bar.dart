@@ -23,6 +23,7 @@ class ReaderBottomBar extends StatelessWidget {
     this.editActions,
     this.onBetaEvaluate,
     this.showBeta = false,
+    this.betaLoading = false,
   });
 
   final bool canEdit;
@@ -42,6 +43,7 @@ class ReaderBottomBar extends StatelessWidget {
   final Widget? editActions;
   final VoidCallback? onBetaEvaluate;
   final bool showBeta;
+  final bool betaLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -118,17 +120,32 @@ class ReaderBottomBar extends StatelessWidget {
           ],
           const Spacer(),
           if (!editMode && showBeta && onBetaEvaluate != null) ...[
-            Semantics(
-              button: true,
-              label: l10n.betaEvaluate,
-              child: Tooltip(
-                message: l10n.betaEvaluate,
-                child: IconButton(
-                  icon: const Icon(Icons.science),
-                  iconSize: iconSize,
-                  onPressed: onBetaEvaluate,
-                ),
-              ),
+            AnimatedSwitcher(
+              duration: reduceMotion
+                  ? Duration.zero
+                  : const Duration(milliseconds: 200),
+              switchInCurve: reduceMotion ? Curves.linear : Curves.easeOut,
+              switchOutCurve: reduceMotion ? Curves.linear : Curves.easeIn,
+              child: betaLoading
+                  ? SizedBox(
+                      key: const ValueKey('beta_spinner'),
+                      height: iconSize,
+                      width: iconSize,
+                      child: const CircularProgressIndicator(strokeWidth: 2.5),
+                    )
+                  : Semantics(
+                      button: true,
+                      label: l10n.betaEvaluate,
+                      child: Tooltip(
+                        message: l10n.betaEvaluate,
+                        child: IconButton(
+                          key: const ValueKey('beta_button'),
+                          icon: const Icon(Icons.science),
+                          iconSize: iconSize,
+                          onPressed: onBetaEvaluate,
+                        ),
+                      ),
+                    ),
             ),
             SizedBox(width: spacing),
           ],

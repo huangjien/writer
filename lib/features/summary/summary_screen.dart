@@ -25,6 +25,8 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   bool _saving = false;
   String? _error;
   bool _refreshing = false;
+  bool _isDirty = false;
+  String _baseSummary = '';
 
   @override
   void initState() {
@@ -50,6 +52,8 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
       final desc = resolved?.description ?? '';
       _summaryController.text = desc;
     }
+    _baseSummary = _summaryController.text;
+    _isDirty = false;
     setState(() {});
   }
 
@@ -144,12 +148,19 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                     maxLines: null,
                     validator: (v) =>
                         v == null || v.trim().isEmpty ? l10n.required : null,
+                    onChanged: (_) {
+                      final dirty =
+                          _summaryController.text.trim() != _baseSummary.trim();
+                      if (dirty != _isDirty) {
+                        setState(() => _isDirty = dirty);
+                      }
+                    },
                   ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
                       ElevatedButton(
-                        onPressed: _saving
+                        onPressed: (_saving || !_isDirty)
                             ? null
                             : () async {
                                 final ok =
