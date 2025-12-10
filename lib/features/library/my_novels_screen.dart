@@ -16,7 +16,16 @@ class MyNovelsScreen extends ConsumerWidget {
     final supabaseEnabled = ref.watch(supabaseEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n?.myNovels ?? 'My Novels')),
+      appBar: AppBar(
+        title: Text(l10n?.myNovels ?? 'My Novels'),
+        actions: [
+          IconButton(
+            onPressed: () => context.go('/'),
+            icon: const Icon(Icons.home),
+            tooltip: l10n?.home ?? 'Home',
+          ),
+        ],
+      ),
       body: !supabaseEnabled
           ? Center(child: Text(l10n?.noSupabase ?? 'Supabase is not enabled.'))
           : _MemberNovelsList(l10n: l10n),

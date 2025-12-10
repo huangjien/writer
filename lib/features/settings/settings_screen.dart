@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'widgets/reader_bundle_grid.dart';
 import 'widgets/performance_section.dart';
@@ -44,23 +43,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         : null;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.settings),
-        actions: [
-          if (isSupabaseEnabled)
-            IconButton(
-              icon: Icon(user == null ? Icons.login : Icons.logout),
-              onPressed: () async {
-                if (user == null) {
-                  context.push('/auth');
-                } else {
-                  await Supabase.instance.client.auth.signOut();
-                  setState(() {});
-                }
-              },
-            ),
-        ],
-      ),
+      appBar: AppBar(title: Text(l10n.settings), actions: const []),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 16),
         children: [
@@ -99,6 +82,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           SupabaseSection(user: user),
           const Divider(),
           const TtsSettingsContainer(),
+          if (isSupabaseEnabled && user != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Center(
+                child: TextButton(
+                  style: TextButton.styleFrom(foregroundColor: Colors.orange),
+                  onPressed: () async {
+                    await Supabase.instance.client.auth.signOut();
+                    setState(() {});
+                  },
+                  child: Text(l10n.signOut),
+                ),
+              ),
+            ),
         ],
       ),
     );

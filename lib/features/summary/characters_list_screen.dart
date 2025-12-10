@@ -71,6 +71,11 @@ class _CharactersListScreenState extends ConsumerState<CharactersListScreen> {
             icon: const Icon(Icons.add),
             tooltip: l10n.newLabel,
           ),
+          IconButton(
+            onPressed: () => context.go('/'),
+            icon: const Icon(Icons.home),
+            tooltip: l10n.home,
+          ),
         ],
       ),
       body: _loading

@@ -385,6 +385,11 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
             icon: const Icon(Icons.add),
             tooltip: l10n.newPrompt,
           ),
+          IconButton(
+            onPressed: () => context.go('/'),
+            icon: const Icon(Icons.home),
+            tooltip: l10n.home,
+          ),
         ],
       ),
       body: _loading

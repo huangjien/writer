@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/prompt.dart';
 import '../services/prompts_service.dart';
 import '../l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 
 const _keys = [
   'system.beta.male',
@@ -18,12 +19,16 @@ class PromptFormScreen extends StatefulWidget {
   final Prompt? initial;
   final bool defaultPublic;
   final bool isAdmin;
+  final bool isSignedIn;
+  final bool canEdit;
   const PromptFormScreen({
     super.key,
     required this.service,
     this.initial,
     this.defaultPublic = false,
     this.isAdmin = false,
+    this.isSignedIn = true,
+    this.canEdit = true,
   });
   @override
   State<PromptFormScreen> createState() => _PromptFormScreenState();
@@ -138,9 +143,22 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
         if (mounted) Navigator.pop(context, res);
       }
     } catch (e) {
-      setState(() {
-        _error = e.toString();
-      });
+      if (e is ApiException && (e.statusCode == 401 || e.statusCode == 403)) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.notSignedIn),
+            action: SnackBarAction(
+              label: AppLocalizations.of(context)!.signIn,
+              onPressed: () => context.push('/auth'),
+            ),
+          ),
+        );
+      } else {
+        setState(() {
+          _error = e.toString();
+        });
+      }
     } finally {
       setState(() {
         _saving = false;
@@ -238,7 +256,13 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
-                    onPressed: (_saving || !_isDirty) ? null : _save,
+                    onPressed:
+                        (_saving ||
+                            !_isDirty ||
+                            (_isEdit &&
+                                (!widget.isSignedIn || !widget.canEdit)))
+                        ? null
+                        : _save,
                     child: Text(l10n.save),
                   ),
                 ],
@@ -249,6 +273,14 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                   child: Text(
                     _error!,
                     style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+              if (_isEdit && (!widget.isSignedIn || !widget.canEdit))
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    AppLocalizations.of(context)!.notSignedIn,
+                    style: const TextStyle(color: Colors.orange),
                   ),
                 ),
               const SizedBox(height: 12),
