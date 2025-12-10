@@ -92,6 +92,17 @@ class FakePromptsService extends PromptsService {
   }
 }
 
+class TrackingPromptsService extends FakePromptsService {
+  int searchCalls = 0;
+  String? lastSearchQ;
+  @override
+  Future<List<Prompt>> searchPrompts(String query, {bool? isPublic}) async {
+    searchCalls++;
+    lastSearchQ = query;
+    return prompts;
+  }
+}
+
 void main() {
   testWidgets('PromptsListScreen renders items and badges', (tester) async {
     final svc = FakePromptsService();
@@ -199,7 +210,9 @@ void main() {
       ),
     );
     await tester.pump();
-    await tester.tap(find.widgetWithText(ElevatedButton, 'New Prompt'));
+    final addIcon = find.byIcon(Icons.add);
+    expect(addIcon, findsOneWidget);
+    await tester.tap(addIcon);
     await tester.pump();
     final fields = find.descendant(
       of: find.byType(AlertDialog),
@@ -278,6 +291,34 @@ void main() {
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(svc.updateCalled, isTrue);
+  });
+
+  testWidgets('PromptsListScreen search debounced and thresholded', (
+    tester,
+  ) async {
+    final svc = TrackingPromptsService();
+    svc.prompts = [];
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PromptsListScreen(service: svc, isAdmin: true),
+      ),
+    );
+    await tester.pump();
+    final searchField = find.widgetWithText(TextField, 'Search');
+    expect(searchField, findsOneWidget);
+    await tester.enterText(searchField, 'a');
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(svc.searchCalls, 0);
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(svc.searchCalls, 0);
+    await tester.enterText(searchField, 'ab');
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(svc.searchCalls, 0);
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(svc.searchCalls, 1);
+    expect(svc.lastSearchQ, 'ab');
   });
 
   testWidgets('PromptFormScreen save disabled until changes', (tester) async {

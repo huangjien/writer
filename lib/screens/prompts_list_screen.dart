@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import '../l10n/app_localizations.dart';
 
 const int _previewLen = 50;
+const int _searchDebounceMs = 600;
+const int _searchMinLen = 2;
 
 class PromptsListScreen extends StatefulWidget {
   final PromptsService service;
@@ -62,10 +64,13 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
     }
   }
 
-  Future<void> _search() async {
+  Future<void> _search({bool force = false}) async {
     final q = _searchCtrl.text.trim();
     if (q.isEmpty) {
       return _load();
+    }
+    if (!force && q.length < _searchMinLen) {
+      return;
     }
     setState(() {
       _loading = true;
@@ -269,11 +274,11 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
               onChanged: (_) {
                 _searchTimer?.cancel();
                 _searchTimer = Timer(
-                  const Duration(milliseconds: 300),
+                  const Duration(milliseconds: _searchDebounceMs),
                   _search,
                 );
               },
-              onSubmitted: (_) => _search(),
+              onSubmitted: (_) => _search(force: true),
             ),
           ),
           if (widget.isAdmin) ...[
@@ -288,10 +293,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
               },
             ),
           ],
-          ElevatedButton(
-            onPressed: _createPromptDialog,
-            child: Text(l10n.newPrompt),
-          ),
+          const SizedBox.shrink(),
         ],
       ),
     );
@@ -377,6 +379,11 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
             onPressed: _load,
             icon: const Icon(Icons.refresh),
             tooltip: l10n.refreshTooltip,
+          ),
+          IconButton(
+            onPressed: _createPromptDialog,
+            icon: const Icon(Icons.add),
+            tooltip: l10n.newPrompt,
           ),
         ],
       ),
