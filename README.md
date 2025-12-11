@@ -8,6 +8,12 @@ A Flutter application for reading novels with Supabase-backed storage, localizat
 - Provides TTS playback with locale mapping and configurable settings.
 - Ships with Makefile targets to simplify development and release builds across platforms.
 
+## Recent UI Updates
+- Home AppBar uses a logo that opens the sidebar on tap.
+- Home sidebar includes: Settings, Character Templates, Scene Templates, Prompts, New Novel, About.
+- About page shows a large logo above the title.
+- AI Coach (Snowflake) panel keeps chat history for the current session and persists per-novel coaching state.
+
 ## Prerequisites
 - Flutter SDK installed (`flutter --version`).
 - Platform toolchains as needed:
@@ -55,6 +61,12 @@ A Flutter application for reading novels with Supabase-backed storage, localizat
   - Default: `http://localhost:5600/`
   - Override at build/run: `--dart-define=AI_SERVICE_URL=https://your-backend.example.com/`
 - The URL can be edited at runtime in Settings → App Settings → AI Service URL.
+
+### AI Coach (Snowflake) behavior
+- Backend endpoint: `POST /snowflake/refine`
+- Returns coaching JSON with `status`, `critique`, `question`, and `suggestions`. When `status = "refined"`, it includes `refined_summary` and the app applies it to the Summary field automatically.
+- Chat history is included in responses and rendered in the Coach panel; history is stored per novel.
+- Supabase persistence table: `public.snowflake_refinements (novel_id uuid primary key, state jsonb)`, protected by RLS using `public.is_member(novel_id)`.
 
 ## Tests
 - Run tests with coverage summary: `make test`
