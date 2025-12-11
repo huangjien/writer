@@ -122,6 +122,7 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
 
     final output = _lastOutput!;
     final isDone = output.status == 'refined';
+    final messages = output.history ?? const [];
 
     return Column(
       children: [
@@ -132,35 +133,123 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  children: [
-                    const Icon(Icons.auto_awesome, color: Colors.purple),
-                    const SizedBox(width: 8),
-                    Text(
-                      isDone ? "Refinement Complete!" : "Coach's Question",
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.purple,
+                if (messages.isEmpty) ...[
+                  Row(
+                    children: [
+                      const Icon(Icons.auto_awesome, color: Colors.purple),
+                      const SizedBox(width: 8),
+                      Text(
+                        isDone ? "Refinement Complete!" : "Coach's Question",
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.purple,
+                            ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.purple.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.purple.shade100),
+                    ),
+                    child: Text(
+                      isDone
+                          ? (output.critique ??
+                                "Great job! Your summary looks solid.")
+                          : (output.aiQuestion ?? "How can we improve this?"),
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ] else ...[
+                  for (final msg in messages) ...[
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: (msg['role'] == 'user')
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 520),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: (msg['role'] == 'user')
+                                ? Colors.blue.shade50
+                                : Colors.purple.shade50,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: (msg['role'] == 'user')
+                                  ? Colors.blue.shade100
+                                  : Colors.purple.shade100,
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  (msg['role'] == 'user')
+                                      ? Icons.person
+                                      : Icons.auto_awesome,
+                                  color: (msg['role'] == 'user')
+                                      ? Colors.blue
+                                      : Colors.purple,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    msg['content'] ?? '',
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.purple.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.purple.shade100),
-                  ),
-                  child: Text(
-                    isDone
-                        ? (output.critique ??
-                              "Great job! Your summary looks solid.")
-                        : (output.aiQuestion ?? "How can we improve this?"),
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
+                  if (isDone && (output.critique?.isNotEmpty ?? false)) ...[
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 520),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade50,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.green.shade100),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.check_circle,
+                                  color: Colors.green,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    output.critique!,
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
                 // Suggestions
                 if (!isDone && (output.suggestions?.isNotEmpty ?? false)) ...[
                   const SizedBox(height: 16),

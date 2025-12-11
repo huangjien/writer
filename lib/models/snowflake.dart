@@ -28,6 +28,7 @@ class SnowflakeRefinementOutput {
   final String? aiQuestion;
   final List<String>? suggestions;
   final String? critique;
+  final List<Map<String, String>>? history;
 
   const SnowflakeRefinementOutput({
     required this.novelId,
@@ -36,9 +37,23 @@ class SnowflakeRefinementOutput {
     this.aiQuestion,
     this.suggestions,
     this.critique,
+    this.history,
   });
 
   factory SnowflakeRefinementOutput.fromJson(Map<String, dynamic> json) {
+    List<Map<String, String>>? hist;
+    final rawHist = json['history'];
+    if (rawHist is List) {
+      hist = rawHist
+          .whereType<Map<String, dynamic>>()
+          .map(
+            (e) => {
+              'role': (e['role'] ?? '').toString(),
+              'content': (e['content'] ?? '').toString(),
+            },
+          )
+          .toList();
+    }
     return SnowflakeRefinementOutput(
       novelId: json['novel_id'] as String,
       summaryContent: json['summary_content'] as String,
@@ -48,6 +63,7 @@ class SnowflakeRefinementOutput {
           ?.map((e) => e as String)
           .toList(),
       critique: json['critique'] as String?,
+      history: hist,
     );
   }
 }
