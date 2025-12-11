@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/mock_providers.dart';
-// Supabase gating is read via provider for testability
 import 'package:writer/state/providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
+import 'package:writer/features/summary/snowflake_coach_widget.dart';
 import '../../main.dart';
 
 class SummaryScreen extends ConsumerStatefulWidget {
@@ -27,6 +27,9 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   bool _refreshing = false;
   bool _isDirty = false;
   String _baseSummary = '';
+
+  // Coach State
+  bool _showCoach = false;
 
   @override
   void initState() {
@@ -71,37 +74,10 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
         : ref.watch(mockChaptersProvider(widget.novelId));
 
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.summary),
-        actions: [
-          if (_refreshing)
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            )
-          else
-            IconButton(
-              onPressed: () async {
-                setState(() => _refreshing = true);
-                final enabled = ref.read(supabaseEnabledProvider);
-                if (enabled) {
-                  ref.invalidate(novelProvider(widget.novelId));
-                  ref.invalidate(chaptersProvider(widget.novelId));
-                }
-                await _load();
-                if (mounted) setState(() => _refreshing = false);
-              },
-              icon: const Icon(Icons.refresh),
-              tooltip: l10n.refreshTooltip,
-            ),
-        ],
-      ),
-      body: SingleChildScrollView(
+
+    // Main Content
+    Widget buildMainContent() {
+      return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,6 +119,20 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                     controller: _summaryController,
                     decoration: InputDecoration(
                       labelText: l10n.descriptionLabel,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _showCoach
+                              ? Icons.chat_bubble
+                              : Icons.chat_bubble_outline,
+                          color: _showCoach ? Colors.purple : null,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _showCoach = !_showCoach;
+                          });
+                        },
+                        tooltip: "Toggle AI Coach",
+                      ),
                     ),
                     minLines: 4,
                     maxLines: null,
@@ -223,6 +213,98 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
             ),
           ],
         ),
+      );
+    }
+
+    // Layout
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.summary),
+        actions: [
+          if (_refreshing)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else
+            IconButton(
+              onPressed: () async {
+                setState(() => _refreshing = true);
+                final enabled = ref.read(supabaseEnabledProvider);
+                if (enabled) {
+                  ref.invalidate(novelProvider(widget.novelId));
+                  ref.invalidate(chaptersProvider(widget.novelId));
+                }
+                await _load();
+                if (mounted) setState(() => _refreshing = false);
+              },
+              icon: const Icon(Icons.refresh),
+              tooltip: l10n.refreshTooltip,
+            ),
+        ],
+      ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          if (_showCoach) {
+            // Split View on large screens, or BottomSheet style on small?
+            // Since this is likely a desktop app, let's just split 50/50 or use a sidebar
+            if (constraints.maxWidth > 800) {
+              return Row(
+                children: [
+                  Expanded(flex: 2, child: buildMainContent()),
+                  const VerticalDivider(width: 1),
+                  Expanded(
+                    flex: 1,
+                    child: SnowflakeCoachWidget(
+                      novelId: widget.novelId,
+                      currentSummary: _summaryController.text,
+                      onSummaryUpdated: (newSummary) {
+                        _summaryController.text = newSummary;
+                        // Trigger dirty check manually since controller doesn't notify on programmatic change
+                        final dirty =
+                            _summaryController.text.trim() !=
+                            _baseSummary.trim();
+                        if (dirty != _isDirty) {
+                          setState(() => _isDirty = dirty);
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              // On smaller screens, maybe column? Or just take space below?
+              // Let's use column for now
+              return Column(
+                children: [
+                  Expanded(flex: 1, child: buildMainContent()),
+                  const Divider(height: 1),
+                  Expanded(
+                    flex: 1,
+                    child: SnowflakeCoachWidget(
+                      novelId: widget.novelId,
+                      currentSummary: _summaryController.text,
+                      onSummaryUpdated: (newSummary) {
+                        _summaryController.text = newSummary;
+                        final dirty =
+                            _summaryController.text.trim() !=
+                            _baseSummary.trim();
+                        if (dirty != _isDirty) {
+                          setState(() => _isDirty = dirty);
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              );
+            }
+          }
+          return buildMainContent();
+        },
       ),
     );
   }

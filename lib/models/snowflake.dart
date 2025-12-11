@@ -1,0 +1,53 @@
+class SnowflakeRefinementInput {
+  final String novelId;
+  final String summaryContent;
+  final String? userResponse;
+  final String language;
+
+  const SnowflakeRefinementInput({
+    required this.novelId,
+    required this.summaryContent,
+    this.userResponse,
+    this.language = 'en',
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'novel_id': novelId,
+      'summary_content': summaryContent,
+      if (userResponse != null) 'user_response': userResponse,
+      'language': language,
+    };
+  }
+}
+
+class SnowflakeRefinementOutput {
+  final String novelId;
+  final String summaryContent;
+  final String status;
+  final String? aiQuestion;
+  final List<String>? suggestions;
+  final String? critique;
+
+  const SnowflakeRefinementOutput({
+    required this.novelId,
+    required this.summaryContent,
+    required this.status,
+    this.aiQuestion,
+    this.suggestions,
+    this.critique,
+  });
+
+  factory SnowflakeRefinementOutput.fromJson(Map<String, dynamic> json) {
+    return SnowflakeRefinementOutput(
+      novelId: json['novel_id'] as String,
+      summaryContent: json['summary_content'] as String,
+      status: json['status'] as String,
+      aiQuestion: json['ai_question'] as String?,
+      suggestions: (json['suggestions'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      critique: json['critique'] as String?,
+    );
+  }
+}
