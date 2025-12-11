@@ -75,8 +75,10 @@ class _AboutScreenState extends ConsumerState<AboutScreen> {
               const SizedBox(height: 16),
               Text(
                 l10n.appTitle,
-                style:
-                    const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 12),
               Text(l10n.aboutDescription),
@@ -103,8 +105,10 @@ class _AboutScreenState extends ConsumerState<AboutScreen> {
               const SizedBox(height: 16),
               Text(
                 l10n.aboutUsage,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 8),
               Text(l10n.aboutUsageList),

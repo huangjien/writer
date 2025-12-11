@@ -22,10 +22,7 @@ void main() {
 
   test('Continue at chapter formatting', () {
     final l10n = AppLocalizationsEn();
-    expect(
-      l10n.continueAtChapter('One'),
-      'Continue at chapter • One',
-    );
+    expect(l10n.continueAtChapter('One'), 'Continue at chapter • One');
   });
 
   test('Supabase not enabled description', () {

@@ -685,7 +685,9 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          motionSettingsProvider.overrideWith((_) => MotionSettingsNotifier(prefs)),
+          motionSettingsProvider.overrideWith(
+            (_) => MotionSettingsNotifier(prefs),
+          ),
         ],
         child: MaterialApp(
           locale: const Locale('en'),
@@ -712,7 +714,9 @@ void main() {
     expect(animatedSwitcher.duration, Duration.zero);
   });
 
-  testWidgets('Description renders with maxLines=2 and ellipsis', (tester) async {
+  testWidgets('Description renders with maxLines=2 and ellipsis', (
+    tester,
+  ) async {
     const n = Novel(
       id: 'n10',
       title: 'Meta',
