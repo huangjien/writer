@@ -20,23 +20,43 @@ void main() {
         ),
         GoRoute(
           path: '/settings',
-          builder: (context, state) =>
-              const Scaffold(body: Center(child: Text('Settings Screen'))),
+          builder: (context, state) => Scaffold(
+            appBar: AppBar(title: const Text('Settings')),
+            drawer: const AppDrawer(),
+            body: const Center(child: Text('Settings Screen')),
+          ),
         ),
         GoRoute(
           path: '/prompts',
-          builder: (context, state) =>
-              const Scaffold(body: Center(child: Text('Prompts Screen'))),
+          builder: (context, state) => Scaffold(
+            appBar: AppBar(title: const Text('Prompts')),
+            drawer: const AppDrawer(),
+            body: const Center(child: Text('Prompts Screen')),
+          ),
         ),
         GoRoute(
           path: '/create-novel',
-          builder: (context, state) =>
-              const Scaffold(body: Center(child: Text('Create Novel Screen'))),
+          builder: (context, state) => Scaffold(
+            appBar: AppBar(title: const Text('Create Novel')),
+            drawer: const AppDrawer(),
+            body: const Center(child: Text('Create Novel Screen')),
+          ),
         ),
         GoRoute(
           path: '/about',
-          builder: (context, state) =>
-              const Scaffold(body: Center(child: Text('About Screen'))),
+          builder: (context, state) => Scaffold(
+            appBar: AppBar(title: const Text('About')),
+            drawer: const AppDrawer(),
+            body: const Center(child: Text('About Screen')),
+          ),
+        ),
+        GoRoute(
+          path: '/my-novels',
+          builder: (context, state) => Scaffold(
+            appBar: AppBar(title: const Text('My Novels')),
+            drawer: const AppDrawer(),
+            body: const Center(child: Text('My Novels Screen')),
+          ),
         ),
       ],
     );
@@ -54,12 +74,14 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Home Screen'), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.menu));
+    final s1 = tester.state<ScaffoldState>(find.byType(Scaffold));
+    s1.openDrawer();
     await tester.pumpAndSettle();
     await tester.tap(find.text('Settings'));
     await tester.pumpAndSettle();
     expect(find.text('Settings Screen'), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.menu));
+    final s2 = tester.state<ScaffoldState>(find.byType(Scaffold));
+    s2.openDrawer();
     await tester.pumpAndSettle();
     await tester.tap(find.text('About'));
     await tester.pumpAndSettle();
@@ -79,12 +101,14 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.menu));
+    final s1 = tester.state<ScaffoldState>(find.byType(Scaffold));
+    s1.openDrawer();
     await tester.pumpAndSettle();
     await tester.tap(find.text('Prompts'));
     await tester.pumpAndSettle();
     expect(find.text('Prompts Screen'), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.menu));
+    final s2 = tester.state<ScaffoldState>(find.byType(Scaffold));
+    s2.openDrawer();
     await tester.pumpAndSettle();
     await tester.tap(find.text('Create Novel'));
     await tester.pumpAndSettle();
@@ -104,13 +128,17 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.menu));
+    final s1 = tester.state<ScaffoldState>(find.byType(Scaffold));
+    s1.openDrawer();
     await tester.pumpAndSettle();
     await tester.tap(find.text('Character Templates'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.menu));
+    expect(find.text('My Novels Screen'), findsOneWidget);
+    final s2 = tester.state<ScaffoldState>(find.byType(Scaffold));
+    s2.openDrawer();
     await tester.pumpAndSettle();
     await tester.tap(find.text('Scene Templates'));
     await tester.pumpAndSettle();
+    expect(find.text('My Novels Screen'), findsOneWidget);
   });
 }

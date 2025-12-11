@@ -19,8 +19,18 @@ class AppDrawer extends StatelessWidget {
               decoration: BoxDecoration(color: Theme.of(context).primaryColor),
               child: Center(
                 child: kIsWeb
-                    ? Image.network('/icons/Icon-192.png', height: 80)
-                    : Image.asset('web/icons/Icon-192.png', height: 80),
+                    ? Image.network(
+                        '/icons/Icon-192.png',
+                        height: 80,
+                        errorBuilder: (context, error, stack) =>
+                            const Icon(Icons.menu_book, size: 80),
+                      )
+                    : Image.asset(
+                        'web/icons/Icon-192.png',
+                        height: 80,
+                        errorBuilder: (context, error, stack) =>
+                            const Icon(Icons.menu_book, size: 80),
+                      ),
               ),
             ),
           ),

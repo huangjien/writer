@@ -14,6 +14,7 @@ import 'package:writer/features/library/library_providers.dart'
     as lib_providers;
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
+import 'package:writer/state/motion_settings.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -631,5 +632,168 @@ void main() {
     // Cancel deletion to finish test cleanly (or confirm)
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
+  });
+
+  testWidgets('Cover URL error shows fallback icon', (tester) async {
+    const n = Novel(
+      id: 'n8',
+      title: 'With Cover',
+      author: 'Auth',
+      description: 'Desc',
+      coverUrl: 'https://invalid.example/image.png',
+      languageCode: 'en',
+      isPublic: true,
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: LibraryItemRow(
+              novel: n,
+              isSupabaseEnabled: false,
+              isSignedIn: false,
+              canRemove: true,
+              canDownload: true,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.menu_book), findsWidgets);
+  });
+
+  testWidgets('Reduce motion disables progress ring animation', (tester) async {
+    SharedPreferences.setMockInitialValues({'reduce_motion_enabled': true});
+    final prefs = await SharedPreferences.getInstance();
+
+    const n = Novel(
+      id: 'n9',
+      title: 'Motion',
+      author: null,
+      description: null,
+      coverUrl: null,
+      languageCode: 'en',
+      isPublic: true,
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          motionSettingsProvider.overrideWith((_) => MotionSettingsNotifier(prefs)),
+        ],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: LibraryItemRow(
+              novel: n,
+              isSupabaseEnabled: false,
+              isSignedIn: false,
+              canRemove: true,
+              canDownload: false,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pumpAndSettle();
+    final switcherFinder = find.byType(AnimatedSwitcher);
+    expect(switcherFinder, findsOneWidget);
+    final animatedSwitcher = tester.widget<AnimatedSwitcher>(switcherFinder);
+    expect(animatedSwitcher.duration, Duration.zero);
+  });
+
+  testWidgets('Description renders with maxLines=2 and ellipsis', (tester) async {
+    const n = Novel(
+      id: 'n10',
+      title: 'Meta',
+      author: 'Author',
+      description:
+          'This is a very long description that should be truncated to two lines in the UI.',
+      coverUrl: null,
+      languageCode: 'en',
+      isPublic: true,
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: LibraryItemRow(
+              novel: n,
+              isSupabaseEnabled: false,
+              isSignedIn: false,
+              canRemove: true,
+              canDownload: false,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    final descFinder = find.text(n.description!);
+    final textWidget = tester.widget<Text>(descFinder);
+    expect(textWidget.maxLines, 2);
+    expect(textWidget.overflow, TextOverflow.ellipsis);
+  });
+
+  testWidgets('Unknown chapter fallback in continue text', (tester) async {
+    const n = Novel(
+      id: 'n11',
+      title: 'Unknown',
+      author: null,
+      description: null,
+      coverUrl: null,
+      languageCode: 'en',
+      isPublic: true,
+    );
+
+    final progress = UserProgress(
+      userId: 'u',
+      novelId: 'n11',
+      chapterId: 'missing',
+      scrollOffset: 0,
+      ttsCharIndex: 10,
+      updatedAt: DateTime.now(),
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          lastProgressProvider.overrideWith((ref, id) async => progress),
+          chaptersProvider.overrideWith((ref, id) async => []),
+        ],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: LibraryItemRow(
+              novel: n,
+              isSupabaseEnabled: true,
+              isSignedIn: true,
+              canRemove: true,
+              canDownload: true,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    expect(find.text('Continue at chapter • Unknown chapter'), findsOneWidget);
   });
 }

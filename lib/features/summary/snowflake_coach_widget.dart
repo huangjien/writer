@@ -25,14 +25,12 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
   bool _loading = false;
   SnowflakeRefinementOutput? _lastOutput;
   String? _error;
+  bool _appliedUpdate = false;
 
   @override
   void initState() {
     super.initState();
-    // Initial analysis
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _analyze();
-    });
+    _analyze();
   }
 
   Future<void> _analyze({String? userResponse}) async {
@@ -54,10 +52,8 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
           setState(() {
             _lastOutput = result;
           });
-          // If the AI updated the summary, propagate it back
-          if (result.summaryContent != widget.currentSummary) {
-            widget.onSummaryUpdated(result.summaryContent);
-          }
+          widget.onSummaryUpdated(result.summaryContent);
+          _appliedUpdate = true;
         }
       } else {
         if (mounted) setState(() => _error = 'Failed to analyze');
@@ -73,6 +69,13 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
   void dispose() {
     _inputController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant SnowflakeCoachWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _appliedUpdate = false;
+    _analyze();
   }
 
   @override
@@ -123,6 +126,15 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
     final output = _lastOutput!;
     final isDone = output.status == 'refined';
     final messages = output.history ?? const [];
+    if (isDone && !_appliedUpdate) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        widget.onSummaryUpdated(output.summaryContent);
+        setState(() {
+          _appliedUpdate = true;
+        });
+      });
+    }
 
     return Column(
       children: [
@@ -133,38 +145,36 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (messages.isEmpty) ...[
-                  Row(
-                    children: [
-                      const Icon(Icons.auto_awesome, color: Colors.purple),
-                      const SizedBox(width: 8),
-                      Text(
-                        isDone ? "Refinement Complete!" : "Coach's Question",
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.purple,
-                            ),
+                Row(
+                  children: [
+                    const Icon(Icons.auto_awesome, color: Colors.purple),
+                    const SizedBox(width: 8),
+                    Text(
+                      isDone ? "Refinement Complete!" : "Coach's Question",
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.purple,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.purple.shade50,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.purple.shade100),
                     ),
-                    child: Text(
-                      isDone
-                          ? (output.critique ??
-                                "Great job! Your summary looks solid.")
-                          : (output.aiQuestion ?? "How can we improve this?"),
-                      style: const TextStyle(fontSize: 16),
-                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.purple.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.purple.shade100),
                   ),
-                ] else ...[
+                  child: Text(
+                    isDone
+                        ? (output.critique ??
+                              "Great job! Your summary looks solid.")
+                        : (output.aiQuestion ?? "How can we improve this?"),
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+                if (messages.isNotEmpty) ...[
                   for (final msg in messages) ...[
                     const SizedBox(height: 8),
                     Align(
