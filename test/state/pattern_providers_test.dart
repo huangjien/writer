@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/state/pattern_providers.dart';
 import 'package:writer/state/providers.dart';
-import 'package:writer/repositories/pattern_repository.dart';
+import 'package:writer/services/patterns_service.dart';
 import 'package:writer/models/pattern.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class FakePatternRepository extends PatternRepository {
-  FakePatternRepository() : super(SupabaseClient('http://example.com', 'anon'));
+class FakePatternsService extends PatternsService {
+  FakePatternsService() : super(baseUrl: 'http://example.com');
   List<Pattern> items = const [
     Pattern(
       id: 'p1',
@@ -25,9 +25,9 @@ class FakePatternRepository extends PatternRepository {
     ),
   ];
   @override
-  Future<List<Pattern>> listPatterns({int limit = 200}) async => items;
+  Future<List<Pattern>> fetchPatterns() async => items;
   @override
-  Future<Pattern?> getPattern(String id) async =>
+  Future<Pattern> getPattern(String id) async =>
       items.firstWhere((e) => e.id == id);
 }
 
@@ -43,8 +43,8 @@ void main() {
     expect(p, isNull);
   });
 
-  test('patterns providers return from repository when enabled', () async {
-    final fake = FakePatternRepository();
+  test('patterns providers return from service when enabled', () async {
+    final fake = FakePatternsService();
     final container = ProviderContainer(
       overrides: [
         supabaseEnabledProvider.overrideWith((_) => true),
@@ -52,7 +52,7 @@ void main() {
           (ref) =>
               Stream.value(AuthState(AuthChangeEvent.initialSession, null)),
         ),
-        patternRepositoryProvider.overrideWith((_) => fake),
+        patternsServiceRefProvider.overrideWith((_) => fake),
       ],
     );
     addTearDown(container.dispose);

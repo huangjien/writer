@@ -7,15 +7,12 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/pattern.dart';
 import 'package:writer/screens/patterns_list_screen.dart';
 import 'package:writer/state/pattern_providers.dart';
-import 'package:writer/repositories/pattern_repository.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:writer/services/patterns_service.dart';
 
 class MockGoRouter extends Mock implements GoRouter {}
 
-class MockSupabaseClient extends Mock implements SupabaseClient {}
-
-class FakePatternRepository extends PatternRepository {
-  FakePatternRepository() : super(MockSupabaseClient());
+class FakePatternsService extends PatternsService {
+  FakePatternsService() : super(baseUrl: 'http://example.com');
   List<Pattern> items = const [
     Pattern(id: 'p1', title: 'A', description: 'D', content: 'X'),
     Pattern(id: 'p2', title: 'B', description: null, content: 'Y'),
@@ -23,22 +20,23 @@ class FakePatternRepository extends PatternRepository {
   bool deleteCalled = false;
   String? lastDeleteId;
   @override
-  Future<List<Pattern>> listPatterns({int limit = 200}) async => items;
+  Future<List<Pattern>> fetchPatterns() async => items;
   @override
-  Future<void> deletePattern(String id) async {
+  Future<bool> deletePattern(String id) async {
     deleteCalled = true;
     lastDeleteId = id;
+    return true;
   }
 }
 
 void main() {
   testWidgets('PatternsListScreen renders items', (tester) async {
-    final fake = FakePatternRepository();
+    final fake = FakePatternsService();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           patternsProvider.overrideWith((ref) async => fake.items),
-          patternRepositoryProvider.overrideWith((_) => fake),
+          patternsServiceRefProvider.overrideWith((_) => fake),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -54,12 +52,12 @@ void main() {
   });
 
   testWidgets('Delete action confirms and calls repository', (tester) async {
-    final fake = FakePatternRepository();
+    final fake = FakePatternsService();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           patternsProvider.overrideWith((ref) async => fake.items),
-          patternRepositoryProvider.overrideWith((_) => fake),
+          patternsServiceRefProvider.overrideWith((_) => fake),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -80,7 +78,7 @@ void main() {
   });
 
   testWidgets('Double-tap on row navigates to edit', (tester) async {
-    final fake = FakePatternRepository();
+    final fake = FakePatternsService();
     final mockRouter = MockGoRouter();
     when(
       () => mockRouter.push(any(), extra: any(named: 'extra')),
@@ -89,7 +87,7 @@ void main() {
       ProviderScope(
         overrides: [
           patternsProvider.overrideWith((ref) async => fake.items),
-          patternRepositoryProvider.overrideWith((_) => fake),
+          patternsServiceRefProvider.overrideWith((_) => fake),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

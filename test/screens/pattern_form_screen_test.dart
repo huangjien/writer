@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/pattern.dart';
 import 'package:writer/screens/pattern_form_screen.dart';
 import 'package:writer/state/pattern_providers.dart';
-import 'package:writer/repositories/pattern_repository.dart';
+import 'package:writer/services/patterns_service.dart';
 
-class MockSupabaseClient extends Mock implements SupabaseClient {}
-
-class FakePatternRepository extends PatternRepository {
-  FakePatternRepository() : super(MockSupabaseClient());
+class FakePatternsService extends PatternsService {
+  FakePatternsService() : super(baseUrl: 'http://example.com');
   bool createCalled = false;
   bool updateCalled = false;
   Map<String, dynamic>? lastCreate;
@@ -24,7 +20,6 @@ class FakePatternRepository extends PatternRepository {
     String? description,
     required String content,
     Map<String, dynamic>? usageRules,
-    List<double>? embedding,
   }) async {
     createCalled = true;
     lastCreate = {
@@ -49,7 +44,6 @@ class FakePatternRepository extends PatternRepository {
     String? description,
     String? content,
     Map<String, dynamic>? usageRules,
-    List<double>? embedding,
   }) async {
     updateCalled = true;
     lastUpdate = {
@@ -71,10 +65,10 @@ class FakePatternRepository extends PatternRepository {
 
 void main() {
   testWidgets('PatternFormScreen requires title and content', (tester) async {
-    final repo = FakePatternRepository();
+    final svc = FakePatternsService();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [patternRepositoryProvider.overrideWith((_) => repo)],
+        overrides: [patternsServiceRefProvider.overrideWith((_) => svc)],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -85,14 +79,14 @@ void main() {
     await tester.pump();
     await tester.tap(find.text('Save'));
     await tester.pump();
-    expect(repo.createCalled, isFalse);
+    expect(svc.createCalled, isFalse);
   });
 
   testWidgets('PatternFormScreen create calls repository', (tester) async {
-    final repo = FakePatternRepository();
+    final svc = FakePatternsService();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [patternRepositoryProvider.overrideWith((_) => repo)],
+        overrides: [patternsServiceRefProvider.overrideWith((_) => svc)],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -113,16 +107,16 @@ void main() {
     await tester.pump();
     await tester.tap(find.text('Save'));
     await tester.pump();
-    expect(repo.createCalled, isTrue);
-    expect(repo.lastCreate?['usage_rules'], isA<Map<String, dynamic>>());
-    expect((repo.lastCreate?['usage_rules'] as Map)['x'], isTrue);
+    expect(svc.createCalled, isTrue);
+    expect(svc.lastCreate?['usage_rules'], isA<Map<String, dynamic>>());
+    expect((svc.lastCreate?['usage_rules'] as Map)['x'], isTrue);
   });
 
   testWidgets('PatternFormScreen invalid JSON shows error', (tester) async {
-    final repo = FakePatternRepository();
+    final svc = FakePatternsService();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [patternRepositoryProvider.overrideWith((_) => repo)],
+        overrides: [patternsServiceRefProvider.overrideWith((_) => svc)],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -138,11 +132,11 @@ void main() {
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(find.text('Invalid JSON'), findsOneWidget);
-    expect(repo.createCalled, isTrue);
+    expect(svc.createCalled, isTrue);
   });
 
   testWidgets('PatternFormScreen edit calls update', (tester) async {
-    final repo = FakePatternRepository();
+    final svc = FakePatternsService();
     final initial = const Pattern(
       id: 'p1',
       title: 'Old',
@@ -152,7 +146,7 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [patternRepositoryProvider.overrideWith((_) => repo)],
+        overrides: [patternsServiceRefProvider.overrideWith((_) => svc)],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -166,9 +160,9 @@ void main() {
     await tester.enterText(fields.at(2), 'B');
     await tester.tap(find.text('Save'));
     await tester.pump();
-    expect(repo.updateCalled, isTrue);
-    expect(repo.lastUpdate?['id'], 'p1');
-    expect(repo.lastUpdate?['title'], 'New');
-    expect(repo.lastUpdate?['content'], 'B');
+    expect(svc.updateCalled, isTrue);
+    expect(svc.lastUpdate?['id'], 'p1');
+    expect(svc.lastUpdate?['title'], 'New');
+    expect(svc.lastUpdate?['content'], 'B');
   });
 }

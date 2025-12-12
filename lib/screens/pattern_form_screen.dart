@@ -65,11 +65,11 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
       _error = null;
       _saving = true;
     });
-    final repo = ref.read(patternRepositoryProvider);
+    final svc = ref.read(patternsServiceRefProvider);
     try {
       final usage = _parseUsage(_usageCtrl.text) ?? widget.initial?.usageRules;
       if (_isEdit) {
-        final res = await repo.updatePattern(
+        final res = await svc.updatePattern(
           id: widget.initial!.id,
           title: _titleCtrl.text.trim(),
           description: _descCtrl.text.trim().isEmpty
@@ -80,7 +80,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
         );
         if (mounted) Navigator.pop(context, res);
       } else {
-        final res = await repo.createPattern(
+        final res = await svc.createPattern(
           title: _titleCtrl.text.trim(),
           description: _descCtrl.text.trim().isEmpty
               ? null

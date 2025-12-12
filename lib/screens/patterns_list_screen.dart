@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../models/pattern.dart';
 import '../state/pattern_providers.dart';
+import '../state/providers.dart';
 import '../l10n/app_localizations.dart';
 
 const int _previewLen = 80;
@@ -97,8 +98,8 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
       ),
     );
     if (ok == true) {
-      final repo = ref.read(patternRepositoryProvider);
-      await repo.deletePattern(p.id);
+      final svc = ref.read(patternsServiceRefProvider);
+      await svc.deletePattern(p.id);
       ref.invalidate(patternsProvider);
     }
   }
@@ -106,6 +107,7 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isSupabaseEnabled = ref.watch(supabaseEnabledProvider);
     final patternsAsync = ref.watch(patternsProvider);
     return Scaffold(
       appBar: AppBar(
@@ -117,7 +119,7 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
             tooltip: l10n.reload,
           ),
           IconButton(
-            onPressed: () => context.push('/pattern_form'),
+            onPressed: isSupabaseEnabled ? () => context.push('/pattern_form') : null,
             icon: const Icon(Icons.add),
             tooltip: l10n.newPattern,
           ),
@@ -131,6 +133,33 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
       body: patternsAsync.when(
         data: (items) {
           if (items.isEmpty) {
+            if (!isSupabaseEnabled) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        l10n.supabaseNotEnabled,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.supabaseNotEnabledDescription,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      TextButton(
+                        onPressed: () => context.goNamed('settings'),
+                        child: Text(l10n.supabaseSettings),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
             return Center(child: Text(l10n.noPatterns));
           }
           return SingleChildScrollView(

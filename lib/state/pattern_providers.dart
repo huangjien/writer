@@ -1,19 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/pattern.dart';
-import '../repositories/pattern_repository.dart';
 import 'providers.dart';
+import '../services/patterns_service.dart';
 
-final patternRepositoryProvider = Provider<PatternRepository>((ref) {
-  final client = ref.watch(supabaseClientProvider);
-  return PatternRepository(client);
+final patternsServiceRefProvider = Provider<PatternsService>((ref) {
+  return ref.watch(patternsServiceProvider);
 });
 
 final patternsProvider = FutureProvider<List<Pattern>>((ref) async {
   final enabled = ref.watch(supabaseEnabledProvider);
   if (!enabled) return const <Pattern>[];
   ref.watch(authStateProvider);
-  final repo = ref.watch(patternRepositoryProvider);
-  return repo.listPatterns();
+  final svc = ref.watch(patternsServiceRefProvider);
+  return svc.fetchPatterns();
 });
 
 final patternByIdProvider = FutureProvider.family<Pattern?, String>((
@@ -23,6 +22,6 @@ final patternByIdProvider = FutureProvider.family<Pattern?, String>((
   final enabled = ref.watch(supabaseEnabledProvider);
   if (!enabled) return null;
   ref.watch(authStateProvider);
-  final repo = ref.watch(patternRepositoryProvider);
-  return repo.getPattern(id);
+  final svc = ref.watch(patternsServiceRefProvider);
+  return svc.getPattern(id);
 });
