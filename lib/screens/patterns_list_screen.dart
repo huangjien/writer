@@ -119,9 +119,7 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
             tooltip: l10n.reload,
           ),
           IconButton(
-            onPressed: isSupabaseEnabled
-                ? () => context.push('/pattern_form')
-                : null,
+            onPressed: isSupabaseEnabled ? () => context.push('/pattern_form') : null,
             icon: const Icon(Icons.add),
             tooltip: l10n.newPattern,
           ),
