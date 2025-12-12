@@ -34,9 +34,7 @@ class FakePatternRepository extends PatternRepository {
 void main() {
   test('patternsProvider returns empty when Supabase disabled', () async {
     final container = ProviderContainer(
-      overrides: [
-        supabaseEnabledProvider.overrideWith((_) => false),
-      ],
+      overrides: [supabaseEnabledProvider.overrideWith((_) => false)],
     );
     addTearDown(container.dispose);
     final result = await container.read(patternsProvider.future);
@@ -51,7 +49,8 @@ void main() {
       overrides: [
         supabaseEnabledProvider.overrideWith((_) => true),
         authStateProvider.overrideWith(
-          (ref) => Stream.value(AuthState(AuthChangeEvent.initialSession, null)),
+          (ref) =>
+              Stream.value(AuthState(AuthChangeEvent.initialSession, null)),
         ),
         patternRepositoryProvider.overrideWith((_) => fake),
       ],
@@ -63,4 +62,3 @@ void main() {
     expect(p?.title, 'B');
   });
 }
-

@@ -810,6 +810,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get prompts => '提示';
+
   @override
   String get patterns => '写作模式';
 
@@ -845,11 +846,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get newPrompt => '新建提示';
+
   @override
   String get newPattern => '新建模式';
 
   @override
   String get editPrompt => '编辑提示';
+
   @override
   String get editPattern => '编辑模式';
 
@@ -858,6 +861,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noPrompts => '没有提示';
+
   @override
   String get noPatterns => '没有模式';
 

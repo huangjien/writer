@@ -36,7 +36,9 @@ void main() {
         'created_at': '2024-01-02T00:00:00Z',
       },
     ];
-    when(() => qb.select(any())).thenAnswer((_) => FakePostgrestFilterBuilder(rows));
+    when(
+      () => qb.select(any()),
+    ).thenAnswer((_) => FakePostgrestFilterBuilder(rows));
     // order + limit handled by Fake transformers
     final items = await repo.listPatterns();
     expect(items.length, 2);
@@ -52,7 +54,9 @@ void main() {
       'content': 'X',
       'created_at': '2024-01-01T00:00:00Z',
     };
-    when(() => qb.select(any())).thenAnswer((_) => FakePostgrestFilterBuilder([row]));
+    when(
+      () => qb.select(any()),
+    ).thenAnswer((_) => FakePostgrestFilterBuilder([row]));
     final p = await repo.getPattern('p1');
     expect(p, isNotNull);
     expect(p!.id, 'p1');
@@ -60,7 +64,9 @@ void main() {
   });
 
   test('getPattern returns null when empty', () async {
-    when(() => qb.select(any())).thenAnswer((_) => FakePostgrestFilterBuilder(<Map<String, dynamic>>[]));
+    when(
+      () => qb.select(any()),
+    ).thenAnswer((_) => FakePostgrestFilterBuilder(<Map<String, dynamic>>[]));
     final p = await repo.getPattern('pX');
     expect(p, isNull);
   });
@@ -72,7 +78,9 @@ void main() {
       'content': 'C',
       'embedding': [0.1, 0.2],
     };
-    when(() => qb.insert(any())).thenAnswer((_) => FakePostgrestFilterBuilder([created]));
+    when(
+      () => qb.insert(any()),
+    ).thenAnswer((_) => FakePostgrestFilterBuilder([created]));
     final p = await repo.createPattern(
       title: 'T',
       description: null,
@@ -115,4 +123,3 @@ void main() {
     verify(() => qb.delete()).called(1);
   });
 }
-

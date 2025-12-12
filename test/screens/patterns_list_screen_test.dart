@@ -17,18 +17,8 @@ class MockSupabaseClient extends Mock implements SupabaseClient {}
 class FakePatternRepository extends PatternRepository {
   FakePatternRepository() : super(MockSupabaseClient());
   List<Pattern> items = const [
-    Pattern(
-      id: 'p1',
-      title: 'A',
-      description: 'D',
-      content: 'X',
-    ),
-    Pattern(
-      id: 'p2',
-      title: 'B',
-      description: null,
-      content: 'Y',
-    ),
+    Pattern(id: 'p1', title: 'A', description: 'D', content: 'X'),
+    Pattern(id: 'p2', title: 'B', description: null, content: 'Y'),
   ];
   bool deleteCalled = false;
   String? lastDeleteId;
@@ -92,8 +82,9 @@ void main() {
   testWidgets('Double-tap on row navigates to edit', (tester) async {
     final fake = FakePatternRepository();
     final mockRouter = MockGoRouter();
-    when(() => mockRouter.push(any(), extra: any(named: 'extra')))
-        .thenAnswer((_) async => null);
+    when(
+      () => mockRouter.push(any(), extra: any(named: 'extra')),
+    ).thenAnswer((_) async => null);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -117,7 +108,8 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     await tester.tap(titleCell);
     await tester.pump();
-    verify(() => mockRouter.push('/pattern_form', extra: any(named: 'extra')))
-        .called(1);
+    verify(
+      () => mockRouter.push('/pattern_form', extra: any(named: 'extra')),
+    ).called(1);
   });
 }
