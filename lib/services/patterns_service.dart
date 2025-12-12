@@ -146,4 +146,14 @@ class PatternsService {
     if (data is Map && data['deleted'] is bool) return data['deleted'] as bool;
     return false;
   }
+
+  Future<List<Pattern>> searchPatterns(String query) async {
+    final data = await _send('GET', '/patterns/search', query: {'q': query});
+    final list = (data is Map && data['items'] is List)
+        ? (data['items'] as List)
+        : (data is List ? data : []);
+    return list
+        .map((e) => Pattern.fromMap(Map<String, dynamic>.from(e)))
+        .toList();
+  }
 }
