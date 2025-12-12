@@ -1640,6 +1640,12 @@ abstract class AppLocalizations {
   /// **'Prompts'**
   String get prompts;
 
+  /// No description provided for @patterns.
+  ///
+  /// In en, this message translates to:
+  /// **'Patterns'**
+  String get patterns;
+
   /// No description provided for @tools.
   ///
   /// In en, this message translates to:
@@ -1706,11 +1712,23 @@ abstract class AppLocalizations {
   /// **'New Prompt'**
   String get newPrompt;
 
+  /// No description provided for @newPattern.
+  ///
+  /// In en, this message translates to:
+  /// **'New Pattern'**
+  String get newPattern;
+
   /// No description provided for @editPrompt.
   ///
   /// In en, this message translates to:
   /// **'Edit Prompt'**
   String get editPrompt;
+
+  /// No description provided for @editPattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Pattern'**
+  String get editPattern;
 
   /// No description provided for @makePublic.
   ///
@@ -1723,6 +1741,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No prompts found'**
   String get noPrompts;
+
+  /// No description provided for @noPatterns.
+  ///
+  /// In en, this message translates to:
+  /// **'No patterns'**
+  String get noPatterns;
 
   /// No description provided for @confirm.
   ///

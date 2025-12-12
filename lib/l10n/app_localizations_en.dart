@@ -826,6 +826,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get prompts => 'Prompts';
+  @override
+  String get patterns => 'Patterns';
 
   @override
   String get tools => 'Tools';
@@ -859,15 +861,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newPrompt => 'New Prompt';
+  @override
+  String get newPattern => 'New Pattern';
 
   @override
   String get editPrompt => 'Edit Prompt';
+  @override
+  String get editPattern => 'Edit Pattern';
 
   @override
   String get makePublic => 'Make Public';
 
   @override
   String get noPrompts => 'No prompts found';
+  @override
+  String get noPatterns => 'No patterns';
 
   @override
   String get confirm => 'Confirm';

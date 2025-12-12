@@ -21,7 +21,10 @@ import '../features/summary/scene_templates_screen.dart';
 import '../features/reader/novel_metadata_editor.dart';
 import '../screens/prompts_list_screen.dart';
 import '../screens/prompt_form_screen.dart';
+import '../screens/patterns_list_screen.dart';
+import '../screens/pattern_form_screen.dart';
 import '../models/prompt.dart';
+import '../models/pattern.dart';
 import '../state/providers.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -40,6 +43,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final isAdmin = ref.watch(isAdminProvider);
           return PromptsListScreen(service: svc, isAdmin: isAdmin);
         },
+      ),
+      GoRoute(
+        path: '/patterns',
+        name: 'patterns',
+        builder: (context, state) => const PatternsListScreen(),
       ),
       GoRoute(
         path: '/prompt_form',
@@ -62,6 +70,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             isSignedIn: isSignedIn,
             canEdit: canEdit,
           );
+        },
+      ),
+      GoRoute(
+        path: '/pattern_form',
+        name: 'patternForm',
+        builder: (context, state) {
+          final initial = state.extra is Pattern
+              ? state.extra as Pattern?
+              : null;
+          return PatternFormScreen(initial: initial);
         },
       ),
       GoRoute(

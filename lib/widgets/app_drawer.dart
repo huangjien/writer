@@ -66,6 +66,14 @@ class AppDrawer extends StatelessWidget {
               context.go('/prompts');
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.auto_awesome),
+            title: Text(l10n.patterns),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/patterns');
+            },
+          ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.add),
