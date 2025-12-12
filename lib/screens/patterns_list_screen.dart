@@ -88,6 +88,15 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
 
   Future<void> _deletePattern(Pattern p) async {
     final l10n = AppLocalizations.of(context)!;
+    final isAdmin = ref.watch(isAdminProvider);
+    if (!isAdmin) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Not authorized')));
+      }
+      return;
+    }
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -106,9 +115,38 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
       ),
     );
     if (ok == true) {
-      final svc = ref.read(patternsServiceRefProvider);
-      await svc.deletePattern(p.id);
-      ref.invalidate(patternsProvider);
+      try {
+        final svc = ref.read(patternsServiceRefProvider);
+        final success = await svc.deletePattern(p.id);
+        if (success) {
+          final showingSearch =
+              _items.isNotEmpty || _searchCtrl.text.trim().isNotEmpty;
+          if (showingSearch) {
+            setState(() {
+              _items = _items.where((e) => e.id != p.id).toList();
+            });
+          } else {
+            ref.invalidate(patternsProvider);
+          }
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('${l10n.delete}: ${p.title}')),
+            );
+          }
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Delete failed: ${p.title}')),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Delete error: $e')));
+        }
+      }
     }
   }
 
