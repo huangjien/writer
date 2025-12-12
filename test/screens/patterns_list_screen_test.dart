@@ -7,7 +7,6 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/pattern.dart';
 import 'package:writer/screens/patterns_list_screen.dart';
 import 'package:writer/state/pattern_providers.dart';
-import 'package:writer/state/providers.dart';
 import 'package:writer/services/patterns_service.dart';
 
 class MockGoRouter extends Mock implements GoRouter {}
@@ -38,7 +37,6 @@ void main() {
         overrides: [
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
-          isAdminProvider.overrideWith((_) => true),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -60,7 +58,6 @@ void main() {
         overrides: [
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
-          isAdminProvider.overrideWith((_) => true),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -91,7 +88,6 @@ void main() {
         overrides: [
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
-          isAdminProvider.overrideWith((_) => true),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -113,33 +109,5 @@ void main() {
     verify(
       () => mockRouter.push('/pattern_form', extra: any(named: 'extra')),
     ).called(1);
-  });
-
-  testWidgets('Non-admin tapping delete shows feedback and does not delete', (
-    tester,
-  ) async {
-    final fake = FakePatternsService();
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          patternsProvider.overrideWith((ref) async => fake.items),
-          patternsServiceRefProvider.overrideWith((_) => fake),
-          supabaseEnabledProvider.overrideWith((_) => true),
-          isAdminProvider.overrideWith((_) => false),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: const PatternsListScreen(),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    final deleteIcon = find.byIcon(Icons.delete).first;
-    expect(deleteIcon, findsOneWidget);
-    await tester.tap(deleteIcon);
-    await tester.pump();
-    expect(find.text('Not authorized'), findsOneWidget);
-    expect(fake.deleteCalled, isFalse);
   });
 }

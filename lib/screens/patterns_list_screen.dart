@@ -88,15 +88,6 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
 
   Future<void> _deletePattern(Pattern p) async {
     final l10n = AppLocalizations.of(context)!;
-    final isAdmin = ref.watch(isAdminProvider);
-    if (!isAdmin) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Not authorized')));
-      }
-      return;
-    }
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
