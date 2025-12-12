@@ -13,6 +13,11 @@ import 'package:writer/state/supabase_config.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 // removed unnecessary supabase import; supabase_flutter exports AuthClientOptions
+import 'package:writer/features/summary/snowflake_service.dart';
+import 'package:writer/features/summary/snowflake_coach_widget.dart';
+import 'package:http/testing.dart';
+import 'package:http/http.dart' as http;
+import 'package:writer/state/providers.dart';
 
 class CapturingLocalRepo extends LocalStorageRepository {
   final Map<String, String> savedSummaries = {};
@@ -153,5 +158,115 @@ void main() {
     await tester.pump();
     final btn2 = tester.widget<ElevatedButton>(saveButton);
     expect(btn2.onPressed, isNotNull);
+  });
+
+  testWidgets('SummaryScreen toggles AI Coach and shows widget (small layout)', (
+    tester,
+  ) async {
+    final repo = CapturingLocalRepo();
+    final novel = const Novel(
+      id: 'n-1',
+      title: 'Test Novel',
+      author: 'Author',
+      description: 'Existing description',
+      coverUrl: null,
+      languageCode: 'en',
+      isPublic: true,
+    );
+    // Mock Snowflake service to return a refined summary immediately
+    final client = MockClient((request) async {
+      if (request.method == 'POST' &&
+          request.url.path.endsWith('snowflake/refine')) {
+        return http.Response(
+          '{"novel_id":"n-1","summary_content":"AI update","status":"refined"}',
+          200,
+        );
+      }
+      return http.Response('not found', 404);
+    });
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          localStorageRepositoryProvider.overrideWith((_) => repo),
+          mockNovelsProvider.overrideWith((ref) async => [novel]),
+          novelProvider.overrideWith((ref, id) async => novel),
+          snowflakeServiceProvider.overrideWithValue(
+            SnowflakeService('http://example.com/', client: client),
+          ),
+          supabaseEnabledProvider.overrideWith((_) => false),
+        ],
+        child: const MaterialApp(home: SummaryScreen(novelId: 'n-1')),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Toggle coach via suffix icon button
+    await tester.tap(find.byTooltip('Toggle AI Coach'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SnowflakeCoachWidget), findsOneWidget);
+    // Small layout uses Column with a Divider between sections
+    expect(find.byType(Divider), findsOneWidget);
+
+    // Coach applies update and makes form dirty; Save becomes enabled
+    final saveButton = find.widgetWithText(ElevatedButton, 'Save');
+    final btn = tester.widget<ElevatedButton>(saveButton);
+    expect(btn.onPressed, isNotNull);
+  });
+
+  testWidgets('SummaryScreen shows split view with coach on wide screens', (
+    tester,
+  ) async {
+    final repo = CapturingLocalRepo();
+    final novel = const Novel(
+      id: 'n-1',
+      title: 'Test Novel',
+      author: 'Author',
+      description: 'Existing description',
+      coverUrl: null,
+      languageCode: 'en',
+      isPublic: true,
+    );
+    final client = MockClient((request) async {
+      if (request.method == 'POST' &&
+          request.url.path.endsWith('snowflake/refine')) {
+        return http.Response(
+          '{"novel_id":"n-1","summary_content":"AI update","status":"refined"}',
+          200,
+        );
+      }
+      return http.Response('not found', 404);
+    });
+
+    // Set a wide test surface
+    tester.view.physicalSize = const Size(1600, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          localStorageRepositoryProvider.overrideWith((_) => repo),
+          mockNovelsProvider.overrideWith((ref) async => [novel]),
+          novelProvider.overrideWith((ref, id) async => novel),
+          snowflakeServiceProvider.overrideWithValue(
+            SnowflakeService('http://example.com/', client: client),
+          ),
+          supabaseEnabledProvider.overrideWith((_) => false),
+        ],
+        child: const MaterialApp(home: SummaryScreen(novelId: 'n-1')),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Toggle AI Coach'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SnowflakeCoachWidget), findsOneWidget);
+    // Wide layout includes a VerticalDivider between panels
+    expect(find.byType(VerticalDivider), findsOneWidget);
   });
 }

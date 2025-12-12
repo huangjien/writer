@@ -84,4 +84,54 @@ void main() {
     expect(repo.lastNote?['language_code'], 'en');
     expect(find.text('Saved'), findsOneWidget);
   });
+
+  testWidgets(
+    'CharactersScreen saves with selected language and null empty fields',
+    (tester) async {
+      final repo = CapturingLocalRepo();
+      final novel = const Novel(
+        id: 'n-1',
+        title: 'Test Novel',
+        author: 'Author',
+        description: '',
+        coverUrl: null,
+        languageCode: 'en',
+        isPublic: true,
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            localStorageRepositoryProvider.overrideWith((_) => repo),
+            mockNovelsProvider.overrideWith((ref) async => [novel]),
+            novelProvider.overrideWith((ref, id) async => novel),
+          ],
+          child: const MaterialApp(home: CharactersScreen(novelId: 'n-1')),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final titleField = find.widgetWithText(TextFormField, 'Title');
+      find.widgetWithText(TextFormField, 'Summaries');
+      find.widgetWithText(TextFormField, 'Synopses');
+
+      await tester.enterText(titleField, 'Bob');
+      // Leave summaries/synopses empty to verify nulls
+      // Select Chinese language
+      await tester.tap(find.byType(DropdownButton<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Chinese').last);
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Save'));
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(repo.lastNote?['title'], 'Bob');
+      expect(repo.lastNote?['character_summaries'], isNull);
+      expect(repo.lastNote?['character_synopses'], isNull);
+      expect(repo.lastNote?['language_code'], 'zh');
+      expect(find.text('Saved'), findsOneWidget);
+    },
+  );
 }

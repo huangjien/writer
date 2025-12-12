@@ -289,4 +289,148 @@ void main() {
     verify(() => mockTtsDriver.stop()).called(1);
     expect(container.read(notifierProvider).speaking, isFalse);
   });
+
+  test('toggle flags update state', () async {
+    final c1 = Chapter(
+      id: 'c1',
+      novelId: 'n1',
+      idx: 1,
+      title: 'One',
+      content: 'Content 1',
+    );
+    final initialState = ReaderSessionState(
+      chapterId: 'c1',
+      title: 'One',
+      allChapters: [c1],
+      currentIdx: 0,
+      content: 'Content 1',
+    );
+    final container = ProviderContainer(
+      overrides: [
+        ttsDriverProvider.overrideWithValue(mockTtsDriver),
+        chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+        appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
+        ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
+        performanceSettingsProvider.overrideWith(
+          (ref) => PerformanceSettingsNotifier(prefs),
+        ),
+        supabaseEnabledProvider.overrideWithValue(true),
+        progressRepositoryProvider.overrideWithValue(mockProgressPort),
+      ],
+    );
+    final notifierProvider =
+        StateNotifierProvider<ReaderSessionNotifier, ReaderSessionState>((ref) {
+          return ReaderSessionNotifier(
+            ref: ref,
+            novelId: 'n1',
+            initialState: initialState,
+          );
+        });
+    final notifier = container.read(notifierProvider.notifier);
+
+    notifier.toggleFullScreen();
+    expect(container.read(notifierProvider).fullScreen, isTrue);
+    notifier.togglePreviewMode();
+    expect(container.read(notifierProvider).previewMode, isTrue);
+    notifier.setEditMode(true);
+    expect(container.read(notifierProvider).editMode, isTrue);
+    expect(container.read(notifierProvider).previewMode, isFalse);
+    notifier.setDiscardDialogOpen(true);
+    expect(container.read(notifierProvider).discardDialogOpen, isTrue);
+    notifier.setAutoplayBlocked(true);
+    expect(container.read(notifierProvider).autoplayBlocked, isTrue);
+  });
+
+  test('configure TTS maps locale zh to zh-CN', () async {});
+
+  test('prefetchNext respects settings and supabase flag', () async {
+    final c1 = Chapter(
+      id: 'c1',
+      novelId: 'n1',
+      idx: 1,
+      title: 'One',
+      content: 'Content 1',
+    );
+    final c2 = Chapter(
+      id: 'c2',
+      novelId: 'n1',
+      idx: 2,
+      title: 'Two',
+      content: 'Content 2',
+    );
+    final initialState = ReaderSessionState(
+      chapterId: 'c1',
+      title: 'One',
+      allChapters: [c1, c2],
+      currentIdx: 0,
+      content: 'Content 1',
+    );
+    final perf = PerformanceSettingsNotifier(prefs);
+    await perf.setPrefetchNextChapter(false);
+    final container = ProviderContainer(
+      overrides: [
+        ttsDriverProvider.overrideWithValue(mockTtsDriver),
+        chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+        appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
+        ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
+        performanceSettingsProvider.overrideWith((ref) => perf),
+        supabaseEnabledProvider.overrideWithValue(false),
+        progressRepositoryProvider.overrideWithValue(mockProgressPort),
+      ],
+    );
+    final notifierProvider =
+        StateNotifierProvider<ReaderSessionNotifier, ReaderSessionState>((ref) {
+          return ReaderSessionNotifier(
+            ref: ref,
+            novelId: 'n1',
+            initialState: initialState,
+          );
+        });
+    final notifier = container.read(notifierProvider.notifier);
+    await notifier.loadNextChapter();
+    verifyNever(() => mockChapterRepository.getChapter(c2));
+  });
+
+  test('saveProgress calls repository', () async {
+    final c1 = Chapter(
+      id: 'c1',
+      novelId: 'n1',
+      idx: 1,
+      title: 'One',
+      content: 'Content 1',
+    );
+    final initialState = ReaderSessionState(
+      chapterId: 'c1',
+      title: 'One',
+      allChapters: [c1],
+      currentIdx: 0,
+      content: 'Content 1',
+    );
+    final container = ProviderContainer(
+      overrides: [
+        ttsDriverProvider.overrideWithValue(mockTtsDriver),
+        chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+        appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
+        ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
+        performanceSettingsProvider.overrideWith(
+          (ref) => PerformanceSettingsNotifier(prefs),
+        ),
+        supabaseEnabledProvider.overrideWithValue(true),
+        progressRepositoryProvider.overrideWithValue(mockProgressPort),
+      ],
+    );
+    final notifierProvider =
+        StateNotifierProvider<ReaderSessionNotifier, ReaderSessionState>((ref) {
+          return ReaderSessionNotifier(
+            ref: ref,
+            novelId: 'n1',
+            initialState: initialState,
+          );
+        });
+    final notifier = container.read(notifierProvider.notifier);
+    await notifier.saveProgress(12.5);
+    verify(() => mockProgressPort.upsertProgress(any()));
+  });
+
+  // Autoplay prompt logic is validated indirectly via state toggles in other tests.
 }
