@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:io';
+import 'package:writer/common/errors/failures.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/models/chapter_cache.dart';
 import 'package:writer/repositories/chapter_repository.dart';
@@ -61,7 +63,31 @@ void main() {
       expect(chapters.last.id, 'c2');
     });
 
-    test('getChapter returns cache hit without Supabase call', () async {
+    test('getChapter prefers network and updates cache on success', () async {
+      final row = [
+        {'content': 'remote', 'sha': 'abc'},
+      ];
+      when(
+        () => mockQuery.select('content, sha'),
+      ).thenAnswer((_) => FakePostgrestFilterBuilder(row));
+
+      final chap = Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
+      final res = await repo.getChapter(chap);
+
+      expect(res.content, 'remote');
+      expect(res.sha, 'abc');
+
+      // Should save to cache
+      verify(() => mockLocal.saveChapter(any())).called(1);
+    });
+
+    test('getChapter falls back to cache on network failure', () async {
+      // Setup: Network fails
+      when(
+        () => mockQuery.select(any()),
+      ).thenThrow(const SocketException('No Internet'));
+
+      // Setup: Cache exists
       final cache = ChapterCache(
         chapterId: 'c1',
         novelId: 'n1',
@@ -74,26 +100,24 @@ void main() {
 
       final chap = Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
       final res = await repo.getChapter(chap);
+
       expect(res.content, 'cached');
-      verifyNever(() => mockQuery.select('content, sha'));
+      // Verify both were called
+      verify(() => mockQuery.select('content, sha')).called(1);
+      verify(() => mockLocal.getChapter('c1')).called(1);
     });
 
     test(
-      'getChapter cache miss fetches from Supabase and saves cache',
+      'getChapter throws NetworkFailure on network error and cache miss',
       () async {
-        when(() => mockLocal.getChapter('c1')).thenAnswer((_) async => null);
-        final row = [
-          {'content': 'remote', 'sha': 'abc'},
-        ];
         when(
-          () => mockQuery.select('content, sha'),
-        ).thenAnswer((_) => FakePostgrestFilterBuilder(row));
+          () => mockQuery.select(any()),
+        ).thenThrow(const SocketException('No Internet'));
+        when(() => mockLocal.getChapter('c1')).thenAnswer((_) async => null);
 
         final chap = Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
-        final res = await repo.getChapter(chap);
-        expect(res.content, 'remote');
-        expect(res.sha, 'abc');
-        verify(() => mockLocal.saveChapter(any())).called(1);
+
+        expect(() => repo.getChapter(chap), throwsA(isA<NetworkFailure>()));
       },
     );
 

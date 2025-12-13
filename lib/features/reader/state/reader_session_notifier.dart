@@ -13,6 +13,7 @@ import '../logic/tts_driver.dart';
 import '../logic/progress_saver.dart';
 import 'reader_session_state.dart';
 import '../../../models/chapter.dart';
+import '../../../common/errors/failures.dart';
 
 final readerSessionProvider =
     StateNotifierProvider.autoDispose<
@@ -65,25 +66,64 @@ class ReaderSessionNotifier extends StateNotifier<ReaderSessionState> {
     } catch (_) {}
   }
 
+  Future<void> loadInitial() async {
+    if (state.content != null && state.content!.isNotEmpty) return;
+    try {
+      final repo = ref.read(chapterRepositoryProvider);
+      // We need to construct Chapter object to fetch.
+      // But we only have ID?
+      // State has currentIdx and allChapters...
+      // If allChapters is empty, we are in trouble.
+      // Assuming allChapters is populated.
+      if (state.allChapters.isEmpty) return;
+
+      final current = state.allChapters[state.currentIdx];
+      final fetched = await repo.getChapter(current);
+
+      state = state.copyWith(content: fetched.content, clearFailure: true);
+      // Setup TTS or other things if needed?
+      // For now just content.
+    } catch (e) {
+      state = state.copyWith(
+        failure: e is AppFailure
+            ? e
+            : UnknownFailure('Failed to load chapter', e),
+      );
+    }
+  }
+
   Future<bool> loadNextChapter() async {
+    // If we are already failing or loading, we might want to block?
+    // But allowing retry is good.
+
     final res = computeNext(state.allChapters, state.currentIdx, novelId);
     if (res == null) {
       return false;
     }
+
+    String? content = res.content;
+    if (content == null || content.isEmpty) {
+      final repo = ref.read(chapterRepositoryProvider);
+      final nextChapter = state.allChapters[res.currentIdx];
+      final fetched = await repo.getChapter(nextChapter);
+      content = fetched.content;
+    }
+
     state = state.copyWith(
       chapterId: res.chapterId,
       title: res.title,
-      content: res.content,
+      content: content,
       currentIdx: res.currentIdx,
       ttsIndex: 0,
       ttsIndexVisual: 0,
       speaking: false,
       autoplayBlocked: false,
       progressDenomLockedIndex: null,
+      clearFailure: true,
     );
 
     await startTts(optimistic: true);
-    await _prefetchNext(res.currentIdx);
+    _prefetchNext(res.currentIdx);
     return true;
   }
 
@@ -92,27 +132,39 @@ class ReaderSessionNotifier extends StateNotifier<ReaderSessionState> {
     if (res == null) {
       return false;
     }
+
+    String? content = res.content;
+    if (content == null || content.isEmpty) {
+      final repo = ref.read(chapterRepositoryProvider);
+      final prevChapter = state.allChapters[res.currentIdx];
+      final fetched = await repo.getChapter(prevChapter);
+      content = fetched.content;
+    }
+
     state = state.copyWith(
       chapterId: res.chapterId,
       title: res.title,
-      content: res.content,
+      content: content,
       currentIdx: res.currentIdx,
       ttsIndex: 0,
       speaking: false,
+      clearFailure: true,
     );
     await _playback.stop();
     return true;
   }
 
   Future<void> _prefetchNext(int fromIdx) async {
-    final perf = ref.read(performanceSettingsProvider);
-    final supEnabled = ref.read(supabaseEnabledProvider);
-    if (!perf.prefetchNextChapter || !supEnabled) return;
-    final idx = fromIdx + 1;
-    if (idx >= state.allChapters.length) return;
-    final next = state.allChapters[idx];
-    final repo = ref.read(chapterRepositoryProvider);
-    await repo.getChapter(next);
+    try {
+      final perf = ref.read(performanceSettingsProvider);
+      final supEnabled = ref.read(supabaseEnabledProvider);
+      if (!perf.prefetchNextChapter || !supEnabled) return;
+      final idx = fromIdx + 1;
+      if (idx >= state.allChapters.length) return;
+      final next = state.allChapters[idx];
+      final repo = ref.read(chapterRepositoryProvider);
+      await repo.getChapter(next);
+    } catch (_) {}
   }
 
   Future<void> startTts({bool optimistic = true}) async {

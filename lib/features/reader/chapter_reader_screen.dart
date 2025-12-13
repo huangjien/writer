@@ -26,6 +26,8 @@ import 'logic/edit_discard_dialog.dart';
 import 'logic/edit_mode.dart';
 import 'state/reader_session_state.dart';
 import 'state/reader_session_notifier.dart';
+import '../../shared/widgets/error_view.dart';
+import '../../common/errors/failures.dart';
 
 class ChapterReaderScreen extends ConsumerWidget {
   const ChapterReaderScreen({
@@ -109,6 +111,11 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     if (widget.initialOffset > 0) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_controller.hasClients) _controller.jumpTo(widget.initialOffset);
+        ref.read(readerSessionProvider.notifier).loadInitial();
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(readerSessionProvider.notifier).loadInitial();
       });
     }
 
@@ -131,10 +138,14 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
           await notifier.stopTts();
           break;
         case 'next':
-          await _onNextPressed();
+          try {
+            await _onNextPressed();
+          } catch (_) {}
           break;
         case 'prev':
-          await _onPrevPressed();
+          try {
+            await _onPrevPressed();
+          } catch (_) {}
           break;
       }
     });
@@ -162,11 +173,24 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     final state = ref.read(readerSessionProvider);
     if (state.editMode && await _handleDirtyEdit()) return;
 
-    final success = await notifier.loadNextChapter();
-    if (!success && mounted) {
+    try {
+      final success = await notifier.loadNextChapter();
+      if (!success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.reachedLastChapter),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.reachedLastChapter),
+          content: Text(e is AppFailure ? e.message : 'Failed to load chapter'),
+          action: SnackBarAction(
+            label: 'Retry',
+            onPressed: () => _onNextPressed(),
+          ),
         ),
       );
     }
@@ -177,11 +201,24 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     final state = ref.read(readerSessionProvider);
     if (state.editMode && await _handleDirtyEdit()) return;
 
-    final success = await notifier.loadPrevChapter();
-    if (!success && mounted) {
+    try {
+      final success = await notifier.loadPrevChapter();
+      if (!success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.reachedFirstChapter),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.reachedFirstChapter),
+          content: Text(e is AppFailure ? e.message : 'Failed to load chapter'),
+          action: SnackBarAction(
+            label: 'Retry',
+            onPressed: () => _onPrevPressed(),
+          ),
         ),
       );
     }
@@ -314,6 +351,20 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     final state = ref.watch(readerSessionProvider);
     final notifier = ref.read(readerSessionProvider.notifier);
 
+    // Check for load failures in the session state if applicable
+    // But readerSessionProvider.state usually holds current data.
+    // If the *load* of the chapter content failed, we might need a way to see that.
+    // The current ReaderSessionNotifier seems to handle loading internally.
+    // However, if we want to show full screen error, we should check if content is null/empty AND there was an error.
+    // Assuming ReaderSessionNotifier or a provider exposing AsyncValue<Chapter> is what we'd watch.
+    // In this architecture, it seems ReaderSessionNotifier manages state.
+    // If we want to catch load errors, we might need to look at how data is fetched.
+    // Since we don't have a direct "AsyncValue" in the build method here (it's hidden in notifier),
+    // and we just have 'state', we might need to rely on the repository throwing to the notifier,
+    // and the notifier updating state with an error flag?
+    // Current ReaderSessionState doesn't seem to have an 'error' field.
+    // For now, let's wrap the logic in a safe way or if the state implies error.
+
     ref.listen(readerSessionProvider, (prev, next) {
       if (prev?.chapterId != next.chapterId) {
         if (_controller.hasClients) _controller.jumpTo(0);
@@ -351,7 +402,14 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: state.editMode
+            child: state.failure != null
+                ? ErrorView(
+                    message: state.failure!.message,
+                    onRetry: () {
+                      notifier.loadInitial();
+                    },
+                  )
+                : state.editMode
                 ? EditChapterBody(
                     novelId: widget.novelId,
                     current: current,
@@ -418,27 +476,16 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
                       final editPerms = ref.watch(
                         editPermissionsProvider(widget.novelId),
                       );
+
+                      // Handling Error in Edit Permissions Provider as well
+                      if (editPerms.hasError) {
+                        // If we can't check permissions, assume false but don't crash
+                        // or maybe show a small icon? For now, default false.
+                      }
+
                       final bool canEdit = editPerms.asData?.value ?? false;
 
-                      // Calculation for progress bar
                       final baseLen = (state.content?.length ?? 1).toDouble();
-                      // We need to handle progressDenomLockedIndex.
-                      // It's in state.
-                      // _ttsTotalLen is NOT in state.
-                      // However, we can use baseLen as approximation if ttsTotalLen is missing,
-                      // or add ttsTotalLen to state.
-                      // For now, let's use baseLen if not speaking?
-                      // In original:
-                      /*
-                      final denom =
-                          _progressDenomLockedIndex?.toDouble() ??
-                          (_speaking
-                              ? (_ttsTotalLen > 0 ? _ttsTotalLen.toDouble() : baseLen)
-                              : baseLen);
-                      */
-                      // If we don't have ttsTotalLen in state, the progress bar might be inaccurate during TTS if using chunks.
-                      // But for now let's use baseLen.
-
                       final denom =
                           state.progressDenomLockedIndex?.toDouble() ?? baseLen;
 
@@ -447,27 +494,6 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
                               state.ttsIndexVisual > 0)
                           ? state.ttsIndexVisual.toDouble()
                           : (state.scrollProgress * denom);
-                      // Wait, state.scrollProgress is 0.0 in state (default).
-                      // We need to update scrollProgress in state?
-                      // Or read from controller?
-                      // The original updated _scrollProgress? No, it didn't seem to update it constantly.
-                      // It used `_scrollProgress * denom`.
-                      // But where was `_scrollProgress` set?
-                      // Searching original file: `_scrollProgress` only assigned `0.0` and `widget.initialOffset` (indirectly?).
-                      // Actually, I missed where `_scrollProgress` was updated.
-                      // Maybe it wasn't updated and the progress bar for scrolling was broken or I missed a listener?
-                      // Ah, ReaderBody takes `controller`.
-                      // Maybe ReaderBody updates it?
-                      // No, ReaderBody is stateless.
-                      // ReaderBottomBarShell uses `scrollProgress`.
-                      // If `_scrollProgress` was never updated in original code, then it was 0.
-                      // Let's assume we can use `_controller` to get progress if needed, but `LayoutBuilder` rebuilds on constraints change, not scroll.
-                      // To update progress bar on scroll, we need to listen to scroll controller and setState.
-                      // The original code didn't seem to have a scroll listener calling setState!
-                      // So maybe the bottom bar progress only reflected TTS progress?
-                      // "final num = ... : (_scrollProgress * denom);"
-                      // If _scrollProgress is 0, then it's 0.
-                      // Let's ignore scroll progress for now or fix it later.
 
                       final barProgress = (denom > 0 ? (num / denom) : 0.0)
                           .clamp(0.0, 1.0);

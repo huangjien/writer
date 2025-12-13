@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../../../models/chapter.dart';
+import '../../../common/errors/failures.dart';
 
 @immutable
 class ReaderSessionState {
@@ -18,6 +19,7 @@ class ReaderSessionState {
   final bool fullScreen;
   final int? progressDenomLockedIndex;
   final List<Chapter> allChapters;
+  final AppFailure? failure;
 
   const ReaderSessionState({
     required this.chapterId,
@@ -35,6 +37,7 @@ class ReaderSessionState {
     this.fullScreen = false,
     this.progressDenomLockedIndex,
     this.allChapters = const [],
+    this.failure,
   });
 
   ReaderSessionState copyWith({
@@ -53,6 +56,8 @@ class ReaderSessionState {
     bool? fullScreen,
     int? progressDenomLockedIndex,
     List<Chapter>? allChapters,
+    AppFailure? failure,
+    bool clearFailure = false, // Helper to clear failure
   }) {
     return ReaderSessionState(
       chapterId: chapterId ?? this.chapterId,
@@ -71,6 +76,7 @@ class ReaderSessionState {
       progressDenomLockedIndex:
           progressDenomLockedIndex ?? this.progressDenomLockedIndex,
       allChapters: allChapters ?? this.allChapters,
+      failure: clearFailure ? null : (failure ?? this.failure),
     );
   }
 }
