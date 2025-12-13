@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -45,6 +46,28 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _signInWithProvider(OAuthProvider provider) async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final auth = widget.authClient ?? Supabase.instance.client.auth;
+      await auth.signInWithOAuth(
+        provider,
+        redirectTo: kIsWeb ? 'https://ai.huangjien.com' : null,
+      );
+    } catch (e) {
+      if (mounted) {
+        setState(() => _error = e.toString());
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -103,6 +126,18 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   : Text(l10n.signIn),
             ),
             const SizedBox(height: 16),
+            TextButton(
+              onPressed: _loading
+                  ? null
+                  : () => _signInWithProvider(OAuthProvider.google),
+              child: Text(l10n.signInWithGoogle),
+            ),
+            TextButton(
+              onPressed: _loading
+                  ? null
+                  : () => _signInWithProvider(OAuthProvider.apple),
+              child: Text(l10n.signInWithApple),
+            ),
           ],
         ),
       ),
