@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/pattern.dart';
 import '../state/pattern_providers.dart';
+import '../state/supabase_config.dart';
 import '../l10n/app_localizations.dart';
 
 class PatternFormScreen extends ConsumerStatefulWidget {
@@ -22,6 +24,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
   late bool _isPublic;
   bool _saving = false;
   String? _error;
+  bool _canDelete = false;
 
   bool get _isEdit => widget.initial != null;
 
@@ -42,6 +45,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
       text: widget.initial?.language ?? 'en',
     );
     _isPublic = widget.initial?.isPublic ?? true;
+    _canDelete = _computeCanDelete();
   }
 
   String? _required(String? v) {
@@ -61,6 +65,159 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
         _error = 'Invalid JSON';
       });
       return null;
+    }
+  }
+
+  Map<String, dynamic>? _parseUsageForAi(String s) {
+    final t = s.trim();
+    if (t.isEmpty) return null;
+    try {
+      final obj = jsonDecode(t);
+      return obj is Map<String, dynamic> ? obj : Map<String, dynamic>.from(obj);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  bool _computeCanDelete() {
+    final initial = widget.initial;
+    if (initial == null) return false;
+    if (!supabaseEnabled) return false;
+    try {
+      final client = Supabase.instance.client;
+      final user = client.auth.currentUser;
+      if (user == null) return false;
+      final userId = user.id;
+      final dynamic appMeta = user.appMetadata;
+      final dynamic userMeta = user.userMetadata;
+      if (appMeta == null && userMeta == null) {
+        return false;
+      }
+      bool admin = false;
+      dynamic roles = appMeta != null ? appMeta['roles'] : null;
+      roles ??= userMeta != null ? userMeta['roles'] : null;
+      if (roles is List) {
+        admin = roles.any((r) => r.toString().toLowerCase() == 'admin');
+      }
+      dynamic role = appMeta != null ? appMeta['role'] : null;
+      role ??= userMeta != null ? userMeta['role'] : null;
+      if (!admin && role is String) {
+        admin = role.toLowerCase() == 'admin';
+      }
+      dynamic flag = appMeta != null ? appMeta['isAdmin'] : null;
+      flag ??= userMeta != null ? userMeta['isAdmin'] : null;
+      if (!admin && flag is bool) {
+        admin = flag;
+      }
+      if (admin) return true;
+      final ownerId = initial.ownerId;
+      if (ownerId == null) return false;
+      return ownerId == userId;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _applyAi() async {
+    if (_saving) return;
+    setState(() {
+      _error = null;
+      _saving = true;
+    });
+    try {
+      final svc = ref.read(patternsServiceRefProvider);
+      final usage = _parseUsageForAi(_usageCtrl.text);
+      final langText = _languageCtrl.text.trim();
+      final language = langText.isEmpty ? null : langText;
+      final improved = await svc.improvePattern(
+        title: _titleCtrl.text.trim(),
+        description: _descCtrl.text.trim().isEmpty
+            ? null
+            : _descCtrl.text.trim(),
+        content: _contentCtrl.text.trim(),
+        usageRules: usage,
+        language: language,
+      );
+      final title = improved['title'];
+      final desc = improved['description'];
+      final content = improved['content'];
+      final usageOut = improved['usage_rules'];
+      final langOut = improved['language'];
+      setState(() {
+        if (title is String && title.trim().isNotEmpty) {
+          _titleCtrl.text = title.trim();
+        }
+        if (desc is String) {
+          _descCtrl.text = desc;
+        }
+        if (content is String && content.trim().isNotEmpty) {
+          _contentCtrl.text = content;
+        }
+        if (usageOut is Map<String, dynamic>) {
+          _usageCtrl.text = const JsonEncoder.withIndent(
+            '  ',
+          ).convert(usageOut);
+        }
+        if (langOut is String && langOut.trim().isNotEmpty) {
+          _languageCtrl.text = langOut.trim();
+        }
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+      });
+    } finally {
+      setState(() {
+        _saving = false;
+      });
+    }
+  }
+
+  Future<void> _delete() async {
+    if (!_isEdit || _saving) return;
+    final l10n = AppLocalizations.of(context)!;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.confirmDelete),
+        content: Text(l10n.confirmDeleteDescription(widget.initial!.title)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    setState(() {
+      _error = null;
+      _saving = true;
+    });
+    final svc = ref.read(patternsServiceRefProvider);
+    try {
+      final success = await svc.deletePattern(widget.initial!.id);
+      if (!success) {
+        setState(() {
+          _error = 'Delete failed';
+        });
+        return;
+      }
+      if (mounted) {
+        Navigator.pop(context, null);
+      }
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+      });
+    } finally {
+      setState(() {
+        _saving = false;
+      });
     }
   }
 
@@ -117,6 +274,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isLocked = widget.initial?.locked == true;
+    final canDelete = _isEdit && _canDelete && !isLocked && !_saving;
     return Scaffold(
       appBar: AppBar(title: Text(_isEdit ? 'Edit Pattern' : 'New Pattern')),
       body: Padding(
@@ -213,6 +371,17 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
                   TextButton(
                     onPressed: _saving ? null : () => Navigator.pop(context),
                     child: Text(l10n.cancel),
+                  ),
+                  const SizedBox(width: 8),
+                  if (_isEdit)
+                    TextButton(
+                      onPressed: canDelete ? _delete : null,
+                      child: Text(l10n.delete),
+                    ),
+                  if (_isEdit) const SizedBox(width: 8),
+                  TextButton(
+                    onPressed: _saving || isLocked ? null : _applyAi,
+                    child: const Text('AI'),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(

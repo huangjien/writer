@@ -151,6 +151,30 @@ class PatternsService {
     return Pattern.fromMap(Map<String, dynamic>.from(data));
   }
 
+  Future<Map<String, dynamic>> improvePattern({
+    required String title,
+    String? description,
+    required String content,
+    Map<String, dynamic>? usageRules,
+    String? language,
+  }) async {
+    final payload = <String, dynamic>{
+      'title': title,
+      'description': description,
+      'content': content,
+      'usage_rules': usageRules,
+    };
+    if (language != null) payload['language'] = language;
+    final data = await _send('POST', '/patterns/improve', json: payload);
+    if (data is Map<String, dynamic>) {
+      return data;
+    }
+    if (data is Map) {
+      return Map<String, dynamic>.from(data);
+    }
+    throw ApiException(0, 'Invalid improvePattern response');
+  }
+
   Future<bool> deletePattern(String id) async {
     final data = await _send('DELETE', '/patterns/$id');
     if (data is Map && data['deleted'] is bool) return data['deleted'] as bool;
