@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app.dart';
 import 'state/ai_service_settings.dart';
 import 'state/supabase_config.dart';
@@ -17,6 +18,7 @@ final localStorageRepositoryProvider = Provider<LocalStorageRepository>((ref) {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  GoogleFonts.config.allowRuntimeFetching = false;
   if (supabaseEnabled) {
     await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
   }

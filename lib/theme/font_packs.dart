@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import '../shared/strings.dart';
 
 /// Optional font packs for reader UI.
@@ -45,16 +44,10 @@ ThemeData applyFontPack(ThemeData base, ReaderFontPack pack) {
     case ReaderFontPack.system:
       return base; // No change
     case ReaderFontPack.inter:
-      if (kIsWeb) {
-        return base; // Avoid runtime downloads on web
-      }
       return base.copyWith(
         textTheme: GoogleFonts.interTextTheme(base.textTheme),
       );
     case ReaderFontPack.merriweather:
-      if (kIsWeb) {
-        return base; // Avoid runtime downloads on web
-      }
       return base.copyWith(
         textTheme: GoogleFonts.merriweatherTextTheme(base.textTheme),
       );
