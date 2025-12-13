@@ -60,7 +60,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
 
   void _checkDirty() {
     final initial = widget.initial;
-    
+
     final newTitle = _titleCtrl.text;
     final newDesc = _descCtrl.text;
     final newContent = _contentCtrl.text;
@@ -79,7 +79,8 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
     final oldPublic = initial?.isPublic ?? true;
     final oldLocked = initial?.locked ?? false;
 
-    final isDirty = newTitle.trim() != oldTitle ||
+    final isDirty =
+        newTitle.trim() != oldTitle ||
         newDesc.trim() != oldDesc ||
         newContent.trim() != oldContent ||
         newUsage.trim() != oldUsage ||

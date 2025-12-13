@@ -301,12 +301,16 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
                     _items.isNotEmpty || _searchCtrl.text.trim().isNotEmpty
                     ? _items
                     : items0;
-                
+
                 if (_filterLanguage != null) {
-                  items = items.where((p) => (p.language ?? 'en') == _filterLanguage).toList();
+                  items = items
+                      .where((p) => (p.language ?? 'en') == _filterLanguage)
+                      .toList();
                 }
                 if (_filterLocked != null) {
-                  items = items.where((p) => (p.locked ?? false) == _filterLocked).toList();
+                  items = items
+                      .where((p) => (p.locked ?? false) == _filterLocked)
+                      .toList();
                 }
 
                 if (items.isEmpty) {
