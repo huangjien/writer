@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import '../../main.dart';
 import '../../models/template.dart';
 import '../../l10n/app_localizations.dart';
@@ -18,10 +19,12 @@ class SceneTemplatesScreen extends ConsumerStatefulWidget {
       _SceneTemplatesScreenState();
 }
 
-class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen> {
+class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descController = TextEditingController();
+  late TabController _tabController;
   bool _saving = false;
   String? _error;
   bool _isDirty = false;
@@ -31,6 +34,7 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen> {
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
     _load();
   }
 
@@ -59,6 +63,7 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen> {
   void dispose() {
     _nameController.dispose();
     _descController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -87,16 +92,49 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen> {
                 },
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _descController,
-                decoration: InputDecoration(labelText: l10n.descriptionLabel),
-                maxLines: 5,
-                onChanged: (_) {
-                  final dirty =
-                      _nameController.text.trim() != _baseName.trim() ||
-                      _descController.text.trim() != _baseDesc.trim();
-                  if (dirty != _isDirty) setState(() => _isDirty = dirty);
-                },
+              TabBar(
+                controller: _tabController,
+                tabs: [
+                  Tab(text: l10n.previewLabel),
+                  Tab(text: l10n.edit),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    // Preview Mode
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      child: Markdown(
+                        data: _descController.text,
+                        selectable: true,
+                      ),
+                    ),
+                    // Edit Mode
+                    TextFormField(
+                      controller: _descController,
+                      decoration: InputDecoration(
+                        hintText: l10n.markdownHint,
+                        border: const OutlineInputBorder(),
+                      ),
+                      maxLines: null,
+                      expands: true,
+                      textAlignVertical: TextAlignVertical.top,
+                      onChanged: (_) {
+                        final dirty =
+                            _nameController.text.trim() != _baseName.trim() ||
+                            _descController.text.trim() != _baseDesc.trim();
+                        if (dirty != _isDirty) setState(() => _isDirty = dirty);
+                      },
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
               Row(
