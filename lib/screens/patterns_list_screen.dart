@@ -25,6 +25,8 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
   List<Pattern> _items = [];
   bool _searchLoading = false;
   String? _error;
+  String? _filterLanguage;
+  bool? _filterLocked;
 
   String _preview(String s) {
     if (s.length <= _previewLen) return s;
@@ -188,6 +190,7 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
   }
 
   Widget _filters() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Wrap(
@@ -211,7 +214,50 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
               onSubmitted: (_) => _search(force: true),
             ),
           ),
-          const SizedBox.shrink(),
+          SizedBox(
+            width: 180,
+            child: InputDecorator(
+              decoration: InputDecoration(
+                labelText: l10n.languageLabel(''),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String?>(
+                  value: _filterLanguage,
+                  isDense: true,
+                  items: [
+                    const DropdownMenuItem(value: null, child: Text('All')),
+                    DropdownMenuItem(value: 'en', child: Text(l10n.english)),
+                    DropdownMenuItem(value: 'zh', child: Text(l10n.chinese)),
+                  ],
+                  onChanged: (v) => setState(() => _filterLanguage = v),
+                ),
+              ),
+            ),
+          ),
+          Tooltip(
+            message: _filterLocked == null
+                ? 'Filter by Locked'
+                : (_filterLocked! ? 'Locked Only' : 'Unlocked Only'),
+            child: IconButton(
+              icon: Icon(
+                _filterLocked == null
+                    ? Icons.filter_alt_off
+                    : (_filterLocked! ? Icons.lock : Icons.lock_open),
+              ),
+              onPressed: () {
+                setState(() {
+                  if (_filterLocked == null) {
+                    _filterLocked = true;
+                  } else if (_filterLocked == true) {
+                    _filterLocked = false;
+                  } else {
+                    _filterLocked = null;
+                  }
+                });
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -251,10 +297,18 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
           ? Center(child: Text(_error!))
           : patternsAsync.when(
               data: (items0) {
-                final items =
+                var items =
                     _items.isNotEmpty || _searchCtrl.text.trim().isNotEmpty
                     ? _items
                     : items0;
+                
+                if (_filterLanguage != null) {
+                  items = items.where((p) => (p.language ?? 'en') == _filterLanguage).toList();
+                }
+                if (_filterLocked != null) {
+                  items = items.where((p) => (p.locked ?? false) == _filterLocked).toList();
+                }
+
                 if (items.isEmpty) {
                   if (!isSupabaseEnabled) {
                     return Center(

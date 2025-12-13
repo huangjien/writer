@@ -27,6 +27,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
   late bool _isPublic;
   late bool _locked;
   bool _saving = false;
+  bool _isDirty = false;
   String? _error;
   bool _canDelete = false;
 
@@ -50,6 +51,45 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
     _isPublic = widget.initial?.isPublic ?? true;
     _locked = widget.initial?.locked ?? false;
     _canDelete = _computeCanDelete();
+
+    _titleCtrl.addListener(_checkDirty);
+    _descCtrl.addListener(_checkDirty);
+    _contentCtrl.addListener(_checkDirty);
+    _usageCtrl.addListener(_checkDirty);
+  }
+
+  void _checkDirty() {
+    final initial = widget.initial;
+    
+    final newTitle = _titleCtrl.text;
+    final newDesc = _descCtrl.text;
+    final newContent = _contentCtrl.text;
+    final newUsage = _usageCtrl.text;
+    final newLang = _language;
+    final newPublic = _isPublic;
+    final newLocked = _locked;
+
+    final oldTitle = initial?.title ?? '';
+    final oldDesc = initial?.description ?? '';
+    final oldContent = initial?.content ?? '';
+    final oldUsage = initial?.usageRules != null
+        ? const JsonEncoder.withIndent('  ').convert(initial!.usageRules)
+        : '';
+    final oldLang = initial?.language ?? 'en';
+    final oldPublic = initial?.isPublic ?? true;
+    final oldLocked = initial?.locked ?? false;
+
+    final isDirty = newTitle.trim() != oldTitle ||
+        newDesc.trim() != oldDesc ||
+        newContent.trim() != oldContent ||
+        newUsage.trim() != oldUsage ||
+        newLang != oldLang ||
+        newPublic != oldPublic ||
+        newLocked != oldLocked;
+
+    if (_isDirty != isDirty) {
+      setState(() => _isDirty = isDirty);
+    }
   }
 
   @override
@@ -175,6 +215,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
           _language = langOut.trim();
         }
       });
+      _checkDirty();
     } catch (e) {
       setState(() {
         _error = e.toString();
@@ -344,7 +385,10 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                       ],
                       onChanged: (!_locked && !_saving)
                           ? (v) {
-                              if (v != null) setState(() => _language = v);
+                              if (v != null) {
+                                setState(() => _language = v);
+                                _checkDirty();
+                              }
                             }
                           : null,
                     ),
@@ -354,7 +398,10 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                     InkWell(
                       onTap: _saving
                           ? null
-                          : () => setState(() => _locked = !_locked),
+                          : () {
+                              setState(() => _locked = !_locked);
+                              _checkDirty();
+                            },
                       borderRadius: BorderRadius.circular(4),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -386,6 +433,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                             setState(() {
                               _isPublic = v;
                             });
+                            _checkDirty();
                           },
                   ),
                   const SizedBox(width: 4),
@@ -468,7 +516,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
-                    onPressed: _saving ? null : _save,
+                    onPressed: (_saving || !_isDirty) ? null : _save,
                     child: _saving
                         ? const SizedBox(
                             width: 16,

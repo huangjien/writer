@@ -345,6 +345,8 @@ void main() {
     await tester.pump();
 
     // Tap save
+    await tester.enterText(find.widgetWithText(TextFormField, 'Title'), 'New Title');
+    await tester.pump();
     await tester.tap(find.text('Save'));
     await tester.pump(); // Start animation
 
