@@ -377,5 +377,15 @@
   "urlLabel": "URL",
   "systemFont": "System Font",
   "fontInter": "Inter",
-  "fontMerriweather": "Merriweather"
+  "fontMerriweather": "Merriweather",
+  "editPatternTitle": "Edit Pattern",
+  "newPatternTitle": "New Pattern",
+  "usageRulesLabel": "Usage Rules (JSON)",
+  "publicPatternLabel": "Public pattern",
+  "lockedLabel": "Locked",
+  "unlockedLabel": "Unlocked",
+  "aiButton": "AI",
+  "invalidJson": "Invalid JSON",
+  "deleteFailed": "Delete failed",
+  "lockPattern": "Lock pattern"
 }

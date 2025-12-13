@@ -955,4 +955,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fontMerriweather => 'Merriweather';
+
+  @override
+  String get editPatternTitle => 'Edit Pattern';
+
+  @override
+  String get newPatternTitle => 'New Pattern';
+
+  @override
+  String get usageRulesLabel => 'Usage Rules (JSON)';
+
+  @override
+  String get publicPatternLabel => 'Public pattern';
+
+  @override
+  String get lockedLabel => 'Locked';
+
+  @override
+  String get unlockedLabel => 'Unlocked';
+
+  @override
+  String get aiButton => 'AI';
+
+  @override
+  String get invalidJson => 'Invalid JSON';
+
+  @override
+  String get deleteFailed => 'Delete failed';
+
+  @override
+  String get lockPattern => 'Lock pattern';
 }

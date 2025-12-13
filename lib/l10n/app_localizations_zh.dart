@@ -939,4 +939,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get fontMerriweather => 'Merriweather';
+
+  @override
+  String get editPatternTitle => '编辑模式';
+
+  @override
+  String get newPatternTitle => '新建模式';
+
+  @override
+  String get usageRulesLabel => '使用规则 (JSON)';
+
+  @override
+  String get publicPatternLabel => '公开模式';
+
+  @override
+  String get lockedLabel => '已锁定';
+
+  @override
+  String get unlockedLabel => '未锁定';
+
+  @override
+  String get aiButton => 'AI';
+
+  @override
+  String get invalidJson => '无效的 JSON';
+
+  @override
+  String get deleteFailed => '删除失败';
+
+  @override
+  String get lockPattern => '锁定模式';
 }

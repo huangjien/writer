@@ -1885,6 +1885,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Merriweather'**
   String get fontMerriweather;
+
+  /// No description provided for @editPatternTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Pattern'**
+  String get editPatternTitle;
+
+  /// No description provided for @newPatternTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Pattern'**
+  String get newPatternTitle;
+
+  /// No description provided for @usageRulesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage Rules (JSON)'**
+  String get usageRulesLabel;
+
+  /// No description provided for @publicPatternLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Public pattern'**
+  String get publicPatternLabel;
+
+  /// No description provided for @lockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get lockedLabel;
+
+  /// No description provided for @unlockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked'**
+  String get unlockedLabel;
+
+  /// No description provided for @aiButton.
+  ///
+  /// In en, this message translates to:
+  /// **'AI'**
+  String get aiButton;
+
+  /// No description provided for @invalidJson.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid JSON'**
+  String get invalidJson;
+
+  /// No description provided for @deleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete failed'**
+  String get deleteFailed;
+
+  /// No description provided for @lockPattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock pattern'**
+  String get lockPattern;
 }
 
 class _AppLocalizationsDelegate

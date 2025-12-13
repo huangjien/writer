@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/pattern.dart';
@@ -14,14 +15,17 @@ class PatternFormScreen extends ConsumerStatefulWidget {
   ConsumerState<PatternFormScreen> createState() => _PatternFormScreenState();
 }
 
-class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
+class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _titleCtrl;
   late final TextEditingController _descCtrl;
   late final TextEditingController _contentCtrl;
   late final TextEditingController _usageCtrl;
-  late final TextEditingController _languageCtrl;
+  late final TabController _tabController;
+  late String _language;
   late bool _isPublic;
+  late bool _locked;
   bool _saving = false;
   String? _error;
   bool _canDelete = false;
@@ -31,6 +35,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
     _titleCtrl = TextEditingController(text: widget.initial?.title ?? '');
     _descCtrl = TextEditingController(text: widget.initial?.description ?? '');
     _contentCtrl = TextEditingController(text: widget.initial?.content ?? '');
@@ -41,11 +46,20 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
             ).convert(widget.initial!.usageRules)
           : '',
     );
-    _languageCtrl = TextEditingController(
-      text: widget.initial?.language ?? 'en',
-    );
+    _language = widget.initial?.language ?? 'en';
     _isPublic = widget.initial?.isPublic ?? true;
+    _locked = widget.initial?.locked ?? false;
     _canDelete = _computeCanDelete();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _titleCtrl.dispose();
+    _descCtrl.dispose();
+    _contentCtrl.dispose();
+    _usageCtrl.dispose();
+    super.dispose();
   }
 
   String? _required(String? v) {
@@ -127,8 +141,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
     try {
       final svc = ref.read(patternsServiceRefProvider);
       final usage = _parseUsageForAi(_usageCtrl.text);
-      final langText = _languageCtrl.text.trim();
-      final language = langText.isEmpty ? null : langText;
+      final language = _language.trim().isEmpty ? null : _language.trim();
       final improved = await svc.improvePattern(
         title: _titleCtrl.text.trim(),
         description: _descCtrl.text.trim().isEmpty
@@ -159,7 +172,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
           ).convert(usageOut);
         }
         if (langOut is String && langOut.trim().isNotEmpty) {
-          _languageCtrl.text = langOut.trim();
+          _language = langOut.trim();
         }
       });
     } catch (e) {
@@ -202,8 +215,10 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
     try {
       final success = await svc.deletePattern(widget.initial!.id);
       if (!success) {
+        if (!mounted) return;
+        final l10n = AppLocalizations.of(context)!;
         setState(() {
-          _error = 'Delete failed';
+          _error = l10n.deleteFailed;
         });
         return;
       }
@@ -231,8 +246,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
     final svc = ref.read(patternsServiceRefProvider);
     try {
       final usage = _parseUsage(_usageCtrl.text) ?? widget.initial?.usageRules;
-      final langText = _languageCtrl.text.trim();
-      final language = langText.isEmpty ? null : langText;
+      final language = _language.trim().isEmpty ? null : _language.trim();
       if (_isEdit) {
         final res = await svc.updatePattern(
           id: widget.initial!.id,
@@ -244,6 +258,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
           usageRules: usage,
           language: language,
           isPublic: _isPublic,
+          locked: _locked,
         );
         if (mounted) Navigator.pop(context, res);
       } else {
@@ -273,10 +288,11 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isLocked = widget.initial?.locked == true;
-    final canDelete = _isEdit && _canDelete && !isLocked && !_saving;
+    final canDelete = _isEdit && _canDelete && !_locked && !_saving;
     return Scaffold(
-      appBar: AppBar(title: Text(_isEdit ? 'Edit Pattern' : 'New Pattern')),
+      appBar: AppBar(
+        title: Text(_isEdit ? l10n.editPatternTitle : l10n.newPatternTitle),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -290,17 +306,17 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
                       controller: _titleCtrl,
                       decoration: InputDecoration(labelText: l10n.titleLabel),
                       validator: _required,
-                      enabled: !isLocked && !_saving,
+                      enabled: !_locked && !_saving,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextFormField(
                       controller: _descCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Description',
+                      decoration: InputDecoration(
+                        labelText: l10n.descriptionLabel,
                       ),
-                      enabled: !isLocked && !_saving,
+                      enabled: !_locked && !_saving,
                     ),
                   ),
                 ],
@@ -309,21 +325,52 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
               Row(
                 children: [
                   SizedBox(
-                    width: 120,
-                    child: TextFormField(
-                      controller: _languageCtrl,
-                      decoration: const InputDecoration(labelText: 'Language'),
-                      enabled: !isLocked && !_saving,
+                    width: 180,
+                    child: DropdownButtonFormField<String>(
+                      key: ValueKey(_language),
+                      initialValue: _language,
+                      decoration: InputDecoration(
+                        labelText: l10n.languageLabel(''),
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: 'en',
+                          child: Text(l10n.english),
+                        ),
+                        DropdownMenuItem(
+                          value: 'zh',
+                          child: Text(l10n.chinese),
+                        ),
+                      ],
+                      onChanged: (!_locked && !_saving)
+                          ? (v) {
+                              if (v != null) setState(() => _language = v);
+                            }
+                          : null,
                     ),
                   ),
                   const SizedBox(width: 12),
                   if (_isEdit)
-                    Row(
-                      children: [
-                        Icon(isLocked ? Icons.lock : Icons.lock_open, size: 18),
-                        const SizedBox(width: 4),
-                        Text(isLocked ? 'Locked' : 'Unlocked'),
-                      ],
+                    InkWell(
+                      onTap: _saving
+                          ? null
+                          : () => setState(() => _locked = !_locked),
+                      borderRadius: BorderRadius.circular(4),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Icon(
+                              _locked ? Icons.lock : Icons.lock_open,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              _locked ? l10n.lockedLabel : l10n.unlockedLabel,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                 ],
               ),
@@ -332,7 +379,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
                 children: [
                   Checkbox(
                     value: _isPublic,
-                    onChanged: _saving
+                    onChanged: _saving || _locked
                         ? null
                         : (v) {
                             if (v == null) return;
@@ -342,28 +389,58 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
                           },
                   ),
                   const SizedBox(width: 4),
-                  const Text('Public pattern'),
+                  Text(l10n.publicPatternLabel),
                 ],
               ),
               const SizedBox(height: 12),
-              Expanded(
-                child: TextFormField(
-                  controller: _contentCtrl,
-                  maxLines: null,
-                  expands: true,
-                  validator: _required,
-                  decoration: InputDecoration(labelText: l10n.content),
-                  enabled: !isLocked && !_saving,
-                ),
+              TabBar(
+                controller: _tabController,
+                labelColor: Theme.of(context).primaryColor,
+                unselectedLabelColor: Colors.grey,
+                tabs: [
+                  Tab(text: l10n.previewLabel),
+                  Tab(text: l10n.edit),
+                  Tab(text: l10n.usageRulesLabel),
+                ],
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _usageCtrl,
-                maxLines: 6,
-                decoration: const InputDecoration(
-                  labelText: 'Usage Rules (JSON)',
+              const SizedBox(height: 8),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Markdown(
+                        data: _contentCtrl.text,
+                        padding: const EdgeInsets.all(8),
+                      ),
+                    ),
+                    TextFormField(
+                      controller: _contentCtrl,
+                      maxLines: null,
+                      expands: true,
+                      validator: _required,
+                      decoration: InputDecoration(
+                        hintText: l10n.content,
+                        border: const OutlineInputBorder(),
+                      ),
+                      enabled: !_locked && !_saving,
+                    ),
+                    TextFormField(
+                      controller: _usageCtrl,
+                      maxLines: null,
+                      expands: true,
+                      decoration: InputDecoration(
+                        hintText: l10n.usageRulesLabel,
+                        border: const OutlineInputBorder(),
+                      ),
+                      enabled: !_locked && !_saving,
+                    ),
+                  ],
                 ),
-                enabled: !isLocked && !_saving,
               ),
               const SizedBox(height: 8),
               Row(
@@ -380,13 +457,25 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
                     ),
                   if (_isEdit) const SizedBox(width: 8),
                   TextButton(
-                    onPressed: _saving || isLocked ? null : _applyAi,
-                    child: const Text('AI'),
+                    onPressed: _saving || _locked ? null : _applyAi,
+                    child: _saving
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(l10n.aiButton),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
-                    onPressed: _saving || isLocked ? null : _save,
-                    child: Text(l10n.save),
+                    onPressed: _saving ? null : _save,
+                    child: _saving
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(l10n.save),
                   ),
                 ],
               ),

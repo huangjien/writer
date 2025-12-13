@@ -363,5 +363,16 @@
   "urlLabel": "链接",
   "systemFont": "系统字体",
   "fontInter": "Inter",
-  "fontMerriweather": "Merriweather"
+  "fontMerriweather": "Merriweather",
+  "editPatternTitle": "编辑模式",
+  "newPatternTitle": "新建模式",
+  "descriptionLabel": "描述",
+  "usageRulesLabel": "使用规则 (JSON)",
+  "publicPatternLabel": "公开模式",
+  "lockedLabel": "已锁定",
+  "unlockedLabel": "未锁定",
+  "aiButton": "AI",
+  "invalidJson": "无效的 JSON",
+  "deleteFailed": "删除失败",
+  "lockPattern": "锁定模式"
 }
