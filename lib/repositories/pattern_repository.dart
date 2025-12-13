@@ -31,6 +31,9 @@ class PatternRepository {
     required String content,
     Map<String, dynamic>? usageRules,
     List<double>? embedding,
+    String? language,
+    bool? isPublic,
+    bool? locked,
   }) async {
     final insert = <String, dynamic>{
       'title': title,
@@ -41,6 +44,9 @@ class PatternRepository {
     if (embedding != null) {
       insert['embedding'] = embedding;
     }
+    if (language != null) insert['language'] = language;
+    if (isPublic != null) insert['is_public'] = isPublic;
+    if (locked != null) insert['locked'] = locked;
     final res = await client
         .from('writing_patterns')
         .insert(insert)
@@ -56,6 +62,9 @@ class PatternRepository {
     String? content,
     Map<String, dynamic>? usageRules,
     List<double>? embedding,
+    String? language,
+    bool? isPublic,
+    bool? locked,
   }) async {
     final update = <String, dynamic>{};
     if (title != null) update['title'] = title;
@@ -63,6 +72,9 @@ class PatternRepository {
     if (content != null) update['content'] = content;
     if (usageRules != null) update['usage_rules'] = usageRules;
     if (embedding != null) update['embedding'] = embedding;
+    if (language != null) update['language'] = language;
+    if (isPublic != null) update['is_public'] = isPublic;
+    if (locked != null) update['locked'] = locked;
     final res = await client
         .from('writing_patterns')
         .update(update)

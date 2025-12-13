@@ -18,6 +18,8 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
   late final TextEditingController _descCtrl;
   late final TextEditingController _contentCtrl;
   late final TextEditingController _usageCtrl;
+  late final TextEditingController _languageCtrl;
+  late bool _isPublic;
   bool _saving = false;
   String? _error;
 
@@ -36,6 +38,10 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
             ).convert(widget.initial!.usageRules)
           : '',
     );
+    _languageCtrl = TextEditingController(
+      text: widget.initial?.language ?? 'en',
+    );
+    _isPublic = widget.initial?.isPublic ?? true;
   }
 
   String? _required(String? v) {
@@ -68,6 +74,8 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
     final svc = ref.read(patternsServiceRefProvider);
     try {
       final usage = _parseUsage(_usageCtrl.text) ?? widget.initial?.usageRules;
+      final langText = _languageCtrl.text.trim();
+      final language = langText.isEmpty ? null : langText;
       if (_isEdit) {
         final res = await svc.updatePattern(
           id: widget.initial!.id,
@@ -77,6 +85,8 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
               : _descCtrl.text.trim(),
           content: _contentCtrl.text.trim(),
           usageRules: usage,
+          language: language,
+          isPublic: _isPublic,
         );
         if (mounted) Navigator.pop(context, res);
       } else {
@@ -87,6 +97,8 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
               : _descCtrl.text.trim(),
           content: _contentCtrl.text.trim(),
           usageRules: usage,
+          language: language,
+          isPublic: _isPublic,
         );
         if (mounted) Navigator.pop(context, res);
       }
@@ -104,6 +116,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isLocked = widget.initial?.locked == true;
     return Scaffold(
       appBar: AppBar(title: Text(_isEdit ? 'Edit Pattern' : 'New Pattern')),
       body: Padding(
@@ -119,6 +132,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
                       controller: _titleCtrl,
                       decoration: InputDecoration(labelText: l10n.titleLabel),
                       validator: _required,
+                      enabled: !isLocked && !_saving,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -128,8 +142,49 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
                       decoration: const InputDecoration(
                         labelText: 'Description',
                       ),
+                      enabled: !isLocked && !_saving,
                     ),
                   ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 120,
+                    child: TextFormField(
+                      controller: _languageCtrl,
+                      decoration: const InputDecoration(labelText: 'Language'),
+                      enabled: !isLocked && !_saving,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  if (_isEdit)
+                    Row(
+                      children: [
+                        Icon(isLocked ? Icons.lock : Icons.lock_open, size: 18),
+                        const SizedBox(width: 4),
+                        Text(isLocked ? 'Locked' : 'Unlocked'),
+                      ],
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Checkbox(
+                    value: _isPublic,
+                    onChanged: _saving
+                        ? null
+                        : (v) {
+                            if (v == null) return;
+                            setState(() {
+                              _isPublic = v;
+                            });
+                          },
+                  ),
+                  const SizedBox(width: 4),
+                  const Text('Public pattern'),
                 ],
               ),
               const SizedBox(height: 12),
@@ -140,6 +195,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
                   expands: true,
                   validator: _required,
                   decoration: InputDecoration(labelText: l10n.content),
+                  enabled: !isLocked && !_saving,
                 ),
               ),
               const SizedBox(height: 12),
@@ -149,6 +205,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Usage Rules (JSON)',
                 ),
+                enabled: !isLocked && !_saving,
               ),
               const SizedBox(height: 8),
               Row(
@@ -159,7 +216,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen> {
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
-                    onPressed: _saving ? null : _save,
+                    onPressed: _saving || isLocked ? null : _save,
                     child: Text(l10n.save),
                   ),
                 ],

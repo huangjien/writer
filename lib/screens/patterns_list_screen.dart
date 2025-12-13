@@ -51,6 +51,7 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
       columns: [
         DataColumn(label: Text(l10n.titleLabel)),
         DataColumn(label: Text(l10n.previewLabel)),
+        const DataColumn(label: Text('Meta')),
         DataColumn(label: Text(l10n.actions)),
       ],
       rows: src
@@ -61,6 +62,18 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
                 DataCell(
                   Text(_preview(p.description ?? p.content)),
                   onTap: () => _onRowTap(p),
+                ),
+                DataCell(
+                  Row(
+                    children: [
+                      Text(p.language ?? 'en'),
+                      const SizedBox(width: 8),
+                      Icon(
+                        p.locked == true ? Icons.lock : Icons.lock_open,
+                        size: 16,
+                      ),
+                    ],
+                  ),
                 ),
                 DataCell(
                   Row(

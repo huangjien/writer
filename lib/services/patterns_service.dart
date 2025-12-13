@@ -114,6 +114,8 @@ class PatternsService {
     String? description,
     required String content,
     Map<String, dynamic>? usageRules,
+    String? language,
+    bool? isPublic,
   }) async {
     final payload = <String, dynamic>{
       'title': title,
@@ -121,6 +123,8 @@ class PatternsService {
       'content': content,
       'usage_rules': usageRules,
     };
+    if (language != null) payload['language'] = language;
+    if (isPublic != null) payload['is_public'] = isPublic;
     final data = await _send('POST', '/patterns/', json: payload);
     return Pattern.fromMap(Map<String, dynamic>.from(data));
   }
@@ -131,12 +135,18 @@ class PatternsService {
     String? description,
     String? content,
     Map<String, dynamic>? usageRules,
+    String? language,
+    bool? isPublic,
+    bool? locked,
   }) async {
     final payload = <String, dynamic>{};
     if (title != null) payload['title'] = title;
     if (description != null) payload['description'] = description;
     if (content != null) payload['content'] = content;
     if (usageRules != null) payload['usage_rules'] = usageRules;
+    if (language != null) payload['language'] = language;
+    if (isPublic != null) payload['is_public'] = isPublic;
+    if (locked != null) payload['locked'] = locked;
     final data = await _send('PATCH', '/patterns/$id', json: payload);
     return Pattern.fromMap(Map<String, dynamic>.from(data));
   }

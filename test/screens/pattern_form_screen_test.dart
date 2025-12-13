@@ -20,6 +20,8 @@ class FakePatternsService extends PatternsService {
     String? description,
     required String content,
     Map<String, dynamic>? usageRules,
+    String? language,
+    bool? isPublic,
   }) async {
     createCalled = true;
     lastCreate = {
@@ -44,6 +46,9 @@ class FakePatternsService extends PatternsService {
     String? description,
     String? content,
     Map<String, dynamic>? usageRules,
+    String? language,
+    bool? isPublic,
+    bool? locked,
   }) async {
     updateCalled = true;
     lastUpdate = {
@@ -95,15 +100,22 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    final fields = find.byType(TextFormField);
-    // Title
-    await tester.enterText(fields.at(0), 'Title');
-    // Description (optional)
-    await tester.enterText(fields.at(1), 'Desc');
-    // Content
-    await tester.enterText(fields.at(2), 'Content body');
-    // Usage (JSON)
-    await tester.enterText(fields.at(3), '{"x":true}');
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Title'),
+      'Title',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Description'),
+      'Desc',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Content'),
+      'Content body',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Usage Rules (JSON)'),
+      '{"x":true}',
+    );
     await tester.pump();
     await tester.tap(find.text('Save'));
     await tester.pump();
@@ -125,10 +137,18 @@ void main() {
       ),
     );
     await tester.pump();
-    final fields = find.byType(TextFormField);
-    await tester.enterText(fields.at(0), 'Title');
-    await tester.enterText(fields.at(2), 'Body');
-    await tester.enterText(fields.at(3), '{bad json]');
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Title'),
+      'Title',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Content'),
+      'Body',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Usage Rules (JSON)'),
+      '{bad json]',
+    );
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(find.text('Invalid JSON'), findsOneWidget);
@@ -155,9 +175,8 @@ void main() {
       ),
     );
     await tester.pump();
-    final fields = find.byType(TextFormField);
-    await tester.enterText(fields.at(0), 'New');
-    await tester.enterText(fields.at(2), 'B');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Title'), 'New');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Content'), 'B');
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(svc.updateCalled, isTrue);

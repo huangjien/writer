@@ -5,6 +5,10 @@ class Pattern {
   final String content;
   final Map<String, dynamic>? usageRules;
   final List<double>? embedding;
+  final String? language;
+  final bool? isPublic;
+  final bool? locked;
+  final String? ownerId;
   final DateTime? createdAt;
 
   const Pattern({
@@ -14,6 +18,10 @@ class Pattern {
     required this.content,
     this.usageRules,
     this.embedding,
+    this.language,
+    this.isPublic,
+    this.locked,
+    this.ownerId,
     this.createdAt,
   });
 
@@ -38,6 +46,10 @@ class Pattern {
                 ? Map<String, dynamic>.from(map['usage_rules'] as Map)
                 : null),
       embedding: emb,
+      language: map['language'] as String?,
+      isPublic: map['is_public'] as bool?,
+      locked: map['locked'] as bool?,
+      ownerId: map['owner_id'] as String?,
       createdAt: created is String ? DateTime.tryParse(created) : null,
     );
   }
@@ -50,6 +62,10 @@ class Pattern {
       'content': content,
       'usage_rules': usageRules,
       'embedding': embedding,
+      'language': language,
+      'is_public': isPublic,
+      'locked': locked,
+      'owner_id': ownerId,
       'created_at': createdAt?.toIso8601String(),
     };
   }
