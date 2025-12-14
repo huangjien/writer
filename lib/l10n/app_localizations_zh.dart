@@ -25,6 +25,33 @@ class AppLocalizationsZh extends AppLocalizations {
       '阅读和管理小说，支持 Supabase 云存储、离线模式和文本转语音播放。使用“文库”浏览、搜索并打开章节；登录以同步进度；在设置中调整主题、排版和动效。';
 
   @override
+  String get aboutIntro =>
+      'AuthorConsole 帮助您跨设备规划、编写和阅读小说。它专注于读者的简洁体验和作者的强大功能，提供统一的平台来管理章节、大纲、角色和场景。';
+
+  @override
+  String get aboutSecurity =>
+      '借助 Supabase 支持的存储和严格的行级安全性，您的数据将得到保护。经过验证的用户可以同步进度、元数据和模板，同时保持隐私。';
+
+  @override
+  String get aboutCoach =>
+      '内置的 AI 教练使用雪花法来改进您的故事大纲。它会提出针对性的问题，提供建议，并在准备就绪时提供完善的大纲，应用会自动将其应用到您的文档中。';
+
+  @override
+  String get aboutFeatureCreate => '• 创建新小说并组织章节。';
+
+  @override
+  String get aboutFeatureTemplates => '• 使用角色和场景模板来快速启动创意。';
+
+  @override
+  String get aboutFeatureTracking => '• 跟踪阅读进度并在设备间恢复阅读。';
+
+  @override
+  String get aboutFeatureCoach => '• 使用 AI 教练完善大纲并应用改进。';
+
+  @override
+  String get aboutFeaturePrompts => '• 管理提示词并尝试 AI 辅助的工作流程。';
+
+  @override
   String get aboutUsage => '用法';
 
   @override

@@ -24,7 +24,7 @@ A Flutter application for reading novels with Supabase-backed storage, localizat
 
 ## Setup
 - Install dependencies: `make deps`
-- Optional static analysis and formatting: `make analyze` and `make format`
+- Static analysis and formatting: `make lint`
 - Environment variables for runtime (pass via dart-define at build/run time):
   - `SUPABASE_URL` – your Supabase project URL.
   - `SUPABASE_ANON_KEY` – your Supabase anonymous client key.
@@ -55,6 +55,7 @@ A Flutter application for reading novels with Supabase-backed storage, localizat
 - Web (local dev server): `make dev-web WEB_PORT=5500 SUPABASE_URL=... SUPABASE_ANON_KEY=...`
 - Chrome device: `make dev-chrome SUPABASE_URL=... SUPABASE_ANON_KEY=...`
 - macOS device: `make macos SUPABASE_URL=... SUPABASE_ANON_KEY=...`
+- Android build (copies APK to `/tmp/`): `make build-android`
 
 ### AI service URL
 - The app reads a default backend AI service URL from `AI_SERVICE_URL` at build time and stores the value in preferences:

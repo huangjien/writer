@@ -178,6 +178,8 @@ build-android:
 	$(FLUTTER) clean
 	node scripts/patch_isar.js
 	$(FLUTTER) build apk --release $(DF_ARGS)
+	@echo "Copying APK to /tmp/..."
+	cp build/app/outputs/flutter-apk/app-release.apk /tmp/
 
 build-windows:
 	node scripts/patch_flutter_tts_windows_cmake.js
