@@ -5,6 +5,7 @@ import '../repositories/chapter_repository.dart';
 import '../repositories/chapter_port.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
+import 'package:writer/shared/constants.dart';
 
 enum EditRequest { idle, saving, creating, deleting }
 
@@ -298,7 +299,7 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
       return;
     }
     _embedTimer?.cancel();
-    var delay = const Duration(seconds: 2);
+    var delay = kEmbeddingDebounce;
     assert(() {
       delay = Duration.zero;
       return true;

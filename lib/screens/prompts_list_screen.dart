@@ -6,10 +6,11 @@ import '../models/prompt.dart';
 import '../services/prompts_service.dart';
 import 'package:go_router/go_router.dart';
 import '../l10n/app_localizations.dart';
+import '../shared/constants.dart';
 
-const int _previewLen = 50;
-const int _searchDebounceMs = 600;
-const int _searchMinLen = 2;
+const int _previewLen = kPreviewLenShort;
+const int _searchDebounceMs = kSearchDebounceMs;
+const int _searchMinLen = kSearchMinLen;
 
 class PromptsListScreen extends StatefulWidget {
   final PromptsService service;
@@ -289,7 +290,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
     final now = DateTime.now();
     if (_lastRowTapId == p.id &&
         _lastRowTapAt != null &&
-        now.difference(_lastRowTapAt!) < const Duration(milliseconds: 300)) {
+        now.difference(_lastRowTapAt!) < kDoubleTapThreshold) {
       context.push('/prompt_form', extra: p);
       _lastRowTapAt = null;
       _lastRowTapId = null;

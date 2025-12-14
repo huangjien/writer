@@ -42,7 +42,7 @@ DF_ARGS := $(strip $(if $(SUPABASE_URL),--dart-define SUPABASE_URL=$(SUPABASE_UR
                  $(if $(DEFAULT_AGENT_EMBEDDING_TEMPERATURE),--dart-define DEFAULT_AGENT_EMBEDDING_TEMPERATURE=$(DEFAULT_AGENT_EMBEDDING_TEMPERATURE)))
 IMAGE ?= writer-web:latest
 
-.PHONY: help dev-web dev-chrome macos deps test test-expanded analyze lint format clean build-web serve-web-build env-print \
+.PHONY: help dev-web dev-chrome macos deps test test-expanded analyze lint clean build-web serve-web-build env-print \
         build-macos build-android build-ios build-windows build-linux build-ipa build-ipa-nocodesign install-hooks icons \
         docker-build-web docker-push-web ci
 
@@ -56,8 +56,7 @@ help:
 	@echo "  test               - Run unit/widget tests (with coverage summary)"
 	@echo "  test-expanded      - Run tests with expanded reporter and coverage summary"
 	@echo "  analyze            - Run static analysis (Dart)"
-	@echo "  lint               - Run static analysis (alias of analyze)"
-	@echo "  format             - Format source files"
+	@echo "  lint               - Run static analysis (alias of analyze) and format"
 	@echo "  clean              - Clean Flutter build outputs"
 	@echo "  build-web          - Build Flutter web app (release)"
 	@echo "  build-macos        - Build macOS release app"
@@ -140,14 +139,10 @@ analyze:
 	dart analyze
 
 lint:
-	@echo "Running formatter check (no changes allowed)..."
-	# Use output=show to avoid writing; suppress output to keep logs clean
-	dart format --output show --set-exit-if-changed lib test >/dev/null
+	@echo "Running formatter..."
+	dart format lib test
 	@echo "Running analyzer with fatal infos..."
 	dart analyze --fatal-infos
-
-format:
-	dart format lib test
 
 clean:
 	$(FLUTTER) clean

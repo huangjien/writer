@@ -6,10 +6,11 @@ import '../models/pattern.dart';
 import '../state/pattern_providers.dart';
 import '../state/providers.dart';
 import '../l10n/app_localizations.dart';
+import '../shared/constants.dart';
 
-const int _previewLen = 80;
-const int _searchDebounceMs = 600;
-const int _searchMinLen = 2;
+const int _previewLen = kPreviewLenLong;
+const int _searchDebounceMs = kSearchDebounceMs;
+const int _searchMinLen = kSearchMinLen;
 
 class PatternsListScreen extends ConsumerStatefulWidget {
   const PatternsListScreen({super.key});
@@ -37,7 +38,7 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
     final now = DateTime.now();
     if (_lastRowTapId == p.id &&
         _lastRowTapAt != null &&
-        now.difference(_lastRowTapAt!) < const Duration(milliseconds: 300)) {
+        now.difference(_lastRowTapAt!) < kDoubleTapThreshold) {
       context.push('/pattern_form', extra: p);
       _lastRowTapAt = null;
       _lastRowTapId = null;

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:async';
 import '../tts_chunker.dart';
+import '../../../shared/constants.dart';
 
 typedef TtsProgress = void Function(int index);
 typedef TtsFlag = void Function();
@@ -119,7 +120,7 @@ class TtsDriver {
   Future<void> start({
     required String content,
     required int startIndex,
-    int chunkMaxLen = 500,
+    int chunkMaxLen = kTtsChunkMaxLen,
   }) async {
     _speaking = true;
     _completedHandled = false;
@@ -149,7 +150,7 @@ class TtsDriver {
 
         // Wait for completion handler with a safety timeout
         // Calculate timeout based on length (conservative estimate: 1s per 5 chars + 5s base)
-        final timeoutMs = 5000 + (part.length * 200);
+        final timeoutMs = kTtsBaseTimeoutMs + (part.length * kTtsCharTimeoutMs);
         await _chunkCompleter!.future.timeout(
           Duration(milliseconds: timeoutMs),
           onTimeout: () {

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
+import 'package:writer/shared/constants.dart';
 
 class ChatMessage {
   final String content;
@@ -108,8 +109,8 @@ class AiServiceStatusNotifier extends StateNotifier<bool> {
 
   final AiChatService _aiChatService;
   Timer? _timer;
-  final Duration _okInterval = const Duration(minutes: 8);
-  final Duration _failInterval = const Duration(minutes: 2);
+  final Duration _okInterval = kAiHealthCheckIntervalOk;
+  final Duration _failInterval = kAiHealthCheckIntervalFail;
 
   void _scheduleNext(Duration delay) {
     _timer?.cancel();

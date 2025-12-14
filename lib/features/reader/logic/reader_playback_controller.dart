@@ -5,6 +5,7 @@ import '../../../state/app_settings.dart';
 import '../../../state/tts_settings.dart';
 import 'tts_driver.dart';
 import '../tts_chunker.dart';
+import '../../../shared/constants.dart';
 
 typedef ProgressCb = void Function(int index);
 typedef FlagCb = void Function();
@@ -17,7 +18,7 @@ class ReaderPlaybackController {
   int _attempts = 0;
   bool _speaking = false;
   int _index = 0;
-  final int _maxAttempts = 5;
+  final int _maxAttempts = kTtsMaxAttempts;
   int _totalLen = 0;
   int _lastIndex = 0;
 
@@ -138,13 +139,7 @@ class ReaderPlaybackController {
     required FlagCb onComplete,
   }) {
     _autoStartRetry?.cancel();
-    final delays = <Duration>[
-      const Duration(seconds: 1),
-      const Duration(seconds: 2),
-      const Duration(seconds: 4),
-      const Duration(seconds: 8),
-      const Duration(seconds: 8),
-    ];
+    final delays = kTtsRetryDelays;
     final idx = _attempts.clamp(0, delays.length - 1);
     final delay = delays[idx];
     _autoStartRetry = Timer(delay, () {

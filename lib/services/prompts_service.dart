@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/prompt.dart';
+import '../shared/constants.dart';
 
 class ApiException implements Exception {
   final int statusCode;
@@ -24,7 +25,7 @@ class PromptsService {
     this.authToken,
     Duration? timeout,
     http.Client? client,
-  }) : timeout = timeout ?? const Duration(seconds: 30),
+  }) : timeout = timeout ?? kLlmTimeout,
        _client = client;
 
   bool get isLoading => _loading;
