@@ -164,6 +164,10 @@ docker-push-web:
 ## Release builds (pass SUPABASE_URL/SUPABASE_ANON_KEY if needed)
 build-macos:
 	$(FLUTTER) build macos --release $(DF_ARGS)
+	@if [ -d "/Applications" ] && [ -z "$$CI" ]; then \
+		echo "Copying to /Applications..."; \
+		cp -R "build/macos/Build/Products/Release/writer.app" "/Applications/" || echo "Failed to copy app"; \
+	fi
 
 build-ios:
 	# Builds without code signing for portability; configure signing in Xcode if needed.
