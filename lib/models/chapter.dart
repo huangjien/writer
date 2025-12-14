@@ -56,4 +56,21 @@ class Chapter {
       sha: sha ?? this.sha,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Chapter &&
+        other.id == id &&
+        other.novelId == novelId &&
+        other.idx == idx &&
+        other.title == title &&
+        other.content == content &&
+        other.sha == sha;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(id, novelId, idx, title, content, sha);
+  }
 }

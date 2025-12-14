@@ -14,6 +14,16 @@ import '../models/character_template_row.dart';
 import '../models/scene_template_row.dart';
 
 class LocalStorageRepository {
+  final bool? _supabaseEnabledOverride;
+  final SupabaseClient? _clientOverride;
+
+  LocalStorageRepository({bool? supabaseEnabled, SupabaseClient? client})
+    : _supabaseEnabledOverride = supabaseEnabled,
+      _clientOverride = client;
+
+  bool get _isSupabaseEnabled => _supabaseEnabledOverride ?? supabaseEnabled;
+  SupabaseClient get _client => _clientOverride ?? Supabase.instance.client;
+
   Future<void> saveChapter(ChapterCache chapter) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(chapter.chapterId, jsonEncode(chapter.toJson()));
@@ -110,9 +120,9 @@ class LocalStorageRepository {
       'character_form_$novelId',
       jsonEncode(character.toMap()),
     );
-    if (supabaseEnabled) {
+    if (_isSupabaseEnabled) {
       try {
-        final client = Supabase.instance.client;
+        final client = _client;
         await client.from('characters').upsert({
           'novel_id': novelId,
           'idx': idx ?? 1,
@@ -135,9 +145,9 @@ class LocalStorageRepository {
         local = Character.fromMap(decoded);
       } catch (_) {}
     }
-    if (supabaseEnabled) {
+    if (_isSupabaseEnabled) {
       try {
-        final client = Supabase.instance.client;
+        final client = _client;
         final rows = List<Map<String, dynamic>>.from(
           await client
               .from('characters')
@@ -181,9 +191,9 @@ class LocalStorageRepository {
       'language_code': languageCode,
     };
     await prefs.setString('character_note_form_$novelId', jsonEncode(payload));
-    if (supabaseEnabled) {
+    if (_isSupabaseEnabled) {
       try {
-        final client = Supabase.instance.client;
+        final client = _client;
         await client.from('characters').upsert({
           'novel_id': novelId,
           'idx': idx ?? 1,
@@ -208,9 +218,9 @@ class LocalStorageRepository {
         local = jsonDecode(raw) as Map<String, dynamic>;
       } catch (_) {}
     }
-    if (supabaseEnabled) {
+    if (_isSupabaseEnabled) {
       try {
-        final client = Supabase.instance.client;
+        final client = _client;
         final rows = List<Map<String, dynamic>>.from(
           await client
               .from('characters')
@@ -236,9 +246,9 @@ class LocalStorageRepository {
   Future<void> saveSceneForm(String novelId, Scene scene, {int? idx}) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('scene_form_$novelId', jsonEncode(scene.toMap()));
-    if (supabaseEnabled) {
+    if (_isSupabaseEnabled) {
       try {
-        final client = Supabase.instance.client;
+        final client = _client;
         final summaries = scene.summary;
         final synopses = scene.location;
         await client.from('scenes').upsert({
@@ -263,9 +273,9 @@ class LocalStorageRepository {
         local = Scene.fromMap(decoded);
       } catch (_) {}
     }
-    if (supabaseEnabled) {
+    if (_isSupabaseEnabled) {
       try {
-        final client = Supabase.instance.client;
+        final client = _client;
         final rows = List<Map<String, dynamic>>.from(
           await client
               .from('scenes')
@@ -297,8 +307,8 @@ class LocalStorageRepository {
     String novelId,
     TemplateItem item,
   ) async {
-    if (supabaseEnabled) {
-      final client = Supabase.instance.client;
+    if (_isSupabaseEnabled) {
+      final client = _client;
       final uid = client.auth.currentUser?.id;
       final existing = await (uid != null
           ? client
@@ -321,9 +331,9 @@ class LocalStorageRepository {
       'character_template_form_$novelId',
       jsonEncode(item.toMap()),
     );
-    if (supabaseEnabled) {
+    if (_isSupabaseEnabled) {
       try {
-        final client = Supabase.instance.client;
+        final client = _client;
         final uid = client.auth.currentUser?.id;
         await client.from('character_templates').insert({
           'idx': 1,
@@ -346,9 +356,9 @@ class LocalStorageRepository {
         local = TemplateItem.fromMap(decoded);
       } catch (_) {}
     }
-    if (supabaseEnabled) {
+    if (_isSupabaseEnabled) {
       try {
-        final client = Supabase.instance.client;
+        final client = _client;
         final rows = List<Map<String, dynamic>>.from(
           await client
               .from('character_templates')
@@ -376,9 +386,9 @@ class LocalStorageRepository {
       'scene_template_form_$novelId',
       jsonEncode(item.toMap()),
     );
-    if (supabaseEnabled) {
+    if (_isSupabaseEnabled) {
       try {
-        final client = Supabase.instance.client;
+        final client = _client;
         final uid = client.auth.currentUser?.id;
         await client.from('scene_templates').insert({
           'idx': 1,
@@ -401,9 +411,9 @@ class LocalStorageRepository {
         local = TemplateItem.fromMap(decoded);
       } catch (_) {}
     }
-    if (supabaseEnabled) {
+    if (_isSupabaseEnabled) {
       try {
-        final client = Supabase.instance.client;
+        final client = _client;
         final rows = List<Map<String, dynamic>>.from(
           await client
               .from('scene_templates')
@@ -426,7 +436,7 @@ class LocalStorageRepository {
   }
 
   Future<List<CharacterNote>> listCharacterNotes(String novelId) async {
-    if (!supabaseEnabled) {
+    if (!_isSupabaseEnabled) {
       final cached = await getCharacterNoteForm(novelId);
       if (cached == null) return <CharacterNote>[];
       final now = DateTime.now();
@@ -444,7 +454,7 @@ class LocalStorageRepository {
         ),
       ];
     }
-    final client = Supabase.instance.client;
+    final client = _client;
     final res = await client
         .from('characters')
         .select(
@@ -459,8 +469,8 @@ class LocalStorageRepository {
   }
 
   Future<int> nextCharacterIdx(String novelId) async {
-    if (!supabaseEnabled) return 2;
-    final client = Supabase.instance.client;
+    if (!_isSupabaseEnabled) return 2;
+    final client = _client;
     final rows = await client
         .from('characters')
         .select('idx')
@@ -474,18 +484,18 @@ class LocalStorageRepository {
   }
 
   Future<void> deleteCharacterNoteById(String id) async {
-    if (!supabaseEnabled) return;
-    final client = Supabase.instance.client;
+    if (!_isSupabaseEnabled) return;
+    final client = _client;
     await client.from('characters').delete().eq('id', id);
   }
 
   Future<void> deleteCharacterNoteByIdx(String novelId, int idx) async {
-    if (!supabaseEnabled) {
+    if (!_isSupabaseEnabled) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('character_note_form_$novelId');
       return;
     }
-    final client = Supabase.instance.client;
+    final client = _client;
     await client
         .from('characters')
         .delete()
@@ -494,7 +504,7 @@ class LocalStorageRepository {
   }
 
   Future<List<SceneNote>> listSceneNotes(String novelId) async {
-    if (!supabaseEnabled) {
+    if (!_isSupabaseEnabled) {
       final cached = await getSceneForm(novelId);
       if (cached == null) return <SceneNote>[];
       final now = DateTime.now();
@@ -512,7 +522,7 @@ class LocalStorageRepository {
         ),
       ];
     }
-    final client = Supabase.instance.client;
+    final client = _client;
     final res = await client
         .from('scenes')
         .select(
@@ -527,8 +537,8 @@ class LocalStorageRepository {
   }
 
   Future<int> nextSceneIdx(String novelId) async {
-    if (!supabaseEnabled) return 2;
-    final client = Supabase.instance.client;
+    if (!_isSupabaseEnabled) return 2;
+    final client = _client;
     final rows = await client
         .from('scenes')
         .select('idx')
@@ -542,26 +552,26 @@ class LocalStorageRepository {
   }
 
   Future<void> deleteSceneNoteById(String id) async {
-    if (!supabaseEnabled) return;
-    final client = Supabase.instance.client;
+    if (!_isSupabaseEnabled) return;
+    final client = _client;
     await client.from('scenes').delete().eq('id', id);
   }
 
   Future<void> deleteSceneNoteByIdx(String novelId, int idx) async {
-    if (!supabaseEnabled) {
+    if (!_isSupabaseEnabled) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('scene_form_$novelId');
       return;
     }
-    final client = Supabase.instance.client;
+    final client = _client;
     await client.from('scenes').delete().eq('novel_id', novelId).eq('idx', idx);
   }
 
   Future<List<CharacterTemplateRow>> listCharacterTemplates() async {
-    if (!supabaseEnabled) {
+    if (!_isSupabaseEnabled) {
       return <CharacterTemplateRow>[];
     }
-    final client = Supabase.instance.client;
+    final client = _client;
     final res = await client
         .from('character_templates')
         .select(
@@ -575,14 +585,14 @@ class LocalStorageRepository {
   }
 
   Future<void> deleteCharacterTemplate(String id) async {
-    if (!supabaseEnabled) return;
-    final client = Supabase.instance.client;
+    if (!_isSupabaseEnabled) return;
+    final client = _client;
     await client.from('character_templates').delete().eq('id', id);
   }
 
   Future<CharacterTemplateRow?> getCharacterTemplateById(String id) async {
-    if (!supabaseEnabled) return null;
-    final client = Supabase.instance.client;
+    if (!_isSupabaseEnabled) return null;
+    final client = _client;
     final row = await client
         .from('character_templates')
         .select(
@@ -601,8 +611,8 @@ class LocalStorageRepository {
     String? synopses,
     String languageCode = 'en',
   }) async {
-    if (!supabaseEnabled) return;
-    final client = Supabase.instance.client;
+    if (!_isSupabaseEnabled) return;
+    final client = _client;
     if (title != null && title.trim().isNotEmpty) {
       final uid = client.auth.currentUser?.id;
       final existing = await (uid != null
@@ -635,10 +645,10 @@ class LocalStorageRepository {
   }
 
   Future<List<SceneTemplateRow>> listSceneTemplates() async {
-    if (!supabaseEnabled) {
+    if (!_isSupabaseEnabled) {
       return <SceneTemplateRow>[];
     }
-    final client = Supabase.instance.client;
+    final client = _client;
     final res = await client
         .from('scene_templates')
         .select(
@@ -652,14 +662,14 @@ class LocalStorageRepository {
   }
 
   Future<void> deleteSceneTemplate(String id) async {
-    if (!supabaseEnabled) return;
-    final client = Supabase.instance.client;
+    if (!_isSupabaseEnabled) return;
+    final client = _client;
     await client.from('scene_templates').delete().eq('id', id);
   }
 
   Future<SceneTemplateRow?> getSceneTemplateById(String id) async {
-    if (!supabaseEnabled) return null;
-    final client = Supabase.instance.client;
+    if (!_isSupabaseEnabled) return null;
+    final client = _client;
     final row = await client
         .from('scene_templates')
         .select(
@@ -678,8 +688,28 @@ class LocalStorageRepository {
     String? synopses,
     String languageCode = 'en',
   }) async {
-    if (!supabaseEnabled) return;
-    final client = Supabase.instance.client;
+    if (!_isSupabaseEnabled) return;
+    final client = _client;
+    if (title != null && title.trim().isNotEmpty) {
+      final uid = client.auth.currentUser?.id;
+      final existing = await (uid != null
+          ? client
+                .from('scene_templates')
+                .select('id')
+                .eq('created_by', uid)
+                .ilike('title', title.trim())
+                .neq('id', id)
+                .limit(1)
+          : client
+                .from('scene_templates')
+                .select('id')
+                .ilike('title', title.trim())
+                .neq('id', id)
+                .limit(1));
+      if ((existing as List).isNotEmpty) {
+        throw Exception('Duplicate template name');
+      }
+    }
     await client
         .from('scene_templates')
         .update({
@@ -693,11 +723,11 @@ class LocalStorageRepository {
 
   Future<void> saveSummaryText(String novelId, String text) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('summary_form_$novelId', text);
+    await prefs.setString('summary_text_$novelId', text);
   }
 
   Future<String?> getSummaryText(String novelId) async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('summary_form_$novelId');
+    return prefs.getString('summary_text_$novelId');
   }
 }

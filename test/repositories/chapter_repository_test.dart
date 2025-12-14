@@ -235,5 +235,107 @@ void main() {
       verify(() => mockQuery.delete()).called(1);
       verify(() => mockLocal.removeChapter('c1')).called(1);
     });
+
+    test('getChapters throws ServerFailure on PostgrestException', () async {
+      when(() => mockQuery.select(any())).thenThrow(
+        const PostgrestException(message: 'Server Error', code: '500'),
+      );
+      expect(
+        () => repo.getChapters('n1'),
+        throwsA(
+          isA<ServerFailure>()
+              .having((e) => e.message, 'message', 'Server Error')
+              .having((e) => e.statusCode, 'code', 500),
+        ),
+      );
+    });
+
+    test('getChapters throws NetworkFailure on SocketException', () async {
+      when(
+        () => mockQuery.select(any()),
+      ).thenThrow(const SocketException('No Internet'));
+      expect(() => repo.getChapters('n1'), throwsA(isA<NetworkFailure>()));
+    });
+
+    test('getChapters throws UnknownFailure on generic Exception', () async {
+      when(() => mockQuery.select(any())).thenThrow(Exception('Generic'));
+      expect(() => repo.getChapters('n1'), throwsA(isA<UnknownFailure>()));
+    });
+
+    test('updateChapter throws ServerFailure on PostgrestException', () async {
+      when(() => mockQuery.update(any())).thenThrow(
+        const PostgrestException(message: 'Update Error', code: '400'),
+      );
+      final chap = Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
+      expect(() => repo.updateChapter(chap), throwsA(isA<ServerFailure>()));
+    });
+
+    test('updateChapter throws NetworkFailure on SocketException', () async {
+      when(
+        () => mockQuery.update(any()),
+      ).thenThrow(const SocketException('No Net'));
+      final chap = Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
+      expect(() => repo.updateChapter(chap), throwsA(isA<NetworkFailure>()));
+    });
+
+    test('updateChapterIdx handles cache update failure gracefully', () async {
+      when(
+        () => mockQuery.update(any()),
+      ).thenAnswer((_) => FakePostgrestFilterBuilder(null));
+      when(
+        () => mockLocal.getChapter('c1'),
+      ).thenThrow(Exception('Cache Error'));
+
+      await repo.updateChapterIdx('c1', 2);
+      // Should not throw
+      verify(() => mockQuery.update({'idx': 2})).called(1);
+    });
+
+    test('bulkShiftIdx throws ServerFailure on PostgrestException', () async {
+      when(
+        () => mockQuery.select(any()),
+      ).thenThrow(const PostgrestException(message: 'Shift Error'));
+      expect(
+        () => repo.bulkShiftIdx('n1', 1, 1),
+        throwsA(isA<ServerFailure>()),
+      );
+    });
+
+    test('getNextIdx throws ServerFailure on PostgrestException', () async {
+      when(
+        () => mockQuery.select(any()),
+      ).thenThrow(const PostgrestException(message: 'Idx Error'));
+      expect(() => repo.getNextIdx('n1'), throwsA(isA<ServerFailure>()));
+    });
+
+    test('createChapter throws ServerFailure on PostgrestException', () async {
+      when(
+        () => mockQuery.insert(any()),
+      ).thenThrow(const PostgrestException(message: 'Create Error'));
+      expect(
+        () => repo.createChapter(novelId: 'n1', idx: 1),
+        throwsA(isA<ServerFailure>()),
+      );
+    });
+
+    test('deleteChapter handles local cache failure gracefully', () async {
+      when(
+        () => mockQuery.delete(),
+      ).thenAnswer((_) => FakePostgrestFilterBuilder(null));
+      when(
+        () => mockLocal.removeChapter('c1'),
+      ).thenThrow(Exception('Cache remove fail'));
+
+      await repo.deleteChapter('c1');
+      // Should not throw
+      verify(() => mockQuery.delete()).called(1);
+    });
+
+    test('deleteChapter throws ServerFailure on PostgrestException', () async {
+      when(
+        () => mockQuery.delete(),
+      ).thenThrow(const PostgrestException(message: 'Delete Error'));
+      expect(() => repo.deleteChapter('c1'), throwsA(isA<ServerFailure>()));
+    });
   });
 }

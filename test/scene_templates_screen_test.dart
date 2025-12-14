@@ -36,7 +36,14 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    final descFieldPre = find.widgetWithText(TextFormField, 'Description');
+    // Switch to Edit tab
+    await tester.tap(find.text('Edit'));
+    await tester.pumpAndSettle();
+
+    final descFieldPre = find.widgetWithText(
+      TextFormField,
+      'Enter description in Markdown...',
+    );
     await tester.enterText(descFieldPre, 'X');
     await tester.pump();
     await tester.tap(find.text('Save'));
@@ -45,7 +52,10 @@ void main() {
 
     // Fill fields and save.
     final nameField = find.widgetWithText(TextFormField, 'Template Name');
-    final descField = find.widgetWithText(TextFormField, 'Description');
+    final descField = find.widgetWithText(
+      TextFormField,
+      'Enter description in Markdown...',
+    );
     await tester.enterText(nameField, 'Battle Scene');
     await tester.enterText(descField, 'High tension encounter');
     await tester.tap(find.text('Save'));

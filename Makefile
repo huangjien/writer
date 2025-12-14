@@ -114,7 +114,7 @@ test:
 	else \
 		echo "Coverage file not found; ensure --coverage succeeded."; \
 	fi; \
-	echo "Checking per-file coverage (<85%)..."; \
+	echo "Checking per-file coverage (<80%)..."; \
 	dart check_coverage.dart; \
 	END=$$(date +%s); \
 	ELAPSED=$$((END-START)); \

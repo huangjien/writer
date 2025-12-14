@@ -7,7 +7,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/features/ai_chat/widgets/ai_chat_sidebar.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
-import 'package:writer/state/supabase_config.dart';
+import 'package:writer/state/providers.dart';
 import 'widgets/beta_evaluation/beta_evaluation_dialog.dart';
 
 import '../../models/chapter.dart';
@@ -108,6 +108,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
   @override
   void initState() {
     super.initState();
+    _controller.addListener(_onScroll);
     if (widget.initialOffset > 0) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_controller.hasClients) _controller.jumpTo(widget.initialOffset);
@@ -247,7 +248,9 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
             content: state.content,
           );
 
-    if (isEditDirty(ref, current)) {
+    final dirty = isEditDirty(ref, current);
+
+    if (dirty) {
       final notifier = ref.read(readerSessionProvider.notifier);
       notifier.setDiscardDialogOpen(true);
       final result = await showDiscardDialogBridge(
@@ -392,6 +395,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
           );
 
     final isAiChatOpen = ref.watch(aiChatUiProvider);
+    final isSupabaseEnabled = ref.watch(supabaseEnabledProvider);
 
     final readerScaffold = Scaffold(
       backgroundColor: bgColor,
@@ -517,7 +521,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
                           notifier.jumpToCreated(created);
                         },
                         onBetaEvaluate: _onBetaEvaluatePressed,
-                        showBeta: supabaseEnabled,
+                        showBeta: isSupabaseEnabled,
                         betaLoading: _betaLoading,
                       );
                     },
@@ -541,8 +545,17 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     );
   }
 
+  void _onScroll() {
+    if (!_controller.hasClients) return;
+    final max = _controller.position.maxScrollExtent;
+    if (max <= 0) return;
+    final progress = (_controller.offset / max).clamp(0.0, 1.0);
+    ref.read(readerSessionProvider.notifier).updateScrollProgress(progress);
+  }
+
   @override
   void dispose() {
+    _controller.removeListener(_onScroll);
     _controller.dispose();
     super.dispose();
   }

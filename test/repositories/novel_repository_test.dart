@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/repositories/novel_repository.dart';
+import 'package:writer/common/errors/failures.dart';
+import 'dart:io';
 
 import '../shared/supabase_fakes.dart';
 
@@ -12,6 +14,9 @@ class MockSupabaseQueryBuilder extends Mock implements SupabaseQueryBuilder {}
 class MockGoTrueClient extends Mock implements GoTrueClient {}
 
 class MockUser extends Mock implements User {}
+
+class MockPostgrestFilterBuilder extends Mock
+    implements PostgrestFilterBuilder<PostgrestList> {}
 
 void main() {
   late MockSupabaseClient client;
@@ -178,5 +183,150 @@ void main() {
     when(() => qb.delete()).thenAnswer((_) => FakePostgrestFilterBuilder(null));
     await repo.deleteNovel('n1');
     verify(() => qb.delete()).called(1);
+  });
+
+  group('NovelRepository Failures', () {
+    test(
+      'fetchPublicNovels throws ServerFailure on PostgrestException',
+      () async {
+        when(() => qb.select()).thenThrow(
+          const PostgrestException(message: 'Server Error', code: '500'),
+        );
+        expect(
+          () => repo.fetchPublicNovels(),
+          throwsA(
+            isA<ServerFailure>()
+                .having((f) => f.message, 'message', 'Server Error')
+                .having((f) => f.statusCode, 'statusCode', 500),
+          ),
+        );
+      },
+    );
+
+    test(
+      'fetchPublicNovels throws NetworkFailure on SocketException',
+      () async {
+        when(() => qb.select()).thenThrow(const SocketException('No internet'));
+        expect(() => repo.fetchPublicNovels(), throwsA(isA<NetworkFailure>()));
+      },
+    );
+
+    test('fetchPublicNovels throws UnknownFailure on other errors', () async {
+      when(() => qb.select()).thenThrow(Exception('Unknown'));
+      expect(() => repo.fetchPublicNovels(), throwsA(isA<UnknownFailure>()));
+    });
+
+    test('createNovel throws ServerFailure on PostgrestException', () async {
+      when(() => auth.currentUser).thenReturn(user);
+      when(() => user.id).thenReturn('owner1');
+      when(
+        () => qb.insert(any()),
+      ).thenThrow(const PostgrestException(message: 'DB Error'));
+      expect(
+        () => repo.createNovel(title: 'Fail'),
+        throwsA(isA<ServerFailure>()),
+      );
+    });
+
+    test('getNovel returns null on PGRST116', () async {
+      final filterBuilder = MockPostgrestFilterBuilder();
+      when(() => qb.select()).thenAnswer((_) => filterBuilder);
+      when(
+        () => filterBuilder.eq(any(), any()),
+      ).thenAnswer((_) => filterBuilder);
+      when(() => filterBuilder.single()).thenThrow(
+        const PostgrestException(message: 'Row not found', code: 'PGRST116'),
+      );
+
+      final result = await repo.getNovel('missing');
+      expect(result, isNull);
+    });
+
+    test('getNovel throws ServerFailure on other PostgrestException', () async {
+      final filterBuilder = MockPostgrestFilterBuilder();
+      when(() => qb.select()).thenAnswer((_) => filterBuilder);
+      when(
+        () => filterBuilder.eq(any(), any()),
+      ).thenAnswer((_) => filterBuilder);
+      when(
+        () => filterBuilder.single(),
+      ).thenThrow(const PostgrestException(message: 'DB Error', code: '500'));
+
+      expect(() => repo.getNovel('error'), throwsA(isA<ServerFailure>()));
+    });
+
+    test('getChapter returns null on PGRST116', () async {
+      final filterBuilder = MockPostgrestFilterBuilder();
+      when(() => qb.select()).thenAnswer((_) => filterBuilder);
+      when(
+        () => filterBuilder.eq(any(), any()),
+      ).thenAnswer((_) => filterBuilder);
+      when(() => filterBuilder.single()).thenThrow(
+        const PostgrestException(message: 'Row not found', code: 'PGRST116'),
+      );
+
+      final result = await repo.getChapter('missing');
+      expect(result, isNull);
+    });
+
+    test('updateNovelMetadata does nothing if no fields provided', () async {
+      // No calls to update should happen
+      await repo.updateNovelMetadata('n1');
+      verifyNever(() => qb.update(any()));
+    });
+
+    test('fetchChaptersByNovel throws ServerFailure', () async {
+      when(
+        () => qb.select(),
+      ).thenThrow(const PostgrestException(message: 'Error'));
+      expect(
+        () => repo.fetchChaptersByNovel('n1'),
+        throwsA(isA<ServerFailure>()),
+      );
+    });
+
+    test('deleteNovel throws ServerFailure', () async {
+      when(
+        () => qb.delete(),
+      ).thenThrow(const PostgrestException(message: 'Error'));
+      expect(() => repo.deleteNovel('n1'), throwsA(isA<ServerFailure>()));
+    });
+
+    test('updateNovelMetadata throws ServerFailure', () async {
+      when(
+        () => qb.update(any()),
+      ).thenThrow(const PostgrestException(message: 'Error'));
+      expect(
+        () => repo.updateNovelMetadata('n1', title: 'T'),
+        throwsA(isA<ServerFailure>()),
+      );
+    });
+
+    test('addContributor throws ServerFailure', () async {
+      when(
+        () => qb.insert(any()),
+      ).thenThrow(const PostgrestException(message: 'Error'));
+      expect(
+        () => repo.addContributor(novelId: 'n1', userId: 'u1'),
+        throwsA(isA<ServerFailure>()),
+      );
+    });
+
+    test('fetchMemberNovels throws ServerFailure', () async {
+      when(
+        () => client.rpc(any(), params: any(named: 'params')),
+      ).thenThrow(const PostgrestException(message: 'Error'));
+      expect(() => repo.fetchMemberNovels(), throwsA(isA<ServerFailure>()));
+    });
+
+    test('addContributorByEmail throws ServerFailure', () async {
+      when(
+        () => client.rpc(any(), params: any(named: 'params')),
+      ).thenThrow(const PostgrestException(message: 'Error'));
+      expect(
+        () => repo.addContributorByEmail(novelId: 'n1', email: 'e'),
+        throwsA(isA<ServerFailure>()),
+      );
+    });
   });
 }

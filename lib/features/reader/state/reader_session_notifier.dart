@@ -247,6 +247,11 @@ class ReaderSessionNotifier extends StateNotifier<ReaderSessionState> {
     state = state.copyWith(autoplayBlocked: value);
   }
 
+  void updateScrollProgress(double progress) {
+    if ((progress - state.scrollProgress).abs() < 0.01) return;
+    state = state.copyWith(scrollProgress: progress);
+  }
+
   void tryAutoStartTts(VoidCallback showPrompt) {
     _playback.tryAutoStart(
       content: state.content ?? '',
