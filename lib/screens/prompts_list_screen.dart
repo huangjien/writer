@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 
 import '../models/prompt.dart';
@@ -85,9 +86,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
         _items = data;
       });
     } catch (e) {
-      setState(() {
-        _error = e.toString();
-      });
+      _showError(e.toString());
     } finally {
       setState(() {
         _loading = false;
@@ -106,6 +105,39 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
   String _preview(String s) {
     if (s.length <= _previewLen) return s;
     return '${s.substring(0, _previewLen)}…';
+  }
+
+  void _showError(String message) {
+    // Strip "ApiException(400): " prefix if present for cleaner display
+    final cleanMsg = message.replaceFirst(
+      RegExp(r'^ApiException\(\d+\): '),
+      '',
+    );
+    final l10n = AppLocalizations.of(context)!;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.error),
+        content: SelectableText(cleanMsg),
+        actions: [
+          TextButton.icon(
+            icon: const Icon(Icons.copy),
+            label: Text(l10n.copy),
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: cleanMsg));
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(l10n.copiedToClipboard)));
+            },
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.close),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _createPromptDialog() async {
@@ -182,9 +214,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
         );
         await _load();
       } catch (e) {
-        setState(() {
-          _error = e.toString();
-        });
+        _showError(e.toString());
       }
     }
   }
@@ -218,9 +248,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
         );
         await _load();
       } catch (e) {
-        setState(() {
-          _error = e.toString();
-        });
+        _showError(e.toString());
       }
     }
   }
@@ -249,9 +277,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
         await widget.service.deletePrompt(p.id);
         await _load();
       } catch (e) {
-        setState(() {
-          _error = e.toString();
-        });
+        _showError(e.toString());
       }
     }
   }
