@@ -6,6 +6,9 @@ import 'package:writer/state/supabase_config.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
+import 'package:writer/models/character_template_row.dart';
+import 'package:writer/repositories/remote_repository.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import '../../main.dart';
 
 class CharactersScreen extends ConsumerStatefulWidget {
@@ -32,6 +35,11 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
   String _baseSynopses = '';
   String _baseLanguageCode = 'en';
 
+  List<CharacterTemplateRow> _templates = [];
+  CharacterTemplateRow? _selectedTemplate;
+  bool _isConverting = false;
+  bool _showPreview = false;
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +48,10 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
 
   Future<void> _load() async {
     final repo = ref.read(localStorageRepositoryProvider);
+    try {
+      _templates = await repo.listCharacterTemplates();
+    } catch (_) {}
+
     final data = await repo.getCharacterNoteForm(
       widget.novelId,
       idx: widget.idx,
@@ -58,6 +70,42 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
     _baseLanguageCode = _languageCode;
     _isDirty = false;
     setState(() {});
+  }
+
+  Future<void> _convertCharacter() async {
+    if (_titleController.text.isEmpty || _selectedTemplate == null) return;
+
+    setState(() {
+      _isConverting = true;
+    });
+
+    try {
+      final repo = ref.read(remoteRepositoryProvider);
+      final result = await repo.convertCharacter(
+        name: _titleController.text,
+        templateContent: _selectedTemplate!.characterSummaries ?? '',
+        language: _languageCode,
+      );
+
+      if (result != null) {
+        setState(() {
+          _summariesController.text = result;
+          _isDirty = true;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Conversion failed: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isConverting = false;
+        });
+      }
+    }
   }
 
   @override
@@ -124,23 +172,128 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                       },
                     ),
                     const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _summariesController,
-                      decoration: InputDecoration(
-                        labelText: l10n.summariesLabel,
+                    if (_templates.isNotEmpty) ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Autocomplete<CharacterTemplateRow>(
+                              displayStringForOption: (option) =>
+                                  option.title ?? '',
+                              optionsBuilder: (textEditingValue) {
+                                if (textEditingValue.text.isEmpty) {
+                                  return _templates;
+                                }
+                                return _templates.where(
+                                  (t) => (t.title ?? '').toLowerCase().contains(
+                                    textEditingValue.text.toLowerCase(),
+                                  ),
+                                );
+                              },
+                              onSelected: (selection) {
+                                setState(() {
+                                  _selectedTemplate = selection;
+                                });
+                              },
+                              fieldViewBuilder:
+                                  (
+                                    context,
+                                    textEditingController,
+                                    focusNode,
+                                    onFieldSubmitted,
+                                  ) {
+                                    return TextFormField(
+                                      controller: textEditingController,
+                                      focusNode: focusNode,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Template',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onFieldSubmitted: (String value) {
+                                        onFieldSubmitted();
+                                      },
+                                    );
+                                  },
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          if (_selectedTemplate != null &&
+                              _selectedTemplate!.characterSummaries != null)
+                            Tooltip(
+                              message: _selectedTemplate!.characterSummaries!,
+                              child: const Icon(Icons.info_outline),
+                            ),
+                          const SizedBox(width: 8),
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.auto_awesome),
+                            label: _isConverting
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text('AI Convert'),
+                            onPressed:
+                                _isConverting ||
+                                    _titleController.text.isEmpty ||
+                                    _selectedTemplate == null
+                                ? null
+                                : _convertCharacter,
+                          ),
+                        ],
                       ),
-                      maxLines: 3,
-                      onChanged: (_) {
-                        final dirty =
-                            _titleController.text.trim() != _baseTitle.trim() ||
-                            _summariesController.text.trim() !=
-                                _baseSummaries.trim() ||
-                            _synopsesController.text.trim() !=
-                                _baseSynopses.trim() ||
-                            _languageCode != _baseLanguageCode;
-                        if (dirty != _isDirty) setState(() => _isDirty = dirty);
-                      },
+                      const SizedBox(height: 12),
+                    ],
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            l10n.summariesLabel,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _showPreview = !_showPreview;
+                            });
+                          },
+                          child: Text(_showPreview ? 'Edit' : 'Preview'),
+                        ),
+                      ],
                     ),
+                    if (_showPreview)
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        constraints: const BoxConstraints(minHeight: 100),
+                        child: MarkdownBody(data: _summariesController.text),
+                      )
+                    else
+                      TextFormField(
+                        controller: _summariesController,
+                        decoration: InputDecoration(
+                          hintText: l10n.summariesLabel,
+                        ),
+                        maxLines: 10,
+                        onChanged: (_) {
+                          final dirty =
+                              _titleController.text.trim() !=
+                                  _baseTitle.trim() ||
+                              _summariesController.text.trim() !=
+                                  _baseSummaries.trim() ||
+                              _synopsesController.text.trim() !=
+                                  _baseSynopses.trim() ||
+                              _languageCode != _baseLanguageCode;
+                          if (dirty != _isDirty) {
+                            setState(() => _isDirty = dirty);
+                          }
+                        },
+                      ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _synopsesController,
