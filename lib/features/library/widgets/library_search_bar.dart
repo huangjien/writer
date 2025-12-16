@@ -7,9 +7,11 @@ class LibrarySearchBar extends StatelessWidget {
     super.key,
     required this.controller,
     required this.onChanged,
+    this.matchCount,
   });
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
+  final int? matchCount;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +21,7 @@ class LibrarySearchBar extends StatelessWidget {
       decoration: InputDecoration(
         hintText: l10n.searchByTitle,
         prefixIcon: const Icon(Icons.search),
+        suffixText: matchCount != null ? '$matchCount' : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(Radii.s),
         ),

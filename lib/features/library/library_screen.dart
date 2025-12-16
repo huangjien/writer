@@ -106,6 +106,17 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     super.dispose();
   }
 
+  List<dynamic> _filterNovels(List<dynamic> novels, Set<String> removedIds) {
+    final query = _normalizeForSearch(_searchController.text.trim());
+    final filtered = query.isEmpty
+        ? [...novels]
+        : novels
+              .where((n) => _normalizeForSearch(n.title).contains(query))
+              .toList();
+    // Apply local removals with undo support
+    return filtered.where((n) => !removedIds.contains(n.id)).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -137,6 +148,12 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     final canDownload =
         isSupabaseEnabled ||
         ref.watch(downloadFeatureFlagProvider); // safe testing override
+
+    final novels = novelsAsync.asData?.value;
+    final visibleCount = novels != null
+        ? _filterNovels(novels, removedIds).length
+        : null;
+
     return Scaffold(
       appBar: AppBar(
         title: FittedBox(
@@ -262,26 +279,13 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
               onChanged: (_) {
                 setState(() {});
               },
+              matchCount: visibleCount,
             ),
             const SizedBox(height: Spacing.m),
             Expanded(
               child: novelsAsync.when(
                 data: (novels) {
-                  final query = _normalizeForSearch(
-                    _searchController.text.trim(),
-                  );
-                  final filtered = query.isEmpty
-                      ? [...novels]
-                      : novels
-                            .where(
-                              (n) =>
-                                  _normalizeForSearch(n.title).contains(query),
-                            )
-                            .toList();
-                  // Apply local removals with undo support
-                  final visible = filtered
-                      .where((n) => !removedIds.contains(n.id))
-                      .toList();
+                  final visible = _filterNovels(novels, removedIds);
                   // Apply sort order
                   visible.sort((a, b) {
                     switch (_sort) {

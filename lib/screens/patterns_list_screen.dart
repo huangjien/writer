@@ -190,7 +190,7 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
     }
   }
 
-  Widget _filters() {
+  Widget _filters(int count) {
     final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -204,7 +204,10 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
             width: 320,
             child: TextField(
               controller: _searchCtrl,
-              decoration: const InputDecoration(labelText: 'Search'),
+              decoration: InputDecoration(
+                labelText: 'Search',
+                suffixText: '$count',
+              ),
               onChanged: (_) {
                 _searchTimer?.cancel();
                 _searchTimer = Timer(
@@ -346,7 +349,7 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
                 }
                 return Column(
                   children: [
-                    _filters(),
+                    _filters(items.length),
                     Expanded(
                       child: SingleChildScrollView(
                         padding: const EdgeInsets.all(8),

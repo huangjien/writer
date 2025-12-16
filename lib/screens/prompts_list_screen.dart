@@ -300,7 +300,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
     }
   }
 
-  Widget _filters() {
+  Widget _filters(int count) {
     final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -314,7 +314,10 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
             width: 320,
             child: TextField(
               controller: _searchCtrl,
-              decoration: const InputDecoration(labelText: 'Search'),
+              decoration: InputDecoration(
+                labelText: 'Search',
+                suffixText: '$count',
+              ),
               onChanged: (_) {
                 _searchTimer?.cancel();
                 _searchTimer = Timer(
@@ -451,7 +454,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
           ? Center(child: Text(_error!))
           : Column(
               children: [
-                _filters(),
+                _filters(filtered.length),
                 Expanded(
                   child:
                       grouped.isEmpty ||
