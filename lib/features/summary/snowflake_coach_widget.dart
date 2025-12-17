@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/summary/snowflake_service.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/models/snowflake.dart';
 
 class SnowflakeCoachWidget extends ConsumerStatefulWidget {
@@ -56,7 +58,10 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
           _appliedUpdate = true;
         }
       } else {
-        if (mounted) setState(() => _error = 'Failed to analyze');
+        if (mounted) {
+          final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+          setState(() => _error = l10n.failedToAnalyze);
+        }
       }
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());
@@ -80,17 +85,16 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // Assuming you have l10n strings, if not fallback english
-    // Using hardcoded strings for now as adding l10n is complex in this env
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
 
     if (_loading && _lastOutput == null) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 8),
-            Text("AI Coach is analyzing..."),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 8),
+            Text(l10n.aiCoachAnalyzing),
           ],
         ),
       );
@@ -106,7 +110,7 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
             Text(_error!),
             ElevatedButton(
               onPressed: () => _analyze(),
-              child: const Text("Retry"),
+              child: Text(l10n.retry),
             ),
           ],
         ),
@@ -118,7 +122,7 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
         child: ElevatedButton.icon(
           onPressed: () => _analyze(),
           icon: const Icon(Icons.auto_awesome),
-          label: const Text("Start AI Coaching"),
+          label: Text(l10n.startAiCoaching),
         ),
       );
     }
@@ -150,7 +154,7 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                     const Icon(Icons.auto_awesome, color: Colors.purple),
                     const SizedBox(width: 8),
                     Text(
-                      isDone ? "Refinement Complete!" : "Coach's Question",
+                      isDone ? l10n.refinementComplete : l10n.coachQuestion,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Colors.purple,
@@ -168,9 +172,8 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                   ),
                   child: Text(
                     isDone
-                        ? (output.critique ??
-                              "Great job! Your summary looks solid.")
-                        : (output.aiQuestion ?? "How can we improve this?"),
+                        ? (output.critique ?? l10n.summaryLooksGood)
+                        : (output.aiQuestion ?? l10n.howToImprove),
                     style: const TextStyle(fontSize: 16),
                   ),
                 ),
@@ -264,7 +267,7 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                 if (!isDone && (output.suggestions?.isNotEmpty ?? false)) ...[
                   const SizedBox(height: 16),
                   Text(
-                    "Suggestions:",
+                    l10n.suggestionsLabel,
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
                   const SizedBox(height: 8),
@@ -297,8 +300,8 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                 Expanded(
                   child: TextField(
                     controller: _inputController,
-                    decoration: const InputDecoration(
-                      hintText: "Review suggestions or type answer...",
+                    decoration: InputDecoration(
+                      hintText: l10n.reviewSuggestionsHint,
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 12,

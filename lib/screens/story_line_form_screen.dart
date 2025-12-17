@@ -2,10 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/story_line.dart';
 import '../state/story_line_providers.dart';
-import '../state/supabase_config.dart';
+import '../state/providers.dart';
 import '../l10n/app_localizations.dart';
 
 class StoryLineFormScreen extends ConsumerStatefulWidget {
@@ -138,40 +137,16 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
   bool _computeCanDelete() {
     final initial = widget.initial;
     if (initial == null) return false;
-    if (!supabaseEnabled) return false;
-    try {
-      final client = Supabase.instance.client;
-      final user = client.auth.currentUser;
-      if (user == null) return false;
-      final userId = user.id;
-      final dynamic appMeta = user.appMetadata;
-      final dynamic userMeta = user.userMetadata;
-      if (appMeta == null && userMeta == null) {
-        return false;
-      }
-      bool admin = false;
-      dynamic roles = appMeta != null ? appMeta['roles'] : null;
-      roles ??= userMeta != null ? userMeta['roles'] : null;
-      if (roles is List) {
-        admin = roles.any((r) => r.toString().toLowerCase() == 'admin');
-      }
-      dynamic role = appMeta != null ? appMeta['role'] : null;
-      role ??= userMeta != null ? userMeta['role'] : null;
-      if (!admin && role is String) {
-        admin = role.toLowerCase() == 'admin';
-      }
-      dynamic flag = appMeta != null ? appMeta['isAdmin'] : null;
-      flag ??= userMeta != null ? userMeta['isAdmin'] : null;
-      if (!admin && flag is bool) {
-        admin = flag;
-      }
-      if (admin) return true;
-      final ownerId = initial.ownerId;
-      if (ownerId == null) return false;
-      return ownerId == userId;
-    } catch (_) {
-      return false;
-    }
+    final enabled = ref.read(supabaseEnabledProvider);
+    if (!enabled) return false;
+    final admin = ref.read(isAdminProvider);
+    if (admin) return true;
+    final session = ref.read(supabaseSessionProvider);
+    final userId = session?.user.id;
+    if (userId == null) return false;
+    final ownerId = initial.ownerId;
+    if (ownerId == null) return false;
+    return ownerId == userId;
   }
 
   Future<void> _applyAi() async {

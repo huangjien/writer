@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class ErrorView extends StatelessWidget {
   final String message;
@@ -34,7 +35,7 @@ class ErrorView extends StatelessWidget {
               FilledButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
+                label: Text(AppLocalizations.of(context)!.retry),
               ),
             ],
           ],

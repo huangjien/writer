@@ -100,7 +100,8 @@ class _CharacterTemplatesScreenState
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _error = 'Retrieve failed: $e');
+        final l10n = AppLocalizations.of(context)!;
+        setState(() => _error = l10n.retrieveFailed(e.toString()));
       }
     } finally {
       if (mounted) {
@@ -129,10 +130,10 @@ class _CharacterTemplatesScreenState
                       controller: _nameController,
                       decoration: InputDecoration(
                         labelText: l10n.templateName,
-                        hintText: 'e.g. Harry Potter',
+                        hintText: l10n.exampleCharacterName,
                       ),
                       validator: (v) =>
-                          v == null || v.trim().isEmpty ? 'Required' : null,
+                          v == null || v.trim().isEmpty ? l10n.required : null,
                       onChanged: (_) {
                         final dirty =
                             _nameController.text.trim() != _baseName.trim() ||

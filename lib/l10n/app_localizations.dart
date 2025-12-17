@@ -1634,6 +1634,12 @@ abstract class AppLocalizations {
   /// **'Menu'**
   String get menu;
 
+  /// No description provided for @metaLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Meta'**
+  String get metaLabel;
+
   /// No description provided for @aiServiceUnavailable.
   ///
   /// In en, this message translates to:
@@ -1718,6 +1724,36 @@ abstract class AppLocalizations {
   /// **'Actions'**
   String get actions;
 
+  /// No description provided for @searchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchLabel;
+
+  /// No description provided for @allLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allLabel;
+
+  /// No description provided for @filterByLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Locked'**
+  String get filterByLocked;
+
+  /// No description provided for @lockedOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked Only'**
+  String get lockedOnly;
+
+  /// No description provided for @unlockedOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked Only'**
+  String get unlockedOnly;
+
   /// No description provided for @promptKey.
   ///
   /// In en, this message translates to:
@@ -1796,6 +1832,24 @@ abstract class AppLocalizations {
   /// **'Edit Story Line'**
   String get editStoryLine;
 
+  /// No description provided for @deletedWithTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted: {title}'**
+  String deletedWithTitle(String title);
+
+  /// No description provided for @deleteFailedWithTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete failed: {title}'**
+  String deleteFailedWithTitle(String title);
+
+  /// No description provided for @deleteErrorWithMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete error: {error}'**
+  String deleteErrorWithMessage(String error);
+
   /// No description provided for @makePublic.
   ///
   /// In en, this message translates to:
@@ -1819,6 +1873,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No story lines'**
   String get noStoryLines;
+
+  /// No description provided for @conversionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversion failed: {error}'**
+  String conversionFailed(String error);
+
+  /// No description provided for @failedToAnalyze.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to analyze'**
+  String get failedToAnalyze;
+
+  /// No description provided for @aiCoachAnalyzing.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Coach is analyzing...'**
+  String get aiCoachAnalyzing;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @startAiCoaching.
+  ///
+  /// In en, this message translates to:
+  /// **'Start AI Coaching'**
+  String get startAiCoaching;
+
+  /// No description provided for @refinementComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Refinement Complete!'**
+  String get refinementComplete;
+
+  /// No description provided for @coachQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Coach\'s Question'**
+  String get coachQuestion;
+
+  /// No description provided for @summaryLooksGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Great job! Your summary looks solid.'**
+  String get summaryLooksGood;
+
+  /// No description provided for @howToImprove.
+  ///
+  /// In en, this message translates to:
+  /// **'How can we improve this?'**
+  String get howToImprove;
+
+  /// No description provided for @suggestionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions:'**
+  String get suggestionsLabel;
+
+  /// No description provided for @reviewSuggestionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Review suggestions or type answer...'**
+  String get reviewSuggestionsHint;
+
+  /// No description provided for @templateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Template'**
+  String get templateLabel;
+
+  /// No description provided for @exampleCharacterName.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Harry Potter'**
+  String get exampleCharacterName;
+
+  /// No description provided for @aiConvert.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Convert'**
+  String get aiConvert;
+
+  /// No description provided for @toggleAiCoach.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle AI Coach'**
+  String get toggleAiCoach;
+
+  /// No description provided for @retrieveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Retrieve failed: {error}'**
+  String retrieveFailed(String error);
 
   /// No description provided for @confirm.
   ///

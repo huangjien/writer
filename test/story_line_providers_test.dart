@@ -1,0 +1,101 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:writer/models/story_line.dart';
+import 'package:writer/services/story_lines_service.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/state/story_line_providers.dart';
+
+class FakeStoryLinesService extends StoryLinesService {
+  FakeStoryLinesService() : super(baseUrl: 'http://example.com');
+
+  bool fetchCalled = false;
+  bool getCalled = false;
+  String? lastGetId;
+
+  List<StoryLine> items = const [
+    StoryLine(id: 's1', title: 'A', content: 'C', language: 'en'),
+  ];
+
+  @override
+  Future<List<StoryLine>> fetchStoryLines() async {
+    fetchCalled = true;
+    return items;
+  }
+
+  @override
+  Future<StoryLine> getStoryLine(String id) async {
+    getCalled = true;
+    lastGetId = id;
+    return StoryLine(id: id, title: 'T$id', content: 'C$id', language: 'en');
+  }
+}
+
+void main() {
+  test('storyLinesProvider returns empty when Supabase disabled', () async {
+    final fake = FakeStoryLinesService();
+    final container = ProviderContainer(
+      overrides: [
+        supabaseEnabledProvider.overrideWith((_) => false),
+        authStateProvider.overrideWith((_) => Stream<AuthState>.empty()),
+        storyLinesServiceRefProvider.overrideWith((_) => fake),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final list = await container.read(storyLinesProvider.future);
+    expect(list, isEmpty);
+    expect(fake.fetchCalled, isFalse);
+  });
+
+  test('storyLineByIdProvider returns null when Supabase disabled', () async {
+    final fake = FakeStoryLinesService();
+    final container = ProviderContainer(
+      overrides: [
+        supabaseEnabledProvider.overrideWith((_) => false),
+        authStateProvider.overrideWith((_) => Stream<AuthState>.empty()),
+        storyLinesServiceRefProvider.overrideWith((_) => fake),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final v = await container.read(storyLineByIdProvider('s1').future);
+    expect(v, isNull);
+    expect(fake.getCalled, isFalse);
+  });
+
+  test('storyLinesProvider calls service when Supabase enabled', () async {
+    final fake = FakeStoryLinesService();
+    final container = ProviderContainer(
+      overrides: [
+        supabaseEnabledProvider.overrideWith((_) => true),
+        authStateProvider.overrideWith((_) => Stream<AuthState>.empty()),
+        storyLinesServiceRefProvider.overrideWith((_) => fake),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final list = await container.read(storyLinesProvider.future);
+    expect(list.length, 1);
+    expect(list.first.id, 's1');
+    expect(fake.fetchCalled, isTrue);
+  });
+
+  test('storyLineByIdProvider calls service when Supabase enabled', () async {
+    final fake = FakeStoryLinesService();
+    final container = ProviderContainer(
+      overrides: [
+        supabaseEnabledProvider.overrideWith((_) => true),
+        authStateProvider.overrideWith((_) => Stream<AuthState>.empty()),
+        storyLinesServiceRefProvider.overrideWith((_) => fake),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final v = await container.read(storyLineByIdProvider('s9').future);
+    expect(v, isNotNull);
+    expect(v!.id, 's9');
+    expect(fake.getCalled, isTrue);
+    expect(fake.lastGetId, 's9');
+  });
+}

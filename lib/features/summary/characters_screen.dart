@@ -95,9 +95,10 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Conversion failed: $e')));
+        final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.conversionFailed(e.toString()))),
+        );
       }
     } finally {
       if (mounted) {
@@ -204,9 +205,9 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                                     return TextFormField(
                                       controller: textEditingController,
                                       focusNode: focusNode,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Template',
-                                        border: OutlineInputBorder(),
+                                      decoration: InputDecoration(
+                                        labelText: l10n.templateLabel,
+                                        border: const OutlineInputBorder(),
                                       ),
                                       onFieldSubmitted: (String value) {
                                         onFieldSubmitted();
@@ -233,7 +234,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                                       strokeWidth: 2,
                                     ),
                                   )
-                                : const Text('AI Convert'),
+                                : Text(l10n.aiConvert),
                             onPressed:
                                 _isConverting ||
                                     _titleController.text.isEmpty ||
@@ -259,7 +260,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                               _showPreview = !_showPreview;
                             });
                           },
-                          child: Text(_showPreview ? 'Edit' : 'Preview'),
+                          child: Text(_showPreview ? l10n.edit : l10n.preview),
                         ),
                       ],
                     ),

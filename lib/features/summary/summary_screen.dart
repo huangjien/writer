@@ -131,7 +131,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                             _showCoach = !_showCoach;
                           });
                         },
-                        tooltip: "Toggle AI Coach",
+                        tooltip: l10n.toggleAiCoach,
                       ),
                     ),
                     minLines: 4,

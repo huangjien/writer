@@ -833,6 +833,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get menu => 'Menu';
 
   @override
+  String get metaLabel => 'Meta';
+
+  @override
   String get aiServiceUnavailable => 'AI Service Unavailable';
 
   @override
@@ -875,6 +878,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actions => 'Actions';
 
   @override
+  String get searchLabel => 'Search';
+
+  @override
+  String get allLabel => 'All';
+
+  @override
+  String get filterByLocked => 'Filter by Locked';
+
+  @override
+  String get lockedOnly => 'Locked Only';
+
+  @override
+  String get unlockedOnly => 'Unlocked Only';
+
+  @override
   String get promptKey => 'Prompt Key';
 
   @override
@@ -914,6 +932,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editStoryLine => 'Edit Story Line';
 
   @override
+  String deletedWithTitle(String title) {
+    return 'Deleted: $title';
+  }
+
+  @override
+  String deleteFailedWithTitle(String title) {
+    return 'Delete failed: $title';
+  }
+
+  @override
+  String deleteErrorWithMessage(String error) {
+    return 'Delete error: $error';
+  }
+
+  @override
   String get makePublic => 'Make Public';
 
   @override
@@ -924,6 +957,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noStoryLines => 'No story lines';
+
+  @override
+  String conversionFailed(String error) {
+    return 'Conversion failed: $error';
+  }
+
+  @override
+  String get failedToAnalyze => 'Failed to analyze';
+
+  @override
+  String get aiCoachAnalyzing => 'AI Coach is analyzing...';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get startAiCoaching => 'Start AI Coaching';
+
+  @override
+  String get refinementComplete => 'Refinement Complete!';
+
+  @override
+  String get coachQuestion => 'Coach\'s Question';
+
+  @override
+  String get summaryLooksGood => 'Great job! Your summary looks solid.';
+
+  @override
+  String get howToImprove => 'How can we improve this?';
+
+  @override
+  String get suggestionsLabel => 'Suggestions:';
+
+  @override
+  String get reviewSuggestionsHint => 'Review suggestions or type answer...';
+
+  @override
+  String get templateLabel => 'Template';
+
+  @override
+  String get exampleCharacterName => 'e.g. Harry Potter';
+
+  @override
+  String get aiConvert => 'AI Convert';
+
+  @override
+  String get toggleAiCoach => 'Toggle AI Coach';
+
+  @override
+  String retrieveFailed(String error) {
+    return 'Retrieve failed: $error';
+  }
 
   @override
   String get confirm => 'Confirm';

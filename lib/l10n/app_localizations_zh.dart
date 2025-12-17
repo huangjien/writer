@@ -812,6 +812,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get menu => '菜单';
 
   @override
+  String get metaLabel => '元数据';
+
+  @override
   String get aiServiceUnavailable => 'AI 服务不可用';
 
   @override
@@ -854,6 +857,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get actions => '操作';
 
   @override
+  String get searchLabel => '搜索';
+
+  @override
+  String get allLabel => '全部';
+
+  @override
+  String get filterByLocked => '按锁定筛选';
+
+  @override
+  String get lockedOnly => '仅锁定';
+
+  @override
+  String get unlockedOnly => '仅未锁定';
+
+  @override
   String get promptKey => '提示键';
 
   @override
@@ -893,6 +911,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get editStoryLine => '编辑故事线';
 
   @override
+  String deletedWithTitle(String title) {
+    return '已删除：$title';
+  }
+
+  @override
+  String deleteFailedWithTitle(String title) {
+    return '删除失败：$title';
+  }
+
+  @override
+  String deleteErrorWithMessage(String error) {
+    return '删除出错：$error';
+  }
+
+  @override
   String get makePublic => '设为公开';
 
   @override
@@ -903,6 +936,58 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noStoryLines => '没有故事线';
+
+  @override
+  String conversionFailed(String error) {
+    return '转换失败：$error';
+  }
+
+  @override
+  String get failedToAnalyze => '分析失败';
+
+  @override
+  String get aiCoachAnalyzing => 'AI 教练正在分析...';
+
+  @override
+  String get retry => '重试';
+
+  @override
+  String get startAiCoaching => '开始 AI 教练';
+
+  @override
+  String get refinementComplete => '完善完成！';
+
+  @override
+  String get coachQuestion => '教练提问';
+
+  @override
+  String get summaryLooksGood => '做得很好！你的概要很扎实。';
+
+  @override
+  String get howToImprove => '我们可以如何改进？';
+
+  @override
+  String get suggestionsLabel => '建议：';
+
+  @override
+  String get reviewSuggestionsHint => '查看建议或输入回答...';
+
+  @override
+  String get templateLabel => '模板';
+
+  @override
+  String get exampleCharacterName => '例如：哈利·波特';
+
+  @override
+  String get aiConvert => 'AI 转换';
+
+  @override
+  String get toggleAiCoach => '切换 AI 教练';
+
+  @override
+  String retrieveFailed(String error) {
+    return '获取失败：$error';
+  }
 
   @override
   String get confirm => '确认';

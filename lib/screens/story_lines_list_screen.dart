@@ -55,7 +55,7 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
       columns: [
         DataColumn(label: Text(l10n.titleLabel)),
         DataColumn(label: Text(l10n.previewLabel)),
-        const DataColumn(label: Text('Meta')),
+        DataColumn(label: Text(l10n.metaLabel)),
         DataColumn(label: Text(l10n.actions)),
       ],
       rows: src
@@ -138,21 +138,21 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
           }
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${l10n.delete}: ${p.title}')),
+              SnackBar(content: Text(l10n.deletedWithTitle(p.title))),
             );
           }
         } else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Delete failed: ${p.title}')),
+              SnackBar(content: Text(l10n.deleteFailedWithTitle(p.title))),
             );
           }
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Delete error: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.deleteErrorWithMessage(e.toString()))),
+          );
         }
       }
     }
@@ -206,7 +206,7 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
             child: TextField(
               controller: _searchCtrl,
               decoration: InputDecoration(
-                labelText: 'Search',
+                labelText: l10n.searchLabel,
                 suffixText: '$count',
               ),
               onChanged: (_) {
@@ -231,7 +231,7 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
                   value: _filterLanguage,
                   isDense: true,
                   items: [
-                    const DropdownMenuItem(value: null, child: Text('All')),
+                    DropdownMenuItem(value: null, child: Text(l10n.allLabel)),
                     DropdownMenuItem(value: 'en', child: Text(l10n.english)),
                     DropdownMenuItem(value: 'zh', child: Text(l10n.chinese)),
                   ],
@@ -242,8 +242,8 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
           ),
           Tooltip(
             message: _filterLocked == null
-                ? 'Filter by Locked'
-                : (_filterLocked! ? 'Locked Only' : 'Unlocked Only'),
+                ? l10n.filterByLocked
+                : (_filterLocked! ? l10n.lockedOnly : l10n.unlockedOnly),
             child: IconButton(
               icon: Icon(
                 _filterLocked == null
