@@ -1694,6 +1694,12 @@ abstract class AppLocalizations {
   /// **'Patterns'**
   String get patterns;
 
+  /// No description provided for @storyLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Story Lines'**
+  String get storyLines;
+
   /// No description provided for @tools.
   ///
   /// In en, this message translates to:
@@ -1766,6 +1772,12 @@ abstract class AppLocalizations {
   /// **'New Pattern'**
   String get newPattern;
 
+  /// No description provided for @newStoryLine.
+  ///
+  /// In en, this message translates to:
+  /// **'New Story Line'**
+  String get newStoryLine;
+
   /// No description provided for @editPrompt.
   ///
   /// In en, this message translates to:
@@ -1777,6 +1789,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit Pattern'**
   String get editPattern;
+
+  /// No description provided for @editStoryLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Story Line'**
+  String get editStoryLine;
 
   /// No description provided for @makePublic.
   ///
@@ -1795,6 +1813,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No patterns'**
   String get noPatterns;
+
+  /// No description provided for @noStoryLines.
+  ///
+  /// In en, this message translates to:
+  /// **'No story lines'**
+  String get noStoryLines;
 
   /// No description provided for @confirm.
   ///
@@ -1946,6 +1970,18 @@ abstract class AppLocalizations {
   /// **'New Pattern'**
   String get newPatternTitle;
 
+  /// No description provided for @editStoryLineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Story Line'**
+  String get editStoryLineTitle;
+
+  /// No description provided for @newStoryLineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Story Line'**
+  String get newStoryLineTitle;
+
   /// No description provided for @usageRulesLabel.
   ///
   /// In en, this message translates to:
@@ -1957,6 +1993,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Public pattern'**
   String get publicPatternLabel;
+
+  /// No description provided for @publicStoryLineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Public story line'**
+  String get publicStoryLineLabel;
 
   /// No description provided for @lockedLabel.
   ///

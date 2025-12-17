@@ -23,8 +23,11 @@ import '../screens/prompts_list_screen.dart';
 import '../screens/prompt_form_screen.dart';
 import '../screens/patterns_list_screen.dart';
 import '../screens/pattern_form_screen.dart';
+import '../screens/story_lines_list_screen.dart';
+import '../screens/story_line_form_screen.dart';
 import '../models/prompt.dart';
 import '../models/pattern.dart';
+import '../models/story_line.dart';
 import '../state/providers.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -48,6 +51,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/patterns',
         name: 'patterns',
         builder: (context, state) => const PatternsListScreen(),
+      ),
+      GoRoute(
+        path: '/story_lines',
+        name: 'storyLines',
+        builder: (context, state) => const StoryLinesListScreen(),
       ),
       GoRoute(
         path: '/prompt_form',
@@ -80,6 +88,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ? state.extra as Pattern?
               : null;
           return PatternFormScreen(initial: initial);
+        },
+      ),
+      GoRoute(
+        path: '/story_line_form',
+        name: 'storyLineForm',
+        builder: (context, state) {
+          final initial = state.extra is StoryLine
+              ? state.extra as StoryLine?
+              : null;
+          return StoryLineFormScreen(initial: initial);
         },
       ),
       GoRoute(

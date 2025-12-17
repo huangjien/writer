@@ -1,0 +1,378 @@
+import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../models/story_line.dart';
+import '../state/story_line_providers.dart';
+import '../state/providers.dart';
+import '../l10n/app_localizations.dart';
+import '../shared/constants.dart';
+
+const int _previewLen = kPreviewLenLong;
+const int _searchDebounceMs = kSearchDebounceMs;
+const int _searchMinLen = kSearchMinLen;
+
+class StoryLinesListScreen extends ConsumerStatefulWidget {
+  const StoryLinesListScreen({super.key});
+  @override
+  ConsumerState<StoryLinesListScreen> createState() =>
+      _StoryLinesListScreenState();
+}
+
+class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
+  DateTime? _lastRowTapAt;
+  String? _lastRowTapId;
+  final _searchCtrl = TextEditingController();
+  Timer? _searchTimer;
+  List<StoryLine> _items = [];
+  bool _searchLoading = false;
+  String? _error;
+  String? _filterLanguage;
+  bool? _filterLocked;
+
+  String _preview(String s) {
+    if (s.length <= _previewLen) return s;
+    return '${s.substring(0, _previewLen)}…';
+  }
+
+  void _onRowTap(StoryLine p) {
+    final now = DateTime.now();
+    if (_lastRowTapId == p.id &&
+        _lastRowTapAt != null &&
+        now.difference(_lastRowTapAt!) < kDoubleTapThreshold) {
+      context.push('/story_line_form', extra: p);
+      _lastRowTapAt = null;
+      _lastRowTapId = null;
+    } else {
+      _lastRowTapAt = now;
+      _lastRowTapId = p.id;
+    }
+  }
+
+  DataTable _table(List<StoryLine> src) {
+    final l10n = AppLocalizations.of(context)!;
+    return DataTable(
+      columns: [
+        DataColumn(label: Text(l10n.titleLabel)),
+        DataColumn(label: Text(l10n.previewLabel)),
+        const DataColumn(label: Text('Meta')),
+        DataColumn(label: Text(l10n.actions)),
+      ],
+      rows: src
+          .map(
+            (p) => DataRow(
+              cells: [
+                DataCell(Text(p.title), onTap: () => _onRowTap(p)),
+                DataCell(
+                  Text(_preview(p.description ?? p.content)),
+                  onTap: () => _onRowTap(p),
+                ),
+                DataCell(
+                  Row(
+                    children: [
+                      Text(p.language ?? 'en'),
+                      const SizedBox(width: 8),
+                      Icon(
+                        p.locked == true ? Icons.lock : Icons.lock_open,
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ),
+                DataCell(
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () =>
+                            context.push('/story_line_form', extra: p),
+                        tooltip: l10n.editStoryLine,
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => _deleteStoryLine(p),
+                        tooltip: l10n.delete,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  Future<void> _deleteStoryLine(StoryLine p) async {
+    final l10n = AppLocalizations.of(context)!;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.confirmDelete),
+        content: Text(l10n.confirmDeleteDescription(p.title)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) {
+      try {
+        final svc = ref.read(storyLinesServiceRefProvider);
+        final success = await svc.deleteStoryLine(p.id);
+        if (success) {
+          final showingSearch =
+              _items.isNotEmpty || _searchCtrl.text.trim().isNotEmpty;
+          if (showingSearch) {
+            setState(() {
+              _items = _items.where((e) => e.id != p.id).toList();
+            });
+          } else {
+            ref.invalidate(storyLinesProvider);
+          }
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('${l10n.delete}: ${p.title}')),
+            );
+          }
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Delete failed: ${p.title}')),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Delete error: $e')));
+        }
+      }
+    }
+  }
+
+  Future<void> _search({bool force = false}) async {
+    final q = _searchCtrl.text.trim();
+    if (q.isEmpty) {
+      setState(() {
+        _items = [];
+        _error = null;
+      });
+      return;
+    }
+    if (!force && q.length < _searchMinLen) {
+      return;
+    }
+    setState(() {
+      _searchLoading = true;
+      _error = null;
+    });
+    try {
+      final svc = ref.read(storyLinesServiceRefProvider);
+      final data = await svc.searchStoryLines(q);
+      setState(() {
+        _items = data;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+      });
+    } finally {
+      setState(() {
+        _searchLoading = false;
+      });
+    }
+  }
+
+  Widget _filters(int count) {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Wrap(
+        alignment: WrapAlignment.start,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 12,
+        runSpacing: 12,
+        children: [
+          SizedBox(
+            width: 320,
+            child: TextField(
+              controller: _searchCtrl,
+              decoration: InputDecoration(
+                labelText: 'Search',
+                suffixText: '$count',
+              ),
+              onChanged: (_) {
+                _searchTimer?.cancel();
+                _searchTimer = Timer(
+                  const Duration(milliseconds: _searchDebounceMs),
+                  _search,
+                );
+              },
+              onSubmitted: (_) => _search(force: true),
+            ),
+          ),
+          SizedBox(
+            width: 180,
+            child: InputDecorator(
+              decoration: InputDecoration(
+                labelText: l10n.languageLabel(''),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String?>(
+                  value: _filterLanguage,
+                  isDense: true,
+                  items: [
+                    const DropdownMenuItem(value: null, child: Text('All')),
+                    DropdownMenuItem(value: 'en', child: Text(l10n.english)),
+                    DropdownMenuItem(value: 'zh', child: Text(l10n.chinese)),
+                  ],
+                  onChanged: (v) => setState(() => _filterLanguage = v),
+                ),
+              ),
+            ),
+          ),
+          Tooltip(
+            message: _filterLocked == null
+                ? 'Filter by Locked'
+                : (_filterLocked! ? 'Locked Only' : 'Unlocked Only'),
+            child: IconButton(
+              icon: Icon(
+                _filterLocked == null
+                    ? Icons.filter_alt_off
+                    : (_filterLocked! ? Icons.lock : Icons.lock_open),
+              ),
+              onPressed: () {
+                setState(() {
+                  if (_filterLocked == null) {
+                    _filterLocked = true;
+                  } else if (_filterLocked == true) {
+                    _filterLocked = false;
+                  } else {
+                    _filterLocked = null;
+                  }
+                });
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final isSupabaseEnabled = ref.watch(supabaseEnabledProvider);
+    final storyLinesAsync = ref.watch(storyLinesProvider);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.storyLines),
+        actions: [
+          IconButton(
+            onPressed: () => ref.invalidate(storyLinesProvider),
+            icon: const Icon(Icons.refresh),
+            tooltip: l10n.reload,
+          ),
+          IconButton(
+            onPressed: isSupabaseEnabled
+                ? () => context.push('/story_line_form')
+                : null,
+            icon: const Icon(Icons.add),
+            tooltip: l10n.newStoryLine,
+          ),
+          IconButton(
+            onPressed: () => context.go('/'),
+            icon: const Icon(Icons.home),
+            tooltip: l10n.home,
+          ),
+        ],
+      ),
+      body: _searchLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+          ? Center(child: Text(_error!))
+          : storyLinesAsync.when(
+              data: (items0) {
+                var items =
+                    _items.isNotEmpty || _searchCtrl.text.trim().isNotEmpty
+                    ? _items
+                    : items0;
+
+                if (_filterLanguage != null) {
+                  items = items
+                      .where((p) => (p.language ?? 'en') == _filterLanguage)
+                      .toList();
+                }
+                if (_filterLocked != null) {
+                  items = items
+                      .where((p) => (p.locked ?? false) == _filterLocked)
+                      .toList();
+                }
+
+                if (items.isEmpty) {
+                  if (!isSupabaseEnabled) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              l10n.supabaseNotEnabled,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              l10n.supabaseNotEnabledDescription,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 12),
+                            TextButton(
+                              onPressed: () => context.goNamed('settings'),
+                              child: Text(l10n.supabaseSettings),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  return Center(child: Text(l10n.noStoryLines));
+                }
+                return Column(
+                  children: [
+                    _filters(items.length),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(8),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: _table(items),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text(e.toString())),
+            ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    _searchTimer?.cancel();
+    super.dispose();
+  }
+}

@@ -842,6 +842,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get patterns => '写作模式';
 
   @override
+  String get storyLines => '故事线';
+
+  @override
   String get tools => '工具';
 
   @override
@@ -878,10 +881,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get newPattern => '新建模式';
 
   @override
+  String get newStoryLine => '新建故事线';
+
+  @override
   String get editPrompt => '编辑提示';
 
   @override
   String get editPattern => '编辑模式';
+
+  @override
+  String get editStoryLine => '编辑故事线';
 
   @override
   String get makePublic => '设为公开';
@@ -891,6 +900,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noPatterns => '没有模式';
+
+  @override
+  String get noStoryLines => '没有故事线';
 
   @override
   String get confirm => '确认';
@@ -974,10 +986,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get newPatternTitle => '新建模式';
 
   @override
+  String get editStoryLineTitle => '编辑故事线';
+
+  @override
+  String get newStoryLineTitle => '新建故事线';
+
+  @override
   String get usageRulesLabel => '使用规则 (JSON)';
 
   @override
   String get publicPatternLabel => '公开模式';
+
+  @override
+  String get publicStoryLineLabel => '公开故事线';
 
   @override
   String get lockedLabel => '已锁定';

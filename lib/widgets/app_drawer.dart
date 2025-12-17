@@ -91,6 +91,14 @@ class AppDrawer extends ConsumerWidget {
               context.go('/patterns');
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.timeline),
+            title: Text(l10n.storyLines),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/story_lines');
+            },
+          ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.add),

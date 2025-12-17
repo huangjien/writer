@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'supabase_config.dart';
 import '../services/prompts_service.dart';
 import '../services/patterns_service.dart';
+import '../services/story_lines_service.dart';
 import 'ai_service_settings.dart';
 import 'admin_settings.dart';
 
@@ -56,6 +57,22 @@ final patternsServiceProvider = Provider<PatternsService>((ref) {
     token = session?.accessToken;
   }
   return PatternsService(baseUrl: baseUrl, authToken: token);
+});
+
+final storyLinesServiceProvider = Provider<StoryLinesService>((ref) {
+  String baseUrl;
+  try {
+    baseUrl = ref.watch(aiServiceProvider);
+  } catch (_) {
+    baseUrl = 'http://localhost:5600/';
+  }
+  String? token;
+  final enabled = ref.watch(supabaseEnabledProvider);
+  if (enabled) {
+    final session = ref.watch(supabaseSessionProvider);
+    token = session?.accessToken;
+  }
+  return StoryLinesService(baseUrl: baseUrl, authToken: token);
 });
 
 final isAdminProvider = Provider<bool>((ref) {

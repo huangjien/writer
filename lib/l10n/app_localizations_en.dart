@@ -863,6 +863,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get patterns => 'Patterns';
 
   @override
+  String get storyLines => 'Story Lines';
+
+  @override
   String get tools => 'Tools';
 
   @override
@@ -899,10 +902,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newPattern => 'New Pattern';
 
   @override
+  String get newStoryLine => 'New Story Line';
+
+  @override
   String get editPrompt => 'Edit Prompt';
 
   @override
   String get editPattern => 'Edit Pattern';
+
+  @override
+  String get editStoryLine => 'Edit Story Line';
 
   @override
   String get makePublic => 'Make Public';
@@ -912,6 +921,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noPatterns => 'No patterns';
+
+  @override
+  String get noStoryLines => 'No story lines';
 
   @override
   String get confirm => 'Confirm';
@@ -995,10 +1007,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newPatternTitle => 'New Pattern';
 
   @override
+  String get editStoryLineTitle => 'Edit Story Line';
+
+  @override
+  String get newStoryLineTitle => 'New Story Line';
+
+  @override
   String get usageRulesLabel => 'Usage Rules (JSON)';
 
   @override
   String get publicPatternLabel => 'Public pattern';
+
+  @override
+  String get publicStoryLineLabel => 'Public story line';
 
   @override
   String get lockedLabel => 'Locked';
