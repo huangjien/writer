@@ -1007,44 +1007,44 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get content => 'Content';
+  String get content => '内容';
 
   @override
-  String get invalidKey => 'Invalid key';
+  String get invalidKey => '键无效';
 
   @override
-  String get invalidLanguage => 'Invalid language';
+  String get invalidLanguage => '语言无效';
 
   @override
-  String get invalidInput => 'Invalid input';
+  String get invalidInput => '输入无效';
 
   @override
   String charsCount(int count) {
-    return 'Characters: $count';
+    return '字符数：$count';
   }
 
   @override
   String deletePromptConfirm(String promptKey, String language) {
-    return 'Delete prompt \"$promptKey\" ($language)?';
+    return '删除提示词 \"$promptKey\"（$language）？';
   }
 
   @override
-  String get profileRetrieved => 'Profile retrieved';
+  String get profileRetrieved => '已获取个人资料';
 
   @override
-  String get noProfileFound => 'No profile found';
+  String get noProfileFound => '未找到个人资料';
 
   @override
-  String get templateName => 'Template Name';
+  String get templateName => '模板名称';
 
   @override
-  String get retrieveProfile => 'Retrieve profile';
+  String get retrieveProfile => '获取个人资料';
 
   @override
-  String get previewLabel => 'Preview';
+  String get previewLabel => '预览';
 
   @override
-  String get markdownHint => 'Enter description in Markdown...';
+  String get markdownHint => '用 Markdown 输入描述...';
 
   @override
   String get templateNameExists => '模板名称已存在';
