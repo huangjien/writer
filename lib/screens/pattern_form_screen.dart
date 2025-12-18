@@ -341,19 +341,20 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
           key: _formKey,
           child: Column(
             children: [
-              Row(
-                children: [
-                  Expanded(
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final wide = constraints.maxWidth >= 860;
+                  final titleField = SizedBox(
+                    width: wide ? 280 : null,
                     child: TextFormField(
                       controller: _titleCtrl,
                       decoration: InputDecoration(labelText: l10n.titleLabel),
                       validator: _required,
                       enabled: !_locked && !_saving,
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  SizedBox(
-                    width: 180,
+                  );
+                  final languageField = SizedBox(
+                    width: wide ? 180 : null,
                     child: DropdownButtonFormField<String>(
                       key: ValueKey(_language),
                       initialValue: _language,
@@ -383,16 +384,8 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                             }
                           : null,
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 12,
-                runSpacing: 8,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Row(
+                  );
+                  final publicToggle = Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Checkbox(
@@ -409,34 +402,69 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                       ),
                       Text(l10n.publicPatternLabel),
                     ],
-                  ),
-                  if (_isEdit)
-                    InkWell(
-                      onTap: _saving
-                          ? null
-                          : () {
-                              setState(() => _locked = !_locked);
-                              _checkDirty();
-                            },
-                      borderRadius: BorderRadius.circular(4),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              _locked ? Icons.lock : Icons.lock_open,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              _locked ? l10n.lockedLabel : l10n.unlockedLabel,
-                            ),
-                          ],
-                        ),
+                  );
+                  final lockToggle = InkWell(
+                    onTap: _saving
+                        ? null
+                        : () {
+                            setState(() => _locked = !_locked);
+                            _checkDirty();
+                          },
+                    borderRadius: BorderRadius.circular(4),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _locked ? Icons.lock : Icons.lock_open,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(_locked ? l10n.lockedLabel : l10n.unlockedLabel),
+                        ],
                       ),
                     ),
-                ],
+                  );
+
+                  if (wide) {
+                    return Row(
+                      children: [
+                        titleField,
+                        const SizedBox(width: 12),
+                        languageField,
+                        const SizedBox(width: 12),
+                        publicToggle,
+                        if (_isEdit) ...[
+                          const SizedBox(width: 12),
+                          lockToggle,
+                        ],
+                      ],
+                    );
+                  }
+
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(child: titleField),
+                          const SizedBox(width: 12),
+                          SizedBox(width: 180, child: languageField),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          publicToggle,
+                          if (_isEdit) lockToggle,
+                        ],
+                      ),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 12),
               TextFormField(
