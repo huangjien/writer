@@ -320,46 +320,32 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
               LayoutBuilder(
                 builder: (context, constraints) {
                   final wide = constraints.maxWidth >= 860;
-                  final titleField = SizedBox(
-                    width: wide ? 280 : null,
-                    child: TextFormField(
-                      controller: _titleCtrl,
-                      decoration: InputDecoration(labelText: l10n.titleLabel),
-                      validator: _required,
-                      enabled: !_locked && !_saving,
-                    ),
+                  final titleField = TextFormField(
+                    controller: _titleCtrl,
+                    decoration: InputDecoration(labelText: l10n.titleLabel),
+                    validator: _required,
+                    enabled: !_locked && !_saving,
                   );
-                  final languageField = SizedBox(
-                    width: wide ? 180 : null,
-                    child: DropdownButtonFormField<String>(
-                      key: ValueKey(_language),
-                      initialValue: _language,
-                      isExpanded: true,
-                      decoration: InputDecoration(
-                        labelText: l10n.languageLabel(''),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                        ),
-                      ),
-                      items: [
-                        DropdownMenuItem(
-                          value: 'en',
-                          child: Text(l10n.english),
-                        ),
-                        DropdownMenuItem(
-                          value: 'zh',
-                          child: Text(l10n.chinese),
-                        ),
-                      ],
-                      onChanged: (!_locked && !_saving)
-                          ? (v) {
-                              if (v != null) {
-                                setState(() => _language = v);
-                                _checkDirty();
-                              }
-                            }
-                          : null,
+                  final languageField = DropdownButtonFormField<String>(
+                    key: ValueKey(_language),
+                    initialValue: _language,
+                    isExpanded: true,
+                    decoration: InputDecoration(
+                      labelText: l10n.languageLabel(''),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                     ),
+                    items: [
+                      DropdownMenuItem(value: 'en', child: Text(l10n.english)),
+                      DropdownMenuItem(value: 'zh', child: Text(l10n.chinese)),
+                    ],
+                    onChanged: (!_locked && !_saving)
+                        ? (v) {
+                            if (v != null) {
+                              setState(() => _language = v);
+                              _checkDirty();
+                            }
+                          }
+                        : null,
                   );
                   final publicToggle = Row(
                     mainAxisSize: MainAxisSize.min,
@@ -406,37 +392,34 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
                   if (wide) {
                     return Row(
                       children: [
-                        titleField,
+                        SizedBox(width: 260, child: titleField),
                         const SizedBox(width: 12),
-                        languageField,
+                        SizedBox(width: 160, child: languageField),
                         const SizedBox(width: 12),
                         publicToggle,
-                        if (_isEdit) ...[
-                          const SizedBox(width: 12),
-                          lockToggle,
-                        ],
+                        if (_isEdit) ...[const SizedBox(width: 12), lockToggle],
                       ],
                     );
                   }
 
                   return Column(
                     children: [
-                      Row(
-                        children: [
-                          Expanded(child: titleField),
-                          const SizedBox(width: 12),
-                          SizedBox(width: 180, child: languageField),
-                        ],
-                      ),
+                      titleField,
                       const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 12,
-                        runSpacing: 8,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          publicToggle,
-                          if (_isEdit) lockToggle,
-                        ],
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(width: 160, child: languageField),
+                            const SizedBox(width: 12),
+                            publicToggle,
+                            if (_isEdit) ...[
+                              const SizedBox(width: 12),
+                              lockToggle,
+                            ],
+                          ],
+                        ),
                       ),
                     ],
                   );

@@ -301,10 +301,8 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
           ? Center(child: Text(_error!))
           : patternsAsync.when(
               data: (items0) {
-                var items =
-                    _items.isNotEmpty || _searchCtrl.text.trim().isNotEmpty
-                    ? _items
-                    : items0;
+                final isSearching = _searchCtrl.text.trim().isNotEmpty;
+                var items = isSearching ? _items : items0;
 
                 if (_filterLanguage != null) {
                   items = items
@@ -317,34 +315,34 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
                       .toList();
                 }
 
-                if (items.isEmpty) {
-                  if (!isSupabaseEnabled) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              l10n.supabaseNotEnabled,
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              l10n.supabaseNotEnabledDescription,
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 12),
-                            TextButton(
-                              onPressed: () => context.goNamed('settings'),
-                              child: Text(l10n.supabaseSettings),
-                            ),
-                          ],
-                        ),
+                if (!isSupabaseEnabled && items0.isEmpty && !isSearching) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            l10n.supabaseNotEnabled,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.supabaseNotEnabledDescription,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 12),
+                          TextButton(
+                            onPressed: () => context.goNamed('settings'),
+                            child: Text(l10n.supabaseSettings),
+                          ),
+                        ],
                       ),
-                    );
-                  }
+                    ),
+                  );
+                }
+                if (items.isEmpty && !isSearching) {
                   return Center(child: Text(l10n.noPatterns));
                 }
                 return Column(

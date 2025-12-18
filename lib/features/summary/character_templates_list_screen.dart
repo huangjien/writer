@@ -47,107 +47,115 @@ class _CharacterTemplatesListScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.characterTemplates),
-        actions: [
-          if (_loading)
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        context.go('/');
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: BackButton(onPressed: () => context.go('/')),
+          title: Text(l10n.characterTemplates),
+          actions: [
+            if (_loading)
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              )
+            else
+              IconButton(
+                onPressed: _load,
+                icon: const Icon(Icons.refresh),
+                tooltip: l10n.refreshTooltip,
               ),
-            )
-          else
             IconButton(
-              onPressed: _load,
-              icon: const Icon(Icons.refresh),
-              tooltip: l10n.refreshTooltip,
+              onPressed: () => context.push(
+                '/novel/${widget.novelId}/character-templates/new',
+              ),
+              icon: const Icon(Icons.add),
+              tooltip: l10n.newLabel,
             ),
-          IconButton(
-            onPressed: () => context.push(
-              '/novel/${widget.novelId}/character-templates/new',
+            IconButton(
+              onPressed: () => context.go('/'),
+              icon: const Icon(Icons.home),
+              tooltip: l10n.home,
             ),
-            icon: const Icon(Icons.add),
-            tooltip: l10n.newLabel,
-          ),
-          IconButton(
-            onPressed: () => context.go('/'),
-            icon: const Icon(Icons.home),
-            tooltip: l10n.home,
-          ),
-        ],
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-          ? Center(child: Text(_error!))
-          : ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemBuilder: (ctx, i) {
-                final it = _items[i];
-                final title = it.title ?? l10n.untitled;
-                final subtitle =
-                    (it.characterSummaries ?? it.characterSynopses ?? '')
-                        .replaceAll('**', '');
-                return ListTile(
-                  title: Text(title),
-                  subtitle: subtitle.isEmpty
-                      ? null
-                      : Text(
-                          subtitle,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () {
-                          context.push(
-                            '/novel/${widget.novelId}/character-templates/${it.id}',
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () async {
-                          final ok = await showDialog<bool>(
-                            context: context,
-                            builder: (d) => AlertDialog(
-                              title: Text(l10n.deleteTemplateTitle),
-                              content: Text(l10n.confirmDeleteGeneric),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(d, false),
-                                  child: Text(l10n.cancel),
-                                ),
-                                FilledButton(
-                                  onPressed: () => Navigator.pop(d, true),
-                                  child: Text(l10n.delete),
-                                ),
-                              ],
-                            ),
-                          );
-                          if (ok == true) {
-                            final repo = ref.read(
-                              localStorageRepositoryProvider,
+          ],
+        ),
+        body: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : _error != null
+            ? Center(child: Text(_error!))
+            : ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemBuilder: (ctx, i) {
+                  final it = _items[i];
+                  final title = it.title ?? l10n.untitled;
+                  final subtitle =
+                      (it.characterSummaries ?? it.characterSynopses ?? '')
+                          .replaceAll('**', '');
+                  return ListTile(
+                    title: Text(title),
+                    subtitle: subtitle.isEmpty
+                        ? null
+                        : Text(
+                            subtitle,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            context.push(
+                              '/novel/${widget.novelId}/character-templates/${it.id}',
                             );
-                            await repo.deleteCharacterTemplate(it.id);
-                            await _load();
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
-              separatorBuilder: (context, index) => const SizedBox(height: 8),
-              itemCount: _items.length,
-            ),
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () async {
+                            final ok = await showDialog<bool>(
+                              context: context,
+                              builder: (d) => AlertDialog(
+                                title: Text(l10n.deleteTemplateTitle),
+                                content: Text(l10n.confirmDeleteGeneric),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(d, false),
+                                    child: Text(l10n.cancel),
+                                  ),
+                                  FilledButton(
+                                    onPressed: () => Navigator.pop(d, true),
+                                    child: Text(l10n.delete),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (ok == true) {
+                              final repo = ref.read(
+                                localStorageRepositoryProvider,
+                              );
+                              await repo.deleteCharacterTemplate(it.id);
+                              await _load();
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                separatorBuilder: (context, index) => const SizedBox(height: 8),
+                itemCount: _items.length,
+              ),
+      ),
     );
   }
 }
