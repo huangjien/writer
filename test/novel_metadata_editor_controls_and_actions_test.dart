@@ -112,9 +112,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(repo.lastUpdate, isNotNull);
     expect(repo.lastUpdate!['language_code'], equals('zh'));
-
-    await tester.ensureVisible(find.widgetWithText(SwitchListTile, 'Public'));
-    await tester.ensureVisible(find.widgetWithText(SwitchListTile, 'Public'));
+    await tester.ensureVisible(find.text('Public'));
   });
 
   testWidgets('Non-owner hides Public and Contributor controls', (

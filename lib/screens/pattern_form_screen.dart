@@ -353,10 +353,11 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                   ),
                   const SizedBox(width: 12),
                   SizedBox(
-                    width: 140,
+                    width: 180,
                     child: DropdownButtonFormField<String>(
                       key: ValueKey(_language),
                       initialValue: _language,
+                      isExpanded: true,
                       decoration: InputDecoration(
                         labelText: l10n.languageLabel(''),
                         contentPadding: const EdgeInsets.symmetric(
@@ -383,8 +384,16 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                           : null,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
                   Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Checkbox(
                         value: _isPublic,
@@ -401,8 +410,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                       Text(l10n.publicPatternLabel),
                     ],
                   ),
-                  if (_isEdit) ...[
-                    const SizedBox(width: 12),
+                  if (_isEdit)
                     InkWell(
                       onTap: _saving
                           ? null
@@ -414,6 +422,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
                               _locked ? Icons.lock : Icons.lock_open,
@@ -427,7 +436,6 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                         ),
                       ),
                     ),
-                  ],
                 ],
               ),
               const SizedBox(height: 12),
