@@ -328,27 +328,16 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _descCtrl,
-                      decoration: InputDecoration(
-                        labelText: l10n.descriptionLabel,
-                      ),
-                      enabled: !_locked && !_saving,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
                   SizedBox(
-                    width: 180,
+                    width: 140,
                     child: DropdownButtonFormField<String>(
                       key: ValueKey(_language),
                       initialValue: _language,
                       decoration: InputDecoration(
                         labelText: l10n.languageLabel(''),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                        ),
                       ),
                       items: [
                         DropdownMenuItem(
@@ -371,7 +360,25 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
                     ),
                   ),
                   const SizedBox(width: 12),
-                  if (_isEdit)
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _isPublic,
+                        onChanged: _saving || _locked
+                            ? null
+                            : (v) {
+                                if (v == null) return;
+                                setState(() {
+                                  _isPublic = v;
+                                });
+                                _checkDirty();
+                              },
+                      ),
+                      Text(l10n.publicStoryLineLabel),
+                    ],
+                  ),
+                  if (_isEdit) ...[
+                    const SizedBox(width: 12),
                     InkWell(
                       onTap: _saving
                           ? null
@@ -396,26 +403,14 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
                         ),
                       ),
                     ),
+                  ],
                 ],
               ),
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  Checkbox(
-                    value: _isPublic,
-                    onChanged: _saving || _locked
-                        ? null
-                        : (v) {
-                            if (v == null) return;
-                            setState(() {
-                              _isPublic = v;
-                            });
-                            _checkDirty();
-                          },
-                  ),
-                  const SizedBox(width: 4),
-                  Text(l10n.publicStoryLineLabel),
-                ],
+              TextFormField(
+                controller: _descCtrl,
+                decoration: InputDecoration(labelText: l10n.descriptionLabel),
+                enabled: !_locked && !_saving,
               ),
               const SizedBox(height: 12),
               TabBar(

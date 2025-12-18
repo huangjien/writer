@@ -154,22 +154,86 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: Column(
                     children: [
-                      TextFormField(
-                        controller: _titleController,
-                        decoration: InputDecoration(labelText: l10n.titleLabel),
-                        onChanged: (_) {
-                          _recomputeFormValidity();
-                          final dirty =
-                              _titleController.text.trim() !=
-                                  _baseTitle.trim() ||
-                              _descriptionController.text.trim() !=
-                                  _baseDescription.trim() ||
-                              (_coverUrlController.text.trim() !=
-                                  _baseCoverUrl.trim());
-                          if (dirty != _isDirty) {
-                            setState(() => _isDirty = dirty);
-                          }
-                        },
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _titleController,
+                              decoration: InputDecoration(
+                                labelText: l10n.titleLabel,
+                              ),
+                              onChanged: (_) {
+                                _recomputeFormValidity();
+                                final dirty =
+                                    _titleController.text.trim() !=
+                                        _baseTitle.trim() ||
+                                    _descriptionController.text.trim() !=
+                                        _baseDescription.trim() ||
+                                    (_coverUrlController.text.trim() !=
+                                        _baseCoverUrl.trim());
+                                if (dirty != _isDirty) {
+                                  setState(() => _isDirty = dirty);
+                                }
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          DropdownButton<String>(
+                            value: _languageCode,
+                            onChanged: (code) {
+                              if (code == null) return;
+                              setState(() => _languageCode = code);
+                              final dirty =
+                                  _titleController.text.trim() !=
+                                      _baseTitle.trim() ||
+                                  _descriptionController.text.trim() !=
+                                      _baseDescription.trim() ||
+                                  (_coverUrlController.text.trim() !=
+                                      _baseCoverUrl.trim()) ||
+                                  (_languageCode != _baseLanguageCode);
+                              if (dirty != _isDirty) {
+                                setState(() => _isDirty = dirty);
+                              }
+                            },
+                            items: [
+                              DropdownMenuItem(
+                                value: 'en',
+                                child: Text(l10n.english),
+                              ),
+                              DropdownMenuItem(
+                                value: 'zh',
+                                child: Text(l10n.chinese),
+                              ),
+                            ],
+                          ),
+                          if (isOwner) ...[
+                            const SizedBox(width: 12),
+                            Row(
+                              children: [
+                                Switch(
+                                  value: _isPublic,
+                                  onChanged: (v) {
+                                    setState(() => _isPublic = v);
+                                    final dirty =
+                                        _titleController.text.trim() !=
+                                            _baseTitle.trim() ||
+                                        _descriptionController.text.trim() !=
+                                            _baseDescription.trim() ||
+                                        (_coverUrlController.text.trim() !=
+                                            _baseCoverUrl.trim()) ||
+                                        (_isPublic != _baseIsPublic);
+                                    if (dirty != _isDirty) {
+                                      setState(() => _isDirty = dirty);
+                                    }
+                                  },
+                                ),
+                                const SizedBox(width: 4),
+                                Text(l10n.publicLabel),
+                              ],
+                            ),
+                          ],
+                        ],
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
@@ -214,61 +278,6 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                             setState(() => _isDirty = dirty);
                           }
                         },
-                      ),
-                      const SizedBox(height: 12),
-                      if (isOwner) ...[
-                        SwitchListTile(
-                          value: _isPublic,
-                          title: Text(l10n.publicLabel),
-                          onChanged: (v) {
-                            setState(() => _isPublic = v);
-                            final dirty =
-                                _titleController.text.trim() !=
-                                    _baseTitle.trim() ||
-                                _descriptionController.text.trim() !=
-                                    _baseDescription.trim() ||
-                                (_coverUrlController.text.trim() !=
-                                    _baseCoverUrl.trim()) ||
-                                (_isPublic != _baseIsPublic);
-                            if (dirty != _isDirty) {
-                              setState(() => _isDirty = dirty);
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 12),
-                      ],
-                      Row(
-                        children: [
-                          Expanded(child: Text(l10n.chooseLanguage)),
-                          DropdownButton<String>(
-                            value: _languageCode,
-                            onChanged: (code) {
-                              if (code == null) return;
-                              setState(() => _languageCode = code);
-                              final dirty =
-                                  _titleController.text.trim() !=
-                                      _baseTitle.trim() ||
-                                  _descriptionController.text.trim() !=
-                                      _baseDescription.trim() ||
-                                  (_coverUrlController.text.trim() !=
-                                      _baseCoverUrl.trim()) ||
-                                  (_languageCode != _baseLanguageCode);
-                              if (dirty != _isDirty) {
-                                setState(() => _isDirty = dirty);
-                              }
-                            },
-                            items: [
-                              DropdownMenuItem(
-                                value: 'en',
-                                child: Text(l10n.english),
-                              ),
-                              DropdownMenuItem(
-                                value: 'zh',
-                                child: Text(l10n.chinese),
-                              ),
-                            ],
-                          ),
-                        ],
                       ),
                       const SizedBox(height: 12),
                       if (isOwner) ...[

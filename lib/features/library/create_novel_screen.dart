@@ -105,10 +105,29 @@ class _CreateNovelScreenState extends ConsumerState<CreateNovelScreen> {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: ListView(
             children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: InputDecoration(labelText: l10n.titleLabel),
-                validator: (v) => isBlank(v) ? l10n.titleLabel : null,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _titleController,
+                      decoration: InputDecoration(labelText: l10n.titleLabel),
+                      validator: (v) => isBlank(v) ? l10n.titleLabel : null,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  DropdownButton<String>(
+                    value: _languageCode,
+                    onChanged: (code) {
+                      if (code == null) return;
+                      setState(() => _languageCode = code);
+                    },
+                    items: [
+                      DropdownMenuItem(value: 'en', child: Text(l10n.english)),
+                      DropdownMenuItem(value: 'zh', child: Text(l10n.chinese)),
+                    ],
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -130,23 +149,6 @@ class _CreateNovelScreenState extends ConsumerState<CreateNovelScreen> {
                 controller: _coverUrlController,
                 decoration: InputDecoration(labelText: l10n.coverUrlLabel),
                 validator: _validateCoverUrl,
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(child: Text(l10n.chooseLanguage)),
-                  DropdownButton<String>(
-                    value: _languageCode,
-                    onChanged: (code) {
-                      if (code == null) return;
-                      setState(() => _languageCode = code);
-                    },
-                    items: [
-                      DropdownMenuItem(value: 'en', child: Text(l10n.english)),
-                      DropdownMenuItem(value: 'zh', child: Text(l10n.chinese)),
-                    ],
-                  ),
-                ],
               ),
               const SizedBox(height: 16),
               if (_saving) const LinearProgressIndicator(),
