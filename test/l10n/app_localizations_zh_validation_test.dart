@@ -108,6 +108,16 @@ void main() {
       expect(zh.chapters.isNotEmpty, true);
       expect(zh.noChaptersFound.isNotEmpty, true);
       expect(zh.indexLabel(1).contains('1'), true);
+      expect(zh.sceneTemplates.isNotEmpty, true);
+      expect(zh.templateName.isNotEmpty, true);
+      expect(zh.templateLabel.isNotEmpty, true);
+      expect(zh.aiConvert.isNotEmpty, true);
+      expect(zh.profileRetrieved.isNotEmpty, true);
+      expect(zh.noProfileFound.isNotEmpty, true);
+      expect(zh.retrieveProfile.isNotEmpty, true);
+      expect(zh.retrieveFailed('x').contains('x'), true);
+      expect(zh.conversionFailed('x').contains('x'), true);
+      expect(zh.markdownHint.isNotEmpty, true);
     });
   });
 }

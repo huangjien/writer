@@ -61,7 +61,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutUsageList =>
-      '• Library: search and open novels\n• Reader: navigate chapters, toggle TTS\n• Settings: theme, typography, and preferences\n• Sign In: enable cloud sync via Supabase';
+      '• Library: search and open novels\n• Reader: navigate chapters, toggle TTS\n• Templates: manage character and scene templates\n• Settings: theme, typography, and preferences\n• Sign In: enable cloud sync via Supabase';
 
   @override
   String get version => 'Version';

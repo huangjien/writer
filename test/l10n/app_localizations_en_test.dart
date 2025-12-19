@@ -26,6 +26,10 @@ void main() {
     expect(l10n.dark, 'Dark');
     expect(l10n.select, 'Select');
     expect(l10n.clear, 'Clear');
+    expect(l10n.sceneTemplates, 'Scene Templates');
+    expect(l10n.templateName, 'Template Name');
+    expect(l10n.templateLabel, 'Template');
+    expect(l10n.aiConvert, 'AI Convert');
   });
 
   test('Placeholders en', () async {

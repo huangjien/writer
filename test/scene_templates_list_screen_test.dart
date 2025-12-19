@@ -23,7 +23,7 @@ class FakeLocalRepo extends LocalStorageRepository {
   ];
   String? deletedId;
   @override
-  Future<List<SceneTemplateRow>> listSceneTemplates() async {
+  Future<List<SceneTemplateRow>> listSceneTemplates({int limit = 200}) async {
     return items;
   }
 

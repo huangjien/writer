@@ -111,4 +111,94 @@ class RemoteRepository {
     }
     return null;
   }
+
+  Future<String?> fetchSceneProfile(String name) async {
+    final url = baseUrl.endsWith('/')
+        ? '${baseUrl}scenes/profile'
+        : '$baseUrl/scenes/profile';
+
+    String? token;
+    if (supabaseEnabled) {
+      final client = Supabase.instance.client;
+      token = client.auth.currentSession?.accessToken;
+      if (token == null && client.auth.currentUser != null) {
+        try {
+          await client.auth.refreshSession();
+          token = client.auth.currentSession?.accessToken;
+        } catch (_) {}
+      }
+    }
+
+    final headers = {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+
+    try {
+      final response = await (_client ?? http.Client()).post(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode({'name': name}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        if (data is Map<String, dynamic> && data.containsKey('scene_profile')) {
+          return data['scene_profile'] as String;
+        }
+      }
+    } catch (_) {
+      // Handle error or return null
+    }
+    return null;
+  }
+
+  Future<String?> convertScene({
+    required String name,
+    required String templateContent,
+    required String language,
+  }) async {
+    final url = baseUrl.endsWith('/')
+        ? '${baseUrl}scenes/convert'
+        : '$baseUrl/scenes/convert';
+
+    String? token;
+    if (supabaseEnabled) {
+      final client = Supabase.instance.client;
+      token = client.auth.currentSession?.accessToken;
+      if (token == null && client.auth.currentUser != null) {
+        try {
+          await client.auth.refreshSession();
+          token = client.auth.currentSession?.accessToken;
+        } catch (_) {}
+      }
+    }
+
+    final headers = {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+
+    try {
+      final response = await (_client ?? http.Client()).post(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode({
+          'name': name,
+          'template': templateContent,
+          'language': language,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        if (data is Map<String, dynamic> && data.containsKey('result')) {
+          return data['result'] as String;
+        }
+      }
+    } catch (_) {
+      // Handle error or return null
+    }
+    return null;
+  }
 }

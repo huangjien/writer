@@ -13,7 +13,7 @@
   "aboutFeatureCoach": "• Refine your summary with the AI Coach and apply improvements.",
   "aboutFeaturePrompts": "• Manage prompts and experiment with AI-assisted workflows.",
   "aboutUsage": "Usage",
-  "aboutUsageList": "• Library: search and open novels\n• Reader: navigate chapters, toggle TTS\n• Settings: theme, typography, and preferences\n• Sign In: enable cloud sync via Supabase",
+  "aboutUsageList": "• Library: search and open novels\n• Reader: navigate chapters, toggle TTS\n• Templates: manage character and scene templates\n• Settings: theme, typography, and preferences\n• Sign In: enable cloud sync via Supabase",
   "version": "Version",
   "appLanguage": "App Language",
   "english": "English",

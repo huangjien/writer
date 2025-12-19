@@ -101,8 +101,12 @@ void main() {
       () => mockRepo.getSceneTemplateForm(any()),
     ).thenAnswer((_) async => null);
     when(
-      () => mockRepo.saveSceneTemplateForm(any(), any()),
-    ).thenAnswer((_) async => 'new-id');
+      () => mockRepo.saveSceneTemplateForm(
+        any(),
+        any(),
+        languageCode: any(named: 'languageCode'),
+      ),
+    ).thenAnswer((_) async => 't-1');
 
     await tester.pumpWidget(createWidget());
     await tester.pumpAndSettle();
@@ -132,6 +136,7 @@ void main() {
               .having((t) => t.name, 'name', 'New Name')
               .having((t) => t.description, 'description', 'New Description'),
         ),
+        languageCode: any(named: 'languageCode'),
       ),
     ).called(1);
   });

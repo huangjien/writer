@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
+import 'package:writer/state/supabase_config.dart';
 import '../../main.dart';
 import '../../models/template.dart';
 import '../../l10n/app_localizations.dart';
+import '../../repositories/remote_repository.dart';
 
 class SceneTemplatesScreen extends ConsumerStatefulWidget {
   const SceneTemplatesScreen({
@@ -26,10 +29,13 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
   final _descController = TextEditingController();
   late TabController _tabController;
   bool _saving = false;
+  bool _retrieving = false;
   String? _error;
   bool _isDirty = false;
+  String _languageCode = 'en';
   String _baseName = '';
   String _baseDesc = '';
+  String _baseLanguageCode = 'en';
 
   @override
   void initState() {
@@ -45,6 +51,7 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
       if (row != null) {
         _nameController.text = row.title ?? '';
         _descController.text = row.sceneSummaries ?? '';
+        _languageCode = row.languageCode;
       }
     } else {
       final item = await repo.getSceneTemplateForm(widget.novelId);
@@ -55,6 +62,7 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
     }
     _baseName = _nameController.text;
     _baseDesc = _descController.text;
+    _baseLanguageCode = _languageCode;
     _isDirty = false;
     setState(() {});
   }
@@ -65,6 +73,52 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
     _descController.dispose();
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> _onRetrieve() async {
+    final name = _nameController.text.trim();
+    if (name.isEmpty) return;
+
+    setState(() {
+      _retrieving = true;
+      _error = null;
+    });
+
+    try {
+      final repo = ref.read(remoteRepositoryProvider);
+      final profile = await repo.fetchSceneProfile(name);
+
+      if (profile != null) {
+        _descController.text = profile.trim();
+        if (mounted) {
+          setState(() {
+            _isDirty = true;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.profileRetrieved),
+            ),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.noProfileFound),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        setState(() => _error = l10n.retrieveFailed(e.toString()));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _retrieving = false);
+      }
+    }
   }
 
   @override
@@ -79,17 +133,71 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(labelText: l10n.templateName),
-                validator: (v) =>
-                    v == null || v.trim().isEmpty ? l10n.required : null,
-                onChanged: (_) {
-                  final dirty =
-                      _nameController.text.trim() != _baseName.trim() ||
-                      _descController.text.trim() != _baseDesc.trim();
-                  if (dirty != _isDirty) setState(() => _isDirty = dirty);
-                },
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(labelText: l10n.templateName),
+                      validator: (v) =>
+                          v == null || v.trim().isEmpty ? l10n.required : null,
+                      onChanged: (_) {
+                        final dirty =
+                            _nameController.text.trim() != _baseName.trim() ||
+                            _descController.text.trim() != _baseDesc.trim() ||
+                            _languageCode != _baseLanguageCode;
+                        if (dirty != _isDirty) setState(() => _isDirty = dirty);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: DropdownButton<String>(
+                      value: _languageCode,
+                      onChanged: (code) {
+                        if (code == null) return;
+                        setState(() {
+                          _languageCode = code;
+                          final dirty =
+                              _nameController.text.trim() != _baseName.trim() ||
+                              _descController.text.trim() != _baseDesc.trim() ||
+                              _languageCode != _baseLanguageCode;
+                          if (dirty != _isDirty) _isDirty = dirty;
+                        });
+                      },
+                      items: [
+                        DropdownMenuItem(
+                          value: 'en',
+                          child: Text(l10n.english),
+                        ),
+                        DropdownMenuItem(
+                          value: 'zh',
+                          child: Text(l10n.chinese),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: IconButton.filledTonal(
+                      onPressed:
+                          _retrieving || _nameController.text.trim().isEmpty
+                          ? null
+                          : _onRetrieve,
+                      icon: _retrieving
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.download),
+                      tooltip: l10n.retrieveProfile,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
               TabBar(
@@ -129,7 +237,8 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
                       onChanged: (_) {
                         final dirty =
                             _nameController.text.trim() != _baseName.trim() ||
-                            _descController.text.trim() != _baseDesc.trim();
+                            _descController.text.trim() != _baseDesc.trim() ||
+                            _languageCode != _baseLanguageCode;
                         if (dirty != _isDirty) setState(() => _isDirty = dirty);
                       },
                     ),
@@ -154,6 +263,7 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
                               final repo = ref.read(
                                 localStorageRepositoryProvider,
                               );
+                              String? templateId = widget.templateId;
                               if (widget.templateId != null) {
                                 await repo.updateSceneTemplate(
                                   widget.templateId!,
@@ -161,10 +271,10 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
                                   summaries: _descController.text.trim().isEmpty
                                       ? null
                                       : _descController.text.trim(),
-                                  languageCode: 'en',
+                                  languageCode: _languageCode,
                                 );
                               } else {
-                                await repo.saveSceneTemplateForm(
+                                templateId = await repo.saveSceneTemplateForm(
                                   widget.novelId,
                                   TemplateItem(
                                     novelId: widget.novelId,
@@ -174,14 +284,41 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
                                         ? null
                                         : _descController.text.trim(),
                                   ),
+                                  languageCode: _languageCode,
                                 );
                               }
+                              if (supabaseEnabled &&
+                                  templateId != null &&
+                                  _descController.text.trim().isNotEmpty) {
+                                final ai = ref.read(aiChatServiceProvider);
+                                final vec = await ai.embed(
+                                  _descController.text.trim(),
+                                );
+                                if (vec != null && vec.isNotEmpty) {
+                                  await repo.upsertSceneTemplateEmbedding(
+                                    templateId,
+                                    vec,
+                                  );
+                                }
+                              }
+                              _baseName = _nameController.text;
+                              _baseDesc = _descController.text;
+                              _baseLanguageCode = _languageCode;
+                              _isDirty = false;
                               if (!context.mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(l10n.saved)),
                               );
                             } catch (e) {
-                              setState(() => _error = e.toString());
+                              final msg =
+                                  e.toString().contains(
+                                    'Duplicate template name',
+                                  )
+                                  ? AppLocalizations.of(
+                                      context,
+                                    )!.templateNameExists
+                                  : e.toString();
+                              setState(() => _error = msg);
                             } finally {
                               if (mounted) setState(() => _saving = false);
                             }

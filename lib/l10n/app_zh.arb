@@ -13,7 +13,7 @@
   "aboutFeatureCoach": "• 使用 AI 教练完善大纲并应用改进。",
   "aboutFeaturePrompts": "• 管理提示词并尝试 AI 辅助的工作流程。",
   "aboutUsage": "用法",
-  "aboutUsageList": "• 文库：搜索并打开小说\n• 阅读器：浏览章节、切换 TTS\n• 设置：主题、排版和偏好\n• 登录：通过 Supabase 启用云同步",
+  "aboutUsageList": "• 文库：搜索并打开小说\n• 阅读器：浏览章节、切换 TTS\n• 模板：管理角色与场景模板\n• 设置：主题、排版和偏好\n• 登录：通过 Supabase 启用云同步",
   "version": "版本",
   "appLanguage": "应用语言",
   "english": "英语",

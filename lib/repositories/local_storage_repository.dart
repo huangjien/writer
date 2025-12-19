@@ -380,7 +380,30 @@ class LocalStorageRepository {
     return local;
   }
 
-  Future<void> saveSceneTemplateForm(String novelId, TemplateItem item) async {
+  Future<String?> saveSceneTemplateForm(
+    String novelId,
+    TemplateItem item, {
+    String languageCode = 'en',
+  }) async {
+    if (_isSupabaseEnabled) {
+      final client = _client;
+      final uid = client.auth.currentUser?.id;
+      final existing = await (uid != null
+          ? client
+                .from('scene_templates')
+                .select('id')
+                .eq('created_by', uid)
+                .ilike('title', item.name.trim())
+                .limit(1)
+          : client
+                .from('scene_templates')
+                .select('id')
+                .ilike('title', item.name.trim())
+                .limit(1));
+      if ((existing as List).isNotEmpty) {
+        throw Exception('Duplicate template name');
+      }
+    }
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
       'scene_template_form_$novelId',
@@ -390,15 +413,22 @@ class LocalStorageRepository {
       try {
         final client = _client;
         final uid = client.auth.currentUser?.id;
-        await client.from('scene_templates').insert({
-          'idx': 1,
-          'title': item.name,
-          'scene_summaries': item.description,
-          'language_code': 'en',
-          'created_by': uid,
-        });
+        final res = await client
+            .from('scene_templates')
+            .insert({
+              'idx': 1,
+              'title': item.name,
+              'scene_summaries': item.description,
+              'language_code': languageCode,
+              'created_by': uid,
+            })
+            .select('id')
+            .single();
+        final map = Map<String, dynamic>.from(res as Map);
+        return map['id'] as String?;
       } catch (_) {}
     }
+    return null;
   }
 
   Future<TemplateItem?> getSceneTemplateForm(String novelId) async {
@@ -644,7 +674,7 @@ class LocalStorageRepository {
         .eq('id', id);
   }
 
-  Future<List<SceneTemplateRow>> listSceneTemplates() async {
+  Future<List<SceneTemplateRow>> listSceneTemplates({int limit = 200}) async {
     if (!_isSupabaseEnabled) {
       return <SceneTemplateRow>[];
     }
@@ -654,11 +684,60 @@ class LocalStorageRepository {
         .select(
           'id, idx, title, scene_summaries, scene_synopses, language_code, created_by, created_at, updated_at',
         )
-        .order('updated_at', ascending: false);
+        .order('updated_at', ascending: false)
+        .limit(limit);
     return (res as List)
         .cast<Map<String, dynamic>>()
         .map(SceneTemplateRow.fromRow)
         .toList();
+  }
+
+  Future<List<SceneTemplateRow>> searchSceneTemplatesByVector(
+    List<double> query, {
+    int limit = 10,
+    int offset = 0,
+    String? languageCode,
+  }) async {
+    if (!_isSupabaseEnabled) return <SceneTemplateRow>[];
+    if (query.isEmpty) return <SceneTemplateRow>[];
+    final client = _client;
+    final raw = await client.rpc(
+      'search_scene_templates',
+      params: {'p_query': query, 'p_limit': limit, 'p_offset': offset},
+    );
+    final hits = (raw as List).cast<Map<String, dynamic>>();
+    final ids = hits.map((h) => h['id'].toString()).toList();
+    if (ids.isEmpty) return <SceneTemplateRow>[];
+    final queryBuilder = client
+        .from('scene_templates')
+        .select(
+          'id, idx, title, scene_summaries, scene_synopses, language_code, created_by, created_at, updated_at',
+        )
+        .inFilter('id', ids);
+    final rows = languageCode == null
+        ? await queryBuilder
+        : await queryBuilder.eq('language_code', languageCode);
+    final mapped = (rows as List)
+        .cast<Map<String, dynamic>>()
+        .map(SceneTemplateRow.fromRow)
+        .toList();
+    final byId = <String, SceneTemplateRow>{
+      for (final row in mapped) row.id: row,
+    };
+    return ids.map((id) => byId[id]).whereType<SceneTemplateRow>().toList();
+  }
+
+  Future<void> upsertSceneTemplateEmbedding(
+    String templateId,
+    List<double> embedding,
+  ) async {
+    if (!_isSupabaseEnabled) return;
+    if (embedding.isEmpty) return;
+    final client = _client;
+    await client.rpc(
+      'upsert_scene_template_embedding',
+      params: {'p_template_id': templateId, 'p_embedding': embedding},
+    );
   }
 
   Future<void> deleteSceneTemplate(String id) async {

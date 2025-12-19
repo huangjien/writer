@@ -56,7 +56,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get aboutUsageList =>
-      '• 文库：搜索并打开小说\n• 阅读器：浏览章节、切换 TTS\n• 设置：主题、排版和偏好\n• 登录：通过 Supabase 启用云同步';
+      '• 文库：搜索并打开小说\n• 阅读器：浏览章节、切换 TTS\n• 模板：管理角色与场景模板\n• 设置：主题、排版和偏好\n• 登录：通过 Supabase 启用云同步';
 
   @override
   String get version => '版本';

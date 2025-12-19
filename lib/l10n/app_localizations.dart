@@ -185,7 +185,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutUsageList.
   ///
   /// In en, this message translates to:
-  /// **'• Library: search and open novels\n• Reader: navigate chapters, toggle TTS\n• Settings: theme, typography, and preferences\n• Sign In: enable cloud sync via Supabase'**
+  /// **'• Library: search and open novels\n• Reader: navigate chapters, toggle TTS\n• Templates: manage character and scene templates\n• Settings: theme, typography, and preferences\n• Sign In: enable cloud sync via Supabase'**
   String get aboutUsageList;
 
   /// No description provided for @version.
