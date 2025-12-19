@@ -11,7 +11,6 @@ import 'widgets/tts_settings_container.dart';
 import 'package:writer/theme/reader_bundles.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
@@ -39,9 +38,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isSupabaseEnabled = ref.watch(supabaseEnabledProvider);
-    final user = isSupabaseEnabled
-        ? Supabase.instance.client.auth.currentUser
-        : null;
+    final client = isSupabaseEnabled ? ref.watch(supabaseClientProvider) : null;
+    final user = client?.auth.currentUser;
 
     return Scaffold(
       appBar: AppBar(
@@ -104,7 +102,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 child: TextButton(
                   style: TextButton.styleFrom(foregroundColor: Colors.orange),
                   onPressed: () async {
-                    await Supabase.instance.client.auth.signOut();
+                    await client!.auth.signOut();
                     setState(() {});
                   },
                   child: Text(l10n.signOut),

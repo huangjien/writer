@@ -842,7 +842,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get prompts => '提示';
 
   @override
-  String get patterns => '写作模式';
+  String get patterns => '套路';
 
   @override
   String get storyLines => '故事线';
