@@ -75,9 +75,10 @@ class TtsDriver {
           }
         });
         _tts!.setErrorHandler((msg) {
+          _speaking = false;
           _onError?.call(msg ?? '');
           if (_chunkCompleter != null && !_chunkCompleter!.isCompleted) {
-            _chunkCompleter!.completeError(msg ?? 'Unknown error');
+            _chunkCompleter!.complete();
           }
         });
         // Use manual completion handler to drive chunks

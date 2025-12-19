@@ -69,7 +69,8 @@ void main() {
         ),
         if (includeEditRoute)
           GoRoute(
-            path: '/novel/novel-1/edit',
+            path: '/novel/:id/edit',
+            name: 'editNovel',
             builder: (context, state) =>
                 const Scaffold(body: Text('Edit Screen')),
           ),

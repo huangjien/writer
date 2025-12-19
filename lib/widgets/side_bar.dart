@@ -107,7 +107,10 @@ class SideBar extends ConsumerWidget {
                 onTap: () {
                   Navigator.of(context).pop();
                   try {
-                    context.push('/novel/$novelId/edit');
+                    context.pushNamed(
+                      'editNovel',
+                      pathParameters: {'id': novelId},
+                    );
                   } catch (_) {
                     Navigator.of(context).push(
                       MaterialPageRoute(

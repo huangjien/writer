@@ -198,7 +198,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Signed in as a@b.com'), findsOneWidget);
-    expect(find.text('Sign Out'), findsOneWidget);
 
     final scrollable = find.byType(Scrollable).at(0);
     await tester.scrollUntilVisible(
@@ -206,6 +205,7 @@ void main() {
       800,
       scrollable: scrollable,
     );
+    expect(find.text('Sign Out'), findsOneWidget);
 
     await tester.tap(find.text('Sign Out'));
     await tester.pumpAndSettle();
