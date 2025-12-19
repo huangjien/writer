@@ -274,6 +274,16 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
     final patternsAsync = ref.watch(patternsProvider);
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(
+          onPressed: () {
+            final r = GoRouter.of(context);
+            if (r.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
+          },
+        ),
         title: Text(l10n.patterns),
         actions: [
           IconButton(

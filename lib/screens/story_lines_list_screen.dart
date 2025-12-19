@@ -275,6 +275,16 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
     final storyLinesAsync = ref.watch(storyLinesProvider);
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(
+          onPressed: () {
+            final r = GoRouter.of(context);
+            if (r.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
+          },
+        ),
         title: Text(l10n.storyLines),
         actions: [
           IconButton(

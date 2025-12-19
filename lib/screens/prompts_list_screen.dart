@@ -429,6 +429,16 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(
+          onPressed: () {
+            final r = GoRouter.of(context);
+            if (r.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
+          },
+        ),
         title: Text(l10n.prompts),
         actions: [
           IconButton(
