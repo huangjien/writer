@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:writer/widgets/side_bar.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/edit_permissions.dart';
+import 'package:writer/features/reader/novel_metadata_editor.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/repositories/novel_repository.dart';
@@ -44,6 +45,34 @@ void main() {
           builder: (context, state) =>
               const Scaffold(body: Text('Library Screen')),
         ),
+      ],
+    );
+  }
+
+  GoRouter createDrawerRouter({required bool includeEditRoute}) {
+    return GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => Scaffold(
+            appBar: AppBar(),
+            drawer: const SideBar(novelId: 'novel-1'),
+            body: const Text('Root Screen'),
+          ),
+        ),
+        GoRoute(
+          path: '/library',
+          name: 'library',
+          builder: (context, state) =>
+              const Scaffold(body: Text('Library Screen')),
+        ),
+        if (includeEditRoute)
+          GoRoute(
+            path: '/novel/novel-1/edit',
+            builder: (context, state) =>
+                const Scaffold(body: Text('Edit Screen')),
+          ),
       ],
     );
   }
@@ -177,5 +206,85 @@ void main() {
     await tester.pumpAndSettle();
 
     verify(() => mockNovelRepository.deleteNovel('novel-1')).called(1);
+  });
+
+  testWidgets('Update Novel falls back when edit route is missing', (
+    tester,
+  ) async {
+    final container = ProviderContainer(
+      overrides: [
+        novelProvider.overrideWith(
+          (ref, id) async => id == 'novel-1' ? sampleNovel : null,
+        ),
+        editRoleProvider.overrideWith((ref, id) async => EditRole.owner),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: createDrawerRouter(includeEditRoute: false),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    tester.state<ScaffoldState>(find.byType(Scaffold).first).openDrawer();
+    await tester.pumpAndSettle();
+
+    await tester.drag(find.byType(ListView), const Offset(0, -500));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Update Novel'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(NovelMetadataEditor), findsOneWidget);
+  });
+
+  testWidgets('Delete Novel navigates to library on confirm', (tester) async {
+    final mockNovelRepository = MockNovelRepository();
+    when(() => mockNovelRepository.deleteNovel(any())).thenAnswer((_) async {});
+
+    final container = ProviderContainer(
+      overrides: [
+        novelProvider.overrideWith(
+          (ref, id) async => id == 'novel-1' ? sampleNovel : null,
+        ),
+        editRoleProvider.overrideWith((ref, id) async => EditRole.owner),
+        novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: createDrawerRouter(includeEditRoute: true),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    tester.state<ScaffoldState>(find.byType(Scaffold).first).openDrawer();
+    await tester.pumpAndSettle();
+
+    await tester.drag(find.byType(ListView), const Offset(0, -500));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Delete Novel'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Delete'));
+    await tester.pumpAndSettle();
+
+    verify(() => mockNovelRepository.deleteNovel('novel-1')).called(1);
+    expect(find.text('Library Screen'), findsOneWidget);
   });
 }

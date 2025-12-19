@@ -105,6 +105,8 @@ class _FakeStartTtsDriver extends TtsDriver {
     required String content,
     required int startIndex,
     int chunkMaxLen = 1200,
+    int baseTimeoutMs = 5000,
+    int charTimeoutMs = 200,
   }) async {}
 
   @override

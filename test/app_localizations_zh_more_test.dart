@@ -8,6 +8,14 @@ void main() {
     expect(l10n.settings.isNotEmpty, true);
     expect(l10n.appTitle.isNotEmpty, true);
     expect(l10n.about.isNotEmpty, true);
+    expect(l10n.prompts.isNotEmpty, true);
+    expect(l10n.patterns.isNotEmpty, true);
+    expect(l10n.storyLines.isNotEmpty, true);
+    expect(l10n.noPrompts.isNotEmpty, true);
+    expect(l10n.noPatterns.isNotEmpty, true);
+    expect(l10n.noStoryLines.isNotEmpty, true);
+    expect(l10n.profileRetrieved.isNotEmpty, true);
+    expect(l10n.noProfileFound.isNotEmpty, true);
   });
 
   test('formatters produce expected output', () {
@@ -26,5 +34,14 @@ void main() {
     expect(l10n.chapterLabel(4), '第4章');
     expect(l10n.chapterWithTitle(1, 'X'), '第1章：X');
     expect(l10n.confirmDeleteDescription('T'), '将从 Supabase 删除“T”。是否确认？');
+    expect(l10n.deletedWithTitle('T'), '已删除：T');
+    expect(l10n.deleteFailedWithTitle('T'), '删除失败：T');
+    expect(l10n.deleteErrorWithMessage('E'), '删除出错：E');
+    expect(l10n.retrieveFailed('E'), '获取失败：E');
+    expect(l10n.conversionFailed('E'), '转换失败：E');
+    expect(l10n.showingCachedPublicData('M'), 'M — 显示缓存/公共数据');
+    expect(l10n.charsCount(12), '字符数：12');
+    expect(l10n.deletePromptConfirm('k', 'zh'), '删除提示词 "k"（zh）？');
+    expect(l10n.makePublicPromptConfirm('k', 'zh'), '将提示 "k"（zh）设为公开？');
   });
 }

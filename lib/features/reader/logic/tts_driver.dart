@@ -18,6 +18,8 @@ class TtsDriver {
   int _baseStart = 0;
   int _consumedLength = 0;
   Completer<void>? _chunkCompleter;
+  int _baseTimeoutMs = kTtsBaseTimeoutMs;
+  int _charTimeoutMs = kTtsCharTimeoutMs;
 
   TtsDriver({FlutterTts? tts}) : _tts = tts;
 
@@ -121,11 +123,15 @@ class TtsDriver {
     required String content,
     required int startIndex,
     int chunkMaxLen = kTtsChunkMaxLen,
+    int baseTimeoutMs = kTtsBaseTimeoutMs,
+    int charTimeoutMs = kTtsCharTimeoutMs,
   }) async {
     _speaking = true;
     _completedHandled = false;
     _baseStart = startIndex.clamp(0, content.length);
     _consumedLength = 0;
+    _baseTimeoutMs = baseTimeoutMs;
+    _charTimeoutMs = charTimeoutMs;
     final remaining = content.substring(_baseStart);
     _chunks = chunkText(remaining, maxLen: chunkMaxLen);
     if (_chunks.isEmpty) {
@@ -150,7 +156,7 @@ class TtsDriver {
 
         // Wait for completion handler with a safety timeout
         // Calculate timeout based on length (conservative estimate: 1s per 5 chars + 5s base)
-        final timeoutMs = kTtsBaseTimeoutMs + (part.length * kTtsCharTimeoutMs);
+        final timeoutMs = _baseTimeoutMs + (part.length * _charTimeoutMs);
         await _chunkCompleter!.future.timeout(
           Duration(milliseconds: timeoutMs),
           onTimeout: () {

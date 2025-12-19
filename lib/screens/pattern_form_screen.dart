@@ -10,7 +10,15 @@ import '../l10n/app_localizations.dart';
 
 class PatternFormScreen extends ConsumerStatefulWidget {
   final Pattern? initial;
-  const PatternFormScreen({super.key, this.initial});
+  final bool? supabaseEnabledOverride;
+  final SupabaseClient? supabaseClientOverride;
+
+  const PatternFormScreen({
+    super.key,
+    this.initial,
+    this.supabaseEnabledOverride,
+    this.supabaseClientOverride,
+  });
   @override
   ConsumerState<PatternFormScreen> createState() => _PatternFormScreenState();
 }
@@ -137,9 +145,10 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
   bool _computeCanDelete() {
     final initial = widget.initial;
     if (initial == null) return false;
-    if (!supabaseEnabled) return false;
+    final enabled = widget.supabaseEnabledOverride ?? supabaseEnabled;
+    if (!enabled) return false;
     try {
-      final client = Supabase.instance.client;
+      final client = widget.supabaseClientOverride ?? Supabase.instance.client;
       final user = client.auth.currentUser;
       if (user == null) return false;
       final userId = user.id;

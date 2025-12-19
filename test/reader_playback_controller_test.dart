@@ -62,6 +62,8 @@ class FakeTtsDriver implements TtsDriver {
     required String content,
     required int startIndex,
     int chunkMaxLen = 1200,
+    int baseTimeoutMs = 5000,
+    int charTimeoutMs = 200,
   }) async {
     // Do nothing by default to simulate blocked autoplay
   }

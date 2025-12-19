@@ -64,6 +64,16 @@ class FakePostgrestFilterBuilder<T> extends Fake
   }
 
   @override
+  PostgrestFilterBuilder<T> ilike(String column, String pattern) {
+    return this;
+  }
+
+  @override
+  PostgrestFilterBuilder<T> neq(String column, Object value) {
+    return this;
+  }
+
+  @override
   PostgrestFilterBuilder<T> gte(String column, Object value) {
     return this;
   }
