@@ -4,11 +4,16 @@ import '../shared/constants.dart';
 
 class VectorService {
   final String baseUrl;
+  final String? sessionId;
   final String? authToken;
   final http.Client? _client;
 
-  VectorService({required this.baseUrl, this.authToken, http.Client? client})
-    : _client = client;
+  VectorService({
+    required this.baseUrl,
+    this.sessionId,
+    this.authToken,
+    http.Client? client,
+  }) : _client = client;
 
   Uri _buildUri(String path) {
     final base = baseUrl.endsWith('/')
@@ -23,6 +28,9 @@ class VectorService {
 
     final uri = _buildUri('/vectors/embed');
     final headers = <String, String>{'Content-Type': 'application/json'};
+    if (sessionId != null && sessionId!.trim().isNotEmpty) {
+      headers['x-session-id'] = sessionId!;
+    }
     if (authToken != null) {
       headers['Authorization'] = 'Bearer $authToken';
     }

@@ -15,6 +15,7 @@ class ApiException implements Exception {
 
 class StoryLinesService {
   final String baseUrl;
+  final String? sessionId;
   String? authToken;
   Duration timeout;
   bool _loading = false;
@@ -22,6 +23,7 @@ class StoryLinesService {
 
   StoryLinesService({
     required this.baseUrl,
+    this.sessionId,
     this.authToken,
     Duration? timeout,
     http.Client? client,
@@ -53,6 +55,9 @@ class StoryLinesService {
     try {
       final uri = _buildUri(path, query);
       final headers = <String, String>{'Content-Type': 'application/json'};
+      if (sessionId != null && sessionId!.trim().isNotEmpty) {
+        headers['x-session-id'] = sessionId!;
+      }
       if (authToken != null && authToken!.isNotEmpty) {
         headers['Authorization'] = 'Bearer $authToken';
       }

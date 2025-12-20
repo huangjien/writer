@@ -1,34 +1,48 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-export 'supabase_config.dart';
-import 'supabase_config.dart';
 import '../services/prompts_service.dart';
 import '../services/patterns_service.dart';
 import '../services/vector_service.dart';
 import '../services/story_lines_service.dart';
 import 'ai_service_settings.dart';
 import 'admin_settings.dart';
+import 'session_state.dart';
+import 'supabase_config.dart';
+
+export 'supabase_config.dart';
+
+final isSignedInProvider = Provider<bool>((ref) {
+  final sessionId = ref.watch(sessionProvider);
+  return sessionId != null && sessionId.trim().isNotEmpty;
+});
 
 final supabaseClientProvider = Provider<SupabaseClient>((ref) {
+  final enabled = ref.watch(supabaseEnabledProvider);
+  if (!enabled) {
+    throw StateError('Supabase is disabled');
+  }
   return Supabase.instance.client;
 });
 
-// Expose auth state changes so other providers can react (e.g., refetch data)
-final authStateProvider = StreamProvider<AuthState>((ref) {
-  final client = Supabase.instance.client;
-  return client.auth.onAuthStateChange;
-});
-
-// Current Supabase session, exposed as a provider for easier testing and DI.
 final supabaseSessionProvider = Provider<Session?>((ref) {
-  ref.watch(authStateProvider);
-  return Supabase.instance.client.auth.currentSession;
+  final enabled = ref.watch(supabaseEnabledProvider);
+  if (!enabled) return null;
+  try {
+    return Supabase.instance.client.auth.currentSession;
+  } catch (_) {
+    return null;
+  }
 });
 
-// Test-friendly provider to expose whether Supabase is enabled.
-// Allows widget tests to override gating without compile-time dart-define.
-// Defined in supabase_config.dart
-// final supabaseEnabledProvider = Provider<bool>((ref) => supabaseEnabled);
+final authStateProvider = StreamProvider<AuthState>((ref) {
+  final enabled = ref.watch(supabaseEnabledProvider);
+  if (!enabled) return Stream<AuthState>.empty();
+  try {
+    return Supabase.instance.client.auth.onAuthStateChange;
+  } catch (_) {
+    return Stream<AuthState>.empty();
+  }
+});
 
 final promptsServiceProvider = Provider<PromptsService>((ref) {
   String baseUrl;
@@ -37,13 +51,8 @@ final promptsServiceProvider = Provider<PromptsService>((ref) {
   } catch (_) {
     baseUrl = 'http://localhost:5600/';
   }
-  String? token;
-  final enabled = ref.watch(supabaseEnabledProvider);
-  if (enabled) {
-    final session = ref.watch(supabaseSessionProvider);
-    token = session?.accessToken;
-  }
-  return PromptsService(baseUrl: baseUrl, authToken: token);
+  final sessionId = ref.watch(sessionProvider);
+  return PromptsService(baseUrl: baseUrl, sessionId: sessionId);
 });
 
 final patternsServiceProvider = Provider<PatternsService>((ref) {
@@ -53,21 +62,8 @@ final patternsServiceProvider = Provider<PatternsService>((ref) {
   } catch (_) {
     baseUrl = 'http://localhost:5600/';
   }
-  String? token;
-  final enabled = ref.watch(supabaseEnabledProvider);
-  SupabaseClient? supabaseClient;
-  if (enabled) {
-    final session = ref.watch(supabaseSessionProvider);
-    token = session?.accessToken;
-    supabaseClient = ref.watch(supabaseClientProvider);
-  }
-  final vectorService = ref.watch(vectorServiceProvider);
-  return PatternsService(
-    baseUrl: baseUrl,
-    authToken: token,
-    supabaseClient: supabaseClient,
-    vectorService: vectorService,
-  );
+  final sessionId = ref.watch(sessionProvider);
+  return PatternsService(baseUrl: baseUrl, sessionId: sessionId);
 });
 
 final vectorServiceProvider = Provider<VectorService>((ref) {
@@ -77,13 +73,8 @@ final vectorServiceProvider = Provider<VectorService>((ref) {
   } catch (_) {
     baseUrl = 'http://localhost:5600/';
   }
-  String? token;
-  final enabled = ref.watch(supabaseEnabledProvider);
-  if (enabled) {
-    final session = ref.watch(supabaseSessionProvider);
-    token = session?.accessToken;
-  }
-  return VectorService(baseUrl: baseUrl, authToken: token);
+  final sessionId = ref.watch(sessionProvider);
+  return VectorService(baseUrl: baseUrl, sessionId: sessionId);
 });
 
 final storyLinesServiceProvider = Provider<StoryLinesService>((ref) {
@@ -93,43 +84,25 @@ final storyLinesServiceProvider = Provider<StoryLinesService>((ref) {
   } catch (_) {
     baseUrl = 'http://localhost:5600/';
   }
-  String? token;
-  final enabled = ref.watch(supabaseEnabledProvider);
-  if (enabled) {
-    final session = ref.watch(supabaseSessionProvider);
-    token = session?.accessToken;
-  }
-  return StoryLinesService(baseUrl: baseUrl, authToken: token);
+  final sessionId = ref.watch(sessionProvider);
+  return StoryLinesService(baseUrl: baseUrl, sessionId: sessionId);
 });
 
 final isAdminProvider = Provider<bool>((ref) {
-  final enabled = ref.watch(supabaseEnabledProvider);
-  if (enabled) {
+  final supabaseEnabled = ref.watch(supabaseEnabledProvider);
+  if (supabaseEnabled) {
     final session = ref.watch(supabaseSessionProvider);
     final user = session?.user;
-    final appMeta = user?.appMetadata is Map
-        ? (user?.appMetadata as Map)
-        : null;
-    final userMeta = user?.userMetadata is Map
-        ? (user?.userMetadata as Map)
-        : null;
-    bool admin = false;
-    dynamic roles = appMeta != null ? appMeta['roles'] : null;
-    roles ??= userMeta != null ? userMeta['roles'] : null;
+    final meta = user?.appMetadata;
+    final roles = meta?['roles'];
     if (roles is List) {
-      admin = roles.any((r) => r.toString().toLowerCase() == 'admin');
+      for (final r in roles) {
+        if (r is String && r.toLowerCase() == 'admin') return true;
+      }
     }
-    dynamic role = appMeta != null ? appMeta['role'] : null;
-    role ??= userMeta != null ? userMeta['role'] : null;
-    if (!admin && role is String) {
-      admin = role.toLowerCase() == 'admin';
-    }
-    dynamic flag = appMeta != null ? appMeta['isAdmin'] : null;
-    flag ??= userMeta != null ? userMeta['isAdmin'] : null;
-    if (!admin && flag is bool) {
-      admin = flag;
-    }
-    return admin;
+    final role = meta?['role'];
+    if (role is String && role.toLowerCase() == 'admin') return true;
+    return false;
   }
   return ref.watch(adminModeProvider);
 });
