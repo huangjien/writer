@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/summary/character_templates_list_screen.dart';
 import 'package:writer/main.dart';
@@ -67,5 +69,139 @@ void main() {
 
     expect(repo.deletedId, 't-1');
     expect(find.text('Hero Archetype'), findsNothing);
+  });
+
+  testWidgets('Enter on focused row navigates to edit', (tester) async {
+    final repo = FakeLocalRepo();
+    final router = GoRouter(
+      initialLocation: '/novel/n-1/character-templates',
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) =>
+              const Scaffold(body: Text('Home Screen')),
+        ),
+        GoRoute(
+          path: '/novel/:id/character-templates',
+          builder: (context, state) => CharacterTemplatesListScreen(
+            novelId: state.pathParameters['id']!,
+          ),
+        ),
+        GoRoute(
+          path: '/novel/:id/character-templates/new',
+          builder: (context, state) =>
+              const Scaffold(body: Text('New Character Template')),
+        ),
+        GoRoute(
+          path: '/novel/:id/character-templates/:tid',
+          builder: (context, state) => Scaffold(
+            body: Text(
+              'Edit Character Template ${state.pathParameters['tid']}',
+            ),
+          ),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final focusFinder = find.byWidgetPredicate(
+      (w) => w is Focus && w.child is ListTile,
+    );
+    expect(focusFinder, findsOneWidget);
+
+    final listTileFinder = find.descendant(
+      of: focusFinder,
+      matching: find.byType(ListTile),
+    );
+    final tileElement = tester.element(listTileFinder);
+    final focusNode = Focus.of(tileElement);
+    focusNode.requestFocus();
+    await tester.pump();
+    expect(focusNode.hasFocus, isTrue);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Edit Character Template t-1'), findsOneWidget);
+  });
+
+  testWidgets('Double tap on row navigates to edit', (tester) async {
+    final repo = FakeLocalRepo();
+    final router = GoRouter(
+      initialLocation: '/novel/n-1/character-templates',
+      routes: [
+        GoRoute(
+          path: '/novel/:id/character-templates',
+          builder: (context, state) => CharacterTemplatesListScreen(
+            novelId: state.pathParameters['id']!,
+          ),
+        ),
+        GoRoute(
+          path: '/novel/:id/character-templates/:tid',
+          builder: (context, state) => Scaffold(
+            body: Text(
+              'Edit Character Template ${state.pathParameters['tid']}',
+            ),
+          ),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final row = find.text('Hero Archetype');
+    expect(row, findsOneWidget);
+    await tester.tap(row);
+    await tester.pump(const Duration(milliseconds: 10));
+    await tester.tap(row);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Edit Character Template t-1'), findsOneWidget);
+  });
+
+  testWidgets('Add button navigates to new template screen', (tester) async {
+    final repo = FakeLocalRepo();
+    final router = GoRouter(
+      initialLocation: '/novel/n-1/character-templates',
+      routes: [
+        GoRoute(
+          path: '/novel/:id/character-templates',
+          builder: (context, state) => CharacterTemplatesListScreen(
+            novelId: state.pathParameters['id']!,
+          ),
+        ),
+        GoRoute(
+          path: '/novel/:id/character-templates/new',
+          builder: (context, state) =>
+              const Scaffold(body: Text('New Character Template')),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpAndSettle();
+
+    expect(find.text('New Character Template'), findsOneWidget);
   });
 }

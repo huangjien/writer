@@ -79,6 +79,11 @@ class FakePostgrestFilterBuilder<T> extends Fake
   }
 
   @override
+  PostgrestFilterBuilder<T> inFilter(String column, List<dynamic> values) {
+    return this;
+  }
+
+  @override
   PostgrestTransformBuilder<T> order(
     String column, {
     bool ascending = true,

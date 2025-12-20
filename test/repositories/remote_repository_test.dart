@@ -177,4 +177,103 @@ void main() {
       expect(res, isNull);
     });
   });
+
+  group('RemoteRepository.fetchSceneProfile', () {
+    test('returns profile string on 200 with scene_profile', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path.endsWith('scenes/profile')) {
+          final body = jsonEncode({'scene_profile': 'profile'});
+          return http.Response(body, 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final repo = RemoteRepository('http://example.com/', client: client);
+      final res = await repo.fetchSceneProfile('Scene A');
+      expect(res, 'profile');
+    });
+
+    test('returns null on non-200', () async {
+      final client = MockClient((request) async => http.Response('bad', 500));
+      final repo = RemoteRepository('http://example.com', client: client);
+      final res = await repo.fetchSceneProfile('Scene B');
+      expect(res, isNull);
+    });
+  });
+
+  group('RemoteRepository.convertScene', () {
+    test('returns result string on 200 with result', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path.endsWith('scenes/convert')) {
+          final body = jsonEncode({'result': 'converted'});
+          return http.Response(body, 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final repo = RemoteRepository('http://example.com', client: client);
+      final res = await repo.convertScene(
+        name: 'Opening',
+        templateContent: 'T',
+        language: 'en',
+      );
+      expect(res, 'converted');
+    });
+
+    test('uses trailing slash baseUrl correctly', () async {
+      late Uri url;
+      final client = MockClient((request) async {
+        url = request.url;
+        return http.Response(jsonEncode({'result': 'ok'}), 200);
+      });
+      final repo = RemoteRepository('http://example.com/', client: client);
+      final res = await repo.convertScene(
+        name: 'Opening',
+        templateContent: 'T',
+        language: 'en',
+      );
+      expect(res, 'ok');
+      expect(url.toString(), 'http://example.com/scenes/convert');
+    });
+  });
+
+  group('RemoteRepository auth headers', () {
+    test('adds Authorization header when token is available', () async {
+      final client = MockClient((request) async {
+        expect(request.headers['Authorization'], 'Bearer tok');
+        return http.Response(jsonEncode({'result': 'ok'}), 200);
+      });
+      final repo = RemoteRepository(
+        'http://example.com/',
+        client: client,
+        authToken: () async => 'tok',
+      );
+      final res = await repo.convertCharacter(
+        name: 'Alice',
+        templateContent: 'T',
+        language: 'en',
+      );
+      expect(res, 'ok');
+    });
+
+    test('omits Authorization header when token getter throws', () async {
+      final client = MockClient((request) async {
+        expect(request.headers.containsKey('Authorization'), false);
+        return http.Response(jsonEncode({'result': 'ok'}), 200);
+      });
+      final repo = RemoteRepository(
+        'http://example.com/',
+        client: client,
+        authToken: () async {
+          throw Exception('token error');
+        },
+      );
+      final res = await repo.convertCharacter(
+        name: 'Alice',
+        templateContent: 'T',
+        language: 'en',
+      );
+      expect(res, 'ok');
+    });
+  });
 }

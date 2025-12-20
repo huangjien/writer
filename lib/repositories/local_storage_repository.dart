@@ -16,21 +16,29 @@ import '../models/scene_template_row.dart';
 class LocalStorageRepository {
   final bool? _supabaseEnabledOverride;
   final SupabaseClient? _clientOverride;
+  final Future<SharedPreferences> Function() _prefs;
+  final DateTime Function() _now;
 
-  LocalStorageRepository({bool? supabaseEnabled, SupabaseClient? client})
-    : _supabaseEnabledOverride = supabaseEnabled,
-      _clientOverride = client;
+  LocalStorageRepository({
+    bool? supabaseEnabled,
+    SupabaseClient? client,
+    Future<SharedPreferences> Function()? prefs,
+    DateTime Function()? now,
+  }) : _supabaseEnabledOverride = supabaseEnabled,
+       _clientOverride = client,
+       _prefs = prefs ?? SharedPreferences.getInstance,
+       _now = now ?? DateTime.now;
 
   bool get _isSupabaseEnabled => _supabaseEnabledOverride ?? supabaseEnabled;
   SupabaseClient get _client => _clientOverride ?? Supabase.instance.client;
 
   Future<void> saveChapter(ChapterCache chapter) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     await prefs.setString(chapter.chapterId, jsonEncode(chapter.toJson()));
   }
 
   Future<ChapterCache?> getChapter(String chapterId) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     final chapterJson = prefs.getString(chapterId);
     if (chapterJson != null) {
       return ChapterCache.fromJson(jsonDecode(chapterJson));
@@ -39,20 +47,20 @@ class LocalStorageRepository {
   }
 
   Future<void> saveChapters(List<ChapterCache> chapters) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     for (final chapter in chapters) {
       await prefs.setString(chapter.chapterId, jsonEncode(chapter.toJson()));
     }
   }
 
   Future<void> removeChapter(String chapterId) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     await prefs.remove(chapterId);
   }
 
   /// Safely clears cached chapter entries by detecting ChapterCache JSON shape.
   Future<int> clearChapterCache() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     final keys = prefs.getKeys();
     int removed = 0;
     for (final key in keys) {
@@ -80,7 +88,7 @@ class LocalStorageRepository {
   }
 
   Future<void> saveLibraryNovels(List<Novel> novels) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     final list = novels
         .map(
           (n) => {
@@ -98,7 +106,7 @@ class LocalStorageRepository {
   }
 
   Future<List<Novel>> getLibraryNovels() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     final raw = prefs.getString('library_novels_cache');
     if (raw == null) return <Novel>[];
     try {
@@ -115,7 +123,7 @@ class LocalStorageRepository {
     Character character, {
     int? idx,
   }) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     await prefs.setString(
       'character_form_$novelId',
       jsonEncode(character.toMap()),
@@ -136,7 +144,7 @@ class LocalStorageRepository {
   }
 
   Future<Character?> getCharacterForm(String novelId, {int? idx}) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     final raw = prefs.getString('character_form_$novelId');
     Character? local;
     if (raw != null) {
@@ -183,7 +191,7 @@ class LocalStorageRepository {
     String languageCode = 'en',
     int? idx,
   }) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     final payload = {
       'title': title,
       'character_summaries': summaries,
@@ -210,7 +218,7 @@ class LocalStorageRepository {
     String novelId, {
     int? idx,
   }) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     final raw = prefs.getString('character_note_form_$novelId');
     Map<String, dynamic>? local;
     if (raw != null) {
@@ -244,7 +252,7 @@ class LocalStorageRepository {
   }
 
   Future<void> saveSceneForm(String novelId, Scene scene, {int? idx}) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     await prefs.setString('scene_form_$novelId', jsonEncode(scene.toMap()));
     if (_isSupabaseEnabled) {
       try {
@@ -264,7 +272,7 @@ class LocalStorageRepository {
   }
 
   Future<Scene?> getSceneForm(String novelId, {int? idx}) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     final raw = prefs.getString('scene_form_$novelId');
     Scene? local;
     if (raw != null) {
@@ -326,7 +334,7 @@ class LocalStorageRepository {
         throw Exception('Duplicate template name');
       }
     }
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     await prefs.setString(
       'character_template_form_$novelId',
       jsonEncode(item.toMap()),
@@ -347,7 +355,7 @@ class LocalStorageRepository {
   }
 
   Future<TemplateItem?> getCharacterTemplateForm(String novelId) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     final raw = prefs.getString('character_template_form_$novelId');
     TemplateItem? local;
     if (raw != null) {
@@ -404,7 +412,7 @@ class LocalStorageRepository {
         throw Exception('Duplicate template name');
       }
     }
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     await prefs.setString(
       'scene_template_form_$novelId',
       jsonEncode(item.toMap()),
@@ -432,7 +440,7 @@ class LocalStorageRepository {
   }
 
   Future<TemplateItem?> getSceneTemplateForm(String novelId) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     final raw = prefs.getString('scene_template_form_$novelId');
     TemplateItem? local;
     if (raw != null) {
@@ -469,7 +477,7 @@ class LocalStorageRepository {
     if (!_isSupabaseEnabled) {
       final cached = await getCharacterNoteForm(novelId);
       if (cached == null) return <CharacterNote>[];
-      final now = DateTime.now();
+      final now = _now();
       return [
         CharacterNote(
           id: 'local-$novelId-1',
@@ -521,7 +529,7 @@ class LocalStorageRepository {
 
   Future<void> deleteCharacterNoteByIdx(String novelId, int idx) async {
     if (!_isSupabaseEnabled) {
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = await _prefs();
       await prefs.remove('character_note_form_$novelId');
       return;
     }
@@ -537,7 +545,7 @@ class LocalStorageRepository {
     if (!_isSupabaseEnabled) {
       final cached = await getSceneForm(novelId);
       if (cached == null) return <SceneNote>[];
-      final now = DateTime.now();
+      final now = _now();
       return [
         SceneNote(
           id: 'local-$novelId-1',
@@ -589,7 +597,7 @@ class LocalStorageRepository {
 
   Future<void> deleteSceneNoteByIdx(String novelId, int idx) async {
     if (!_isSupabaseEnabled) {
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = await _prefs();
       await prefs.remove('scene_form_$novelId');
       return;
     }
@@ -801,12 +809,12 @@ class LocalStorageRepository {
   }
 
   Future<void> saveSummaryText(String novelId, String text) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     await prefs.setString('summary_text_$novelId', text);
   }
 
   Future<String?> getSummaryText(String novelId) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs();
     return prefs.getString('summary_text_$novelId');
   }
 }
