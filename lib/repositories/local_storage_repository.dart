@@ -741,6 +741,9 @@ class LocalStorageRepository {
   ) async {
     if (!_isSupabaseEnabled) return;
     if (embedding.isEmpty) return;
+    if (embedding.length != 1536) {
+      throw Exception('Invalid embedding length: ${embedding.length}');
+    }
     final client = _client;
     await client.rpc(
       'upsert_scene_template_embedding',

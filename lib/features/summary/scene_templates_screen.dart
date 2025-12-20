@@ -54,11 +54,9 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
         _languageCode = row.languageCode;
       }
     } else {
-      final item = await repo.getSceneTemplateForm(widget.novelId);
-      if (item != null) {
-        _nameController.text = item.name;
-        _descController.text = item.description ?? '';
-      }
+      _nameController.text = '';
+      _descController.text = '';
+      _languageCode = 'en';
     }
     _baseName = _nameController.text;
     _baseDesc = _descController.text;
@@ -293,6 +291,7 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
                                 final ai = ref.read(aiChatServiceProvider);
                                 final vec = await ai.embed(
                                   _descController.text.trim(),
+                                  model: 'text-embedding-3-small',
                                 );
                                 if (vec != null && vec.isNotEmpty) {
                                   await repo.upsertSceneTemplateEmbedding(

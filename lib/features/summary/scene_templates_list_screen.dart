@@ -6,6 +6,7 @@ import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/state/supabase_config.dart';
+import 'package:writer/shared/constants.dart';
 import '../../main.dart';
 import '../../models/scene_template_row.dart';
 
@@ -28,6 +29,8 @@ class _SceneTemplatesListScreenState
   String? _error;
   final _searchCtrl = TextEditingController();
   Timer? _searchTimer;
+  DateTime? _lastRowTapAt;
+  String? _lastRowTapId;
 
   @override
   void initState() {
@@ -86,7 +89,7 @@ class _SceneTemplatesListScreenState
     }
     try {
       final ai = ref.read(aiChatServiceProvider);
-      final vec = await ai.embed(q);
+      final vec = await ai.embed(q, model: 'text-embedding-3-small');
       if (!mounted) return;
       if (vec == null || vec.isEmpty) {
         setState(() {
@@ -124,6 +127,24 @@ class _SceneTemplatesListScreenState
     _searchTimer?.cancel();
     _searchCtrl.dispose();
     super.dispose();
+  }
+
+  void _openEdit(SceneTemplateRow it) {
+    context.push('/novel/${widget.novelId}/scene-templates/${it.id}');
+  }
+
+  void _onRowTap(SceneTemplateRow it) {
+    final now = DateTime.now();
+    if (_lastRowTapId == it.id &&
+        _lastRowTapAt != null &&
+        now.difference(_lastRowTapAt!) < kDoubleTapThreshold) {
+      _openEdit(it);
+      _lastRowTapAt = null;
+      _lastRowTapId = null;
+    } else {
+      _lastRowTapAt = now;
+      _lastRowTapId = it.id;
+    }
   }
 
   @override
@@ -199,26 +220,38 @@ class _SceneTemplatesListScreenState
                         final it = _displayItems[i];
                         final title = it.title ?? l10n.untitled;
                         final subtitle =
-                            it.sceneSummaries ?? it.sceneSynopses ?? '';
+                            (it.sceneSummaries ?? it.sceneSynopses ?? '')
+                                .replaceAll('**', '')
+                                .replaceAll(RegExp(r'\s+'), ' ')
+                                .trim();
+                        final theme = Theme.of(context);
+                        final titleStyle = theme.textTheme.titleMedium;
+                        final subtitleStyle = theme.textTheme.bodySmall
+                            ?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            );
                         return ListTile(
-                          title: Text(title),
-                          subtitle: subtitle.isEmpty
-                              ? null
-                              : Text(
-                                  subtitle,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                          title: Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(text: title, style: titleStyle),
+                                if (subtitle.isNotEmpty)
+                                  TextSpan(
+                                    text: '  $subtitle',
+                                    style: subtitleStyle,
+                                  ),
+                              ],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          onTap: () => _onRowTap(it),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
                                 icon: const Icon(Icons.edit),
-                                onPressed: () {
-                                  context.push(
-                                    '/novel/${widget.novelId}/scene-templates/${it.id}',
-                                  );
-                                },
+                                onPressed: () => _openEdit(it),
                               ),
                               IconButton(
                                 icon: const Icon(Icons.delete),

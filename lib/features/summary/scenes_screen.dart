@@ -98,7 +98,7 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
     _templateSearchTimer = Timer(const Duration(milliseconds: 250), () async {
       try {
         final ai = ref.read(aiChatServiceProvider);
-        final vec = await ai.embed(q);
+        final vec = await ai.embed(q, model: 'text-embedding-3-small');
         if (!mounted) return;
         if (vec == null || vec.isEmpty) {
           setState(() {

@@ -328,7 +328,7 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
   void _startEmbedding(String latest, String latestHash) {
     Future(() async {
       try {
-        final vec = await _ai.embed(latest);
+        final vec = await _ai.embed(latest, model: 'text-embedding-3-small');
         if (vec != null && vec.isNotEmpty) {
           await Supabase.instance.client.rpc(
             'upsert_chapter_embedding',

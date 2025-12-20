@@ -6,6 +6,7 @@ import 'package:writer/features/summary/scene_templates_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/main.dart';
 import 'package:writer/models/template.dart';
+import 'package:writer/models/scene_template_row.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -68,32 +69,56 @@ void main() {
     expect(find.text('Enter description in Markdown...'), findsOneWidget);
   });
 
-  testWidgets('SceneTemplatesScreen loads existing data', (tester) async {
-    final item = TemplateItem(
-      novelId: 'novel-1',
-      name: 'My Template',
-      description: '# Header\nContent',
-    );
-    when(
-      () => mockRepo.getSceneTemplateForm(any()),
-    ).thenAnswer((_) async => item);
-
+  testWidgets('SceneTemplatesScreen starts with empty form when creating new', (
+    tester,
+  ) async {
     await tester.pumpWidget(createWidget());
     await tester.pumpAndSettle();
 
-    expect(find.widgetWithText(TextFormField, 'My Template'), findsOneWidget);
+    final nameField = tester.widget<TextFormField>(
+      find.byType(TextFormField).first,
+    );
+    expect(nameField.controller?.text ?? '', '');
+    expect(find.text('Header'), findsNothing);
+    expect(find.text('Content'), findsNothing);
+  });
 
-    // Check Markdown content rendered
-    // 'Header' should be visible
-    expect(find.text('Header'), findsOneWidget);
-    // 'Content' should be visible
-    expect(find.text('Content'), findsOneWidget);
+  testWidgets('SceneTemplatesScreen loads existing template by id', (
+    tester,
+  ) async {
+    final row = SceneTemplateRow(
+      id: 't-1',
+      idx: 1,
+      title: 'My Template',
+      sceneSummaries: '# Header\nContent',
+      sceneSynopses: null,
+      languageCode: 'en',
+      createdBy: 'u-1',
+      createdAt: DateTime(2024, 1, 1),
+      updatedAt: DateTime(2024, 1, 2),
+    );
+    when(
+      () => mockRepo.getSceneTemplateById('t-1'),
+    ).thenAnswer((_) async => row);
 
-    // Switch to Edit
-    await tester.tap(find.text('Edit'));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [localStorageRepositoryProvider.overrideWithValue(mockRepo)],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const SceneTemplatesScreen(
+            novelId: 'novel-1',
+            templateId: 't-1',
+          ),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
-    expect(find.text('# Header\nContent'), findsOneWidget);
+    expect(find.widgetWithText(TextFormField, 'My Template'), findsOneWidget);
+    expect(find.text('Header'), findsOneWidget);
+    expect(find.text('Content'), findsOneWidget);
   });
 
   testWidgets('SceneTemplatesScreen saves data', (tester) async {
