@@ -132,16 +132,19 @@ void main() {
     test(
       'getCharacterTemplateForm prefers remote and falls back to local',
       () async {
+        when(() => qb.select(any())).thenAnswer(
+          (_) => FakePostgrestFilterBuilder(<Map<String, dynamic>>[]),
+        );
+        when(
+          () => qb.insert(any()),
+        ).thenAnswer((_) => FakePostgrestFilterBuilder(null));
+
         await repo.saveCharacterTemplateForm(
           'n1',
           const TemplateItem(novelId: 'n1', name: 'Local', description: 'LD'),
         );
 
-        when(() => qb.select(any())).thenAnswer((inv) {
-          final cols = inv.positionalArguments.first as String;
-          if (cols == 'id') {
-            return FakePostgrestFilterBuilder(<Map<String, dynamic>>[]);
-          }
+        when(() => qb.select()).thenAnswer((_) {
           return FakePostgrestFilterBuilder([
             {'title': 'Remote', 'character_summaries': 'RD'},
           ]);

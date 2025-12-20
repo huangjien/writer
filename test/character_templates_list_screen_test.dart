@@ -57,7 +57,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Character Templates'), findsOneWidget);
-    expect(find.text('Hero Archetype'), findsOneWidget);
+    expect(find.textContaining('Hero Archetype'), findsOneWidget);
     expect(find.byTooltip('New'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.delete));
@@ -68,7 +68,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repo.deletedId, 't-1');
-    expect(find.text('Hero Archetype'), findsNothing);
+    expect(find.textContaining('Hero Archetype'), findsNothing);
   });
 
   testWidgets('Enter on focused row navigates to edit', (tester) async {
@@ -160,9 +160,10 @@ void main() {
         child: MaterialApp.router(routerConfig: router),
       ),
     );
+
     await tester.pumpAndSettle();
 
-    final row = find.text('Hero Archetype');
+    final row = find.textContaining('Hero Archetype');
     expect(row, findsOneWidget);
     await tester.tap(row);
     await tester.pump(const Duration(milliseconds: 10));
