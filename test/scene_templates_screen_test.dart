@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/features/summary/scene_templates_screen.dart';
+import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/main.dart';
 import 'package:writer/models/scene_template_row.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/models/template.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/state/providers.dart';
 
 class CapturingLocalRepo extends LocalStorageRepository {
   TemplateItem? lastItem;
@@ -71,6 +75,10 @@ class FakeRemoteRepo extends RemoteRepository {
   }
 }
 
+class MockSession extends Mock implements Session {}
+
+class MockAiChatService extends Mock implements AiChatService {}
+
 void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
@@ -78,9 +86,19 @@ void main() {
 
   testWidgets('SceneTemplatesScreen validates and saves', (tester) async {
     final repo = CapturingLocalRepo();
+    final session = MockSession();
+    final ai = MockAiChatService();
+    when(
+      () => ai.embed(any(), model: any(named: 'model')),
+    ).thenAnswer((_) async => null);
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
+        overrides: [
+          localStorageRepositoryProvider.overrideWith((_) => repo),
+          aiChatServiceProvider.overrideWithValue(ai),
+          supabaseEnabledProvider.overrideWith((_) => true),
+          supabaseSessionProvider.overrideWith((_) => session),
+        ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -193,9 +211,19 @@ void main() {
     tester,
   ) async {
     final repo = CapturingLocalRepo();
+    final session = MockSession();
+    final ai = MockAiChatService();
+    when(
+      () => ai.embed(any(), model: any(named: 'model')),
+    ).thenAnswer((_) async => null);
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [localStorageRepositoryProvider.overrideWithValue(repo)],
+        overrides: [
+          localStorageRepositoryProvider.overrideWithValue(repo),
+          aiChatServiceProvider.overrideWithValue(ai),
+          supabaseEnabledProvider.overrideWith((_) => true),
+          supabaseSessionProvider.overrideWith((_) => session),
+        ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,

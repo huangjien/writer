@@ -346,25 +346,23 @@ class LocalStorageRepository {
       jsonEncode(item.toMap()),
     );
     if (_isSupabaseEnabled) {
-      try {
-        final client = _client;
-        final uid = client.auth.currentUser?.id;
-        final payload = <String, dynamic>{
-          'idx': 1,
-          'title': item.name,
-          'character_summaries': item.description,
-          'language_code': 'en',
-          'created_by': uid,
-        };
-        if (_vectorService != null) {
-          final text = [item.name, item.description ?? ''].join('\n\n').trim();
-          final vector = await _vectorService.embed(text);
-          if (vector.isNotEmpty) {
-            payload['embedding'] = vector;
-          }
+      final client = _client;
+      final uid = client.auth.currentUser?.id;
+      final payload = <String, dynamic>{
+        'idx': 1,
+        'title': item.name,
+        'character_summaries': item.description,
+        'language_code': 'en',
+        'created_by': uid,
+      };
+      if (_vectorService != null) {
+        final text = [item.name, item.description ?? ''].join('\n\n').trim();
+        final vector = await _vectorService.embed(text);
+        if (vector.isNotEmpty) {
+          payload['embedding'] = vector;
         }
-        await client.from('character_templates').insert(payload);
-      } catch (_) {}
+      }
+      await client.from('character_templates').insert(payload);
     }
   }
 
@@ -432,31 +430,29 @@ class LocalStorageRepository {
       jsonEncode(item.toMap()),
     );
     if (_isSupabaseEnabled) {
-      try {
-        final client = _client;
-        final uid = client.auth.currentUser?.id;
-        final payload = <String, dynamic>{
-          'idx': 1,
-          'title': item.name,
-          'scene_summaries': item.description,
-          'language_code': languageCode,
-          'created_by': uid,
-        };
-        if (_vectorService != null) {
-          final text = [item.name, item.description ?? ''].join('\n\n').trim();
-          final vector = await _vectorService.embed(text);
-          if (vector.isNotEmpty) {
-            payload['embedding'] = vector;
-          }
+      final client = _client;
+      final uid = client.auth.currentUser?.id;
+      final payload = <String, dynamic>{
+        'idx': 1,
+        'title': item.name,
+        'scene_summaries': item.description,
+        'language_code': languageCode,
+        'created_by': uid,
+      };
+      if (_vectorService != null) {
+        final text = [item.name, item.description ?? ''].join('\n\n').trim();
+        final vector = await _vectorService.embed(text);
+        if (vector.isNotEmpty) {
+          payload['embedding'] = vector;
         }
-        final res = await client
-            .from('scene_templates')
-            .insert(payload)
-            .select('id')
-            .single();
-        final map = Map<String, dynamic>.from(res as Map);
-        return map['id'] as String?;
-      } catch (_) {}
+      }
+      final res = await client
+          .from('scene_templates')
+          .insert(payload)
+          .select('id')
+          .single();
+      final map = Map<String, dynamic>.from(res as Map);
+      return map['id'] as String?;
     }
     return null;
   }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/features/summary/scenes_screen.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/state/mock_providers.dart';
@@ -15,6 +17,7 @@ import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/features/summary/scene_templates_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/template.dart';
+import 'package:writer/state/providers.dart';
 
 class CapturingLocalRepo extends LocalStorageRepository {
   Scene? lastScene;
@@ -70,6 +73,8 @@ class FakeAiChatService extends AiChatService {
     return vectors[input];
   }
 }
+
+class MockSession extends Mock implements Session {}
 
 class EndToEndLocalRepo extends LocalStorageRepository {
   final List<SceneTemplateRow> _templates = [];
@@ -236,6 +241,7 @@ void main() {
     final repo = EndToEndLocalRepo();
     final remote = FakeRemoteRepo();
     final ai = FakeAiChatService({'Battle': null});
+    final session = MockSession();
     final novel = const Novel(
       id: 'n-1',
       title: 'Test Novel',
@@ -252,6 +258,8 @@ void main() {
           localStorageRepositoryProvider.overrideWithValue(repo),
           remoteRepositoryProvider.overrideWithValue(remote),
           aiChatServiceProvider.overrideWithValue(ai),
+          supabaseEnabledProvider.overrideWith((_) => true),
+          supabaseSessionProvider.overrideWith((_) => session),
           mockNovelsProvider.overrideWith((ref) async => [novel]),
           novelProvider.overrideWith((ref, id) async => novel),
         ],
@@ -297,6 +305,8 @@ void main() {
           localStorageRepositoryProvider.overrideWithValue(repo),
           remoteRepositoryProvider.overrideWithValue(remote),
           aiChatServiceProvider.overrideWithValue(ai),
+          supabaseEnabledProvider.overrideWith((_) => true),
+          supabaseSessionProvider.overrideWith((_) => session),
           mockNovelsProvider.overrideWith((ref) async => [novel]),
           novelProvider.overrideWith((ref, id) async => novel),
         ],

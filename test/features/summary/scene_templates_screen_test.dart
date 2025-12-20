@@ -2,16 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/features/summary/scene_templates_screen.dart';
+import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/main.dart';
 import 'package:writer/models/template.dart';
 import 'package:writer/models/scene_template_row.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/state/providers.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockLocalStorageRepository extends Mock
     implements LocalStorageRepository {}
+
+class MockSession extends Mock implements Session {}
+
+class MockAiChatService extends Mock implements AiChatService {}
 
 class FakeTemplateItem extends Fake implements TemplateItem {}
 
@@ -122,6 +129,11 @@ void main() {
   });
 
   testWidgets('SceneTemplatesScreen saves data', (tester) async {
+    final session = MockSession();
+    final ai = MockAiChatService();
+    when(
+      () => ai.embed(any(), model: any(named: 'model')),
+    ).thenAnswer((_) async => null);
     when(
       () => mockRepo.getSceneTemplateForm(any()),
     ).thenAnswer((_) async => null);
@@ -133,7 +145,21 @@ void main() {
       ),
     ).thenAnswer((_) async => 't-1');
 
-    await tester.pumpWidget(createWidget());
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          localStorageRepositoryProvider.overrideWithValue(mockRepo),
+          aiChatServiceProvider.overrideWithValue(ai),
+          supabaseEnabledProvider.overrideWith((_) => true),
+          supabaseSessionProvider.overrideWith((_) => session),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const SceneTemplatesScreen(novelId: 'novel-1'),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
     await tester.enterText(
@@ -144,7 +170,6 @@ void main() {
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
 
-    // Find by hint text
     await tester.enterText(
       find.widgetWithText(TextFormField, 'Enter description in Markdown...'),
       'New Description',

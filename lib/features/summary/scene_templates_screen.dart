@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
-import 'package:writer/state/supabase_config.dart';
 import '../../main.dart';
 import '../../models/template.dart';
 import '../../l10n/app_localizations.dart';
 import '../../repositories/remote_repository.dart';
+import '../../state/providers.dart';
 
 class SceneTemplatesScreen extends ConsumerStatefulWidget {
   const SceneTemplatesScreen({
@@ -253,6 +253,18 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
                             final ok =
                                 _formKey.currentState?.validate() ?? false;
                             if (!ok) return;
+                            final isSupabaseEnabled = ref.read(
+                              supabaseEnabledProvider,
+                            );
+                            if (!isSupabaseEnabled) {
+                              setState(() => _error = l10n.noSupabase);
+                              return;
+                            }
+                            final session = ref.read(supabaseSessionProvider);
+                            if (session == null) {
+                              setState(() => _error = l10n.signInToSync);
+                              return;
+                            }
                             setState(() {
                               _saving = true;
                               _error = null;
@@ -285,8 +297,10 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
                                   languageCode: _languageCode,
                                 );
                               }
-                              if (supabaseEnabled &&
-                                  templateId != null &&
+                              if (templateId == null) {
+                                throw Exception('Failed to persist template');
+                              }
+                              if (isSupabaseEnabled &&
                                   _descController.text.trim().isNotEmpty) {
                                 final ai = ref.read(aiChatServiceProvider);
                                 final vec = await ai.embed(
