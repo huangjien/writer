@@ -36,18 +36,20 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
   String _baseName = '';
   String _baseDesc = '';
   String _baseLanguageCode = 'en';
+  String? _templateId;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
+    _templateId = widget.templateId;
     _load();
   }
 
   Future<void> _load() async {
     final repo = ref.read(localStorageRepositoryProvider);
-    if (widget.templateId != null) {
-      final row = await repo.getSceneTemplateById(widget.templateId!);
+    if (_templateId != null) {
+      final row = await repo.getSceneTemplateById(_templateId!);
       if (row != null) {
         _nameController.text = row.title ?? '';
         _descController.text = row.sceneSummaries ?? '';
@@ -273,10 +275,10 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
                               final repo = ref.read(
                                 localStorageRepositoryProvider,
                               );
-                              String? templateId = widget.templateId;
-                              if (widget.templateId != null) {
+                              String? templateId = _templateId;
+                              if (_templateId != null) {
                                 await repo.updateSceneTemplate(
-                                  widget.templateId!,
+                                  _templateId!,
                                   title: _nameController.text.trim(),
                                   summaries: _descController.text.trim().isEmpty
                                       ? null
@@ -300,6 +302,23 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
                               if (templateId == null) {
                                 throw Exception('Failed to persist template');
                               }
+                              final persisted = await repo.getSceneTemplateById(
+                                templateId,
+                              );
+                              if (persisted == null) {
+                                throw Exception(
+                                  'Template not found after save: $templateId',
+                                );
+                              }
+                              final savedTitle = (persisted.title ?? '').trim();
+                              final desiredTitle = _nameController.text.trim();
+                              if (savedTitle.isNotEmpty &&
+                                  desiredTitle.isNotEmpty &&
+                                  savedTitle != desiredTitle) {
+                                throw Exception(
+                                  'Template title mismatch after save: $templateId',
+                                );
+                              }
                               if (isSupabaseEnabled &&
                                   _descController.text.trim().isNotEmpty) {
                                 final ai = ref.read(aiChatServiceProvider);
@@ -314,6 +333,7 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
                                   );
                                 }
                               }
+                              _templateId = templateId;
                               _baseName = _nameController.text;
                               _baseDesc = _descController.text;
                               _baseLanguageCode = _languageCode;

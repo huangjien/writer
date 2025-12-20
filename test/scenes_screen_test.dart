@@ -114,6 +114,14 @@ class EndToEndLocalRepo extends LocalStorageRepository {
   }
 
   @override
+  Future<SceneTemplateRow?> getSceneTemplateById(String id) async {
+    for (final row in _templates) {
+      if (row.id == id) return row;
+    }
+    return null;
+  }
+
+  @override
   Future<Scene?> getSceneForm(String novelId, {int? idx}) async {
     return null;
   }

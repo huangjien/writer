@@ -34,14 +34,17 @@ class CapturingLocalRepo extends LocalStorageRepository {
   @override
   Future<SceneTemplateRow?> getSceneTemplateById(String id) async {
     getById = id;
+    final title = updatedTitle ?? lastItem?.name ?? 'Existing';
+    final summaries = updatedSummaries ?? lastItem?.description ?? 'Old';
+    final language = updatedLanguageCode ?? 'zh';
     return SceneTemplateRow(
       id: id,
       idx: 1,
-      title: 'Existing',
-      sceneSummaries: 'Old',
+      title: title,
+      sceneSummaries: summaries,
       sceneSynopses: null,
-      languageCode: 'zh',
-      createdBy: 'u-1',
+      languageCode: language,
+      createdBy: null,
       createdAt: DateTime(2024, 1, 1),
       updatedAt: DateTime(2024, 1, 1),
     );

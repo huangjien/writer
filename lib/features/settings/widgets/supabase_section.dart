@@ -34,6 +34,16 @@ class SupabaseSection extends ConsumerWidget {
           ),
         ] else ...[
           ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: const Text('Supabase Project'),
+            subtitle: Text(
+              [
+                if (supabaseUrl.isNotEmpty) supabaseUrl,
+                if (user?.email != null) 'email=${user!.email}',
+              ].join('\n'),
+            ),
+          ),
+          ListTile(
             leading: const Icon(Icons.cloud_download),
             title: Text(l10n.fetchFromSupabase),
             subtitle: Text(l10n.fetchFromSupabaseDescription),
