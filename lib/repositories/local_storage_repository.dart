@@ -323,19 +323,17 @@ class LocalStorageRepository {
   ) async {
     if (_isSupabaseEnabled) {
       final client = _client;
-      final uid = client.auth.currentUser?.id;
-      final existing = await (uid != null
-          ? client
-                .from('character_templates')
-                .select('id')
-                .eq('created_by', uid)
-                .ilike('title', item.name.trim())
-                .limit(1)
-          : client
-                .from('character_templates')
-                .select('id')
-                .ilike('title', item.name.trim())
-                .limit(1));
+      final uid =
+          client.auth.currentUser?.id ?? client.auth.currentSession?.user.id;
+      if (uid == null || uid.trim().isEmpty) {
+        throw Exception('Not signed in');
+      }
+      final existing = await client
+          .from('character_templates')
+          .select('id')
+          .eq('created_by', uid)
+          .ilike('title', item.name.trim())
+          .limit(1);
       if ((existing as List).isNotEmpty) {
         throw Exception('Duplicate template name');
       }
@@ -347,7 +345,11 @@ class LocalStorageRepository {
     );
     if (_isSupabaseEnabled) {
       final client = _client;
-      final uid = client.auth.currentUser?.id;
+      final uid =
+          client.auth.currentUser?.id ?? client.auth.currentSession?.user.id;
+      if (uid == null || uid.trim().isEmpty) {
+        throw Exception('Not signed in');
+      }
       final payload = <String, dynamic>{
         'idx': 1,
         'title': item.name,
@@ -358,7 +360,7 @@ class LocalStorageRepository {
       if (_vectorService != null) {
         final text = [item.name, item.description ?? ''].join('\n\n').trim();
         final vector = await _vectorService.embed(text);
-        if (vector.isNotEmpty) {
+        if (vector.length == 1536) {
           payload['embedding'] = vector;
         }
       }
@@ -407,19 +409,17 @@ class LocalStorageRepository {
   }) async {
     if (_isSupabaseEnabled) {
       final client = _client;
-      final uid = client.auth.currentUser?.id;
-      final existing = await (uid != null
-          ? client
-                .from('scene_templates')
-                .select('id')
-                .eq('created_by', uid)
-                .ilike('title', item.name.trim())
-                .limit(1)
-          : client
-                .from('scene_templates')
-                .select('id')
-                .ilike('title', item.name.trim())
-                .limit(1));
+      final uid =
+          client.auth.currentUser?.id ?? client.auth.currentSession?.user.id;
+      if (uid == null || uid.trim().isEmpty) {
+        throw Exception('Not signed in');
+      }
+      final existing = await client
+          .from('scene_templates')
+          .select('id')
+          .eq('created_by', uid)
+          .ilike('title', item.name.trim())
+          .limit(1);
       if ((existing as List).isNotEmpty) {
         throw Exception('Duplicate template name');
       }
@@ -431,7 +431,11 @@ class LocalStorageRepository {
     );
     if (_isSupabaseEnabled) {
       final client = _client;
-      final uid = client.auth.currentUser?.id;
+      final uid =
+          client.auth.currentUser?.id ?? client.auth.currentSession?.user.id;
+      if (uid == null || uid.trim().isEmpty) {
+        throw Exception('Not signed in');
+      }
       final payload = <String, dynamic>{
         'idx': 1,
         'title': item.name,
@@ -442,7 +446,7 @@ class LocalStorageRepository {
       if (_vectorService != null) {
         final text = [item.name, item.description ?? ''].join('\n\n').trim();
         final vector = await _vectorService.embed(text);
-        if (vector.isNotEmpty) {
+        if (vector.length == 1536) {
           payload['embedding'] = vector;
         }
       }
