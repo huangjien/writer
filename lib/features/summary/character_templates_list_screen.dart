@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
+import 'package:writer/state/supabase_config.dart';
 import '../../main.dart';
 import '../../models/character_template_row.dart';
 import '../../shared/constants.dart';
@@ -24,8 +27,11 @@ class CharacterTemplatesListScreen extends ConsumerStatefulWidget {
 class _CharacterTemplatesListScreenState
     extends ConsumerState<CharacterTemplatesListScreen> {
   List<CharacterTemplateRow> _items = const [];
+  List<CharacterTemplateRow> _displayItems = const [];
   bool _loading = true;
+  bool _searchLoading = false;
   String? _error;
+  final _searchCtrl = TextEditingController();
   DateTime? _lastRowTapAt;
   String? _lastRowTapId;
   String? _selectedId;
@@ -36,6 +42,12 @@ class _CharacterTemplatesListScreenState
     _load();
   }
 
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
   Future<void> _load() async {
     setState(() {
       _loading = true;
@@ -44,12 +56,76 @@ class _CharacterTemplatesListScreenState
     try {
       final repo = ref.read(localStorageRepositoryProvider);
       _items = await repo.listCharacterTemplates();
+      _localSearch();
     } catch (e) {
       _error = e.toString();
     } finally {
       setState(() {
         _loading = false;
       });
+    }
+  }
+
+  void _localSearch() {
+    final q = _searchCtrl.text.trim().toLowerCase();
+    if (q.isEmpty) {
+      _displayItems = _items;
+      return;
+    }
+    _displayItems = _items.where((t) {
+      final title = (t.title ?? '').toLowerCase();
+      return title.contains(q);
+    }).toList();
+  }
+
+  Future<void> _smartSearch() async {
+    final q = _searchCtrl.text.trim();
+    if (q.isEmpty) return;
+
+    final enabled = ref.read(supabaseEnabledProvider);
+    if (!enabled) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Smart search requires Supabase connection'),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _searchLoading = true;
+    });
+
+    try {
+      final ai = ref.read(aiChatServiceProvider);
+      final vec = await ai.embed(q, model: 'text-embedding-3-small');
+      if (!mounted) return;
+      if (vec == null || vec.isEmpty) {
+        setState(() {
+          _localSearch();
+          _searchLoading = false;
+        });
+        return;
+      }
+
+      final repo = ref.read(localStorageRepositoryProvider);
+      final res = await repo.searchCharacterTemplatesByVector(vec, limit: 5);
+
+      if (!mounted) return;
+      setState(() {
+        _displayItems = res;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.toString();
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _searchLoading = false;
+        });
+      }
     }
   }
 
@@ -91,7 +167,7 @@ class _CharacterTemplatesListScreenState
           leading: BackButton(onPressed: () => context.go('/')),
           title: Text(l10n.characterTemplates),
           actions: [
-            if (_loading)
+            if (_loading || _searchLoading)
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12),
                 child: SizedBox(
@@ -124,111 +200,148 @@ class _CharacterTemplatesListScreenState
             ? const Center(child: CircularProgressIndicator())
             : _error != null
             ? Center(child: Text(_error!))
-            : ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemBuilder: (ctx, i) {
-                  final it = _items[i];
-                  final title = it.title ?? l10n.untitled;
-                  final subtitle =
-                      (it.characterSummaries ?? it.characterSynopses ?? '')
-                          .replaceAll('**', '')
-                          .replaceAll(RegExp(r'\s+'), ' ')
-                          .trim();
-                  final theme = Theme.of(context);
-                  final titleStyle = theme.textTheme.titleMedium;
-                  final subtitleStyle = theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  );
-
-                  return Shortcuts(
-                    shortcuts: const <ShortcutActivator, Intent>{
-                      SingleActivator(LogicalKeyboardKey.enter): _EditIntent(),
-                      SingleActivator(LogicalKeyboardKey.numpadEnter):
-                          _EditIntent(),
-                    },
-                    child: Actions(
-                      actions: <Type, Action<Intent>>{
-                        _EditIntent: CallbackAction<_EditIntent>(
-                          onInvoke: (_) {
-                            _openEdit(it);
-                            return null;
-                          },
-                        ),
-                      },
-                      child: Focus(
-                        canRequestFocus: true,
-                        onFocusChange: (hasFocus) {
-                          if (!hasFocus) return;
-                          setState(() {
-                            _selectedId = it.id;
-                          });
-                        },
-                        child: ListTile(
-                          selected: _selectedId == it.id,
-                          selectedTileColor: theme.colorScheme.primary
-                              .withValues(alpha: 0.08),
-                          title: Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(text: title, style: titleStyle),
-                                if (subtitle.isNotEmpty)
-                                  TextSpan(
-                                    text: '  $subtitle',
-                                    style: subtitleStyle,
-                                  ),
-                              ],
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          onTap: () => _onRowTap(it),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit),
-                                onPressed: () => _openEdit(it),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () async {
-                                  final ok = await showDialog<bool>(
-                                    context: context,
-                                    builder: (d) => AlertDialog(
-                                      title: Text(l10n.deleteTemplateTitle),
-                                      content: Text(l10n.confirmDeleteGeneric),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(d, false),
-                                          child: Text(l10n.cancel),
-                                        ),
-                                        FilledButton(
-                                          onPressed: () =>
-                                              Navigator.pop(d, true),
-                                          child: Text(l10n.delete),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                  if (ok == true) {
-                                    final repo = ref.read(
-                                      localStorageRepositoryProvider,
-                                    );
-                                    await repo.deleteCharacterTemplate(it.id);
-                                    await _load();
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
+            : Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: TextField(
+                      controller: _searchCtrl,
+                      decoration: InputDecoration(
+                        labelText: l10n.searchLabel,
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.auto_awesome),
+                          tooltip: 'Smart Search',
+                          onPressed: _smartSearch,
                         ),
                       ),
+                      onChanged: (_) {
+                        setState(() {
+                          _localSearch();
+                        });
+                      },
+                      onSubmitted: (_) => _smartSearch(),
                     ),
-                  );
-                },
-                separatorBuilder: (context, index) => const SizedBox(height: 8),
-                itemCount: _items.length,
+                  ),
+                  Expanded(
+                    child: ListView.separated(
+                      padding: const EdgeInsets.all(16),
+                      itemBuilder: (ctx, i) {
+                        final it = _displayItems[i];
+                        final title = it.title ?? l10n.untitled;
+                        final subtitle =
+                            (it.characterSummaries ??
+                                    it.characterSynopses ??
+                                    '')
+                                .replaceAll('**', '')
+                                .replaceAll(RegExp(r'\s+'), ' ')
+                                .trim();
+                        final theme = Theme.of(context);
+                        final titleStyle = theme.textTheme.titleMedium;
+                        final subtitleStyle = theme.textTheme.bodySmall
+                            ?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            );
+
+                        return Shortcuts(
+                          shortcuts: const <ShortcutActivator, Intent>{
+                            SingleActivator(LogicalKeyboardKey.enter):
+                                _EditIntent(),
+                            SingleActivator(LogicalKeyboardKey.numpadEnter):
+                                _EditIntent(),
+                          },
+                          child: Actions(
+                            actions: <Type, Action<Intent>>{
+                              _EditIntent: CallbackAction<_EditIntent>(
+                                onInvoke: (_) {
+                                  _openEdit(it);
+                                  return null;
+                                },
+                              ),
+                            },
+                            child: Focus(
+                              canRequestFocus: true,
+                              onFocusChange: (hasFocus) {
+                                if (!hasFocus) return;
+                                setState(() {
+                                  _selectedId = it.id;
+                                });
+                              },
+                              child: ListTile(
+                                selected: _selectedId == it.id,
+                                selectedTileColor: theme.colorScheme.primary
+                                    .withValues(alpha: 0.08),
+                                title: Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(text: title, style: titleStyle),
+                                      if (subtitle.isNotEmpty)
+                                        TextSpan(
+                                          text: '  $subtitle',
+                                          style: subtitleStyle,
+                                        ),
+                                    ],
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                onTap: () => _onRowTap(it),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.edit),
+                                      onPressed: () => _openEdit(it),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      onPressed: () async {
+                                        final ok = await showDialog<bool>(
+                                          context: context,
+                                          builder: (d) => AlertDialog(
+                                            title: Text(
+                                              l10n.deleteTemplateTitle,
+                                            ),
+                                            content: Text(
+                                              l10n.confirmDeleteGeneric,
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(d, false),
+                                                child: Text(l10n.cancel),
+                                              ),
+                                              FilledButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(d, true),
+                                                child: Text(l10n.delete),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                        if (ok == true) {
+                                          final repo = ref.read(
+                                            localStorageRepositoryProvider,
+                                          );
+                                          await repo.deleteCharacterTemplate(
+                                            it.id,
+                                          );
+                                          await _load();
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 8),
+                      itemCount: _displayItems.length,
+                    ),
+                  ),
+                ],
               ),
       ),
     );

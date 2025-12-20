@@ -11,7 +11,6 @@ import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/mock_providers.dart';
 import 'package:writer/state/providers.dart';
-import 'package:writer/state/supabase_config.dart';
 
 void main() {
   testWidgets(

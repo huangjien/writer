@@ -6,7 +6,6 @@ import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/progress_providers.dart';
-import 'package:writer/state/supabase_config.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/user_progress.dart';
 import 'package:writer/l10n/app_localizations.dart';

@@ -7,6 +7,9 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/story_line.dart';
 import 'package:writer/screens/story_lines_list_screen.dart';
 import 'package:writer/services/story_lines_service.dart';
+import 'package:writer/main.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/story_line_providers.dart';
 
@@ -39,9 +42,15 @@ class FakeStoryLinesService extends StoryLinesService {
   bool shouldFailDelete = false;
   bool shouldThrowDelete = false;
   bool shouldThrowSearch = false;
+  bool shouldThrowFetch = false;
 
   @override
-  Future<List<StoryLine>> fetchStoryLines() async => items;
+  Future<List<StoryLine>> fetchStoryLines() async {
+    if (shouldThrowFetch) {
+      throw ApiException(500, 'Fetch failed');
+    }
+    return items;
+  }
 
   @override
   Future<List<StoryLine>> searchStoryLines(String query) async {
@@ -62,6 +71,28 @@ class FakeStoryLinesService extends StoryLinesService {
     deleteCalled = true;
     lastDeleteId = id;
     return true;
+  }
+}
+
+class FakeAiService extends AiChatService {
+  FakeAiService() : super('');
+
+  @override
+  Future<List<double>> embed(String text, {String? model}) async {
+    return List.filled(1536, 0.1);
+  }
+}
+
+class FakeLocalRepo extends LocalStorageRepository {
+  List<StoryLine> searchResults = [];
+
+  @override
+  Future<List<StoryLine>> searchStoryLinesByVector(
+    List<double> query, {
+    int limit = 5,
+    int offset = 0,
+  }) async {
+    return searchResults;
   }
 }
 
@@ -233,6 +264,55 @@ void main() {
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
     expect(find.textContaining('Search failed'), findsOneWidget);
+  });
+
+  testWidgets('Smart search filters items', (tester) async {
+    final fake = FakeStoryLinesService();
+    final fakeAi = FakeAiService();
+    final fakeLocalRepo = FakeLocalRepo();
+    fakeLocalRepo.searchResults = [
+      const StoryLine(
+        id: 's3',
+        title: 'Smart Result',
+        description: 'AI Found',
+        content: 'Content',
+        language: 'en',
+        locked: false,
+      ),
+    ];
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          storyLinesProvider.overrideWith((ref) async => fake.items),
+          storyLinesServiceRefProvider.overrideWith((_) => fake),
+          aiChatServiceProvider.overrideWith((_) => fakeAi),
+          localStorageRepositoryProvider.overrideWith((_) => fakeLocalRepo),
+          supabaseEnabledProvider.overrideWith((_) => true),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const StoryLinesListScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Enter text and click AI icon
+    await tester.enterText(find.byType(TextField), 'Smart Query');
+    await tester.pump();
+
+    final aiIcon = find.byIcon(Icons.auto_awesome);
+    expect(aiIcon, findsOneWidget);
+    await tester.tap(aiIcon);
+    await tester.pumpAndSettle();
+
+    expect(
+      find.textContaining('Smart Result', findRichText: true),
+      findsOneWidget,
+    );
+    expect(find.text('A'), findsNothing);
   });
 
   testWidgets('Language filter works', (tester) async {

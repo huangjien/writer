@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../state/supabase_config.dart';
+import '../services/vector_service.dart';
 import '../models/chapter_cache.dart';
 import '../models/novel.dart';
 import '../models/character.dart';
@@ -12,22 +13,27 @@ import '../models/character_note.dart';
 import '../models/scene_note.dart';
 import '../models/character_template_row.dart';
 import '../models/scene_template_row.dart';
+import '../models/pattern.dart';
+import '../models/story_line.dart';
 
 class LocalStorageRepository {
   final bool? _supabaseEnabledOverride;
   final SupabaseClient? _clientOverride;
   final Future<SharedPreferences> Function() _prefs;
   final DateTime Function() _now;
+  final VectorService? _vectorService;
 
   LocalStorageRepository({
     bool? supabaseEnabled,
     SupabaseClient? client,
     Future<SharedPreferences> Function()? prefs,
     DateTime Function()? now,
+    VectorService? vectorService,
   }) : _supabaseEnabledOverride = supabaseEnabled,
        _clientOverride = client,
        _prefs = prefs ?? SharedPreferences.getInstance,
-       _now = now ?? DateTime.now;
+       _now = now ?? DateTime.now,
+       _vectorService = vectorService;
 
   bool get _isSupabaseEnabled => _supabaseEnabledOverride ?? supabaseEnabled;
   SupabaseClient get _client => _clientOverride ?? Supabase.instance.client;
@@ -343,13 +349,21 @@ class LocalStorageRepository {
       try {
         final client = _client;
         final uid = client.auth.currentUser?.id;
-        await client.from('character_templates').insert({
+        final payload = <String, dynamic>{
           'idx': 1,
           'title': item.name,
           'character_summaries': item.description,
           'language_code': 'en',
           'created_by': uid,
-        });
+        };
+        if (_vectorService != null) {
+          final text = [item.name, item.description ?? ''].join('\n\n').trim();
+          final vector = await _vectorService.embed(text);
+          if (vector.isNotEmpty) {
+            payload['embedding'] = vector;
+          }
+        }
+        await client.from('character_templates').insert(payload);
       } catch (_) {}
     }
   }
@@ -421,15 +435,23 @@ class LocalStorageRepository {
       try {
         final client = _client;
         final uid = client.auth.currentUser?.id;
+        final payload = <String, dynamic>{
+          'idx': 1,
+          'title': item.name,
+          'scene_summaries': item.description,
+          'language_code': languageCode,
+          'created_by': uid,
+        };
+        if (_vectorService != null) {
+          final text = [item.name, item.description ?? ''].join('\n\n').trim();
+          final vector = await _vectorService.embed(text);
+          if (vector.isNotEmpty) {
+            payload['embedding'] = vector;
+          }
+        }
         final res = await client
             .from('scene_templates')
-            .insert({
-              'idx': 1,
-              'title': item.name,
-              'scene_summaries': item.description,
-              'language_code': languageCode,
-              'created_by': uid,
-            })
+            .insert(payload)
             .select('id')
             .single();
         final map = Map<String, dynamic>.from(res as Map);
@@ -733,6 +755,73 @@ class LocalStorageRepository {
       for (final row in mapped) row.id: row,
     };
     return ids.map((id) => byId[id]).whereType<SceneTemplateRow>().toList();
+  }
+
+  Future<List<CharacterTemplateRow>> searchCharacterTemplatesByVector(
+    List<double> query, {
+    int limit = 10,
+    int offset = 0,
+    String? languageCode,
+  }) async {
+    if (!_isSupabaseEnabled) return <CharacterTemplateRow>[];
+    if (query.isEmpty) return <CharacterTemplateRow>[];
+    final client = _client;
+    final raw = await client.rpc(
+      'search_character_templates',
+      params: {'p_query': query, 'p_limit': limit, 'p_offset': offset},
+    );
+    final hits = (raw as List).cast<Map<String, dynamic>>();
+    final ids = hits.map((h) => h['id'].toString()).toList();
+    if (ids.isEmpty) return <CharacterTemplateRow>[];
+    final queryBuilder = client
+        .from('character_templates')
+        .select(
+          'id, idx, title, character_summaries, character_synopses, language_code, created_by, created_at, updated_at',
+        )
+        .inFilter('id', ids);
+    final rows = languageCode == null
+        ? await queryBuilder
+        : await queryBuilder.eq('language_code', languageCode);
+    final mapped = (rows as List)
+        .cast<Map<String, dynamic>>()
+        .map(CharacterTemplateRow.fromRow)
+        .toList();
+    final byId = <String, CharacterTemplateRow>{
+      for (final row in mapped) row.id: row,
+    };
+    return ids.map((id) => byId[id]).whereType<CharacterTemplateRow>().toList();
+  }
+
+  Future<List<Pattern>> searchWritingPatternsByVector(
+    List<double> query, {
+    int limit = 5,
+    int offset = 0,
+  }) async {
+    if (!_isSupabaseEnabled) return <Pattern>[];
+    if (query.isEmpty) return <Pattern>[];
+    final client = _client;
+    final raw = await client.rpc(
+      'search_writing_patterns',
+      params: {'p_query': query, 'p_limit': limit, 'p_offset': offset},
+    );
+    final hits = (raw as List).cast<Map<String, dynamic>>();
+    return hits.map((e) => Pattern.fromMap(e)).toList();
+  }
+
+  Future<List<StoryLine>> searchStoryLinesByVector(
+    List<double> query, {
+    int limit = 5,
+    int offset = 0,
+  }) async {
+    if (!_isSupabaseEnabled) return <StoryLine>[];
+    if (query.isEmpty) return <StoryLine>[];
+    final client = _client;
+    final raw = await client.rpc(
+      'search_story_lines',
+      params: {'p_query': query, 'p_limit': limit, 'p_offset': offset},
+    );
+    final hits = (raw as List).cast<Map<String, dynamic>>();
+    return hits.map((e) => StoryLine.fromMap(e)).toList();
   }
 
   Future<void> upsertSceneTemplateEmbedding(

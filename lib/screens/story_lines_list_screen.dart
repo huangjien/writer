@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../models/story_line.dart';
 import '../state/story_line_providers.dart';
 import '../state/providers.dart';
+import '../features/ai_chat/services/ai_chat_service.dart';
+import '../main.dart';
 import '../l10n/app_localizations.dart';
 import '../shared/constants.dart';
 
@@ -191,6 +193,58 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
     }
   }
 
+  Future<void> _smartSearch() async {
+    _searchTimer?.cancel();
+    final q = _searchCtrl.text.trim();
+    if (q.isEmpty) return;
+
+    final enabled = ref.read(supabaseEnabledProvider);
+    if (!enabled) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Smart search requires Supabase connection'),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _searchLoading = true;
+    });
+
+    try {
+      final ai = ref.read(aiChatServiceProvider);
+      final vec = await ai.embed(q, model: 'text-embedding-3-small');
+      if (!mounted) return;
+      if (vec == null || vec.isEmpty) {
+        setState(() {
+          _search(force: true);
+          _searchLoading = false;
+        });
+        return;
+      }
+
+      final repo = ref.read(localStorageRepositoryProvider);
+      final res = await repo.searchStoryLinesByVector(vec, limit: 5);
+
+      if (!mounted) return;
+      setState(() {
+        _items = res;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.toString();
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _searchLoading = false;
+        });
+      }
+    }
+  }
+
   Widget _filters(int count) {
     final l10n = AppLocalizations.of(context)!;
     return Padding(
@@ -208,6 +262,11 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
               decoration: InputDecoration(
                 labelText: l10n.searchLabel,
                 suffixText: '$count',
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.auto_awesome),
+                  onPressed: _smartSearch,
+                  tooltip: 'Smart Search',
+                ),
               ),
               onChanged: (_) {
                 _searchTimer?.cancel();

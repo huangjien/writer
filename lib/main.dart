@@ -4,16 +4,17 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app.dart';
 import 'state/ai_service_settings.dart';
-import 'state/supabase_config.dart';
 import 'repositories/local_storage_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'state/app_settings.dart';
 import 'state/theme_controller.dart';
 import 'state/tts_settings.dart';
 import 'state/admin_settings.dart';
+import 'state/providers.dart';
 
 final localStorageRepositoryProvider = Provider<LocalStorageRepository>((ref) {
-  return LocalStorageRepository();
+  final vectorService = ref.watch(vectorServiceProvider);
+  return LocalStorageRepository(vectorService: vectorService);
 });
 
 void main() async {

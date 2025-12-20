@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/summary/character_templates_list_screen.dart';
+import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
+import 'package:writer/state/supabase_config.dart';
 import 'package:writer/main.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/models/character_template_row.dart';
@@ -33,6 +35,36 @@ class FakeLocalRepo extends LocalStorageRepository {
   Future<void> deleteCharacterTemplate(String id) async {
     deletedId = id;
     items = items.where((e) => e.id != id).toList();
+  }
+
+  @override
+  Future<List<CharacterTemplateRow>> searchCharacterTemplatesByVector(
+    List<double> query, {
+    int limit = 10,
+    int offset = 0,
+    String? languageCode,
+  }) async {
+    // print('DEBUG: searchCharacterTemplatesByVector called');
+    return [
+      CharacterTemplateRow(
+        id: 't-smart',
+        idx: 99,
+        title: 'Smart Result',
+        characterSummaries: 'Found via vector',
+        createdAt: DateTime(2024, 1, 1),
+        updatedAt: DateTime(2024, 1, 1),
+      ),
+    ];
+  }
+}
+
+class FakeAiService extends AiChatService {
+  FakeAiService() : super('http://mock', client: null);
+
+  @override
+  Future<List<double>?> embed(String input, {String? model}) async {
+    // print('DEBUG: embed called');
+    return List.filled(1536, 0.1);
   }
 }
 
@@ -204,5 +236,42 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('New Character Template'), findsOneWidget);
+  });
+
+  testWidgets('Smart search triggers vector search', (tester) async {
+    final repo = FakeLocalRepo();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          localStorageRepositoryProvider.overrideWith((_) => repo),
+          supabaseEnabledProvider.overrideWithValue(true),
+          aiChatServiceProvider.overrideWithValue(FakeAiService()),
+        ],
+        child: const MaterialApp(
+          home: CharacterTemplatesListScreen(novelId: 'n-1'),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Type query
+    await tester.enterText(find.byType(TextField), 'Smart');
+    await tester.pump(); // OnChanged triggers local search
+
+    // Click AI icon
+    await tester.tap(find.byIcon(Icons.auto_awesome));
+    await tester.pump(); // Start search
+    await tester.pump(); // Async gap
+    await tester.pumpAndSettle();
+
+    expect(
+      find.textContaining('Smart Result', findRichText: true),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('Found via vector', findRichText: true),
+      findsOneWidget,
+    );
   });
 }

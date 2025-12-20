@@ -6,6 +6,9 @@ import 'package:mocktail/mocktail.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/pattern.dart';
 import 'package:writer/screens/patterns_list_screen.dart';
+import 'package:writer/main.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/state/pattern_providers.dart';
 import 'package:writer/services/patterns_service.dart';
 import 'package:writer/state/providers.dart';
@@ -52,6 +55,28 @@ class FakePatternsService extends PatternsService {
     deleteCalled = true;
     lastDeleteId = id;
     return true;
+  }
+}
+
+class FakeAiService extends AiChatService {
+  FakeAiService() : super('');
+
+  @override
+  Future<List<double>> embed(String text, {String? model}) async {
+    return List.filled(1536, 0.1);
+  }
+}
+
+class FakeLocalRepo extends LocalStorageRepository {
+  List<Pattern> searchResults = [];
+
+  @override
+  Future<List<Pattern>> searchWritingPatternsByVector(
+    List<double> query, {
+    int limit = 5,
+    int offset = 0,
+  }) async {
+    return searchResults;
   }
 }
 
@@ -164,6 +189,55 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('B'), findsNothing);
+  });
+
+  testWidgets('Smart search filters items', (tester) async {
+    final fake = FakePatternsService();
+    final fakeAi = FakeAiService();
+    final fakeLocalRepo = FakeLocalRepo();
+    fakeLocalRepo.searchResults = [
+      const Pattern(
+        id: 'p3',
+        title: 'Smart Result',
+        description: 'AI Found',
+        content: 'Content',
+        language: 'en',
+        locked: false,
+      ),
+    ];
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          patternsProvider.overrideWith((ref) async => fake.items),
+          patternsServiceRefProvider.overrideWith((_) => fake),
+          aiChatServiceProvider.overrideWith((_) => fakeAi),
+          localStorageRepositoryProvider.overrideWith((_) => fakeLocalRepo),
+          supabaseEnabledProvider.overrideWith((_) => true),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const PatternsListScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Enter text and click AI icon
+    await tester.enterText(find.byType(TextField), 'Smart Query');
+    await tester.pump();
+
+    final aiIcon = find.byIcon(Icons.auto_awesome);
+    expect(aiIcon, findsOneWidget);
+    await tester.tap(aiIcon);
+    await tester.pumpAndSettle();
+
+    expect(
+      find.textContaining('Smart Result', findRichText: true),
+      findsOneWidget,
+    );
+    expect(find.text('A'), findsNothing);
   });
 
   testWidgets('Language filter works', (tester) async {

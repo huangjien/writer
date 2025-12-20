@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'vector_service.dart';
 import '../models/pattern.dart';
 import '../shared/constants.dart';
 
@@ -19,14 +21,20 @@ class PatternsService {
   Duration timeout;
   bool _loading = false;
   final http.Client? _client;
+  final SupabaseClient? _supabaseClient;
+  final VectorService? _vectorService;
 
   PatternsService({
     required this.baseUrl,
     this.authToken,
     Duration? timeout,
     http.Client? client,
+    SupabaseClient? supabaseClient,
+    VectorService? vectorService,
   }) : timeout = timeout ?? kLlmTimeout,
-       _client = client;
+       _client = client,
+       _supabaseClient = supabaseClient,
+       _vectorService = vectorService;
 
   bool get isLoading => _loading;
   void setAuthToken(String? token) => authToken = token;
@@ -118,6 +126,35 @@ class PatternsService {
     String? language,
     bool? isPublic,
   }) async {
+    if (_supabaseClient != null && _vectorService != null) {
+      _loading = true;
+      try {
+        final text = [title, description ?? '', content].join('\n\n').trim();
+        final vector = await _vectorService.embed(text);
+        final user = _supabaseClient.auth.currentUser;
+        final payload = <String, dynamic>{
+          'title': title,
+          'description': description,
+          'content': content,
+          'usage_rules': usageRules,
+          'language': language ?? 'en',
+          'is_public': isPublic ?? true,
+          'owner_id': user?.id,
+        };
+        if (vector.isNotEmpty) {
+          payload['embedding'] = vector;
+        }
+        final res = await _supabaseClient
+            .from('writing_patterns')
+            .insert(payload)
+            .select()
+            .single();
+        return Pattern.fromMap(Map<String, dynamic>.from(res));
+      } finally {
+        _loading = false;
+      }
+    }
+
     final payload = <String, dynamic>{
       'title': title,
       'description': description,
@@ -140,6 +177,50 @@ class PatternsService {
     bool? isPublic,
     bool? locked,
   }) async {
+    if (_supabaseClient != null && _vectorService != null) {
+      _loading = true;
+      try {
+        final payload = <String, dynamic>{};
+        if (title != null) payload['title'] = title;
+        if (description != null) payload['description'] = description;
+        if (content != null) payload['content'] = content;
+        if (usageRules != null) payload['usage_rules'] = usageRules;
+        if (language != null) payload['language'] = language;
+        if (isPublic != null) payload['is_public'] = isPublic;
+        if (locked != null) payload['locked'] = locked;
+
+        if (title != null || description != null || content != null) {
+          final current = await _supabaseClient
+              .from('writing_patterns')
+              .select('title, description, content')
+              .eq('id', id)
+              .single();
+          final newTitle = title ?? (current['title'] as String);
+          final newDesc = description ?? (current['description'] as String?);
+          final newContent = content ?? (current['content'] as String?);
+          final text = [
+            newTitle,
+            newDesc ?? '',
+            newContent ?? '',
+          ].join('\n\n').trim();
+          final vector = await _vectorService.embed(text);
+          if (vector.isNotEmpty) {
+            payload['embedding'] = vector;
+          }
+        }
+
+        final res = await _supabaseClient
+            .from('writing_patterns')
+            .update(payload)
+            .eq('id', id)
+            .select()
+            .single();
+        return Pattern.fromMap(Map<String, dynamic>.from(res));
+      } finally {
+        _loading = false;
+      }
+    }
+
     final payload = <String, dynamic>{};
     if (title != null) payload['title'] = title;
     if (description != null) payload['description'] = description;
