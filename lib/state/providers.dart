@@ -27,6 +27,7 @@ final supabaseClientProvider = Provider<SupabaseClient>((ref) {
 final supabaseSessionProvider = Provider<Session?>((ref) {
   final enabled = ref.watch(supabaseEnabledProvider);
   if (!enabled) return null;
+  ref.watch(authStateProvider);
   try {
     return Supabase.instance.client.auth.currentSession;
   } catch (_) {

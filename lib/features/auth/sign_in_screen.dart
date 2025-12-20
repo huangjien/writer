@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
+import '../../state/ai_service_settings.dart';
 import '../../state/providers.dart';
+import '../../state/session_state.dart';
 import '../../l10n/app_localizations.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
@@ -21,6 +26,44 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   bool _loading = false;
   String? _error;
 
+  String _urlJoin(String baseUrl, String path) {
+    final b = baseUrl.endsWith('/')
+        ? baseUrl.substring(0, baseUrl.length - 1)
+        : baseUrl;
+    final p = path.startsWith('/') ? path : '/$path';
+    return '$b$p';
+  }
+
+  Future<void> _syncBackendSession(GoTrueClient auth) async {
+    String baseUrl;
+    try {
+      baseUrl = ref.read(aiServiceProvider);
+    } catch (_) {
+      baseUrl = 'http://localhost:5600/';
+    }
+    var token = auth.currentSession?.accessToken;
+    if (token == null && auth.currentUser != null) {
+      try {
+        await auth.refreshSession();
+        token = auth.currentSession?.accessToken;
+      } catch (_) {}
+    }
+    if (token == null || token.isEmpty) return;
+
+    final res = await http.post(
+      Uri.parse(_urlJoin(baseUrl, '/auth/session')),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (res.statusCode < 200 || res.statusCode >= 300) {
+      return;
+    }
+    final decoded = jsonDecode(utf8.decode(res.bodyBytes));
+    if (decoded is! Map) return;
+    final sessionId = decoded['session_id'];
+    if (sessionId is! String || sessionId.trim().isEmpty) return;
+    await ref.read(sessionProvider.notifier).setSessionId(sessionId);
+  }
+
   Future<void> _signIn() async {
     setState(() {
       _loading = true;
@@ -35,6 +78,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       if (!mounted) return;
       try {
         await auth.refreshSession();
+      } catch (_) {}
+      if (!mounted) return;
+      try {
+        await _syncBackendSession(auth);
       } catch (_) {}
       if (!mounted) return;
       if (Navigator.of(context).canPop()) {

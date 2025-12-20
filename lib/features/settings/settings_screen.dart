@@ -11,6 +11,7 @@ import 'widgets/tts_settings_container.dart';
 import 'package:writer/theme/reader_bundles.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
+import 'package:writer/state/session_state.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
@@ -103,6 +104,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   style: TextButton.styleFrom(foregroundColor: Colors.orange),
                   onPressed: () async {
                     await client!.auth.signOut();
+                    await ref.read(sessionProvider.notifier).clear();
                     setState(() {});
                   },
                   child: Text(l10n.signOut),
