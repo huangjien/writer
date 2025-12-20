@@ -637,14 +637,12 @@ void main() {
           () => client.rpc(any(), params: any(named: 'params')),
         ).thenAnswer((_) => FakePostgrestFilterBuilder(null));
 
-        await repo.upsertSceneTemplateEmbedding('t1', const [0.1, 0.2]);
+        final embedding = List.filled(1536, 0.1);
+        await repo.upsertSceneTemplateEmbedding('t1', embedding);
         verify(
           () => client.rpc(
             'upsert_scene_template_embedding',
-            params: {
-              'p_template_id': 't1',
-              'p_embedding': [0.1, 0.2],
-            },
+            params: {'p_template_id': 't1', 'p_embedding': embedding},
           ),
         ).called(1);
       },

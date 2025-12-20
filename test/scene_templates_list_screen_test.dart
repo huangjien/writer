@@ -60,7 +60,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Scene Templates'), findsOneWidget);
-    expect(find.text('Battle Scene'), findsOneWidget);
+    expect(
+      find.textContaining('Battle Scene', findRichText: true),
+      findsOneWidget,
+    );
     expect(find.byTooltip('New'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.delete));
@@ -71,7 +74,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repo.deletedId, 't-1');
-    expect(find.text('Battle Scene'), findsNothing);
+    expect(
+      find.textContaining('Battle Scene', findRichText: true),
+      findsNothing,
+    );
   });
 
   testWidgets('Search filters list when supabase disabled', (tester) async {
@@ -101,8 +107,14 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Battle Scene'), findsOneWidget);
-    expect(find.text('Quiet Scene'), findsOneWidget);
+    expect(
+      find.textContaining('Battle Scene', findRichText: true),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('Quiet Scene', findRichText: true),
+      findsOneWidget,
+    );
 
     final search = find.byType(TextField);
     expect(search, findsOneWidget);
@@ -110,8 +122,14 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     await tester.pumpAndSettle();
 
-    expect(find.text('Battle Scene'), findsNothing);
-    expect(find.text('Quiet Scene'), findsOneWidget);
+    expect(
+      find.textContaining('Battle Scene', findRichText: true),
+      findsNothing,
+    );
+    expect(
+      find.textContaining('Quiet Scene', findRichText: true),
+      findsOneWidget,
+    );
 
     final tf = tester.widget<TextField>(search);
     expect(tf.decoration?.suffixText, '1');
