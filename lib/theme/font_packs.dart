@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../shared/strings.dart';
 
 /// Optional font packs for reader UI.
@@ -39,17 +38,36 @@ TextTheme _applyFamilyWithFallback(TextTheme base, String family) {
   );
 }
 
+TextTheme _applyFamily(TextTheme base, String family) {
+  TextStyle? withStyle(TextStyle? s) => s?.copyWith(fontFamily: family);
+  return base.copyWith(
+    displayLarge: withStyle(base.displayLarge),
+    displayMedium: withStyle(base.displayMedium),
+    displaySmall: withStyle(base.displaySmall),
+    headlineLarge: withStyle(base.headlineLarge),
+    headlineMedium: withStyle(base.headlineMedium),
+    headlineSmall: withStyle(base.headlineSmall),
+    titleLarge: withStyle(base.titleLarge),
+    titleMedium: withStyle(base.titleMedium),
+    titleSmall: withStyle(base.titleSmall),
+    bodyLarge: withStyle(base.bodyLarge),
+    bodyMedium: withStyle(base.bodyMedium),
+    bodySmall: withStyle(base.bodySmall),
+    labelLarge: withStyle(base.labelLarge),
+    labelMedium: withStyle(base.labelMedium),
+    labelSmall: withStyle(base.labelSmall),
+  );
+}
+
 ThemeData applyFontPack(ThemeData base, ReaderFontPack pack) {
   switch (pack) {
     case ReaderFontPack.system:
       return base; // No change
     case ReaderFontPack.inter:
-      return base.copyWith(
-        textTheme: GoogleFonts.interTextTheme(base.textTheme),
-      );
+      return base.copyWith(textTheme: _applyFamily(base.textTheme, 'Inter'));
     case ReaderFontPack.merriweather:
       return base.copyWith(
-        textTheme: GoogleFonts.merriweatherTextTheme(base.textTheme),
+        textTheme: _applyFamily(base.textTheme, 'Merriweather'),
       );
   }
 }

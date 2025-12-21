@@ -48,7 +48,7 @@ ThemeData _buildFromSeed(Color seed, Brightness brightness) {
   return ThemeData(
     colorScheme: ColorScheme.fromSeed(seedColor: seed, brightness: brightness),
     useMaterial3: true,
-    fontFamily: 'NotoSansSC',
+    fontFamily: 'Noto Sans SC',
   );
 }
 
@@ -58,7 +58,7 @@ ThemeData themeForLight(AppThemeFamily family) {
     return ThemeData(
       colorScheme: const ColorScheme.highContrastLight(),
       useMaterial3: true,
-      fontFamily: 'NotoSansSC',
+      fontFamily: 'Noto Sans SC',
     );
   }
   return _buildFromSeed(_seedFor(family), Brightness.light);
@@ -70,7 +70,7 @@ ThemeData themeForDark(AppThemeFamily family) {
     return ThemeData(
       colorScheme: const ColorScheme.highContrastDark(),
       useMaterial3: true,
-      fontFamily: 'NotoSansSC',
+      fontFamily: 'Noto Sans SC',
     );
   }
   return _buildFromSeed(_seedFor(family), Brightness.dark);

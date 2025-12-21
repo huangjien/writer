@@ -84,7 +84,7 @@ class App extends ConsumerWidget {
 
     ThemeData applyMotion(ThemeData base) {
       final withFont = base.copyWith(
-        textTheme: base.textTheme.apply(fontFamily: 'NotoSansSC'),
+        textTheme: base.textTheme.apply(fontFamily: 'Noto Sans SC'),
       );
 
       if (motion.reduceMotion) {

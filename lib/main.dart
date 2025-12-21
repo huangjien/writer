@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
 import 'state/ai_service_settings.dart';
@@ -18,9 +18,22 @@ final localStorageRepositoryProvider = Provider<LocalStorageRepository>((ref) {
   return LocalStorageRepository(vectorService: vectorService);
 });
 
+Future<void> _preloadFonts() async {
+  final noto = FontLoader('Noto Sans SC')
+    ..addFont(rootBundle.load('assets/fonts/NotoSansSC-Regular.ttf'))
+    ..addFont(rootBundle.load('assets/fonts/NotoSansSC-Bold.ttf'));
+  final inter = FontLoader('Inter')
+    ..addFont(rootBundle.load('assets/fonts/Inter-Regular.ttf'))
+    ..addFont(rootBundle.load('assets/fonts/Inter-Bold.ttf'));
+  final merri = FontLoader('Merriweather')
+    ..addFont(rootBundle.load('assets/fonts/Merriweather-Regular.ttf'))
+    ..addFont(rootBundle.load('assets/fonts/Merriweather-Bold.ttf'));
+  await Future.wait([noto.load(), inter.load(), merri.load()]);
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  GoogleFonts.config.allowRuntimeFetching = false;
+  await _preloadFonts();
   if (supabaseEnabled) {
     await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
   }
