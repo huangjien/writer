@@ -7,8 +7,6 @@ import '../state/pattern_providers.dart';
 import '../state/providers.dart';
 import '../l10n/app_localizations.dart';
 import '../shared/constants.dart';
-import '../features/ai_chat/services/ai_chat_service.dart';
-import '../main.dart';
 
 const int _previewLen = kPreviewLenLong;
 const int _searchDebounceMs = kSearchDebounceMs;
@@ -212,23 +210,15 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
     });
 
     try {
-      final ai = ref.read(aiChatServiceProvider);
-      final vec = await ai.embed(q, model: 'text-embedding-3-small');
-      if (!mounted) return;
-      if (vec == null || vec.isEmpty) {
-        setState(() {
-          _search(force: true);
-          _searchLoading = false;
-        });
-        return;
-      }
-
-      final repo = ref.read(localStorageRepositoryProvider);
-      final res = await repo.searchWritingPatternsByVector(vec, limit: 5);
-
+      final svc = ref.read(patternsServiceRefProvider);
+      final res = await svc.smartSearchPatterns(q, limit: 5);
       if (!mounted) return;
       setState(() {
-        _items = res;
+        if (res.isEmpty) {
+          _search(force: true);
+        } else {
+          _items = res;
+        }
       });
     } catch (e) {
       if (!mounted) return;

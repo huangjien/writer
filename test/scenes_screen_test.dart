@@ -524,8 +524,8 @@ class _VectorSearchRepo extends LocalStorageRepository {
   }
 
   @override
-  Future<List<SceneTemplateRow>> searchSceneTemplatesByVector(
-    List<double> query, {
+  Future<List<SceneTemplateRow>> searchSceneTemplates(
+    String query, {
     int limit = 10,
     int offset = 0,
     String? languageCode,

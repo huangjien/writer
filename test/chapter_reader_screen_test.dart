@@ -257,11 +257,7 @@ void main() {
         if (c == chapter) {
           // return SpyChapterEditController(c, mockChapterRepository, mockAiChatService);
         }
-        return ChapterEditController(
-          c,
-          mockChapterRepository,
-          mockAiChatService,
-        );
+        return ChapterEditController(c, mockChapterRepository);
       },
     );
     await tester.pumpAndSettle();

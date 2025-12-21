@@ -196,4 +196,22 @@ class PatternsService {
         .map((e) => Pattern.fromMap(Map<String, dynamic>.from(e)))
         .toList();
   }
+
+  Future<List<Pattern>> smartSearchPatterns(
+    String query, {
+    int limit = 10,
+    int offset = 0,
+  }) async {
+    final data = await _send(
+      'POST',
+      '/patterns/search_vector',
+      json: {'query': query, 'limit': limit, 'offset': offset},
+    );
+    final list = (data is Map && data['items'] is List)
+        ? (data['items'] as List)
+        : (data is List ? data : []);
+    return list
+        .map((e) => Pattern.fromMap(Map<String, dynamic>.from(e)))
+        .toList();
+  }
 }

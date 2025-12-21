@@ -8,6 +8,7 @@ import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/models/character.dart';
 import 'package:writer/models/scene.dart';
 import 'package:writer/models/template.dart';
+import 'package:writer/services/vector_service.dart';
 
 import 'shared/supabase_fakes.dart';
 
@@ -18,6 +19,8 @@ class MockGoTrueClient extends Mock implements GoTrueClient {}
 class MockUser extends Mock implements User {}
 
 class MockSupabaseQueryBuilder extends Mock implements SupabaseQueryBuilder {}
+
+class MockVectorService extends Mock implements VectorService {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -314,17 +317,17 @@ void main() {
       await repo.deleteSceneTemplate('id');
     });
 
-    test('search/upsert no-op when supabase disabled', () async {
+    test('search/refresh no-op when supabase disabled', () async {
       final client = MockSupabaseClient();
       final repo = LocalStorageRepository(
         supabaseEnabled: false,
         client: client,
       );
 
-      final res = await repo.searchSceneTemplatesByVector(const [0.1, 0.2]);
+      final res = await repo.searchSceneTemplates('q');
       expect(res, isEmpty);
 
-      await repo.upsertSceneTemplateEmbedding('t1', const [0.1, 0.2]);
+      await repo.refreshSceneTemplateEmbedding('t1');
       verifyNever(() => client.rpc(any(), params: any(named: 'params')));
     });
   });
@@ -334,6 +337,7 @@ void main() {
     late MockGoTrueClient auth;
     late MockUser user;
     late MockSupabaseQueryBuilder qb;
+    late MockVectorService vectors;
     late LocalStorageRepository repo;
 
     setUp(() {
@@ -341,13 +345,18 @@ void main() {
       auth = MockGoTrueClient();
       user = MockUser();
       qb = MockSupabaseQueryBuilder();
+      vectors = MockVectorService();
 
       when(() => client.auth).thenReturn(auth);
       when(() => auth.currentUser).thenReturn(user);
       when(() => user.id).thenReturn('u1');
       when(() => client.from('scene_templates')).thenAnswer((_) => qb);
 
-      repo = LocalStorageRepository(supabaseEnabled: true, client: client);
+      repo = LocalStorageRepository(
+        supabaseEnabled: true,
+        client: client,
+        vectorService: vectors,
+      );
     });
 
     test('saveSceneTemplateForm returns inserted id', () async {
@@ -535,25 +544,8 @@ void main() {
       });
     });
 
-    test('searchSceneTemplatesByVector returns rows in hit order', () async {
-      when(() => client.rpc(any(), params: any(named: 'params'))).thenAnswer(
-        (_) => FakePostgrestFilterBuilder([
-          {'id': 'b'},
-          {'id': 'a'},
-        ]),
-      );
+    test('searchSceneTemplates returns rows in returned order', () async {
       final rows = [
-        {
-          'id': 'a',
-          'idx': 1,
-          'title': 'A',
-          'scene_summaries': 'S',
-          'scene_synopses': 'Y',
-          'language_code': 'en',
-          'created_by': 'u1',
-          'created_at': '2024-01-01T00:00:00Z',
-          'updated_at': '2024-01-02T00:00:00Z',
-        },
         {
           'id': 'b',
           'idx': 2,
@@ -565,13 +557,29 @@ void main() {
           'created_at': '2024-01-01T00:00:00Z',
           'updated_at': '2024-01-02T00:00:00Z',
         },
+        {
+          'id': 'a',
+          'idx': 1,
+          'title': 'A',
+          'scene_summaries': 'S',
+          'scene_synopses': 'Y',
+          'language_code': 'en',
+          'created_by': 'u1',
+          'created_at': '2024-01-01T00:00:00Z',
+          'updated_at': '2024-01-02T00:00:00Z',
+        },
       ];
       when(
-        () => qb.select(any()),
-      ).thenAnswer((_) => FakePostgrestFilterBuilder(rows));
+        () => vectors.searchSceneTemplates(
+          query: any(named: 'query'),
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+          languageCode: any(named: 'languageCode'),
+        ),
+      ).thenAnswer((_) async => rows);
 
-      final res = await repo.searchSceneTemplatesByVector(
-        const [0.1, 0.2],
+      final res = await repo.searchSceneTemplates(
+        'q',
         limit: 10,
         offset: 0,
         languageCode: 'en',
@@ -580,30 +588,25 @@ void main() {
     });
 
     test(
-      'searchSceneTemplatesByVector returns empty when hits empty',
+      'searchSceneTemplates returns empty when backend returns empty',
       () async {
-        when(() => client.rpc(any(), params: any(named: 'params'))).thenAnswer(
-          (_) => FakePostgrestFilterBuilder(<Map<String, dynamic>>[]),
-        );
+        when(
+          () => vectors.searchSceneTemplates(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            offset: any(named: 'offset'),
+            languageCode: any(named: 'languageCode'),
+          ),
+        ).thenAnswer((_) async => <Map<String, dynamic>>[]);
 
-        final res = await repo.searchSceneTemplatesByVector(
-          const [0.1, 0.2],
-          limit: 10,
-          offset: 0,
-        );
+        final res = await repo.searchSceneTemplates('q', limit: 10, offset: 0);
         expect(res, isEmpty);
-        verifyNever(() => client.from('scene_templates'));
       },
     );
 
     test(
-      'searchSceneTemplatesByVector uses no language filter when null',
+      'searchSceneTemplates passes null languageCode when omitted',
       () async {
-        when(() => client.rpc(any(), params: any(named: 'params'))).thenAnswer(
-          (_) => FakePostgrestFilterBuilder([
-            {'id': 'a'},
-          ]),
-        );
         final rows = [
           {
             'id': 'a',
@@ -618,39 +621,34 @@ void main() {
           },
         ];
         when(
-          () => qb.select(any()),
-        ).thenAnswer((_) => FakePostgrestFilterBuilder(rows));
+          () => vectors.searchSceneTemplates(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            offset: any(named: 'offset'),
+            languageCode: any(named: 'languageCode'),
+          ),
+        ).thenAnswer((_) async => rows);
 
-        final res = await repo.searchSceneTemplatesByVector(
-          const [0.1, 0.2],
-          limit: 10,
-          offset: 0,
-        );
+        final res = await repo.searchSceneTemplates('q', limit: 10, offset: 0);
         expect(res.map((e) => e.id).toList(), ['a']);
-      },
-    );
-
-    test(
-      'upsertSceneTemplateEmbedding calls rpc when embedding non-empty',
-      () async {
-        when(
-          () => client.rpc(any(), params: any(named: 'params')),
-        ).thenAnswer((_) => FakePostgrestFilterBuilder(null));
-
-        final embedding = List.filled(1536, 0.1);
-        await repo.upsertSceneTemplateEmbedding('t1', embedding);
         verify(
-          () => client.rpc(
-            'upsert_scene_template_embedding',
-            params: {'p_template_id': 't1', 'p_embedding': embedding},
+          () => vectors.searchSceneTemplates(
+            query: 'q',
+            limit: 10,
+            offset: 0,
+            languageCode: null,
           ),
         ).called(1);
       },
     );
 
-    test('upsertSceneTemplateEmbedding no-ops on empty embedding', () async {
-      await repo.upsertSceneTemplateEmbedding('t1', const []);
-      verifyNever(() => client.rpc(any(), params: any(named: 'params')));
+    test('refreshSceneTemplateEmbedding delegates to VectorService', () async {
+      when(
+        () => vectors.refreshSceneTemplateEmbedding(any()),
+      ).thenAnswer((_) async {});
+
+      await repo.refreshSceneTemplateEmbedding('t1');
+      verify(() => vectors.refreshSceneTemplateEmbedding('t1')).called(1);
     });
   });
 

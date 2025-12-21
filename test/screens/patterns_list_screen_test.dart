@@ -6,9 +6,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/pattern.dart';
 import 'package:writer/screens/patterns_list_screen.dart';
-import 'package:writer/main.dart';
-import 'package:writer/repositories/local_storage_repository.dart';
-import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/state/pattern_providers.dart';
 import 'package:writer/services/patterns_service.dart';
 import 'package:writer/state/providers.dart';
@@ -38,6 +35,7 @@ class FakePatternsService extends PatternsService {
   bool deleteCalled = false;
   String? lastDeleteId;
   bool shouldFailDelete = false;
+  List<Pattern> smartResults = const [];
 
   @override
   Future<List<Pattern>> fetchPatterns() async => items;
@@ -56,27 +54,14 @@ class FakePatternsService extends PatternsService {
     lastDeleteId = id;
     return true;
   }
-}
-
-class FakeAiService extends AiChatService {
-  FakeAiService() : super('');
 
   @override
-  Future<List<double>> embed(String text, {String? model}) async {
-    return List.filled(1536, 0.1);
-  }
-}
-
-class FakeLocalRepo extends LocalStorageRepository {
-  List<Pattern> searchResults = [];
-
-  @override
-  Future<List<Pattern>> searchWritingPatternsByVector(
-    List<double> query, {
-    int limit = 5,
+  Future<List<Pattern>> smartSearchPatterns(
+    String query, {
+    int limit = 10,
     int offset = 0,
   }) async {
-    return searchResults;
+    return smartResults;
   }
 }
 
@@ -193,9 +178,7 @@ void main() {
 
   testWidgets('Smart search filters items', (tester) async {
     final fake = FakePatternsService();
-    final fakeAi = FakeAiService();
-    final fakeLocalRepo = FakeLocalRepo();
-    fakeLocalRepo.searchResults = [
+    fake.smartResults = [
       const Pattern(
         id: 'p3',
         title: 'Smart Result',
@@ -211,8 +194,6 @@ void main() {
         overrides: [
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
-          aiChatServiceProvider.overrideWith((_) => fakeAi),
-          localStorageRepositoryProvider.overrideWith((_) => fakeLocalRepo),
           supabaseEnabledProvider.overrideWith((_) => true),
         ],
         child: MaterialApp(

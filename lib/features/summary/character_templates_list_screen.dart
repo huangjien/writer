@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/state/supabase_config.dart';
@@ -97,23 +96,12 @@ class _CharacterTemplatesListScreenState
     });
 
     try {
-      final ai = ref.read(aiChatServiceProvider);
-      final vec = await ai.embed(q, model: 'text-embedding-3-small');
-      if (!mounted) return;
-      if (vec == null || vec.isEmpty) {
-        setState(() {
-          _localSearch();
-          _searchLoading = false;
-        });
-        return;
-      }
-
       final repo = ref.read(localStorageRepositoryProvider);
-      final res = await repo.searchCharacterTemplatesByVector(vec, limit: 5);
+      final res = await repo.searchCharacterTemplates(q, limit: 5);
 
       if (!mounted) return;
       setState(() {
-        _displayItems = res;
+        _displayItems = res.isEmpty ? _items : res;
       });
     } catch (e) {
       if (!mounted) return;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
-import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import '../../main.dart';
 import '../../models/template.dart';
 import '../../l10n/app_localizations.dart';
@@ -319,19 +318,10 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
                                   'Template title mismatch after save: $templateId',
                                 );
                               }
-                              if (isSupabaseEnabled &&
-                                  _descController.text.trim().isNotEmpty) {
-                                final ai = ref.read(aiChatServiceProvider);
-                                final vec = await ai.embed(
-                                  _descController.text.trim(),
-                                  model: 'text-embedding-3-small',
+                              if (isSupabaseEnabled) {
+                                await repo.refreshSceneTemplateEmbedding(
+                                  templateId,
                                 );
-                                if (vec != null && vec.isNotEmpty) {
-                                  await repo.upsertSceneTemplateEmbedding(
-                                    templateId,
-                                    vec,
-                                  );
-                                }
                               }
                               _templateId = templateId;
                               _baseName = _nameController.text;

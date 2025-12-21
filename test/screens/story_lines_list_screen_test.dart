@@ -7,9 +7,6 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/story_line.dart';
 import 'package:writer/screens/story_lines_list_screen.dart';
 import 'package:writer/services/story_lines_service.dart';
-import 'package:writer/main.dart';
-import 'package:writer/repositories/local_storage_repository.dart';
-import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/story_line_providers.dart';
 
@@ -43,6 +40,7 @@ class FakeStoryLinesService extends StoryLinesService {
   bool shouldThrowDelete = false;
   bool shouldThrowSearch = false;
   bool shouldThrowFetch = false;
+  List<StoryLine> smartResults = const [];
 
   @override
   Future<List<StoryLine>> fetchStoryLines() async {
@@ -72,27 +70,14 @@ class FakeStoryLinesService extends StoryLinesService {
     lastDeleteId = id;
     return true;
   }
-}
-
-class FakeAiService extends AiChatService {
-  FakeAiService() : super('');
 
   @override
-  Future<List<double>> embed(String text, {String? model}) async {
-    return List.filled(1536, 0.1);
-  }
-}
-
-class FakeLocalRepo extends LocalStorageRepository {
-  List<StoryLine> searchResults = [];
-
-  @override
-  Future<List<StoryLine>> searchStoryLinesByVector(
-    List<double> query, {
-    int limit = 5,
+  Future<List<StoryLine>> smartSearchStoryLines(
+    String query, {
+    int limit = 10,
     int offset = 0,
   }) async {
-    return searchResults;
+    return smartResults;
   }
 }
 
@@ -268,9 +253,7 @@ void main() {
 
   testWidgets('Smart search filters items', (tester) async {
     final fake = FakeStoryLinesService();
-    final fakeAi = FakeAiService();
-    final fakeLocalRepo = FakeLocalRepo();
-    fakeLocalRepo.searchResults = [
+    fake.smartResults = [
       const StoryLine(
         id: 's3',
         title: 'Smart Result',
@@ -286,8 +269,6 @@ void main() {
         overrides: [
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
-          aiChatServiceProvider.overrideWith((_) => fakeAi),
-          localStorageRepositoryProvider.overrideWith((_) => fakeLocalRepo),
           supabaseEnabledProvider.overrideWith((_) => true),
         ],
         child: MaterialApp(

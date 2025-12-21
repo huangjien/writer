@@ -13,8 +13,6 @@ import '../models/character_note.dart';
 import '../models/scene_note.dart';
 import '../models/character_template_row.dart';
 import '../models/scene_template_row.dart';
-import '../models/pattern.dart';
-import '../models/story_line.dart';
 
 class LocalStorageRepository {
   final bool? _supabaseEnabledOverride;
@@ -357,14 +355,16 @@ class LocalStorageRepository {
         'language_code': 'en',
         'created_by': uid,
       };
-      if (_vectorService != null) {
-        final text = [item.name, item.description ?? ''].join('\n\n').trim();
-        final vector = await _vectorService.embed(text);
-        if (vector.length == 1536) {
-          payload['embedding'] = vector;
-        }
+      final res = await client
+          .from('character_templates')
+          .insert(payload)
+          .select('id')
+          .single();
+      final map = Map<String, dynamic>.from(res as Map);
+      final id = map['id'] as String?;
+      if (_vectorService != null && id != null && id.trim().isNotEmpty) {
+        await _vectorService.refreshCharacterTemplateEmbedding(id);
       }
-      await client.from('character_templates').insert(payload);
     }
   }
 
@@ -443,20 +443,17 @@ class LocalStorageRepository {
         'language_code': languageCode,
         'created_by': uid,
       };
-      if (_vectorService != null) {
-        final text = [item.name, item.description ?? ''].join('\n\n').trim();
-        final vector = await _vectorService.embed(text);
-        if (vector.length == 1536) {
-          payload['embedding'] = vector;
-        }
-      }
       final res = await client
           .from('scene_templates')
           .insert(payload)
           .select('id')
           .single();
       final map = Map<String, dynamic>.from(res as Map);
-      return map['id'] as String?;
+      final id = map['id'] as String?;
+      if (_vectorService != null && id != null && id.trim().isNotEmpty) {
+        await _vectorService.refreshSceneTemplateEmbedding(id);
+      }
+      return id;
     }
     return null;
   }
@@ -722,122 +719,50 @@ class LocalStorageRepository {
         .toList();
   }
 
-  Future<List<SceneTemplateRow>> searchSceneTemplatesByVector(
-    List<double> query, {
+  Future<List<SceneTemplateRow>> searchSceneTemplates(
+    String query, {
     int limit = 10,
     int offset = 0,
     String? languageCode,
   }) async {
     if (!_isSupabaseEnabled) return <SceneTemplateRow>[];
-    if (query.isEmpty) return <SceneTemplateRow>[];
-    final client = _client;
-    final raw = await client.rpc(
-      'search_scene_templates',
-      params: {'p_query': query, 'p_limit': limit, 'p_offset': offset},
+    if (_vectorService == null) return <SceneTemplateRow>[];
+    final rows = await _vectorService.searchSceneTemplates(
+      query: query,
+      limit: limit,
+      offset: offset,
+      languageCode: languageCode,
     );
-    final hits = (raw as List).cast<Map<String, dynamic>>();
-    final ids = hits.map((h) => h['id'].toString()).toList();
-    if (ids.isEmpty) return <SceneTemplateRow>[];
-    final queryBuilder = client
-        .from('scene_templates')
-        .select(
-          'id, idx, title, scene_summaries, scene_synopses, language_code, created_by, created_at, updated_at',
-        )
-        .inFilter('id', ids);
-    final rows = languageCode == null
-        ? await queryBuilder
-        : await queryBuilder.eq('language_code', languageCode);
-    final mapped = (rows as List)
-        .cast<Map<String, dynamic>>()
-        .map(SceneTemplateRow.fromRow)
-        .toList();
-    final byId = <String, SceneTemplateRow>{
-      for (final row in mapped) row.id: row,
-    };
-    return ids.map((id) => byId[id]).whereType<SceneTemplateRow>().toList();
+    return rows.map(SceneTemplateRow.fromRow).toList();
   }
 
-  Future<List<CharacterTemplateRow>> searchCharacterTemplatesByVector(
-    List<double> query, {
+  Future<List<CharacterTemplateRow>> searchCharacterTemplates(
+    String query, {
     int limit = 10,
     int offset = 0,
     String? languageCode,
   }) async {
     if (!_isSupabaseEnabled) return <CharacterTemplateRow>[];
-    if (query.isEmpty) return <CharacterTemplateRow>[];
-    final client = _client;
-    final raw = await client.rpc(
-      'search_character_templates',
-      params: {'p_query': query, 'p_limit': limit, 'p_offset': offset},
+    if (_vectorService == null) return <CharacterTemplateRow>[];
+    final rows = await _vectorService.searchCharacterTemplates(
+      query: query,
+      limit: limit,
+      offset: offset,
+      languageCode: languageCode,
     );
-    final hits = (raw as List).cast<Map<String, dynamic>>();
-    final ids = hits.map((h) => h['id'].toString()).toList();
-    if (ids.isEmpty) return <CharacterTemplateRow>[];
-    final queryBuilder = client
-        .from('character_templates')
-        .select(
-          'id, idx, title, character_summaries, character_synopses, language_code, created_by, created_at, updated_at',
-        )
-        .inFilter('id', ids);
-    final rows = languageCode == null
-        ? await queryBuilder
-        : await queryBuilder.eq('language_code', languageCode);
-    final mapped = (rows as List)
-        .cast<Map<String, dynamic>>()
-        .map(CharacterTemplateRow.fromRow)
-        .toList();
-    final byId = <String, CharacterTemplateRow>{
-      for (final row in mapped) row.id: row,
-    };
-    return ids.map((id) => byId[id]).whereType<CharacterTemplateRow>().toList();
+    return rows.map(CharacterTemplateRow.fromRow).toList();
   }
 
-  Future<List<Pattern>> searchWritingPatternsByVector(
-    List<double> query, {
-    int limit = 5,
-    int offset = 0,
-  }) async {
-    if (!_isSupabaseEnabled) return <Pattern>[];
-    if (query.isEmpty) return <Pattern>[];
-    final client = _client;
-    final raw = await client.rpc(
-      'search_writing_patterns',
-      params: {'p_query': query, 'p_limit': limit, 'p_offset': offset},
-    );
-    final hits = (raw as List).cast<Map<String, dynamic>>();
-    return hits.map((e) => Pattern.fromMap(e)).toList();
-  }
-
-  Future<List<StoryLine>> searchStoryLinesByVector(
-    List<double> query, {
-    int limit = 5,
-    int offset = 0,
-  }) async {
-    if (!_isSupabaseEnabled) return <StoryLine>[];
-    if (query.isEmpty) return <StoryLine>[];
-    final client = _client;
-    final raw = await client.rpc(
-      'search_story_lines',
-      params: {'p_query': query, 'p_limit': limit, 'p_offset': offset},
-    );
-    final hits = (raw as List).cast<Map<String, dynamic>>();
-    return hits.map((e) => StoryLine.fromMap(e)).toList();
-  }
-
-  Future<void> upsertSceneTemplateEmbedding(
-    String templateId,
-    List<double> embedding,
-  ) async {
+  Future<void> refreshSceneTemplateEmbedding(String templateId) async {
     if (!_isSupabaseEnabled) return;
-    if (embedding.isEmpty) return;
-    if (embedding.length != 1536) {
-      throw Exception('Invalid embedding length: ${embedding.length}');
-    }
-    final client = _client;
-    await client.rpc(
-      'upsert_scene_template_embedding',
-      params: {'p_template_id': templateId, 'p_embedding': embedding},
-    );
+    if (_vectorService == null) return;
+    await _vectorService.refreshSceneTemplateEmbedding(templateId);
+  }
+
+  Future<void> refreshCharacterTemplateEmbedding(String templateId) async {
+    if (!_isSupabaseEnabled) return;
+    if (_vectorService == null) return;
+    await _vectorService.refreshCharacterTemplateEmbedding(templateId);
   }
 
   Future<void> deleteSceneTemplate(String id) async {

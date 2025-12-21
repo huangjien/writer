@@ -5,8 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../models/story_line.dart';
 import '../state/story_line_providers.dart';
 import '../state/providers.dart';
-import '../features/ai_chat/services/ai_chat_service.dart';
-import '../main.dart';
 import '../l10n/app_localizations.dart';
 import '../shared/constants.dart';
 
@@ -213,23 +211,15 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
     });
 
     try {
-      final ai = ref.read(aiChatServiceProvider);
-      final vec = await ai.embed(q, model: 'text-embedding-3-small');
-      if (!mounted) return;
-      if (vec == null || vec.isEmpty) {
-        setState(() {
-          _search(force: true);
-          _searchLoading = false;
-        });
-        return;
-      }
-
-      final repo = ref.read(localStorageRepositoryProvider);
-      final res = await repo.searchStoryLinesByVector(vec, limit: 5);
-
+      final svc = ref.read(storyLinesServiceRefProvider);
+      final res = await svc.smartSearchStoryLines(q, limit: 5);
       if (!mounted) return;
       setState(() {
-        _items = res;
+        if (res.isEmpty) {
+          _search(force: true);
+        } else {
+          _items = res;
+        }
       });
     } catch (e) {
       if (!mounted) return;

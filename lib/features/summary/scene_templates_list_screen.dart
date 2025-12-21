@@ -1,8 +1,6 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/state/supabase_config.dart';
@@ -21,14 +19,12 @@ class SceneTemplatesListScreen extends ConsumerStatefulWidget {
 
 class _SceneTemplatesListScreenState
     extends ConsumerState<SceneTemplatesListScreen> {
-  static const int _searchDebounceMs = 250;
   List<SceneTemplateRow> _items = const [];
   List<SceneTemplateRow> _displayItems = const [];
   bool _loading = true;
   bool _searchLoading = false;
   String? _error;
   final _searchCtrl = TextEditingController();
-  Timer? _searchTimer;
   DateTime? _lastRowTapAt;
   String? _lastRowTapId;
 
@@ -46,7 +42,7 @@ class _SceneTemplatesListScreenState
     try {
       final repo = ref.read(localStorageRepositoryProvider);
       _items = await repo.listSceneTemplates();
-      _displayItems = _items;
+      _localSearch();
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -56,57 +52,43 @@ class _SceneTemplatesListScreenState
     }
   }
 
-  Future<void> _search({bool force = false}) async {
-    final q = _searchCtrl.text.trim();
+  void _localSearch() {
+    final q = _searchCtrl.text.trim().toLowerCase();
     if (q.isEmpty) {
-      if (mounted) {
-        setState(() {
-          _searchLoading = false;
-          _displayItems = _items;
-        });
-      }
+      _displayItems = _items;
+      return;
+    }
+    _displayItems = _items.where((t) {
+      final title = (t.title ?? '').toLowerCase();
+      return title.contains(q);
+    }).toList();
+  }
+
+  Future<void> _smartSearch() async {
+    final q = _searchCtrl.text.trim();
+    if (q.isEmpty) return;
+
+    final enabled = ref.read(supabaseEnabledProvider);
+    if (!enabled) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Smart search requires Supabase connection'),
+        ),
+      );
       return;
     }
 
-    if (!supabaseEnabled) {
-      if (mounted) {
-        setState(() {
-          _searchLoading = false;
-          _displayItems = _items
-              .where(
-                (t) => (t.title ?? '').toLowerCase().contains(q.toLowerCase()),
-              )
-              .toList();
-        });
-      }
-      return;
-    }
+    setState(() {
+      _searchLoading = true;
+    });
 
-    if (mounted) {
-      setState(() {
-        _searchLoading = true;
-      });
-    }
     try {
-      final ai = ref.read(aiChatServiceProvider);
-      final vec = await ai.embed(q, model: 'text-embedding-3-small');
-      if (!mounted) return;
-      if (vec == null || vec.isEmpty) {
-        setState(() {
-          _searchLoading = false;
-          _displayItems = _items
-              .where(
-                (t) => (t.title ?? '').toLowerCase().contains(q.toLowerCase()),
-              )
-              .toList();
-        });
-        return;
-      }
       final repo = ref.read(localStorageRepositoryProvider);
-      final res = await repo.searchSceneTemplatesByVector(vec, limit: 50);
+      final res = await repo.searchSceneTemplates(q, limit: 5);
+
       if (!mounted) return;
       setState(() {
-        _displayItems = res;
+        _displayItems = res.isEmpty ? _items : res;
       });
     } catch (e) {
       if (!mounted) return;
@@ -124,7 +106,6 @@ class _SceneTemplatesListScreenState
 
   @override
   void dispose() {
-    _searchTimer?.cancel();
     _searchCtrl.dispose();
     super.dispose();
   }
@@ -201,16 +182,18 @@ class _SceneTemplatesListScreenState
                       controller: _searchCtrl,
                       decoration: InputDecoration(
                         labelText: l10n.searchLabel,
-                        suffixText: '${_displayItems.length}',
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.auto_awesome),
+                          tooltip: 'Smart Search',
+                          onPressed: _smartSearch,
+                        ),
                       ),
                       onChanged: (_) {
-                        _searchTimer?.cancel();
-                        _searchTimer = Timer(
-                          const Duration(milliseconds: _searchDebounceMs),
-                          _search,
-                        );
+                        setState(() {
+                          _localSearch();
+                        });
                       },
-                      onSubmitted: (_) => _search(force: true),
+                      onSubmitted: (_) => _smartSearch(),
                     ),
                   ),
                   Expanded(
@@ -283,7 +266,6 @@ class _SceneTemplatesListScreenState
                                       await repo.deleteSceneTemplate(it.id);
                                       await _load();
                                       if (!context.mounted) return;
-                                      await _search(force: true);
                                     } catch (e) {
                                       if (!context.mounted) return;
                                       ScaffoldMessenger.of(

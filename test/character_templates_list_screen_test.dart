@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/summary/character_templates_list_screen.dart';
-import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/state/supabase_config.dart';
 import 'package:writer/main.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
@@ -38,13 +37,12 @@ class FakeLocalRepo extends LocalStorageRepository {
   }
 
   @override
-  Future<List<CharacterTemplateRow>> searchCharacterTemplatesByVector(
-    List<double> query, {
+  Future<List<CharacterTemplateRow>> searchCharacterTemplates(
+    String query, {
     int limit = 10,
     int offset = 0,
     String? languageCode,
   }) async {
-    // print('DEBUG: searchCharacterTemplatesByVector called');
     return [
       CharacterTemplateRow(
         id: 't-smart',
@@ -55,16 +53,6 @@ class FakeLocalRepo extends LocalStorageRepository {
         updatedAt: DateTime(2024, 1, 1),
       ),
     ];
-  }
-}
-
-class FakeAiService extends AiChatService {
-  FakeAiService() : super('http://mock', client: null);
-
-  @override
-  Future<List<double>?> embed(String input, {String? model}) async {
-    // print('DEBUG: embed called');
-    return List.filled(1536, 0.1);
   }
 }
 
@@ -238,14 +226,13 @@ void main() {
     expect(find.text('New Character Template'), findsOneWidget);
   });
 
-  testWidgets('Smart search triggers vector search', (tester) async {
+  testWidgets('Smart search loads results from backend search', (tester) async {
     final repo = FakeLocalRepo();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           localStorageRepositoryProvider.overrideWith((_) => repo),
           supabaseEnabledProvider.overrideWithValue(true),
-          aiChatServiceProvider.overrideWithValue(FakeAiService()),
         ],
         child: const MaterialApp(
           home: CharacterTemplatesListScreen(novelId: 'n-1'),

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
-import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/mock_providers.dart';
 import 'package:writer/state/supabase_config.dart';
@@ -97,31 +96,24 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
     }
     _templateSearchTimer = Timer(const Duration(milliseconds: 250), () async {
       try {
-        final ai = ref.read(aiChatServiceProvider);
-        final vec = await ai.embed(q, model: 'text-embedding-3-small');
-        if (!mounted) return;
-        if (vec == null || vec.isEmpty) {
-          setState(() {
-            _templateSearchLoading = false;
-            _templateSearchResults = _templatesForLanguage(_languageCode)
-                .where(
-                  (t) =>
-                      (t.title ?? '').toLowerCase().contains(q.toLowerCase()),
-                )
-                .toList();
-          });
-          return;
-        }
         final repo = ref.read(localStorageRepositoryProvider);
-        final res = await repo.searchSceneTemplatesByVector(
-          vec,
+        final res = await repo.searchSceneTemplates(
+          q,
           limit: 10,
           languageCode: _languageCode,
         );
         if (!mounted) return;
         setState(() {
           _templateSearchLoading = false;
-          _templateSearchResults = res;
+          _templateSearchResults = res.isEmpty
+              ? _templatesForLanguage(_languageCode)
+                    .where(
+                      (t) => (t.title ?? '').toLowerCase().contains(
+                        q.toLowerCase(),
+                      ),
+                    )
+                    .toList()
+              : res;
         });
       } catch (_) {
         if (!mounted) return;
