@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/repositories/template_repository.dart';
-import 'package:writer/shared/Constants.dart';
+import 'package:writer/shared/constants.dart';
 import '../../models/scene_template_row.dart';
 import '../../state/providers.dart';
 
