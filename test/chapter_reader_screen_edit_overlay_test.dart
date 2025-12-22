@@ -9,13 +9,14 @@ import 'package:writer/state/edit_permissions.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/state/ai_service_settings.dart';
+import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/tts_settings.dart';
 import 'package:writer/repositories/chapter_port.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 
 class FakeAiChatService extends AiChatService {
-  FakeAiChatService() : super('http://localhost:5600/');
+  FakeAiChatService() : super(RemoteRepository('http://localhost:5600/'));
   @override
   Future<bool> checkHealth() async => true;
   @override

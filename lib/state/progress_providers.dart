@@ -4,47 +4,54 @@ import 'providers.dart';
 import '../models/user_progress.dart';
 import '../repositories/progress_repository.dart';
 import '../repositories/progress_port.dart';
+import '../repositories/remote_repository.dart';
 
 final progressRepositoryProvider = Provider<ProgressPort>((ref) {
-  final client = ref.watch(supabaseClientProvider);
-  return ProgressRepository(client);
+  return ProgressRepository(ref.watch(remoteRepositoryProvider));
 });
 
 final lastProgressProvider = FutureProvider.family<UserProgress?, String>((
   ref,
   novelId,
 ) async {
+  ref.watch(authStateProvider);
+  final isSignedIn = ref.watch(isSignedInProvider);
+  if (!isSignedIn) return null;
   final clientRepo = ref.watch(progressRepositoryProvider);
   return clientRepo.lastProgressForNovel(novelId);
 });
 
-final latestUserProgressProvider = StreamProvider.autoDispose<UserProgress?>((
+final latestUserProgressProvider = FutureProvider.autoDispose<UserProgress?>((
   ref,
-) {
-  final client = ref.watch(supabaseClientProvider);
-  final userId = client.auth.currentUser?.id;
-  if (userId == null) return Stream.value(null);
-  return client
-      .from('user_progress')
-      .stream(primaryKey: ['user_id', 'chapter_id'])
-      .eq('user_id', userId)
-      .order('updated_at', ascending: false)
-      .limit(1)
-      .map((list) => list.isEmpty ? null : UserProgress.fromJson(list.first));
+) async {
+  ref.watch(authStateProvider);
+  final isSignedIn = ref.watch(isSignedInProvider);
+  if (!isSignedIn) return null;
+  final repo = ref.watch(progressRepositoryProvider);
+  return repo.latestProgressForUser();
 });
 
 final recentUserProgressProvider =
-    StreamProvider.autoDispose<List<UserProgress>>((ref) {
-      final client = ref.watch(supabaseClientProvider);
-      final userId = client.auth.currentUser?.id;
-      if (userId == null) return Stream.value([]);
-      return client
-          .from('user_progress')
-          .stream(primaryKey: ['user_id', 'chapter_id'])
-          .eq('user_id', userId)
-          .order('updated_at', ascending: false)
-          .limit(3)
-          .map(
-            (list) => list.map((item) => UserProgress.fromJson(item)).toList(),
-          );
+    FutureProvider.autoDispose<List<UserProgress>>((ref) async {
+      ref.watch(authStateProvider);
+      final isSignedIn = ref.watch(isSignedInProvider);
+      if (!isSignedIn) return const [];
+      final remote = ref.watch(remoteRepositoryProvider);
+      final res = await remote.get(
+        'progress/recent',
+        queryParameters: {'limit': '3'},
+      );
+      if (res is List) {
+        return res
+            .cast<Map<String, dynamic>>()
+            .map(UserProgress.fromJson)
+            .toList();
+      }
+      if (res is Map && res['items'] is List) {
+        return (res['items'] as List)
+            .cast<Map<String, dynamic>>()
+            .map(UserProgress.fromJson)
+            .toList();
+      }
+      return const [];
     });

@@ -5,12 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/summary/character_templates_list_screen.dart';
-import 'package:writer/state/supabase_config.dart';
-import 'package:writer/main.dart';
-import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/models/character_template_row.dart';
+import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/repositories/template_repository.dart';
+import 'package:writer/state/providers.dart';
 
-class FakeLocalRepo extends LocalStorageRepository {
+class FakeTemplateRepo extends TemplateRepository {
+  FakeTemplateRepo() : super(RemoteRepository('http://localhost'));
+
   List<CharacterTemplateRow> items = [
     CharacterTemplateRow(
       id: 't-1',
@@ -25,10 +27,9 @@ class FakeLocalRepo extends LocalStorageRepository {
     ),
   ];
   String? deletedId;
+
   @override
-  Future<List<CharacterTemplateRow>> listCharacterTemplates() async {
-    return items;
-  }
+  Future<List<CharacterTemplateRow>> listCharacterTemplates() async => items;
 
   @override
   Future<void> deleteCharacterTemplate(String id) async {
@@ -64,10 +65,13 @@ void main() {
   testWidgets('CharacterTemplatesListScreen renders and deletes item', (
     tester,
   ) async {
-    final repo = FakeLocalRepo();
+    final repo = FakeTemplateRepo();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
+        overrides: [
+          isSignedInProvider.overrideWithValue(true),
+          templateRepositoryProvider.overrideWithValue(repo),
+        ],
         child: const MaterialApp(
           home: CharacterTemplatesListScreen(novelId: 'n-1'),
         ),
@@ -92,7 +96,7 @@ void main() {
   });
 
   testWidgets('Enter on focused row navigates to edit', (tester) async {
-    final repo = FakeLocalRepo();
+    final repo = FakeTemplateRepo();
     final router = GoRouter(
       initialLocation: '/novel/n-1/character-templates',
       routes: [
@@ -125,7 +129,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
+        overrides: [
+          isSignedInProvider.overrideWithValue(true),
+          templateRepositoryProvider.overrideWithValue(repo),
+        ],
         child: MaterialApp.router(routerConfig: router),
       ),
     );
@@ -153,7 +160,7 @@ void main() {
   });
 
   testWidgets('Double tap on row navigates to edit', (tester) async {
-    final repo = FakeLocalRepo();
+    final repo = FakeTemplateRepo();
     final router = GoRouter(
       initialLocation: '/novel/n-1/character-templates',
       routes: [
@@ -176,7 +183,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
+        overrides: [
+          isSignedInProvider.overrideWithValue(true),
+          templateRepositoryProvider.overrideWithValue(repo),
+        ],
         child: MaterialApp.router(routerConfig: router),
       ),
     );
@@ -194,7 +204,7 @@ void main() {
   });
 
   testWidgets('Add button navigates to new template screen', (tester) async {
-    final repo = FakeLocalRepo();
+    final repo = FakeTemplateRepo();
     final router = GoRouter(
       initialLocation: '/novel/n-1/character-templates',
       routes: [
@@ -214,7 +224,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
+        overrides: [
+          isSignedInProvider.overrideWithValue(true),
+          templateRepositoryProvider.overrideWithValue(repo),
+        ],
         child: MaterialApp.router(routerConfig: router),
       ),
     );
@@ -227,12 +240,12 @@ void main() {
   });
 
   testWidgets('Smart search loads results from backend search', (tester) async {
-    final repo = FakeLocalRepo();
+    final repo = FakeTemplateRepo();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          localStorageRepositoryProvider.overrideWith((_) => repo),
-          supabaseEnabledProvider.overrideWithValue(true),
+          isSignedInProvider.overrideWithValue(true),
+          templateRepositoryProvider.overrideWithValue(repo),
         ],
         child: const MaterialApp(
           home: CharacterTemplatesListScreen(novelId: 'n-1'),

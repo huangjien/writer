@@ -11,7 +11,6 @@ import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 import 'package:writer/features/ai_chat/widgets/ai_chat_sidebar.dart';
 import 'package:writer/shared/widgets/error_view.dart';
 import 'package:writer/features/reader/chapter_reader_screen.dart';
-import 'package:writer/features/reader/logic/progress_saver.dart';
 import 'package:writer/features/reader/logic/tts_driver.dart';
 import 'package:writer/features/reader/widgets/beta_evaluation/beta_evaluation_dialog.dart';
 import 'package:writer/features/reader/widgets/edit_chapter_body.dart';
@@ -29,7 +28,6 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/common/errors/failures.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MockTtsDriver extends Mock implements TtsDriver {}
 
@@ -77,7 +75,6 @@ void main() {
   );
 
   setUp(() async {
-    mockGetUser = () => null; // Avoid Supabase.instance access
     mockTtsDriver = MockTtsDriver();
     mockAiChatService = MockAiChatService();
     mockChapterRepository = MockChapterRepository();
@@ -151,9 +148,7 @@ void main() {
     ).thenAnswer((_) async {});
   });
 
-  tearDown(() {
-    mockGetUser = null;
-  });
+  tearDown(() {});
 
   Future<void> pumpScreen(
     WidgetTester tester, {
@@ -221,10 +216,9 @@ void main() {
           themeControllerProvider.overrideWith((ref) => ThemeController(prefs)),
           ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
           aiChatServiceProvider.overrideWith((ref) => mockAiChatService),
-          authStateProvider.overrideWith(
-            (ref) => Stream.value(AuthState(AuthChangeEvent.signedIn, null)),
-          ),
-          supabaseEnabledProvider.overrideWithValue(true),
+          isSignedInProvider.overrideWith((ref) => true),
+          authStateProvider.overrideWith((ref) => 'test-session'),
+          currentUserProvider.overrideWith((ref) async => null),
           // Ensure we have chapters
           chaptersProvider(novelId).overrideWith((ref) async => chapters),
           if (editControllerBuilder != null)

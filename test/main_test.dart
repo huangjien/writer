@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:writer/main.dart' as app_main;
 import 'package:writer/repositories/local_storage_repository.dart';
-import 'package:writer/state/supabase_config.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/tts_settings.dart';
@@ -17,16 +16,6 @@ void main() {
     addTearDown(container.dispose);
     final repo = container.read(app_main.localStorageRepositoryProvider);
     expect(repo, isA<LocalStorageRepository>());
-  });
-
-  test('supabaseEnabled reflects dart-define gating', () {
-    final hasUrl = supabaseUrl.isNotEmpty;
-    final hasKey = supabaseAnonKey.isNotEmpty;
-    if (hasUrl && hasKey) {
-      expect(supabaseEnabled, isTrue);
-    } else {
-      expect(supabaseEnabled, isFalse);
-    }
   });
 
   group('main function component tests', () {
@@ -95,16 +84,13 @@ void main() {
       expect(providerScope, isA<ProviderScope>());
     });
 
-    test('ProviderScope can be created with real providers', () {
+    test('ProviderScope can be created with real providers', () async {
       SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
 
       final providerScope = ProviderScope(
         overrides: [
-          appSettingsProvider.overrideWith(
-            (ref) => AppSettingsNotifier(
-              SharedPreferences.getInstance() as SharedPreferences,
-            ),
-          ),
+          appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
         ],
         child: const App(),
       );

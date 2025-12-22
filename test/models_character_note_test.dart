@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/models/character_note.dart';
 
 void main() {
-  test('CharacterNote.fromRow maps supabase row', () {
+  test('CharacterNote.fromRow maps backend row', () {
     final now = DateTime.parse('2025-01-01T00:00:00Z');
     final row = {
       'id': 'uuid-1',
@@ -27,7 +27,7 @@ void main() {
     expect(note.updatedAt.toIso8601String(), now.toIso8601String());
   });
 
-  test('CharacterNote.toRow emits supabase keys', () {
+  test('CharacterNote.toRow emits backend keys', () {
     final now = DateTime.parse('2025-01-01T00:00:00Z');
     final note = CharacterNote(
       id: 'uuid-2',

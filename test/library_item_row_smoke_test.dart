@@ -35,7 +35,6 @@ void main() {
           home: Scaffold(
             body: LibraryItemRow(
               novel: n,
-              isSupabaseEnabled: false,
               isSignedIn: false,
               canRemove: true,
               canDownload: true,

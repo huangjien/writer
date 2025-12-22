@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../state/novel_providers.dart';
-import '../../state/mock_providers.dart';
 import '../../widgets/recent_chapters.dart';
 import '../../widgets/app_drawer.dart';
 import '../../state/providers.dart';
@@ -120,34 +119,25 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isSupabaseEnabled = ref.watch(supabaseEnabledProvider);
-    final session = isSupabaseEnabled
-        ? ref.watch(supabaseSessionProvider)
-        : null;
-    final novelsAsync = isSupabaseEnabled
-        ? ref.watch(libraryNovelsProvider)
-        : ref.watch(mockNovelsProvider);
+    final isSignedIn = ref.watch(isSignedInProvider);
+    final novelsAsync = ref.watch(libraryNovelsProvider);
 
-    if (isSupabaseEnabled) {
-      ref.listen(memberNovelsProvider, (prev, next) {
-        if (next.hasError) {
-          final msg = l10n.errorLoadingNovels;
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.showingCachedPublicData(msg))),
-            );
-          }
+    ref.listen(memberNovelsProvider, (prev, next) {
+      if (next.hasError) {
+        final msg = l10n.errorLoadingNovels;
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.showingCachedPublicData(msg))),
+          );
         }
-      });
-    }
+      }
+    });
 
     final removedIds = ref.watch(removedNovelIdsProvider);
-    // Remove is allowed offline (mock mode) for local hide/undo.
-    // In Supabase mode, require a signed-in session to show Delete.
-    final canRemove = isSupabaseEnabled ? (session != null) : true;
-    final canDownload =
-        isSupabaseEnabled ||
-        ref.watch(downloadFeatureFlagProvider); // safe testing override
+    // Remove is allowed offline for local hide/undo.
+    // When signed-in, remove also deletes remotely (with confirmation).
+    const canRemove = true;
+    final canDownload = true; // safe testing override
 
     final novels = novelsAsync.asData?.value;
     final visibleCount = novels != null
@@ -195,15 +185,11 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
               const SizedBox(width: Spacing.xs),
               const Icon(Icons.info_outline, size: 16),
               const SizedBox(width: Spacing.xs),
-              Text(
-                isSupabaseEnabled ? l10n.modeSupabase : l10n.modeMockData,
-                style: const TextStyle(color: Colors.black54, fontSize: 12),
-              ),
             ],
           ),
         ),
         actions: [
-          if (isSupabaseEnabled && session == null)
+          if (!isSignedIn)
             IconButton(
               tooltip: l10n.signIn,
               icon: const Icon(Icons.login),
@@ -215,16 +201,13 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                 tooltip: l10n.reload,
                 icon: const Icon(Icons.refresh),
                 onPressed: () {
-                  if (isSupabaseEnabled) {
-                    ref.invalidate(novelsProvider);
-                  } else {
-                    ref.invalidate(mockNovelsProvider);
-                  }
+                  ref.invalidate(libraryNovelsProvider);
+                  ref.invalidate(memberNovelsProvider);
                 },
               );
             },
           ),
-          if (isSupabaseEnabled && session != null)
+          if (isSignedIn)
             IconButton(
               tooltip: l10n.createNovel,
               icon: const Icon(Icons.add),
@@ -253,11 +236,8 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SessionSection(
-              isSupabaseEnabled: isSupabaseEnabled,
-              isSignedIn: session != null,
-            ),
-            if (isSupabaseEnabled && session != null) ...[
+            SessionSection(isSignedIn: isSignedIn),
+            if (isSignedIn) ...[
               ExpansionTile(
                 tilePadding: EdgeInsets.zero,
                 title: Text(
@@ -347,8 +327,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                               final n = visible[index];
                               return LibraryItemRow(
                                 novel: n,
-                                isSupabaseEnabled: isSupabaseEnabled,
-                                isSignedIn: session != null,
+                                isSignedIn: isSignedIn,
                                 canRemove: canRemove,
                                 canDownload: canDownload,
                               );

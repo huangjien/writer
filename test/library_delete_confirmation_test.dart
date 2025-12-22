@@ -4,25 +4,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/state/novel_providers.dart';
-import 'package:writer/state/providers.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/user_progress.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/models/chapter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-// Flutter-specific options for Supabase.initialize
+import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/state/session_state.dart';
+import 'package:writer/main.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
 
 class FakeNovelRepository extends NovelRepository {
-  FakeNovelRepository()
-    : super(
-        SupabaseClient(
-          supabaseUrl,
-          supabaseAnonKey,
-          authOptions: const AuthClientOptions(autoRefreshToken: false),
-        ),
-      );
+  FakeNovelRepository() : super(_NoopRemoteRepository());
   bool called = false;
   String? deletedId;
   @override
@@ -33,39 +28,90 @@ class FakeNovelRepository extends NovelRepository {
   }
 }
 
-/// Creates a minimal session using fromJson for testing purposes.
-Session _fakeSession() {
-  return Session.fromJson({
-    'access_token': 'test',
-    'token_type': 'bearer',
-    'expires_in': 3600,
-    'refresh_token': 'refresh',
-    'user': {
-      'id': 'user-id',
-      'aud': 'authenticated',
-      'role': 'authenticated',
-      'email': 'user@example.com',
-      'phone': '',
-      'app_metadata': <String, dynamic>{},
-      'user_metadata': <String, dynamic>{},
-      'created_at': '2024-01-01T00:00:00Z',
-      'updated_at': '2024-01-01T00:00:00Z',
-    },
-  })!;
+class _NoopRemoteRepository implements RemoteRepository {
+  @override
+  String get baseUrl => 'http://test/';
+
+  @override
+  Future<void> delete(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    bool retryUnauthorized = false,
+  }) async {}
+
+  @override
+  Future<dynamic> get(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    bool retryUnauthorized = true,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<dynamic> patch(
+    String path,
+    Map<String, dynamic> body, {
+    bool retryUnauthorized = false,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<dynamic> post(
+    String path,
+    Map<String, dynamic> body, {
+    bool retryUnauthorized = false,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String?> fetchCharacterProfile(String name) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String?> convertCharacter({
+    required String name,
+    required String templateContent,
+    required String language,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String?> fetchSceneProfile(String name) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String?> convertScene({
+    required String name,
+    required String templateContent,
+    required String language,
+  }) async {
+    throw UnimplementedError();
+  }
+}
+
+class _FakeLocalStorageRepository extends LocalStorageRepository {
+  List<Novel> _cachedNovels = const [];
+
+  @override
+  Future<List<Novel>> getLibraryNovels() async => _cachedNovels;
+
+  @override
+  Future<void> saveLibraryNovels(List<Novel> novels) async {
+    _cachedNovels = novels;
+  }
 }
 
 void main() {
   testWidgets(
     'When signed in, tapping remove shows confirm dialog and calls delete',
     (tester) async {
-      // Skip this test unless Supabase is enabled via dart-define.
-      if (!supabaseEnabled) {
-        return; // Test runner will treat as pass if body returns early.
-      }
-
       SharedPreferences.setMockInitialValues({});
-
-      // Supabase is initialized in flutter_test_config when enabled.
 
       final novels = <Novel>[
         const Novel(
@@ -89,25 +135,27 @@ void main() {
       ];
 
       final fakeRepo = FakeNovelRepository();
+      final sessionNotifier = SessionNotifier()..state = 'test-session';
+      final fakeLocal = _FakeLocalStorageRepository();
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            // Provide a non-null session to exercise the confirmation path.
-            supabaseSessionProvider.overrideWith((ref) => _fakeSession()),
             // Override novels fetch to return our fixture list.
             novelsProvider.overrideWith((ref) async => novels),
             // Ensure library union resolves without network.
             memberNovelsProvider.overrideWith((ref) async => const <Novel>[]),
             // Override repository to capture delete calls.
             novelRepositoryProvider.overrideWith((ref) => fakeRepo),
+            sessionProvider.overrideWith((ref) => sessionNotifier),
+            localStorageRepositoryProvider.overrideWithValue(fakeLocal),
             // Avoid network-backed providers that can hang during settle.
             lastProgressProvider.overrideWith((ref, novelId) async => null),
             chaptersProvider.overrideWith(
               (ref, novelId) async => const <Chapter>[],
             ),
             recentUserProgressProvider.overrideWith(
-              (ref) => Stream.value(const <UserProgress>[]),
+              (ref) async => const <UserProgress>[],
             ),
           ],
           child: MaterialApp(
@@ -132,7 +180,7 @@ void main() {
       expect(find.text('Confirm Delete'), findsOneWidget);
       expect(
         find.text(
-          "This will delete 'Quiet City Nights' from Supabase. Are you sure?",
+          AppLocalizationsEn().confirmDeleteDescription('Quiet City Nights'),
         ),
         findsOneWidget,
       );

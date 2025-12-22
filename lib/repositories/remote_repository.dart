@@ -2,8 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/state/ai_service_settings.dart';
-import 'package:writer/state/supabase_config.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:writer/state/session_state.dart';
 
 final remoteRepositoryProvider = Provider<RemoteRepository>((ref) {
   String baseUrl;
@@ -12,7 +11,12 @@ final remoteRepositoryProvider = Provider<RemoteRepository>((ref) {
   } catch (_) {
     baseUrl = 'http://localhost:5600/';
   }
-  return RemoteRepository(baseUrl);
+  final sessionId = ref.watch(sessionProvider);
+  return RemoteRepository(
+    baseUrl,
+    authToken: () async => sessionId,
+    onUnauthorized: () async => ref.read(sessionProvider.notifier).clear(),
+  );
 });
 
 typedef AuthTokenGetter = Future<String?> Function();
@@ -21,58 +25,243 @@ class RemoteRepository {
   final String baseUrl;
   final http.Client _client;
   final AuthTokenGetter _authToken;
+  final Future<void> Function()? _onUnauthorized;
 
   RemoteRepository(
     this.baseUrl, {
     http.Client? client,
     AuthTokenGetter? authToken,
+    Future<void> Function()? onUnauthorized,
   }) : _client = client ?? http.Client(),
-       _authToken = authToken ?? _defaultAuthToken;
-
-  static Future<String?> _defaultAuthToken() async {
-    if (!supabaseEnabled) return null;
-    final client = Supabase.instance.client;
-    var token = client.auth.currentSession?.accessToken;
-    if (token == null && client.auth.currentUser != null) {
-      try {
-        await client.auth.refreshSession();
-        token = client.auth.currentSession?.accessToken;
-      } catch (_) {}
-    }
-    return token;
-  }
+       _authToken = authToken ?? (() async => null),
+       _onUnauthorized = onUnauthorized;
 
   String _url(String path) {
     if (baseUrl.endsWith('/')) return '$baseUrl$path';
     return '$baseUrl/$path';
   }
 
+  Future<Map<String, String>> _headers({bool withAuth = true}) async {
+    String? token;
+    if (withAuth) {
+      try {
+        token = await _authToken();
+      } catch (_) {
+        token = null;
+      }
+    }
+    final trimmed = token?.trim();
+    return {
+      'Content-Type': 'application/json',
+      if (trimmed != null && trimmed.isNotEmpty) 'X-Session-Id': trimmed,
+    };
+  }
+
+  Future<http.Response> _getWithRetry(
+    Uri uri, {
+    required bool retryUnauthorized,
+  }) async {
+    var headers = await _headers(withAuth: true);
+    var response = await _client.get(uri, headers: headers);
+    if (response.statusCode == 401) {
+      final hadAuth = headers.containsKey('X-Session-Id');
+      if (hadAuth) {
+        try {
+          await _onUnauthorized?.call();
+        } catch (_) {}
+      }
+      if (retryUnauthorized && hadAuth) {
+        headers = await _headers(withAuth: false);
+        response = await _client.get(uri, headers: headers);
+      }
+    }
+    return response;
+  }
+
+  Future<http.Response> _deleteWithRetry(
+    Uri uri, {
+    required bool retryUnauthorized,
+  }) async {
+    var headers = await _headers(withAuth: true);
+    var response = await _client.delete(uri, headers: headers);
+    if (response.statusCode == 401) {
+      final hadAuth = headers.containsKey('X-Session-Id');
+      if (hadAuth) {
+        try {
+          await _onUnauthorized?.call();
+        } catch (_) {}
+      }
+      if (retryUnauthorized && hadAuth) {
+        headers = await _headers(withAuth: false);
+        response = await _client.delete(uri, headers: headers);
+      }
+    }
+    return response;
+  }
+
+  Future<http.Response> _postWithRetry(
+    Uri uri,
+    Map<String, dynamic> body, {
+    required bool retryUnauthorized,
+  }) async {
+    var headers = await _headers(withAuth: true);
+    var response = await _client.post(
+      uri,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+    if (response.statusCode == 401) {
+      final hadAuth = headers.containsKey('X-Session-Id');
+      if (hadAuth) {
+        try {
+          await _onUnauthorized?.call();
+        } catch (_) {}
+      }
+      if (retryUnauthorized && hadAuth) {
+        headers = await _headers(withAuth: false);
+        response = await _client.post(
+          uri,
+          headers: headers,
+          body: jsonEncode(body),
+        );
+      }
+    }
+    return response;
+  }
+
+  Future<http.Response> _patchWithRetry(
+    Uri uri,
+    Map<String, dynamic> body, {
+    required bool retryUnauthorized,
+  }) async {
+    var headers = await _headers(withAuth: true);
+    var response = await _client.patch(
+      uri,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+    if (response.statusCode == 401) {
+      final hadAuth = headers.containsKey('X-Session-Id');
+      if (hadAuth) {
+        try {
+          await _onUnauthorized?.call();
+        } catch (_) {}
+      }
+      if (retryUnauthorized && hadAuth) {
+        headers = await _headers(withAuth: false);
+        response = await _client.patch(
+          uri,
+          headers: headers,
+          body: jsonEncode(body),
+        );
+      }
+    }
+    return response;
+  }
+
+  Future<dynamic> get(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    bool retryUnauthorized = true,
+  }) async {
+    try {
+      final uri = Uri.parse(
+        _url(path),
+      ).replace(queryParameters: queryParameters);
+      final response = await _getWithRetry(
+        uri,
+        retryUnauthorized: retryUnauthorized,
+      );
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception(
+          'Request failed: ${response.statusCode} ${response.body}',
+        );
+      }
+      if (response.body.isEmpty) return null;
+      return jsonDecode(utf8.decode(response.bodyBytes));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<dynamic> post(
+    String path,
+    Map<String, dynamic> body, {
+    bool retryUnauthorized = false,
+  }) async {
+    try {
+      final response = await _postWithRetry(
+        Uri.parse(_url(path)),
+        body,
+        retryUnauthorized: retryUnauthorized,
+      );
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception(
+          'Request failed: ${response.statusCode} ${response.body}',
+        );
+      }
+      if (response.body.isEmpty) return null;
+      return jsonDecode(utf8.decode(response.bodyBytes));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<dynamic> patch(
+    String path,
+    Map<String, dynamic> body, {
+    bool retryUnauthorized = false,
+  }) async {
+    try {
+      final response = await _patchWithRetry(
+        Uri.parse(_url(path)),
+        body,
+        retryUnauthorized: retryUnauthorized,
+      );
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception(
+          'Request failed: ${response.statusCode} ${response.body}',
+        );
+      }
+      if (response.body.isEmpty) return null;
+      return jsonDecode(utf8.decode(response.bodyBytes));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> delete(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    bool retryUnauthorized = false,
+  }) async {
+    try {
+      final uri = Uri.parse(
+        _url(path),
+      ).replace(queryParameters: queryParameters);
+      final response = await _deleteWithRetry(
+        uri,
+        retryUnauthorized: retryUnauthorized,
+      );
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception(
+          'Request failed: ${response.statusCode} ${response.body}',
+        );
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Deprecated usage mapping to new methods
   Future<Map<String, dynamic>?> _postJson(
     String path,
     Map<String, dynamic> payload,
   ) async {
-    String? token;
     try {
-      token = await _authToken();
-    } catch (_) {
-      token = null;
-    }
-
-    final headers = <String, String>{
-      'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
-
-    try {
-      final response = await _client.post(
-        Uri.parse(_url(path)),
-        headers: headers,
-        body: jsonEncode(payload),
-      );
-      if (response.statusCode != 200) return null;
-      final decoded = jsonDecode(utf8.decode(response.bodyBytes));
-      if (decoded is! Map<String, dynamic>) return null;
-      return decoded;
+      final res = await post(path, payload);
+      if (res is Map<String, dynamic>) return res;
+      return null;
     } catch (_) {
       return null;
     }

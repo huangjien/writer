@@ -22,7 +22,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutDescription =>
-      'Read and manage novels, with Supabase-backed storage, offline support, and Text-To-Speech playback. Use the Library to browse, search, and open chapters; sign in to sync progress; adjust settings for theme, typography, and motion.';
+      'Read and manage novels, with cloud-backed storage, offline support, and Text-To-Speech playback. Use the Library to browse, search, and open chapters; sign in to sync progress; adjust settings for theme, typography, and motion.';
 
   @override
   String get aboutIntro =>
@@ -30,7 +30,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutSecurity =>
-      'With Supabase-backed storage and strict Row Level Security, your data remains protected. Authenticated users can sync progress, metadata, and templates while maintaining privacy.';
+      'With cloud-backed storage and strict access controls, your data remains protected. Authenticated users can sync progress, metadata, and templates while maintaining privacy.';
 
   @override
   String get aboutCoach =>
@@ -61,7 +61,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutUsageList =>
-      '• Library: search and open novels\n• Reader: navigate chapters, toggle TTS\n• Templates: manage character and scene templates\n• Settings: theme, typography, and preferences\n• Sign In: enable cloud sync via Supabase';
+      '• Library: search and open novels\n• Reader: navigate chapters, toggle TTS\n• Templates: manage character and scene templates\n• Settings: theme, typography, and preferences\n• Sign In: enable cloud sync';
 
   @override
   String get version => 'Version';
@@ -76,12 +76,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chinese => 'Chinese';
 
   @override
-  String get supabaseIntegrationInitialized =>
-      'Supabase integration initialized';
+  String get supabaseIntegrationInitialized => 'Cloud sync initialized';
 
   @override
   String get configureEnvironment =>
-      'Please configure your environment variables to use Supabase';
+      'Please configure your environment variables to enable cloud sync';
 
   @override
   String signedInAs(String email) {
@@ -116,7 +115,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recentlyRead => 'Recently Read';
 
   @override
-  String get noSupabase => 'Supabase is not enabled in this build.';
+  String get noSupabase => 'Cloud sync is not enabled in this build.';
 
   @override
   String get errorLoadingProgress => 'Error loading progress';
@@ -227,25 +226,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appSettings => 'App Settings';
 
   @override
-  String get supabaseSettings => 'Supabase Settings';
+  String get supabaseSettings => 'Cloud Sync Settings';
 
   @override
-  String get supabaseNotEnabled => 'Supabase not enabled';
+  String get supabaseNotEnabled => 'Cloud sync not enabled';
 
   @override
   String get supabaseNotEnabledDescription =>
-      'Supabase is not configured for this build.';
+      'Cloud sync is not configured for this build.';
 
   @override
   String get authDisabledInBuild =>
-      'Supabase is not configured. Authentication is disabled in this build.';
+      'Cloud sync is not configured. Authentication is disabled in this build.';
 
   @override
-  String get fetchFromSupabase => 'Fetch from Supabase';
+  String get fetchFromSupabase => 'Fetch from cloud';
 
   @override
   String get fetchFromSupabaseDescription =>
-      'Fetch latest novels and progress from Supabase.';
+      'Fetch latest novels and progress from the cloud.';
 
   @override
   String get confirmFetch => 'Confirm Fetch';
@@ -264,7 +263,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadChapters => 'Download chapters';
 
   @override
-  String get modeSupabase => 'Mode: Supabase';
+  String get modeSupabase => 'Mode: Cloud sync';
 
   @override
   String get modeMockData => 'Mode: Mock data';
@@ -360,7 +359,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supabaseProgressNotSaved =>
-      'Supabase not configured; progress not saved';
+      'Cloud sync not configured; progress not saved';
 
   @override
   String get progressSaved => 'Progress saved';
@@ -536,7 +535,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String confirmDeleteDescription(String title) {
-    return 'This will delete \'$title\' from Supabase. Are you sure?';
+    return 'This will delete \'$title\' from your cloud library. Are you sure?';
   }
 
   @override

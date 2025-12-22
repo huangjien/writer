@@ -1,15 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/admin_settings.dart';
-
-class MockSession extends Mock implements Session {}
-
-class MockUser extends Mock implements User {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -18,46 +12,23 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  test(
-    'isAdminProvider: Supabase disabled falls back to adminModeProvider',
-    () async {
-      final prefs = await SharedPreferences.getInstance();
-      final container = ProviderContainer(
-        overrides: [
-          supabaseEnabledProvider.overrideWith((_) => false),
-          adminModeProvider.overrideWith((ref) {
-            final n = AdminModeNotifier(prefs);
-            return n;
-          }),
-        ],
-      );
-      final n = container.read(adminModeProvider.notifier);
-      await n.enable();
-      final isAdmin = container.read(isAdminProvider);
-      expect(isAdmin, isTrue);
-    },
-  );
-
-  test('isAdminProvider: reads roles and role from session', () async {
-    final session = MockSession();
-    final user = MockUser();
-    when(() => session.user).thenReturn(user);
-    when(() => user.appMetadata).thenReturn({
-      'roles': ['admin'],
-    });
-
+  test('isAdminProvider reads adminModeProvider', () async {
+    final prefs = await SharedPreferences.getInstance();
     final container = ProviderContainer(
       overrides: [
-        supabaseEnabledProvider.overrideWith((_) => true),
-        supabaseSessionProvider.overrideWith((_) => session),
+        adminModeProvider.overrideWith((ref) {
+          return AdminModeNotifier(prefs);
+        }),
       ],
     );
-    final isAdmin = container.read(isAdminProvider);
-    expect(isAdmin, isTrue);
+    addTearDown(container.dispose);
 
-    when(() => user.appMetadata).thenReturn({'role': 'admin'});
-    final isAdmin2 = container.read(isAdminProvider);
-    expect(isAdmin2, isTrue);
+    final n = container.read(adminModeProvider.notifier);
+    await n.enable();
+    expect(container.read(isAdminProvider), isTrue);
+
+    await n.disable();
+    expect(container.read(isAdminProvider), isFalse);
   });
 
   test(

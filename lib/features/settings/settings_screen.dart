@@ -4,7 +4,6 @@ import 'package:writer/state/theme_controller.dart';
 import 'widgets/reader_bundle_grid.dart';
 import 'widgets/performance_section.dart';
 import 'widgets/typography_settings_section.dart';
-import 'widgets/supabase_section.dart';
 import 'widgets/app_settings_section.dart';
 import 'widgets/palette_settings_section.dart';
 import 'widgets/tts_settings_container.dart';
@@ -38,9 +37,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isSupabaseEnabled = ref.watch(supabaseEnabledProvider);
-    final client = isSupabaseEnabled ? ref.watch(supabaseClientProvider) : null;
-    final user = client?.auth.currentUser;
+    final isSignedIn = ref.watch(isSignedInProvider);
+    final currentUser = ref.watch(currentUserProvider).asData?.value;
 
     return Scaffold(
       appBar: AppBar(
@@ -53,11 +51,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(l10n.settings),
-            if (user != null) ...[
+            if (currentUser != null) ...[
               const SizedBox(width: 12),
               Flexible(
                 child: Text(
-                  l10n.signedInAs(user.email!),
+                  l10n.signedInAs(currentUser.email ?? currentUser.id),
                   style: Theme.of(context).textTheme.bodySmall,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -93,19 +91,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           // Performance Settings
           const PerformanceSection(),
           const Divider(),
-          SupabaseSection(user: user),
-          const Divider(),
           const TtsSettingsContainer(),
-          if (isSupabaseEnabled && user != null)
+          const Divider(),
+          if (!isSignedIn)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Center(
+                child: FilledButton(
+                  onPressed: () => context.push('/auth'),
+                  child: Text(l10n.signIn),
+                ),
+              ),
+            )
+          else
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
               child: Center(
                 child: TextButton(
                   style: TextButton.styleFrom(foregroundColor: Colors.orange),
                   onPressed: () async {
-                    await client!.auth.signOut();
                     await ref.read(sessionProvider.notifier).clear();
-                    setState(() {});
+                    ref.invalidate(currentUserProvider);
+                    if (mounted) setState(() {});
                   },
                   child: Text(l10n.signOut),
                 ),

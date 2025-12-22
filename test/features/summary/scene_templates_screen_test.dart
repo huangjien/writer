@@ -2,37 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:writer/features/summary/scene_templates_screen.dart';
-import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/main.dart';
 import 'package:writer/models/template.dart';
 import 'package:writer/models/scene_template_row.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
-import 'package:writer/state/providers.dart';
+import 'package:writer/repositories/template_repository.dart';
+import 'package:writer/state/session_state.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockLocalStorageRepository extends Mock
     implements LocalStorageRepository {}
 
-class MockSession extends Mock implements Session {}
-
-class MockAiChatService extends Mock implements AiChatService {}
+class MockTemplateRepository extends Mock implements TemplateRepository {}
 
 class FakeTemplateItem extends Fake implements TemplateItem {}
 
 void main() {
   late MockLocalStorageRepository mockRepo;
+  late MockTemplateRepository mockTemplateRepo;
 
   setUp(() {
     mockRepo = MockLocalStorageRepository();
+    mockTemplateRepo = MockTemplateRepository();
     registerFallbackValue(FakeTemplateItem());
   });
 
   Widget createWidget() {
     return ProviderScope(
-      overrides: [localStorageRepositoryProvider.overrideWithValue(mockRepo)],
+      overrides: [
+        localStorageRepositoryProvider.overrideWithValue(mockRepo),
+        templateRepositoryProvider.overrideWithValue(mockTemplateRepo),
+      ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -129,29 +132,34 @@ void main() {
   });
 
   testWidgets('SceneTemplatesScreen saves data', (tester) async {
-    final session = MockSession();
-    final ai = MockAiChatService();
-    when(
-      () => ai.embed(any(), model: any(named: 'model')),
-    ).thenAnswer((_) async => null);
     when(
       () => mockRepo.getSceneTemplateForm(any()),
     ).thenAnswer((_) async => null);
     when(
-      () => mockRepo.saveSceneTemplateForm(
-        any(),
-        any(),
+      () => mockTemplateRepo.upsertSceneTemplate(
+        id: any(named: 'id'),
+        title: any(named: 'title'),
+        summaries: any(named: 'summaries'),
+        synopses: any(named: 'synopses'),
         languageCode: any(named: 'languageCode'),
+        embedding: any(named: 'embedding'),
       ),
     ).thenAnswer((_) async => 't-1');
+    when(
+      () => mockTemplateRepo.refreshSceneTemplateEmbedding(any()),
+    ).thenAnswer((_) async {});
+    when(
+      () => mockTemplateRepo.getSceneTemplateById(any()),
+    ).thenAnswer((_) async => null);
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           localStorageRepositoryProvider.overrideWithValue(mockRepo),
-          aiChatServiceProvider.overrideWithValue(ai),
-          supabaseEnabledProvider.overrideWith((_) => true),
-          supabaseSessionProvider.overrideWith((_) => session),
+          templateRepositoryProvider.overrideWithValue(mockTemplateRepo),
+          sessionProvider.overrideWith(
+            (_) => SessionNotifier(null)..state = 's-1',
+          ),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -179,15 +187,17 @@ void main() {
     await tester.pumpAndSettle();
 
     verify(
-      () => mockRepo.saveSceneTemplateForm(
-        'novel-1',
-        any(
-          that: isA<TemplateItem>()
-              .having((t) => t.name, 'name', 'New Name')
-              .having((t) => t.description, 'description', 'New Description'),
-        ),
+      () => mockTemplateRepo.upsertSceneTemplate(
+        id: any(named: 'id'),
+        title: 'New Name',
+        summaries: 'New Description',
+        synopses: any(named: 'synopses'),
         languageCode: any(named: 'languageCode'),
+        embedding: any(named: 'embedding'),
       ),
+    ).called(1);
+    verify(
+      () => mockTemplateRepo.refreshSceneTemplateEmbedding('t-1'),
     ).called(1);
   });
 }

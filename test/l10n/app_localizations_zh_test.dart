@@ -7,9 +7,9 @@ void main() {
     final l10n = await AppLocalizations.delegate.load(const Locale('zh'));
     expect(l10n.settings, '设置');
     expect(l10n.appTitle, '写手');
-    expect(l10n.supabaseSettings, 'Supabase 设置');
-    expect(l10n.supabaseNotEnabled, 'Supabase 未启用');
-    expect(l10n.fetchFromSupabase, '从 Supabase 获取');
+    expect(l10n.supabaseSettings, '云同步设置');
+    expect(l10n.supabaseNotEnabled, '云同步未启用');
+    expect(l10n.fetchFromSupabase, '从云端获取');
     expect(l10n.confirmFetch, '确认获取');
     expect(l10n.cancel, '取消');
     expect(l10n.fetch, '获取');
@@ -29,6 +29,6 @@ void main() {
     expect(l10n.novelsAndProgressSummary(3, '75%'), '小说: 3, 进度: 75%');
     expect(l10n.indexLabel(7), '第 7 章');
     expect(l10n.ttsError('网络错误'), 'TTS 错误：网络错误');
-    expect(l10n.confirmDeleteDescription('我的小说'), '将从 Supabase 删除“我的小说”。是否确认？');
+    expect(l10n.confirmDeleteDescription('我的小说'), '将从云端删除“我的小说”。是否确认？');
   });
 }

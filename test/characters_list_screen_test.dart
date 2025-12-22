@@ -3,11 +3,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/summary/characters_list_screen.dart';
-import 'package:writer/main.dart';
-import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/models/character_note.dart';
+import 'package:writer/repositories/notes_repository.dart';
+import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/state/providers.dart';
 
-class FakeLocalRepo extends LocalStorageRepository {
+class FakeNotesRepo extends NotesRepository {
+  FakeNotesRepo() : super(RemoteRepository('http://example.com'));
+
   List<CharacterNote> items = [
     CharacterNote(
       id: 'c-1',
@@ -23,6 +26,7 @@ class FakeLocalRepo extends LocalStorageRepository {
   ];
   int? deletedIdx;
   String? deletedNovelId;
+
   @override
   Future<List<CharacterNote>> listCharacterNotes(String novelId) async {
     return items.where((e) => e.novelId == novelId).toList();
@@ -44,10 +48,13 @@ void main() {
   });
 
   testWidgets('CharactersListScreen renders and deletes item', (tester) async {
-    final repo = FakeLocalRepo();
+    final repo = FakeNotesRepo();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
+        overrides: [
+          isSignedInProvider.overrideWithValue(true),
+          notesRepositoryProvider.overrideWith((_) => repo),
+        ],
         child: const MaterialApp(home: CharactersListScreen(novelId: 'n-1')),
       ),
     );

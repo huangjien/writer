@@ -13,7 +13,7 @@ class MyNovelsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final supabaseEnabled = ref.watch(supabaseEnabledProvider);
+    final isSignedIn = ref.watch(isSignedInProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -26,8 +26,20 @@ class MyNovelsScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: !supabaseEnabled
-          ? Center(child: Text(l10n?.noSupabase ?? 'Supabase is not enabled.'))
+      body: !isSignedIn
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(l10n?.signInToSync ?? 'Sign in to sync.'),
+                  const SizedBox(height: 12),
+                  FilledButton(
+                    onPressed: () => context.push('/auth'),
+                    child: Text(l10n?.signIn ?? 'Sign in'),
+                  ),
+                ],
+              ),
+            )
           : _MemberNovelsList(l10n: l10n),
     );
   }

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/reader/reader_screen.dart';
-import 'package:writer/state/mock_providers.dart';
-import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/features/reader/chapter_reader_screen.dart' as cr;
 import 'helpers/test_utils.dart';
 
 void main() {
@@ -19,17 +19,7 @@ void main() {
     final scope = await buildAppScope(
       child: materialAppFor(home: const ReaderScreen(novelId: 'novel-001')),
       extraOverrides: [
-        mockNovelsProvider.overrideWith(
-          (ref) async => [
-            const Novel(
-              id: 'novel-001',
-              title: 'N1',
-              languageCode: 'en',
-              isPublic: true,
-            ),
-          ],
-        ),
-        mockChaptersProvider.overrideWith(
+        chaptersProvider.overrideWith(
           (ref, id) async => const [
             Chapter(
               id: 'c1',
@@ -70,7 +60,7 @@ void main() {
         home: const ReaderScreen(novelId: 'novel-001', chapterId: 'c2'),
       ),
       extraOverrides: [
-        mockChaptersProvider.overrideWith(
+        chaptersProvider.overrideWith(
           (ref, id) async => const [
             Chapter(
               id: 'c1',
@@ -94,6 +84,6 @@ void main() {
     await tester.pumpWidget(scope);
     await tester.pumpAndSettle(const Duration(milliseconds: 200));
 
-    expect(find.byType(ChapterReaderScreen), findsOneWidget);
+    expect(find.byType(cr.ChapterReaderScreen), findsOneWidget);
   });
 }

@@ -5,8 +5,11 @@ import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/progress_providers.dart';
 import 'helpers/test_utils.dart';
-import 'package:writer/state/providers.dart';
 
 void main() {
   setUp(() async {
@@ -34,7 +37,25 @@ void main() {
 
     final app = await buildAppScope(
       prefs: prefs,
-      extraOverrides: [supabaseEnabledProvider.overrideWith((_) => false)],
+      extraOverrides: [
+        libraryNovelsProvider.overrideWith(
+          (ref) async => const [
+            Novel(
+              id: 'novel-001',
+              title: 'The Whispering Forest',
+              author: 'A. Storyteller',
+              description: 'A gentle adventure through a mysterious forest.',
+              coverUrl: null,
+              languageCode: 'en',
+              isPublic: true,
+            ),
+          ],
+        ),
+        chaptersProvider.overrideWith(
+          (ref, novelId) async => const <Chapter>[],
+        ),
+        lastProgressProvider.overrideWith((ref, novelId) async => null),
+      ],
       child: MaterialApp(
         locale: const Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -107,7 +128,25 @@ void main() {
 
     final app = await buildAppScope(
       prefs: prefs,
-      extraOverrides: [supabaseEnabledProvider.overrideWith((_) => false)],
+      extraOverrides: [
+        libraryNovelsProvider.overrideWith(
+          (ref) async => const [
+            Novel(
+              id: 'novel-001',
+              title: 'The Whispering Forest',
+              author: 'A. Storyteller',
+              description: 'A gentle adventure through a mysterious forest.',
+              coverUrl: null,
+              languageCode: 'en',
+              isPublic: true,
+            ),
+          ],
+        ),
+        chaptersProvider.overrideWith(
+          (ref, novelId) async => const <Chapter>[],
+        ),
+        lastProgressProvider.overrideWith((ref, novelId) async => null),
+      ],
       child: MaterialApp(
         locale: const Locale('zh'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,

@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/features/library/create_novel_screen.dart';
-import 'package:writer/state/providers.dart';
 
 // No repository needed for disabled-path gating test.
 
@@ -13,10 +12,6 @@ void main() {
   ) async {
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          supabaseEnabledProvider.overrideWith((_) => false),
-          supabaseSessionProvider.overrideWith((_) => null),
-        ],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,

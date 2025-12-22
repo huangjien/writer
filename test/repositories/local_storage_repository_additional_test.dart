@@ -65,27 +65,13 @@ void main() {
       expect(saved['character_summaries'], 'S');
     });
 
-    test('listCharacterNotes (offline fallback)', () async {
-      // Ensure supabaseEnabled is false in context or ignored by offline path logic
-      // The repo checks supabaseEnabled global. We can't easily change it if it's a top-level const/final?
-      // It's a getter in 'writer/state/supabase_config.dart'.
-      // If it's a getter based on env vars, we might not be able to toggle it at runtime easily without a hack.
-      // But assuming default test env doesn't have keys, it might be false?
-      // Actually in 'state/supabase_config.dart', it checks String.fromEnvironment.
-      // Let's assume it is false or we just test the local path.
-
+    test('listCharacterNotes returns cached note', () async {
       const novelId = 'n1';
       await repo.saveCharacterNoteForm(novelId, title: 'Note1');
 
-      // If supabaseEnabled is true, this might try to call Supabase and fail or return empty.
-      // But if false, it returns local list.
-      // We can verify if it returns the local one.
-      // If it returns empty (because supabaseEnabled=true and no mock client), we skip asserting the value.
-      // But we want coverage.
-
-      // Let's check save/get logic first.
       final notes = await repo.listCharacterNotes(novelId);
-      expect(notes, isA<List>());
+      expect(notes, hasLength(1));
+      expect(notes.first.title, 'Note1');
     });
 
     test('deleteCharacterNoteByIdx (offline)', () async {

@@ -7,10 +7,11 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/progress_notifier.dart';
 import 'package:writer/repositories/progress_port.dart';
-import 'package:writer/state/supabase_config.dart';
-import 'package:writer/features/reader/logic/progress_saver.dart' as saver;
 import 'package:writer/features/reader/reader_screen.dart';
 import 'package:writer/models/user_progress.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/state/session_state.dart';
+import 'package:writer/state/tts_settings.dart';
 
 class CapturingProgressPort implements ProgressPort {
   int saveCalls = 0;
@@ -41,54 +42,48 @@ void main() {
         .setMockMethodCallHandler(ttsChannel, null);
   });
 
-  testWidgets(
-    'Supabase enabled but unauthenticated user: Stop does not call save',
-    (tester) async {
-      // Gate this test so it runs only when supabase is enabled.
-      if (!supabaseEnabled) {
-        return; // skip when not enabled
-      }
-      saver.mockSupabaseEnabled = true;
-      saver.mockGetUser = () => null;
+  testWidgets('Signed-in but no user: Stop does not call save', (tester) async {
+    SharedPreferences.setMockInitialValues({'backend_session_id': 's-1'});
 
-      final prefs = await SharedPreferences.getInstance();
-      final appNotifier = AppSettingsNotifier(prefs);
-      final fakeRepo = CapturingProgressPort();
+    final prefs = await SharedPreferences.getInstance();
+    final appNotifier = AppSettingsNotifier(prefs);
+    final fakeRepo = CapturingProgressPort();
+    final session = SessionNotifier(prefs);
+    final ttsSettings = TtsSettingsNotifier(prefs);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            appSettingsProvider.overrideWith((_) => appNotifier),
-            progressRepositoryProvider.overrideWith((_) => fakeRepo),
-          ],
-          child: MaterialApp(
-            locale: const Locale('en'),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const ChapterReaderScreen(
-              chapterId: 'c1',
-              title: 'Progress',
-              content: 'Hello world. This is a chapter.',
-              novelId: 'n1',
-              autoStartTts: false,
-            ),
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appSettingsProvider.overrideWith((_) => appNotifier),
+          progressRepositoryProvider.overrideWith((_) => fakeRepo),
+          sessionProvider.overrideWith((_) => session),
+          currentUserProvider.overrideWith((ref) async => null),
+          ttsSettingsProvider.overrideWith((_) => ttsSettings),
+        ],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const ChapterReaderScreen(
+            chapterId: 'c1',
+            title: 'Progress',
+            content: 'Hello world. This is a chapter.',
+            novelId: 'n1',
+            autoStartTts: false,
           ),
         ),
-      );
+      ),
+    );
 
-      await tester.pumpAndSettle();
-      expect(find.byTooltip('Speak'), findsOneWidget);
-      await tester.tap(find.byTooltip('Speak'));
-      await tester.pump();
-      expect(find.byTooltip('Stop TTS'), findsOneWidget);
-      await tester.tap(find.byTooltip('Stop TTS'));
-      await tester.pumpAndSettle();
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Speak'), findsOneWidget);
+    await tester.tap(find.byTooltip('Speak'));
+    await tester.pump();
+    expect(find.byTooltip('Stop TTS'), findsOneWidget);
+    await tester.tap(find.byTooltip('Stop TTS'));
+    await tester.pumpAndSettle();
 
-      // Without an authenticated user, save should not be called.
-      expect(fakeRepo.saveCalls, 0);
-      saver.mockSupabaseEnabled = null;
-      saver.mockGetUser = null;
-    },
-    skip: supabaseEnabled,
-  );
+    // Without an authenticated user, save should not be called.
+    expect(fakeRepo.saveCalls, 0);
+  });
 }

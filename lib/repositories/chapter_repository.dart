@@ -1,54 +1,38 @@
-import 'package:writer/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:writer/state/supabase_config.dart';
+import 'package:writer/repositories/remote_repository.dart';
 
 import '../models/chapter.dart';
 import '../models/chapter_cache.dart';
 import 'chapter_port.dart';
-import 'local_storage_repository.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import '../common/errors/failures.dart';
-import 'dart:io';
+import '../repositories/local_storage_repository.dart';
+import '../main.dart';
 
 final chapterRepositoryProvider = Provider<ChapterPort>((ref) {
-  if (!supabaseEnabled) {
-    throw StateError(
-      'Supabase is not enabled for this build. Configure SUPABASE_URL and SUPABASE_ANON_KEY to use ChapterRepository.',
-    );
-  }
-  final client = Supabase.instance.client;
+  final remote = ref.watch(remoteRepositoryProvider);
   final localStorage = ref.watch(localStorageRepositoryProvider);
-  return ChapterRepository(client, localStorage);
+  return ChapterRepository(remote, localStorage);
 });
 
 class ChapterRepository implements ChapterPort {
-  final SupabaseClient _client;
+  final RemoteRepository _remote;
   final LocalStorageRepository _localStorage;
 
-  ChapterRepository(this._client, this._localStorage);
+  ChapterRepository(this._remote, this._localStorage);
 
   @override
   Future<List<Chapter>> getChapters(String novelId) async {
     try {
-      final response = await _client
-          .from('chapters')
-          .select('id, novel_id, title, idx, sha')
-          .eq('novel_id', novelId)
-          .order('idx', ascending: true);
-
-      return (response as List).map((e) => Chapter.fromJson(e)).toList();
-    } on PostgrestException catch (e) {
-      throw ServerFailure(
-        message: e.message,
-        statusCode: int.tryParse(e.code ?? ''),
-        originalException: e,
-      );
-    } on SocketException catch (e) {
-      throw NetworkFailure('No internet connection', e);
+      final res = await _remote.get('novels/$novelId/chapters');
+      if (res is List) {
+        final list = res.cast<Map<String, dynamic>>();
+        return list.map(Chapter.fromJson).toList();
+      }
+      return [];
     } catch (e) {
-      throw UnknownFailure('Failed to fetch chapters', e);
+      // Fallback? Currently existing code threw errors.
+      rethrow;
     }
   }
 
@@ -56,54 +40,44 @@ class ChapterRepository implements ChapterPort {
   Future<Chapter> getChapter(Chapter chapter) async {
     // 1. Try Network First strategy with Cache Fallback
     try {
-      final response = await _client
-          .from('chapters')
-          .select('content, sha')
-          .eq('id', chapter.id)
-          .single();
+      final res = await _remote.get(
+        'chapters/${chapter.id}',
+      ); // Ensure endpoint returns full content
+      if (res is! Map<String, dynamic>) throw Exception('Invalid response');
 
-      final newChapter = chapter.copyWith(
-        content: response['content'],
-        sha: response['sha'],
-      );
+      final content =
+          res['content'] as String?; // Assuming endpoint returns content
+      final sha = res['sha'] as String?;
 
-      // Async write to cache, don't await blocking the UI return
-      _localStorage
-          .saveChapter(
-            ChapterCache(
-              chapterId: newChapter.id,
-              novelId: newChapter.novelId,
-              idx: newChapter.idx,
-              title: newChapter.title,
-              content: newChapter.content!,
-              lastUpdated: DateTime.now(),
-            ),
-          )
-          .ignore();
+      final newChapter = chapter.copyWith(content: content, sha: sha);
+
+      // Async write to cache
+      if (newChapter.content != null) {
+        _localStorage
+            .saveChapter(
+              ChapterCache(
+                chapterId: newChapter.id,
+                novelId: newChapter.novelId,
+                idx: newChapter.idx,
+                title: newChapter.title,
+                content: newChapter.content!,
+                lastUpdated: DateTime.now(),
+              ),
+            )
+            .ignore();
+      }
 
       return newChapter;
-    } on Exception catch (e) {
+    } catch (e) {
       // 2. Network failed, try Cache
       try {
         final cachedChapter = await _localStorage.getChapter(chapter.id);
         if (cachedChapter != null) {
           return Chapter.fromCache(cachedChapter);
         }
-      } catch (_) {
-        // Cache read failed too, proceed to throw original network error
-      }
+      } catch (_) {}
 
-      if (e is PostgrestException) {
-        throw ServerFailure(
-          message: e.message,
-          statusCode: int.tryParse(e.code ?? ''),
-          originalException: e,
-        );
-      } else if (e is SocketException) {
-        throw NetworkFailure('No internet connection', e);
-      } else {
-        throw UnknownFailure('Failed to load chapter', e);
-      }
+      rethrow;
     }
   }
 
@@ -115,16 +89,15 @@ class ChapterRepository implements ChapterPort {
         final bytes = utf8.encode(chapter.content!);
         sha = sha256.convert(bytes).toString();
       }
-      await _client
-          .from('chapters')
-          .update({
-            'title': chapter.title,
-            'content': chapter.content,
-            if (sha != null) 'sha': sha,
-          })
-          .eq('id', chapter.id);
+      final body = {
+        'title': chapter.title,
+        'content': chapter.content,
+        if (sha != null) 'sha': sha,
+      };
 
-      // Only update local cache if server update succeeded to maintain consistency
+      await _remote.patch('chapters/${chapter.id}', body);
+
+      // Only update local cache if server update succeeded
       if (chapter.content != null) {
         await _localStorage.saveChapter(
           ChapterCache(
@@ -137,26 +110,15 @@ class ChapterRepository implements ChapterPort {
           ),
         );
       }
-    } on PostgrestException catch (e) {
-      throw ServerFailure(
-        message: e.message,
-        statusCode: int.tryParse(e.code ?? ''),
-        originalException: e,
-      );
-    } on SocketException catch (e) {
-      throw NetworkFailure('Failed to save changes', e);
     } catch (e) {
-      throw UnknownFailure('Failed to update chapter', e);
+      rethrow;
     }
   }
 
   @override
   Future<void> updateChapterIdx(String chapterId, int newIdx) async {
     try {
-      await _client
-          .from('chapters')
-          .update({'idx': newIdx})
-          .eq('id', chapterId);
+      await _remote.patch('chapters/$chapterId', {'idx': newIdx});
 
       // Update local cache
       try {
@@ -173,77 +135,37 @@ class ChapterRepository implements ChapterPort {
             ),
           );
         }
-      } catch (e) {
-        // Cache update failed, but server succeeded. Log locally or ignore.
-        // We consider this a success from user perspective.
-      }
-    } on PostgrestException catch (e) {
-      throw ServerFailure(
-        message: e.message,
-        statusCode: int.tryParse(e.code ?? ''),
-        originalException: e,
-      );
-    } on SocketException catch (e) {
-      throw NetworkFailure('Failed to reorder chapter', e);
+      } catch (_) {}
     } catch (e) {
-      throw UnknownFailure('Failed to reorder chapter', e);
+      rethrow;
     }
   }
 
   @override
   Future<void> bulkShiftIdx(String novelId, int fromIdx, int delta) async {
+    // Ideally backend should handle this. For now, fetch all and update relevant ones.
     try {
-      final rows =
-          await _client
-                  .from('chapters')
-                  .select('id, idx')
-                  .eq('novel_id', novelId)
-                  .gte('idx', fromIdx)
-                  .order('idx', ascending: true)
-              as List<dynamic>;
+      final chapters = await getChapters(novelId);
+      final toUpdate = chapters.where((c) => c.idx >= fromIdx).toList();
 
-      for (final row in rows) {
-        final id = (row as Map<String, dynamic>)['id'] as String;
-        final idx = (row)['idx'] as int;
-        final newIdx = idx + delta;
-        await updateChapterIdx(id, newIdx);
+      // We need to update them. doing it sequentially might be slow but safe.
+      for (final c in toUpdate) {
+        await updateChapterIdx(c.id, c.idx + delta);
       }
-    } on PostgrestException catch (e) {
-      throw ServerFailure(
-        message: e.message,
-        statusCode: int.tryParse(e.code ?? ''),
-        originalException: e,
-      );
-    } on SocketException catch (e) {
-      throw NetworkFailure('Failed to reorder chapters', e);
     } catch (e) {
-      throw UnknownFailure('Failed to reorder chapters', e);
+      rethrow;
     }
   }
 
   @override
   Future<int> getNextIdx(String novelId) async {
     try {
-      final res = await _client
-          .from('chapters')
-          .select('idx')
-          .eq('novel_id', novelId)
-          .order('idx', ascending: false)
-          .limit(1);
-      final list = (res as List).cast<Map<String, dynamic>>();
-      if (list.isEmpty) return 1;
-      final maxIdx = (list.first['idx'] as int?) ?? 0;
+      final chapters = await getChapters(novelId);
+      if (chapters.isEmpty) return 1;
+      final maxIdx = chapters.map((c) => c.idx).reduce((a, b) => a > b ? a : b);
       return maxIdx + 1;
-    } on PostgrestException catch (e) {
-      throw ServerFailure(
-        message: e.message,
-        statusCode: int.tryParse(e.code ?? ''),
-        originalException: e,
-      );
-    } on SocketException catch (e) {
-      throw NetworkFailure('Connection error', e);
     } catch (e) {
-      throw UnknownFailure('Unknown error', e);
+      return 1; // Default fallback
     }
   }
 
@@ -254,23 +176,21 @@ class ChapterRepository implements ChapterPort {
     String? title,
     String? content,
   }) async {
-    try {
-      final insert = {
-        'novel_id': novelId,
-        'idx': idx,
-        'title': title,
-        'content': content ?? '',
-        'sha': sha256.convert(utf8.encode(content ?? '')).toString(),
-        'language_code': 'en',
-      };
-      final res = await _client
-          .from('chapters')
-          .insert(insert)
-          .select()
-          .single();
-      final created = Chapter.fromJson(res);
+    final body = {
+      'novel_id': novelId,
+      'idx': idx,
+      'title': title,
+      'content': content,
+      // 'sha' calculated by backend or we can send it? Library.py creates SHA if not present?
+      // Library.py takes Sha.
+      'sha': sha256.convert(utf8.encode(content ?? '')).toString(),
+      'language_code': 'en',
+    };
 
-      // Cache the empty content as a placeholder to avoid nulls downstream
+    final res = await _remote.post('chapters', body);
+    if (res is Map<String, dynamic>) {
+      final created = Chapter.fromJson(res);
+      // Cache
       await _localStorage.saveChapter(
         ChapterCache(
           chapterId: created.id,
@@ -282,39 +202,15 @@ class ChapterRepository implements ChapterPort {
         ),
       );
       return created;
-    } on PostgrestException catch (e) {
-      throw ServerFailure(
-        message: e.message,
-        statusCode: int.tryParse(e.code ?? ''),
-        originalException: e,
-      );
-    } on SocketException catch (e) {
-      throw NetworkFailure('Failed to create chapter', e);
-    } catch (e) {
-      throw UnknownFailure('Failed to create chapter', e);
     }
+    throw Exception('Failed to create chapter');
   }
 
   @override
   Future<void> deleteChapter(String chapterId) async {
+    await _remote.delete('chapters/$chapterId');
     try {
-      await _client.from('chapters').delete().eq('id', chapterId);
-      // Best-effort remove from local cache
-      try {
-        await _localStorage.removeChapter(chapterId);
-      } catch (_) {
-        // Ignore local cache deletion errors
-      }
-    } on PostgrestException catch (e) {
-      throw ServerFailure(
-        message: e.message,
-        statusCode: int.tryParse(e.code ?? ''),
-        originalException: e,
-      );
-    } on SocketException catch (e) {
-      throw NetworkFailure('Failed to delete chapter', e);
-    } catch (e) {
-      throw UnknownFailure('Failed to delete chapter', e);
-    }
+      await _localStorage.removeChapter(chapterId);
+    } catch (_) {}
   }
 }

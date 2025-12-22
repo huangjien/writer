@@ -14,9 +14,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('Supabase login/logout not shown when supabase disabled', (
-    tester,
-  ) async {
+  testWidgets('Login/logout not shown when signed out', (tester) async {
     final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(
       ProviderScope(

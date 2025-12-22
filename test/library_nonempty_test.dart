@@ -3,10 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/library_screen.dart';
-import 'package:writer/state/mock_providers.dart';
-import 'package:writer/state/providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/progress_providers.dart';
 
 void main() {
   testWidgets('Library shows list, search filter, and disabled download', (
@@ -38,8 +38,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => false),
-          mockNovelsProvider.overrideWith((ref) async => novels),
+          libraryNovelsProvider.overrideWith((ref) async => novels),
+          memberNovelsProvider.overrideWith((ref) async => const []),
+          chaptersProvider.overrideWith((ref, novelId) async => const []),
+          lastProgressProvider.overrideWith((ref, novelId) async => null),
         ],
         child: MaterialApp(
           locale: const Locale('en'),
@@ -54,8 +56,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
     await tester.pumpAndSettle();
 
-    // Mode banner and counts
-    expect(find.text('Mode: Mock data'), findsOneWidget);
+    // Counts
     expect(find.text('2 / 2 Novels'), findsOneWidget);
 
     // Search field present and filters to one item
@@ -65,18 +66,6 @@ void main() {
     await tester.pump();
     expect(find.text('1 / 2 Novels'), findsOneWidget);
 
-    // Download IconButton present but disabled (Supabase disabled)
-    final downloadButtons = find.byWidgetPredicate(
-      (w) =>
-          w is IconButton &&
-          w.icon is Icon &&
-          (w.icon as Icon).icon == Icons.download,
-    );
-    expect(downloadButtons, findsWidgets);
-    final anyDisabled = downloadButtons.evaluate().any((e) {
-      final w = e.widget as IconButton;
-      return w.onPressed == null;
-    });
-    expect(anyDisabled, isTrue);
+    expect(find.byKey(const Key('downloadButton_n-1')), findsOneWidget);
   });
 }

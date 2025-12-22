@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/state/progress_providers.dart' as pp;
 import 'package:writer/models/user_progress.dart';
 import 'package:writer/repositories/progress_port.dart';
+import 'package:writer/state/providers.dart';
 
 class FakeProgressRepo implements ProgressPort {
   @override
@@ -29,6 +30,7 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         pp.progressRepositoryProvider.overrideWith((_) => FakeProgressRepo()),
+        isSignedInProvider.overrideWith((_) => true),
       ],
     );
     final p = await container.read(pp.lastProgressProvider('n').future);

@@ -3,14 +3,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/library_screen.dart';
-import 'package:writer/state/mock_providers.dart';
-import 'package:writer/state/providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/progress_providers.dart';
 
 void main() {
   testWidgets('Library sort by author changes order', (tester) async {
     SharedPreferences.setMockInitialValues({});
+
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(800, 2000);
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
 
     final novels = <Novel>[
       const Novel(
@@ -45,8 +52,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => false),
-          mockNovelsProvider.overrideWith((ref) async => novels),
+          libraryNovelsProvider.overrideWith((ref) async => novels),
+          memberNovelsProvider.overrideWith((ref) async => const []),
+          chaptersProvider.overrideWith((ref, novelId) async => const []),
+          lastProgressProvider.overrideWith((ref, novelId) async => null),
         ],
         child: MaterialApp(
           locale: const Locale('en'),

@@ -34,20 +34,23 @@ void main() {
     expect(got?.description, 'Dark');
   });
 
-  test('listCharacterTemplates returns empty when supabase disabled', () async {
-    final repo = LocalStorageRepository();
-    final rows = await repo.listCharacterTemplates();
-    expect(rows, isEmpty);
-  });
+  test(
+    'listCharacterTemplates returns empty when cloud sync disabled',
+    () async {
+      final repo = LocalStorageRepository();
+      final rows = await repo.listCharacterTemplates();
+      expect(rows, isEmpty);
+    },
+  );
 
-  test('listSceneTemplates returns empty when supabase disabled', () async {
+  test('listSceneTemplates returns empty when cloud sync disabled', () async {
     final repo = LocalStorageRepository();
     final rows = await repo.listSceneTemplates();
     expect(rows, isEmpty);
   });
 
   test(
-    'getCharacterTemplateById returns null when supabase disabled',
+    'getCharacterTemplateById returns null when cloud sync disabled',
     () async {
       final repo = LocalStorageRepository();
       final row = await repo.getCharacterTemplateById('x');
@@ -55,18 +58,18 @@ void main() {
     },
   );
 
-  test('getSceneTemplateById returns null when supabase disabled', () async {
+  test('getSceneTemplateById returns null when cloud sync disabled', () async {
     final repo = LocalStorageRepository();
     final row = await repo.getSceneTemplateById('x');
     expect(row, isNull);
   });
 
-  test('updateCharacterTemplate no-op when supabase disabled', () async {
+  test('updateCharacterTemplate no-op when cloud sync disabled', () async {
     final repo = LocalStorageRepository();
     await repo.updateCharacterTemplate('id', title: 'T');
   });
 
-  test('updateSceneTemplate no-op when supabase disabled', () async {
+  test('updateSceneTemplate no-op when cloud sync disabled', () async {
     final repo = LocalStorageRepository();
     await repo.updateSceneTemplate('id', title: 'T');
   });

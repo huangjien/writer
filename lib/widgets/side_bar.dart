@@ -5,6 +5,7 @@ import '../state/novel_providers.dart';
 import '../state/edit_permissions.dart';
 import '../features/reader/novel_metadata_editor.dart';
 import '../l10n/app_localizations.dart';
+import '../repositories/novel_repository.dart';
 
 class SideBar extends ConsumerWidget {
   final String novelId;

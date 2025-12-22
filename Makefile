@@ -2,21 +2,16 @@
 ## Usage examples:
 ##   make help
 ##   make dev-web WEB_PORT=5500
-##   make dev-web SUPABASE_URL=https://your.supabase.co SUPABASE_ANON_KEY=xyz
-##   make dev-chrome SUPABASE_URL=... SUPABASE_ANON_KEY=...
 ##   make deps
 ##   make test
 ##   make analyze
 ##   make format
-##   make build-web SUPABASE_URL=... SUPABASE_ANON_KEY=...
+##   make build-web
 ##   make serve-web-build WEB_PORT=8080
 
 FLUTTER := flutter
 
 # Optional configuration passed via make variables
-# Example: make dev-web SUPABASE_URL=... SUPABASE_ANON_KEY=...
-SUPABASE_URL ?=
-SUPABASE_ANON_KEY ?=
 AI_SERVICE_URL ?=
 DEFAULT_AGENT_RESPOND_MODEL ?=
 DEFAULT_AGENT_QA_MODEL ?=
@@ -31,9 +26,7 @@ PACKAGE_VERSION := $(shell node -p "require('./package.json').version" 2>/dev/nu
 TAG ?= v$(PACKAGE_VERSION)
 
 # Construct dart-define args only when variables are provided
-DF_ARGS := $(strip $(if $(SUPABASE_URL),--dart-define SUPABASE_URL=$(SUPABASE_URL)) \
-                 $(if $(SUPABASE_ANON_KEY),--dart-define SUPABASE_ANON_KEY=$(SUPABASE_ANON_KEY)) \
-                 $(if $(AI_SERVICE_URL),--dart-define AI_SERVICE_URL=$(AI_SERVICE_URL)) \
+DF_ARGS := $(strip $(if $(AI_SERVICE_URL),--dart-define AI_SERVICE_URL=$(AI_SERVICE_URL)) \
                  $(if $(DEFAULT_AGENT_RESPOND_MODEL),--dart-define DEFAULT_AGENT_RESPOND_MODEL=$(DEFAULT_AGENT_RESPOND_MODEL)) \
                  $(if $(DEFAULT_AGENT_QA_MODEL),--dart-define DEFAULT_AGENT_QA_MODEL=$(DEFAULT_AGENT_QA_MODEL)) \
                  $(if $(DEFAULT_AGENT_EMBEDDING_MODEL),--dart-define DEFAULT_AGENT_EMBEDDING_MODEL=$(DEFAULT_AGENT_EMBEDDING_MODEL)) \
@@ -67,7 +60,7 @@ help:
 	@echo "  build-windows      - Build Windows release app"
 	@echo "  build-linux        - Build Linux release app"
 	@echo "  serve-web-build    - Serve built web assets locally (requires python3)"
-	@echo "  env-print          - Print Supabase env passed to dart-define"
+	@echo "  env-print          - Print env passed to dart-define"
 	@echo "  install-hooks      - Configure git to use .githooks/ as hooks path"
 	@echo "  publish-release    - Publish release to GitHub (defaults to version in package.json)"
 	@echo "  ci                 - Mirror Writer CI locally (deps, icons, lint, tests)"
@@ -156,7 +149,6 @@ docker-build-web:
 docker-push-web:
 	docker push $(IMAGE)
 
-## Release builds (pass SUPABASE_URL/SUPABASE_ANON_KEY if needed)
 build-macos:
 	$(FLUTTER) build macos --release $(DF_ARGS)
 	@if [ -d "/Applications" ] && [ -z "$$CI" ]; then \
@@ -192,8 +184,6 @@ serve-web-build:
 	python3 -m http.server $(WEB_PORT) --directory build/web
 
 env-print:
-	@echo "SUPABASE_URL=$(SUPABASE_URL)"
-	@echo "SUPABASE_ANON_KEY=$(SUPABASE_ANON_KEY)"
 	@echo "AI_SERVICE_URL=$(AI_SERVICE_URL)"
 	@echo "DEFAULT_AGENT_RESPOND_MODEL=$(DEFAULT_AGENT_RESPOND_MODEL)"
 	@echo "DEFAULT_AGENT_QA_MODEL=$(DEFAULT_AGENT_QA_MODEL)"

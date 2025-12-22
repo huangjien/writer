@@ -7,8 +7,8 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/pattern.dart';
 import 'package:writer/screens/patterns_list_screen.dart';
 import 'package:writer/state/pattern_providers.dart';
-import 'package:writer/services/patterns_service.dart';
 import 'package:writer/state/providers.dart';
+import 'package:writer/services/patterns_service.dart';
 
 class MockGoRouter extends Mock implements GoRouter {}
 
@@ -71,6 +71,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          isSignedInProvider.overrideWithValue(true),
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
         ],
@@ -81,7 +82,7 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(find.text('Patterns'), findsOneWidget);
     expect(find.text('A'), findsOneWidget);
     expect(find.text('B'), findsOneWidget);
@@ -92,6 +93,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          isSignedInProvider.overrideWithValue(true),
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
         ],
@@ -122,6 +124,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          isSignedInProvider.overrideWithValue(true),
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
         ],
@@ -152,6 +155,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          isSignedInProvider.overrideWithValue(true),
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
         ],
@@ -192,9 +196,9 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          isSignedInProvider.overrideWithValue(true),
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
-          supabaseEnabledProvider.overrideWith((_) => true),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -226,6 +230,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          isSignedInProvider.overrideWithValue(true),
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
         ],
@@ -255,6 +260,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          isSignedInProvider.overrideWithValue(true),
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
         ],
@@ -305,9 +311,9 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          isSignedInProvider.overrideWithValue(true),
           patternsProvider.overrideWith((ref) async => []),
           patternsServiceRefProvider.overrideWith((_) => fake),
-          supabaseEnabledProvider.overrideWith((_) => false),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -318,7 +324,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Supabase not enabled'), findsOneWidget);
+    expect(find.text('No patterns'), findsOneWidget);
   });
 
   testWidgets('Shows No Patterns message when empty and enabled', (
@@ -329,9 +335,9 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          isSignedInProvider.overrideWithValue(true),
           patternsProvider.overrideWith((ref) async => []),
           patternsServiceRefProvider.overrideWith((_) => fake),
-          supabaseEnabledProvider.overrideWith((_) => true),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -351,6 +357,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          isSignedInProvider.overrideWithValue(true),
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
         ],

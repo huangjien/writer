@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
 import 'state/ai_service_settings.dart';
 import 'repositories/local_storage_repository.dart';
@@ -10,12 +9,11 @@ import 'state/app_settings.dart';
 import 'state/theme_controller.dart';
 import 'state/tts_settings.dart';
 import 'state/admin_settings.dart';
-import 'state/providers.dart';
 import 'state/session_state.dart';
 
 final localStorageRepositoryProvider = Provider<LocalStorageRepository>((ref) {
-  final vectorService = ref.watch(vectorServiceProvider);
-  return LocalStorageRepository(vectorService: vectorService);
+  // final vectorService = ref.watch(vectorServiceProvider);
+  return LocalStorageRepository();
 });
 
 Future<void> _preloadFonts() async {
@@ -34,9 +32,7 @@ Future<void> _preloadFonts() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _preloadFonts();
-  if (supabaseEnabled) {
-    await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
-  }
+
   final prefs = await SharedPreferences.getInstance();
   final appSettings = AppSettingsNotifier(prefs);
   final themeController = ThemeController(prefs);

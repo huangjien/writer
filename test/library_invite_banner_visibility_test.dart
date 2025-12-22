@@ -3,15 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:writer/features/library/library_screen.dart';
-import 'package:writer/state/providers.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';
 
 void main() {
-  testWidgets('Invite banner shows when Supabase enabled and session is null', (
-    tester,
-  ) async {
+  testWidgets('Invite banner shows when signed out', (tester) async {
     final novels = [
       const Novel(
         id: 'n1',
@@ -27,9 +24,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWithValue(true),
-          supabaseSessionProvider.overrideWithValue(null),
-          // Use mock novels to avoid actual supabase queries in test
+          // Use mock novels to avoid actual backend queries in test
           novelsProvider.overrideWith((ref) async => novels),
         ],
         child: MaterialApp(

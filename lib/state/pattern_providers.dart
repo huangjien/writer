@@ -8,9 +8,9 @@ final patternsServiceRefProvider = Provider<PatternsService>((ref) {
 });
 
 final patternsProvider = FutureProvider<List<Pattern>>((ref) async {
-  final enabled = ref.watch(supabaseEnabledProvider);
-  if (!enabled) return const <Pattern>[];
   ref.watch(authStateProvider);
+  final isSignedIn = ref.watch(isSignedInProvider);
+  if (!isSignedIn) return const <Pattern>[];
   final svc = ref.watch(patternsServiceRefProvider);
   return svc.fetchPatterns();
 });
@@ -19,9 +19,9 @@ final patternByIdProvider = FutureProvider.family<Pattern?, String>((
   ref,
   id,
 ) async {
-  final enabled = ref.watch(supabaseEnabledProvider);
-  if (!enabled) return null;
   ref.watch(authStateProvider);
+  final isSignedIn = ref.watch(isSignedInProvider);
+  if (!isSignedIn) return null;
   final svc = ref.watch(patternsServiceRefProvider);
   return svc.getPattern(id);
 });

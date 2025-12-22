@@ -7,9 +7,9 @@ void main() {
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
     expect(l10n.settings, 'Settings');
     expect(l10n.appTitle, 'Writer');
-    expect(l10n.supabaseSettings, 'Supabase Settings');
-    expect(l10n.supabaseNotEnabled, 'Supabase not enabled');
-    expect(l10n.fetchFromSupabase, 'Fetch from Supabase');
+    expect(l10n.supabaseSettings, 'Cloud Sync Settings');
+    expect(l10n.supabaseNotEnabled, 'Cloud sync not enabled');
+    expect(l10n.fetchFromSupabase, 'Fetch from cloud');
     expect(l10n.confirmFetch, 'Confirm Fetch');
     expect(
       l10n.confirmFetchDescription,
@@ -47,7 +47,7 @@ void main() {
     expect(l10n.ttsError('Network error'), 'TTS error: Network error');
     expect(
       l10n.confirmDeleteDescription('My Novel'),
-      "This will delete 'My Novel' from Supabase. Are you sure?",
+      "This will delete 'My Novel' from your cloud library. Are you sure?",
     );
   });
 }

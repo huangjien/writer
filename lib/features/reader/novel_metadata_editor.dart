@@ -4,6 +4,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/shared/strings.dart';
 import 'package:writer/state/edit_permissions.dart';
+import 'package:writer/repositories/novel_repository.dart';
 
 class NovelMetadataEditor extends ConsumerStatefulWidget {
   final String novelId;

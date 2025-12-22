@@ -8,7 +8,6 @@ import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/state/ai_service_settings.dart';
-import 'package:writer/state/providers.dart';
 import 'package:writer/features/settings/widgets/app_settings_section.dart';
 
 void main() {
@@ -22,7 +21,6 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     final container = ProviderContainer(
       overrides: [
-        supabaseEnabledProvider.overrideWith((_) => false),
         appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
         themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
         motionSettingsProvider.overrideWith(
@@ -68,7 +66,6 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     final container = ProviderContainer(
       overrides: [
-        supabaseEnabledProvider.overrideWith((_) => false),
         appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
         themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
         motionSettingsProvider.overrideWith(

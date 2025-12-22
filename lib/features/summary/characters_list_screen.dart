@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
-import '../../main.dart';
 import '../../models/character_note.dart';
+import 'package:writer/repositories/notes_repository.dart';
+import '../../state/providers.dart';
 
 class CharactersListScreen extends ConsumerStatefulWidget {
   const CharactersListScreen({super.key, required this.novelId});
@@ -32,8 +33,12 @@ class _CharactersListScreenState extends ConsumerState<CharactersListScreen> {
       _error = null;
     });
     try {
-      final repo = ref.read(localStorageRepositoryProvider);
-      _items = await repo.listCharacterNotes(widget.novelId);
+      final repo = ref.read(notesRepositoryProvider);
+      if (ref.read(isSignedInProvider)) {
+        _items = await repo.listCharacterNotes(widget.novelId);
+      } else {
+        _items = []; // Local support removed/needs caching
+      }
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -130,13 +135,17 @@ class _CharactersListScreenState extends ConsumerState<CharactersListScreen> {
                             ),
                           );
                           if (ok == true) {
-                            final repo = ref.read(
-                              localStorageRepositoryProvider,
-                            );
-                            await repo.deleteCharacterNoteByIdx(
-                              widget.novelId,
-                              it.idx,
-                            );
+                            final repo = ref.read(notesRepositoryProvider);
+                            // Deleting by ID if possible, but existing used idx.
+                            // NotesRepository has deleteCharacterNoteByIdx.
+                            if (ref.read(isSignedInProvider)) {
+                              await repo.deleteCharacterNoteByIdx(
+                                widget.novelId,
+                                it.idx,
+                              );
+                            }
+                            // Also delete local? Local is empty now.
+                            // await ref.read(localStorageRepositoryProvider).deleteCharacterNoteByIdx...
                             await _load();
                           }
                         },

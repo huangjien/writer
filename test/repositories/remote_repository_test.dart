@@ -240,7 +240,7 @@ void main() {
   group('RemoteRepository auth headers', () {
     test('adds Authorization header when token is available', () async {
       final client = MockClient((request) async {
-        expect(request.headers['Authorization'], 'Bearer tok');
+        expect(request.headers['X-Session-Id'], 'tok');
         return http.Response(jsonEncode({'result': 'ok'}), 200);
       });
       final repo = RemoteRepository(
@@ -258,7 +258,7 @@ void main() {
 
     test('omits Authorization header when token getter throws', () async {
       final client = MockClient((request) async {
-        expect(request.headers.containsKey('Authorization'), false);
+        expect(request.headers.containsKey('X-Session-Id'), false);
         return http.Response(jsonEncode({'result': 'ok'}), 200);
       });
       final repo = RemoteRepository(

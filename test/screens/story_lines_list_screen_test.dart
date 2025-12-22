@@ -87,7 +87,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => true),
+          isSignedInProvider.overrideWithValue(true),
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
@@ -109,7 +109,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => true),
+          isSignedInProvider.overrideWithValue(true),
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
@@ -135,7 +135,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => true),
+          isSignedInProvider.overrideWithValue(true),
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
@@ -160,7 +160,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => true),
+          isSignedInProvider.overrideWithValue(true),
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
@@ -189,7 +189,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => true),
+          isSignedInProvider.overrideWithValue(true),
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
@@ -219,7 +219,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => true),
+          isSignedInProvider.overrideWithValue(true),
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
@@ -267,9 +267,9 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          isSignedInProvider.overrideWithValue(true),
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
-          supabaseEnabledProvider.overrideWith((_) => true),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -301,7 +301,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => true),
+          isSignedInProvider.overrideWithValue(true),
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
@@ -328,7 +328,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => true),
+          isSignedInProvider.overrideWithValue(true),
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
@@ -367,16 +367,13 @@ void main() {
     expect(find.text('B'), findsOneWidget);
   });
 
-  testWidgets('Shows Supabase disabled message when empty and disabled', (
-    tester,
-  ) async {
+  testWidgets('Shows sign-in prompt when signed out', (tester) async {
     final fake = FakeStoryLinesService()..items = [];
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           storyLinesProvider.overrideWith((ref) async => const []),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
-          supabaseEnabledProvider.overrideWith((_) => false),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -386,19 +383,22 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Supabase not enabled'), findsOneWidget);
+    expect(
+      find.text('Sign in to sync progress across devices.'),
+      findsOneWidget,
+    );
   });
 
-  testWidgets('Shows No Story Lines message when empty and enabled', (
+  testWidgets('Shows No Story Lines message when empty and signed in', (
     tester,
   ) async {
     final fake = FakeStoryLinesService()..items = [];
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          isSignedInProvider.overrideWithValue(true),
           storyLinesProvider.overrideWith((ref) async => const []),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
-          supabaseEnabledProvider.overrideWith((_) => true),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

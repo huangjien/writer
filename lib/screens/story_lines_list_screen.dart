@@ -196,12 +196,10 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
     final q = _searchCtrl.text.trim();
     if (q.isEmpty) return;
 
-    final enabled = ref.read(supabaseEnabledProvider);
-    if (!enabled) {
+    final isSignedIn = ref.read(isSignedInProvider);
+    if (!isSignedIn) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Smart search requires Supabase connection'),
-        ),
+        SnackBar(content: Text(AppLocalizations.of(context)!.notSignedIn)),
       );
       return;
     }
@@ -320,7 +318,7 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isSupabaseEnabled = ref.watch(supabaseEnabledProvider);
+    final isSignedIn = ref.watch(isSignedInProvider);
     final storyLinesAsync = ref.watch(storyLinesProvider);
     return Scaffold(
       appBar: AppBar(
@@ -342,7 +340,7 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
             tooltip: l10n.reload,
           ),
           IconButton(
-            onPressed: isSupabaseEnabled
+            onPressed: isSignedIn
                 ? () => context.push('/story_line_form')
                 : null,
             icon: const Icon(Icons.add),
@@ -355,7 +353,24 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
           ),
         ],
       ),
-      body: _searchLoading
+      body: !isSignedIn
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(l10n.signInToSync),
+                    const SizedBox(height: 12),
+                    FilledButton(
+                      onPressed: () => context.push('/auth'),
+                      child: Text(l10n.signIn),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : _searchLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
           ? Center(child: Text(_error!))
@@ -375,33 +390,6 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
                       .toList();
                 }
 
-                if (!isSupabaseEnabled && items0.isEmpty && !isSearching) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            l10n.supabaseNotEnabled,
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            l10n.supabaseNotEnabledDescription,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 12),
-                          TextButton(
-                            onPressed: () => context.goNamed('settings'),
-                            child: Text(l10n.supabaseSettings),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
                 if (items.isEmpty && !isSearching) {
                   return Center(child: Text(l10n.noStoryLines));
                 }

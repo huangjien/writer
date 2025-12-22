@@ -9,89 +9,73 @@ import 'package:writer/models/novel.dart';
 import 'package:writer/models/user_progress.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
-import 'package:writer/state/mock_providers.dart';
-import 'package:writer/state/providers.dart';
 
 void main() {
-  testWidgets(
-    'Mock fallback: 0% ring with Not started when Supabase disabled',
-    (tester) async {
-      // Ensure a clean preferences state
-      SharedPreferences.setMockInitialValues({});
-
-      final novels = <Novel>[
-        const Novel(
-          id: 'n-1',
-          title: 'Quiet City Nights',
-          author: 'L. Dreamer',
-          description: 'Slice-of-life stories set in a peaceful city.',
-          coverUrl: null,
-          languageCode: 'en',
-          isPublic: true,
-        ),
-      ];
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            supabaseEnabledProvider.overrideWith((ref) => false),
-            // In Supabase-disabled mode, LibraryScreen consumes mock providers.
-            mockNovelsProvider.overrideWith((ref) async => novels),
-            mockChaptersProvider.overrideWith((ref, novelId) async {
-              return [
-                const Chapter(
-                  id: 'c-1',
-                  novelId: 'n-1',
-                  idx: 1,
-                  title: 'Chapter One',
-                  content: 'abc',
-                ),
-              ];
-            }),
-            // Neutral offline progress: expect 0% ring and label.
-            mockLastProgressProvider.overrideWith((ref, novelId) async => null),
-          ],
-          child: MaterialApp(
-            locale: const Locale('en'),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
-          ),
-        ),
-      );
-
-      // Allow async providers to resolve
-      await tester.pump(const Duration(milliseconds: 200));
-      await tester.pumpAndSettle();
-
-      // Verify Supabase disabled banner is shown
-      expect(
-        find.text('Supabase is not configured for this build.'),
-        findsOneWidget,
-      );
-
-      // Neutral offline ring and label should be visible.
-      expect(find.text('Not started'), findsOneWidget);
-      final rings = find.byWidgetPredicate(
-        (w) => w is CircularProgressIndicator && w.strokeWidth == 3,
-      );
-      final ringWidgets = rings
-          .evaluate()
-          .map((e) => e.widget)
-          .whereType<CircularProgressIndicator>()
-          .toList();
-      expect(ringWidgets.any((r) => r.value == 0.0), isTrue);
-    },
-  );
-
-  testWidgets('Supabase-backed: shows progress ring and continue text', (
+  testWidgets('0% ring with Not started when no progress exists', (
     tester,
   ) async {
-    // Skip if Supabase is not enabled for this test run.
-    if (!supabaseEnabled) {
-      return;
-    }
+    // Ensure a clean preferences state
+    SharedPreferences.setMockInitialValues({});
 
+    final novels = <Novel>[
+      const Novel(
+        id: 'n-1',
+        title: 'Quiet City Nights',
+        author: 'L. Dreamer',
+        description: 'Slice-of-life stories set in a peaceful city.',
+        coverUrl: null,
+        languageCode: 'en',
+        isPublic: true,
+      ),
+    ];
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          libraryNovelsProvider.overrideWith((ref) async => novels),
+          memberNovelsProvider.overrideWith((ref) async => const []),
+          chaptersProvider.overrideWith((ref, novelId) async {
+            return [
+              const Chapter(
+                id: 'c-1',
+                novelId: 'n-1',
+                idx: 1,
+                title: 'Chapter One',
+                content: 'abc',
+              ),
+            ];
+          }),
+          lastProgressProvider.overrideWith((ref, novelId) async => null),
+        ],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const LibraryScreen(),
+        ),
+      ),
+    );
+
+    // Allow async providers to resolve
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pumpAndSettle();
+
+    // Neutral ring and label should be visible.
+    expect(find.text('Not started'), findsOneWidget);
+    final rings = find.byWidgetPredicate(
+      (w) => w is CircularProgressIndicator && w.strokeWidth == 3,
+    );
+    final ringWidgets = rings
+        .evaluate()
+        .map((e) => e.widget)
+        .whereType<CircularProgressIndicator>()
+        .toList();
+    expect(ringWidgets.any((r) => r.value == 0.0), isTrue);
+  });
+
+  testWidgets('Shows progress ring and continue text when progress exists', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
 
     final novels = <Novel>[
@@ -112,9 +96,8 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseSessionProvider.overrideWith((_) => null),
-          // Force Library to use Supabase-backed providers by overriding them directly.
-          novelsProvider.overrideWith((ref) async => novels),
+          libraryNovelsProvider.overrideWith((ref) async => novels),
+          memberNovelsProvider.overrideWith((ref) async => const []),
           chaptersProvider.overrideWith((ref, novelId) async {
             return [
               Chapter(

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/state/novel_providers.dart';
-import 'package:writer/state/mock_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/features/summary/snowflake_coach_widget.dart';
+import 'package:writer/repositories/novel_repository.dart';
 import '../../main.dart';
 
 class SummaryScreen extends ConsumerStatefulWidget {
@@ -43,15 +43,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
     if (cached != null) {
       _summaryController.text = cached;
     } else {
-      final isSupabaseEnabled = ref.read(supabaseEnabledProvider);
-      Novel? resolved;
-      if (isSupabaseEnabled) {
-        resolved = await ref.read(novelProvider(widget.novelId).future);
-      } else {
-        final novels = await ref.read(mockNovelsProvider.future);
-        final matches = novels.where((n) => n.id == widget.novelId);
-        resolved = matches.isNotEmpty ? matches.first : null;
-      }
+      final resolved = await ref.read(novelProvider(widget.novelId).future);
       final desc = resolved?.description ?? '';
       _summaryController.text = desc;
     }
@@ -68,10 +60,8 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isSupabaseEnabled = ref.watch(supabaseEnabledProvider);
-    final chaptersAsync = isSupabaseEnabled
-        ? ref.watch(chaptersProvider(widget.novelId))
-        : ref.watch(mockChaptersProvider(widget.novelId));
+    final isSignedIn = ref.watch(isSignedInProvider);
+    final chaptersAsync = ref.watch(chaptersProvider(widget.novelId));
 
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
 
@@ -82,33 +72,13 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (isSupabaseEnabled)
-              ref
-                  .watch(novelProvider(widget.novelId))
-                  .when(
-                    data: (novel) => _NovelHeader(novel: novel),
-                    loading: () => _LoadingTile(label: l10n.loadingNovels),
-                    error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
-                  )
-            else
-              ref
-                  .watch(mockNovelsProvider)
-                  .when(
-                    data: (novels) {
-                      Novel? novel;
-                      final matches = novels.where(
-                        (n) => n.id == widget.novelId,
-                      );
-                      if (matches.isNotEmpty) {
-                        novel = matches.first;
-                      } else {
-                        novel = null;
-                      }
-                      return _NovelHeader(novel: novel);
-                    },
-                    loading: () => _LoadingTile(label: l10n.loadingNovels),
-                    error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
-                  ),
+            ref
+                .watch(novelProvider(widget.novelId))
+                .when(
+                  data: (novel) => _NovelHeader(novel: novel),
+                  loading: () => _LoadingTile(label: l10n.loadingNovels),
+                  error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
+                ),
             const SizedBox(height: 16),
             Form(
               key: _formKey,
@@ -168,7 +138,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                                     widget.novelId,
                                     _summaryController.text.trim(),
                                   );
-                                  if (isSupabaseEnabled) {
+                                  if (isSignedIn) {
                                     final repo = ref.read(
                                       novelRepositoryProvider,
                                     );
@@ -234,11 +204,8 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
             IconButton(
               onPressed: () async {
                 setState(() => _refreshing = true);
-                final enabled = ref.read(supabaseEnabledProvider);
-                if (enabled) {
-                  ref.invalidate(novelProvider(widget.novelId));
-                  ref.invalidate(chaptersProvider(widget.novelId));
-                }
+                ref.invalidate(novelProvider(widget.novelId));
+                ref.invalidate(chaptersProvider(widget.novelId));
                 await _load();
                 if (mounted) setState(() => _refreshing = false);
               },

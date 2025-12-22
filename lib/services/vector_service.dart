@@ -36,7 +36,7 @@ class VectorService {
         .post(uri, headers: headers, body: jsonEncode(json))
         .timeout(kLlmTimeout);
     if (response.body.isEmpty) return {};
-    return jsonDecode(response.body);
+    return jsonDecode(utf8.decode(response.bodyBytes));
   }
 
   Future<List<double>> embed(String input) async {
@@ -57,7 +57,7 @@ class VectorService {
           .timeout(kLlmTimeout);
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
         if (data is Map && data['vector'] is List) {
           return (data['vector'] as List)
               .cast<num>()

@@ -3,18 +3,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:writer/features/library/library_screen.dart';
-import 'package:writer/state/mock_providers.dart';
-import 'package:writer/state/providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/progress_providers.dart';
 
 void main() {
   testWidgets('Empty state localization in Chinese', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => false),
-          // Force empty novels list
-          mockNovelsProvider.overrideWith((ref) async => []),
+          libraryNovelsProvider.overrideWith((ref) async => const []),
+          memberNovelsProvider.overrideWith((ref) async => const []),
+          chaptersProvider.overrideWith((ref, novelId) async => const []),
+          lastProgressProvider.overrideWith((ref, novelId) async => null),
         ],
         child: const MaterialApp(
           locale: Locale('zh'),

@@ -1,8 +1,7 @@
-import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/repositories/novel_repository.dart';
@@ -14,8 +13,6 @@ import 'package:writer/models/user_progress.dart';
 import 'package:writer/main.dart'; // Import main.dart to access localStorageRepositoryProvider
 
 // Mocks
-class MockSupabaseClient extends Mock implements SupabaseClient {}
-
 class MockNovelRepository extends Mock implements NovelRepository {}
 
 class MockLocalStorageRepository extends Mock
@@ -46,10 +43,7 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockRepo),
-          authStateProvider.overrideWith(
-            (ref) =>
-                Stream.value(AuthState(AuthChangeEvent.initialSession, null)),
-          ),
+          isSignedInProvider.overrideWithValue(true),
         ],
       );
       addTearDown(container.dispose);
@@ -74,10 +68,7 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockRepo),
-          authStateProvider.overrideWith(
-            (ref) =>
-                Stream.value(AuthState(AuthChangeEvent.initialSession, null)),
-          ),
+          isSignedInProvider.overrideWithValue(true),
         ],
       );
       addTearDown(container.dispose);
@@ -114,10 +105,6 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           localStorageRepositoryProvider.overrideWithValue(mockLocalRepo),
-          authStateProvider.overrideWith(
-            (ref) =>
-                Stream.value(AuthState(AuthChangeEvent.initialSession, null)),
-          ),
           // Override fetching providers to return static data immediately
           novelsProvider.overrideWith((ref) async => public),
           memberNovelsProvider.overrideWith((ref) async => member),
@@ -162,10 +149,6 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           localStorageRepositoryProvider.overrideWithValue(mockLocalRepo),
-          authStateProvider.overrideWith(
-            (ref) =>
-                Stream.value(AuthState(AuthChangeEvent.initialSession, null)),
-          ),
           novelsProvider.overrideWith((ref) async => public),
           // Mock memberNovelsProvider to complete with error
           memberNovelsProvider.overrideWith(
@@ -223,25 +206,17 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             novelRepositoryProvider.overrideWithValue(mockRepo),
-            // Use StreamController for user progress to simulate a stream
-            recentUserProgressProvider.overrideWith(
-              (ref) => Stream.value(progress),
-            ),
+            recentUserProgressProvider.overrideWith((ref) async => progress),
           ],
         );
 
         try {
-          final sub = container.listen(
-            recentUserProgressProvider,
-            (prev, _) {},
-          );
           final result = await container.read(
             recentProgressDetailsProvider.future,
           );
           expect(result, hasLength(1));
           expect(result.first.novel.id, 'n1');
           expect(result.first.chapter.id, 'c1');
-          sub.close();
         } finally {
           container.dispose();
         }

@@ -2,45 +2,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:writer/models/user_progress.dart';
 import 'package:writer/repositories/progress_repository.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:writer/repositories/remote_repository.dart';
 
-import '../shared/supabase_fakes.dart';
-
-class MockSupabaseClient extends Mock implements SupabaseClient {}
-
-class MockSupabaseQueryBuilder extends Mock implements SupabaseQueryBuilder {}
-
-class MockGoTrueClient extends Mock implements GoTrueClient {}
-
-class MockUser extends Mock implements User {}
+class MockRemoteRepository extends Mock implements RemoteRepository {}
 
 void main() {
-  late MockSupabaseClient mockClient;
-  late MockGoTrueClient mockAuth;
-  late MockUser mockUser;
-  late MockSupabaseQueryBuilder mockQueryBuilder;
+  late MockRemoteRepository remote;
   late ProgressRepository repository;
 
   setUpAll(() {
-    registerFallbackValue((List<Map<String, dynamic>> _) {});
-    registerFallbackValue((dynamic _) {});
-    registerFallbackValue((Object error, StackTrace stackTrace) {});
+    registerFallbackValue(<String, dynamic>{});
   });
 
   setUp(() {
-    mockClient = MockSupabaseClient();
-    mockAuth = MockGoTrueClient();
-    mockUser = MockUser();
-    mockQueryBuilder = MockSupabaseQueryBuilder();
-
-    when(() => mockClient.auth).thenReturn(mockAuth);
-    when(() => mockClient.from(any())).thenAnswer((_) => mockQueryBuilder);
-
-    repository = ProgressRepository(mockClient);
+    remote = MockRemoteRepository();
+    repository = ProgressRepository(remote);
   });
 
   group('ProgressRepository', () {
-    test('upsertProgress calls upsert', () async {
+    test('upsertProgress posts progress payload', () async {
       final progress = UserProgress(
         userId: 'user1',
         novelId: 'novel1',
@@ -50,20 +30,24 @@ void main() {
         updatedAt: DateTime.now(),
       );
 
-      when(
-        () => mockQueryBuilder.upsert(any()),
-      ).thenAnswer((_) => FakePostgrestFilterBuilder(null));
+      final captured = <Map<String, dynamic>>[];
+      when(() => remote.post(any(), any())).thenAnswer((inv) async {
+        captured.add(inv.positionalArguments[1] as Map<String, dynamic>);
+        return {};
+      });
 
       await repository.upsertProgress(progress);
 
-      verify(() => mockClient.from('user_progress')).called(1);
-      verify(() => mockQueryBuilder.upsert(any())).called(1);
+      expect(captured.single, {
+        'novel_id': 'novel1',
+        'chapter_id': 'chap1',
+        'scroll_offset': 100.0,
+        'tts_char_index': 10,
+      });
+      verify(() => remote.post('progress', any())).called(1);
     });
 
     test('lastProgressForNovel returns progress when found', () async {
-      when(() => mockAuth.currentUser).thenReturn(mockUser);
-      when(() => mockUser.id).thenReturn('user1');
-
       final progressData = {
         'user_id': 'user1',
         'novel_id': 'novel1',
@@ -74,8 +58,8 @@ void main() {
       };
 
       when(
-        () => mockQueryBuilder.select(any()),
-      ).thenAnswer((_) => FakePostgrestFilterBuilder([progressData]));
+        () => remote.get('progress/novels/novel1/last'),
+      ).thenAnswer((_) async => progressData);
 
       final result = await repository.lastProgressForNovel('novel1');
 
@@ -84,32 +68,15 @@ void main() {
       expect(result.userId, 'user1');
     });
 
-    test('lastProgressForNovel returns null when user is null', () async {
-      when(() => mockAuth.currentUser).thenReturn(null);
-
-      final result = await repository.lastProgressForNovel('novel1');
-
-      expect(result, isNull);
-      verifyNever(() => mockClient.from(any()));
-    });
-
-    test('lastProgressForNovel returns null when empty', () async {
-      when(() => mockAuth.currentUser).thenReturn(mockUser);
-      when(() => mockUser.id).thenReturn('user1');
-
+    test('lastProgressForNovel returns null on error', () async {
       when(
-        () => mockQueryBuilder.select(any()),
-      ).thenAnswer((_) => FakePostgrestFilterBuilder([]));
-
+        () => remote.get('progress/novels/novel1/last'),
+      ).thenThrow(Exception('404'));
       final result = await repository.lastProgressForNovel('novel1');
-
       expect(result, isNull);
     });
 
     test('latestProgressForUser returns progress', () async {
-      when(() => mockAuth.currentUser).thenReturn(mockUser);
-      when(() => mockUser.id).thenReturn('user1');
-
       final progressData = {
         'user_id': 'user1',
         'novel_id': 'novel1',
@@ -120,8 +87,8 @@ void main() {
       };
 
       when(
-        () => mockQueryBuilder.select(any()),
-      ).thenAnswer((_) => FakePostgrestFilterBuilder([progressData]));
+        () => remote.get('progress/latest'),
+      ).thenAnswer((_) async => progressData);
 
       final result = await repository.latestProgressForUser();
 

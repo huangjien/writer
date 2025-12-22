@@ -7,9 +7,9 @@ import 'package:writer/l10n/app_localizations.dart';
 import '../../../theme/design_tokens.dart';
 import '../../../state/motion_settings.dart';
 import '../../../state/novel_providers.dart';
-import '../../../state/mock_providers.dart';
 import '../../../state/progress_providers.dart';
 import '../../../repositories/chapter_repository.dart';
+import '../../../repositories/novel_repository.dart';
 import '../../../models/chapter.dart';
 import '../../../models/user_progress.dart';
 import '../../library/library_providers.dart';
@@ -30,13 +30,11 @@ class LibraryItemRow extends ConsumerWidget {
   const LibraryItemRow({
     super.key,
     required this.novel,
-    required this.isSupabaseEnabled,
     required this.isSignedIn,
     required this.canRemove,
     required this.canDownload,
   });
   final Novel novel;
-  final bool isSupabaseEnabled;
   final bool isSignedIn;
   final bool canRemove;
   final bool canDownload;
@@ -221,11 +219,11 @@ class LibraryItemRow extends ConsumerWidget {
     return FocusTraversalOrder(
       order: const NumericFocusOrder(1.0),
       child: Tooltip(
-        message: l10n.supabaseNotEnabledDescription,
+        message: l10n.downloadChapters,
         child: IconButton(
           key: Key('downloadButton_$novelId'),
           icon: const Icon(Icons.download),
-          tooltip: l10n.supabaseNotEnabledDescription,
+          tooltip: l10n.downloadChapters,
           onPressed: null,
         ),
       ),
@@ -269,7 +267,6 @@ class LibraryItemRow extends ConsumerWidget {
   Widget _removeAction(
     AppLocalizations l10n,
     bool canRemove,
-    bool isSupabaseEnabled,
     bool isSignedIn,
     Novel n,
     BuildContext context,
@@ -288,7 +285,7 @@ class LibraryItemRow extends ConsumerWidget {
             key: Key('removeButton_${n.id}'),
             icon: const Icon(Icons.delete_outline),
             onPressed: () async {
-              if (isSupabaseEnabled && isSignedIn) {
+              if (isSignedIn) {
                 final confirmed = await showDialog<bool>(
                   context: context,
                   builder: (ctx) => AlertDialog(
@@ -373,12 +370,8 @@ class LibraryItemRow extends ConsumerWidget {
     final n = novel;
     final l10n = AppLocalizations.of(context)!;
     final motion = ref.watch(motionSettingsProvider);
-    final lastProgressAsync = isSupabaseEnabled
-        ? ref.watch(lastProgressProvider(n.id))
-        : ref.watch(mockLastProgressProvider(n.id));
-    final chaptersAsync = isSupabaseEnabled
-        ? ref.watch(chaptersProvider(n.id))
-        : ref.watch(mockChaptersProvider(n.id));
+    final lastProgressAsync = ref.watch(lastProgressProvider(n.id));
+    final chaptersAsync = ref.watch(chaptersProvider(n.id));
 
     return Shortcuts(
       shortcuts: <ShortcutActivator, Intent>{
@@ -428,7 +421,7 @@ class LibraryItemRow extends ConsumerWidget {
           if (canRemove)
             _RemoveIntent: CallbackAction<_RemoveIntent>(
               onInvoke: (_) async {
-                if (isSupabaseEnabled && isSignedIn) {
+                if (isSignedIn) {
                   final confirmed = await showDialog<bool>(
                     context: context,
                     builder: (ctx) => AlertDialog(
@@ -574,15 +567,7 @@ class LibraryItemRow extends ConsumerWidget {
                   _downloadAction(l10n, canDownload, n.id, ref),
                   _continueAction(l10n, lastProgressAsync, n.id, context),
                   if (canRemove) const SizedBox(width: Spacing.s),
-                  _removeAction(
-                    l10n,
-                    canRemove,
-                    isSupabaseEnabled,
-                    isSignedIn,
-                    n,
-                    context,
-                    ref,
-                  ),
+                  _removeAction(l10n, canRemove, isSignedIn, n, context, ref),
                 ],
               ),
             ),

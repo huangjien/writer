@@ -3,10 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/library_screen.dart';
-import 'package:writer/state/mock_providers.dart';
-import 'package:writer/state/providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/progress_providers.dart';
 
 void main() {
   testWidgets('Library shows skeleton loading while fetching novels', (
@@ -29,8 +29,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => false),
-          mockNovelsProvider.overrideWith((ref) async {
+          memberNovelsProvider.overrideWith((ref) async => const []),
+          chaptersProvider.overrideWith((ref, novelId) async => const []),
+          lastProgressProvider.overrideWith((ref, novelId) async => null),
+          libraryNovelsProvider.overrideWith((ref) async {
             // artificial delay to show loading UI
             await Future<void>.delayed(const Duration(seconds: 1));
             return novels;

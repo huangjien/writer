@@ -3,14 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/models/user_progress.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
-import 'package:writer/state/mock_providers.dart';
-import 'package:writer/state/providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/progress_providers.dart';
 import 'helpers/test_utils.dart';
 
 void main() {
@@ -42,73 +41,70 @@ void main() {
 
     final app = await buildAppScope(
       prefs: prefs,
-      child: ProviderScope(
-        overrides: [
-          supabaseEnabledProvider.overrideWith((ref) => false),
-          mockNovelsProvider.overrideWith(
-            (ref) async => [
-              const Novel(
-                id: 'novel-001',
-                title: 'The Whispering Forest',
-                author: 'A. Storyteller',
-                description: 'A gentle adventure through a mysterious forest.',
-                coverUrl: null,
-                languageCode: 'en',
-                isPublic: true,
-              ),
-            ],
-          ),
-          mockChaptersProvider.overrideWith(
-            (ref, novelId) async => [
-              const Chapter(
-                id: 'chap-001-01',
-                novelId: 'novel-001',
-                idx: 1,
-                title: 'Into the Woods',
-                content: null,
-              ),
-              Chapter(
-                id: 'chap-001-02',
-                novelId: 'novel-001',
-                idx: 2,
-                title: 'Hidden Creek',
-                content: chapterContent,
-              ),
-            ],
-          ),
-          mockLastProgressProvider.overrideWith(
-            (ref, novelId) async => UserProgress(
-              userId: 'u-1',
-              novelId: 'novel-001',
-              chapterId: 'chap-001-02',
-              scrollOffset: 0.0,
-              ttsCharIndex: 250,
-              updatedAt: DateTime(2024, 1, 1),
+      extraOverrides: [
+        libraryNovelsProvider.overrideWith(
+          (ref) async => [
+            const Novel(
+              id: 'novel-001',
+              title: 'The Whispering Forest',
+              author: 'A. Storyteller',
+              description: 'A gentle adventure through a mysterious forest.',
+              coverUrl: null,
+              languageCode: 'en',
+              isPublic: true,
             ),
-          ),
-        ],
-        child: MaterialApp(
-          locale: const Locale('en'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          theme: ThemeData(
-            useMaterial3: true,
-            fontFamily: 'Roboto',
-            platform: TargetPlatform.android,
-            visualDensity: VisualDensity.standard,
-            listTileTheme: const ListTileThemeData(
-              contentPadding: EdgeInsets.zero,
-            ),
-          ),
-          builder: (context, child) {
-            final mq = MediaQuery.of(context);
-            return MediaQuery(
-              data: mq.copyWith(textScaler: TextScaler.noScaling),
-              child: child ?? const SizedBox.shrink(),
-            );
-          },
-          home: const LibraryScreen(),
+          ],
         ),
+        chaptersProvider.overrideWith(
+          (ref, novelId) async => [
+            const Chapter(
+              id: 'chap-001-01',
+              novelId: 'novel-001',
+              idx: 1,
+              title: 'Into the Woods',
+              content: null,
+            ),
+            Chapter(
+              id: 'chap-001-02',
+              novelId: 'novel-001',
+              idx: 2,
+              title: 'Hidden Creek',
+              content: chapterContent,
+            ),
+          ],
+        ),
+        lastProgressProvider.overrideWith(
+          (ref, novelId) async => UserProgress(
+            userId: 'u-1',
+            novelId: 'novel-001',
+            chapterId: 'chap-001-02',
+            scrollOffset: 0.0,
+            ttsCharIndex: 250,
+            updatedAt: DateTime(2024, 1, 1),
+          ),
+        ),
+      ],
+      child: MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: ThemeData(
+          useMaterial3: true,
+          fontFamily: 'Roboto',
+          platform: TargetPlatform.android,
+          visualDensity: VisualDensity.standard,
+          listTileTheme: const ListTileThemeData(
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
+        builder: (context, child) {
+          final mq = MediaQuery.of(context);
+          return MediaQuery(
+            data: mq.copyWith(textScaler: TextScaler.noScaling),
+            child: child ?? const SizedBox.shrink(),
+          );
+        },
+        home: const LibraryScreen(),
       ),
     );
 
@@ -161,73 +157,70 @@ void main() {
 
     final app = await buildAppScope(
       prefs: prefs,
-      child: ProviderScope(
-        overrides: [
-          supabaseEnabledProvider.overrideWith((ref) => false),
-          mockNovelsProvider.overrideWith(
-            (ref) async => [
-              const Novel(
-                id: 'novel-001',
-                title: 'The Whispering Forest',
-                author: 'A. Storyteller',
-                description: 'A gentle adventure through a mysterious forest.',
-                coverUrl: null,
-                languageCode: 'en',
-                isPublic: true,
-              ),
-            ],
-          ),
-          mockChaptersProvider.overrideWith(
-            (ref, novelId) async => [
-              const Chapter(
-                id: 'chap-001-01',
-                novelId: 'novel-001',
-                idx: 1,
-                title: 'Into the Woods',
-                content: null,
-              ),
-              Chapter(
-                id: 'chap-001-02',
-                novelId: 'novel-001',
-                idx: 2,
-                title: 'Hidden Creek',
-                content: chapterContent,
-              ),
-            ],
-          ),
-          mockLastProgressProvider.overrideWith(
-            (ref, novelId) async => UserProgress(
-              userId: 'u-1',
-              novelId: 'novel-001',
-              chapterId: 'chap-001-02',
-              scrollOffset: 0.0,
-              ttsCharIndex: 250,
-              updatedAt: DateTime(2024, 1, 1),
+      extraOverrides: [
+        libraryNovelsProvider.overrideWith(
+          (ref) async => [
+            const Novel(
+              id: 'novel-001',
+              title: 'The Whispering Forest',
+              author: 'A. Storyteller',
+              description: 'A gentle adventure through a mysterious forest.',
+              coverUrl: null,
+              languageCode: 'en',
+              isPublic: true,
             ),
-          ),
-        ],
-        child: MaterialApp(
-          locale: const Locale('zh'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          theme: ThemeData(
-            useMaterial3: true,
-            fontFamily: 'Roboto',
-            platform: TargetPlatform.android,
-            visualDensity: VisualDensity.standard,
-            listTileTheme: const ListTileThemeData(
-              contentPadding: EdgeInsets.zero,
-            ),
-          ),
-          builder: (context, child) {
-            final mq = MediaQuery.of(context);
-            return MediaQuery(
-              data: mq.copyWith(textScaler: TextScaler.noScaling),
-              child: child ?? const SizedBox.shrink(),
-            );
-          },
-          home: const LibraryScreen(),
+          ],
         ),
+        chaptersProvider.overrideWith(
+          (ref, novelId) async => [
+            const Chapter(
+              id: 'chap-001-01',
+              novelId: 'novel-001',
+              idx: 1,
+              title: 'Into the Woods',
+              content: null,
+            ),
+            Chapter(
+              id: 'chap-001-02',
+              novelId: 'novel-001',
+              idx: 2,
+              title: 'Hidden Creek',
+              content: chapterContent,
+            ),
+          ],
+        ),
+        lastProgressProvider.overrideWith(
+          (ref, novelId) async => UserProgress(
+            userId: 'u-1',
+            novelId: 'novel-001',
+            chapterId: 'chap-001-02',
+            scrollOffset: 0.0,
+            ttsCharIndex: 250,
+            updatedAt: DateTime(2024, 1, 1),
+          ),
+        ),
+      ],
+      child: MaterialApp(
+        locale: const Locale('zh'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: ThemeData(
+          useMaterial3: true,
+          fontFamily: 'Roboto',
+          platform: TargetPlatform.android,
+          visualDensity: VisualDensity.standard,
+          listTileTheme: const ListTileThemeData(
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
+        builder: (context, child) {
+          final mq = MediaQuery.of(context);
+          return MediaQuery(
+            data: mq.copyWith(textScaler: TextScaler.noScaling),
+            child: child ?? const SizedBox.shrink(),
+          );
+        },
+        home: const LibraryScreen(),
       ),
     );
 

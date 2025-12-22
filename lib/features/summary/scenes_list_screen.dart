@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
-import '../../main.dart';
 import '../../models/scene_note.dart';
+import 'package:writer/repositories/notes_repository.dart';
+import '../../state/providers.dart';
 
 class ScenesListScreen extends ConsumerStatefulWidget {
   const ScenesListScreen({super.key, required this.novelId});
@@ -31,8 +32,12 @@ class _ScenesListScreenState extends ConsumerState<ScenesListScreen> {
       _error = null;
     });
     try {
-      final repo = ref.read(localStorageRepositoryProvider);
-      _items = await repo.listSceneNotes(widget.novelId);
+      final repo = ref.read(notesRepositoryProvider);
+      if (ref.read(isSignedInProvider)) {
+        _items = await repo.listSceneNotes(widget.novelId);
+      } else {
+        _items = [];
+      }
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -128,13 +133,13 @@ class _ScenesListScreenState extends ConsumerState<ScenesListScreen> {
                             ),
                           );
                           if (ok == true) {
-                            final repo = ref.read(
-                              localStorageRepositoryProvider,
-                            );
-                            await repo.deleteSceneNoteByIdx(
-                              widget.novelId,
-                              it.idx,
-                            );
+                            final repo = ref.read(notesRepositoryProvider);
+                            if (ref.read(isSignedInProvider)) {
+                              await repo.deleteSceneNoteByIdx(
+                                widget.novelId,
+                                it.idx,
+                              );
+                            }
                             await _load();
                           }
                         },

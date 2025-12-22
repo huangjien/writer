@@ -144,12 +144,38 @@ class FakeStoryLinesService extends StoryLinesService {
   }
 }
 
+Finder _textFormField(String labelOrHint) {
+  final byDecoration = find.byWidgetPredicate((w) {
+    if (w is! TextField) return false;
+    final decoration = w.decoration;
+    final labelText = decoration?.labelText;
+    final hintText = decoration?.hintText;
+    if (labelText == labelOrHint || hintText == labelOrHint) return true;
+    final label = decoration?.label;
+    return label is Text && label.data == labelOrHint;
+  });
+  if (byDecoration.evaluate().isNotEmpty) return byDecoration.first;
+
+  final byTextDescendant = find.widgetWithText(TextField, labelOrHint);
+  if (byTextDescendant.evaluate().isNotEmpty) return byTextDescendant.first;
+
+  final allFields = find.byType(TextField);
+  if (labelOrHint == 'Title') return allFields.at(0);
+  if (labelOrHint == 'Description') return allFields.at(1);
+  if (labelOrHint == 'Content') return allFields.at(2);
+  if (labelOrHint == 'Usage Rules (JSON)') return allFields.at(3);
+  return allFields.first;
+}
+
 void main() {
   testWidgets('StoryLineFormScreen requires content to save', (tester) async {
     final svc = FakeStoryLinesService();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [storyLinesServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          storyLinesServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -159,10 +185,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Title'),
-      'Title',
-    );
+    final ex = tester.takeException();
+    if (ex != null) fail(ex.toString());
+
+    await tester.enterText(_textFormField('Title'), 'Title');
     await tester.pump();
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
@@ -175,7 +201,10 @@ void main() {
     final svc = FakeStoryLinesService();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [storyLinesServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          storyLinesServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -185,20 +214,11 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Title'),
-      'Title',
-    );
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Description'),
-      'Desc',
-    );
+    await tester.enterText(_textFormField('Title'), 'Title');
+    await tester.enterText(_textFormField('Description'), 'Desc');
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Content'),
-      'Body',
-    );
+    await tester.enterText(_textFormField('Content'), 'Body');
     await tester.tap(
       find.descendant(
         of: find.byType(Tab),
@@ -206,10 +226,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Usage Rules (JSON)'),
-      '{"x":true}',
-    );
+    await tester.enterText(_textFormField('Usage Rules (JSON)'), '{"x":true}');
     await tester.pump();
 
     await tester.tap(find.text('Save'));
@@ -225,7 +242,10 @@ void main() {
     final svc = FakeStoryLinesService();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [storyLinesServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          storyLinesServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -235,10 +255,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.widgetWithText(TextFormField, 'Title'), 'T');
+    await tester.enterText(_textFormField('Title'), 'T');
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.widgetWithText(TextFormField, 'Content'), 'C');
+    await tester.enterText(_textFormField('Content'), 'C');
     await tester.tap(
       find.descendant(
         of: find.byType(Tab),
@@ -246,10 +266,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Usage Rules (JSON)'),
-      '{bad json]',
-    );
+    await tester.enterText(_textFormField('Usage Rules (JSON)'), '{bad json]');
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(find.text('Invalid JSON'), findsOneWidget);
@@ -268,7 +285,10 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [storyLinesServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          storyLinesServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -277,10 +297,10 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.enterText(find.widgetWithText(TextFormField, 'Title'), 'New');
+    await tester.enterText(_textFormField('Title'), 'New');
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.widgetWithText(TextFormField, 'Content'), 'B');
+    await tester.enterText(_textFormField('Content'), 'B');
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(svc.updateCalled, isTrue);
@@ -301,7 +321,10 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [storyLinesServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          storyLinesServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -333,7 +356,10 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [storyLinesServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          storyLinesServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -357,7 +383,10 @@ void main() {
     final svc = FakeStoryLinesService();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [storyLinesServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          storyLinesServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -367,10 +396,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.widgetWithText(TextFormField, 'Title'), 'T');
+    await tester.enterText(_textFormField('Title'), 'T');
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.widgetWithText(TextFormField, 'Content'), 'C');
+    await tester.enterText(_textFormField('Content'), 'C');
     await tester.pump();
     await tester.tap(find.text('AI'));
     await tester.pumpAndSettle();
@@ -383,7 +412,10 @@ void main() {
     final svc = FakeStoryLinesService();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [storyLinesServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          storyLinesServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -393,10 +425,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.widgetWithText(TextFormField, 'Title'), 'T');
+    await tester.enterText(_textFormField('Title'), 'T');
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.widgetWithText(TextFormField, 'Content'), 'C');
+    await tester.enterText(_textFormField('Content'), 'C');
     await tester.tap(
       find.descendant(
         of: find.byType(Tab),
@@ -404,10 +436,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Usage Rules (JSON)'),
-      '{bad json]',
-    );
+    await tester.enterText(_textFormField('Usage Rules (JSON)'), '{bad json]');
     await tester.pump();
     await tester.tap(find.text('AI'));
     await tester.pumpAndSettle();
@@ -428,7 +457,10 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [storyLinesServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          storyLinesServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -438,7 +470,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.widgetWithText(TextFormField, 'Title'), 'New');
+    await tester.enterText(_textFormField('Title'), 'New');
     await tester.tap(
       find.descendant(
         of: find.byType(Tab),
@@ -446,10 +478,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Usage Rules (JSON)'),
-      '',
-    );
+    await tester.enterText(_textFormField('Usage Rules (JSON)'), '');
     await tester.pump();
     await tester.tap(find.text('Save'));
     await tester.pump();
@@ -462,7 +491,10 @@ void main() {
     final svc = FakeStoryLinesService()..throwImprove = true;
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [storyLinesServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          storyLinesServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -472,10 +504,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.widgetWithText(TextFormField, 'Title'), 'T');
+    await tester.enterText(_textFormField('Title'), 'T');
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.widgetWithText(TextFormField, 'Content'), 'C');
+    await tester.enterText(_textFormField('Content'), 'C');
     await tester.pump();
     await tester.tap(find.text('AI'));
     await tester.pumpAndSettle();
@@ -487,7 +519,10 @@ void main() {
     final svc = FakeStoryLinesService()..throwCreate = true;
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [storyLinesServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          storyLinesServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -497,10 +532,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.widgetWithText(TextFormField, 'Title'), 'T');
+    await tester.enterText(_textFormField('Title'), 'T');
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.widgetWithText(TextFormField, 'Content'), 'C');
+    await tester.enterText(_textFormField('Content'), 'C');
     await tester.pump();
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
@@ -513,7 +548,10 @@ void main() {
     final initial = const StoryLine(id: 's1', title: 'Old', content: 'A');
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [storyLinesServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          storyLinesServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -523,7 +561,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.widgetWithText(TextFormField, 'Title'), 'New');
+    await tester.enterText(_textFormField('Title'), 'New');
     await tester.pump();
     await tester.tap(find.text('Save'));
     await tester.pump();
@@ -550,8 +588,8 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => true),
           isAdminProvider.overrideWith((_) => true),
+          isSignedInProvider.overrideWithValue(true),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

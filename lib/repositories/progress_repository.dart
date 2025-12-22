@@ -1,51 +1,51 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user_progress.dart';
 import 'progress_port.dart';
+import 'remote_repository.dart';
+
+final progressRepositoryProvider = Provider<ProgressRepository>((ref) {
+  return ProgressRepository(ref.watch(remoteRepositoryProvider));
+});
 
 class ProgressRepository implements ProgressPort {
-  final SupabaseClient client;
-  ProgressRepository(this.client);
+  final RemoteRepository remote;
+
+  ProgressRepository(this.remote);
 
   @override
   Future<void> upsertProgress(UserProgress progress) async {
-    final insert = progress.toMap();
-    await client.from('user_progress').upsert(insert);
+    final body = {
+      'novel_id': progress.novelId,
+      'chapter_id': progress.chapterId,
+      'scroll_offset': progress.scrollOffset,
+      'tts_char_index': progress.ttsCharIndex,
+    };
+    await remote.post('progress', body);
   }
 
   @override
   Future<UserProgress?> lastProgressForNovel(String novelId) async {
-    final user = client.auth.currentUser;
-    if (user == null) return null;
-    final res = await client
-        .from('user_progress')
-        .select(
-          'user_id, novel_id, chapter_id, scroll_offset, tts_char_index, updated_at',
-        )
-        .eq('user_id', user.id)
-        .eq('novel_id', novelId)
-        .order('updated_at', ascending: false)
-        .limit(1);
-    final list = (res as List).cast<Map<String, dynamic>>();
-    if (list.isEmpty) return null;
-    final m = list.first;
-    return UserProgress.fromJson(m);
+    try {
+      final res = await remote.get('progress/novels/$novelId/last');
+      if (res is Map<String, dynamic>) {
+        return UserProgress.fromJson(res);
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
   }
 
   @override
   Future<UserProgress?> latestProgressForUser() async {
-    final user = client.auth.currentUser;
-    if (user == null) return null;
-    final res = await client
-        .from('user_progress')
-        .select(
-          'user_id, novel_id, chapter_id, scroll_offset, tts_char_index, updated_at',
-        )
-        .eq('user_id', user.id)
-        .order('updated_at', ascending: false)
-        .limit(1);
-    final list = (res as List).cast<Map<String, dynamic>>();
-    if (list.isEmpty) return null;
-    final m = list.first;
-    return UserProgress.fromJson(m);
+    try {
+      final res = await remote.get('progress/latest');
+      if (res is Map<String, dynamic>) {
+        return UserProgress.fromJson(res);
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
   }
 }

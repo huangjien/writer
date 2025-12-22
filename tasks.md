@@ -2,7 +2,7 @@ Stage 1 together. If you want, I can also scaffold and run commands for you in y
 
 **Project Overview**
 
-- Flutter app with Supabase for content management and auth
+- Flutter app with backend content management and auth
 - Clean reader UI with customizable font, size, spacing, theme
 - Built-in TTS with continuous playback, looping across chapters
 - Recent chapters tracking (last 3), reading progress and viewport tracking
@@ -12,13 +12,12 @@ Stage 1 together. If you want, I can also scaffold and run commands for you in y
 **Prerequisites**
 
 - Platforms: confirm target platforms (Android, iOS, Web, macOS)
-- Accounts: a Supabase project ready (or I’ll help set it up)
-- Local tooling: Flutter SDK, a device/emulator, optional Supabase CLI
+- Local tooling: Flutter SDK, a device/emulator
 
 **High-Level Plan**
 
 - Stage 1: Environment setup + Flutter project scaffold
-- Stage 2: Supabase project + schema + RLS policies
+- Stage 2: Backend setup
 - Stage 3: Flutter dependencies and app architecture
 - Stage 4: Reader UI scaffold with navigation and viewport tracking
 - Stage 5: TTS engine integration and continuous playback controller
@@ -43,93 +42,14 @@ If this plan looks good, we’ll proceed through each stage, confirming key deci
 
 Tell me if you want me to run these commands for you now. Otherwise, once you’ve completed Stage 1, say “Stage 1 done” and we’ll proceed.
 
-**Stage 2 — Supabase Setup**
+**Stage 2 — Backend Setup**
 
-- Create a new Supabase project at [supabase.com](http://supabase.com/) and grab:
-    - `SUPABASE_URL`
-    - `SUPABASE_ANON_KEY`
-- Database schema (public content + user-specific data):
-    - Novels and chapters (public readable when `is_public=true`)
-    - User progress per chapter (private per user)
-    - Optional: materialized view for “recent chapters” or compute from progress
-
-SQL to apply in Supabase (Database → SQL Editor):
-
-```
--- Novels
-create table public.novels (
-  id uuid primary key default gen_random_uuid(),
-  title text not null,
-  author text,
-  description text,
-  cover_url text,
-  language_code text not null default 'en',
-  is_public boolean not null default true,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
--- Chapters
-create table public.chapters (
-  id uuid primary key default gen_random_uuid(),
-  novel_id uuid not null references public.novels(id) on delete cascade,
-  idx int not null,
-  title text,
-  content text not null,
-  language_code text not null default 'en',
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  unique (novel_id, idx)
-);
-
--- Progress per user and chapter
-create table public.user_progress (
-  user_id uuid not null references auth.users(id) on delete cascade,
-  novel_id uuid not null references public.novels(id) on delete cascade,
-  chapter_id uuid not null references public.chapters(id) on delete cascade,
-  scroll_offset double precision not null default 0,
-  tts_char_index int not null default 0,
-  updated_at timestamptz not null default now(),
-  primary key (user_id, chapter_id)
-);
-
--- Policies: Public read on novels/chapters if is_public
-alter table public.novels enable row level security;
-create policy "Public read novels"
-on public.novels for select
-using (is_public = true);
-
-alter table public.chapters enable row level security;
-create policy "Public read chapters"
-on public.chapters for select
-using (exists (
-  select 1 from public.novels n
-  where n.id = chapters.novel_id and n.is_public = true
-));
-
--- Policies: per-user read/write on progress
-alter table public.user_progress enable row level security;
-create policy "Read own progress"
-on public.user_progress for select
-using (auth.uid() = user_progress.user_id);
-
-create policy "Upsert own progress"
-on public.user_progress for insert
-with check (auth.uid() = user_progress.user_id);
-
-create policy "Update own progress"
-on public.user_progress for update
-using (auth.uid() = user_progress.user_id)
-with check (auth.uid() = user_progress.user_id);
-
-```
-
-We can add more later (e.g., tags, favorites, downloads meta) as needed.
+- Ensure the backend is running and reachable from the app
+- Ensure authentication is configured
 
 **Stage 3 — Flutter Dependencies & Architecture**
 
 - Add packages:
-    - `supabase_flutter` for DB/auth
     - `flutter_tts` for text-to-speech
     - `go_router` for routing
     - `hooks_riverpod` or `riverpod` for state management
@@ -138,15 +58,12 @@ We can add more later (e.g., tags, favorites, downloads meta) as needed.
     - `intl` for localization
 - Suggested folder structure:
     - `lib/app.dart` and `lib/main.dart`
-    - `lib/core/` (supabase client, models, services)
+    - `lib/core/` (models, services)
     - `lib/features/reader/` (screens, widgets, controllers)
     - `lib/features/library/` (listing novels/chapters, recent)
     - `lib/features/settings/` (language, TTS voice, theme)
     - `lib/state/` (providers)
     - `lib/routing/` (go_router setup)
-- Supabase init in `main.dart`:
-    - `Supabase.initialize(url: ..., anonKey: ...)`
-    - Load from `-dart-define` or a `.env` loader with care (avoid committing secrets)
 
 **Stage 4 — Reader UI Scaffold**
 
@@ -184,7 +101,7 @@ class TtsController {
 
 **Stage 6 — Progress & Viewport Tracking**
 
-- For scroll: listen to `ScrollController` changes; debounce and persist `scroll_offset` to Supabase
+- For scroll: listen to `ScrollController` changes; debounce and persist `scroll_offset` to backend
 - For TTS: persist `tts_char_index` on chunk completion or every N seconds
 - Restore positions when opening a chapter
 
@@ -213,17 +130,13 @@ class TtsController {
 
 - Widget tests for Reader scrolling and resume
 - Unit tests for `TtsController` state machine
-- Integration tests for Supabase data flows
+- Integration tests for backend data flows
 - Performance: lazy-loading chapters, chunked TTS, caching
 
 **Configuration Snippets**
 
-- Run app with secrets:
-    - `flutter run -d chrome --dart-define=SUPABASE_URL=... --dart-define=SUPABASE_ANON_KEY=...`
-- Access in code:
-    - `const supabaseUrl = String.fromEnvironment('SUPABASE_URL');`
-    - `const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');`
-
+- Run app:
+    - `flutter run -d chrome`
 **Key Decisions To Confirm**
 
 - Target platforms: Android/iOS/Web/macOS

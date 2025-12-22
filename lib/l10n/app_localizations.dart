@@ -125,7 +125,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutDescription.
   ///
   /// In en, this message translates to:
-  /// **'Read and manage novels, with Supabase-backed storage, offline support, and Text-To-Speech playback. Use the Library to browse, search, and open chapters; sign in to sync progress; adjust settings for theme, typography, and motion.'**
+  /// **'Read and manage novels, with cloud-backed storage, offline support, and Text-To-Speech playback. Use the Library to browse, search, and open chapters; sign in to sync progress; adjust settings for theme, typography, and motion.'**
   String get aboutDescription;
 
   /// No description provided for @aboutIntro.
@@ -137,7 +137,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutSecurity.
   ///
   /// In en, this message translates to:
-  /// **'With Supabase-backed storage and strict Row Level Security, your data remains protected. Authenticated users can sync progress, metadata, and templates while maintaining privacy.'**
+  /// **'With cloud-backed storage and strict access controls, your data remains protected. Authenticated users can sync progress, metadata, and templates while maintaining privacy.'**
   String get aboutSecurity;
 
   /// No description provided for @aboutCoach.
@@ -185,7 +185,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutUsageList.
   ///
   /// In en, this message translates to:
-  /// **'• Library: search and open novels\n• Reader: navigate chapters, toggle TTS\n• Templates: manage character and scene templates\n• Settings: theme, typography, and preferences\n• Sign In: enable cloud sync via Supabase'**
+  /// **'• Library: search and open novels\n• Reader: navigate chapters, toggle TTS\n• Templates: manage character and scene templates\n• Settings: theme, typography, and preferences\n• Sign In: enable cloud sync'**
   String get aboutUsageList;
 
   /// No description provided for @version.
@@ -215,13 +215,13 @@ abstract class AppLocalizations {
   /// No description provided for @supabaseIntegrationInitialized.
   ///
   /// In en, this message translates to:
-  /// **'Supabase integration initialized'**
+  /// **'Cloud sync initialized'**
   String get supabaseIntegrationInitialized;
 
   /// No description provided for @configureEnvironment.
   ///
   /// In en, this message translates to:
-  /// **'Please configure your environment variables to use Supabase'**
+  /// **'Please configure your environment variables to enable cloud sync'**
   String get configureEnvironment;
 
   /// No description provided for @signedInAs.
@@ -287,7 +287,7 @@ abstract class AppLocalizations {
   /// No description provided for @noSupabase.
   ///
   /// In en, this message translates to:
-  /// **'Supabase is not enabled in this build.'**
+  /// **'Cloud sync is not enabled in this build.'**
   String get noSupabase;
 
   /// No description provided for @errorLoadingProgress.
@@ -509,37 +509,37 @@ abstract class AppLocalizations {
   /// No description provided for @supabaseSettings.
   ///
   /// In en, this message translates to:
-  /// **'Supabase Settings'**
+  /// **'Cloud Sync Settings'**
   String get supabaseSettings;
 
   /// No description provided for @supabaseNotEnabled.
   ///
   /// In en, this message translates to:
-  /// **'Supabase not enabled'**
+  /// **'Cloud sync not enabled'**
   String get supabaseNotEnabled;
 
   /// No description provided for @supabaseNotEnabledDescription.
   ///
   /// In en, this message translates to:
-  /// **'Supabase is not configured for this build.'**
+  /// **'Cloud sync is not configured for this build.'**
   String get supabaseNotEnabledDescription;
 
   /// No description provided for @authDisabledInBuild.
   ///
   /// In en, this message translates to:
-  /// **'Supabase is not configured. Authentication is disabled in this build.'**
+  /// **'Cloud sync is not configured. Authentication is disabled in this build.'**
   String get authDisabledInBuild;
 
   /// No description provided for @fetchFromSupabase.
   ///
   /// In en, this message translates to:
-  /// **'Fetch from Supabase'**
+  /// **'Fetch from cloud'**
   String get fetchFromSupabase;
 
   /// No description provided for @fetchFromSupabaseDescription.
   ///
   /// In en, this message translates to:
-  /// **'Fetch latest novels and progress from Supabase.'**
+  /// **'Fetch latest novels and progress from the cloud.'**
   String get fetchFromSupabaseDescription;
 
   /// No description provided for @confirmFetch.
@@ -575,7 +575,7 @@ abstract class AppLocalizations {
   /// No description provided for @modeSupabase.
   ///
   /// In en, this message translates to:
-  /// **'Mode: Supabase'**
+  /// **'Mode: Cloud sync'**
   String get modeSupabase;
 
   /// No description provided for @modeMockData.
@@ -749,7 +749,7 @@ abstract class AppLocalizations {
   /// No description provided for @supabaseProgressNotSaved.
   ///
   /// In en, this message translates to:
-  /// **'Supabase not configured; progress not saved'**
+  /// **'Cloud sync not configured; progress not saved'**
   String get supabaseProgressNotSaved;
 
   /// No description provided for @progressSaved.
@@ -1085,7 +1085,7 @@ abstract class AppLocalizations {
   /// No description provided for @confirmDeleteDescription.
   ///
   /// In en, this message translates to:
-  /// **'This will delete \'{title}\' from Supabase. Are you sure?'**
+  /// **'This will delete \'{title}\' from your cloud library. Are you sure?'**
   String confirmDeleteDescription(String title);
 
   /// No description provided for @delete.

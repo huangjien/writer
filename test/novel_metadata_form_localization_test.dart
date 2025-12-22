@@ -1,22 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:writer/features/reader/novel_metadata_editor.dart';
 import 'package:writer/models/novel.dart';
-import 'package:writer/state/novel_providers.dart';
 import 'package:writer/repositories/novel_repository.dart';
+import 'package:writer/repositories/remote_repository.dart';
 import 'helpers/test_utils.dart';
 
 class CapturingNovelRepository extends NovelRepository {
-  CapturingNovelRepository()
-    : super(
-        SupabaseClient(
-          'http://localhost',
-          'anon',
-          authOptions: const AuthClientOptions(autoRefreshToken: false),
-        ),
-      );
+  CapturingNovelRepository() : super(RemoteRepository('http://localhost'));
   @override
   Future<Novel?> getNovel(String novelId) async {
     return const Novel(

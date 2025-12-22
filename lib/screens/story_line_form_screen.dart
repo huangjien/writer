@@ -29,7 +29,6 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
   bool _saving = false;
   bool _isDirty = false;
   String? _error;
-  bool _canDelete = false;
 
   bool get _isEdit => widget.initial != null;
 
@@ -50,7 +49,6 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
     _language = widget.initial?.language ?? 'en';
     _isPublic = widget.initial?.isPublic ?? true;
     _locked = widget.initial?.locked ?? false;
-    _canDelete = _computeCanDelete();
 
     _titleCtrl.addListener(_checkDirty);
     _descCtrl.addListener(_checkDirty);
@@ -132,21 +130,6 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
     } catch (_) {
       return null;
     }
-  }
-
-  bool _computeCanDelete() {
-    final initial = widget.initial;
-    if (initial == null) return false;
-    final enabled = ref.read(supabaseEnabledProvider);
-    if (!enabled) return false;
-    final admin = ref.read(isAdminProvider);
-    if (admin) return true;
-    final session = ref.read(supabaseSessionProvider);
-    final userId = session?.user.id;
-    if (userId == null) return false;
-    final ownerId = initial.ownerId;
-    if (ownerId == null) return false;
-    return ownerId == userId;
   }
 
   Future<void> _applyAi() async {
@@ -306,7 +289,16 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final canDelete = _isEdit && _canDelete && !_locked && !_saving;
+    final isSignedIn = ref.watch(isSignedInProvider);
+    final isAdmin = ref.watch(isAdminProvider);
+    final currentUser = ref.watch(currentUserProvider).asData?.value;
+    final ownerId = widget.initial?.ownerId;
+    final canDelete =
+        _isEdit &&
+        isSignedIn &&
+        !_locked &&
+        !_saving &&
+        (isAdmin || (ownerId != null && ownerId == currentUser?.id));
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEdit ? l10n.editStoryLineTitle : l10n.newStoryLineTitle),

@@ -200,6 +200,11 @@ class TtsDriver {
       await _tts?.stop();
     } catch (_) {}
     _speaking = false;
+    final c = _chunkCompleter;
+    if (c != null && !c.isCompleted) {
+      c.complete();
+    }
+    _chunkCompleter = null;
     _chunks = const [];
   }
 
@@ -208,6 +213,11 @@ class TtsDriver {
       await _tts?.pause();
     } catch (_) {}
     _speaking = false;
+    final c = _chunkCompleter;
+    if (c != null && !c.isCompleted) {
+      c.complete();
+    }
+    _chunkCompleter = null;
   }
 
   Future<void> setLocale(String locale, {String? voiceName}) async {

@@ -8,7 +8,7 @@ void main() {
   });
 
   test(
-    'deleteCharacterNoteByIdx removes local cache when supabase disabled',
+    'deleteCharacterNoteByIdx removes local cache when cloud sync disabled',
     () async {
       final repo = LocalStorageRepository();
       final prefs = await SharedPreferences.getInstance();
@@ -20,7 +20,7 @@ void main() {
   );
 
   test(
-    'deleteSceneNoteByIdx removes local cache when supabase disabled',
+    'deleteSceneNoteByIdx removes local cache when cloud sync disabled',
     () async {
       final repo = LocalStorageRepository();
       final prefs = await SharedPreferences.getInstance();

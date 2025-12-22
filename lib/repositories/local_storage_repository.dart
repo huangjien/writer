@@ -1,9 +1,6 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../state/supabase_config.dart';
-import '../services/vector_service.dart';
 import '../models/chapter_cache.dart';
 import '../models/novel.dart';
 import '../models/character.dart';
@@ -15,26 +12,14 @@ import '../models/character_template_row.dart';
 import '../models/scene_template_row.dart';
 
 class LocalStorageRepository {
-  final bool? _supabaseEnabledOverride;
-  final SupabaseClient? _clientOverride;
   final Future<SharedPreferences> Function() _prefs;
   final DateTime Function() _now;
-  final VectorService? _vectorService;
 
   LocalStorageRepository({
-    bool? supabaseEnabled,
-    SupabaseClient? client,
     Future<SharedPreferences> Function()? prefs,
     DateTime Function()? now,
-    VectorService? vectorService,
-  }) : _supabaseEnabledOverride = supabaseEnabled,
-       _clientOverride = client,
-       _prefs = prefs ?? SharedPreferences.getInstance,
-       _now = now ?? DateTime.now,
-       _vectorService = vectorService;
-
-  bool get _isSupabaseEnabled => _supabaseEnabledOverride ?? supabaseEnabled;
-  SupabaseClient get _client => _clientOverride ?? Supabase.instance.client;
+  }) : _prefs = prefs ?? SharedPreferences.getInstance,
+       _now = now ?? DateTime.now;
 
   Future<void> saveChapter(ChapterCache chapter) async {
     final prefs = await _prefs();
@@ -62,7 +47,6 @@ class LocalStorageRepository {
     await prefs.remove(chapterId);
   }
 
-  /// Safely clears cached chapter entries by detecting ChapterCache JSON shape.
   Future<int> clearChapterCache() async {
     final prefs = await _prefs();
     final keys = prefs.getKeys();
@@ -84,9 +68,7 @@ class LocalStorageRepository {
             removed++;
           }
         }
-      } catch (_) {
-        // Ignore non-JSON values
-      }
+      } catch (_) {}
     }
     return removed;
   }
@@ -122,6 +104,16 @@ class LocalStorageRepository {
     return <Novel>[];
   }
 
+  Future<void> saveSummaryText(String novelId, String text) async {
+    final prefs = await _prefs();
+    await prefs.setString('summary_text_$novelId', text);
+  }
+
+  Future<String?> getSummaryText(String novelId) async {
+    final prefs = await _prefs();
+    return prefs.getString('summary_text_$novelId');
+  }
+
   Future<void> saveCharacterForm(
     String novelId,
     Character character, {
@@ -132,59 +124,18 @@ class LocalStorageRepository {
       'character_form_$novelId',
       jsonEncode(character.toMap()),
     );
-    if (_isSupabaseEnabled) {
-      try {
-        final client = _client;
-        await client.from('characters').upsert({
-          'novel_id': novelId,
-          'idx': idx ?? 1,
-          'title': character.name,
-          'character_summaries': character.role,
-          'character_synopses': character.bio,
-          'language_code': 'en',
-        });
-      } catch (_) {}
-    }
   }
 
   Future<Character?> getCharacterForm(String novelId, {int? idx}) async {
     final prefs = await _prefs();
     final raw = prefs.getString('character_form_$novelId');
-    Character? local;
     if (raw != null) {
       try {
         final decoded = jsonDecode(raw) as Map<String, dynamic>;
-        local = Character.fromMap(decoded);
+        return Character.fromMap(decoded);
       } catch (_) {}
     }
-    if (_isSupabaseEnabled) {
-      try {
-        final client = _client;
-        final rows = List<Map<String, dynamic>>.from(
-          await client
-              .from('characters')
-              .select()
-              .eq('novel_id', novelId)
-              .eq('idx', idx ?? 1)
-              .limit(1),
-        );
-        if (rows.isNotEmpty) {
-          final row = rows.first;
-          final name = (row['title'] as String?) ?? local?.name;
-          final role = (row['character_summaries'] as String?);
-          final bio = (row['character_synopses'] as String?);
-          if (name != null) {
-            return Character(
-              novelId: novelId,
-              name: name,
-              role: role,
-              bio: bio,
-            );
-          }
-        }
-      } catch (_) {}
-    }
-    return local;
+    return null;
   }
 
   Future<void> saveCharacterNoteForm(
@@ -203,19 +154,6 @@ class LocalStorageRepository {
       'language_code': languageCode,
     };
     await prefs.setString('character_note_form_$novelId', jsonEncode(payload));
-    if (_isSupabaseEnabled) {
-      try {
-        final client = _client;
-        await client.from('characters').upsert({
-          'novel_id': novelId,
-          'idx': idx ?? 1,
-          'title': title,
-          'character_summaries': summaries,
-          'character_synopses': synopses,
-          'language_code': languageCode,
-        });
-      } catch (_) {}
-    }
   }
 
   Future<Map<String, dynamic>?> getCharacterNoteForm(
@@ -224,441 +162,154 @@ class LocalStorageRepository {
   }) async {
     final prefs = await _prefs();
     final raw = prefs.getString('character_note_form_$novelId');
-    Map<String, dynamic>? local;
     if (raw != null) {
       try {
-        local = jsonDecode(raw) as Map<String, dynamic>;
+        return jsonDecode(raw) as Map<String, dynamic>;
       } catch (_) {}
     }
-    if (_isSupabaseEnabled) {
-      try {
-        final client = _client;
-        final rows = List<Map<String, dynamic>>.from(
-          await client
-              .from('characters')
-              .select()
-              .eq('novel_id', novelId)
-              .eq('idx', idx ?? 1)
-              .limit(1),
-        );
-        if (rows.isNotEmpty) {
-          final row = rows.first;
-          return {
-            'title': row['title'] as String?,
-            'character_summaries': row['character_summaries'] as String?,
-            'character_synopses': row['character_synopses'] as String?,
-            'language_code': row['language_code'] as String? ?? 'en',
-          };
-        }
-      } catch (_) {}
-    }
-    return local;
+    return null;
   }
 
   Future<void> saveSceneForm(String novelId, Scene scene, {int? idx}) async {
     final prefs = await _prefs();
     await prefs.setString('scene_form_$novelId', jsonEncode(scene.toMap()));
-    if (_isSupabaseEnabled) {
-      try {
-        final client = _client;
-        final summaries = scene.summary;
-        final synopses = scene.location;
-        await client.from('scenes').upsert({
-          'novel_id': novelId,
-          'idx': idx ?? 1,
-          'title': scene.title,
-          'scene_summaries': summaries,
-          'scene_synopses': synopses,
-          'language_code': 'en',
-        });
-      } catch (_) {}
-    }
   }
 
   Future<Scene?> getSceneForm(String novelId, {int? idx}) async {
     final prefs = await _prefs();
     final raw = prefs.getString('scene_form_$novelId');
-    Scene? local;
     if (raw != null) {
       try {
         final decoded = jsonDecode(raw) as Map<String, dynamic>;
-        local = Scene.fromMap(decoded);
+        return Scene.fromMap(decoded);
       } catch (_) {}
     }
-    if (_isSupabaseEnabled) {
-      try {
-        final client = _client;
-        final rows = List<Map<String, dynamic>>.from(
-          await client
-              .from('scenes')
-              .select()
-              .eq('novel_id', novelId)
-              .eq('idx', idx ?? 1)
-              .limit(1),
-        );
-        if (rows.isNotEmpty) {
-          final row = rows.first;
-          final title = (row['title'] as String?) ?? local?.title;
-          final summary = row['scene_summaries'] as String?;
-          final location = row['scene_synopses'] as String?;
-          if (title != null) {
-            return Scene(
-              novelId: novelId,
-              title: title,
-              location: location,
-              summary: summary,
-            );
-          }
-        }
-      } catch (_) {}
-    }
-    return local;
+    return null;
   }
 
   Future<void> saveCharacterTemplateForm(
     String novelId,
     TemplateItem item,
   ) async {
-    if (_isSupabaseEnabled) {
-      final client = _client;
-      final uid =
-          client.auth.currentUser?.id ?? client.auth.currentSession?.user.id;
-      if (uid == null || uid.trim().isEmpty) {
-        throw Exception('Not signed in');
-      }
-      final existing = await client
-          .from('character_templates')
-          .select('id')
-          .eq('created_by', uid)
-          .ilike('title', item.name.trim())
-          .limit(1);
-      if ((existing as List).isNotEmpty) {
-        throw Exception('Duplicate template name');
-      }
-    }
     final prefs = await _prefs();
     await prefs.setString(
       'character_template_form_$novelId',
       jsonEncode(item.toMap()),
     );
-    if (_isSupabaseEnabled) {
-      final client = _client;
-      final uid =
-          client.auth.currentUser?.id ?? client.auth.currentSession?.user.id;
-      if (uid == null || uid.trim().isEmpty) {
-        throw Exception('Not signed in');
-      }
-      final payload = <String, dynamic>{
-        'idx': 1,
-        'title': item.name,
-        'character_summaries': item.description,
-        'language_code': 'en',
-        'created_by': uid,
-      };
-      final res = await client
-          .from('character_templates')
-          .insert(payload)
-          .select('id')
-          .single();
-      final map = Map<String, dynamic>.from(res as Map);
-      final id = map['id'] as String?;
-      if (_vectorService != null && id != null && id.trim().isNotEmpty) {
-        await _vectorService.refreshCharacterTemplateEmbedding(id);
-      }
-    }
   }
 
   Future<TemplateItem?> getCharacterTemplateForm(String novelId) async {
     final prefs = await _prefs();
     final raw = prefs.getString('character_template_form_$novelId');
-    TemplateItem? local;
     if (raw != null) {
       try {
         final decoded = jsonDecode(raw) as Map<String, dynamic>;
-        local = TemplateItem.fromMap(decoded);
+        return TemplateItem.fromMap(decoded);
       } catch (_) {}
     }
-    if (_isSupabaseEnabled) {
-      try {
-        final client = _client;
-        final rows = List<Map<String, dynamic>>.from(
-          await client
-              .from('character_templates')
-              .select()
-              .eq('idx', 1)
-              .order('updated_at', ascending: false)
-              .limit(1),
-        );
-        if (rows.isNotEmpty) {
-          final row = rows.first;
-          return TemplateItem(
-            novelId: novelId,
-            name: (row['title'] as String?) ?? local?.name ?? '',
-            description: row['character_summaries'] as String?,
-          );
-        }
-      } catch (_) {}
-    }
-    return local;
+    return null;
   }
 
-  Future<String?> saveSceneTemplateForm(
+  Future<void> saveSceneTemplateForm(
     String novelId,
     TemplateItem item, {
     String languageCode = 'en',
   }) async {
-    if (_isSupabaseEnabled) {
-      final client = _client;
-      final uid =
-          client.auth.currentUser?.id ?? client.auth.currentSession?.user.id;
-      if (uid == null || uid.trim().isEmpty) {
-        throw Exception('Not signed in');
-      }
-      final existing = await client
-          .from('scene_templates')
-          .select('id')
-          .eq('created_by', uid)
-          .ilike('title', item.name.trim())
-          .limit(1);
-      if ((existing as List).isNotEmpty) {
-        throw Exception('Duplicate template name');
-      }
-    }
     final prefs = await _prefs();
     await prefs.setString(
       'scene_template_form_$novelId',
       jsonEncode(item.toMap()),
     );
-    if (_isSupabaseEnabled) {
-      final client = _client;
-      final uid =
-          client.auth.currentUser?.id ?? client.auth.currentSession?.user.id;
-      if (uid == null || uid.trim().isEmpty) {
-        throw Exception('Not signed in');
-      }
-      final payload = <String, dynamic>{
-        'idx': 1,
-        'title': item.name,
-        'scene_summaries': item.description,
-        'language_code': languageCode,
-        'created_by': uid,
-      };
-      final res = await client
-          .from('scene_templates')
-          .insert(payload)
-          .select('id')
-          .single();
-      final map = Map<String, dynamic>.from(res as Map);
-      final id = map['id'] as String?;
-      if (_vectorService != null && id != null && id.trim().isNotEmpty) {
-        await _vectorService.refreshSceneTemplateEmbedding(id);
-      }
-      return id;
-    }
-    return null;
   }
 
   Future<TemplateItem?> getSceneTemplateForm(String novelId) async {
     final prefs = await _prefs();
     final raw = prefs.getString('scene_template_form_$novelId');
-    TemplateItem? local;
     if (raw != null) {
       try {
         final decoded = jsonDecode(raw) as Map<String, dynamic>;
-        local = TemplateItem.fromMap(decoded);
+        return TemplateItem.fromMap(decoded);
       } catch (_) {}
     }
-    if (_isSupabaseEnabled) {
-      try {
-        final client = _client;
-        final rows = List<Map<String, dynamic>>.from(
-          await client
-              .from('scene_templates')
-              .select()
-              .eq('idx', 1)
-              .order('updated_at', ascending: false)
-              .limit(1),
-        );
-        if (rows.isNotEmpty) {
-          final row = rows.first;
-          return TemplateItem(
-            novelId: novelId,
-            name: (row['title'] as String?) ?? local?.name ?? '',
-            description: row['scene_summaries'] as String?,
-          );
-        }
-      } catch (_) {}
-    }
-    return local;
+    return null;
   }
 
+  // List methods used to return Sync+Local. Now they only return local default if implemented, or empty?
+  // The implementations below were previously mixed.
+  // Ideally, these list methods should be removed from here and moved to NotesRepository entirely,
+  // but to preserve existing contract for non-sync usage (if any), I'll keep them returning empty or local defaults.
+  // Actually, listCharacterNotes returned [local] if offline.
+
   Future<List<CharacterNote>> listCharacterNotes(String novelId) async {
-    if (!_isSupabaseEnabled) {
-      final cached = await getCharacterNoteForm(novelId);
-      if (cached == null) return <CharacterNote>[];
-      final now = _now();
-      return [
-        CharacterNote(
-          id: 'local-$novelId-1',
-          novelId: novelId,
-          idx: 1,
-          title: cached['title'] as String?,
-          characterSummaries: cached['character_summaries'] as String?,
-          characterSynopses: cached['character_synopses'] as String?,
-          languageCode: (cached['language_code'] as String?) ?? 'en',
-          createdAt: now,
-          updatedAt: now,
-        ),
-      ];
-    }
-    final client = _client;
-    final res = await client
-        .from('characters')
-        .select(
-          'id, novel_id, idx, title, character_summaries, character_synopses, language_code, created_at, updated_at',
-        )
-        .eq('novel_id', novelId)
-        .order('idx', ascending: true);
-    return (res as List)
-        .cast<Map<String, dynamic>>()
-        .map(CharacterNote.fromRow)
-        .toList();
+    final cached = await getCharacterNoteForm(novelId);
+    if (cached == null) return <CharacterNote>[];
+    final now = _now();
+    return [
+      CharacterNote(
+        id: 'local-$novelId-1',
+        novelId: novelId,
+        idx: 1,
+        title: cached['title'] as String?,
+        characterSummaries: cached['character_summaries'] as String?,
+        characterSynopses: cached['character_synopses'] as String?,
+        languageCode: (cached['language_code'] as String?) ?? 'en',
+        createdAt: now,
+        updatedAt: now,
+      ),
+    ];
   }
 
   Future<int> nextCharacterIdx(String novelId) async {
-    if (!_isSupabaseEnabled) return 2;
-    final client = _client;
-    final rows = await client
-        .from('characters')
-        .select('idx')
-        .eq('novel_id', novelId)
-        .order('idx', ascending: false)
-        .limit(1);
-    final list = (rows as List).cast<Map<String, dynamic>>();
-    if (list.isEmpty) return 1;
-    final maxIdx = (list.first['idx'] as int?) ?? 0;
-    return maxIdx + 1;
+    return 2; // Default
   }
 
   Future<void> deleteCharacterNoteById(String id) async {
-    if (!_isSupabaseEnabled) return;
-    final client = _client;
-    await client.from('characters').delete().eq('id', id);
+    // Local delete not supported/needed by ID.
   }
 
   Future<void> deleteCharacterNoteByIdx(String novelId, int idx) async {
-    if (!_isSupabaseEnabled) {
-      final prefs = await _prefs();
-      await prefs.remove('character_note_form_$novelId');
-      return;
-    }
-    final client = _client;
-    await client
-        .from('characters')
-        .delete()
-        .eq('novel_id', novelId)
-        .eq('idx', idx);
+    final prefs = await _prefs();
+    await prefs.remove('character_note_form_$novelId');
   }
 
   Future<List<SceneNote>> listSceneNotes(String novelId) async {
-    if (!_isSupabaseEnabled) {
-      final cached = await getSceneForm(novelId);
-      if (cached == null) return <SceneNote>[];
-      final now = _now();
-      return [
-        SceneNote(
-          id: 'local-$novelId-1',
-          novelId: novelId,
-          idx: 1,
-          title: cached.title,
-          sceneSummaries: cached.summary,
-          sceneSynopses: cached.location,
-          languageCode: 'en',
-          createdAt: now,
-          updatedAt: now,
-        ),
-      ];
-    }
-    final client = _client;
-    final res = await client
-        .from('scenes')
-        .select(
-          'id, novel_id, idx, title, scene_summaries, scene_synopses, language_code, created_at, updated_at',
-        )
-        .eq('novel_id', novelId)
-        .order('idx', ascending: true);
-    return (res as List)
-        .cast<Map<String, dynamic>>()
-        .map(SceneNote.fromRow)
-        .toList();
+    final cached = await getSceneForm(novelId);
+    if (cached == null) return <SceneNote>[];
+    final now = _now();
+    return [
+      SceneNote(
+        id: 'local-$novelId-1',
+        novelId: novelId,
+        idx: 1,
+        title: cached.title,
+        sceneSummaries: cached.summary,
+        sceneSynopses: cached.location,
+        languageCode: 'en',
+        createdAt: now,
+        updatedAt: now,
+      ),
+    ];
   }
 
   Future<int> nextSceneIdx(String novelId) async {
-    if (!_isSupabaseEnabled) return 2;
-    final client = _client;
-    final rows = await client
-        .from('scenes')
-        .select('idx')
-        .eq('novel_id', novelId)
-        .order('idx', ascending: false)
-        .limit(1);
-    final list = (rows as List).cast<Map<String, dynamic>>();
-    if (list.isEmpty) return 1;
-    final maxIdx = (list.first['idx'] as int?) ?? 0;
-    return maxIdx + 1;
+    return 2;
   }
 
-  Future<void> deleteSceneNoteById(String id) async {
-    if (!_isSupabaseEnabled) return;
-    final client = _client;
-    await client.from('scenes').delete().eq('id', id);
-  }
+  Future<void> deleteSceneNoteById(String id) async {}
 
   Future<void> deleteSceneNoteByIdx(String novelId, int idx) async {
-    if (!_isSupabaseEnabled) {
-      final prefs = await _prefs();
-      await prefs.remove('scene_form_$novelId');
-      return;
-    }
-    final client = _client;
-    await client.from('scenes').delete().eq('novel_id', novelId).eq('idx', idx);
+    final prefs = await _prefs();
+    await prefs.remove('scene_form_$novelId');
   }
 
   Future<List<CharacterTemplateRow>> listCharacterTemplates() async {
-    if (!_isSupabaseEnabled) {
-      return <CharacterTemplateRow>[];
-    }
-    final client = _client;
-    final res = await client
-        .from('character_templates')
-        .select(
-          'id, idx, title, character_summaries, character_synopses, language_code, created_by, created_at, updated_at',
-        )
-        .order('updated_at', ascending: false);
-    return (res as List)
-        .cast<Map<String, dynamic>>()
-        .map(CharacterTemplateRow.fromRow)
-        .toList();
+    return <CharacterTemplateRow>[];
   }
 
-  Future<void> deleteCharacterTemplate(String id) async {
-    if (!_isSupabaseEnabled) return;
-    final client = _client;
-    await client.from('character_templates').delete().eq('id', id);
-  }
+  Future<void> deleteCharacterTemplate(String id) async {}
 
   Future<CharacterTemplateRow?> getCharacterTemplateById(String id) async {
-    if (!_isSupabaseEnabled) return null;
-    final client = _client;
-    final row = await client
-        .from('character_templates')
-        .select(
-          'id, idx, title, character_summaries, character_synopses, language_code, created_by, created_at, updated_at',
-        )
-        .eq('id', id)
-        .single();
-    final map = Map<String, dynamic>.from(row);
-    return CharacterTemplateRow.fromRow(map);
+    return null;
   }
 
   Future<void> updateCharacterTemplate(
@@ -667,56 +318,10 @@ class LocalStorageRepository {
     String? summaries,
     String? synopses,
     String languageCode = 'en',
-  }) async {
-    if (!_isSupabaseEnabled) return;
-    final client = _client;
-    if (title != null && title.trim().isNotEmpty) {
-      final uid = client.auth.currentUser?.id;
-      final existing = await (uid != null
-          ? client
-                .from('character_templates')
-                .select('id')
-                .eq('created_by', uid)
-                .ilike('title', title.trim())
-                .neq('id', id)
-                .limit(1)
-          : client
-                .from('character_templates')
-                .select('id')
-                .ilike('title', title.trim())
-                .neq('id', id)
-                .limit(1));
-      if ((existing as List).isNotEmpty) {
-        throw Exception('Duplicate template name');
-      }
-    }
-    await client
-        .from('character_templates')
-        .update({
-          'title': title,
-          'character_summaries': summaries,
-          'character_synopses': synopses,
-          'language_code': languageCode,
-        })
-        .eq('id', id);
-  }
+  }) async {}
 
   Future<List<SceneTemplateRow>> listSceneTemplates({int limit = 200}) async {
-    if (!_isSupabaseEnabled) {
-      return <SceneTemplateRow>[];
-    }
-    final client = _client;
-    final res = await client
-        .from('scene_templates')
-        .select(
-          'id, idx, title, scene_summaries, scene_synopses, language_code, created_by, created_at, updated_at',
-        )
-        .order('updated_at', ascending: false)
-        .limit(limit);
-    return (res as List)
-        .cast<Map<String, dynamic>>()
-        .map(SceneTemplateRow.fromRow)
-        .toList();
+    return <SceneTemplateRow>[];
   }
 
   Future<List<SceneTemplateRow>> searchSceneTemplates(
@@ -725,15 +330,7 @@ class LocalStorageRepository {
     int offset = 0,
     String? languageCode,
   }) async {
-    if (!_isSupabaseEnabled) return <SceneTemplateRow>[];
-    if (_vectorService == null) return <SceneTemplateRow>[];
-    final rows = await _vectorService.searchSceneTemplates(
-      query: query,
-      limit: limit,
-      offset: offset,
-      languageCode: languageCode,
-    );
-    return rows.map(SceneTemplateRow.fromRow).toList();
+    return <SceneTemplateRow>[];
   }
 
   Future<List<CharacterTemplateRow>> searchCharacterTemplates(
@@ -742,47 +339,17 @@ class LocalStorageRepository {
     int offset = 0,
     String? languageCode,
   }) async {
-    if (!_isSupabaseEnabled) return <CharacterTemplateRow>[];
-    if (_vectorService == null) return <CharacterTemplateRow>[];
-    final rows = await _vectorService.searchCharacterTemplates(
-      query: query,
-      limit: limit,
-      offset: offset,
-      languageCode: languageCode,
-    );
-    return rows.map(CharacterTemplateRow.fromRow).toList();
+    return <CharacterTemplateRow>[];
   }
 
-  Future<void> refreshSceneTemplateEmbedding(String templateId) async {
-    if (!_isSupabaseEnabled) return;
-    if (_vectorService == null) return;
-    await _vectorService.refreshSceneTemplateEmbedding(templateId);
-  }
+  Future<void> refreshSceneTemplateEmbedding(String templateId) async {}
 
-  Future<void> refreshCharacterTemplateEmbedding(String templateId) async {
-    if (!_isSupabaseEnabled) return;
-    if (_vectorService == null) return;
-    await _vectorService.refreshCharacterTemplateEmbedding(templateId);
-  }
+  Future<void> refreshCharacterTemplateEmbedding(String templateId) async {}
 
-  Future<void> deleteSceneTemplate(String id) async {
-    if (!_isSupabaseEnabled) return;
-    final client = _client;
-    await client.from('scene_templates').delete().eq('id', id);
-  }
+  Future<void> deleteSceneTemplate(String id) async {}
 
   Future<SceneTemplateRow?> getSceneTemplateById(String id) async {
-    if (!_isSupabaseEnabled) return null;
-    final client = _client;
-    final row = await client
-        .from('scene_templates')
-        .select(
-          'id, idx, title, scene_summaries, scene_synopses, language_code, created_by, created_at, updated_at',
-        )
-        .eq('id', id)
-        .single();
-    final map = Map<String, dynamic>.from(row);
-    return SceneTemplateRow.fromRow(map);
+    return null;
   }
 
   Future<void> updateSceneTemplate(
@@ -791,47 +358,5 @@ class LocalStorageRepository {
     String? summaries,
     String? synopses,
     String languageCode = 'en',
-  }) async {
-    if (!_isSupabaseEnabled) return;
-    final client = _client;
-    if (title != null && title.trim().isNotEmpty) {
-      final uid = client.auth.currentUser?.id;
-      final existing = await (uid != null
-          ? client
-                .from('scene_templates')
-                .select('id')
-                .eq('created_by', uid)
-                .ilike('title', title.trim())
-                .neq('id', id)
-                .limit(1)
-          : client
-                .from('scene_templates')
-                .select('id')
-                .ilike('title', title.trim())
-                .neq('id', id)
-                .limit(1));
-      if ((existing as List).isNotEmpty) {
-        throw Exception('Duplicate template name');
-      }
-    }
-    await client
-        .from('scene_templates')
-        .update({
-          'title': title,
-          'scene_summaries': summaries,
-          'scene_synopses': synopses,
-          'language_code': languageCode,
-        })
-        .eq('id', id);
-  }
-
-  Future<void> saveSummaryText(String novelId, String text) async {
-    final prefs = await _prefs();
-    await prefs.setString('summary_text_$novelId', text);
-  }
-
-  Future<String?> getSummaryText(String novelId) async {
-    final prefs = await _prefs();
-    return prefs.getString('summary_text_$novelId');
-  }
+  }) async {}
 }

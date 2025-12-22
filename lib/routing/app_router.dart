@@ -64,10 +64,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final svc = ref.watch(promptsServiceProvider);
           final initial = state.extra is Prompt ? state.extra as Prompt? : null;
           final isAdmin = ref.watch(isAdminProvider);
-          final session = ref.watch(supabaseSessionProvider);
-          final isSignedIn = session != null;
           final ownerId = initial?.userId;
-          final currentUserId = session?.user.id;
+          final isSignedIn = ref.watch(isSignedInProvider);
+          final currentUserId = ref
+              .watch(currentUserProvider)
+              .asData
+              ?.value
+              ?.id;
           final canEdit = initial == null
               ? true
               : (isAdmin || (ownerId != null && ownerId == currentUserId));

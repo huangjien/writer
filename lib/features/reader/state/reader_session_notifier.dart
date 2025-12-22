@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/legacy.dart';
 import '../../../repositories/chapter_repository.dart';
 import '../../../state/app_settings.dart';
 import '../../../state/performance_settings.dart';
-import '../../../state/providers.dart';
 import '../../../state/tts_settings.dart';
 import '../logic/reader_navigation.dart';
 import '../logic/reader_playback_controller.dart';
@@ -157,8 +156,7 @@ class ReaderSessionNotifier extends StateNotifier<ReaderSessionState> {
   Future<void> _prefetchNext(int fromIdx) async {
     try {
       final perf = ref.read(performanceSettingsProvider);
-      final supEnabled = ref.read(supabaseEnabledProvider);
-      if (!perf.prefetchNextChapter || !supEnabled) return;
+      if (!perf.prefetchNextChapter) return;
       final idx = fromIdx + 1;
       if (idx >= state.allChapters.length) return;
       final next = state.allChapters[idx];

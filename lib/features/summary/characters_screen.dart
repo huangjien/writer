@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/state/novel_providers.dart';
-import 'package:writer/state/mock_providers.dart';
-import 'package:writer/state/supabase_config.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/models/character_template_row.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:writer/repositories/notes_repository.dart';
+import '../../state/providers.dart';
 import '../../main.dart';
 
 class CharactersScreen extends ConsumerStatefulWidget {
@@ -52,10 +52,25 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
       _templates = await repo.listCharacterTemplates();
     } catch (_) {}
 
-    final data = await repo.getCharacterNoteForm(
-      widget.novelId,
-      idx: widget.idx,
-    );
+    var data = await repo.getCharacterNoteForm(widget.novelId, idx: widget.idx);
+
+    if (widget.idx != null && ref.read(isSignedInProvider)) {
+      try {
+        final notes = await ref
+            .read(notesRepositoryProvider)
+            .listCharacterNotes(widget.novelId);
+        final match = notes.where((n) => n.idx == widget.idx).firstOrNull;
+        if (match != null) {
+          data ??= {
+            'title': match.title,
+            'character_summaries': match.characterSummaries,
+            'character_synopses': match.characterSynopses,
+            'language_code': match.languageCode,
+          };
+        }
+      } catch (_) {}
+    }
+
     if (data != null) {
       _titleController.text = (data['title'] as String?) ?? '';
       _summariesController.text =
@@ -128,28 +143,13 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (supabaseEnabled)
-                ref
-                    .watch(novelProvider(widget.novelId))
-                    .when(
-                      data: (novel) => _NovelHeader(novel: novel),
-                      loading: () => _LoadingTile(label: l10n.loadingNovels),
-                      error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
-                    )
-              else
-                ref
-                    .watch(mockNovelsProvider)
-                    .when(
-                      data: (novels) {
-                        final matches = novels.where(
-                          (n) => n.id == widget.novelId,
-                        );
-                        final novel = matches.isNotEmpty ? matches.first : null;
-                        return _NovelHeader(novel: novel);
-                      },
-                      loading: () => _LoadingTile(label: l10n.loadingNovels),
-                      error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
-                    ),
+              ref
+                  .watch(novelProvider(widget.novelId))
+                  .when(
+                    data: (novel) => _NovelHeader(novel: novel),
+                    loading: () => _LoadingTile(label: l10n.loadingNovels),
+                    error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
+                  ),
               const SizedBox(height: 16),
               Form(
                 key: _formKey,
@@ -379,29 +379,47 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                                     final repo = ref.read(
                                       localStorageRepositoryProvider,
                                     );
+                                    final notesRepo = ref.read(
+                                      notesRepositoryProvider,
+                                    );
+
                                     final useIdx =
                                         widget.idx ??
                                         await repo.nextCharacterIdx(
                                           widget.novelId,
                                         );
+
+                                    final title = _titleController.text.trim();
+                                    final summaries =
+                                        _summariesController.text.trim().isEmpty
+                                        ? null
+                                        : _summariesController.text.trim();
+                                    final synopses =
+                                        _synopsesController.text.trim().isEmpty
+                                        ? null
+                                        : _synopsesController.text.trim();
+
                                     await repo.saveCharacterNoteForm(
                                       widget.novelId,
-                                      title: _titleController.text.trim(),
-                                      summaries:
-                                          _summariesController.text
-                                              .trim()
-                                              .isEmpty
-                                          ? null
-                                          : _summariesController.text.trim(),
-                                      synopses:
-                                          _synopsesController.text
-                                              .trim()
-                                              .isEmpty
-                                          ? null
-                                          : _synopsesController.text.trim(),
+                                      title: title,
+                                      summaries: summaries,
+                                      synopses: synopses,
                                       languageCode: _languageCode,
                                       idx: useIdx,
                                     );
+
+                                    // Save to backend if signed in
+                                    if (ref.read(isSignedInProvider)) {
+                                      await notesRepo.upsertCharacterNote(
+                                        novelId: widget.novelId,
+                                        idx: useIdx,
+                                        title: title,
+                                        summaries: summaries,
+                                        synopses: synopses,
+                                        languageCode: _languageCode,
+                                      );
+                                    }
+
                                     if (!context.mounted) {
                                       return;
                                     }

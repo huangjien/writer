@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:writer/state/novel_providers.dart';
-import 'package:writer/state/mock_providers.dart';
-import 'package:writer/state/supabase_config.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/models/scene_template_row.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/repositories/template_repository.dart';
 import '../../main.dart';
 import '../../models/scene.dart';
+import 'package:writer/repositories/notes_repository.dart';
+import '../../state/providers.dart';
 
 class ScenesScreen extends ConsumerStatefulWidget {
   const ScenesScreen({super.key, required this.novelId, this.idx});
@@ -56,10 +57,51 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
   Future<void> _load() async {
     final repo = ref.read(localStorageRepositoryProvider);
     try {
-      _templates = await repo.listSceneTemplates(limit: 50);
+      if (ref.read(isSignedInProvider)) {
+        List<SceneTemplateRow> templates = [];
+        try {
+          templates = await ref
+              .read(templateRepositoryProvider)
+              .listSceneTemplates(limit: 200);
+        } catch (_) {}
+        if (templates.isNotEmpty) {
+          _templates = templates;
+        } else {
+          _templates = await repo.listSceneTemplates(limit: 50);
+        }
+      } else {
+        _templates = await repo.listSceneTemplates(limit: 50);
+      }
     } catch (_) {}
 
-    final item = await repo.getSceneForm(widget.novelId, idx: widget.idx);
+    // Load from local draft first
+    var item = await repo.getSceneForm(widget.novelId, idx: widget.idx);
+
+    // If signed in, try to fetch from backend to get latest version if local is empty or we prefer remote?
+    // Actually, usually we load what we have. If we are editing an existing scene (idx known), we might want to fetch it.
+    if (widget.idx != null && ref.read(isSignedInProvider)) {
+      try {
+        final notes = await ref
+            .read(notesRepositoryProvider)
+            .listSceneNotes(widget.novelId);
+        final match = notes.where((n) => n.idx == widget.idx).firstOrNull;
+        if (match != null) {
+          // Prefer remote if found? Or only if local is null?
+          // Simplest is to use remote if local is null, or maybe just overwrite local?
+          // Since this is a "Form" screen, maybe we assume local is latest draft?
+          // But if I open scene 5 for first time on this device, local is empty.
+          if (item == null || item.title.isEmpty) {
+            item = Scene(
+              novelId: widget.novelId,
+              title: match.title ?? '',
+              location: match.sceneSynopses,
+              summary: match.sceneSummaries,
+            );
+          }
+        }
+      } catch (_) {}
+    }
+
     if (item != null) {
       _titleController.text = item.title;
       _locationController.text = item.location ?? '';
@@ -97,11 +139,30 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
     _templateSearchTimer = Timer(const Duration(milliseconds: 250), () async {
       try {
         final repo = ref.read(localStorageRepositoryProvider);
-        final res = await repo.searchSceneTemplates(
-          q,
-          limit: 10,
-          languageCode: _languageCode,
-        );
+        List<SceneTemplateRow> res = [];
+        if (ref.read(isSignedInProvider)) {
+          try {
+            res = await ref
+                .read(templateRepositoryProvider)
+                .searchSceneTemplates(
+                  q,
+                  limit: 10,
+                  languageCode: _languageCode,
+                );
+          } catch (_) {
+            res = await repo.searchSceneTemplates(
+              q,
+              limit: 10,
+              languageCode: _languageCode,
+            );
+          }
+        } else {
+          res = await repo.searchSceneTemplates(
+            q,
+            limit: 10,
+            languageCode: _languageCode,
+          );
+        }
         if (!mounted) return;
         setState(() {
           _templateSearchLoading = false;
@@ -181,28 +242,13 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (supabaseEnabled)
-                ref
-                    .watch(novelProvider(widget.novelId))
-                    .when(
-                      data: (novel) => _NovelHeader(novel: novel),
-                      loading: () => _LoadingTile(label: l10n.loadingNovels),
-                      error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
-                    )
-              else
-                ref
-                    .watch(mockNovelsProvider)
-                    .when(
-                      data: (novels) {
-                        final matches = novels.where(
-                          (n) => n.id == widget.novelId,
-                        );
-                        final novel = matches.isNotEmpty ? matches.first : null;
-                        return _NovelHeader(novel: novel);
-                      },
-                      loading: () => _LoadingTile(label: l10n.loadingNovels),
-                      error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
-                    ),
+              ref
+                  .watch(novelProvider(widget.novelId))
+                  .when(
+                    data: (novel) => _NovelHeader(novel: novel),
+                    loading: () => _LoadingTile(label: l10n.loadingNovels),
+                    error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
+                  ),
               const SizedBox(height: 16),
               Form(
                 key: _formKey,
@@ -465,29 +511,47 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
                                     final repo = ref.read(
                                       localStorageRepositoryProvider,
                                     );
+                                    final notesRepo = ref.read(
+                                      notesRepositoryProvider,
+                                    );
+
                                     final useIdx =
                                         widget.idx ??
                                         await repo.nextSceneIdx(widget.novelId);
+                                    final scene = Scene(
+                                      novelId: widget.novelId,
+                                      title: _titleController.text.trim(),
+                                      location:
+                                          _locationController.text
+                                              .trim()
+                                              .isEmpty
+                                          ? null
+                                          : _locationController.text.trim(),
+                                      summary:
+                                          _summaryController.text.trim().isEmpty
+                                          ? null
+                                          : _summaryController.text.trim(),
+                                    );
+
+                                    // Save local draft
                                     await repo.saveSceneForm(
                                       widget.novelId,
-                                      Scene(
-                                        novelId: widget.novelId,
-                                        title: _titleController.text.trim(),
-                                        location:
-                                            _locationController.text
-                                                .trim()
-                                                .isEmpty
-                                            ? null
-                                            : _locationController.text.trim(),
-                                        summary:
-                                            _summaryController.text
-                                                .trim()
-                                                .isEmpty
-                                            ? null
-                                            : _summaryController.text.trim(),
-                                      ),
+                                      scene,
                                       idx: useIdx,
                                     );
+
+                                    // Save to backend if signed in
+                                    if (ref.read(isSignedInProvider)) {
+                                      await notesRepo.upsertSceneNote(
+                                        novelId: widget.novelId,
+                                        idx: useIdx,
+                                        title: scene.title,
+                                        synopses: scene.location,
+                                        summaries: scene.summary,
+                                        languageCode: _languageCode,
+                                      );
+                                    }
+
                                     if (!context.mounted) return;
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: Text(l10n.saved)),

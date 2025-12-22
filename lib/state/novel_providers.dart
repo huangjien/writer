@@ -7,14 +7,11 @@ import 'providers.dart';
 import 'progress_providers.dart';
 import '../main.dart';
 
-final novelRepositoryProvider = Provider<NovelRepository>((ref) {
-  final client = ref.watch(supabaseClientProvider);
-  return NovelRepository(client);
-});
-
 final novelsProvider = FutureProvider<List<Novel>>((ref) async {
   // Re-run when auth state changes to keep Library fresh after login/logout
   ref.watch(authStateProvider);
+  final isSignedIn = ref.watch(isSignedInProvider);
+  if (!isSignedIn) return const [];
   final repo = ref.watch(novelRepositoryProvider);
   return repo.fetchPublicNovels();
 });
@@ -23,6 +20,8 @@ final novelsProvider = FutureProvider<List<Novel>>((ref) async {
 final memberNovelsProvider = FutureProvider<List<Novel>>((ref) async {
   // React to auth changes so membership list updates on login/logout.
   ref.watch(authStateProvider);
+  final isSignedIn = ref.watch(isSignedInProvider);
+  if (!isSignedIn) return const [];
   final repo = ref.watch(novelRepositoryProvider);
   return repo.fetchMemberNovels();
 });
@@ -30,7 +29,12 @@ final memberNovelsProvider = FutureProvider<List<Novel>>((ref) async {
 /// Library novels: union of public novels and novels where the current user is a member.
 final libraryNovelsProvider = FutureProvider<List<Novel>>((ref) async {
   ref.watch(authStateProvider);
+  final isSignedIn = ref.watch(isSignedInProvider);
   final local = ref.watch(localStorageRepositoryProvider);
+  if (!isSignedIn) {
+    final cached = await local.getLibraryNovels();
+    return cached;
+  }
   final public = await ref.watch(novelsProvider.future);
   final memberAsync = ref.watch(memberNovelsProvider);
   if (memberAsync.hasError) {

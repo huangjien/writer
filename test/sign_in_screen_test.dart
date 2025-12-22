@@ -4,44 +4,16 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/features/auth/sign_in_screen.dart';
-import 'package:writer/state/providers.dart';
 
 void main() {
-  testWidgets('SignInScreen shows disabled message when Supabase disabled', (
-    tester,
-  ) async {
+  testWidgets('SignInScreen shows fields', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [supabaseEnabledProvider.overrideWithValue(false)],
+      const ProviderScope(
         child: MaterialApp(
-          locale: const Locale('en'),
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const SignInScreen(),
-        ),
-      ),
-    );
-
-    await tester.pumpAndSettle();
-    expect(
-      find.text(
-        'Supabase is not configured. Authentication is disabled in this build.',
-      ),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('SignInScreen shows fields when Supabase enabled', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [supabaseEnabledProvider.overrideWithValue(true)],
-        child: MaterialApp(
-          locale: const Locale('en'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: const SignInScreen(),
+          home: SignInScreen(),
         ),
       ),
     );

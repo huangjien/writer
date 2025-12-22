@@ -1,115 +1,75 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/state/edit_permissions.dart';
-import 'package:writer/state/providers.dart';
-import '../shared/supabase_fakes.dart';
+import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/state/session_state.dart';
 
-class MockSupabaseClient extends Mock implements SupabaseClient {}
-
-class MockGoTrueClient extends Mock implements GoTrueClient {}
-
-class MockUser extends Mock implements User {}
+class MockRemoteRepository extends Mock implements RemoteRepository {}
 
 void main() {
-  late MockSupabaseClient mockClient;
-  late MockGoTrueClient mockAuth;
-  late MockUser mockUser;
-
-  setUpAll(() {
-    registerFallbackValue(<String, dynamic>{});
-  });
+  late MockRemoteRepository remote;
 
   setUp(() {
-    mockClient = MockSupabaseClient();
-    mockAuth = MockGoTrueClient();
-    mockUser = MockUser();
-
-    when(() => mockClient.auth).thenReturn(mockAuth);
-    when(() => mockAuth.currentUser).thenReturn(mockUser);
-    when(() => mockUser.id).thenReturn('user123');
+    remote = MockRemoteRepository();
   });
 
-  test('editRoleProvider returns none when disabled', () async {
-    final container = ProviderContainer(
-      overrides: [supabaseEnabledProvider.overrideWithValue(false)],
-    );
+  test('editRoleProvider returns none when signed out', () async {
+    final container = ProviderContainer();
     addTearDown(container.dispose);
 
     final role = await container.read(editRoleProvider('n1').future);
     expect(role, EditRole.none);
   });
 
-  test('editRoleProvider returns none when no user', () async {
-    when(() => mockAuth.currentUser).thenReturn(null);
-
+  test('editRoleProvider returns owner for backend role owner', () async {
     final container = ProviderContainer(
       overrides: [
-        supabaseEnabledProvider.overrideWithValue(true),
-        supabaseClientProvider.overrideWithValue(mockClient),
+        sessionProvider.overrideWith((ref) => SessionNotifier()..state = 's'),
+        remoteRepositoryProvider.overrideWithValue(remote),
       ],
     );
     addTearDown(container.dispose);
 
-    final role = await container.read(editRoleProvider('n1').future);
-    expect(role, EditRole.none);
+    when(
+      () => remote.get('permissions/novels/n1'),
+    ).thenAnswer((_) async => {'role': 'owner'});
+    expect(await container.read(editRoleProvider('n1').future), EditRole.owner);
   });
 
-  test('editRoleProvider returns owner if is_owner RPC true', () async {
-    when(
-      () => mockClient.rpc('is_owner', params: any(named: 'params')),
-    ).thenAnswer((_) => FakePostgrestFilterBuilder(true));
+  test(
+    'editRoleProvider returns contributor for backend role contributor',
+    () async {
+      final container = ProviderContainer(
+        overrides: [
+          sessionProvider.overrideWith((ref) => SessionNotifier()..state = 's'),
+          remoteRepositoryProvider.overrideWithValue(remote),
+        ],
+      );
+      addTearDown(container.dispose);
 
+      when(
+        () => remote.get('permissions/novels/n1'),
+      ).thenAnswer((_) async => {'role': 'contributor'});
+      expect(
+        await container.read(editRoleProvider('n1').future),
+        EditRole.contributor,
+      );
+    },
+  );
+
+  test('editRoleProvider returns none for backend role unknown', () async {
     final container = ProviderContainer(
       overrides: [
-        supabaseEnabledProvider.overrideWithValue(true),
-        supabaseClientProvider.overrideWithValue(mockClient),
+        sessionProvider.overrideWith((ref) => SessionNotifier()..state = 's'),
+        remoteRepositoryProvider.overrideWithValue(remote),
       ],
     );
     addTearDown(container.dispose);
 
-    final role = await container.read(editRoleProvider('n1').future);
-    expect(role, EditRole.owner);
-  });
-
-  test('editRoleProvider returns contributor if is_member RPC true', () async {
     when(
-      () => mockClient.rpc('is_owner', params: any(named: 'params')),
-    ).thenAnswer((_) => FakePostgrestFilterBuilder(false));
-    when(
-      () => mockClient.rpc('is_member', params: any(named: 'params')),
-    ).thenAnswer((_) => FakePostgrestFilterBuilder(true));
-
-    final container = ProviderContainer(
-      overrides: [
-        supabaseEnabledProvider.overrideWithValue(true),
-        supabaseClientProvider.overrideWithValue(mockClient),
-      ],
-    );
-    addTearDown(container.dispose);
-
-    final role = await container.read(editRoleProvider('n1').future);
-    expect(role, EditRole.contributor);
-  });
-
-  test('editRoleProvider returns none if both RPC false', () async {
-    when(
-      () => mockClient.rpc('is_owner', params: any(named: 'params')),
-    ).thenAnswer((_) => FakePostgrestFilterBuilder(false));
-    when(
-      () => mockClient.rpc('is_member', params: any(named: 'params')),
-    ).thenAnswer((_) => FakePostgrestFilterBuilder(false));
-
-    final container = ProviderContainer(
-      overrides: [
-        supabaseEnabledProvider.overrideWithValue(true),
-        supabaseClientProvider.overrideWithValue(mockClient),
-      ],
-    );
-    addTearDown(container.dispose);
-
-    final role = await container.read(editRoleProvider('n1').future);
-    expect(role, EditRole.none);
+      () => remote.get('permissions/novels/n1'),
+    ).thenAnswer((_) async => {'role': 'something-else'});
+    expect(await container.read(editRoleProvider('n1').future), EditRole.none);
   });
 }

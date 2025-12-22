@@ -1,14 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/main.dart' as app_main;
 import 'package:writer/repositories/novel_repository.dart';
+import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/state/providers.dart';
 
 class FakeNovelRepository extends NovelRepository {
-  FakeNovelRepository() : super(SupabaseClient('http://example.com', 'anon'));
+  FakeNovelRepository() : super(RemoteRepository('http://example.com'));
   List<Novel> novels = const [
     Novel(
       id: 'n1',
@@ -43,11 +44,13 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         novelRepositoryProvider.overrideWith((_) => fake),
+        isSignedInProvider.overrideWithValue(true),
         app_main.localStorageRepositoryProvider.overrideWith(
           (_) => throw UnimplementedError(),
         ),
       ],
     );
+    addTearDown(container.dispose);
     final novels = await container.read(novelsProvider.future);
     expect(novels.length, 1);
     final ch = await container.read(chaptersProvider('n1').future);

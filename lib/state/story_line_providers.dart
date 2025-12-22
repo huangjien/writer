@@ -8,9 +8,9 @@ final storyLinesServiceRefProvider = Provider<StoryLinesService>((ref) {
 });
 
 final storyLinesProvider = FutureProvider<List<StoryLine>>((ref) async {
-  final enabled = ref.watch(supabaseEnabledProvider);
-  if (!enabled) return const <StoryLine>[];
   ref.watch(authStateProvider);
+  final isSignedIn = ref.watch(isSignedInProvider);
+  if (!isSignedIn) return const <StoryLine>[];
   final svc = ref.watch(storyLinesServiceRefProvider);
   return svc.fetchStoryLines();
 });
@@ -19,9 +19,9 @@ final storyLineByIdProvider = FutureProvider.family<StoryLine?, String>((
   ref,
   id,
 ) async {
-  final enabled = ref.watch(supabaseEnabledProvider);
-  if (!enabled) return null;
   ref.watch(authStateProvider);
+  final isSignedIn = ref.watch(isSignedInProvider);
+  if (!isSignedIn) return null;
   final svc = ref.watch(storyLinesServiceRefProvider);
   return svc.getStoryLine(id);
 });

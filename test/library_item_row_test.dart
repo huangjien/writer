@@ -17,70 +17,21 @@ import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/repositories/novel_repository.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:writer/repositories/remote_repository.dart';
 
-class FakeNovelRepository implements NovelRepository {
+class FakeRemoteRepository extends RemoteRepository {
+  FakeRemoteRepository() : super('http://localhost');
+}
+
+class FakeNovelRepository extends NovelRepository {
+  FakeNovelRepository() : super(FakeRemoteRepository());
+
   final Set<String> deletedNovels = {};
-
-  @override
-  SupabaseClient get client => throw UnimplementedError();
 
   @override
   Future<void> deleteNovel(String novelId) async {
     deletedNovels.add(novelId);
   }
-
-  @override
-  Future<List<Novel>> fetchPublicNovels() async => [];
-
-  @override
-  Future<List<Chapter>> fetchChaptersByNovel(String novelId) async => [];
-
-  @override
-  Future<Novel> createNovel({
-    required String title,
-    String? author,
-    String? description,
-    String? coverUrl,
-    String languageCode = 'en',
-    bool isPublic = true,
-  }) async {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Novel?> getNovel(String novelId) async => null;
-
-  @override
-  Future<Chapter?> getChapter(String chapterId) async => null;
-
-  @override
-  Future<void> updateNovelMetadata(
-    String novelId, {
-    String? title,
-    String? description,
-    String? coverUrl,
-    String? languageCode,
-    bool? isPublic,
-  }) async {}
-
-  @override
-  Future<void> addContributor({
-    required String novelId,
-    required String userId,
-  }) async {}
-
-  @override
-  Future<List<Novel>> fetchMemberNovels({
-    int limit = 50,
-    int offset = 0,
-  }) async => [];
-
-  @override
-  Future<void> addContributorByEmail({
-    required String novelId,
-    required String email,
-  }) async {}
 }
 
 class TestChapterRepository implements ChapterRepository {
@@ -162,7 +113,6 @@ void main() {
           home: Scaffold(
             body: LibraryItemRow(
               novel: n,
-              isSupabaseEnabled: false,
               isSignedIn: false,
               canRemove: true,
               canDownload: false,
@@ -224,7 +174,6 @@ void main() {
           home: Scaffold(
             body: LibraryItemRow(
               novel: n,
-              isSupabaseEnabled: true,
               isSignedIn: true,
               canRemove: true,
               canDownload: true,
@@ -263,7 +212,6 @@ void main() {
           home: Scaffold(
             body: LibraryItemRow(
               novel: n,
-              isSupabaseEnabled: false,
               isSignedIn: false,
               canRemove: true,
               canDownload: false,
@@ -276,10 +224,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final btnFinder = find.byKey(const Key('downloadButton_n3'));
-    expect(
-      find.byTooltip('Supabase is not configured for this build.'),
-      findsWidgets,
-    );
+    expect(find.byTooltip('Download chapters'), findsWidgets);
     final btn = tester.widget<IconButton>(btnFinder);
     expect(btn.onPressed, isNull);
   });
@@ -310,7 +255,6 @@ void main() {
           home: Scaffold(
             body: LibraryItemRow(
               novel: n,
-              isSupabaseEnabled: true,
               isSignedIn: true,
               canRemove: true,
               canDownload: true,
@@ -365,7 +309,6 @@ void main() {
                   children: [
                     LibraryItemRow(
                       novel: n,
-                      isSupabaseEnabled: true,
                       isSignedIn: true,
                       canRemove: true,
                       canDownload: false,
@@ -444,7 +387,6 @@ void main() {
                   children: [
                     LibraryItemRow(
                       novel: n,
-                      isSupabaseEnabled: false, // Local mode
                       isSignedIn: false,
                       canRemove: true,
                       canDownload: false,
@@ -520,7 +462,6 @@ void main() {
                   children: [
                     LibraryItemRow(
                       novel: n,
-                      isSupabaseEnabled: true,
                       isSignedIn: true,
                       canRemove: true,
                       canDownload: true,
@@ -626,7 +567,7 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.delete);
     await tester.pumpAndSettle();
 
-    // Should show dialog (since isSupabaseEnabled=true)
+    // Should show dialog (since isSignedIn=true)
     expect(find.text('Confirm Delete'), findsOneWidget);
 
     // Cancel deletion to finish test cleanly (or confirm)
@@ -654,7 +595,6 @@ void main() {
           home: Scaffold(
             body: LibraryItemRow(
               novel: n,
-              isSupabaseEnabled: false,
               isSignedIn: false,
               canRemove: true,
               canDownload: true,
@@ -696,7 +636,6 @@ void main() {
           home: Scaffold(
             body: LibraryItemRow(
               novel: n,
-              isSupabaseEnabled: false,
               isSignedIn: false,
               canRemove: true,
               canDownload: false,
@@ -737,7 +676,6 @@ void main() {
           home: Scaffold(
             body: LibraryItemRow(
               novel: n,
-              isSupabaseEnabled: false,
               isSignedIn: false,
               canRemove: true,
               canDownload: false,
@@ -787,7 +725,6 @@ void main() {
           home: Scaffold(
             body: LibraryItemRow(
               novel: n,
-              isSupabaseEnabled: true,
               isSignedIn: true,
               canRemove: true,
               canDownload: true,

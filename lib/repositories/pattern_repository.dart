@@ -1,28 +1,42 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/pattern.dart';
+import 'remote_repository.dart';
+
+final patternRepositoryProvider = Provider<PatternRepository>((ref) {
+  return PatternRepository(ref.watch(remoteRepositoryProvider));
+});
 
 class PatternRepository {
-  final SupabaseClient client;
-  PatternRepository(this.client);
+  final RemoteRepository remote;
 
-  Future<List<Pattern>> listPatterns({int limit = 200}) async {
-    final res = await client
-        .from('writing_patterns')
-        .select()
-        .order('created_at', ascending: false)
-        .limit(limit);
-    final list = (res as List).cast<Map<String, dynamic>>();
-    return list.map(Pattern.fromMap).toList();
+  PatternRepository(this.remote);
+
+  Future<List<Pattern>> listPatterns({int limit = 50}) async {
+    final res = await remote.get(
+      'patterns',
+      queryParameters: {'limit': limit.toString(), 'offset': '0'},
+    );
+    if (res is List) {
+      final list = res.cast<Map<String, dynamic>>();
+      return list.map(Pattern.fromMap).toList();
+    }
+    if (res is Map && res['items'] is List) {
+      final list = (res['items'] as List).cast<Map<String, dynamic>>();
+      return list.map(Pattern.fromMap).toList();
+    }
+    return [];
   }
 
   Future<Pattern?> getPattern(String id) async {
-    final res = await client
-        .from('writing_patterns')
-        .select()
-        .eq('id', id)
-        .single();
-    if (res.isEmpty) return null;
-    return Pattern.fromMap(res);
+    try {
+      final res = await remote.get('patterns/$id');
+      if (res is Map<String, dynamic>) {
+        return Pattern.fromMap(res);
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<Pattern> createPattern({
@@ -35,24 +49,21 @@ class PatternRepository {
     bool? isPublic,
     bool? locked,
   }) async {
-    final insert = <String, dynamic>{
+    final body = <String, dynamic>{
       'title': title,
       'description': description,
       'content': content,
       'usage_rules': usageRules,
+      'embedding': embedding,
+      'language': language,
+      'is_public': isPublic,
+      'locked': locked,
     };
-    if (embedding != null) {
-      insert['embedding'] = embedding;
+    final res = await remote.post('patterns', body);
+    if (res is Map<String, dynamic>) {
+      return Pattern.fromMap(res);
     }
-    if (language != null) insert['language'] = language;
-    if (isPublic != null) insert['is_public'] = isPublic;
-    if (locked != null) insert['locked'] = locked;
-    final res = await client
-        .from('writing_patterns')
-        .insert(insert)
-        .select()
-        .single();
-    return Pattern.fromMap(res);
+    throw Exception('Failed to create pattern');
   }
 
   Future<Pattern> updatePattern({
@@ -66,25 +77,23 @@ class PatternRepository {
     bool? isPublic,
     bool? locked,
   }) async {
-    final update = <String, dynamic>{};
-    if (title != null) update['title'] = title;
-    if (description != null) update['description'] = description;
-    if (content != null) update['content'] = content;
-    if (usageRules != null) update['usage_rules'] = usageRules;
-    if (embedding != null) update['embedding'] = embedding;
-    if (language != null) update['language'] = language;
-    if (isPublic != null) update['is_public'] = isPublic;
-    if (locked != null) update['locked'] = locked;
-    final res = await client
-        .from('writing_patterns')
-        .update(update)
-        .eq('id', id)
-        .select()
-        .single();
-    return Pattern.fromMap(res);
+    final body = <String, dynamic>{};
+    if (title != null) body['title'] = title;
+    if (description != null) body['description'] = description;
+    if (content != null) body['content'] = content;
+    if (usageRules != null) body['usage_rules'] = usageRules;
+    if (embedding != null) body['embedding'] = embedding;
+    if (language != null) body['language'] = language;
+    if (isPublic != null) body['is_public'] = isPublic;
+    if (locked != null) body['locked'] = locked;
+    final res = await remote.patch('patterns/$id', body);
+    if (res is Map<String, dynamic>) {
+      return Pattern.fromMap(res);
+    }
+    throw Exception('Failed to update pattern');
   }
 
   Future<void> deletePattern(String id) async {
-    await client.from('writing_patterns').delete().eq('id', id);
+    await remote.delete('patterns/$id');
   }
 }

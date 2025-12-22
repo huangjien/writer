@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/legacy.dart'; // Import legacy for StateNotifie
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:writer/features/reader/logic/progress_saver.dart';
+
 import 'package:writer/features/reader/logic/tts_driver.dart';
 import 'package:writer/features/reader/state/reader_session_notifier.dart';
 import 'package:writer/features/reader/state/reader_session_state.dart';
@@ -37,15 +36,6 @@ void main() {
     mockTtsDriver = MockTtsDriver();
     mockChapterRepository = MockChapterRepository();
     mockProgressPort = MockProgressPort();
-
-    // Mock getUser for progress saver
-    mockGetUser = () => User(
-      id: 'test-user',
-      appMetadata: {},
-      userMetadata: {},
-      aud: 'authenticated',
-      createdAt: DateTime.now().toIso8601String(),
-    );
 
     // Register fallback for UserProgress
     registerFallbackValue(
@@ -85,10 +75,6 @@ void main() {
     when(() => mockTtsDriver.index).thenReturn(0);
 
     when(() => mockProgressPort.upsertProgress(any())).thenAnswer((_) async {});
-  });
-
-  tearDown(() {
-    mockGetUser = null;
   });
 
   test('loadNextChapter updates state and prefetches', () async {
@@ -131,7 +117,6 @@ void main() {
         performanceSettingsProvider.overrideWith(
           (ref) => PerformanceSettingsNotifier(prefs),
         ),
-        supabaseEnabledProvider.overrideWithValue(true),
         progressRepositoryProvider.overrideWithValue(mockProgressPort),
       ],
     );
@@ -207,7 +192,6 @@ void main() {
         performanceSettingsProvider.overrideWith(
           (ref) => PerformanceSettingsNotifier(prefs),
         ),
-        supabaseEnabledProvider.overrideWithValue(true),
         progressRepositoryProvider.overrideWithValue(mockProgressPort),
       ],
     );
@@ -261,7 +245,6 @@ void main() {
         performanceSettingsProvider.overrideWith(
           (ref) => PerformanceSettingsNotifier(prefs),
         ),
-        supabaseEnabledProvider.overrideWithValue(true),
         progressRepositoryProvider.overrideWithValue(mockProgressPort),
       ],
     );
@@ -314,7 +297,6 @@ void main() {
         performanceSettingsProvider.overrideWith(
           (ref) => PerformanceSettingsNotifier(prefs),
         ),
-        supabaseEnabledProvider.overrideWithValue(true),
         progressRepositoryProvider.overrideWithValue(mockProgressPort),
       ],
     );
@@ -343,7 +325,7 @@ void main() {
 
   test('configure TTS maps locale zh to zh-CN', () async {});
 
-  test('prefetchNext respects settings and supabase flag', () async {
+  test('prefetchNext respects settings', () async {
     final c1 = Chapter(
       id: 'c1',
       novelId: 'n1',
@@ -374,7 +356,6 @@ void main() {
         appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
         ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
         performanceSettingsProvider.overrideWith((ref) => perf),
-        supabaseEnabledProvider.overrideWithValue(false),
         progressRepositoryProvider.overrideWithValue(mockProgressPort),
       ],
     );
@@ -415,7 +396,10 @@ void main() {
         performanceSettingsProvider.overrideWith(
           (ref) => PerformanceSettingsNotifier(prefs),
         ),
-        supabaseEnabledProvider.overrideWithValue(true),
+        isSignedInProvider.overrideWithValue(true),
+        currentUserProvider.overrideWith(
+          (ref) async => const BackendUser(id: 'u1', email: null),
+        ),
         progressRepositoryProvider.overrideWithValue(mockProgressPort),
       ],
     );

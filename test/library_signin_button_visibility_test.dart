@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:writer/features/library/library_screen.dart';
-import 'package:writer/state/providers.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
 
@@ -18,12 +17,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          supabaseEnabledProvider.overrideWith((_) => true),
-          supabaseSessionProvider.overrideWith((_) => null),
-          authStateProvider.overrideWith((_) => const Stream.empty()),
-          novelsProvider.overrideWith((_) async => const []),
-        ],
+        overrides: [novelsProvider.overrideWith((_) async => const [])],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,

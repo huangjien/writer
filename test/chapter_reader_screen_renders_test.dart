@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/reader/chapter_reader_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/tts_settings.dart';
@@ -24,7 +25,7 @@ void main() {
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
           ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
           aiChatServiceProvider.overrideWith(
-            (ref) => AiChatService('http://localhost:5600/'),
+            (ref) => AiChatService(RemoteRepository('http://localhost:5600/')),
           ),
         ],
         child: const MaterialApp(

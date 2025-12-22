@@ -5,6 +5,7 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/strings.dart';
 import '../../state/providers.dart';
 import '../../state/novel_providers.dart';
+import '../../repositories/novel_repository.dart';
 
 class CreateNovelScreen extends ConsumerStatefulWidget {
   const CreateNovelScreen({super.key});
@@ -75,9 +76,8 @@ class _CreateNovelScreenState extends ConsumerState<CreateNovelScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isEnabled = ref.watch(supabaseEnabledProvider);
-    final session = ref.watch(supabaseSessionProvider);
-    if (!isEnabled || session == null) {
+    final isSignedIn = ref.watch(isSignedInProvider);
+    if (!isSignedIn) {
       return Scaffold(
         appBar: AppBar(title: Text(l10n.createNovel)),
         body: Center(

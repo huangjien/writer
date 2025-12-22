@@ -33,7 +33,7 @@ void main() {
     expect(l10n.avgWordsPerChapter(800), '平均每章字数：800');
     expect(l10n.chapterLabel(4), '第4章');
     expect(l10n.chapterWithTitle(1, 'X'), '第1章：X');
-    expect(l10n.confirmDeleteDescription('T'), '将从 Supabase 删除“T”。是否确认？');
+    expect(l10n.confirmDeleteDescription('T'), '将从云端删除“T”。是否确认？');
     expect(l10n.deletedWithTitle('T'), '已删除：T');
     expect(l10n.deleteFailedWithTitle('T'), '删除失败：T');
     expect(l10n.deleteErrorWithMessage('E'), '删除出错：E');

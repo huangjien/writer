@@ -4,7 +4,6 @@ import 'package:writer/state/pattern_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/services/patterns_service.dart';
 import 'package:writer/models/pattern.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FakePatternsService extends PatternsService {
   FakePatternsService() : super(baseUrl: 'http://example.com');
@@ -32,9 +31,9 @@ class FakePatternsService extends PatternsService {
 }
 
 void main() {
-  test('patternsProvider returns empty when Supabase disabled', () async {
+  test('patternsProvider returns empty when signed out', () async {
     final container = ProviderContainer(
-      overrides: [supabaseEnabledProvider.overrideWith((_) => false)],
+      overrides: [authStateProvider.overrideWith((_) => null)],
     );
     addTearDown(container.dispose);
     final result = await container.read(patternsProvider.future);
@@ -43,15 +42,12 @@ void main() {
     expect(p, isNull);
   });
 
-  test('patterns providers return from service when enabled', () async {
+  test('patterns providers return from service when signed in', () async {
     final fake = FakePatternsService();
     final container = ProviderContainer(
       overrides: [
-        supabaseEnabledProvider.overrideWith((_) => true),
-        authStateProvider.overrideWith(
-          (ref) =>
-              Stream.value(AuthState(AuthChangeEvent.initialSession, null)),
-        ),
+        isSignedInProvider.overrideWith((_) => true),
+        authStateProvider.overrideWith((_) => 'session'),
         patternsServiceRefProvider.overrideWith((_) => fake),
       ],
     );

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/reader/logic/reader_navigation.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/state/performance_settings.dart';
-import 'package:writer/state/providers.dart';
 import 'package:writer/repositories/chapter_port.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 
@@ -79,7 +78,6 @@ void main() {
         performanceSettingsProvider.overrideWith(
           (ref) => PerformanceSettingsNotifier.lazy(),
         ),
-        supabaseEnabledProvider.overrideWithValue(true),
         chapterRepositoryProvider.overrideWithValue(repo),
       ],
       child: const MaterialApp(home: Scaffold(body: SizedBox.shrink())),
@@ -105,12 +103,19 @@ void main() {
         performanceSettingsProvider.overrideWith(
           (ref) => PerformanceSettingsNotifier.lazy(),
         ),
-        supabaseEnabledProvider.overrideWithValue(false),
         chapterRepositoryProvider.overrideWithValue(repo),
       ],
       child: const MaterialApp(home: Scaffold(body: SizedBox.shrink())),
     );
     await tester.pumpWidget(app);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(Scaffold)),
+      listen: false,
+    );
+    await container
+        .read(performanceSettingsProvider.notifier)
+        .setPrefetchNextChapter(false);
+    await tester.pump();
     await prefetchNextIfEnabled(
       context: tester.element(find.byType(Scaffold)),
       all: all,

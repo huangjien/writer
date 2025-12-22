@@ -4,10 +4,10 @@ import 'package:writer/state/novel_providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/repositories/novel_repository.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/main.dart' as app_main;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/state/providers.dart';
+import 'package:writer/repositories/remote_repository.dart';
 
 class CapturingLocalRepo extends LocalStorageRepository {
   List<Novel>? lastSaved;
@@ -29,10 +29,8 @@ void main() {
       final cache = CapturingLocalRepo();
       final container = ProviderContainer(
         overrides: [
-          authStateProvider.overrideWith(
-            (ref) =>
-                Stream.value(AuthState(AuthChangeEvent.initialSession, null)),
-          ),
+          isSignedInProvider.overrideWith((_) => true),
+          authStateProvider.overrideWith((_) => 'session'),
           app_main.localStorageRepositoryProvider.overrideWith((_) => cache),
           novelsProvider.overrideWith(
             (ref) async => const [
@@ -85,7 +83,7 @@ void main() {
 }
 
 class FakeNovelSingle extends NovelRepository {
-  FakeNovelSingle() : super(SupabaseClient('http://example.com', 'anon'));
+  FakeNovelSingle() : super(RemoteRepository('http://example.com'));
   @override
   Future<Novel?> getNovel(String novelId) async {
     return Novel(

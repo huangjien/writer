@@ -57,7 +57,7 @@ void main() {
       expect(got.bio, 'Solves mysteries');
     });
 
-    test('nextCharacterIdx returns 2 when supabase disabled', () async {
+    test('nextCharacterIdx returns 2 when cloud sync disabled', () async {
       final repo = LocalStorageRepository();
       final next = await repo.nextCharacterIdx('n1');
       expect(next, 2);
@@ -90,7 +90,7 @@ void main() {
       expect(afterDelete, isEmpty);
     });
 
-    test('nextSceneIdx returns 2 when supabase disabled', () async {
+    test('nextSceneIdx returns 2 when cloud sync disabled', () async {
       final repo = LocalStorageRepository();
       final next = await repo.nextSceneIdx('n1');
       expect(next, 2);

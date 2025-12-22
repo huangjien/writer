@@ -3,15 +3,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/routing/app_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
-import 'package:writer/state/providers.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
+import 'package:writer/state/novel_providers.dart';
 
 void main() {
   testWidgets('Go to About via router', (tester) async {
     final container = ProviderContainer(
-      overrides: [supabaseEnabledProvider.overrideWith((_) => false)],
+      overrides: [chaptersProvider.overrideWith((ref, id) async => const [])],
     );
+    addTearDown(container.dispose);
     final router = container.read(appRouterProvider);
+    router.go('/about');
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
@@ -23,19 +25,18 @@ void main() {
         ),
       ),
     );
-    router.go('/about');
     await tester.pumpAndSettle();
     expect(find.text('About'), findsOneWidget);
     expect(find.text(AppLocalizationsEn().appTitle), findsOneWidget);
   });
 
-  testWidgets('Go to Reader list uses mock data when Supabase disabled', (
-    tester,
-  ) async {
+  testWidgets('Go to Reader list shows chapters screen', (tester) async {
     final container = ProviderContainer(
-      overrides: [supabaseEnabledProvider.overrideWith((_) => false)],
+      overrides: [chaptersProvider.overrideWith((ref, id) async => const [])],
     );
+    addTearDown(container.dispose);
     final router = container.read(appRouterProvider);
+    router.go('/novel/novel-001');
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
@@ -47,7 +48,6 @@ void main() {
         ),
       ),
     );
-    router.go('/novel/novel-001');
     await tester.pumpAndSettle();
     expect(find.text('Chapters'), findsOneWidget);
   });

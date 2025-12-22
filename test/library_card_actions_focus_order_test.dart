@@ -7,9 +7,10 @@ import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/features/library/library_providers.dart'
     as lib_providers;
 import 'package:writer/state/mock_providers.dart';
-import 'package:writer/state/providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/user_progress.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/progress_providers.dart';
 
 void main() {
   testWidgets('Focus order: Download → Continue → Remove', (tester) async {
@@ -28,13 +29,22 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => false),
+          libraryNovelsProvider.overrideWith(
+            (ref) async => await ref.watch(mockNovelsProvider.future),
+          ),
+          chaptersProvider.overrideWith(
+            (ref, novelId) async =>
+                await ref.watch(mockChaptersProvider(novelId).future),
+          ),
           // Ensure Download is enabled in tests without Supabase.
           lib_providers.downloadFeatureFlagProvider.overrideWithValue(true),
           // Show Continue button for novel-001.
           mockLastProgressProvider.overrideWith((ref, novelId) async {
             if (novelId == 'novel-001') return continuedProgress;
             return null;
+          }),
+          lastProgressProvider.overrideWith((ref, novelId) async {
+            return ref.watch(mockLastProgressProvider(novelId).future);
           }),
         ],
         child: MaterialApp(
@@ -45,6 +55,15 @@ void main() {
       ),
     );
 
+    await tester.pumpAndSettle();
+
+    final list = find.byKey(const Key('libraryListView'));
+    expect(list, findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.descendant(of: list, matching: find.text('The Whispering Forest')),
+      200,
+      scrollable: find.descendant(of: list, matching: find.byType(Scrollable)),
+    );
     await tester.pumpAndSettle();
 
     final download = find.byKey(const Key('downloadButton_novel-001'));

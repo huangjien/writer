@@ -15,8 +15,21 @@ const List<String> _monoFallback = <String>[
   'monospace',
 ];
 
+const List<String> _textFallback = <String>[
+  'Noto Sans SC',
+  'Noto Sans',
+  'Roboto',
+  'PingFang SC',
+  'Hiragino Sans GB',
+  'Microsoft YaHei',
+  'Heiti SC',
+  'SimHei',
+  'Arial Unicode MS',
+  'sans-serif',
+];
+
 TextTheme _applyFamilyWithFallback(TextTheme base, String family) {
-  List<String> fallback = _monoFallback;
+  List<String> fallback = <String>[..._textFallback, ..._monoFallback];
   TextStyle? withStyle(TextStyle? s) =>
       s?.copyWith(fontFamily: family, fontFamilyFallback: fallback);
   return base.copyWith(
@@ -39,7 +52,8 @@ TextTheme _applyFamilyWithFallback(TextTheme base, String family) {
 }
 
 TextTheme _applyFamily(TextTheme base, String family) {
-  TextStyle? withStyle(TextStyle? s) => s?.copyWith(fontFamily: family);
+  TextStyle? withStyle(TextStyle? s) =>
+      s?.copyWith(fontFamily: family, fontFamilyFallback: _textFallback);
   return base.copyWith(
     displayLarge: withStyle(base.displayLarge),
     displayMedium: withStyle(base.displayMedium),

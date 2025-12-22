@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
-import 'package:writer/state/supabase_config.dart';
-import 'package:writer/shared/constants.dart';
-import '../../main.dart';
+import 'package:writer/repositories/template_repository.dart';
+import 'package:writer/shared/Constants.dart';
 import '../../models/scene_template_row.dart';
+import '../../state/providers.dart';
 
 class SceneTemplatesListScreen extends ConsumerStatefulWidget {
   const SceneTemplatesListScreen({super.key, required this.novelId});
@@ -40,8 +40,13 @@ class _SceneTemplatesListScreenState
       _error = null;
     });
     try {
-      final repo = ref.read(localStorageRepositoryProvider);
-      _items = await repo.listSceneTemplates();
+      final repo = ref.read(templateRepositoryProvider);
+      if (ref.read(isSignedInProvider)) {
+        _items = await repo.listSceneTemplates();
+      } else {
+        _items = []; // Local items if supported
+      }
+
       _localSearch();
     } catch (e) {
       _error = e.toString();
@@ -68,12 +73,10 @@ class _SceneTemplatesListScreenState
     final q = _searchCtrl.text.trim();
     if (q.isEmpty) return;
 
-    final enabled = ref.read(supabaseEnabledProvider);
-    if (!enabled) {
+    final isSignedIn = ref.read(isSignedInProvider);
+    if (!isSignedIn) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Smart search requires Supabase connection'),
-        ),
+        const SnackBar(content: Text('Smart search requires sign in')),
       );
       return;
     }
@@ -83,7 +86,7 @@ class _SceneTemplatesListScreenState
     });
 
     try {
-      final repo = ref.read(localStorageRepositoryProvider);
+      final repo = ref.read(templateRepositoryProvider);
       final res = await repo.searchSceneTemplates(q, limit: 5);
 
       if (!mounted) return;
@@ -261,7 +264,7 @@ class _SceneTemplatesListScreenState
                                   if (ok == true) {
                                     try {
                                       final repo = ref.read(
-                                        localStorageRepositoryProvider,
+                                        templateRepositoryProvider,
                                       );
                                       await repo.deleteSceneTemplate(it.id);
                                       await _load();

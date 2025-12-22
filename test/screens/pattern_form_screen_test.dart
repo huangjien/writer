@@ -3,18 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/pattern.dart';
 import 'package:writer/screens/pattern_form_screen.dart';
 import 'package:writer/state/pattern_providers.dart';
+import 'package:writer/state/providers.dart';
 import 'package:writer/services/patterns_service.dart';
-
-class MockSupabaseClient extends Mock implements SupabaseClient {}
-
-class MockGoTrueClient extends Mock implements GoTrueClient {}
-
-class MockUser extends Mock implements User {}
 
 class FakePatternsService extends PatternsService {
   FakePatternsService() : super(baseUrl: 'http://example.com');
@@ -127,6 +122,26 @@ class FakePatternsService extends PatternsService {
   }
 }
 
+Finder _fieldByKey(String key) => find.byKey(ValueKey(key));
+
+Future<void> _setFieldText(WidgetTester tester, String key, String text) async {
+  var finder = _fieldByKey(key);
+  if (finder.evaluate().isEmpty) {
+    final fields = find.byType(TextFormField);
+    if (key == 'patternForm_title') {
+      finder = fields.at(0);
+    } else if (key == 'patternForm_description') {
+      finder = fields.at(1);
+    } else if (key == 'patternForm_content' ||
+        key == 'patternForm_usageRules') {
+      finder = fields.at(2);
+    }
+  }
+  final field = tester.widget<TextFormField>(finder);
+  field.controller!.text = text;
+  await tester.pump();
+}
+
 void main() {
   setUpAll(() {
     registerFallbackValue(<String, dynamic>{});
@@ -136,7 +151,10 @@ void main() {
     final svc = FakePatternsService();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [patternsServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          patternsServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -154,7 +172,10 @@ void main() {
     final svc = FakePatternsService();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [patternsServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          patternsServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -163,23 +184,14 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Title'),
-      'Title',
-    );
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Description'),
-      'Desc',
-    );
+    await _setFieldText(tester, 'patternForm_title', 'Title');
+    await _setFieldText(tester, 'patternForm_description', 'Desc');
 
     // Switch to Edit tab for Content
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
 
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Content'),
-      'Content body',
-    );
+    await _setFieldText(tester, 'patternForm_content', 'Content body');
 
     // Switch to Usage Rules tab
     await tester.tap(
@@ -190,11 +202,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Usage Rules (JSON)'), // Field hint
-      '{"x":true}',
-    );
-    await tester.pump();
+    await _setFieldText(tester, 'patternForm_usageRules', '{"x":true}');
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(svc.createCalled, isTrue);
@@ -206,7 +214,10 @@ void main() {
     final svc = FakePatternsService();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [patternsServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          patternsServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -215,19 +226,13 @@ void main() {
       ),
     );
     await tester.pump();
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Title'),
-      'Title',
-    );
+    await _setFieldText(tester, 'patternForm_title', 'Title');
 
     // Switch to Edit tab for Content
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
 
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Content'),
-      'Body',
-    );
+    await _setFieldText(tester, 'patternForm_content', 'Body');
 
     // Switch to Usage Rules tab
     await tester.tap(
@@ -238,10 +243,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Usage Rules (JSON)'),
-      '{bad json]',
-    );
+    await _setFieldText(tester, 'patternForm_usageRules', '{bad json]');
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(find.text('Invalid JSON'), findsOneWidget);
@@ -259,7 +261,10 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [patternsServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          patternsServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -268,13 +273,13 @@ void main() {
       ),
     );
     await tester.pump();
-    await tester.enterText(find.widgetWithText(TextFormField, 'Title'), 'New');
+    await _setFieldText(tester, 'patternForm_title', 'New');
 
     // Switch to Edit tab for Content
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.widgetWithText(TextFormField, 'Content'), 'B');
+    await _setFieldText(tester, 'patternForm_content', 'B');
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(svc.updateCalled, isTrue);
@@ -295,7 +300,10 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [patternsServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          patternsServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -338,7 +346,10 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [patternsServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          patternsServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -378,7 +389,10 @@ void main() {
     final initial = const Pattern(id: 'p1', title: 'Old', content: 'A');
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [patternsServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          patternsServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -389,11 +403,7 @@ void main() {
     await tester.pump();
 
     // Tap save
-    await tester.enterText(
-      find.widgetWithText(TextFormField, 'Title'),
-      'New Title',
-    );
-    await tester.pump();
+    await _setFieldText(tester, 'patternForm_title', 'New Title');
     await tester.tap(find.text('Save'));
     await tester.pump(); // Start animation
 
@@ -436,7 +446,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [patternsServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          patternsServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -447,10 +460,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.widgetWithText(TextFormField, 'Title'), 'Old');
+    await _setFieldText(tester, 'patternForm_title', 'Old');
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.widgetWithText(TextFormField, 'Content'), 'C1');
+    await _setFieldText(tester, 'patternForm_content', 'C1');
 
     await tester.tap(find.text('AI'));
     await tester.pumpAndSettle();
@@ -465,7 +478,10 @@ void main() {
     svc.improveError = Exception('Boom');
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [patternsServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          patternsServiceRefProvider.overrideWith((_) => svc),
+          isAdminProvider.overrideWithValue(false),
+        ],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -476,10 +492,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.widgetWithText(TextFormField, 'Title'), 'Old');
+    await _setFieldText(tester, 'patternForm_title', 'Old');
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.widgetWithText(TextFormField, 'Content'), 'C1');
+    await _setFieldText(tester, 'patternForm_content', 'C1');
 
     await tester.tap(find.text('AI'));
     await tester.pumpAndSettle();
@@ -491,16 +507,6 @@ void main() {
     tester,
   ) async {
     final svc = FakePatternsService();
-    final client = MockSupabaseClient();
-    final auth = MockGoTrueClient();
-    final user = MockUser();
-    when(() => client.auth).thenReturn(auth);
-    when(() => auth.currentUser).thenReturn(user);
-    when(() => user.id).thenReturn('u1');
-    when(() => user.appMetadata).thenReturn({
-      'roles': ['admin'],
-    });
-    when(() => user.userMetadata).thenReturn(null);
 
     final initial = const Pattern(
       id: 'p1',
@@ -510,26 +516,32 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [patternsServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          patternsServiceRefProvider.overrideWith((_) => svc),
+          isSignedInProvider.overrideWithValue(true),
+          isAdminProvider.overrideWithValue(false),
+          currentUserProvider.overrideWith((ref) async {
+            return const BackendUser(id: 'u1');
+          }),
+        ],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: PatternFormScreen(
-            initial: initial,
-            supabaseEnabledOverride: true,
-            supabaseClientOverride: client,
-          ),
+          home: PatternFormScreen(initial: initial),
         ),
       ),
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Delete'));
+    final l10n = AppLocalizations.of(
+      tester.element(find.byType(PatternFormScreen)),
+    )!;
+    await tester.tap(find.text(l10n.delete));
     await tester.pumpAndSettle();
     expect(find.byType(AlertDialog), findsOneWidget);
 
-    await tester.tap(find.text('Delete').last);
+    await tester.tap(find.text(l10n.delete).last);
     await tester.pumpAndSettle();
 
     expect(svc.deleteCalled, isTrue);
@@ -540,16 +552,6 @@ void main() {
     tester,
   ) async {
     final svc = FakePatternsService();
-    final client = MockSupabaseClient();
-    final auth = MockGoTrueClient();
-    final user = MockUser();
-    when(() => client.auth).thenReturn(auth);
-    when(() => auth.currentUser).thenReturn(user);
-    when(() => user.id).thenReturn('u1');
-    when(() => user.appMetadata).thenReturn({
-      'roles': ['admin'],
-    });
-    when(() => user.userMetadata).thenReturn(null);
 
     final initial = const Pattern(
       id: 'p1',
@@ -559,27 +561,33 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [patternsServiceRefProvider.overrideWith((_) => svc)],
+        overrides: [
+          patternsServiceRefProvider.overrideWith((_) => svc),
+          isSignedInProvider.overrideWithValue(true),
+          isAdminProvider.overrideWithValue(false),
+          currentUserProvider.overrideWith((ref) async {
+            return const BackendUser(id: 'u1');
+          }),
+        ],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: PatternFormScreen(
-            initial: initial,
-            supabaseEnabledOverride: true,
-            supabaseClientOverride: client,
-          ),
+          home: PatternFormScreen(initial: initial),
         ),
       ),
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Delete'));
+    final l10n = AppLocalizations.of(
+      tester.element(find.byType(PatternFormScreen)),
+    )!;
+    await tester.tap(find.text(l10n.delete));
     await tester.pumpAndSettle();
     await tester.tap(
       find.descendant(
         of: find.byType(AlertDialog),
-        matching: find.text('Cancel'),
+        matching: find.text(l10n.cancel),
       ),
     );
     await tester.pumpAndSettle();

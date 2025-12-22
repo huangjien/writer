@@ -22,7 +22,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get aboutDescription =>
-      '阅读和管理小说，支持 Supabase 云存储、离线模式和文本转语音播放。使用“文库”浏览、搜索并打开章节；登录以同步进度；在设置中调整主题、排版和动效。';
+      '阅读和管理小说，支持云端存储、离线模式和文本转语音播放。使用“文库”浏览、搜索并打开章节；登录以同步进度；在设置中调整主题、排版和动效。';
 
   @override
   String get aboutIntro =>
@@ -30,7 +30,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get aboutSecurity =>
-      '借助 Supabase 支持的存储和严格的行级安全性，您的数据将得到保护。经过验证的用户可以同步进度、元数据和模板，同时保持隐私。';
+      '借助云端存储和严格的访问控制，您的数据将得到保护。经过验证的用户可以同步进度、元数据和模板，同时保持隐私。';
 
   @override
   String get aboutCoach =>
@@ -56,7 +56,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get aboutUsageList =>
-      '• 文库：搜索并打开小说\n• 阅读器：浏览章节、切换 TTS\n• 模板：管理角色与场景模板\n• 设置：主题、排版和偏好\n• 登录：通过 Supabase 启用云同步';
+      '• 文库：搜索并打开小说\n• 阅读器：浏览章节、切换 TTS\n• 模板：管理角色与场景模板\n• 设置：主题、排版和偏好\n• 登录：启用云同步';
 
   @override
   String get version => '版本';
@@ -71,10 +71,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chinese => '中文';
 
   @override
-  String get supabaseIntegrationInitialized => 'Supabase 集成已初始化';
+  String get supabaseIntegrationInitialized => '云同步已初始化';
 
   @override
-  String get configureEnvironment => '请配置您的环境变量以使用 Supabase';
+  String get configureEnvironment => '请配置您的环境变量以启用云同步';
 
   @override
   String signedInAs(String email) {
@@ -109,7 +109,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get recentlyRead => '最近阅读';
 
   @override
-  String get noSupabase => '此版本未启用 Supabase。';
+  String get noSupabase => '此版本未启用云同步。';
 
   @override
   String get errorLoadingProgress => '加载进度时出错';
@@ -220,22 +220,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appSettings => '应用设置';
 
   @override
-  String get supabaseSettings => 'Supabase 设置';
+  String get supabaseSettings => '云同步设置';
 
   @override
-  String get supabaseNotEnabled => 'Supabase 未启用';
+  String get supabaseNotEnabled => '云同步未启用';
 
   @override
-  String get supabaseNotEnabledDescription => '此版本未配置 Supabase。';
+  String get supabaseNotEnabledDescription => '此版本未配置云同步。';
 
   @override
-  String get authDisabledInBuild => '未配置 Supabase。本版本已禁用认证。';
+  String get authDisabledInBuild => '未配置云同步。本版本已禁用认证。';
 
   @override
-  String get fetchFromSupabase => '从 Supabase 获取';
+  String get fetchFromSupabase => '从云端获取';
 
   @override
-  String get fetchFromSupabaseDescription => '从 Supabase 获取最新的小说和进度。';
+  String get fetchFromSupabaseDescription => '从云端获取最新的小说和进度。';
 
   @override
   String get confirmFetch => '确认获取';
@@ -253,7 +253,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadChapters => '下载章节';
 
   @override
-  String get modeSupabase => '模式：Supabase';
+  String get modeSupabase => '模式：云同步';
 
   @override
   String get modeMockData => '模式：模拟数据';
@@ -348,7 +348,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get speak => '朗读';
 
   @override
-  String get supabaseProgressNotSaved => '未配置 Supabase；进度未保存';
+  String get supabaseProgressNotSaved => '未配置云同步；进度未保存';
 
   @override
   String get progressSaved => '进度已保存';
@@ -519,7 +519,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String confirmDeleteDescription(String title) {
-    return '将从 Supabase 删除“$title”。是否确认？';
+    return '将从云端删除“$title”。是否确认？';
   }
 
   @override

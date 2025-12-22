@@ -1,171 +1,67 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:writer/state/ai_service_settings.dart';
-import 'package:writer/state/supabase_config.dart';
+import 'package:writer/repositories/remote_repository.dart';
 
 class AiChatService {
-  final String baseUrl;
-  final http.Client? _client;
+  final RemoteRepository remote;
 
-  AiChatService(this.baseUrl, {http.Client? client}) : _client = client;
+  AiChatService(this.remote);
 
   Future<String> sendMessage(String message) async {
     try {
-      final url = baseUrl.endsWith('/')
-          ? '${baseUrl}agents/qa'
-          : '$baseUrl/agents/qa';
-      String? token;
-      if (supabaseEnabled) {
-        final client = Supabase.instance.client;
-        token = client.auth.currentSession?.accessToken;
-        if (token == null && client.auth.currentUser != null) {
-          try {
-            await client.auth.refreshSession();
-            token = client.auth.currentSession?.accessToken;
-          } catch (_) {}
-        }
-      }
-      final headers = {
-        'Content-Type': 'application/json',
-        if (token != null) 'Authorization': 'Bearer $token',
-      };
-      final response = await (_client ?? http.Client()).post(
-        Uri.parse(url),
-        headers: headers,
-        body: jsonEncode({'question': message}),
-      );
+      final res = await remote.post('agents/qa', {'question': message});
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data is Map && data.containsKey('answer')) {
-          final v = data['answer'];
-          return v is String ? v : 'No response from AI service';
-        }
-        if (data is Map && data.containsKey('reply')) {
-          final v = data['reply'];
-          return v is String ? v : 'No response from AI service';
-        }
-        if (data is Map && data.containsKey('response')) {
-          final v = data['response'];
-          return v is String ? v : 'No response from AI service';
-        }
-        return 'No response from AI service';
+      if (res is Map) {
+        final answer = res['answer'];
+        if (answer is String) return answer;
+        final reply = res['reply'];
+        if (reply is String) return reply;
+        final response = res['response'];
+        if (response is String) return response;
       }
-      if (response.statusCode == 401) {
+      return 'No response from AI service';
+    } catch (e) {
+      if (e.toString().contains('401')) {
         return 'Sign in required to use AI service';
       }
-      if (response.statusCode == 403) {
+      if (e.toString().contains('403')) {
         return 'Feature not available for your plan';
       }
-      throw Exception('Failed to get response: ${response.statusCode}');
-    } catch (e) {
-      throw Exception('Failed to connect to AI service: $e');
+      return 'Failed to connect to AI service: $e';
     }
   }
 
   Future<bool> checkHealth() async {
     try {
-      final healthUrl = baseUrl.endsWith('/')
-          ? '${baseUrl}health'
-          : '$baseUrl/health';
-      String? token;
-      if (supabaseEnabled) {
-        final client = Supabase.instance.client;
-        token = client.auth.currentSession?.accessToken;
-        if (token == null && client.auth.currentUser != null) {
-          try {
-            await client.auth.refreshSession();
-            token = client.auth.currentSession?.accessToken;
-          } catch (_) {}
-        }
+      final res = await remote.get('health');
+      if (res is Map && res['ai'] is Map) {
+        final ai = res['ai'] as Map;
+        final ok = ai['access_ok'];
+        if (ok is bool) return ok;
       }
-      final headers = {if (token != null) 'Authorization': 'Bearer $token'};
-      final response = await (_client ?? http.Client()).get(
-        Uri.parse(healthUrl),
-        headers: headers,
-      );
-      if (response.statusCode != 200) return false;
-      try {
-        final data = jsonDecode(response.body);
-        if (data is Map && data['ai'] is Map) {
-          final ai = data['ai'] as Map;
-          final ok = ai['access_ok'];
-          if (ok is bool) return ok;
-        }
-      } catch (_) {}
       return true;
     } catch (e) {
+      if (e is FormatException) return true;
       return false;
     }
   }
 
   Future<Map<String, dynamic>?> verifyUser() async {
-    final url = baseUrl.endsWith('/')
-        ? '${baseUrl}auth/verify'
-        : '$baseUrl/auth/verify';
-    String? token;
-    if (supabaseEnabled) {
-      final client = Supabase.instance.client;
-      token = client.auth.currentSession?.accessToken;
-      if (token == null && client.auth.currentUser != null) {
-        try {
-          await client.auth.refreshSession();
-          token = client.auth.currentSession?.accessToken;
-        } catch (_) {}
-      }
-    }
-    final headers = {
-      'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
-    final response = await (_client ?? http.Client()).get(
-      Uri.parse(url),
-      headers: headers,
-    );
-    if (response.statusCode != 200) return null;
     try {
-      final data = jsonDecode(response.body);
-      return data is Map<String, dynamic> ? data : null;
+      final res = await remote.get('auth/verify');
+      return res is Map<String, dynamic> ? res : null;
     } catch (_) {
       return null;
     }
   }
 
   Future<List<double>?> embed(String input, {String? model}) async {
-    final url = baseUrl.endsWith('/')
-        ? '${baseUrl}vectors/embed'
-        : '$baseUrl/vectors/embed';
-    String? token;
-    if (supabaseEnabled) {
-      final client = Supabase.instance.client;
-      token = client.auth.currentSession?.accessToken;
-      if (token == null && client.auth.currentUser != null) {
-        try {
-          await client.auth.refreshSession();
-          token = client.auth.currentSession?.accessToken;
-        } catch (_) {}
-      }
-    }
-    final headers = {
-      'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
-    final body = {'input': input, if (model != null) 'model': model};
-    final res = await (_client ?? http.Client()).post(
-      Uri.parse(url),
-      headers: headers,
-      body: jsonEncode(body),
-    );
-    if (res.statusCode >= 400) return null;
     try {
-      final data = jsonDecode(res.body);
-      if (data is Map && data['vector'] is List) {
-        final v = (data['vector'] as List)
+      final body = {'input': input, if (model != null) 'model': model};
+      final res = await remote.post('vectors/embed', body);
+      if (res is Map && res['vector'] is List) {
+        return (res['vector'] as List)
             .map((e) => (e as num).toDouble())
             .toList();
-        return v;
       }
       return null;
     } catch (_) {
@@ -179,40 +75,16 @@ class AiChatService {
     required String content,
     String language = 'en',
   }) async {
-    final url = baseUrl.endsWith('/')
-        ? '${baseUrl}beta/evaluate'
-        : '$baseUrl/beta/evaluate';
-    String? token;
-    if (supabaseEnabled) {
-      final client = Supabase.instance.client;
-      token = client.auth.currentSession?.accessToken;
-      if (token == null && client.auth.currentUser != null) {
-        try {
-          await client.auth.refreshSession();
-          token = client.auth.currentSession?.accessToken;
-        } catch (_) {}
-      }
-    }
-    final headers = {
-      'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
-    final body = {
-      'novel_id': novelId,
-      'chapter_id': chapterId,
-      'content': content,
-      'language': language,
-    };
-    final res = await (_client ?? http.Client()).post(
-      Uri.parse(url),
-      headers: headers,
-      body: jsonEncode(body),
-    );
-    if (res.statusCode >= 400) return null;
     try {
-      final data = jsonDecode(res.body);
-      if (data is Map && data['evaluation'] is Map) {
-        return (data['evaluation'] as Map).cast<String, dynamic>();
+      final body = {
+        'novel_id': novelId,
+        'chapter_id': chapterId,
+        'content': content,
+        'language': language,
+      };
+      final res = await remote.post('beta/evaluate', body);
+      if (res is Map && res['evaluation'] is Map) {
+        return (res['evaluation'] as Map).cast<String, dynamic>();
       }
       return null;
     } catch (_) {
@@ -222,11 +94,5 @@ class AiChatService {
 }
 
 final aiChatServiceProvider = Provider<AiChatService>((ref) {
-  String url;
-  try {
-    url = ref.watch(aiServiceProvider);
-  } catch (_) {
-    url = 'http://localhost:5600/';
-  }
-  return AiChatService(url);
+  return AiChatService(ref.watch(remoteRepositoryProvider));
 });

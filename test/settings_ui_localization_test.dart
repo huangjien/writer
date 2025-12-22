@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:writer/state/supabase_config.dart';
 
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/features/settings/settings_screen.dart';
@@ -15,11 +13,6 @@ import 'package:writer/state/motion_settings.dart';
 void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
-    if (supabaseEnabled) {
-      try {
-        await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
-      } catch (_) {}
-    }
   });
 
   testWidgets('SettingsScreen shows localized Reduce Motion in en locale', (

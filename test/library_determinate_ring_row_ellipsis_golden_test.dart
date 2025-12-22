@@ -9,11 +9,11 @@ import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/user_progress.dart';
-import 'package:writer/state/mock_providers.dart';
-import 'package:writer/state/providers.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/progress_providers.dart';
 import 'helpers/test_utils.dart';
 
 void main() {
@@ -81,21 +81,20 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => false),
           appSettingsProvider.overrideWith((_) => appNotifier),
           themeControllerProvider.overrideWith((_) => themeController),
-          mockNovelsProvider.overrideWith((ref) async => novels),
-          mockChaptersProvider.overrideWith((ref, novelId) async => chapters),
-          mockLastProgressProvider.overrideWith(
-            (ref, novelId) async => UserProgress(
+          libraryNovelsProvider.overrideWith((ref) async => novels),
+          chaptersProvider.overrideWith((ref, novelId) async => chapters),
+          lastProgressProvider.overrideWith((ref, novelId) async {
+            return UserProgress(
               userId: 'u-1',
               novelId: novelId,
               chapterId: 'c-2',
               scrollOffset: 0.0,
               ttsCharIndex: 500,
               updatedAt: DateTime(2024, 1, 1),
-            ),
-          ),
+            );
+          }),
         ],
         child: MaterialApp(
           locale: const Locale('en'),
@@ -201,21 +200,20 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((_) => false),
           appSettingsProvider.overrideWith((_) => appNotifier),
           themeControllerProvider.overrideWith((_) => themeController),
-          mockNovelsProvider.overrideWith((ref) async => novels),
-          mockChaptersProvider.overrideWith((ref, novelId) async => chapters),
-          mockLastProgressProvider.overrideWith(
-            (ref, novelId) async => UserProgress(
+          libraryNovelsProvider.overrideWith((ref) async => novels),
+          chaptersProvider.overrideWith((ref, novelId) async => chapters),
+          lastProgressProvider.overrideWith((ref, novelId) async {
+            return UserProgress(
               userId: 'u-1',
               novelId: novelId,
               chapterId: 'c-2',
               scrollOffset: 0.0,
               ttsCharIndex: 500,
               updatedAt: DateTime(2024, 1, 1),
-            ),
-          ),
+            );
+          }),
         ],
         child: MaterialApp(
           locale: const Locale('zh'),

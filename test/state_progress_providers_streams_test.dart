@@ -9,13 +9,13 @@ void main() {
     test('latestUserProgressProvider creates correct stream configuration', () {
       // Test that the provider can be created without errors
       final provider = pp.latestUserProgressProvider;
-      expect(provider, isA<StreamProvider<UserProgress?>>());
+      expect(provider, isA<FutureProvider<UserProgress?>>());
     });
 
     test('recentUserProgressProvider creates correct stream configuration', () {
       // Test that the provider can be created without errors
       final provider = pp.recentUserProgressProvider;
-      expect(provider, isA<StreamProvider<List<UserProgress>>>());
+      expect(provider, isA<FutureProvider<List<UserProgress>>>());
     });
 
     test('UserProgress model can be created from JSON', () {

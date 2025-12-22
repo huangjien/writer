@@ -5,6 +5,8 @@ import '../../main.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/template.dart';
 import '../../repositories/remote_repository.dart';
+import '../../repositories/template_repository.dart';
+import '../../state/providers.dart';
 
 class CharacterTemplatesScreen extends ConsumerStatefulWidget {
   const CharacterTemplatesScreen({
@@ -46,10 +48,20 @@ class _CharacterTemplatesScreenState
   Future<void> _load() async {
     final repo = ref.read(localStorageRepositoryProvider);
     if (widget.templateId != null) {
-      final row = await repo.getCharacterTemplateById(widget.templateId!);
-      if (row != null) {
-        _nameController.text = row.title ?? '';
-        _descController.text = row.characterSummaries ?? '';
+      if (ref.read(isSignedInProvider)) {
+        final remote = await ref
+            .read(templateRepositoryProvider)
+            .getCharacterTemplateById(widget.templateId!);
+        if (remote != null) {
+          _nameController.text = remote.title ?? '';
+          _descController.text = remote.characterSummaries ?? '';
+        }
+      } else {
+        final row = await repo.getCharacterTemplateById(widget.templateId!);
+        if (row != null) {
+          _nameController.text = row.title ?? '';
+          _descController.text = row.characterSummaries ?? '';
+        }
       }
     }
     _baseName = _nameController.text;
@@ -226,9 +238,13 @@ class _CharacterTemplatesScreenState
                                 localStorageRepositoryProvider,
                               );
 
-                              if (widget.templateId != null) {
-                                await repo.updateCharacterTemplate(
-                                  widget.templateId!,
+                              final templateRepo = ref.read(
+                                templateRepositoryProvider,
+                              );
+                              if (widget.templateId != null &&
+                                  ref.read(isSignedInProvider)) {
+                                await templateRepo.upsertCharacterTemplate(
+                                  id: widget.templateId,
                                   title: _nameController.text.trim(),
                                   summaries: _descController.text.trim().isEmpty
                                       ? null
@@ -236,6 +252,8 @@ class _CharacterTemplatesScreenState
                                   languageCode: 'en',
                                 );
                               } else {
+                                // For local save or creation, we might not have ID logic properly set up solely in local repo
+                                // But if isSignedIn is false, we can only save to local.
                                 await repo.saveCharacterTemplateForm(
                                   widget.novelId,
                                   TemplateItem(
@@ -246,6 +264,17 @@ class _CharacterTemplatesScreenState
                                         ? null
                                         : _descController.text.trim(),
                                   ),
+                                );
+                              }
+                              // Creation logic for remote? If widget.templateId is null?
+                              if (widget.templateId == null &&
+                                  ref.read(isSignedInProvider)) {
+                                await templateRepo.upsertCharacterTemplate(
+                                  title: _nameController.text.trim(),
+                                  summaries: _descController.text.trim().isEmpty
+                                      ? null
+                                      : _descController.text.trim(),
+                                  languageCode: 'en',
                                 );
                               }
                               if (!context.mounted) return;

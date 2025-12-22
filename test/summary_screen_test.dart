@@ -9,15 +9,11 @@ import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/main.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
-import 'package:writer/state/supabase_config.dart';
-import 'package:writer/repositories/novel_repository.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-// removed unnecessary supabase import; supabase_flutter exports AuthClientOptions
 import 'package:writer/features/summary/snowflake_service.dart';
 import 'package:writer/features/summary/snowflake_coach_widget.dart';
+import 'package:writer/repositories/remote_repository.dart';
 import 'package:http/testing.dart';
 import 'package:http/http.dart' as http;
-import 'package:writer/state/providers.dart';
 
 class CapturingLocalRepo extends LocalStorageRepository {
   final Map<String, String> savedSummaries = {};
@@ -25,19 +21,6 @@ class CapturingLocalRepo extends LocalStorageRepository {
   Future<void> saveSummaryText(String novelId, String text) async {
     savedSummaries[novelId] = text;
   }
-}
-
-class StubNovelRepository extends NovelRepository {
-  StubNovelRepository(super.client);
-  @override
-  Future<void> updateNovelMetadata(
-    String novelId, {
-    String? title,
-    String? description,
-    String? coverUrl,
-    String? languageCode,
-    bool? isPublic,
-  }) async {}
 }
 
 void main() {
@@ -83,15 +66,6 @@ void main() {
           mockChaptersProvider.overrideWith((ref, id) async => chapters),
           novelProvider.overrideWith((ref, id) async => novel),
           chaptersProvider.overrideWith((ref, id) async => chapters),
-          novelRepositoryProvider.overrideWith(
-            (ref) => StubNovelRepository(
-              SupabaseClient(
-                'http://localhost',
-                'anon',
-                authOptions: const AuthClientOptions(autoRefreshToken: false),
-              ),
-            ),
-          ),
         ],
         child: const MaterialApp(home: SummaryScreen(novelId: 'n-1')),
       ),
@@ -122,9 +96,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(repo.savedSummaries['n-1'], 'New summary text');
-    if (!supabaseEnabled) {
-      expect(find.text('Saved'), findsOneWidget);
-    }
+    expect(find.text('Saved'), findsOneWidget);
   });
 
   testWidgets('SummaryScreen save disabled until changes', (tester) async {
@@ -192,9 +164,10 @@ void main() {
           mockNovelsProvider.overrideWith((ref) async => [novel]),
           novelProvider.overrideWith((ref, id) async => novel),
           snowflakeServiceProvider.overrideWithValue(
-            SnowflakeService('http://example.com/', client: client),
+            SnowflakeService(
+              RemoteRepository('http://example.com/', client: client),
+            ),
           ),
-          supabaseEnabledProvider.overrideWith((_) => false),
         ],
         child: const MaterialApp(home: SummaryScreen(novelId: 'n-1')),
       ),
@@ -254,9 +227,10 @@ void main() {
           mockNovelsProvider.overrideWith((ref) async => [novel]),
           novelProvider.overrideWith((ref, id) async => novel),
           snowflakeServiceProvider.overrideWithValue(
-            SnowflakeService('http://example.com/', client: client),
+            SnowflakeService(
+              RemoteRepository('http://example.com/', client: client),
+            ),
           ),
-          supabaseEnabledProvider.overrideWith((_) => false),
         ],
         child: const MaterialApp(home: SummaryScreen(novelId: 'n-1')),
       ),

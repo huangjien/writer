@@ -1,10 +1,10 @@
 # Writer
 
-A Flutter application for reading novels with Supabase-backed storage, localization, and Text-To-Speech (TTS) support.
+A Flutter application for reading novels with localization and Text-To-Speech (TTS) support.
 
 ## Overview
-- Reads chapters stored in Supabase and supports local Markdown imports.
-- Saves reading progress and supports authenticated progress sync.
+- Reads novels/chapters from the backend and supports offline caching.
+- Saves reading progress.
 - Provides TTS playback with locale mapping and configurable settings.
 - Ships with Makefile targets to simplify development and release builds across platforms.
 
@@ -25,36 +25,11 @@ A Flutter application for reading novels with Supabase-backed storage, localizat
 ## Setup
 - Install dependencies: `make deps`
 - Static analysis and formatting: `make lint`
-- Environment variables for runtime (pass via dart-define at build/run time):
-  - `SUPABASE_URL` – your Supabase project URL.
-  - `SUPABASE_ANON_KEY` – your Supabase anonymous client key.
-- Never commit secrets. Use `.env` locally and pass via Makefile variables if needed.
-
-### Supabase configuration (embedded at build time)
-- End users do not enter Supabase settings; the app reads compile-time values from `lib/state/supabase_config.dart`:
-  - `supabaseUrl = String.fromEnvironment('SUPABASE_URL')`
-  - `supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY')`
-  - `supabaseEnabled` is `true` only when both are provided.
-- If these are omitted at build time, Supabase-dependent features are disabled but the app still runs.
-- The `anon` key is public by design and can be embedded in client apps; enforce data protection via Supabase Row Level Security (RLS) policies. Never embed the `service_role` key in the app.
-
-## Supabase Import (Markdown → novels/chapters)
-- Script: `scripts/import_novel_from_md.js`
-- Expected directory layout:
-  - Chapter files named `<number>_<title>.md` inside a `chapters/` folder.
-  - Example: `001_Beginning.md`, `002_Chapter Two.md`, etc.
-- Usage:
-  - `cd writer`
-  - `npm run import-novel -- --novel-title "Your Novel" --author "Author Name" --dir "/absolute/path/to/novel" --lang "zh-CN"`
-  - Requires `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in the environment (service role key is required to bypass RLS for inserts).
-- Notes:
-  - Re-running the importer upserts chapters (no duplicates).
-  - Service role key must be kept server-side only; never bundle into client apps.
 
 ## Development
-- Web (local dev server): `make dev-web WEB_PORT=5500 SUPABASE_URL=... SUPABASE_ANON_KEY=...`
-- Chrome device: `make dev-chrome SUPABASE_URL=... SUPABASE_ANON_KEY=...`
-- macOS device: `make macos SUPABASE_URL=... SUPABASE_ANON_KEY=...`
+- Web (local dev server): `make dev-web WEB_PORT=5500`
+- Chrome device: `make dev-chrome`
+- macOS device: `make macos`
 - Android build (copies APK to `/tmp/`): `make build-android`
 
 ### AI service URL
@@ -67,22 +42,21 @@ A Flutter application for reading novels with Supabase-backed storage, localizat
 - Backend endpoint: `POST /snowflake/refine`
 - Returns coaching JSON with `status`, `critique`, `question`, and `suggestions`. When `status = "refined"`, it includes `refined_summary` and the app applies it to the Summary field automatically.
 - Chat history is included in responses and rendered in the Coach panel; history is stored per novel.
-- Supabase persistence table: `public.snowflake_refinements (novel_id uuid primary key, state jsonb)`, protected by RLS using `public.is_member(novel_id)`.
 
 ## Tests
 - Run tests with coverage summary: `make test`
 
-### Attach Supabase token to backend requests
-- Obtain the access token from the current Supabase session:
-  - `final token = Supabase.instance.client.auth.currentSession?.accessToken;`
+### Attach token to backend requests
+- Obtain the access token from the current session:
+  - `final token = ref.watch(sessionProvider);`
 - Send it in the `Authorization` header (`Bearer` scheme) when calling the backend:
 
 ```dart
-import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:http/http.dart' as http;
 
 Future<http.Response> callBackend(Uri url) async {
-  final token = Supabase.instance.client.auth.currentSession?.accessToken;
+  final token = ref.watch(sessionProvider);
   final headers = {
     if (token != null) 'Authorization': 'Bearer $token',
     'Content-Type': 'application/json',
@@ -92,7 +66,7 @@ Future<http.Response> callBackend(Uri url) async {
 ```
 
 - The app attaches this token automatically for AI calls and health checks; if a session exists but no token is present, it refreshes the session before retrying.
-- The backend verifies this token via Supabase (`/auth/verify`). Requests without a token or with an invalid token receive `401 Unauthorized`. Premium-only routes return `403 Forbidden` for non-premium users.
+- The backend verifies this token via the auth service (`/auth/verify`). Requests without a token or with an invalid token receive `401 Unauthorized`. Premium-only routes return `403 Forbidden` for non-premium users.
 
 ### Gated endpoints
 - `POST /agents/qa` requires authentication.
@@ -104,25 +78,16 @@ Future<http.Response> callBackend(Uri url) async {
   - Unhealthy → next check after 2 minutes
   - Implementation: `lib/features/ai_chat/state/ai_chat_providers.dart`.
 
-### Troubleshooting 401
-- Ensure backend is configured with the same project as the writer build:
-  - `SUPABASE_URL` must match the token `iss` project domain.
-  - `SUPABASE_ANON_KEY` must be set server-side; backend sends `Authorization` and `apikey` to Supabase.
-- Verify with curl:
-  - `curl -H "Authorization: Bearer $TOKEN" -H "apikey: $SUPABASE_ANON_KEY" http://localhost:5600/auth/verify`
-
 ## Build Targets
-- Web (release): `make build-web SUPABASE_URL=... SUPABASE_ANON_KEY=...`
+- Web (release): `make build-web`
 - Serve built web: `make serve-web-build WEB_PORT=8080`
 - Android (APK release): `make build-android`
   - Automatically runs a plugin patch to ensure `isar_flutter_libs` compiles with SDK 36.
-- Android (AAB for Play Console):
-  - `flutter build appbundle --release --dart-define=SUPABASE_URL=https://your-project.supabase.co --dart-define=SUPABASE_ANON_KEY=your_anon_key`
-- Android (APK direct install):
-  - `flutter build apk --release --dart-define=SUPABASE_URL=https://your-project.supabase.co --dart-define=SUPABASE_ANON_KEY=your_anon_key`
+- Android (AAB for Play Console): `flutter build appbundle --release`
+- Android (APK direct install): `flutter build apk --release`
 - iOS (Xcode project, no codesign): `make build-ios`
 - iOS (IPA):
-  - Signed: `make build-ipa SUPABASE_URL=... SUPABASE_ANON_KEY=...`
+  - Signed: `make build-ipa`
   - No codesign: `make build-ipa-nocodesign`
 - Desktop:
   - macOS: `make build-macos`
@@ -150,9 +115,6 @@ Future<http.Response> callBackend(Uri url) async {
 - Android resource linking error (`android:attr/lStar not found`)
   - Ensure the isar plugin is patched (`make build-android` triggers it).
   - If necessary, run `node scripts/patch_isar.js`, then `make clean`, and rebuild.
-- Supabase RLS errors during import
-  - Confirm you are using `SUPABASE_SERVICE_ROLE_KEY` (not `anon`) for the importer.
-  - Decode the JWT to verify `role` is `service_role`.
 - iOS platform not installed
   - Install the iOS platform runtime in Xcode as noted above.
 
@@ -176,11 +138,9 @@ Future<http.Response> callBackend(Uri url) async {
   - Release publishing is skipped for `pull_request` events.
   - Android CI patches `isar_flutter_libs` to add `namespace` and set `compileSdkVersion 36`.
   - `flutter_tts` is pinned to a Windows-compatible version (`4.0.2`) in `pubspec.yaml` to ensure the plugin’s CMake integrates cleanly on CI.
-  - To embed Supabase values in CI builds, store `SUPABASE_URL` and `SUPABASE_ANON_KEY` as repository secrets and pass them via `--dart-define` in the build commands if needed.
 
 ## Security
-- Treat `SUPABASE_ANON_KEY` as a public client key; enforce access using RLS policies and authentication in Supabase.
-- Never store or ship `service_role` keys in the app or in public repos. Use them only server-side or in secure CI contexts for admin tasks (e.g., imports).
+- Never store or ship secrets in the app or in public repos. Use them only server-side or in secure CI contexts.
 
 ## Notes
 - TTS locale mapping is covered by tests (`test/tts_locale_mapping_test.dart`). The task “Map app language preference to TTS language code” is tracked in `tasks.md` and can be extended if new locales are added.

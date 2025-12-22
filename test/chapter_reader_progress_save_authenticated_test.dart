@@ -3,8 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:writer/features/reader/logic/progress_saver.dart' as saver;
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/progress_notifier.dart';
@@ -12,16 +10,8 @@ import 'package:writer/repositories/progress_port.dart';
 import 'package:writer/features/reader/reader_screen.dart';
 import 'package:writer/models/user_progress.dart';
 import 'package:writer/features/reader/state/reader_session_notifier.dart';
-
-class FakeUser extends User {
-  FakeUser({required super.id})
-    : super(
-        appMetadata: {},
-        userMetadata: {},
-        aud: 'aud',
-        createdAt: DateTime.now().toIso8601String(),
-      );
-}
+import 'package:writer/state/providers.dart';
+import 'package:writer/state/session_state.dart';
 
 class CapturingProgressPort implements ProgressPort {
   int saveCalls = 0;
@@ -54,53 +44,54 @@ void main() {
         .setMockMethodCallHandler(ttsChannel, null);
   });
 
-  testWidgets(
-    'Supabase enabled and authenticated user: Stop triggers progress save',
-    (tester) async {
-      saver.mockSupabaseEnabled = true;
-      final currentUser = FakeUser(id: 'auth-001');
-      saver.mockGetUser = () => currentUser;
+  testWidgets('Authenticated user: Stop triggers progress save', (
+    tester,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    final appNotifier = AppSettingsNotifier(prefs);
+    final fakeRepo = CapturingProgressPort();
+    final sessionNotifier = SessionNotifier(prefs);
+    await sessionNotifier.setSessionId('test-session');
 
-      final prefs = await SharedPreferences.getInstance();
-      final appNotifier = AppSettingsNotifier(prefs);
-      final fakeRepo = CapturingProgressPort();
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            appSettingsProvider.overrideWith((_) => appNotifier),
-            progressRepositoryProvider.overrideWith((_) => fakeRepo),
-          ],
-          child: MaterialApp(
-            locale: const Locale('en'),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const ChapterReaderScreen(
-              chapterId: 'c1',
-              title: 'Progress Auth',
-              content: 'Hello world. This is a chapter.',
-              novelId: 'n1',
-              autoStartTts: false,
-            ),
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appSettingsProvider.overrideWith((_) => appNotifier),
+          progressRepositoryProvider.overrideWith((_) => fakeRepo),
+          sessionProvider.overrideWith((_) => sessionNotifier),
+          currentUserProvider.overrideWith((ref) async {
+            final sid = ref.watch(sessionProvider);
+            if (sid == null || sid.isEmpty) return null;
+            return const BackendUser(id: 'auth-001');
+          }),
+        ],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const ChapterReaderScreen(
+            chapterId: 'c1',
+            title: 'Progress Auth',
+            content: 'Hello world. This is a chapter.',
+            novelId: 'n1',
+            autoStartTts: false,
           ),
         ),
-      );
+      ),
+    );
 
-      await tester.pumpAndSettle();
-      final element = tester.element(find.byTooltip('Speak'));
-      final container = ProviderScope.containerOf(element, listen: false);
-      final notifier = container.read(readerSessionProvider.notifier);
-      final current = container.read(readerSessionProvider);
-      notifier.state = current.copyWith(speaking: true);
-      await notifier.playStop(0.0);
+    await tester.pumpAndSettle();
+    final element = tester.element(find.byTooltip('Speak'));
+    final container = ProviderScope.containerOf(element, listen: false);
+    final notifier = container.read(readerSessionProvider.notifier);
+    final current = container.read(readerSessionProvider);
+    notifier.state = current.copyWith(speaking: true);
+    await notifier.playStop(0.0);
 
-      // With an authenticated user, save should be called once.
-      expect(fakeRepo.saveCalls, 1);
-      expect(fakeRepo.lastSaved, isNotNull);
-      expect(fakeRepo.lastSaved!.userId, currentUser.id);
-      expect(fakeRepo.lastSaved!.novelId, 'n1');
-      saver.mockSupabaseEnabled = null;
-      saver.mockGetUser = null;
-    },
-  );
+    // With an authenticated user, save should be called once.
+    expect(fakeRepo.saveCalls, 1);
+    expect(fakeRepo.lastSaved, isNotNull);
+    expect(fakeRepo.lastSaved!.userId, 'auth-001');
+    expect(fakeRepo.lastSaved!.novelId, 'n1');
+  });
 }

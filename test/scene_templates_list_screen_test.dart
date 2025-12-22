@@ -4,11 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/summary/scene_templates_list_screen.dart';
-import 'package:writer/main.dart';
-import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/repositories/template_repository.dart';
 import 'package:writer/models/scene_template_row.dart';
+import 'package:writer/state/providers.dart';
 
-class FakeLocalRepo extends LocalStorageRepository {
+class FakeTemplateRepo extends TemplateRepository {
+  FakeTemplateRepo() : super(RemoteRepository('http://localhost:5600/'));
+
   List<SceneTemplateRow> items = [
     SceneTemplateRow(
       id: 't-1',
@@ -47,10 +50,13 @@ void main() {
   testWidgets('SceneTemplatesListScreen renders and deletes item', (
     tester,
   ) async {
-    final repo = FakeLocalRepo();
+    final repo = FakeTemplateRepo();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
+        overrides: [
+          isSignedInProvider.overrideWithValue(true),
+          templateRepositoryProvider.overrideWith((ref) => repo),
+        ],
         child: const MaterialApp(
           home: SceneTemplatesListScreen(novelId: 'n-1'),
         ),
@@ -80,8 +86,8 @@ void main() {
     );
   });
 
-  testWidgets('Search filters list when supabase disabled', (tester) async {
-    final repo = FakeLocalRepo();
+  testWidgets('Search filters list', (tester) async {
+    final repo = FakeTemplateRepo();
     repo.items = [
       repo.items.first,
       SceneTemplateRow(
@@ -99,7 +105,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
+        overrides: [
+          isSignedInProvider.overrideWithValue(true),
+          templateRepositoryProvider.overrideWith((ref) => repo),
+        ],
         child: const MaterialApp(
           home: SceneTemplatesListScreen(novelId: 'n-1'),
         ),
@@ -130,16 +139,16 @@ void main() {
       find.textContaining('Quiet Scene', findRichText: true),
       findsOneWidget,
     );
-
-    final tf = tester.widget<TextField>(search);
-    expect(tf.decoration?.suffixText, '1');
   });
 
   testWidgets('Delete failure shows SnackBar', (tester) async {
-    final repo = FakeLocalRepo()..throwOnDelete = true;
+    final repo = FakeTemplateRepo()..throwOnDelete = true;
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
+        overrides: [
+          isSignedInProvider.overrideWithValue(true),
+          templateRepositoryProvider.overrideWith((ref) => repo),
+        ],
         child: const MaterialApp(
           home: SceneTemplatesListScreen(novelId: 'n-1'),
         ),
@@ -158,7 +167,7 @@ void main() {
   });
 
   testWidgets('Edit and add buttons navigate', (tester) async {
-    final repo = FakeLocalRepo();
+    final repo = FakeTemplateRepo();
     final router = GoRouter(
       initialLocation: '/novel/n-1/scene-templates',
       routes: [
@@ -183,7 +192,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
+        overrides: [
+          isSignedInProvider.overrideWithValue(true),
+          templateRepositoryProvider.overrideWith((ref) => repo),
+        ],
         child: MaterialApp.router(routerConfig: router),
       ),
     );

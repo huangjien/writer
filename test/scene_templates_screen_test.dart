@@ -2,48 +2,48 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:writer/features/summary/scene_templates_screen.dart';
-import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
-import 'package:writer/main.dart';
 import 'package:writer/models/scene_template_row.dart';
-import 'package:writer/repositories/local_storage_repository.dart';
-import 'package:writer/models/template.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/remote_repository.dart';
-import 'package:writer/state/providers.dart';
+import 'package:writer/repositories/template_repository.dart';
+import 'package:writer/state/session_state.dart';
 
-class CapturingLocalRepo extends LocalStorageRepository {
-  TemplateItem? lastItem;
-  String? updatedId;
-  String? updatedTitle;
-  String? updatedSummaries;
-  String? updatedLanguageCode;
-  String? getById;
+class CapturingTemplateRepo extends TemplateRepository {
+  CapturingTemplateRepo() : super(RemoteRepository('http://test/'));
+
+  String? upsertedId;
+  String? upsertedTitle;
+  String? upsertedSummaries;
+  String? upsertedLanguageCode;
+  String? refreshedId;
+
   @override
-  Future<String?> saveSceneTemplateForm(
-    String novelId,
-    TemplateItem item, {
-    String languageCode = 'en',
+  Future<String?> upsertSceneTemplate({
+    String? id,
+    String? title,
+    String? summaries,
+    String? synopses,
+    String? languageCode,
+    List<double>? embedding,
   }) async {
-    lastItem = item;
-    return 't-1';
+    upsertedId = id;
+    upsertedTitle = title;
+    upsertedSummaries = summaries;
+    upsertedLanguageCode = languageCode;
+    return id ?? 't-1';
   }
 
   @override
   Future<SceneTemplateRow?> getSceneTemplateById(String id) async {
-    getById = id;
-    final title = updatedTitle ?? lastItem?.name ?? 'Existing';
-    final summaries = updatedSummaries ?? lastItem?.description ?? 'Old';
-    final language = updatedLanguageCode ?? 'zh';
     return SceneTemplateRow(
       id: id,
       idx: 1,
-      title: title,
-      sceneSummaries: summaries,
+      title: upsertedTitle ?? 'Existing',
+      sceneSummaries: upsertedSummaries ?? 'Old',
       sceneSynopses: null,
-      languageCode: language,
+      languageCode: upsertedLanguageCode ?? 'zh',
       createdBy: null,
       createdAt: DateTime(2024, 1, 1),
       updatedAt: DateTime(2024, 1, 1),
@@ -51,17 +51,8 @@ class CapturingLocalRepo extends LocalStorageRepository {
   }
 
   @override
-  Future<void> updateSceneTemplate(
-    String id, {
-    String? title,
-    String? summaries,
-    String? synopses,
-    String languageCode = 'en',
-  }) async {
-    updatedId = id;
-    updatedTitle = title;
-    updatedSummaries = summaries;
-    updatedLanguageCode = languageCode;
+  Future<void> refreshSceneTemplateEmbedding(String templateId) async {
+    refreshedId = templateId;
   }
 }
 
@@ -78,29 +69,21 @@ class FakeRemoteRepo extends RemoteRepository {
   }
 }
 
-class MockSession extends Mock implements Session {}
-
-class MockAiChatService extends Mock implements AiChatService {}
-
 void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
   });
 
   testWidgets('SceneTemplatesScreen validates and saves', (tester) async {
-    final repo = CapturingLocalRepo();
-    final session = MockSession();
-    final ai = MockAiChatService();
-    when(
-      () => ai.embed(any(), model: any(named: 'model')),
-    ).thenAnswer((_) async => null);
+    SharedPreferences.setMockInitialValues({'backend_session_id': 's-1'});
+    final prefs = await SharedPreferences.getInstance();
+    final session = SessionNotifier(prefs);
+    final templates = CapturingTemplateRepo();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          localStorageRepositoryProvider.overrideWith((_) => repo),
-          aiChatServiceProvider.overrideWithValue(ai),
-          supabaseEnabledProvider.overrideWith((_) => true),
-          supabaseSessionProvider.overrideWith((_) => session),
+          sessionProvider.overrideWith((_) => session),
+          templateRepositoryProvider.overrideWithValue(templates),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -134,25 +117,23 @@ void main() {
     );
     await tester.enterText(nameField, 'Battle Scene');
     await tester.enterText(descField, 'High tension encounter');
-    await tester.tap(find.text('Save'));
-    await tester.pump();
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
+    await tester.pumpAndSettle();
 
-    expect(repo.lastItem?.name, 'Battle Scene');
-    expect(repo.lastItem?.description, 'High tension encounter');
+    expect(templates.upsertedId, isNull);
+    expect(templates.upsertedTitle, 'Battle Scene');
+    expect(templates.upsertedSummaries, 'High tension encounter');
+    expect(templates.refreshedId, 't-1');
     expect(find.text('Saved'), findsOneWidget);
   });
 
   testWidgets('SceneTemplatesScreen retrieves profile and enables Save', (
     tester,
   ) async {
-    final repo = CapturingLocalRepo();
     final remote = FakeRemoteRepo('# Profile');
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          localStorageRepositoryProvider.overrideWithValue(repo),
-          remoteRepositoryProvider.overrideWithValue(remote),
-        ],
+        overrides: [remoteRepositoryProvider.overrideWithValue(remote)],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -181,14 +162,10 @@ void main() {
   testWidgets('SceneTemplatesScreen shows no-profile snackbar when null', (
     tester,
   ) async {
-    final repo = CapturingLocalRepo();
     final remote = FakeRemoteRepo(null);
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          localStorageRepositoryProvider.overrideWithValue(repo),
-          remoteRepositoryProvider.overrideWithValue(remote),
-        ],
+        overrides: [remoteRepositoryProvider.overrideWithValue(remote)],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -213,19 +190,16 @@ void main() {
   testWidgets('SceneTemplatesScreen updates existing templateId', (
     tester,
   ) async {
-    final repo = CapturingLocalRepo();
-    final session = MockSession();
-    final ai = MockAiChatService();
-    when(
-      () => ai.embed(any(), model: any(named: 'model')),
-    ).thenAnswer((_) async => null);
+    SharedPreferences.setMockInitialValues({'backend_session_id': 's-1'});
+    final prefs = await SharedPreferences.getInstance();
+    final session = SessionNotifier(prefs);
+    final templates = CapturingTemplateRepo();
+    templates.upsertedLanguageCode = 'zh';
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          localStorageRepositoryProvider.overrideWithValue(repo),
-          aiChatServiceProvider.overrideWithValue(ai),
-          supabaseEnabledProvider.overrideWith((_) => true),
-          supabaseSessionProvider.overrideWith((_) => session),
+          sessionProvider.overrideWith((_) => session),
+          templateRepositoryProvider.overrideWithValue(templates),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -236,7 +210,6 @@ void main() {
     );
 
     await tester.pumpAndSettle();
-    expect(repo.getById, 't-99');
 
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
@@ -254,10 +227,11 @@ void main() {
     await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
     await tester.pumpAndSettle();
 
-    expect(repo.updatedId, 't-99');
-    expect(repo.updatedTitle, 'Updated Title');
-    expect(repo.updatedSummaries, 'Updated Body');
-    expect(repo.updatedLanguageCode, 'zh');
+    expect(templates.upsertedId, 't-99');
+    expect(templates.upsertedTitle, 'Updated Title');
+    expect(templates.upsertedSummaries, 'Updated Body');
+    expect(templates.upsertedLanguageCode, 'zh');
+    expect(templates.refreshedId, 't-99');
     expect(find.text('Saved'), findsOneWidget);
   });
 }

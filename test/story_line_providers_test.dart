@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:writer/models/story_line.dart';
 import 'package:writer/services/story_lines_service.dart';
 import 'package:writer/state/providers.dart';
@@ -32,12 +31,11 @@ class FakeStoryLinesService extends StoryLinesService {
 }
 
 void main() {
-  test('storyLinesProvider returns empty when Supabase disabled', () async {
+  test('storyLinesProvider returns empty when signed out', () async {
     final fake = FakeStoryLinesService();
     final container = ProviderContainer(
       overrides: [
-        supabaseEnabledProvider.overrideWith((_) => false),
-        authStateProvider.overrideWith((_) => Stream<AuthState>.empty()),
+        authStateProvider.overrideWith((_) => null),
         storyLinesServiceRefProvider.overrideWith((_) => fake),
       ],
     );
@@ -48,12 +46,11 @@ void main() {
     expect(fake.fetchCalled, isFalse);
   });
 
-  test('storyLineByIdProvider returns null when Supabase disabled', () async {
+  test('storyLineByIdProvider returns null when signed out', () async {
     final fake = FakeStoryLinesService();
     final container = ProviderContainer(
       overrides: [
-        supabaseEnabledProvider.overrideWith((_) => false),
-        authStateProvider.overrideWith((_) => Stream<AuthState>.empty()),
+        authStateProvider.overrideWith((_) => null),
         storyLinesServiceRefProvider.overrideWith((_) => fake),
       ],
     );
@@ -64,12 +61,12 @@ void main() {
     expect(fake.getCalled, isFalse);
   });
 
-  test('storyLinesProvider calls service when Supabase enabled', () async {
+  test('storyLinesProvider calls service when signed in', () async {
     final fake = FakeStoryLinesService();
     final container = ProviderContainer(
       overrides: [
-        supabaseEnabledProvider.overrideWith((_) => true),
-        authStateProvider.overrideWith((_) => Stream<AuthState>.empty()),
+        isSignedInProvider.overrideWith((_) => true),
+        authStateProvider.overrideWith((_) => 'session'),
         storyLinesServiceRefProvider.overrideWith((_) => fake),
       ],
     );
@@ -81,12 +78,12 @@ void main() {
     expect(fake.fetchCalled, isTrue);
   });
 
-  test('storyLineByIdProvider calls service when Supabase enabled', () async {
+  test('storyLineByIdProvider calls service when signed in', () async {
     final fake = FakeStoryLinesService();
     final container = ProviderContainer(
       overrides: [
-        supabaseEnabledProvider.overrideWith((_) => true),
-        authStateProvider.overrideWith((_) => Stream<AuthState>.empty()),
+        isSignedInProvider.overrideWith((_) => true),
+        authStateProvider.overrideWith((_) => 'session'),
         storyLinesServiceRefProvider.overrideWith((_) => fake),
       ],
     );

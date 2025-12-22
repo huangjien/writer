@@ -5,11 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/features/reader/chapter_reader_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/tts_settings.dart';
 
 class FakeAiChatServiceOk extends AiChatService {
-  FakeAiChatServiceOk() : super('http://localhost:5600/');
+  FakeAiChatServiceOk() : super(RemoteRepository('http://localhost:5600/'));
   @override
   Future<Map<String, dynamic>?> betaEvaluateChapter({
     required String novelId,
@@ -22,7 +23,7 @@ class FakeAiChatServiceOk extends AiChatService {
 }
 
 class FakeAiChatServiceNull extends AiChatService {
-  FakeAiChatServiceNull() : super('http://localhost:5600/');
+  FakeAiChatServiceNull() : super(RemoteRepository('http://localhost:5600/'));
   @override
   Future<Map<String, dynamic>?> betaEvaluateChapter({
     required String novelId,

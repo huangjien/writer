@@ -395,7 +395,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
           );
 
     final isAiChatOpen = ref.watch(aiChatUiProvider);
-    final isSupabaseEnabled = ref.watch(supabaseEnabledProvider);
+    final isSignedIn = ref.watch(isSignedInProvider);
 
     final readerScaffold = Scaffold(
       backgroundColor: bgColor,
@@ -521,7 +521,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
                           notifier.jumpToCreated(created);
                         },
                         onBetaEvaluate: _onBetaEvaluatePressed,
-                        showBeta: isSupabaseEnabled,
+                        showBeta: isSignedIn,
                         betaLoading: _betaLoading,
                       );
                     },

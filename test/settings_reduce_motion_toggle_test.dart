@@ -8,15 +8,10 @@ import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/state/theme_controller.dart';
-import 'package:writer/state/supabase_config.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
-    if (supabaseEnabled) {
-      await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
-    }
   });
 
   testWidgets('Toggling Reduce Motion switch updates provider state', (

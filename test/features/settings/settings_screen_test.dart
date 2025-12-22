@@ -2,29 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/settings/settings_screen.dart';
 import 'package:writer/features/settings/widgets/app_settings_section.dart';
 import 'package:writer/features/settings/widgets/palette_settings_section.dart';
 import 'package:writer/features/settings/widgets/tts_settings_container.dart';
-import 'package:writer/features/settings/widgets/supabase_section.dart';
+import 'package:writer/features/settings/widgets/performance_section.dart';
+import 'package:writer/features/settings/widgets/reader_bundle_grid.dart';
+import 'package:writer/features/settings/widgets/typography_settings_section.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/providers.dart';
+import 'package:writer/state/session_state.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/tts_settings.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/theme/font_packs.dart';
 import 'package:writer/theme/reader_typography.dart';
 import 'package:writer/theme/themes.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-class MockSupabaseClient extends Mock implements SupabaseClient {}
-
-class MockGoTrueClient extends Mock implements GoTrueClient {}
-
-class MockUser extends Mock implements User {}
 
 void main() {
   setUp(() {
@@ -64,12 +59,17 @@ void main() {
     await tester.scrollUntilVisible(palette, 500, scrollable: scrollable);
     expect(palette, findsOneWidget);
 
-    // AI Configurations section removed; ensure other sections still render
+    final typography = find.byType(TypographySettingsSection);
+    await tester.scrollUntilVisible(typography, 500, scrollable: scrollable);
+    expect(typography, findsOneWidget);
 
-    // Supabase
-    final supabase = find.byType(SupabaseSection);
-    await tester.scrollUntilVisible(supabase, 500, scrollable: scrollable);
-    expect(supabase, findsOneWidget);
+    final bundles = find.byType(ReaderBundleGrid);
+    await tester.scrollUntilVisible(bundles, 500, scrollable: scrollable);
+    expect(bundles, findsOneWidget);
+
+    final perf = find.byType(PerformanceSection);
+    await tester.scrollUntilVisible(perf, 500, scrollable: scrollable);
+    expect(perf, findsOneWidget);
 
     // TTS
     final tts = find.byType(TtsSettingsContainer);
@@ -168,20 +168,18 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     final themeController = ThemeController(prefs);
 
-    final mockClient = MockSupabaseClient();
-    final mockAuth = MockGoTrueClient();
-    final mockUser = MockUser();
-
-    when(() => mockClient.auth).thenReturn(mockAuth);
-    when(() => mockAuth.currentUser).thenReturn(mockUser);
-    when(() => mockUser.email).thenReturn('a@b.com');
-    when(() => mockAuth.signOut()).thenAnswer((_) async {});
+    final sessionNotifier = SessionNotifier(prefs);
+    await sessionNotifier.setSessionId('test-session');
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          supabaseEnabledProvider.overrideWith((ref) => true),
-          supabaseClientProvider.overrideWithValue(mockClient),
+          sessionProvider.overrideWith((ref) => sessionNotifier),
+          currentUserProvider.overrideWith((ref) async {
+            final sid = ref.watch(sessionProvider);
+            if (sid == null || sid.isEmpty) return null;
+            return const BackendUser(id: 'u1', email: 'a@b.com');
+          }),
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           themeControllerProvider.overrideWith((_) => themeController),
           ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
@@ -209,7 +207,6 @@ void main() {
 
     await tester.tap(find.text('Sign Out'));
     await tester.pumpAndSettle();
-
-    verify(() => mockAuth.signOut()).called(1);
+    expect(find.text('Sign In'), findsOneWidget);
   });
 }

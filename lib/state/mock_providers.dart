@@ -3,7 +3,7 @@ import '../models/novel.dart';
 import '../models/chapter.dart';
 import '../models/user_progress.dart';
 
-// Simple in-memory mock data for offline development when Supabase is disabled.
+// Simple in-memory mock data for offline development.
 
 final _mockNovels = <Novel>[
   const Novel(
@@ -99,7 +99,7 @@ final mockChaptersProvider = FutureProvider.family<List<Chapter>, String>((
 });
 
 /// Neutral offline progress: returns null (not started) for any novel.
-/// This surfaces a determinate 0% ring in the Library when Supabase is disabled.
+/// This surfaces a determinate 0% ring in the Library.
 final mockLastProgressProvider = FutureProvider.family<UserProgress?, String>((
   ref,
   novelId,

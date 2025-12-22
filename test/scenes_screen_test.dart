@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:writer/features/summary/scenes_screen.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/state/mock_providers.dart';
@@ -15,6 +14,7 @@ import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/models/scene_template_row.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/features/summary/scene_templates_screen.dart';
+import 'package:writer/repositories/template_repository.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/template.dart';
 import 'package:writer/state/providers.dart';
@@ -65,7 +65,7 @@ class FakeRemoteRepo extends RemoteRepository {
 }
 
 class FakeAiChatService extends AiChatService {
-  FakeAiChatService(this.vectors) : super('http://test/');
+  FakeAiChatService(this.vectors) : super(RemoteRepository('http://test/'));
   final Map<String, List<double>?> vectors;
 
   @override
@@ -74,7 +74,67 @@ class FakeAiChatService extends AiChatService {
   }
 }
 
-class MockSession extends Mock implements Session {}
+class FakeTemplateRepo extends TemplateRepository {
+  FakeTemplateRepo() : super(RemoteRepository('http://test/'));
+
+  final Map<String, SceneTemplateRow> _rows = {};
+
+  @override
+  Future<String?> upsertSceneTemplate({
+    String? id,
+    String? title,
+    String? summaries,
+    String? synopses,
+    String? languageCode,
+    List<double>? embedding,
+  }) async {
+    final nextId = id ?? 't-${_rows.length + 1}';
+    _rows[nextId] = SceneTemplateRow(
+      id: nextId,
+      idx: _rows.length + 1,
+      title: title,
+      sceneSummaries: summaries,
+      sceneSynopses: synopses,
+      languageCode: languageCode ?? 'en',
+      createdBy: 'u-1',
+      createdAt: DateTime(2024, 1, 1),
+      updatedAt: DateTime(2024, 1, 1),
+    );
+    return nextId;
+  }
+
+  @override
+  Future<SceneTemplateRow?> getSceneTemplateById(String id) async {
+    return _rows[id];
+  }
+
+  @override
+  Future<void> refreshSceneTemplateEmbedding(String id) async {}
+
+  @override
+  Future<List<SceneTemplateRow>> listSceneTemplates({int limit = 200}) async {
+    return _rows.values.take(limit).toList();
+  }
+
+  @override
+  Future<List<SceneTemplateRow>> searchSceneTemplates(
+    String query, {
+    int limit = 10,
+    int offset = 0,
+    String? languageCode,
+  }) async {
+    final q = query.toLowerCase();
+    final filtered = _rows.values
+        .where((row) {
+          if (languageCode != null && row.languageCode != languageCode) {
+            return false;
+          }
+          return (row.title ?? '').toLowerCase().contains(q);
+        })
+        .skip(offset);
+    return filtered.take(limit).toList();
+  }
+}
 
 class EndToEndLocalRepo extends LocalStorageRepository {
   final List<SceneTemplateRow> _templates = [];
@@ -249,7 +309,7 @@ void main() {
     final repo = EndToEndLocalRepo();
     final remote = FakeRemoteRepo();
     final ai = FakeAiChatService({'Battle': null});
-    final session = MockSession();
+    final templates = FakeTemplateRepo();
     final novel = const Novel(
       id: 'n-1',
       title: 'Test Novel',
@@ -266,8 +326,8 @@ void main() {
           localStorageRepositoryProvider.overrideWithValue(repo),
           remoteRepositoryProvider.overrideWithValue(remote),
           aiChatServiceProvider.overrideWithValue(ai),
-          supabaseEnabledProvider.overrideWith((_) => true),
-          supabaseSessionProvider.overrideWith((_) => session),
+          templateRepositoryProvider.overrideWithValue(templates),
+          isSignedInProvider.overrideWithValue(true),
           mockNovelsProvider.overrideWith((ref) async => [novel]),
           novelProvider.overrideWith((ref, id) async => novel),
         ],
@@ -313,8 +373,8 @@ void main() {
           localStorageRepositoryProvider.overrideWithValue(repo),
           remoteRepositoryProvider.overrideWithValue(remote),
           aiChatServiceProvider.overrideWithValue(ai),
-          supabaseEnabledProvider.overrideWith((_) => true),
-          supabaseSessionProvider.overrideWith((_) => session),
+          templateRepositoryProvider.overrideWithValue(templates),
+          isSignedInProvider.overrideWithValue(true),
           mockNovelsProvider.overrideWith((ref) async => [novel]),
           novelProvider.overrideWith((ref, id) async => novel),
         ],

@@ -2,23 +2,15 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/pattern.dart';
 import '../state/pattern_providers.dart';
-import '../state/supabase_config.dart';
+import '../state/providers.dart';
 import '../l10n/app_localizations.dart';
 
 class PatternFormScreen extends ConsumerStatefulWidget {
   final Pattern? initial;
-  final bool? supabaseEnabledOverride;
-  final SupabaseClient? supabaseClientOverride;
 
-  const PatternFormScreen({
-    super.key,
-    this.initial,
-    this.supabaseEnabledOverride,
-    this.supabaseClientOverride,
-  });
+  const PatternFormScreen({super.key, this.initial});
   @override
   ConsumerState<PatternFormScreen> createState() => _PatternFormScreenState();
 }
@@ -37,7 +29,6 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
   bool _saving = false;
   bool _isDirty = false;
   String? _error;
-  bool _canDelete = false;
 
   bool get _isEdit => widget.initial != null;
 
@@ -58,7 +49,6 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
     _language = widget.initial?.language ?? 'en';
     _isPublic = widget.initial?.isPublic ?? true;
     _locked = widget.initial?.locked ?? false;
-    _canDelete = _computeCanDelete();
 
     _titleCtrl.addListener(_checkDirty);
     _descCtrl.addListener(_checkDirty);
@@ -139,46 +129,6 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
       return obj is Map<String, dynamic> ? obj : Map<String, dynamic>.from(obj);
     } catch (_) {
       return null;
-    }
-  }
-
-  bool _computeCanDelete() {
-    final initial = widget.initial;
-    if (initial == null) return false;
-    final enabled = widget.supabaseEnabledOverride ?? supabaseEnabled;
-    if (!enabled) return false;
-    try {
-      final client = widget.supabaseClientOverride ?? Supabase.instance.client;
-      final user = client.auth.currentUser;
-      if (user == null) return false;
-      final userId = user.id;
-      final dynamic appMeta = user.appMetadata;
-      final dynamic userMeta = user.userMetadata;
-      if (appMeta == null && userMeta == null) {
-        return false;
-      }
-      bool admin = false;
-      dynamic roles = appMeta != null ? appMeta['roles'] : null;
-      roles ??= userMeta != null ? userMeta['roles'] : null;
-      if (roles is List) {
-        admin = roles.any((r) => r.toString().toLowerCase() == 'admin');
-      }
-      dynamic role = appMeta != null ? appMeta['role'] : null;
-      role ??= userMeta != null ? userMeta['role'] : null;
-      if (!admin && role is String) {
-        admin = role.toLowerCase() == 'admin';
-      }
-      dynamic flag = appMeta != null ? appMeta['isAdmin'] : null;
-      flag ??= userMeta != null ? userMeta['isAdmin'] : null;
-      if (!admin && flag is bool) {
-        admin = flag;
-      }
-      if (admin) return true;
-      final ownerId = initial.ownerId;
-      if (ownerId == null) return false;
-      return ownerId == userId;
-    } catch (_) {
-      return false;
     }
   }
 
@@ -339,7 +289,16 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final canDelete = _isEdit && _canDelete && !_locked && !_saving;
+    final isSignedIn = ref.watch(isSignedInProvider);
+    final isAdmin = ref.watch(isAdminProvider);
+    final currentUser = ref.watch(currentUserProvider).asData?.value;
+    final ownerId = widget.initial?.ownerId;
+    final canDelete =
+        _isEdit &&
+        isSignedIn &&
+        !_locked &&
+        !_saving &&
+        (isAdmin || (ownerId != null && ownerId == currentUser?.id));
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEdit ? l10n.editPatternTitle : l10n.newPatternTitle),
@@ -354,6 +313,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                 builder: (context, constraints) {
                   final wide = constraints.maxWidth >= 860;
                   final titleField = TextFormField(
+                    key: const ValueKey('patternForm_title'),
                     controller: _titleCtrl,
                     decoration: InputDecoration(labelText: l10n.titleLabel),
                     validator: _required,
@@ -460,6 +420,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
               ),
               const SizedBox(height: 12),
               TextFormField(
+                key: const ValueKey('patternForm_description'),
                 controller: _descCtrl,
                 decoration: InputDecoration(labelText: l10n.descriptionLabel),
                 enabled: !_locked && !_saving,
@@ -491,6 +452,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                       ),
                     ),
                     TextFormField(
+                      key: const ValueKey('patternForm_content'),
                       controller: _contentCtrl,
                       maxLines: null,
                       expands: true,
@@ -502,6 +464,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                       enabled: !_locked && !_saving,
                     ),
                     TextFormField(
+                      key: const ValueKey('patternForm_usageRules'),
                       controller: _usageCtrl,
                       maxLines: null,
                       expands: true,

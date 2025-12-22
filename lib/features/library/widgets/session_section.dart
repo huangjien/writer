@@ -4,12 +4,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../theme/design_tokens.dart';
 
 class SessionSection extends StatefulWidget {
-  const SessionSection({
-    super.key,
-    required this.isSupabaseEnabled,
-    required this.isSignedIn,
-  });
-  final bool isSupabaseEnabled;
+  const SessionSection({super.key, required this.isSignedIn});
   final bool isSignedIn;
 
   @override
@@ -22,15 +17,6 @@ class _SessionSectionState extends State<SessionSection> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    if (!widget.isSupabaseEnabled) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.supabaseNotEnabledDescription),
-          const Divider(height: Spacing.m),
-        ],
-      );
-    }
     if (!widget.isSignedIn) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,

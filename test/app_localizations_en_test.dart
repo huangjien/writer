@@ -16,7 +16,7 @@ void main() {
     final l10n = AppLocalizationsEn();
     expect(
       l10n.confirmDeleteDescription('Sample'),
-      "This will delete 'Sample' from Supabase. Are you sure?",
+      "This will delete 'Sample' from your cloud library. Are you sure?",
     );
   });
 
@@ -25,11 +25,11 @@ void main() {
     expect(l10n.continueAtChapter('One'), 'Continue at chapter • One');
   });
 
-  test('Supabase not enabled description', () {
+  test('Cloud sync not enabled description', () {
     final l10n = AppLocalizationsEn();
     expect(
       l10n.supabaseNotEnabledDescription,
-      'Supabase is not configured for this build.',
+      'Cloud sync is not configured for this build.',
     );
   });
 }

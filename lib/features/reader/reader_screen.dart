@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/design_tokens.dart';
 import '../../widgets/side_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../state/novel_providers.dart';
-import '../../state/mock_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/chapter.dart';
 import 'chapter_reader_screen.dart' as cr;
-import '../../state/supabase_config.dart';
 import '../../repositories/chapter_repository.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -30,9 +29,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final chaptersAsync = supabaseEnabled
-        ? ref.watch(chaptersProvider(widget.novelId))
-        : ref.watch(mockChaptersProvider(widget.novelId));
+    final chaptersAsync = ref.watch(chaptersProvider(widget.novelId));
 
     if (widget.chapterId != null) {
       return chaptersAsync.when(
@@ -43,7 +40,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
           );
           final chapterIndex = chapters.indexOf(chapter);
 
-          return ChapterReaderScreen(
+          return cr.ChapterReaderScreen(
             chapterId: chapter.id,
             title: chapter.title ?? 'Chapter ${chapter.idx}',
             content: chapter.content,
@@ -79,13 +76,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
               tooltip: l10n.refreshTooltip,
               onPressed: () async {
                 setState(() => _refreshing = true);
-                if (supabaseEnabled) {
-                  ref.invalidate(chaptersProvider(widget.novelId));
-                  await ref.read(chaptersProvider(widget.novelId).future);
-                } else {
-                  ref.invalidate(mockChaptersProvider(widget.novelId));
-                  await ref.read(mockChaptersProvider(widget.novelId).future);
-                }
+                ref.invalidate(chaptersProvider(widget.novelId));
+                await ref.read(chaptersProvider(widget.novelId).future);
                 if (mounted) setState(() => _refreshing = false);
               },
             ),
@@ -105,38 +97,43 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                     final errMsg = '${l10n.error}: ${l10n.pdfFailed}';
                     setState(() => _pdfGenerating = true);
                     try {
-                      final chapters = await (supabaseEnabled
-                          ? ref.read(chaptersProvider(widget.novelId).future)
-                          : ref.read(
-                              mockChaptersProvider(widget.novelId).future,
-                            ));
-                      final List<Chapter> withContent = [];
-                      if (supabaseEnabled) {
-                        final repo = ref.read(chapterRepositoryProvider);
-                        for (final c in chapters) {
-                          final full = await repo.getChapter(c);
-                          withContent.add(full);
+                      final notoRegular = pw.Font.ttf(
+                        await rootBundle.load(
+                          'assets/fonts/NotoSansSC-Regular.ttf',
+                        ),
+                      );
+                      final notoBold = pw.Font.ttf(
+                        await rootBundle.load(
+                          'assets/fonts/NotoSansSC-Bold.ttf',
+                        ),
+                      );
+                      final pdfTheme = pw.ThemeData.withFont(
+                        base: notoRegular,
+                        bold: notoBold,
+                      );
+
+                      final chapters = await ref.read(
+                        chaptersProvider(widget.novelId).future,
+                      );
+                      final repo = ref.read(chapterRepositoryProvider);
+                      final withContent = <Chapter>[];
+                      for (final c in chapters) {
+                        if ((c.content ?? '').isNotEmpty) {
+                          withContent.add(c);
+                        } else {
+                          withContent.add(await repo.getChapter(c));
                         }
-                      } else {
-                        withContent.addAll(chapters);
                       }
 
-                      final novel = await (supabaseEnabled
-                          ? ref.read(novelProvider(widget.novelId).future)
-                          : (() async {
-                              final novels = await ref.read(
-                                mockNovelsProvider.future,
-                              );
-                              final matches = novels.where(
-                                (n) => n.id == widget.novelId,
-                              );
-                              return matches.isNotEmpty ? matches.first : null;
-                            })());
+                      final novel = await ref.read(
+                        novelProvider(widget.novelId).future,
+                      );
 
                       final chapterPrefix = l10n.chapter;
                       final doc = pw.Document();
                       doc.addPage(
                         pw.Page(
+                          theme: pdfTheme,
                           build: (context) => pw.Column(
                             crossAxisAlignment: pw.CrossAxisAlignment.start,
                             children: [
@@ -170,6 +167,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                       );
                       doc.addPage(
                         pw.MultiPage(
+                          theme: pdfTheme,
                           header: (context) => pw.Container(
                             alignment: pw.Alignment.centerLeft,
                             padding: const pw.EdgeInsets.only(bottom: 8),

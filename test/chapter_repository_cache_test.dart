@@ -1,10 +1,23 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/models/chapter_cache.dart';
+
+class FailingRemoteRepository extends RemoteRepository {
+  FailingRemoteRepository() : super('http://test/');
+
+  @override
+  Future<dynamic> get(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    bool retryUnauthorized = true,
+  }) async {
+    throw Exception('offline');
+  }
+}
 
 void main() {
   setUp(() async {
@@ -24,8 +37,7 @@ void main() {
       ),
     );
 
-    final dummyClient = SupabaseClient('http://localhost', 'anon');
-    final repo = ChapterRepository(dummyClient, local);
+    final repo = ChapterRepository(FailingRemoteRepository(), local);
     final base = const Chapter(
       id: 'c1',
       novelId: 'n1',

@@ -5,10 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
-import 'package:writer/state/supabase_config.dart';
-import '../../main.dart';
 import '../../models/character_template_row.dart';
 import '../../shared/constants.dart';
+import '../../repositories/template_repository.dart';
+import '../../state/providers.dart';
 
 class _EditIntent extends Intent {
   const _EditIntent();
@@ -53,8 +53,12 @@ class _CharacterTemplatesListScreenState
       _error = null;
     });
     try {
-      final repo = ref.read(localStorageRepositoryProvider);
-      _items = await repo.listCharacterTemplates();
+      final repo = ref.read(templateRepositoryProvider);
+      if (ref.read(isSignedInProvider)) {
+        _items = await repo.listCharacterTemplates();
+      } else {
+        _items = []; // Or local if we had it
+      }
       _localSearch();
     } catch (e) {
       _error = e.toString();
@@ -81,12 +85,10 @@ class _CharacterTemplatesListScreenState
     final q = _searchCtrl.text.trim();
     if (q.isEmpty) return;
 
-    final enabled = ref.read(supabaseEnabledProvider);
-    if (!enabled) {
+    final isSignedIn = ref.read(isSignedInProvider);
+    if (!isSignedIn) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Smart search requires Supabase connection'),
-        ),
+        const SnackBar(content: Text('Smart search requires sign in')),
       );
       return;
     }
@@ -96,7 +98,7 @@ class _CharacterTemplatesListScreenState
     });
 
     try {
-      final repo = ref.read(localStorageRepositoryProvider);
+      final repo = ref.read(templateRepositoryProvider);
       final res = await repo.searchCharacterTemplates(q, limit: 5);
 
       if (!mounted) return;
@@ -308,7 +310,7 @@ class _CharacterTemplatesListScreenState
                                         );
                                         if (ok == true) {
                                           final repo = ref.read(
-                                            localStorageRepositoryProvider,
+                                            templateRepositoryProvider,
                                           );
                                           await repo.deleteCharacterTemplate(
                                             it.id,
