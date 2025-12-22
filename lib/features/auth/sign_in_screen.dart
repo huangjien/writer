@@ -9,7 +9,9 @@ import '../../state/session_state.dart';
 import '../../l10n/app_localizations.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
-  const SignInScreen({super.key});
+  const SignInScreen({super.key, this.client});
+
+  final http.Client? client;
 
   @override
   ConsumerState<SignInScreen> createState() => _SignInScreenState();
@@ -20,6 +22,15 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   final _passwordController = TextEditingController();
   bool _loading = false;
   String? _error;
+  late final http.Client _client;
+  late final bool _disposeClient;
+
+  @override
+  void initState() {
+    super.initState();
+    _client = widget.client ?? http.Client();
+    _disposeClient = widget.client == null;
+  }
 
   String _urlJoin(String baseUrl, String path) {
     final b = baseUrl.endsWith('/')
@@ -43,7 +54,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       }
 
       final url = _urlJoin(baseUrl, '/auth/login');
-      final res = await http.post(
+      final res = await _client.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
@@ -88,6 +99,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    if (_disposeClient) {
+      _client.close();
+    }
     super.dispose();
   }
 

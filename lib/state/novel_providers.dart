@@ -76,6 +76,9 @@ final chaptersProvider = FutureProvider.family<List<Chapter>, String>((
   ref,
   novelId,
 ) async {
+  ref.watch(authStateProvider);
+  final isSignedIn = ref.watch(isSignedInProvider);
+  if (!isSignedIn) return const [];
   final repo = ref.watch(novelRepositoryProvider);
   return repo.fetchChaptersByNovel(novelId);
 });
