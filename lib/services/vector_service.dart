@@ -100,7 +100,7 @@ class VectorService {
 
   Future<List<Map<String, dynamic>>> searchSceneTemplates({
     required String query,
-    int limit = 10,
+    int limit = 5,
     int offset = 0,
     String? languageCode,
   }) async {
@@ -119,7 +119,7 @@ class VectorService {
 
   Future<List<Map<String, dynamic>>> searchCharacterTemplates({
     required String query,
-    int limit = 10,
+    int limit = 5,
     int offset = 0,
     String? languageCode,
   }) async {

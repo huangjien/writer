@@ -199,7 +199,7 @@ class PatternsService {
 
   Future<List<Pattern>> smartSearchPatterns(
     String query, {
-    int limit = 10,
+    int limit = 5,
     int offset = 0,
   }) async {
     final data = await _send(

@@ -144,22 +144,18 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
           try {
             res = await ref
                 .read(templateRepositoryProvider)
-                .searchSceneTemplates(
-                  q,
-                  limit: 10,
-                  languageCode: _languageCode,
-                );
+                .searchSceneTemplates(q, limit: 5, languageCode: _languageCode);
           } catch (_) {
             res = await repo.searchSceneTemplates(
               q,
-              limit: 10,
+              limit: 5,
               languageCode: _languageCode,
             );
           }
         } else {
           res = await repo.searchSceneTemplates(
             q,
-            limit: 10,
+            limit: 5,
             languageCode: _languageCode,
           );
         }

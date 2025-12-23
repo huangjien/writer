@@ -326,7 +326,7 @@ class LocalStorageRepository {
 
   Future<List<SceneTemplateRow>> searchSceneTemplates(
     String query, {
-    int limit = 10,
+    int limit = 5,
     int offset = 0,
     String? languageCode,
   }) async {
