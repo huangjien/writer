@@ -283,6 +283,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enableTTS => 'Enable TTS';
 
   @override
+  String get signInWithBiometrics => 'Sign in with biometrics';
+
+  @override
+  String get enableBiometricLogin => 'Enable Biometric Login';
+
+  @override
+  String get enableBiometricLoginDescription =>
+      'Use fingerprint or face recognition to sign in.';
+
+  @override
+  String get biometricAuthFailed => 'Biometric authentication failed';
+
+  @override
   String get ttsVoice => 'TTS Voice';
 
   @override

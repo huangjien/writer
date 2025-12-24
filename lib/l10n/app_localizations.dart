@@ -608,6 +608,30 @@ abstract class AppLocalizations {
   /// **'Enable TTS'**
   String get enableTTS;
 
+  /// No description provided for @signInWithBiometrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with biometrics'**
+  String get signInWithBiometrics;
+
+  /// No description provided for @enableBiometricLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Biometric Login'**
+  String get enableBiometricLogin;
+
+  /// No description provided for @enableBiometricLoginDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use fingerprint or face recognition to sign in.'**
+  String get enableBiometricLoginDescription;
+
+  /// No description provided for @biometricAuthFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric authentication failed'**
+  String get biometricAuthFailed;
+
   /// No description provided for @ttsVoice.
   ///
   /// In en, this message translates to:

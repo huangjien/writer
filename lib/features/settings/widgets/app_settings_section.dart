@@ -3,14 +3,30 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../state/ai_service_settings.dart';
 import '../../../state/app_settings.dart';
+import '../../../state/biometric_session_state.dart';
 import '../../../state/motion_settings.dart';
+import '../../../state/session_state.dart';
 import '../../../state/theme_controller.dart';
 import '../../../theme/themes.dart';
 
-class AppSettingsSection extends ConsumerWidget {
+class AppSettingsSection extends ConsumerStatefulWidget {
   const AppSettingsSection({super.key});
 
-  void _showAiServiceUrlDialog(BuildContext context, WidgetRef ref) {
+  @override
+  ConsumerState<AppSettingsSection> createState() => _AppSettingsSectionState();
+}
+
+class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
+  @override
+  void initState() {
+    super.initState();
+    // Check availability when settings are opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(biometricSessionProvider.notifier).checkBiometricAvailability();
+    });
+  }
+
+  void _showAiServiceUrlDialog(BuildContext context) {
     final currentUrl = ref.read(aiServiceProvider);
     final controller = TextEditingController(text: currentUrl);
     String? validationError;
@@ -83,11 +99,16 @@ class AppSettingsSection extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final appLocale = ref.watch(appSettingsProvider);
     final themeState = ref.watch(themeControllerProvider);
     final motion = ref.watch(motionSettingsProvider);
+    final biometricState = ref.watch(biometricSessionProvider);
+    final isBiometricAvailable =
+        ref.watch(biometricAvailableProvider).asData?.value ?? false;
+    final sessionId = ref.watch(sessionProvider);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -120,7 +141,10 @@ class AppSettingsSection extends ConsumerWidget {
             children: [
               Expanded(child: Text(l10n.themeMode)),
               DropdownButton<ThemeMode>(
-                value: themeState.mode,
+                value: ThemeMode.values.firstWhere(
+                  (e) => e.name == themeState.mode.name,
+                  orElse: () => ThemeMode.system,
+                ),
                 onChanged: (ThemeMode? mode) {
                   if (mode != null) {
                     ref.read(themeControllerProvider.notifier).setMode(mode);
@@ -145,26 +169,11 @@ class AppSettingsSection extends ConsumerWidget {
           ),
         ),
         ListTile(
-          leading: const Icon(Icons.computer),
-          title: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l10n.aiServiceUrl),
-                    Text(
-                      l10n.aiServiceUrlDescription,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () => _showAiServiceUrlDialog(context, ref),
-              ),
-            ],
+          leading: const Icon(Icons.smart_toy_outlined),
+          title: Text(l10n.aiServiceUrl),
+          trailing: IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () => _showAiServiceUrlDialog(context),
           ),
           subtitle: Text(ref.watch(aiServiceProvider)),
         ),
@@ -206,9 +215,9 @@ class AppSettingsSection extends ConsumerWidget {
                         .read(motionSettingsProvider.notifier)
                         .setSwipeMinVelocity(value);
                   },
-                  min: 50.0,
-                  max: 800.0,
-                  divisions: 15,
+                  min: 100,
+                  max: 2000,
+                  divisions: 19,
                   label: motion.swipeMinVelocity.round().toString(),
                 ),
               ],
@@ -229,6 +238,27 @@ class AppSettingsSection extends ConsumerWidget {
             secondary: const Icon(Icons.invert_colors),
           ),
         ),
+        if (isBiometricAvailable && sessionId != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SwitchListTile.adaptive(
+              value: biometricState == BiometricAuthState.enabled,
+              onChanged: (v) async {
+                if (v) {
+                  await ref
+                      .read(biometricSessionProvider.notifier)
+                      .enableBiometricAuth(sessionId);
+                } else {
+                  await ref
+                      .read(biometricSessionProvider.notifier)
+                      .disableBiometricAuth();
+                }
+              },
+              title: Text(l10n.enableBiometricLogin),
+              subtitle: Text(l10n.enableBiometricLoginDescription),
+              secondary: const Icon(Icons.fingerprint),
+            ),
+          ),
       ],
     );
   }

@@ -3,11 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/features/auth/sign_in_screen.dart';
 import 'package:writer/state/session_state.dart';
+import 'package:writer/services/biometric_service.dart';
+import 'package:writer/state/biometric_session_state.dart';
+
+class MockBiometricService extends Mock implements BiometricService {}
 
 class _OpenSignIn extends StatelessWidget {
   const _OpenSignIn({required this.client});
@@ -89,8 +94,17 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final sessionNotifier = SessionNotifier(prefs);
+
+    final mockBiometricService = MockBiometricService();
+    when(
+      () => mockBiometricService.isBiometricAvailable(),
+    ).thenAnswer((_) async => false);
+
     final container = ProviderContainer(
-      overrides: [sessionProvider.overrideWith((ref) => sessionNotifier)],
+      overrides: [
+        sessionProvider.overrideWith((ref) => sessionNotifier),
+        biometricServiceProvider.overrideWithValue(mockBiometricService),
+      ],
     );
     addTearDown(container.dispose);
 

@@ -50,5 +50,7 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSFaceIDUsageDescription</key>
+	<string>This app uses Face ID or Touch ID to securely sign you in to your account.</string>
 </dict>
 </plist>

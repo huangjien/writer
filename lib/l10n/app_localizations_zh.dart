@@ -273,6 +273,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get enableTTS => '启用 TTS';
 
   @override
+  String get signInWithBiometrics => '使用生物识别登录';
+
+  @override
+  String get enableBiometricLogin => '启用生物识别登录';
+
+  @override
+  String get enableBiometricLoginDescription => '使用指纹或面部识别登录。';
+
+  @override
+  String get biometricAuthFailed => '生物识别验证失败';
+
+  @override
   String get ttsVoice => 'TTS 语音';
 
   @override
