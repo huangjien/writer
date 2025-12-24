@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../state/ai_service_settings.dart';
 import '../../../state/app_settings.dart';
+import '../../../state/admin_settings.dart';
 import '../../../state/biometric_session_state.dart';
 import '../../../state/motion_settings.dart';
 import '../../../state/session_state.dart';
@@ -176,6 +177,22 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
             onPressed: () => _showAiServiceUrlDialog(context),
           ),
           subtitle: Text(ref.watch(aiServiceProvider)),
+        ),
+        Builder(
+          builder: (context) {
+            bool enabled = false;
+            AdminModeNotifier? notifier;
+            try {
+              enabled = ref.watch(adminModeProvider);
+              notifier = ref.read(adminModeProvider.notifier);
+            } catch (_) {}
+            return SwitchListTile.adaptive(
+              value: enabled,
+              onChanged: notifier == null ? null : (v) => notifier!.setAdmin(v),
+              title: Text(l10n.adminMode),
+              secondary: const Icon(Icons.security),
+            );
+          },
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),

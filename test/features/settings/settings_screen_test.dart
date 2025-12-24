@@ -148,11 +148,13 @@ void main() {
     final scrollable = find.byType(Scrollable).at(0);
     await tester.scrollUntilVisible(
       find.text('Nord Calm'),
-      600,
+      1200,
       scrollable: scrollable,
     );
 
-    await tester.tap(find.text('Nord Calm'));
+    final nordText = find.text('Nord Calm');
+    await tester.ensureVisible(nordText);
+    await tester.tap(nordText);
     await tester.pumpAndSettle();
 
     final state = container.read(themeControllerProvider);
@@ -200,13 +202,15 @@ void main() {
     final scrollable = find.byType(Scrollable).at(0);
     await tester.scrollUntilVisible(
       find.text('Sign Out'),
-      800,
+      1200,
       scrollable: scrollable,
     );
     expect(find.text('Sign Out'), findsOneWidget);
 
-    await tester.tap(find.text('Sign Out'));
+    final signOutText = find.text('Sign Out');
+    await tester.ensureVisible(signOutText);
+    await tester.tap(signOutText);
     await tester.pumpAndSettle();
-    expect(find.text('Sign In'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Sign In'), findsOneWidget);
   });
 }

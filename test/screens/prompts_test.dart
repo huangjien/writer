@@ -56,6 +56,7 @@ class FakePromptsService extends PromptsService {
   Future<Prompt> updatePrompt({
     required String id,
     required String content,
+    bool isPublic = false,
   }) async {
     updateCalled = true;
     if (throwOnUpdate) {
@@ -258,6 +259,9 @@ void main() {
       ),
     );
     await tester.pump();
+    // Already in Edit tab by default
+    // await tester.tap(find.text('Edit'));
+    // await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextFormField), 'Y');
     await tester.pumpAndSettle();
     await tester.tap(find.text('Save'));
@@ -283,6 +287,8 @@ void main() {
       ),
     );
     await tester.pump();
+    await tester.tap(find.text('Edit'));
+    await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextFormField), 'B');
     await tester.pumpAndSettle();
     final saveButton = find.widgetWithText(ElevatedButton, 'Save');
@@ -343,6 +349,49 @@ void main() {
     expect(saveButton, findsOneWidget);
     final btn = tester.widget<ElevatedButton>(saveButton);
     expect(btn.onPressed, isNull);
+    // Already in Edit tab by default
+    // await tester.tap(find.text('Edit'));
+    // await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField), 'B');
+    await tester.pump();
+    final btn2 = tester.widget<ElevatedButton>(saveButton);
+    expect(btn2.onPressed, isNotNull);
+  });
+
+  testWidgets('PromptFormScreen allows editing when signed in', (tester) async {
+    final svc = FakePromptsService();
+    final initial = Prompt(
+      id: '1',
+      userId: null,
+      promptKey: 'system.qa.autogen',
+      language: 'en',
+      content: 'A',
+      isPublic: true,
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PromptFormScreen(
+          service: svc,
+          initial: initial,
+          isSignedIn: true,
+          canEdit: false,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('Not signed in'), findsNothing);
+
+    final saveButton = find.widgetWithText(ElevatedButton, 'Save');
+    final btn = tester.widget<ElevatedButton>(saveButton);
+    expect(btn.onPressed, isNull);
+
+    final editable = tester.widget<EditableText>(find.byType(EditableText));
+    expect(editable.readOnly, isFalse);
+
     await tester.enterText(find.byType(TextFormField), 'B');
     await tester.pump();
     final btn2 = tester.widget<ElevatedButton>(saveButton);

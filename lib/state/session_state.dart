@@ -13,13 +13,13 @@ class SessionNotifier extends StateNotifier<String?> {
       await clear();
       return;
     }
-    await _prefs?.setString(_sessionIdKey, sessionId);
     state = sessionId;
+    await _prefs?.setString(_sessionIdKey, sessionId);
   }
 
   Future<void> clear() async {
-    await _prefs?.remove(_sessionIdKey);
     state = null;
+    await _prefs?.remove(_sessionIdKey);
   }
 }
 

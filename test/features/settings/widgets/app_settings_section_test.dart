@@ -29,7 +29,9 @@ void main() {
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: AppSettingsSection()),
+          home: Scaffold(
+            body: SingleChildScrollView(child: AppSettingsSection()),
+          ),
         ),
       ),
     );
@@ -63,7 +65,9 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: Locale('en'),
-          home: Scaffold(body: AppSettingsSection()),
+          home: Scaffold(
+            body: SingleChildScrollView(child: AppSettingsSection()),
+          ),
         ),
       ),
     );
@@ -109,7 +113,9 @@ void main() {
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: AppSettingsSection()),
+          home: Scaffold(
+            body: SingleChildScrollView(child: AppSettingsSection()),
+          ),
         ),
       ),
     );
@@ -146,7 +152,9 @@ void main() {
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: AppSettingsSection()),
+          home: Scaffold(
+            body: SingleChildScrollView(child: AppSettingsSection()),
+          ),
         ),
       ),
     );

@@ -500,6 +500,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get clear => '清除';
 
   @override
+  String get adminMode => '管理员模式';
+
+  @override
   String get reduceMotion => '减少动效';
 
   @override

@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:go_router/go_router.dart';
 
 import '../models/prompt.dart';
 import '../services/prompts_service.dart';
 import '../l10n/app_localizations.dart';
-import 'package:go_router/go_router.dart';
 
 const _keys = [
   'system.beta.male',
   'system.beta.female',
   'system.beta.teenager',
   'system.beta.editor',
+  'system.qa.direct',
+  'system.qa.autogen',
 ];
 
 const _langs = ['en', 'zh', 'zh-CN'];
@@ -34,9 +37,11 @@ class PromptFormScreen extends StatefulWidget {
   State<PromptFormScreen> createState() => _PromptFormScreenState();
 }
 
-class _PromptFormScreenState extends State<PromptFormScreen> {
+class _PromptFormScreenState extends State<PromptFormScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _contentCtrl;
+  late final TabController _tabController;
   String _key = _keys.first;
   String _lang = _langs.first;
   bool _isPublic = false;
@@ -49,12 +54,24 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: 1,
+    ); // Default to Edit tab
     _isPublic = widget.initial?.isPublic ?? widget.defaultPublic;
     _key = widget.initial?.promptKey ?? _keys.first;
     _lang = widget.initial?.language ?? _langs.first;
     _contentCtrl = TextEditingController(text: widget.initial?.content ?? '');
     _isDirty = false;
     _contentCtrl.addListener(_updateDirty);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _contentCtrl.dispose();
+    super.dispose();
   }
 
   void _updateDirty() {
@@ -131,6 +148,7 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
         final res = await widget.service.updatePrompt(
           id: widget.initial!.id,
           content: _contentCtrl.text.trim(),
+          isPublic: widget.initial!.isPublic && widget.initial!.userId == null,
         );
         if (mounted) Navigator.pop(context, res);
       } else {
@@ -143,7 +161,7 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
         if (mounted) Navigator.pop(context, res);
       }
     } catch (e) {
-      if (e is ApiException && (e.statusCode == 401 || e.statusCode == 403)) {
+      if (e is ApiException && e.statusCode == 401) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -154,6 +172,26 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
             ),
           ),
         );
+      } else if (e is ApiException && e.statusCode == 403) {
+        if (!mounted) return;
+        if (!widget.isSignedIn) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.notSignedIn),
+              action: SnackBarAction(
+                label: AppLocalizations.of(context)!.signIn,
+                onPressed: () => context.push('/auth'),
+              ),
+            ),
+          );
+        } else {
+          final msg = Localizations.localeOf(context).languageCode == 'zh'
+              ? '您没有权限执行此操作。'
+              : 'You don’t have permission to do that.';
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(msg)));
+        }
       } else {
         setState(() {
           _error = e.toString();
@@ -168,8 +206,19 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final preview = _contentCtrl.text;
     final l10n = AppLocalizations.of(context)!;
+
+    // Ensure current key is in the list to prevent crash
+    final effectiveKeys = {..._keys};
+    if (!_keys.contains(_key)) {
+      effectiveKeys.add(_key);
+    }
+
+    final effectiveLangs = {..._langs};
+    if (!_langs.contains(_lang)) {
+      effectiveLangs.add(_lang);
+    }
+
     return Scaffold(
       appBar: AppBar(title: Text(_isEdit ? l10n.editPrompt : l10n.newPrompt)),
       body: Padding(
@@ -183,7 +232,7 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                   Expanded(
                     child: DropdownButtonFormField<String>(
                       initialValue: _key,
-                      items: _keys
+                      items: effectiveKeys
                           .map(
                             (e) => DropdownMenuItem(value: e, child: Text(e)),
                           )
@@ -203,7 +252,7 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                     width: 180,
                     child: DropdownButtonFormField<String>(
                       initialValue: _lang,
-                      items: _langs
+                      items: effectiveLangs
                           .map(
                             (e) => DropdownMenuItem(value: e, child: Text(e)),
                           )
@@ -235,14 +284,43 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                 ],
               ),
               const SizedBox(height: 12),
+              TabBar(
+                controller: _tabController,
+                labelColor: Theme.of(context).primaryColor,
+                unselectedLabelColor: Colors.grey,
+                tabs: [
+                  Tab(text: l10n.previewLabel),
+                  Tab(text: l10n.edit),
+                ],
+              ),
+              const SizedBox(height: 8),
               Expanded(
-                child: TextFormField(
-                  controller: _contentCtrl,
-                  maxLines: null,
-                  expands: true,
-                  onChanged: (_) => _updateDirty(),
-                  validator: _validateContent,
-                  decoration: InputDecoration(labelText: l10n.content),
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Markdown(
+                        data: _contentCtrl.text,
+                        padding: const EdgeInsets.all(8),
+                      ),
+                    ),
+                    TextFormField(
+                      controller: _contentCtrl,
+                      maxLines: null,
+                      expands: true,
+                      readOnly: _isEdit && !widget.isSignedIn,
+                      onChanged: (_) => _updateDirty(),
+                      validator: _validateContent,
+                      decoration: InputDecoration(
+                        labelText: l10n.content,
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 8),
@@ -259,8 +337,7 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                     onPressed:
                         (_saving ||
                             !_isDirty ||
-                            (_isEdit &&
-                                (!widget.isSignedIn || !widget.canEdit)))
+                            (_isEdit && !widget.isSignedIn))
                         ? null
                         : _save,
                     child: Text(l10n.save),
@@ -275,7 +352,7 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                     style: const TextStyle(color: Colors.red),
                   ),
                 ),
-              if (_isEdit && (!widget.isSignedIn || !widget.canEdit))
+              if (_isEdit && !widget.isSignedIn)
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
@@ -283,13 +360,6 @@ class _PromptFormScreenState extends State<PromptFormScreen> {
                     style: const TextStyle(color: Colors.orange),
                   ),
                 ),
-              const SizedBox(height: 12),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: SizedBox(width: double.infinity, child: Text(preview)),
-                ),
-              ),
             ],
           ),
         ),

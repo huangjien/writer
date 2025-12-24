@@ -514,6 +514,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clear => 'Clear';
 
   @override
+  String get adminMode => 'Admin Mode';
+
+  @override
   String get reduceMotion => 'Reduce motion';
 
   @override

@@ -36,7 +36,7 @@ void main() {
     expect(Prompt.isValidPromptKey('system.beta.female'), isTrue);
     expect(Prompt.isValidPromptKey('system.beta.teenager'), isTrue);
     expect(Prompt.isValidPromptKey('system.beta.editor'), isTrue);
-    expect(Prompt.isValidPromptKey('system.beta.invalid'), isFalse);
+    expect(Prompt.isValidPromptKey('system.beta.invalid.key'), isFalse);
 
     expect(Prompt.isValidLanguage('en'), isTrue);
     expect(Prompt.isValidLanguage('zh'), isTrue);

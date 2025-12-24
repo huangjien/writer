@@ -64,16 +64,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final svc = ref.watch(promptsServiceProvider);
           final initial = state.extra is Prompt ? state.extra as Prompt? : null;
           final isAdmin = ref.watch(isAdminProvider);
-          final ownerId = initial?.userId;
           final isSignedIn = ref.watch(isSignedInProvider);
-          final currentUserId = ref
-              .watch(currentUserProvider)
-              .asData
-              ?.value
-              ?.id;
-          final canEdit = initial == null
-              ? true
-              : (isAdmin || (ownerId != null && ownerId == currentUserId));
+          final canEdit = initial == null ? true : isSignedIn;
           return PromptFormScreen(
             service: svc,
             initial: initial,

@@ -48,7 +48,7 @@ class Prompt {
   }
 
   static bool isValidPromptKey(String key) {
-    final re = RegExp(r'^system\.beta\.(male|female|teenager|editor)$');
+    final re = RegExp(r'^system\.(beta|qa)\.[a-z]+$');
     return re.hasMatch(key);
   }
 

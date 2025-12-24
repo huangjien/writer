@@ -56,7 +56,7 @@ class PromptsService {
       final uri = _buildUri(path, query);
       final headers = <String, String>{'Content-Type': 'application/json'};
       if (sessionId != null && sessionId!.trim().isNotEmpty) {
-        headers['x-session-id'] = sessionId!;
+        headers['X-Session-Id'] = sessionId!.trim();
       }
       if (authToken != null && authToken!.isNotEmpty) {
         headers['Authorization'] = 'Bearer $authToken';
@@ -149,6 +149,7 @@ class PromptsService {
   Future<Prompt> updatePrompt({
     required String id,
     required String content,
+    bool isPublic = false,
   }) async {
     final data = await _send(
       'PATCH',

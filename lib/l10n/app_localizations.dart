@@ -1046,6 +1046,12 @@ abstract class AppLocalizations {
   /// **'Clear'**
   String get clear;
 
+  /// No description provided for @adminMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Mode'**
+  String get adminMode;
+
   /// No description provided for @reduceMotion.
   ///
   /// In en, this message translates to:

@@ -74,9 +74,23 @@ MockClient _mockClient() {
       };
       return http.Response(jsonEncode(created), 200);
     }
+    if (m == 'PATCH' && path.startsWith('/prompts/public/')) {
+      return http.Response('Unexpected endpoint', 500);
+    }
     if (m == 'PATCH' && path.startsWith('/prompts/')) {
       final id = path.split('/').last;
       final data = jsonDecode(request.body) as Map<String, dynamic>;
+      if (id == 'pub') {
+        final updated = {
+          'id': id,
+          'user_id': null,
+          'prompt_key': 'system.qa.direct',
+          'language': 'en',
+          'content': data['content'],
+          'is_public': true,
+        };
+        return http.Response(jsonEncode(updated), 200);
+      }
       final updated = {
         'id': id,
         'user_id': 'u1',
@@ -134,6 +148,15 @@ void main() {
 
     final upd = await svc.updatePrompt(id: 'new', content: 'Y');
     expect(upd.content, 'Y');
+
+    final updPub = await svc.updatePrompt(
+      id: 'pub',
+      content: 'P',
+      isPublic: true,
+    );
+    expect(updPub.id, 'pub');
+    expect(updPub.isPublic, isTrue);
+    expect(updPub.content, 'P');
 
     final ok = await svc.deletePrompt('new');
     expect(ok, isTrue);
