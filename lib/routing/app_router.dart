@@ -7,6 +7,10 @@ import '../features/library/create_novel_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/reader/reader_screen.dart';
 import '../features/auth/sign_in_screen.dart';
+import '../features/auth/sign_up_screen.dart';
+import '../features/auth/forgot_password_screen.dart';
+import '../features/auth/reset_password_screen.dart';
+import '../features/auth/user_management_screen.dart';
 import '../features/library/my_novels_screen.dart';
 import '../features/about/about_screen.dart';
 import '../features/summary/summary_screen.dart';
@@ -99,6 +103,26 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/auth',
         name: 'auth',
         builder: (context, state) => const SignInScreen(),
+      ),
+      GoRoute(
+        path: '/signup',
+        name: 'signup',
+        builder: (context, state) => const SignUpScreen(),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        name: 'forgotPassword',
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/reset-password',
+        name: 'resetPassword',
+        builder: (context, state) => const ResetPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/admin/users',
+        name: 'userManagement',
+        builder: (context, state) => const UserManagementScreen(),
       ),
       GoRoute(
         path: '/my-novels',

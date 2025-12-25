@@ -11,6 +11,7 @@ import 'package:writer/theme/reader_bundles.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/session_state.dart';
+import '../../state/user_state.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
@@ -39,6 +40,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final l10n = AppLocalizations.of(context)!;
     final isSignedIn = ref.watch(isSignedInProvider);
     final currentUser = ref.watch(currentUserProvider).asData?.value;
+    final userAsync = ref.watch(userProvider);
+    final isAdmin = userAsync.value?.isAdmin ?? false;
 
     return Scaffold(
       appBar: AppBar(
@@ -93,6 +96,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const Divider(),
           const TtsSettingsContainer(),
           const Divider(),
+          if (isAdmin) ...[
+            ListTile(
+              title: const Text('User Management'),
+              leading: const Icon(Icons.people),
+              onTap: () => context.push('/admin/users'),
+            ),
+            const Divider(),
+          ],
           if (!isSignedIn)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),

@@ -260,7 +260,20 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 return const SizedBox.shrink();
               },
             ),
-            // OAuth buttons removed as they require backend changes
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () => context.push('/signup'),
+                  child: const Text('Sign Up'),
+                ),
+                TextButton(
+                  onPressed: () => context.push('/forgot-password'),
+                  child: const Text('Forgot Password?'),
+                ),
+              ],
+            ),
           ],
         ),
       ),
