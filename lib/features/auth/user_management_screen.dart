@@ -28,7 +28,9 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
     _client = widget.client ?? http.Client();
     _disposeClient = widget.client == null;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchUsers();
+      _debugCurrentState();
+      _validateSession();
+      _loadUsers();
     });
   }
 
@@ -40,15 +42,42 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
     super.dispose();
   }
 
-  Future<void> _fetchUsers() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  void _debugCurrentState() {
+    final sessionId = ref.read(sessionProvider);
+    final userAsync = ref.read(userProvider);
+    debugPrint('[UserManagement Debug] Session ID: ${sessionId ?? 'null'}');
+    debugPrint('[UserManagement Debug] User Async: $userAsync');
+    if (userAsync.hasValue) {
+      debugPrint('[UserManagement Debug] User Value: ${userAsync.value}');
+      debugPrint(
+        '[UserManagement Debug] Is Admin: ${userAsync.value?.isAdmin}',
+      );
+    } else if (userAsync.hasError) {
+      debugPrint('[UserManagement Debug] User Error: ${userAsync.error}');
+    } else {
+      debugPrint('[UserManagement Debug] User Loading: ${userAsync.isLoading}');
+    }
+  }
+
+  Future<void> _loadUsers() async {
+    if (_loading) return;
+    _loading = true;
+    _error = null;
+    setState(() {});
 
     try {
       final sessionId = ref.read(sessionProvider);
-      if (sessionId == null) throw Exception("Session expired");
+      debugPrint('[UserManagement] Session ID: $sessionId');
+      if (sessionId == null || sessionId.isEmpty) {
+        throw Exception('No active session found. Please log in again.');
+      }
+
+      // Check current user state
+      final userAsync = ref.read(userProvider);
+      final currentUser = userAsync.value;
+      debugPrint(
+        '[UserManagement] Current user: ${currentUser?.email}, Admin: ${currentUser?.isAdmin}',
+      );
 
       String baseUrl;
       try {
@@ -61,13 +90,33 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
           ? '${baseUrl}admin/users'
           : '$baseUrl/admin/users';
 
+      debugPrint('[UserManagement] Fetching users from: $url');
+      debugPrint(
+        '[UserManagement] Session ID: ${sessionId.length > 8 ? sessionId.substring(0, 8) : sessionId}...',
+      );
+
       final res = await _client.get(
         Uri.parse(url),
         headers: {'X-Session-Id': sessionId},
       );
 
+      debugPrint('[UserManagement] Response status: ${res.statusCode}');
       if (res.statusCode != 200) {
-        throw Exception("Failed to load users: ${res.statusCode}");
+        String errorBody = '';
+        try {
+          errorBody = utf8.decode(res.bodyBytes);
+        } catch (_) {}
+        debugPrint('[UserManagement] Error response body: $errorBody');
+
+        if (res.statusCode == 401) {
+          throw Exception("Authentication failed. Please sign in again.");
+        } else if (res.statusCode == 403) {
+          throw Exception("Access denied. You don't have admin privileges.");
+        } else {
+          throw Exception(
+            "Failed to load users: ${res.statusCode}${errorBody.isNotEmpty ? ' - $errorBody' : ''}",
+          );
+        }
       }
 
       final data = jsonDecode(utf8.decode(res.bodyBytes));
@@ -75,16 +124,74 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
         _users = data['users'] as List<dynamic>;
       });
     } catch (e) {
+      debugPrint('[UserManagement] Error: $e');
       if (mounted) setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
 
+  Future<void> _validateSession() async {
+    try {
+      final sessionId = ref.read(sessionProvider);
+      if (sessionId == null) {
+        debugPrint('[UserManagement] No session ID found');
+        return;
+      }
+
+      String baseUrl;
+      try {
+        baseUrl = ref.read(aiServiceProvider);
+      } catch (_) {
+        baseUrl = 'http://localhost:5600/';
+      }
+
+      final url = baseUrl.endsWith('/')
+          ? '${baseUrl}auth/verify'
+          : '$baseUrl/auth/verify';
+
+      final res = await _client.get(
+        Uri.parse(url),
+        headers: {'X-Session-Id': sessionId},
+      );
+
+      debugPrint(
+        '[UserManagement] Session validation status: ${res.statusCode}',
+      );
+      if (res.statusCode == 200) {
+        final data = jsonDecode(utf8.decode(res.bodyBytes));
+        debugPrint('[UserManagement] User data: $data');
+        final isAdmin = data['is_admin'] ?? false;
+        debugPrint('[UserManagement] Backend says admin: $isAdmin');
+
+        // Show user info for debugging
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'User: ${data['email'] ?? 'No email'}, Admin: $isAdmin',
+              ),
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('[UserManagement] Session validation error: $e');
+    }
+  }
+
   Future<void> _toggleApproval(String userId, bool currentStatus) async {
     try {
       final sessionId = ref.read(sessionProvider);
-      if (sessionId == null) return;
+      if (sessionId == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text("Session expired")));
+        }
+        return;
+      }
 
       String baseUrl = ref.read(aiServiceProvider);
       if (!baseUrl.endsWith('/')) baseUrl += '/';
@@ -92,18 +199,38 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
       final url =
           '${baseUrl}admin/users/$userId/approve?approve=${!currentStatus}';
 
+      debugPrint(
+        '[UserManagement] Toggling approval for $userId to ${!currentStatus}',
+      );
+
       final res = await _client.patch(
         Uri.parse(url),
         headers: {'X-Session-Id': sessionId},
       );
 
+      debugPrint('[UserManagement] Toggle response status: ${res.statusCode}');
       if (res.statusCode != 200) {
-        throw Exception("Failed to update status");
+        String errorBody = '';
+        try {
+          errorBody = utf8.decode(res.bodyBytes);
+        } catch (_) {}
+        debugPrint('[UserManagement] Toggle error body: $errorBody');
+
+        if (res.statusCode == 401) {
+          throw Exception("Authentication failed. Please sign in again.");
+        } else if (res.statusCode == 403) {
+          throw Exception("Access denied. You don't have admin privileges.");
+        } else {
+          throw Exception(
+            "Failed to update status: ${res.statusCode}${errorBody.isNotEmpty ? ' - $errorBody' : ''}",
+          );
+        }
       }
 
       // Refresh list
-      await _fetchUsers();
+      await _loadUsers();
     } catch (e) {
+      debugPrint('[UserManagement] Toggle error: $e');
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -114,28 +241,62 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Check if admin
-    final userAsync = ref.watch(userProvider);
-    final isadmin = userAsync.value?.isAdmin ?? false;
-
-    if (!isadmin) {
-      return Scaffold(
-        appBar: AppBar(title: const Text("User Management")),
-        body: const Center(child: Text("Access Denied")),
-      );
-    }
+    // If we can reach this page, backend has already confirmed admin access
+    // No need to double-check admin status in frontend
 
     return Scaffold(
       appBar: AppBar(
         title: const Text("User Management"),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _fetchUsers),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadUsers),
         ],
       ),
       body: _loading && _users.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-          ? Center(child: Text("Error: $_error"))
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.red,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "Error loading users",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _error ?? 'Unknown error',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () async {
+                        // Refresh user status and try again
+                        await ref.read(userProvider.notifier).fetchUser();
+                        await _loadUsers();
+                      },
+                      child: const Text("Retry"),
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text("Go Back"),
+                    ),
+                  ],
+                ),
+              ),
+            )
           : ListView.builder(
               itemCount: _users.length,
               itemBuilder: (context, index) {

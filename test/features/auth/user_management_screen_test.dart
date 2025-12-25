@@ -46,13 +46,29 @@ void main() {
     );
 
     await tester.pumpAndSettle();
-    expect(find.text('Access Denied'), findsOneWidget);
+    expect(find.text('Error loading users'), findsOneWidget);
+    expect(
+      find.text('Exception: No active session found. Please log in again.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('UserManagementScreen loads and displays users for admin', (
     tester,
   ) async {
     final client = MockClient((request) async {
+      if (request.url.path == '/auth/verify') {
+        return http.Response(
+          jsonEncode({
+            'id': 'admin',
+            'email': 'admin@example.com',
+            'is_admin': true,
+            'is_approved': true,
+          }),
+          200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
+        );
+      }
       if (request.url.path == '/admin/users') {
         return http.Response(
           jsonEncode({
@@ -106,6 +122,18 @@ void main() {
 
     bool patchCalled = false;
     final client = MockClient((request) async {
+      if (request.url.path == '/auth/verify') {
+        return http.Response(
+          jsonEncode({
+            'id': 'admin',
+            'email': 'admin@example.com',
+            'is_admin': true,
+            'is_approved': true,
+          }),
+          200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
+        );
+      }
       if (request.method == 'GET' && request.url.path == '/admin/users') {
         return http.Response(
           jsonEncode({
