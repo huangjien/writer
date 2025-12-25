@@ -119,7 +119,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: () => context.go('/signin'),
+                      onPressed: () => context.go('/auth'),
                       child: const Text("Back to Sign In"),
                     ),
                   ],
@@ -156,7 +156,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   ),
                   const SizedBox(height: 12),
                   TextButton(
-                    onPressed: () => context.go('/signin'),
+                    onPressed: () => context.go('/auth'),
                     child: const Text("Already have an account? Sign In"),
                   ),
                 ],

@@ -29,13 +29,14 @@ class User {
 }
 
 class UserStateNotifier extends StateNotifier<AsyncValue<User?>> {
-  UserStateNotifier(this.ref) : super(const AsyncValue.data(null)) {
-    _init();
+  UserStateNotifier(this.ref, [AsyncValue<User?>? initialState])
+    : super(initialState ?? const AsyncValue.data(null)) {
+    init();
   }
 
   final Ref ref;
 
-  void _init() {
+  void init() {
     ref.listen<String?>(sessionProvider, (previous, next) {
       if (next != null) {
         fetchUser();

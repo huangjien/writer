@@ -7,7 +7,8 @@ import '../../state/session_state.dart';
 import '../../state/user_state.dart';
 
 class UserManagementScreen extends ConsumerStatefulWidget {
-  const UserManagementScreen({super.key});
+  const UserManagementScreen({super.key, this.client});
+  final http.Client? client;
 
   @override
   ConsumerState<UserManagementScreen> createState() =>
@@ -18,13 +19,25 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   bool _loading = false;
   String? _error;
   List<dynamic> _users = [];
+  late final http.Client _client;
+  late final bool _disposeClient;
 
   @override
   void initState() {
     super.initState();
+    _client = widget.client ?? http.Client();
+    _disposeClient = widget.client == null;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchUsers();
     });
+  }
+
+  @override
+  void dispose() {
+    if (_disposeClient) {
+      _client.close();
+    }
+    super.dispose();
   }
 
   Future<void> _fetchUsers() async {
@@ -48,7 +61,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
           ? '${baseUrl}admin/users'
           : '$baseUrl/admin/users';
 
-      final res = await http.get(
+      final res = await _client.get(
         Uri.parse(url),
         headers: {'X-Session-Id': sessionId},
       );
@@ -79,7 +92,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
       final url =
           '${baseUrl}admin/users/$userId/approve?approve=${!currentStatus}';
 
-      final res = await http.patch(
+      final res = await _client.patch(
         Uri.parse(url),
         headers: {'X-Session-Id': sessionId},
       );
