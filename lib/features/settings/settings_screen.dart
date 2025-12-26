@@ -7,6 +7,7 @@ import 'widgets/typography_settings_section.dart';
 import 'widgets/app_settings_section.dart';
 import 'widgets/palette_settings_section.dart';
 import 'widgets/tts_settings_container.dart';
+import 'widgets/token_usage_section.dart';
 import 'package:writer/theme/reader_bundles.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
@@ -95,6 +96,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const PerformanceSection(),
           const Divider(),
           const TtsSettingsContainer(),
+          if (currentUser != null) ...[
+            const Divider(),
+            const TokenUsageSection(),
+          ],
           const Divider(),
           if (isAdmin) ...[
             ListTile(

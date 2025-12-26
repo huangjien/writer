@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:writer/models/token_usage.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/session_state.dart';
 
@@ -310,5 +311,11 @@ class RemoteRepository {
       'template': templateContent,
       'language': language,
     }, 'result');
+  }
+
+  Future<TokenUsage?> getCurrentMonthUsage() async {
+    final data = await get('token-usage/current-month');
+    if (data == null) return null;
+    return TokenUsage.fromJson(data);
   }
 }

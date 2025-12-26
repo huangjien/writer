@@ -12,6 +12,7 @@ import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/models/token_usage.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/main.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
@@ -91,6 +92,11 @@ class _NoopRemoteRepository implements RemoteRepository {
     required String templateContent,
     required String language,
   }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<TokenUsage?> getCurrentMonthUsage() async {
     throw UnimplementedError();
   }
 }
