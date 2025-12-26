@@ -17,6 +17,8 @@ void main() {
             totalCount: 3,
             sortValue: 'titleAsc',
             onSortChanged: (v) => selected = v,
+            viewMode: LibraryViewMode.list,
+            onViewModeChanged: (mode) {},
           ),
         ),
       ),

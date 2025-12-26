@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
 import '../../../models/chapter.dart';
@@ -73,7 +75,7 @@ class ReaderBottomBarShell extends StatelessWidget {
       );
     }
 
-    return ReaderBottomBar(
+    final bottomBar = ReaderBottomBar(
       key: const ValueKey('reader_bottom_bar'),
       canEdit: canEdit,
       editMode: editMode,
@@ -93,6 +95,33 @@ class ReaderBottomBarShell extends StatelessWidget {
       onBetaEvaluate: onBetaEvaluate,
       showBeta: showBeta,
       betaLoading: betaLoading,
+    );
+
+    return AnimatedContainer(
+      duration: Duration(milliseconds: reduceMotion ? 0 : 300),
+      curve: Curves.easeOutCubic,
+      margin: EdgeInsets.all(isCompact ? Spacing.m : Spacing.l),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(
+              context,
+            ).colorScheme.surface.withValues(alpha: 0.85),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: bottomBar,
+          ),
+        ),
+      ),
     );
   }
 }

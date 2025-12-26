@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:animations/animations.dart';
 import 'package:writer/theme/design_tokens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../state/motion_settings.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../state/novel_providers.dart';
@@ -15,6 +17,7 @@ import 'widgets/library_search_bar.dart';
 import 'widgets/library_loading_list.dart';
 import 'widgets/library_error_section.dart';
 import 'widgets/library_item_row.dart';
+import 'widgets/library_grid_item.dart';
 
 // Basic diacritics normalization for case-insensitive, accent-insensitive matching.
 String _normalizeForSearch(String input) {
@@ -92,6 +95,7 @@ class LibraryScreen extends ConsumerStatefulWidget {
 class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   late final TextEditingController _searchController;
   LibrarySort _sort = LibrarySort.titleAsc;
+  LibraryViewMode _viewMode = LibraryViewMode.list;
 
   @override
   void initState() {
@@ -121,6 +125,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     final l10n = AppLocalizations.of(context)!;
     final isSignedIn = ref.watch(isSignedInProvider);
     final novelsAsync = ref.watch(libraryNovelsProvider);
+    final motion = ref.watch(motionSettingsProvider);
 
     ref.listen(memberNovelsProvider, (prev, next) {
       if (next.hasError) {
@@ -295,6 +300,10 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                             setState(() => _sort = LibrarySort.authorAsc);
                           }
                         },
+                        viewMode: _viewMode,
+                        onViewModeChanged: (mode) {
+                          setState(() => _viewMode = mode);
+                        },
                       ),
                       if (visible.isEmpty)
                         Expanded(
@@ -318,20 +327,61 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                         )
                       else
                         Expanded(
-                          child: ListView.separated(
-                            key: const Key('libraryListView'),
-                            itemCount: visible.length,
-                            separatorBuilder: (_, _) =>
-                                const Divider(height: 1),
-                            itemBuilder: (context, index) {
-                              final n = visible[index];
-                              return LibraryItemRow(
-                                novel: n,
-                                isSignedIn: isSignedIn,
-                                canRemove: canRemove,
-                                canDownload: canDownload,
-                              );
-                            },
+                          child: PageTransitionSwitcher(
+                            duration: Duration(
+                              milliseconds: motion.reduceMotion ? 0 : 300,
+                            ),
+                            transitionBuilder:
+                                (
+                                  Widget child,
+                                  Animation<double> primaryAnimation,
+                                  Animation<double> secondaryAnimation,
+                                ) {
+                                  return FadeThroughTransition(
+                                    animation: primaryAnimation,
+                                    secondaryAnimation: secondaryAnimation,
+                                    child: child,
+                                  );
+                                },
+                            child: _viewMode == LibraryViewMode.list
+                                ? ListView.separated(
+                                    key: const Key('libraryListView'),
+                                    itemCount: visible.length,
+                                    separatorBuilder: (_, _) =>
+                                        const Divider(height: 1),
+                                    itemBuilder: (context, index) {
+                                      final n = visible[index];
+                                      return LibraryItemRow(
+                                        novel: n,
+                                        isSignedIn: isSignedIn,
+                                        canRemove: canRemove,
+                                        canDownload: canDownload,
+                                      );
+                                    },
+                                  )
+                                : GridView.builder(
+                                    key: const Key('libraryGridView'),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8,
+                                    ),
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                          childAspectRatio: 0.7,
+                                          crossAxisSpacing: 16,
+                                          mainAxisSpacing: 16,
+                                        ),
+                                    itemCount: visible.length,
+                                    itemBuilder: (context, index) {
+                                      final n = visible[index];
+                                      return LibraryGridItem(
+                                        novel: n,
+                                        isSignedIn: isSignedIn,
+                                        canRemove: canRemove,
+                                        canDownload: canDownload,
+                                      );
+                                    },
+                                  ),
                           ),
                         ),
                     ],

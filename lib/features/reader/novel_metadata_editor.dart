@@ -19,7 +19,12 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _coverUrlController = TextEditingController();
+  final _contributorEmailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final _titleFocusNode = FocusNode();
+  final _descriptionFocusNode = FocusNode();
+  final _coverUrlFocusNode = FocusNode();
+  final _contributorEmailFocusNode = FocusNode();
   bool _initialized = false;
   bool _saving = false;
   bool _isValid = true;
@@ -27,7 +32,6 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
   String? _error;
   String _languageCode = 'en';
   bool _isPublic = true;
-  final _contributorEmailController = TextEditingController();
   bool _isDirty = false;
   String _baseTitle = '';
   String _baseDescription = '';
@@ -41,6 +45,10 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
     _descriptionController.dispose();
     _coverUrlController.dispose();
     _contributorEmailController.dispose();
+    _titleFocusNode.dispose();
+    _descriptionFocusNode.dispose();
+    _coverUrlFocusNode.dispose();
+    _contributorEmailFocusNode.dispose();
     super.dispose();
   }
 
@@ -161,9 +169,28 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                           Expanded(
                             child: TextFormField(
                               controller: _titleController,
+                              focusNode: _titleFocusNode,
                               decoration: InputDecoration(
                                 labelText: l10n.titleLabel,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    width: 2,
+                                  ),
+                                ),
                               ),
+                              textInputAction: TextInputAction.next,
+                              onFieldSubmitted: (_) {
+                                FocusScope.of(
+                                  context,
+                                ).requestFocus(_descriptionFocusNode);
+                              },
                               onChanged: (_) {
                                 _recomputeFormValidity();
                                 final dirty =
@@ -239,12 +266,29 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _descriptionController,
+                        focusNode: _descriptionFocusNode,
                         minLines: 3,
                         maxLines: null,
                         decoration: InputDecoration(
                           labelText: l10n.descriptionLabel,
                           alignLabelWithHint: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.primary,
+                              width: 2,
+                            ),
+                          ),
                         ),
+                        textInputAction: TextInputAction.next,
+                        onFieldSubmitted: (_) {
+                          FocusScope.of(
+                            context,
+                          ).requestFocus(_coverUrlFocusNode);
+                        },
                         onChanged: (_) {
                           _recomputeFormValidity();
                           final dirty =
@@ -262,10 +306,29 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _coverUrlController,
+                        focusNode: _coverUrlFocusNode,
                         decoration: InputDecoration(
                           labelText: l10n.coverUrlLabel,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.primary,
+                              width: 2,
+                            ),
+                          ),
                         ),
+                        textInputAction: TextInputAction.next,
                         validator: _validateCoverUrl,
+                        onFieldSubmitted: (_) {
+                          if (isOwner) {
+                            FocusScope.of(
+                              context,
+                            ).requestFocus(_contributorEmailFocusNode);
+                          }
+                        },
                         onChanged: (s) {
                           _onCoverChanged(s);
                           final dirty =
@@ -284,10 +347,25 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                       if (isOwner) ...[
                         TextFormField(
                           controller: _contributorEmailController,
+                          focusNode: _contributorEmailFocusNode,
                           decoration: InputDecoration(
                             labelText: l10n.contributorEmailLabel,
                             hintText: l10n.contributorEmailHint,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 2,
+                              ),
+                            ),
                           ),
+                          textInputAction: TextInputAction.done,
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context).unfocus();
+                          },
                         ),
                         const SizedBox(height: 8),
                         Align(

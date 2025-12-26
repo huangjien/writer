@@ -20,6 +20,10 @@ class EditChapterBody extends ConsumerWidget {
   final Chapter current;
   final bool previewMode;
 
+  static final _titleFocusNode = FocusNode();
+  static final _contentFocusNode = FocusNode();
+  static final _indexFocusNode = FocusNode();
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
@@ -63,22 +67,52 @@ class EditChapterBody extends ConsumerWidget {
         ] else ...[
           TextFormField(
             initialValue: editState.title,
+            focusNode: _titleFocusNode,
             decoration: InputDecoration(
               labelText: l10n.chapterTitle,
               hintText: l10n.enterChapterTitle,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
+                ),
+              ),
             ),
+            textInputAction: TextInputAction.next,
+            onFieldSubmitted: (_) {
+              FocusScope.of(context).requestFocus(_contentFocusNode);
+            },
             onChanged: controller.setTitle,
           ),
           const SizedBox(height: 12),
           TextFormField(
             initialValue: editState.content,
+            focusNode: _contentFocusNode,
             minLines: 12,
             maxLines: null,
             decoration: InputDecoration(
               labelText: l10n.chapterContent,
               hintText: l10n.enterChapterContent,
               alignLabelWithHint: true,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
+                ),
+              ),
             ),
+            textInputAction: TextInputAction.next,
+            onFieldSubmitted: (_) {
+              FocusScope.of(context).requestFocus(_indexFocusNode);
+            },
             onChanged: controller.setContent,
           ),
           const SizedBox(height: 12),
@@ -127,13 +161,25 @@ class EditChapterBody extends ConsumerWidget {
 
               return TextFormField(
                 controller: idxController,
+                focusNode: _indexFocusNode,
                 decoration: InputDecoration(
                   labelText: l10n.indexLabel(editState.idx),
                   hintText: l10n.enterFloatIndexHint,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                      width: 2,
+                    ),
+                  ),
                 ),
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
+                textInputAction: TextInputAction.done,
                 onFieldSubmitted: (raw) =>
                     submitWithMode(IndexRoundingMode.after),
               );

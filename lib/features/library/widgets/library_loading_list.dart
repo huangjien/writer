@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/design_tokens.dart';
 
@@ -20,47 +21,43 @@ class LibraryLoadingList extends StatelessWidget {
         ),
         const SizedBox(height: Spacing.s),
         Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              children: List.generate(6, (index) {
-                return Column(
-                  children: [
-                    ListTile(
-                      leading: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(Radii.s),
+          child: Skeletonizer(
+            effect: ShimmerEffect(
+              baseColor: Theme.of(context).colorScheme.surfaceContainer,
+              highlightColor: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHighest,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                children: List.generate(6, (index) {
+                  return Column(
+                    children: [
+                      ListTile(
+                        leading: Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(Radii.s),
+                          ),
+                        ),
+                        title: Container(height: 16, color: Colors.grey),
+                        subtitle: Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Container(height: 12, color: Colors.grey),
+                        ),
+                        trailing: const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
                         ),
                       ),
-                      title: Container(
-                        height: 16,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.surfaceContainerHigh,
-                      ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Container(
-                          height: 12,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerHigh,
-                        ),
-                      ),
-                      trailing: const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
-                    if (index < 5) const Divider(height: 1),
-                  ],
-                );
-              }),
+                      if (index < 5) const Divider(height: 1),
+                    ],
+                  );
+                }),
+              ),
             ),
           ),
         ),
