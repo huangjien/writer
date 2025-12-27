@@ -164,7 +164,7 @@ void main() {
     } catch (e) {
       expect(e is ApiException, isTrue);
       expect((e as ApiException).statusCode, 500);
-      expect(e.message, 'search failed');
+      expect(e.rawMessage, 'search failed');
     }
     try {
       await svc.deletePattern('error');
@@ -172,7 +172,7 @@ void main() {
     } catch (e) {
       expect(e is ApiException, isTrue);
       expect((e as ApiException).statusCode, 500);
-      expect(e.message, 'delete failed');
+      expect(e.rawMessage, 'delete failed');
     }
   });
 }

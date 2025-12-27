@@ -1169,4 +1169,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lockPattern => 'Lock pattern';
+
+  // ========== Standardized Error Codes from Backend ==========
+
+  @override
+  String get errorUnauthorized => 'Please sign in to continue';
+
+  @override
+  String get errorForbidden => 'You don\'t have permission to do this';
+
+  @override
+  String get errorSessionExpired =>
+      'Your session expired. Please sign in again';
+
+  @override
+  String get errorValidation => 'Please check your input and try again';
+
+  @override
+  String get errorInvalidInput => 'Invalid input provided';
+
+  @override
+  String get errorDuplicateTitle => 'An item with this title already exists';
+
+  @override
+  String get errorNotFound => 'The requested item was not found';
+
+  @override
+  String get errorServiceUnavailable => 'Service temporarily unavailable';
+
+  @override
+  String get errorAiNotConfigured => 'AI features are not configured';
+
+  @override
+  String get errorSupabaseError => 'Database error occurred';
+
+  @override
+  String get errorRateLimited => 'Too many requests. Please try again later';
+
+  @override
+  String get errorInternal => 'An unexpected error occurred. Please try again';
+
+  @override
+  String get errorBadGateway => 'Unable to connect to service';
+
+  @override
+  String get errorGatewayTimeout => 'Request timed out. Please try again';
 }

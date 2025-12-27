@@ -1147,4 +1147,48 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get lockPattern => '锁定模式';
+
+  // ========== Standardized Error Codes from Backend ==========
+
+  @override
+  String get errorUnauthorized => '请登录以继续';
+
+  @override
+  String get errorForbidden => '您没有权限执行此操作';
+
+  @override
+  String get errorSessionExpired => '会话已过期，请重新登录';
+
+  @override
+  String get errorValidation => '请检查输入后重试';
+
+  @override
+  String get errorInvalidInput => '输入无效';
+
+  @override
+  String get errorDuplicateTitle => '已存在相同标题的项目';
+
+  @override
+  String get errorNotFound => '未找到请求的项目';
+
+  @override
+  String get errorServiceUnavailable => '服务暂时不可用';
+
+  @override
+  String get errorAiNotConfigured => 'AI 功能未配置';
+
+  @override
+  String get errorSupabaseError => '数据库错误';
+
+  @override
+  String get errorRateLimited => '请求过多，请稍后再试';
+
+  @override
+  String get errorInternal => '发生意外错误，请重试';
+
+  @override
+  String get errorBadGateway => '无法连接到服务';
+
+  @override
+  String get errorGatewayTimeout => '请求超时，请重试';
 }

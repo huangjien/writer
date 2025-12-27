@@ -2275,6 +2275,92 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Lock pattern'**
   String get lockPattern;
+
+  // ========== Standardized Error Codes from Backend ==========
+
+  /// No description provided for @errorUnauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to continue'**
+  String get errorUnauthorized;
+
+  /// No description provided for @errorForbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have permission to do this'**
+  String get errorForbidden;
+
+  /// No description provided for @errorSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Please sign in again'**
+  String get errorSessionExpired;
+
+  /// No description provided for @errorValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your input and try again'**
+  String get errorValidation;
+
+  /// No description provided for @errorInvalidInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid input provided'**
+  String get errorInvalidInput;
+
+  /// No description provided for @errorDuplicateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'An item with this title already exists'**
+  String get errorDuplicateTitle;
+
+  /// No description provided for @errorNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested item was not found'**
+  String get errorNotFound;
+
+  /// No description provided for @errorServiceUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Service temporarily unavailable'**
+  String get errorServiceUnavailable;
+
+  /// No description provided for @errorAiNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'AI features are not configured'**
+  String get errorAiNotConfigured;
+
+  /// No description provided for @errorSupabaseError.
+  ///
+  /// In en, this message translates to:
+  /// **'Database error occurred'**
+  String get errorSupabaseError;
+
+  /// No description provided for @errorRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests. Please try again later'**
+  String get errorRateLimited;
+
+  /// No description provided for @errorInternal.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred. Please try again'**
+  String get errorInternal;
+
+  /// No description provided for @errorBadGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to connect to service'**
+  String get errorBadGateway;
+
+  /// No description provided for @errorGatewayTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Request timed out. Please try again'**
+  String get errorGatewayTimeout;
 }
 
 class _AppLocalizationsDelegate

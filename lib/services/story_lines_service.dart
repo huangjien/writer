@@ -3,14 +3,23 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/story_line.dart';
+import '../models/api_error_response.dart';
 import '../shared/constants.dart';
 
 class ApiException implements Exception {
   final int statusCode;
-  final String message;
-  ApiException(this.statusCode, this.message);
+  final String? rawMessage;
+  final ApiErrorResponse? errorResponse;
+
+  ApiException(this.statusCode, this.rawMessage, {this.errorResponse});
+
   @override
-  String toString() => 'ApiException($statusCode): $message';
+  String toString() {
+    if (errorResponse != null) {
+      return 'ApiException($statusCode): ${errorResponse!.code}';
+    }
+    return 'ApiException($statusCode): $rawMessage';
+  }
 }
 
 class StoryLinesService {
@@ -86,6 +95,18 @@ class StoryLinesService {
       final status = res.statusCode;
       final body = res.body;
       if (status >= 400) {
+        // Try to parse as new standardized error format
+        try {
+          final errorData = jsonDecode(body);
+          if (errorData is Map && errorData.containsKey('code')) {
+            final errorResponse = ApiErrorResponse.fromJson(
+              Map<String, dynamic>.from(errorData),
+            );
+            throw ApiException(status, null, errorResponse: errorResponse);
+          }
+        } catch (_) {
+          // Fall back to raw message if parsing fails
+        }
         throw ApiException(status, body.isEmpty ? 'Request failed' : body);
       }
       if (body.isEmpty) return {};
