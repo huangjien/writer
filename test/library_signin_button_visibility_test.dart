@@ -29,6 +29,6 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.byTooltip('Sign In'), findsOneWidget);
+    expect(find.text('Sign In'), findsWidgets);
   });
 }

@@ -205,12 +205,6 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
           ),
         ),
         actions: [
-          if (!isSignedIn)
-            IconButton(
-              tooltip: l10n.signIn,
-              icon: const Icon(Icons.login),
-              onPressed: () => context.push('/auth'),
-            ),
           Consumer(
             builder: (context, ref, _) {
               return IconButton(
