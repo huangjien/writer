@@ -1148,47 +1148,45 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get lockPattern => '锁定模式';
 
-  // ========== Standardized Error Codes from Backend ==========
+  @override
+  String get errorUnauthorized => '未授权';
 
   @override
-  String get errorUnauthorized => '请登录以继续';
+  String get errorForbidden => '禁止访问';
 
   @override
-  String get errorForbidden => '您没有权限执行此操作';
+  String get errorSessionExpired => '会话已过期';
 
   @override
-  String get errorSessionExpired => '会话已过期，请重新登录';
-
-  @override
-  String get errorValidation => '请检查输入后重试';
+  String get errorValidation => '验证错误';
 
   @override
   String get errorInvalidInput => '输入无效';
 
   @override
-  String get errorDuplicateTitle => '已存在相同标题的项目';
+  String get errorDuplicateTitle => '标题重复';
 
   @override
-  String get errorNotFound => '未找到请求的项目';
+  String get errorNotFound => '未找到';
 
   @override
-  String get errorServiceUnavailable => '服务暂时不可用';
+  String get errorServiceUnavailable => '服务不可用';
 
   @override
-  String get errorAiNotConfigured => 'AI 功能未配置';
+  String get errorAiNotConfigured => 'AI 服务未配置';
 
   @override
-  String get errorSupabaseError => '数据库错误';
+  String get errorSupabaseError => '云服务错误';
 
   @override
-  String get errorRateLimited => '请求过多，请稍后再试';
+  String get errorRateLimited => '请求过多';
 
   @override
-  String get errorInternal => '发生意外错误，请重试';
+  String get errorInternal => '服务器内部错误';
 
   @override
-  String get errorBadGateway => '无法连接到服务';
+  String get errorBadGateway => '网关错误';
 
   @override
-  String get errorGatewayTimeout => '请求超时，请重试';
+  String get errorGatewayTimeout => '网关超时';
 }

@@ -449,5 +449,19 @@
   "charsCount": "字符数：{count}",
   "@charsCount": {"placeholders": {"count": {"type": "int"}}},
   "deletePromptConfirm": "删除提示词 \"{promptKey}\"（{language}）？",
-  "@deletePromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}}
+  "@deletePromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}},
+  "errorUnauthorized": "未授权",
+  "errorForbidden": "禁止访问",
+  "errorSessionExpired": "会话已过期",
+  "errorValidation": "验证错误",
+  "errorInvalidInput": "输入无效",
+  "errorDuplicateTitle": "标题重复",
+  "errorNotFound": "未找到",
+  "errorServiceUnavailable": "服务不可用",
+  "errorAiNotConfigured": "AI 服务未配置",
+  "errorSupabaseError": "云服务错误",
+  "errorRateLimited": "请求过多",
+  "errorInternal": "服务器内部错误",
+  "errorBadGateway": "网关错误",
+  "errorGatewayTimeout": "网关超时"
 }

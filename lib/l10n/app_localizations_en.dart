@@ -1170,48 +1170,45 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get lockPattern => 'Lock pattern';
 
-  // ========== Standardized Error Codes from Backend ==========
+  @override
+  String get errorUnauthorized => 'Unauthorized';
 
   @override
-  String get errorUnauthorized => 'Please sign in to continue';
+  String get errorForbidden => 'Forbidden';
 
   @override
-  String get errorForbidden => 'You don\'t have permission to do this';
+  String get errorSessionExpired => 'Session expired';
 
   @override
-  String get errorSessionExpired =>
-      'Your session expired. Please sign in again';
+  String get errorValidation => 'Validation error';
 
   @override
-  String get errorValidation => 'Please check your input and try again';
+  String get errorInvalidInput => 'Invalid input';
 
   @override
-  String get errorInvalidInput => 'Invalid input provided';
+  String get errorDuplicateTitle => 'Duplicate title';
 
   @override
-  String get errorDuplicateTitle => 'An item with this title already exists';
+  String get errorNotFound => 'Not found';
 
   @override
-  String get errorNotFound => 'The requested item was not found';
+  String get errorServiceUnavailable => 'Service unavailable';
 
   @override
-  String get errorServiceUnavailable => 'Service temporarily unavailable';
+  String get errorAiNotConfigured => 'AI service not configured';
 
   @override
-  String get errorAiNotConfigured => 'AI features are not configured';
+  String get errorSupabaseError => 'Cloud service error';
 
   @override
-  String get errorSupabaseError => 'Database error occurred';
+  String get errorRateLimited => 'Too many requests';
 
   @override
-  String get errorRateLimited => 'Too many requests. Please try again later';
+  String get errorInternal => 'Internal server error';
 
   @override
-  String get errorInternal => 'An unexpected error occurred. Please try again';
+  String get errorBadGateway => 'Bad gateway';
 
   @override
-  String get errorBadGateway => 'Unable to connect to service';
-
-  @override
-  String get errorGatewayTimeout => 'Request timed out. Please try again';
+  String get errorGatewayTimeout => 'Gateway timeout';
 }

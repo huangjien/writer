@@ -2276,90 +2276,88 @@ abstract class AppLocalizations {
   /// **'Lock pattern'**
   String get lockPattern;
 
-  // ========== Standardized Error Codes from Backend ==========
-
   /// No description provided for @errorUnauthorized.
   ///
   /// In en, this message translates to:
-  /// **'Please sign in to continue'**
+  /// **'Unauthorized'**
   String get errorUnauthorized;
 
   /// No description provided for @errorForbidden.
   ///
   /// In en, this message translates to:
-  /// **'You don\'t have permission to do this'**
+  /// **'Forbidden'**
   String get errorForbidden;
 
   /// No description provided for @errorSessionExpired.
   ///
   /// In en, this message translates to:
-  /// **'Your session expired. Please sign in again'**
+  /// **'Session expired'**
   String get errorSessionExpired;
 
   /// No description provided for @errorValidation.
   ///
   /// In en, this message translates to:
-  /// **'Please check your input and try again'**
+  /// **'Validation error'**
   String get errorValidation;
 
   /// No description provided for @errorInvalidInput.
   ///
   /// In en, this message translates to:
-  /// **'Invalid input provided'**
+  /// **'Invalid input'**
   String get errorInvalidInput;
 
   /// No description provided for @errorDuplicateTitle.
   ///
   /// In en, this message translates to:
-  /// **'An item with this title already exists'**
+  /// **'Duplicate title'**
   String get errorDuplicateTitle;
 
   /// No description provided for @errorNotFound.
   ///
   /// In en, this message translates to:
-  /// **'The requested item was not found'**
+  /// **'Not found'**
   String get errorNotFound;
 
   /// No description provided for @errorServiceUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'Service temporarily unavailable'**
+  /// **'Service unavailable'**
   String get errorServiceUnavailable;
 
   /// No description provided for @errorAiNotConfigured.
   ///
   /// In en, this message translates to:
-  /// **'AI features are not configured'**
+  /// **'AI service not configured'**
   String get errorAiNotConfigured;
 
   /// No description provided for @errorSupabaseError.
   ///
   /// In en, this message translates to:
-  /// **'Database error occurred'**
+  /// **'Cloud service error'**
   String get errorSupabaseError;
 
   /// No description provided for @errorRateLimited.
   ///
   /// In en, this message translates to:
-  /// **'Too many requests. Please try again later'**
+  /// **'Too many requests'**
   String get errorRateLimited;
 
   /// No description provided for @errorInternal.
   ///
   /// In en, this message translates to:
-  /// **'An unexpected error occurred. Please try again'**
+  /// **'Internal server error'**
   String get errorInternal;
 
   /// No description provided for @errorBadGateway.
   ///
   /// In en, this message translates to:
-  /// **'Unable to connect to service'**
+  /// **'Bad gateway'**
   String get errorBadGateway;
 
   /// No description provided for @errorGatewayTimeout.
   ///
   /// In en, this message translates to:
-  /// **'Request timed out. Please try again'**
+  /// **'Gateway timeout'**
   String get errorGatewayTimeout;
 }
 

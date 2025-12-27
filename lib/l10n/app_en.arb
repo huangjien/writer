@@ -447,5 +447,19 @@
   "aiButton": "AI",
   "invalidJson": "Invalid JSON",
   "deleteFailed": "Delete failed",
-  "lockPattern": "Lock pattern"
+  "lockPattern": "Lock pattern",
+  "errorUnauthorized": "Unauthorized",
+  "errorForbidden": "Forbidden",
+  "errorSessionExpired": "Session expired",
+  "errorValidation": "Validation error",
+  "errorInvalidInput": "Invalid input",
+  "errorDuplicateTitle": "Duplicate title",
+  "errorNotFound": "Not found",
+  "errorServiceUnavailable": "Service unavailable",
+  "errorAiNotConfigured": "AI service not configured",
+  "errorSupabaseError": "Cloud service error",
+  "errorRateLimited": "Too many requests",
+  "errorInternal": "Internal server error",
+  "errorBadGateway": "Bad gateway",
+  "errorGatewayTimeout": "Gateway timeout"
 }
