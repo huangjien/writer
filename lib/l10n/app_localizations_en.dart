@@ -475,6 +475,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get readerBundles => 'Reader Theme Bundles';
 
   @override
+  String get tokenUsage => 'Token Usage';
+
+  @override
+  String get userManagement => 'User Management';
+
+  @override
+  String get totalThisMonth => 'Total This Month';
+
+  @override
+  String get inputTokens => 'Input Tokens';
+
+  @override
+  String get outputTokens => 'Output Tokens';
+
+  @override
+  String get requests => 'Requests';
+
+  @override
+  String get viewHistory => 'View history';
+
+  @override
+  String get noUsageThisMonth => 'No usage this month';
+
+  @override
+  String get startUsingAiFeatures =>
+      'Start using AI features to see your token consumption';
+
+  @override
+  String get errorLoadingUsage => 'Error loading usage';
+
+  @override
   String get bundleNordCalm => 'Nord Calm';
 
   @override

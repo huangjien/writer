@@ -968,6 +968,66 @@ abstract class AppLocalizations {
   /// **'Reader Theme Bundles'**
   String get readerBundles;
 
+  /// No description provided for @tokenUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'Token Usage'**
+  String get tokenUsage;
+
+  /// No description provided for @userManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'User Management'**
+  String get userManagement;
+
+  /// No description provided for @totalThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Total This Month'**
+  String get totalThisMonth;
+
+  /// No description provided for @inputTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Input Tokens'**
+  String get inputTokens;
+
+  /// No description provided for @outputTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Output Tokens'**
+  String get outputTokens;
+
+  /// No description provided for @requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get requests;
+
+  /// No description provided for @viewHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'View history'**
+  String get viewHistory;
+
+  /// No description provided for @noUsageThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'No usage this month'**
+  String get noUsageThisMonth;
+
+  /// No description provided for @startUsingAiFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Start using AI features to see your token consumption'**
+  String get startUsingAiFeatures;
+
+  /// No description provided for @errorLoadingUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading usage'**
+  String get errorLoadingUsage;
+
   /// No description provided for @bundleNordCalm.
   ///
   /// In en, this message translates to:

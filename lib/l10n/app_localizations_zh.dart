@@ -461,6 +461,36 @@ class AppLocalizationsZh extends AppLocalizations {
   String get readerBundles => '阅读主题预设';
 
   @override
+  String get tokenUsage => '令牌使用量';
+
+  @override
+  String get userManagement => '用户管理';
+
+  @override
+  String get totalThisMonth => '本月总计';
+
+  @override
+  String get inputTokens => '输入令牌';
+
+  @override
+  String get outputTokens => '输出令牌';
+
+  @override
+  String get requests => '请求数';
+
+  @override
+  String get viewHistory => '查看历史';
+
+  @override
+  String get noUsageThisMonth => '本月暂无使用';
+
+  @override
+  String get startUsingAiFeatures => '开始使用 AI 功能以查看令牌消耗';
+
+  @override
+  String get errorLoadingUsage => '加载使用量出错';
+
+  @override
   String get bundleNordCalm => 'Nord Calm';
 
   @override

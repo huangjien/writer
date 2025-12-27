@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/features/settings/state/token_usage_providers.dart';
 import 'package:writer/features/settings/widgets/token_usage_section.dart';
 import 'package:writer/models/token_usage.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('TokenUsageSection renders loading state', (tester) async {
@@ -14,7 +15,11 @@ void main() {
             (ref) => Future.delayed(const Duration(seconds: 1), () => null),
           ),
         ],
-        child: const MaterialApp(home: Scaffold(body: TokenUsageSection())),
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(body: TokenUsageSection()),
+        ),
       ),
     );
 
@@ -34,7 +39,11 @@ void main() {
         overrides: [
           currentMonthUsageProvider.overrideWith((ref) => Future.value(null)),
         ],
-        child: const MaterialApp(home: Scaffold(body: TokenUsageSection())),
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(body: TokenUsageSection()),
+        ),
       ),
     );
 
@@ -62,7 +71,11 @@ void main() {
         overrides: [
           currentMonthUsageProvider.overrideWith((ref) => Future.value(usage)),
         ],
-        child: const MaterialApp(home: Scaffold(body: TokenUsageSection())),
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(body: TokenUsageSection()),
+        ),
       ),
     );
 
@@ -85,7 +98,11 @@ void main() {
             (ref) => Future.error('Network Error'),
           ),
         ],
-        child: const MaterialApp(home: Scaffold(body: TokenUsageSection())),
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(body: TokenUsageSection()),
+        ),
       ),
     );
 

@@ -4,6 +4,7 @@ import 'package:writer/features/settings/state/token_usage_providers.dart';
 import 'package:writer/models/token_usage.dart';
 import 'package:intl/intl.dart';
 import '../../../theme/design_tokens.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Enhanced token usage section with modern design
 /// Features:
@@ -16,6 +17,7 @@ class TokenUsageSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final usageAsync = ref.watch(currentMonthUsageProvider);
 
     return Column(
@@ -36,7 +38,7 @@ class TokenUsageSection extends ConsumerWidget {
               ),
               const SizedBox(width: Spacing.s),
               Text(
-                'Token Usage',
+                l10n.tokenUsage,
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -66,6 +68,7 @@ class _UsageData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final formatter = NumberFormat('#,###');
 
@@ -97,7 +100,7 @@ class _UsageData extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'Total This Month',
+                  l10n.totalThisMonth,
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: theme.colorScheme.onPrimaryContainer,
                   ),
@@ -112,7 +115,7 @@ class _UsageData extends StatelessWidget {
                 ),
                 const SizedBox(height: Spacing.xs),
                 Text(
-                  '${usage.requestCount} requests',
+                  '${usage.requestCount} ${l10n.requests.toLowerCase()}',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onPrimaryContainer.withValues(
                       alpha: 0.8,
@@ -125,13 +128,13 @@ class _UsageData extends StatelessWidget {
           const SizedBox(height: Spacing.m),
           // Token breakdown
           _UsageRow(
-            label: 'Input Tokens',
+            label: l10n.inputTokens,
             value: formatter.format(usage.inputTokens),
             color: theme.colorScheme.primary,
             icon: Icons.arrow_upward,
           ),
           _UsageRow(
-            label: 'Output Tokens',
+            label: l10n.outputTokens,
             value: formatter.format(usage.outputTokens),
             color: theme.colorScheme.secondary,
             icon: Icons.arrow_downward,
@@ -143,7 +146,7 @@ class _UsageData extends StatelessWidget {
               // TODO: Navigate to history screen
             },
             icon: const Icon(Icons.history),
-            label: const Text('View History'),
+            label: Text(l10n.viewHistory),
           ),
         ],
       ),
@@ -198,6 +201,7 @@ class _UsageRow extends StatelessWidget {
 class _EmptyUsage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Padding(
@@ -211,14 +215,14 @@ class _EmptyUsage extends StatelessWidget {
           ),
           const SizedBox(height: Spacing.m),
           Text(
-            'No usage this month',
+            l10n.noUsageThisMonth,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: Spacing.s),
           Text(
-            'Start using AI features to see your token consumption',
+            l10n.startUsingAiFeatures,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             ),
@@ -247,6 +251,7 @@ class _ErrorUsage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Padding(
@@ -263,7 +268,7 @@ class _ErrorUsage extends StatelessWidget {
             const SizedBox(width: Spacing.s),
             Expanded(
               child: Text(
-                'Error loading usage',
+                l10n.errorLoadingUsage,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.error,
                 ),

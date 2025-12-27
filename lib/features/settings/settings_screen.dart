@@ -98,12 +98,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const TtsSettingsContainer(),
           if (currentUser != null) ...[
             const Divider(),
+            ListTile(
+              title: Text(
+                l10n.tokenUsage,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              enabled: false,
+            ),
             const TokenUsageSection(),
           ],
           const Divider(),
           if (isAdmin) ...[
             ListTile(
-              title: const Text('User Management'),
+              title: Text(l10n.userManagement),
               leading: const Icon(Icons.people),
               onTap: () => context.push('/admin/users'),
             ),
