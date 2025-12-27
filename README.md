@@ -122,6 +122,64 @@ Future<http.Response> callBackend(Uri url) async {
   - Some versions of `flutter_tts` include CMake script constructs that break generation on certain runners.
   - CI removes `flutter_tts` from the Windows plugin list before building to ensure successful generation. If you need TTS on Windows locally, pin a compatible plugin version or exclude it for Windows.
 
+## GCP Deployment
+
+The Writer service can be deployed to Google Cloud Platform using the provided Makefile targets.
+
+### Prerequisites
+
+1. **Google Cloud SDK** installed and configured
+2. **Docker** installed and running
+3. **Authentication**:
+   ```bash
+   gcloud auth login
+   gcloud auth configure-docker europe-west1-docker.pkg.dev
+   ```
+
+### GCP Configuration
+
+The following variables can be set in your environment or use defaults:
+
+- `PROJECT_ID` - GCP Project ID (default: inferred from gcloud)
+- `RUN_REGION` - Cloud Run region (default: europe-west1)
+- `REPO_NAME` - Artifact Registry repository name (default: writer)
+- `SERVICE_NAME` - Cloud Run service name (default: writer-web)
+
+### Deployment Commands
+
+```bash
+# Complete deployment (recommended)
+make gcp-deploy-full
+
+# Individual steps
+make docker-setup-gcp    # Enable required APIs
+make docker-create-repo   # Create Artifact Registry repo
+make docker-build-gar     # Build & push Docker image
+make docker-deploy-gcp    # Deploy to Cloud Run
+
+# Management
+make gcp-status           # Check deployment status
+make gcp-delete-deployment # Delete service and repo
+```
+
+### Deployed Services
+
+- **Writer Web**: https://writer-web-1026073243556.europe-west1.run.app
+- **Backend API**: https://authorconsole-api-md5e22izxa-ew.a.run.app
+
+### Environment Variables
+
+The deployment automatically configures these secrets from Secret Manager:
+- `OPENAI_API_KEY` - OpenAI API key
+- `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key (backend only)
+
+### Architecture Notes
+
+- Docker images are built for `linux/amd64` platform to ensure Cloud Run compatibility
+- Uses Artifact Registry for container storage
+- Cloud Run provides serverless hosting with automatic scaling
+- HTTPS endpoints with custom domains can be configured in GCP Console
+
 ## Useful Commands
 - Print environment passed to builds: `make env-print`
 - Clean Flutter build outputs: `make clean`

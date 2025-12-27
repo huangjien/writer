@@ -33,11 +33,17 @@ DF_ARGS := $(strip $(if $(AI_SERVICE_URL),--dart-define AI_SERVICE_URL=$(AI_SERV
                  $(if $(DEFAULT_AGENT_RESPOND_TEMPERATURE),--dart-define DEFAULT_AGENT_RESPOND_TEMPERATURE=$(DEFAULT_AGENT_RESPOND_TEMPERATURE)) \
                  $(if $(DEFAULT_AGENT_QA_TEMPERATURE),--dart-define DEFAULT_AGENT_QA_TEMPERATURE=$(DEFAULT_AGENT_QA_TEMPERATURE)) \
                  $(if $(DEFAULT_AGENT_EMBEDDING_TEMPERATURE),--dart-define DEFAULT_AGENT_EMBEDDING_TEMPERATURE=$(DEFAULT_AGENT_EMBEDDING_TEMPERATURE)))
+# GCP Configuration (can be overridden via environment or command line)
+PROJECT_ID ?= static-223923
+RUN_REGION ?= europe-west1
+IMAGE_URI ?= $(RUN_REGION)-docker.pkg.dev/$(PROJECT_ID)/authorconsole/writer-web:latest
 IMAGE ?= writer-web:latest
+AI_SERVICE_URL ?= https://ai.huangjien.com/
 
 .PHONY: help dev-web dev-chrome macos deps test test-expanded analyze lint clean build-web serve-web-build env-print \
         build-macos build-android build-ios build-windows build-linux build-ipa build-ipa-nocodesign install-hooks icons \
-        docker-build-web docker-push-web ci
+        docker-build-web docker-push-web docker-setup-gcp docker-create-repo docker-build-gar docker-deploy-gcp gcp-deploy-full \
+        gcp-delete-deployment gcp-status ci
 
 help:
 	@echo "Available targets:"
@@ -64,6 +70,9 @@ help:
 	@echo "  install-hooks      - Configure git to use .githooks/ as hooks path"
 	@echo "  publish-release    - Publish release to GitHub (defaults to version in package.json)"
 	@echo "  ci                 - Mirror Writer CI locally (deps, icons, lint, tests)"
+	@echo "  docker-build-gar   - Build and push Docker image to Google Artifact Registry"
+	@echo "  docker-deploy-gcp  - Deploy to Google Cloud Run using Artifact Registry image"
+	@echo "  gcp-deploy-full    - Complete GCP deployment: build, push, and deploy"
 
 dev-web:
 	$(FLUTTER) run -d web-server --web-port $(WEB_PORT) $(DF_ARGS)
@@ -226,3 +235,72 @@ publish-release:
 		cp build/ios/ipa/writer.ipa build/ios/ipa/writer-ios-$(TAG).ipa && \
 		gh release upload $(TAG) build/ios/ipa/writer-ios-$(TAG).ipa; \
 	fi
+
+# GCP Deployment Targets
+docker-setup-gcp:
+	@echo "Setting up GCP environment..."
+	@gcloud config set project "$(PROJECT_ID)" || { echo "Error: GCP not authenticated or project not found. Please run 'gcloud auth login' and 'gcloud config set project YOUR_PROJECT_ID'"; exit 1; }
+	@echo "Enabling required APIs..."
+	@gcloud services enable secretmanager.googleapis.com --project "$(PROJECT_ID)"
+	@gcloud services enable artifactregistry.googleapis.com --project "$(PROJECT_ID)"
+
+docker-create-repo:
+	@echo "Setting up Artifact Registry repository..."
+	@if ! gcloud artifacts repositories describe authorconsole --location="$(RUN_REGION)" --project "$(PROJECT_ID)" >/dev/null 2>&1; then \
+		echo "Creating Artifact Registry repository..."; \
+		gcloud artifacts repositories create authorconsole \
+			--repository-format=docker \
+			--location="$(RUN_REGION)" \
+			--description="Docker repository for AuthorConsole" \
+			--project "$(PROJECT_ID)"; \
+	else \
+		echo "Artifact Registry repository already exists"; \
+	fi
+	@echo "Configuring Docker authentication..."
+	@gcloud auth configure-docker "$(RUN_REGION)-docker.pkg.dev"
+
+docker-build-gar: docker-setup-gcp docker-create-repo
+	@echo "Building Flutter web for Docker..."
+	@$(MAKE) build-web
+	@echo "Building Docker image: $(IMAGE_URI)"
+	@docker build --platform linux/amd64 -t "$(IMAGE_URI)" .
+	@echo "Pushing Docker image to Artifact Registry..."
+	@docker push "$(IMAGE_URI)"
+	@echo "Docker image successfully pushed to: $(IMAGE_URI)"
+
+docker-deploy-gcp:
+	@echo "Deploying to Google Cloud Run..."
+	@gcloud run deploy writer-web \
+		--quiet \
+		--region "$(RUN_REGION)" \
+		--update-secrets OPENAI_API_KEY=OPENAI_API_KEY:latest \
+		--update-env-vars AI_SERVICE_URL="$(AI_SERVICE_URL)" \
+		--image "$(IMAGE_URI)" \
+		--platform managed \
+		--port 8080 \
+		--allow-unauthenticated \
+		--project "$(PROJECT_ID)"
+	@echo "Deployment completed successfully!"
+	@echo "Service URL: $$(gcloud run services describe writer-web --region="$(RUN_REGION)" --format='value(status.url)' --project="$(PROJECT_ID)")"
+
+gcp-deploy-full: docker-build-gar docker-deploy-gcp
+	@echo "Complete GCP deployment finished!"
+
+# GCP Management Targets
+gcp-delete-deployment:
+	@echo "Deleting Cloud Run service..."
+	@gcloud run services delete writer-web --region="$(RUN_REGION)" --quiet --project "$(PROJECT_ID)" || echo "Service does not exist"
+	@echo "Deleting Docker image from Artifact Registry..."
+	@gcloud artifacts docker images delete "$(IMAGE_URI)" --delete-tags --quiet --project "$(PROJECT_ID)" || echo "Image does not exist"
+
+gcp-status:
+	@echo "=== GCP Deployment Status ==="
+	@echo "Project: $(PROJECT_ID)"
+	@echo "Region: $(RUN_REGION)"
+	@echo "Image URI: $(IMAGE_URI)"
+	@echo ""
+	@echo "=== Cloud Run Service ==="
+	@gcloud run services describe writer-web --region="$(RUN_REGION)" --format='table(name,status.url,status.latestReadyRevisionName)' --project="$(PROJECT_ID)" || echo "Service not found"
+	@echo ""
+	@echo "=== Artifact Registry Image ==="
+	@gcloud artifacts docker images list "$(RUN_REGION)-docker.pkg.dev/$(PROJECT_ID)/authorconsole/writer-web" --format='table(version,createTime,imageSize,updateTime)' --project="$(PROJECT_ID)" || echo "Image not found"
