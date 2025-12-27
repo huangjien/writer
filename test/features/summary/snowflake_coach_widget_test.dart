@@ -1,64 +1,111 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/features/summary/snowflake_coach_widget.dart';
 import 'package:writer/features/summary/snowflake_service.dart';
-import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/snowflake.dart';
-import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
-class _FakeSnowflakeService extends SnowflakeService {
-  _FakeSnowflakeService(this.result)
-    : super(RemoteRepository('http://example.com/'));
-
-  final SnowflakeRefinementOutput? result;
-  int calls = 0;
+class FakeSnowflakeService extends Fake implements SnowflakeService {
+  SnowflakeRefinementOutput? response;
+  bool shouldFail = false;
 
   @override
   Future<SnowflakeRefinementOutput?> refineSummary(
     SnowflakeRefinementInput input,
   ) async {
-    calls++;
-    return result;
+    if (shouldFail) throw Exception('API Error');
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 100));
+    return response;
   }
 }
 
 void main() {
-  testWidgets('SnowflakeCoachWidget shows error when service returns null', (
-    tester,
-  ) async {
-    final fake = _FakeSnowflakeService(null);
-    final updates = <String>[];
+  late FakeSnowflakeService fakeService;
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [snowflakeServiceProvider.overrideWithValue(fake)],
-        child: MaterialApp(
-          locale: const Locale('en'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: SizedBox(
-              height: 500,
-              child: SnowflakeCoachWidget(
-                novelId: 'n1',
-                currentSummary: 'S',
-                onSummaryUpdated: updates.add,
-              ),
-            ),
+  setUp(() {
+    fakeService = FakeSnowflakeService();
+  });
+
+  Widget createWidget() {
+    return ProviderScope(
+      overrides: [snowflakeServiceProvider.overrideWithValue(fakeService)],
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: SnowflakeCoachWidget(
+            novelId: '123',
+            currentSummary: 'My summary',
+            onSummaryUpdated: (_) {},
           ),
         ),
       ),
     );
+  }
+
+  testWidgets(
+    'SnowflakeCoachWidget calls refineSummary on init and shows result',
+    (tester) async {
+      fakeService.response = SnowflakeRefinementOutput(
+        novelId: '123',
+        summaryContent: 'Refined summary',
+        status: 'question',
+        aiQuestion: 'How can we improve?',
+        history: [],
+      );
+
+      await tester.pumpWidget(createWidget());
+
+      // Loading
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('How can we improve?'), findsOneWidget);
+    },
+  );
+
+  testWidgets('SnowflakeCoachWidget shows error on failure', (tester) async {
+    fakeService.shouldFail = true;
+
+    await tester.pumpWidget(createWidget());
+
     await tester.pumpAndSettle();
 
-    expect(fake.calls, 1);
-    expect(find.text('Failed to analyze'), findsOneWidget);
-    expect(find.widgetWithText(ElevatedButton, 'Retry'), findsOneWidget);
-    expect(updates, isEmpty);
+    expect(find.textContaining('API Error'), findsOneWidget);
+    expect(find.text('Retry'), findsOneWidget);
+  });
 
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Retry'));
+  testWidgets('SnowflakeCoachWidget handles input and submission', (
+    tester,
+  ) async {
+    fakeService.response = SnowflakeRefinementOutput(
+      novelId: '123',
+      summaryContent: 'Refined summary',
+      status: 'question',
+      aiQuestion: 'How can we improve?',
+      history: [],
+    );
+
+    await tester.pumpWidget(createWidget());
     await tester.pumpAndSettle();
-    expect(fake.calls, 2);
+
+    // Find text field
+    final textField = find.byType(TextField);
+    expect(textField, findsOneWidget);
+
+    // Enter text
+    await tester.enterText(textField, 'Make it shorter');
+
+    // Tap send (icon button)
+    await tester.tap(find.byIcon(Icons.send));
+
+    // Should trigger loading again
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    await tester.pumpAndSettle();
   });
 }

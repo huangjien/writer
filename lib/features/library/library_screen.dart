@@ -13,11 +13,12 @@ import '../../state/providers.dart';
 import 'library_providers.dart';
 import 'widgets/session_section.dart';
 import 'widgets/library_list_header.dart';
-import 'widgets/library_search_bar.dart';
 import 'widgets/library_loading_list.dart';
 import 'widgets/library_error_section.dart';
 import 'widgets/library_item_row.dart';
 import 'widgets/library_grid_item.dart';
+import 'widgets/enhanced_search_bar.dart';
+import '../../shared/widgets/empty_state.dart';
 
 // Basic diacritics normalization for case-insensitive, accent-insensitive matching.
 String _normalizeForSearch(String input) {
@@ -85,6 +86,8 @@ String _normalizeForSearch(String input) {
 
 enum LibrarySort { titleAsc, authorAsc }
 
+enum LibraryFilter { all, reading, completed, downloaded }
+
 class LibraryScreen extends ConsumerStatefulWidget {
   const LibraryScreen({super.key});
 
@@ -93,29 +96,42 @@ class LibraryScreen extends ConsumerStatefulWidget {
 }
 
 class _LibraryScreenState extends ConsumerState<LibraryScreen> {
-  late final TextEditingController _searchController;
   LibrarySort _sort = LibrarySort.titleAsc;
   LibraryViewMode _viewMode = LibraryViewMode.list;
-
-  @override
-  void initState() {
-    super.initState();
-    _searchController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
+  LibraryFilter _filter = LibraryFilter.all;
+  String _searchQuery = '';
 
   List<dynamic> _filterNovels(List<dynamic> novels, Set<String> removedIds) {
-    final query = _normalizeForSearch(_searchController.text.trim());
-    final filtered = query.isEmpty
+    final query = _normalizeForSearch(_searchQuery.trim());
+    var filtered = query.isEmpty
         ? [...novels]
         : novels
               .where((n) => _normalizeForSearch(n.title).contains(query))
               .toList();
+
+    // Apply filter chips
+    switch (_filter) {
+      case LibraryFilter.reading:
+        filtered = filtered.where((n) {
+          final progress = n.currentChapterIndex ?? 0;
+          final totalChapters = n.chapterCount ?? 0;
+          return progress > 0 && progress < totalChapters;
+        }).toList();
+        break;
+      case LibraryFilter.completed:
+        filtered = filtered.where((n) {
+          final progress = n.currentChapterIndex ?? 0;
+          final totalChapters = n.chapterCount ?? 0;
+          return progress >= totalChapters && totalChapters > 0;
+        }).toList();
+        break;
+      case LibraryFilter.downloaded:
+        filtered = filtered.where((n) => n.isDownloaded == true).toList();
+        break;
+      case LibraryFilter.all:
+        break;
+    }
+
     // Apply local removals with undo support
     return filtered.where((n) => !removedIds.contains(n.id)).toList();
   }
@@ -143,11 +159,6 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     // When signed-in, remove also deletes remotely (with confirmation).
     const canRemove = true;
     final canDownload = true; // safe testing override
-
-    final novels = novelsAsync.asData?.value;
-    final visibleCount = novels != null
-        ? _filterNovels(novels, removedIds).length
-        : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -259,12 +270,47 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
               ),
               const SizedBox(height: Spacing.s),
             ],
-            LibrarySearchBar(
-              controller: _searchController,
-              onChanged: (_) {
-                setState(() {});
+            EnhancedSearchBar(
+              onChanged: (query) {
+                setState(() {
+                  _searchQuery = query;
+                });
               },
-              matchCount: visibleCount,
+              hintText: 'Search novels...',
+              onClear: () {
+                setState(() {
+                  _searchQuery = '';
+                });
+              },
+              showFilters: true,
+              filters: [
+                LibraryFilterChip(
+                  label: 'All',
+                  selected: _filter == LibraryFilter.all,
+                  onTap: () => setState(() => _filter = LibraryFilter.all),
+                  icon: Icons.apps,
+                ),
+                LibraryFilterChip(
+                  label: 'Reading',
+                  selected: _filter == LibraryFilter.reading,
+                  onTap: () => setState(() => _filter = LibraryFilter.reading),
+                  icon: Icons.menu_book,
+                ),
+                LibraryFilterChip(
+                  label: 'Completed',
+                  selected: _filter == LibraryFilter.completed,
+                  onTap: () =>
+                      setState(() => _filter = LibraryFilter.completed),
+                  icon: Icons.check_circle,
+                ),
+                LibraryFilterChip(
+                  label: 'Downloaded',
+                  selected: _filter == LibraryFilter.downloaded,
+                  onTap: () =>
+                      setState(() => _filter = LibraryFilter.downloaded),
+                  icon: Icons.download_done,
+                ),
+              ],
             ),
             const SizedBox(height: Spacing.m),
             Expanded(
@@ -307,22 +353,13 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                       ),
                       if (visible.isEmpty)
                         Expanded(
-                          child: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Semantics(
-                                  label: l10n.noNovelsFound,
-                                  image: true,
-                                  child: const Icon(
-                                    Icons.menu_book_outlined,
-                                    size: 48,
-                                  ),
-                                ),
-                                const SizedBox(height: Spacing.s),
-                                Text(l10n.noNovelsFound),
-                              ],
-                            ),
+                          child: EmptyState(
+                            icon: Icons.menu_book_outlined,
+                            title: l10n.noNovelsFound,
+                            subtitle:
+                                'Try adjusting your search or create a new novel',
+                            actionLabel: 'Create Novel',
+                            onAction: () => context.pushNamed('createNovel'),
                           ),
                         )
                       else
