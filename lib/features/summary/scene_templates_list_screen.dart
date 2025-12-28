@@ -91,7 +91,7 @@ class _SceneTemplatesListScreenState
 
       if (!mounted) return;
       setState(() {
-        _displayItems = res.isEmpty ? _items : res;
+        _displayItems = res;
       });
     } catch (e) {
       if (!mounted) return;
