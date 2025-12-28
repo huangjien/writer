@@ -1236,6 +1236,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sessionInvalidLoginAgain => '会话无效。请重新登录或再次使用重置链接。';
 
   @override
+  String get updateFailed => '更新失败';
+
+  @override
   String get passwordUpdatedSuccessfully => '密码已成功更新！';
 
   @override
@@ -1260,24 +1263,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get accessDeniedNoAdminPrivileges => '访问被拒绝。您没有管理员权限。';
 
   @override
-  String get updateFailed => '更新失败';
-
-  @override
   String failedToLoadUsers(int statusCode, String errorBody) {
     return '加载用户失败：$statusCode - $errorBody';
   }
 
   @override
-  String get sessionExpired => '会话已过期';
+  String get smartSearchRequiresSignIn => '智能搜索需要登录';
 
   @override
-  String get errorLoadingUsers => '加载用户时出错';
+  String get smartSearch => '智能搜索';
 
   @override
-  String get unknownError => '未知错误';
+  String get failedToPersistTemplate => '保存模板失败';
 
   @override
-  String get goBack => '返回';
+  String get listView => '列表视图';
+
+  @override
+  String get gridView => '网格视图';
 
   @override
   String userIdCreated(String id, String createdAt) {
@@ -1303,29 +1306,23 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tryAdjustingSearchCreateNovel => '尝试调整搜索或创建新小说';
 
   @override
+  String get sessionExpired => '会话已过期';
+
+  @override
+  String get errorLoadingUsers => '加载用户时出错';
+
+  @override
+  String get unknownError => '未知错误';
+
+  @override
+  String get goBack => 'Go Back';
+
+  @override
+  String get unableToLoadAsset => '无法加载资源：\"assetmanifest.bin.json\"';
+
+  @override
   String get continueReading => '继续阅读';
 
   @override
   String get removeFromLibrary => '从文库中移除';
-
-  @override
-  String get listView => '列表视图';
-
-  @override
-  String get gridView => '网格视图';
-
-  @override
-  String get smartSearchRequiresSignIn => '智能搜索需要登录';
-
-  @override
-  String get smartSearch => '智能搜索';
-
-  @override
-  String get failedToPersistTemplate => '保存模板失败';
-
-  @override
-  String get youDontHavePermission => '您没有权限执行此操作。';
-
-  @override
-  String get unableToLoadAsset => '无法加载资源："assetmanifest.bin.json"';
 }

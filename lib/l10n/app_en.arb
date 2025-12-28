@@ -487,10 +487,35 @@
   "authenticationFailedSignInAgain": "Authentication failed. Please sign in again.",
   "accessDeniedNoAdminPrivileges": "Access denied. You don't have admin privileges.",
   "failedToLoadUsers": "Failed to load users: {statusCode} - {errorBody}",
+  "smartSearchRequiresSignIn": "Please sign in to use smart search",
+  "smartSearch": "Smart Search",
+  "failedToPersistTemplate": "Failed to save template",
+  "listView": "List View",
+  "gridView": "Grid View",
+  "userIdCreated": "User {id} created at {createdAt}",
+  "searchNovels": "Search novels...",
+  "allFilter": "All",
+  "readingFilter": "Reading",
+  "completedFilter": "Completed",
+  "downloadedFilter": "Downloaded",
+  "tryAdjustingSearchCreateNovel": "Try adjusting your search or create a new novel",
+  "sessionExpired": "Session expired",
+  "errorLoadingUsers": "Error loading users",
+  "unknownError": "Unknown error",
+  "goBack": "Go Back",
+  "unableToLoadAsset": "Unable to load asset",
+  "continueReading": "Continue Reading",
+  "removeFromLibrary": "Remove from Library",
+  "@userIdCreated": {
+    "placeholders": {
+      "id": {"type": "String"},
+      "createdAt": {"type": "String"}
+    }
+  },
   "@failedToLoadUsers": {
     "placeholders": {
       "statusCode": {"type": "int"},
       "errorBody": {"type": "String"}
     }
-  },
+  }
 }

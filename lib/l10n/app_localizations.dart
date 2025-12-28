@@ -2450,6 +2450,12 @@ abstract class AppLocalizations {
   /// **'Session invalid. Please login or use the reset link again.'**
   String get sessionInvalidLoginAgain;
 
+  /// No description provided for @updateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Update failed'**
+  String get updateFailed;
+
   /// No description provided for @passwordUpdatedSuccessfully.
   ///
   /// In en, this message translates to:
@@ -2495,14 +2501,8 @@ abstract class AppLocalizations {
   /// No description provided for @accessDeniedNoAdminPrivileges.
   ///
   /// In en, this message translates to:
-  /// **'Access denied. You don't have admin privileges.'**
+  /// **'Access denied. You don\'t have admin privileges.'**
   String get accessDeniedNoAdminPrivileges;
-
-  /// No description provided for @updateFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Update failed'**
-  String get updateFailed;
 
   /// No description provided for @failedToLoadUsers.
   ///
@@ -2510,34 +2510,40 @@ abstract class AppLocalizations {
   /// **'Failed to load users: {statusCode} - {errorBody}'**
   String failedToLoadUsers(int statusCode, String errorBody);
 
-  /// No description provided for @sessionExpired.
+  /// No description provided for @smartSearchRequiresSignIn.
   ///
   /// In en, this message translates to:
-  /// **'Session expired'**
-  String get sessionExpired;
+  /// **'Please sign in to use smart search'**
+  String get smartSearchRequiresSignIn;
 
-  /// No description provided for @errorLoadingUsers.
+  /// No description provided for @smartSearch.
   ///
   /// In en, this message translates to:
-  /// **'Error loading users'**
-  String get errorLoadingUsers;
+  /// **'Smart Search'**
+  String get smartSearch;
 
-  /// No description provided for @unknownError.
+  /// No description provided for @failedToPersistTemplate.
   ///
   /// In en, this message translates to:
-  /// **'Unknown error'**
-  String get unknownError;
+  /// **'Failed to save template'**
+  String get failedToPersistTemplate;
 
-  /// No description provided for @goBack.
+  /// No description provided for @listView.
   ///
   /// In en, this message translates to:
-  /// **'Go Back'**
-  String get goBack;
+  /// **'List View'**
+  String get listView;
+
+  /// No description provided for @gridView.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid View'**
+  String get gridView;
 
   /// No description provided for @userIdCreated.
   ///
   /// In en, this message translates to:
-  /// **'ID: {id}\nCreated: {createdAt}'**
+  /// **'User {id} created at {createdAt}'**
   String userIdCreated(String id, String createdAt);
 
   /// No description provided for @searchNovels.
@@ -2576,59 +2582,47 @@ abstract class AppLocalizations {
   /// **'Try adjusting your search or create a new novel'**
   String get tryAdjustingSearchCreateNovel;
 
+  /// No description provided for @sessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired'**
+  String get sessionExpired;
+
+  /// No description provided for @errorLoadingUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading users'**
+  String get errorLoadingUsers;
+
+  /// No description provided for @unknownError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown error'**
+  String get unknownError;
+
+  /// No description provided for @goBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Back'**
+  String get goBack;
+
+  /// No description provided for @unableToLoadAsset.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load asset'**
+  String get unableToLoadAsset;
+
   /// No description provided for @continueReading.
   ///
   /// In en, this message translates to:
-  /// **'Continue reading'**
+  /// **'Continue Reading'**
   String get continueReading;
 
   /// No description provided for @removeFromLibrary.
   ///
   /// In en, this message translates to:
-  /// **'Remove from library'**
+  /// **'Remove from Library'**
   String get removeFromLibrary;
-
-  /// No description provided for @listView.
-  ///
-  /// In en, this message translates to:
-  /// **'List view'**
-  String get listView;
-
-  /// No description provided for @gridView.
-  ///
-  /// In en, this message translates to:
-  /// **'Grid view'**
-  String get gridView;
-
-  /// No description provided for @smartSearchRequiresSignIn.
-  ///
-  /// In en, this message translates to:
-  /// **'Smart search requires sign in'**
-  String get smartSearchRequiresSignIn;
-
-  /// No description provided for @smartSearch.
-  ///
-  /// In en, this message translates to:
-  /// **'Smart Search'**
-  String get smartSearch;
-
-  /// No description provided for @failedToPersistTemplate.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to persist template'**
-  String get failedToPersistTemplate;
-
-  /// No description provided for @youDontHavePermission.
-  ///
-  /// In en, this message translates to:
-  /// **'You don't have permission to do that.'**
-  String get youDontHavePermission;
-
-  /// No description provided for @unableToLoadAsset.
-  ///
-  /// In en, this message translates to:
-  /// **'Unable to load asset: "assetmanifest.bin.json"'**
-  String get unableToLoadAsset;
 }
 
 class _AppLocalizationsDelegate

@@ -1262,6 +1262,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Session invalid. Please login or use the reset link again.';
 
   @override
+  String get updateFailed => 'Update failed';
+
+  @override
   String get passwordUpdatedSuccessfully => 'Password updated successfully!';
 
   @override
@@ -1289,28 +1292,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'Access denied. You don\'t have admin privileges.';
 
   @override
-  String get updateFailed => 'Update failed';
-
-  @override
   String failedToLoadUsers(int statusCode, String errorBody) {
     return 'Failed to load users: $statusCode - $errorBody';
   }
 
   @override
-  String get sessionExpired => 'Session expired';
+  String get smartSearchRequiresSignIn => 'Please sign in to use smart search';
 
   @override
-  String get errorLoadingUsers => 'Error loading users';
+  String get smartSearch => 'Smart Search';
 
   @override
-  String get unknownError => 'Unknown error';
+  String get failedToPersistTemplate => 'Failed to save template';
 
   @override
-  String get goBack => 'Go Back';
+  String get listView => 'List View';
+
+  @override
+  String get gridView => 'Grid View';
 
   @override
   String userIdCreated(String id, String createdAt) {
-    return 'ID: $id\nCreated: $createdAt';
+    return 'User $id created at $createdAt';
   }
 
   @override
@@ -1333,30 +1336,23 @@ class AppLocalizationsEn extends AppLocalizations {
       'Try adjusting your search or create a new novel';
 
   @override
-  String get continueReading => 'Continue reading';
+  String get sessionExpired => 'Session expired';
 
   @override
-  String get removeFromLibrary => 'Remove from library';
+  String get errorLoadingUsers => 'Error loading users';
 
   @override
-  String get listView => 'List view';
+  String get unknownError => 'Unknown error';
 
   @override
-  String get gridView => 'Grid view';
+  String get goBack => 'Go Back';
 
   @override
-  String get smartSearchRequiresSignIn => 'Smart search requires sign in';
+  String get unableToLoadAsset => 'Unable to load asset';
 
   @override
-  String get smartSearch => 'Smart Search';
+  String get continueReading => 'Continue Reading';
 
   @override
-  String get failedToPersistTemplate => 'Failed to persist template';
-
-  @override
-  String get youDontHavePermission => 'You don\'t have permission to do that.';
-
-  @override
-  String get unableToLoadAsset =>
-      'Unable to load asset: "assetmanifest.bin.json"';
+  String get removeFromLibrary => 'Remove from Library';
 }
