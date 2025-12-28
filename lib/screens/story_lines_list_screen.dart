@@ -31,8 +31,9 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
   bool? _filterLocked;
 
   String _preview(String s) {
-    if (s.length <= _previewLen) return s;
-    return '${s.substring(0, _previewLen)}…';
+    final firstLine = s.split('\n').first.trim();
+    if (firstLine.length <= _previewLen) return firstLine;
+    return '${firstLine.substring(0, _previewLen)}…';
   }
 
   void _onRowTap(StoryLine p) {

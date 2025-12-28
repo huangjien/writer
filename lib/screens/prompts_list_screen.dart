@@ -104,8 +104,9 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
   }
 
   String _preview(String s) {
-    if (s.length <= _previewLen) return s;
-    return '${s.substring(0, _previewLen)}…';
+    final firstLine = s.split('\n').first.trim();
+    if (firstLine.length <= _previewLen) return firstLine;
+    return '${firstLine.substring(0, _previewLen)}…';
   }
 
   void _showError(String message) {

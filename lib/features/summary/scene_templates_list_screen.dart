@@ -205,11 +205,11 @@ class _SceneTemplatesListScreenState
                       itemBuilder: (ctx, i) {
                         final it = _displayItems[i];
                         final title = it.title ?? l10n.untitled;
+                        final rawSubtitle =
+                            it.sceneSummaries ?? it.sceneSynopses ?? '';
+                        final firstLine = rawSubtitle.split('\n').first;
                         final subtitle =
-                            (it.sceneSummaries ?? it.sceneSynopses ?? '')
-                                .replaceAll('**', '')
-                                .replaceAll(RegExp(r'\s+'), ' ')
-                                .trim();
+                            firstLine.replaceAll('**', '').trim();
                         final theme = Theme.of(context);
                         final titleStyle = theme.textTheme.titleMedium;
                         final subtitleStyle = theme.textTheme.bodySmall

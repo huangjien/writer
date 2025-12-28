@@ -218,13 +218,11 @@ class _CharacterTemplatesListScreenState
                       itemBuilder: (ctx, i) {
                         final it = _displayItems[i];
                         final title = it.title ?? l10n.untitled;
+                        final rawSubtitle =
+                            it.characterSummaries ?? it.characterSynopses ?? '';
+                        final firstLine = rawSubtitle.split('\n').first;
                         final subtitle =
-                            (it.characterSummaries ??
-                                    it.characterSynopses ??
-                                    '')
-                                .replaceAll('**', '')
-                                .replaceAll(RegExp(r'\s+'), ' ')
-                                .trim();
+                            firstLine.replaceAll('**', '').trim();
                         final theme = Theme.of(context);
                         final titleStyle = theme.textTheme.titleMedium;
                         final subtitleStyle = theme.textTheme.bodySmall

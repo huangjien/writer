@@ -92,13 +92,14 @@ class _ScenesListScreenState extends ConsumerState<ScenesListScreen> {
                 final it = _items[i];
                 final title = it.title ?? l10n.untitled;
                 final subtitle = it.sceneSummaries ?? it.sceneSynopses ?? '';
+                final firstLine = subtitle.split('\n').first.trim();
                 return ListTile(
                   title: Text(title),
-                  subtitle: subtitle.isEmpty
+                  subtitle: firstLine.isEmpty
                       ? null
                       : Text(
-                          subtitle,
-                          maxLines: 2,
+                          firstLine,
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                   trailing: Row(

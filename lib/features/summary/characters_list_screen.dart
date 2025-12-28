@@ -94,13 +94,14 @@ class _CharactersListScreenState extends ConsumerState<CharactersListScreen> {
                 final title = it.title ?? l10n.untitled;
                 final subtitle =
                     it.characterSummaries ?? it.characterSynopses ?? '';
+                final firstLine = subtitle.split('\n').first.trim();
                 return ListTile(
                   title: Text(title),
-                  subtitle: subtitle.isEmpty
+                  subtitle: firstLine.isEmpty
                       ? null
                       : Text(
-                          subtitle,
-                          maxLines: 2,
+                          firstLine,
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                   trailing: Row(
