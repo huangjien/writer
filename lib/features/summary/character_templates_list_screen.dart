@@ -198,13 +198,30 @@ class _CharacterTemplatesListScreenState
                       controller: _searchCtrl,
                       decoration: InputDecoration(
                         labelText: l10n.searchLabel,
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.auto_awesome),
-                          tooltip: l10n.smartSearch,
-                          onPressed: () => _smartSearch(context),
+                        suffixIcon: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (_searchCtrl.text.isNotEmpty)
+                              IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  _searchCtrl.clear();
+                                  setState(() {
+                                    _displayItems = _items;
+                                  });
+                                },
+                                tooltip: 'Clear search',
+                              ),
+                            IconButton(
+                              icon: const Icon(Icons.auto_awesome),
+                              tooltip: l10n.smartSearch,
+                              onPressed: () => _smartSearch(context),
+                            ),
+                          ],
                         ),
                       ),
                       onChanged: (_) {
+                        setState(() {}); // Rebuild to show/hide clear button
                         setState(() {
                           _localSearch();
                         });

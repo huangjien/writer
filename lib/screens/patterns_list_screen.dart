@@ -250,13 +250,31 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
               decoration: InputDecoration(
                 labelText: l10n.searchLabel,
                 suffixText: '$count',
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.auto_awesome),
-                  onPressed: _smartSearch,
-                  tooltip: l10n.smartSearch,
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (_searchCtrl.text.isNotEmpty)
+                      IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchCtrl.clear();
+                          setState(() {
+                            _items = [];
+                            _error = null;
+                          });
+                        },
+                        tooltip: 'Clear search',
+                      ),
+                    IconButton(
+                      icon: const Icon(Icons.auto_awesome),
+                      onPressed: _smartSearch,
+                      tooltip: l10n.smartSearch,
+                    ),
+                  ],
                 ),
               ),
               onChanged: (_) {
+                setState(() {}); // Rebuild to show/hide clear button
                 _searchTimer?.cancel();
                 _searchTimer = Timer(
                   const Duration(milliseconds: _searchDebounceMs),

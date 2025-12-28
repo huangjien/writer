@@ -21,7 +21,7 @@ const List<Duration> kTtsRetryDelays = [
 // UI & Interaction
 const int kPreviewLenShort = 50; // Prompts
 const int kPreviewLenLong = 80; // Patterns
-const int kSearchDebounceMs = 600;
+const int kSearchDebounceMs = 6000;
 const int kSearchMinLen = 2;
 const Duration kDoubleTapThreshold = Duration(milliseconds: 300);
 

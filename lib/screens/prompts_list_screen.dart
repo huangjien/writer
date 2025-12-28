@@ -318,8 +318,19 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
               decoration: InputDecoration(
                 labelText: 'Search',
                 suffixText: '$count',
+                suffixIcon: _searchCtrl.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchCtrl.clear();
+                          setState(() {});
+                        },
+                        tooltip: 'Clear search',
+                      )
+                    : null,
               ),
               onChanged: (_) {
+                setState(() {}); // Rebuild to show/hide clear button
                 _searchTimer?.cancel();
                 _searchTimer = Timer(
                   const Duration(milliseconds: _searchDebounceMs),
