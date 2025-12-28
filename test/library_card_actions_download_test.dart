@@ -12,6 +12,7 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
+import 'package:writer/state/providers.dart';
 // No Supabase imports; use a pure fake repository to avoid timers.
 
 // A minimal fake to avoid Supabase and background timers in tests.
@@ -99,6 +100,9 @@ void main() {
           lastProgressProvider.overrideWith((ref, novelId) async => null),
           lib_providers.downloadFeatureFlagProvider.overrideWithValue(true),
           chapterRepositoryProvider.overrideWithValue(repo),
+          isSignedInProvider.overrideWithValue(
+            true,
+          ), // Mock signed-in state for download test
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

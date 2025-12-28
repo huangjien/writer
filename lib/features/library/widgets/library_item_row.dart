@@ -8,6 +8,7 @@ import '../../../theme/design_tokens.dart';
 import '../../../state/motion_settings.dart';
 import '../../../state/novel_providers.dart';
 import '../../../state/progress_providers.dart';
+import '../../../shared/image_utils.dart';
 import '../../../repositories/chapter_repository.dart';
 import '../../../repositories/novel_repository.dart';
 import '../../../models/chapter.dart';
@@ -518,11 +519,11 @@ class LibraryItemRow extends ConsumerWidget {
                 _progressWidget(l10n, motion, lastProgressAsync, chaptersAsync),
               ],
             ),
-            leading: n.coverUrl != null
+            leading: ImageUtils.getFilteredCoverUrl(n.coverUrl) != null
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(Radii.s),
                     child: Image.network(
-                      n.coverUrl!,
+                      ImageUtils.getFilteredCoverUrl(n.coverUrl)!,
                       width: 48,
                       height: 48,
                       fit: BoxFit.cover,

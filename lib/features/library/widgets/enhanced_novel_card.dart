@@ -4,6 +4,7 @@ import '../../../models/novel.dart';
 import '../../../theme/design_tokens.dart';
 import '../../../shared/widgets/enhanced_card.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/image_utils.dart';
 
 /// Enhanced novel card for grid view
 /// Features:
@@ -125,13 +126,14 @@ class EnhancedNovelCard extends ConsumerWidget {
   }
 
   Widget _buildCover(BuildContext context) {
-    if (novel.coverUrl != null) {
+    final validCoverUrl = ImageUtils.getFilteredCoverUrl(novel.coverUrl);
+    if (validCoverUrl != null) {
       return ClipRRect(
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(Radii.l),
         ),
         child: Image.network(
-          novel.coverUrl!,
+          validCoverUrl,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stack) => _buildPlaceholder(context),
           loadingBuilder: (context, child, loadingProgress) {

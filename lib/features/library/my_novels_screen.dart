@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/novel.dart';
 import '../../state/novel_providers.dart';
 import '../../state/providers.dart';
+import '../../shared/image_utils.dart';
 
 class MyNovelsScreen extends ConsumerWidget {
   const MyNovelsScreen({super.key});
@@ -83,11 +84,11 @@ class _NovelTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: novel.coverUrl != null
+      leading: ImageUtils.getFilteredCoverUrl(novel.coverUrl) != null
           ? ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                novel.coverUrl!,
+                ImageUtils.getFilteredCoverUrl(novel.coverUrl)!,
                 width: 48,
                 height: 48,
                 fit: BoxFit.cover,

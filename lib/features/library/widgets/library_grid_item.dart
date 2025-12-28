@@ -6,6 +6,7 @@ import 'package:animations/animations.dart';
 import '../../../models/novel.dart';
 import '../../../theme/design_tokens.dart';
 import '../../../state/motion_settings.dart';
+import '../../../shared/image_utils.dart';
 
 class LibraryGridItem extends ConsumerWidget {
   const LibraryGridItem({
@@ -26,13 +27,13 @@ class LibraryGridItem extends ConsumerWidget {
     double width = 120,
     double height = 180,
   }) {
-    final hasCover = novel.coverUrl != null && novel.coverUrl!.isNotEmpty;
+    final validCoverUrl = ImageUtils.getFilteredCoverUrl(novel.coverUrl);
 
-    if (hasCover) {
+    if (validCoverUrl != null) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(Radii.m),
         child: Image.network(
-          novel.coverUrl!,
+          validCoverUrl,
           width: width,
           height: height,
           fit: BoxFit.cover,
