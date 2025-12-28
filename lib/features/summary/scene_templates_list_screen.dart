@@ -208,8 +208,7 @@ class _SceneTemplatesListScreenState
                         final rawSubtitle =
                             it.sceneSummaries ?? it.sceneSynopses ?? '';
                         final firstLine = rawSubtitle.split('\n').first;
-                        final subtitle =
-                            firstLine.replaceAll('**', '').trim();
+                        final subtitle = firstLine.replaceAll('**', '').trim();
                         final theme = Theme.of(context);
                         final titleStyle = theme.textTheme.titleMedium;
                         final subtitleStyle = theme.textTheme.bodySmall

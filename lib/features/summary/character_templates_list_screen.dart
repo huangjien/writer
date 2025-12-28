@@ -221,8 +221,7 @@ class _CharacterTemplatesListScreenState
                         final rawSubtitle =
                             it.characterSummaries ?? it.characterSynopses ?? '';
                         final firstLine = rawSubtitle.split('\n').first;
-                        final subtitle =
-                            firstLine.replaceAll('**', '').trim();
+                        final subtitle = firstLine.replaceAll('**', '').trim();
                         final theme = Theme.of(context);
                         final titleStyle = theme.textTheme.titleMedium;
                         final subtitleStyle = theme.textTheme.bodySmall
