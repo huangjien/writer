@@ -48,6 +48,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _loading = true;
       _error = null;
@@ -69,7 +70,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       );
 
       if (res.statusCode != 200) {
-        String msg = 'Request failed';
+        String msg = l10n.requestFailed;
         try {
           final decoded = jsonDecode(res.body);
           if (decoded['detail'] != null) {
@@ -81,8 +82,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
       // Success
       setState(() {
-        _successMessage =
-            "If an account exists, a reset link has been sent to your email.";
+        _successMessage = l10n.ifAccountExistsResetLinkSent;
       });
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());
@@ -95,7 +95,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text("Forgot Password")),
+      appBar: AppBar(title: Text(l10n.forgotPassword)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: _successMessage != null
@@ -113,7 +113,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: () => context.go('/signin'),
-                      child: const Text("Back to Sign In"),
+                      child: Text(l10n.backToSignIn),
                     ),
                   ],
                 ),
@@ -121,9 +121,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Enter your email address to receive a password reset link.",
-                  ),
+                  Text(l10n.enterEmailForResetLink),
                   const SizedBox(height: 16),
                   TextField(
                     controller: _emailController,
@@ -143,7 +141,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : const Text("Send Reset Link"),
+                        : Text(l10n.sendResetLink),
                   ),
                 ],
               ),

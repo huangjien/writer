@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/novel.dart';
 import '../../../theme/design_tokens.dart';
 import '../../../shared/widgets/enhanced_card.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Enhanced novel card for grid view
 /// Features:
@@ -38,6 +39,7 @@ class EnhancedNovelCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return EnhancedCard(
       onTap: onTap,
@@ -96,21 +98,21 @@ class EnhancedNovelCard extends ConsumerWidget {
                       icon: isDownloading ? null : Icons.download,
                       isLoading: isDownloading,
                       onPressed: onDownload,
-                      tooltip: 'Download chapters',
+                      tooltip: l10n.downloadChapters,
                     ),
                     if (progress != null && progress! > 0)
                       _ActionButton(
                         icon: Icons.play_arrow,
-                        label: 'Continue',
+                        label: l10n.continueReading,
                         onPressed: onContinue,
-                        tooltip: 'Continue reading',
+                        tooltip: l10n.continueReading,
                       ),
                     const Spacer(),
                     _ActionButton(
                       icon: Icons.delete_outline,
                       color: theme.colorScheme.error,
                       onPressed: onRemove,
-                      tooltip: 'Remove from library',
+                      tooltip: l10n.removeFromLibrary,
                     ),
                   ],
                 ),

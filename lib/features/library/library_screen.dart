@@ -177,7 +177,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                           height: 40,
                           key: const ValueKey('home_logo'),
                           errorBuilder: (context, error, stack) => Text(
-                            'Unable to load asset: "assetmanifest.bin.json"',
+                            l10n.unableToLoadAsset,
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.redAccent,
@@ -189,7 +189,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                           height: 40,
                           key: const ValueKey('home_logo'),
                           errorBuilder: (context, error, stack) => Text(
-                            'Unable to load asset: "assetmanifest.bin.json"',
+                            l10n.unableToLoadAsset,
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.redAccent,
@@ -270,7 +270,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                   _searchQuery = query;
                 });
               },
-              hintText: 'Search novels...',
+              hintText: l10n.searchNovels,
               onClear: () {
                 setState(() {
                   _searchQuery = '';
@@ -279,26 +279,26 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
               showFilters: true,
               filters: [
                 LibraryFilterChip(
-                  label: 'All',
+                  label: l10n.allFilter,
                   selected: _filter == LibraryFilter.all,
                   onTap: () => setState(() => _filter = LibraryFilter.all),
                   icon: Icons.apps,
                 ),
                 LibraryFilterChip(
-                  label: 'Reading',
+                  label: l10n.readingFilter,
                   selected: _filter == LibraryFilter.reading,
                   onTap: () => setState(() => _filter = LibraryFilter.reading),
                   icon: Icons.menu_book,
                 ),
                 LibraryFilterChip(
-                  label: 'Completed',
+                  label: l10n.completedFilter,
                   selected: _filter == LibraryFilter.completed,
                   onTap: () =>
                       setState(() => _filter = LibraryFilter.completed),
                   icon: Icons.check_circle,
                 ),
                 LibraryFilterChip(
-                  label: 'Downloaded',
+                  label: l10n.downloadedFilter,
                   selected: _filter == LibraryFilter.downloaded,
                   onTap: () =>
                       setState(() => _filter = LibraryFilter.downloaded),
@@ -350,9 +350,8 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                           child: EmptyState(
                             icon: Icons.menu_book_outlined,
                             title: l10n.noNovelsFound,
-                            subtitle:
-                                'Try adjusting your search or create a new novel',
-                            actionLabel: 'Create Novel',
+                            subtitle: l10n.tryAdjustingSearchCreateNovel,
+                            actionLabel: l10n.createNovel,
                             onAction: () => context.pushNamed('createNovel'),
                           ),
                         )

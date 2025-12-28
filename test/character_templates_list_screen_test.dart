@@ -4,11 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:writer/features/summary/character_templates_list_screen.dart';
 import 'package:writer/models/character_template_row.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/repositories/template_repository.dart';
 import 'package:writer/state/providers.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class FakeTemplateRepo extends TemplateRepository {
   FakeTemplateRepo() : super(RemoteRepository('http://localhost'));
@@ -72,7 +74,14 @@ void main() {
           isSignedInProvider.overrideWithValue(true),
           templateRepositoryProvider.overrideWithValue(repo),
         ],
-        child: const MaterialApp(
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
           home: CharacterTemplatesListScreen(novelId: 'n-1'),
         ),
       ),
@@ -133,7 +142,16 @@ void main() {
           isSignedInProvider.overrideWithValue(true),
           templateRepositoryProvider.overrideWithValue(repo),
         ],
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          routerConfig: router,
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -187,7 +205,16 @@ void main() {
           isSignedInProvider.overrideWithValue(true),
           templateRepositoryProvider.overrideWithValue(repo),
         ],
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          routerConfig: router,
+        ),
       ),
     );
 
@@ -228,7 +255,16 @@ void main() {
           isSignedInProvider.overrideWithValue(true),
           templateRepositoryProvider.overrideWithValue(repo),
         ],
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          routerConfig: router,
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -247,7 +283,14 @@ void main() {
           isSignedInProvider.overrideWithValue(true),
           templateRepositoryProvider.overrideWithValue(repo),
         ],
-        child: const MaterialApp(
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
           home: CharacterTemplatesListScreen(novelId: 'n-1'),
         ),
       ),

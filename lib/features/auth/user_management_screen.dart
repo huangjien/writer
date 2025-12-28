@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import '../../state/ai_service_settings.dart';
 import '../../state/session_state.dart';
 import '../../state/user_state.dart';
+import '../../l10n/app_localizations.dart';
 
 class UserManagementScreen extends ConsumerStatefulWidget {
   const UserManagementScreen({super.key, this.client});
@@ -69,7 +70,8 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
       final sessionId = ref.read(sessionProvider);
       debugPrint('[UserManagement] Session ID: $sessionId');
       if (sessionId == null || sessionId.isEmpty) {
-        throw Exception('No active session found. Please log in again.');
+        final l10n = AppLocalizations.of(context)!;
+        throw Exception(l10n.noActiveSessionFound);
       }
 
       // Check current user state
@@ -108,14 +110,22 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
         } catch (_) {}
         debugPrint('[UserManagement] Error response body: $errorBody');
 
+        if (!mounted) {
+          if (res.statusCode == 401) {
+            throw Exception('Authentication failed');
+          } else if (res.statusCode == 403) {
+            throw Exception('Access denied');
+          } else {
+            throw Exception('Failed to load users: ${res.statusCode}');
+          }
+        }
+        final l10n = AppLocalizations.of(context)!;
         if (res.statusCode == 401) {
-          throw Exception("Authentication failed. Please sign in again.");
+          throw Exception(l10n.authenticationFailedSignInAgain);
         } else if (res.statusCode == 403) {
-          throw Exception("Access denied. You don't have admin privileges.");
+          throw Exception(l10n.accessDeniedNoAdminPrivileges);
         } else {
-          throw Exception(
-            "Failed to load users: ${res.statusCode}${errorBody.isNotEmpty ? ' - $errorBody' : ''}",
-          );
+          throw Exception(l10n.failedToLoadUsers(res.statusCode, errorBody));
         }
       }
 
@@ -163,18 +173,6 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
         debugPrint('[UserManagement] User data: $data');
         final isAdmin = data['is_admin'] ?? false;
         debugPrint('[UserManagement] Backend says admin: $isAdmin');
-
-        // Show user info for debugging
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'User: ${data['email'] ?? 'No email'}, Admin: $isAdmin',
-              ),
-              duration: const Duration(seconds: 5),
-            ),
-          );
-        }
       }
     } catch (e) {
       debugPrint('[UserManagement] Session validation error: $e');
@@ -183,12 +181,13 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
 
   Future<void> _toggleApproval(String userId, bool currentStatus) async {
     try {
+      final l10n = AppLocalizations.of(context)!;
       final sessionId = ref.read(sessionProvider);
       if (sessionId == null) {
         if (mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(const SnackBar(content: Text("Session expired")));
+          ).showSnackBar(SnackBar(content: Text(l10n.sessionExpired)));
         }
         return;
       }
@@ -216,10 +215,22 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
         } catch (_) {}
         debugPrint('[UserManagement] Toggle error body: $errorBody');
 
+        if (!mounted) {
+          if (res.statusCode == 401) {
+            throw Exception('Authentication failed');
+          } else if (res.statusCode == 403) {
+            throw Exception('Access denied');
+          } else {
+            throw Exception(
+              "Failed to update status: ${res.statusCode}${errorBody.isNotEmpty ? ' - $errorBody' : ''}",
+            );
+          }
+        }
+        final l10n = AppLocalizations.of(context)!;
         if (res.statusCode == 401) {
-          throw Exception("Authentication failed. Please sign in again.");
+          throw Exception(l10n.authenticationFailedSignInAgain);
         } else if (res.statusCode == 403) {
-          throw Exception("Access denied. You don't have admin privileges.");
+          throw Exception(l10n.accessDeniedNoAdminPrivileges);
         } else {
           throw Exception(
             "Failed to update status: ${res.statusCode}${errorBody.isNotEmpty ? ' - $errorBody' : ''}",
@@ -241,12 +252,13 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     // If we can reach this page, backend has already confirmed admin access
     // No need to double-check admin status in frontend
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("User Management"),
+        title: Text(l10n.userManagement),
         actions: [
           IconButton(icon: const Icon(Icons.refresh), onPressed: _loadUsers),
         ],
@@ -266,16 +278,16 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                       color: Colors.red,
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      "Error loading users",
-                      style: TextStyle(
+                    Text(
+                      l10n.errorLoadingUsers,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _error ?? 'Unknown error',
+                      _error ?? l10n.unknownError,
                       textAlign: TextAlign.center,
                       style: const TextStyle(color: Colors.red),
                     ),
@@ -286,12 +298,12 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                         await ref.read(userProvider.notifier).fetchUser();
                         await _loadUsers();
                       },
-                      child: const Text("Retry"),
+                      child: Text(l10n.retry),
                     ),
                     const SizedBox(height: 8),
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text("Go Back"),
+                      child: Text(l10n.goBack),
                     ),
                   ],
                 ),
@@ -308,7 +320,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
 
                 return ListTile(
                   title: Text(email),
-                  subtitle: Text("ID: $id\nCreated: $createdAt"),
+                  subtitle: Text(l10n.userIdCreated(id, createdAt)),
                   trailing: Switch(
                     value: isApproved,
                     onChanged: (val) => _toggleApproval(id, isApproved),

@@ -46,7 +46,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     return '$b$p';
   }
 
-  Future<void> _signIn() async {
+  Future<void> _signIn(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _loading = true;
       _error = null;
@@ -70,7 +71,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       );
 
       if (res.statusCode != 200) {
-        String msg = 'Login failed';
+        String msg = l10n.loginFailed;
         try {
           final decoded = jsonDecode(res.body);
           if (decoded['detail'] != null) {
@@ -88,12 +89,13 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         final biometricState = ref.read(biometricSessionProvider);
         if (biometricState != BiometricAuthState.unavailable &&
             biometricState != BiometricAuthState.enabled) {
-          _showBiometricSetupDialog(sessionId);
+          if (!mounted) return;
+          _showBiometricSetupDialog(this.context, sessionId);
         } else {
           _navigateToSuccess();
         }
       } else {
-        throw Exception('Invalid response from server');
+        throw Exception(l10n.invalidResponseFromServer);
       }
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());
@@ -112,7 +114,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     }
   }
 
-  void _showBiometricSetupDialog(String sessionId) {
+  void _showBiometricSetupDialog(BuildContext context, String sessionId) {
     final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
@@ -127,7 +129,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           TextButton(
             onPressed: () async {
               Navigator.of(context).pop();
-              await _enableBiometricAuth(sessionId);
+              await _enableBiometricAuth(context, sessionId);
             },
             child: Text(l10n.save),
           ),
@@ -136,7 +138,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     );
   }
 
-  Future<void> _enableBiometricAuth(String sessionId) async {
+  Future<void> _enableBiometricAuth(
+    BuildContext context,
+    String sessionId,
+  ) async {
     final l10n = AppLocalizations.of(context)!;
     setState(() {
       _biometricLoading = true;
@@ -160,7 +165,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     }
   }
 
-  Future<void> _signInWithBiometrics() async {
+  Future<void> _signInWithBiometrics(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
     setState(() {
       _biometricLoading = true;
@@ -221,7 +226,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               const SizedBox(height: 8),
             ],
             ElevatedButton(
-              onPressed: _loading ? null : _signIn,
+              onPressed: _loading ? null : () => _signIn(context),
               child: _loading
                   ? const SizedBox(
                       height: 20,
@@ -241,7 +246,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
                 if (biometricState == BiometricAuthState.enabled) {
                   return ElevatedButton.icon(
-                    onPressed: _biometricLoading ? null : _signInWithBiometrics,
+                    onPressed: _biometricLoading
+                        ? null
+                        : () => _signInWithBiometrics(context),
                     icon: _biometricLoading
                         ? const SizedBox(
                             height: 16,
@@ -266,11 +273,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               children: [
                 TextButton(
                   onPressed: () => context.push('/signup'),
-                  child: const Text('Sign Up'),
+                  child: Text(l10n.signUp),
                 ),
                 TextButton(
                   onPressed: () => context.push('/forgot-password'),
-                  child: const Text('Forgot Password?'),
+                  child: Text(l10n.forgotPassword),
                 ),
               ],
             ),

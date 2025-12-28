@@ -49,6 +49,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   }
 
   Future<void> _signUp() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _loading = true;
       _error = null;
@@ -73,7 +74,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       );
 
       if (res.statusCode != 200 && res.statusCode != 201) {
-        String msg = 'Signup failed';
+        String msg = l10n.signupFailed;
         try {
           final decoded = jsonDecode(res.body);
           if (decoded['detail'] != null) {
@@ -85,7 +86,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
       // Success
       setState(() {
-        _successMessage = "Account created! Please check your email to verify.";
+        _successMessage = l10n.accountCreatedCheckEmail;
       });
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());
@@ -98,7 +99,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text("Sign Up")),
+      appBar: AppBar(title: Text(l10n.signUp)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: _successMessage != null
@@ -120,7 +121,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: () => context.go('/auth'),
-                      child: const Text("Back to Sign In"),
+                      child: Text(l10n.backToSignIn),
                     ),
                   ],
                 ),
@@ -152,12 +153,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : const Text("Create Account"),
+                        : Text(l10n.createAccount),
                   ),
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: () => context.go('/auth'),
-                    child: const Text("Already have an account? Sign In"),
+                    child: Text(l10n.alreadyHaveAccountSignIn),
                   ),
                 ],
               ),

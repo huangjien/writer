@@ -6,22 +6,28 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:writer/features/auth/forgot_password_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   testWidgets('ForgotPasswordScreen shows fields', (tester) async {
     await tester.pumpWidget(
-      const ProviderScope(
+      ProviderScope(
         child: MaterialApp(
-          locale: Locale('en'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [Locale('en')],
           home: ForgotPasswordScreen(),
         ),
       ),
     );
 
     await tester.pumpAndSettle();
-    expect(find.text('Forgot Password'), findsOneWidget);
+    expect(find.text('Forgot Password?'), findsOneWidget);
     expect(find.text('Email'), findsOneWidget);
     expect(
       find.widgetWithText(ElevatedButton, 'Send Reset Link'),
@@ -42,8 +48,13 @@ void main() {
       ProviderScope(
         child: MaterialApp(
           locale: const Locale('en'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
           home: ForgotPasswordScreen(client: client),
         ),
       ),

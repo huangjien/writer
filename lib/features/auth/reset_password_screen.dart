@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
 import '../../state/ai_service_settings.dart';
 import '../../state/session_state.dart';
+import '../../l10n/app_localizations.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
   const ResetPasswordScreen({super.key, this.client});
@@ -50,8 +51,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   }
 
   Future<void> _updatePassword() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_passwordController.text != _confirmController.text) {
-      setState(() => _error = "Passwords do not match");
+      setState(() => _error = l10n.passwordsDoNotMatch);
       return;
     }
 
@@ -76,9 +78,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       if (sessionId != null) {
         headers['X-Session-Id'] = sessionId;
       } else {
-        throw Exception(
-          "Session invalid. Please login or use the reset link again.",
-        );
+        throw Exception(l10n.sessionInvalidLoginAgain);
       }
 
       final res = await _client.patch(
@@ -88,7 +88,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       );
 
       if (res.statusCode != 200) {
-        String msg = 'Update failed';
+        String msg = l10n.updateFailed;
         try {
           final decoded = jsonDecode(res.body);
           if (decoded['detail'] != null) {
@@ -99,7 +99,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       }
 
       setState(() {
-        _successMessage = "Password updated successfully!";
+        _successMessage = l10n.passwordUpdatedSuccessfully;
       });
 
       if (mounted) {
@@ -121,21 +121,22 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text("Reset Password")),
+      appBar: AppBar(title: Text(l10n.resetPassword)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: _passwordController,
-              decoration: const InputDecoration(labelText: "New Password"),
+              decoration: InputDecoration(labelText: l10n.newPassword),
               obscureText: true,
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _confirmController,
-              decoration: const InputDecoration(labelText: "Confirm Password"),
+              decoration: InputDecoration(labelText: l10n.confirmPassword),
               obscureText: true,
             ),
             const SizedBox(height: 20),
@@ -151,7 +152,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text("Update Password"),
+                  : Text(l10n.updatePassword),
             ),
           ],
         ),

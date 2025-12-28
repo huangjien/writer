@@ -3,11 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:writer/features/summary/scene_templates_list_screen.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/repositories/template_repository.dart';
 import 'package:writer/models/scene_template_row.dart';
 import 'package:writer/state/providers.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class FakeTemplateRepo extends TemplateRepository {
   FakeTemplateRepo() : super(RemoteRepository('http://localhost:5600/'));
@@ -57,7 +59,14 @@ void main() {
           isSignedInProvider.overrideWithValue(true),
           templateRepositoryProvider.overrideWith((ref) => repo),
         ],
-        child: const MaterialApp(
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
           home: SceneTemplatesListScreen(novelId: 'n-1'),
         ),
       ),
@@ -109,7 +118,14 @@ void main() {
           isSignedInProvider.overrideWithValue(true),
           templateRepositoryProvider.overrideWith((ref) => repo),
         ],
-        child: const MaterialApp(
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
           home: SceneTemplatesListScreen(novelId: 'n-1'),
         ),
       ),
@@ -149,7 +165,14 @@ void main() {
           isSignedInProvider.overrideWithValue(true),
           templateRepositoryProvider.overrideWith((ref) => repo),
         ],
-        child: const MaterialApp(
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
           home: SceneTemplatesListScreen(novelId: 'n-1'),
         ),
       ),
@@ -196,17 +219,37 @@ void main() {
           isSignedInProvider.overrideWithValue(true),
           templateRepositoryProvider.overrideWith((ref) => repo),
         ],
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          routerConfig: router,
+        ),
       ),
     );
     await tester.pumpAndSettle();
 
+    // Wait for data to load and items to appear
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Battle Scene', findRichText: true),
+      findsOneWidget,
+    );
+
+    // Test edit button
     await tester.tap(find.byIcon(Icons.edit));
     await tester.pumpAndSettle();
     expect(find.text('Edit Scene Template t-1'), findsOneWidget);
 
+    // Go back to list
     router.go('/novel/n-1/scene-templates');
     await tester.pumpAndSettle();
+
+    // Test add button
     await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
     expect(find.text('New Scene Template'), findsOneWidget);

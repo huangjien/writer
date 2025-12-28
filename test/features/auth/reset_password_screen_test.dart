@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:writer/features/auth/reset_password_screen.dart';
 import 'package:writer/state/session_state.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 class MockSessionNotifier extends SessionNotifier {
   MockSessionNotifier(String? initial) : super(null) {
@@ -16,7 +18,18 @@ class MockSessionNotifier extends SessionNotifier {
 void main() {
   testWidgets('ResetPasswordScreen shows fields', (tester) async {
     await tester.pumpWidget(
-      const ProviderScope(child: MaterialApp(home: ResetPasswordScreen())),
+      ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          home: ResetPasswordScreen(),
+        ),
+      ),
     );
 
     await tester.pumpAndSettle();
@@ -27,7 +40,18 @@ void main() {
 
   testWidgets('ResetPasswordScreen validates match', (tester) async {
     await tester.pumpWidget(
-      const ProviderScope(child: MaterialApp(home: ResetPasswordScreen())),
+      ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          home: ResetPasswordScreen(),
+        ),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -53,7 +77,16 @@ void main() {
         overrides: [
           sessionProvider.overrideWith((ref) => MockSessionNotifier('s-123')),
         ],
-        child: MaterialApp(home: ResetPasswordScreen(client: client)),
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          home: ResetPasswordScreen(client: client),
+        ),
       ),
     );
     await tester.pumpAndSettle();

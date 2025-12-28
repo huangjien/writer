@@ -252,7 +252,7 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.auto_awesome),
                   onPressed: _smartSearch,
-                  tooltip: 'Smart Search',
+                  tooltip: l10n.smartSearch,
                 ),
               ),
               onChanged: (_) {

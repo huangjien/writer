@@ -253,7 +253,7 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.auto_awesome),
                   onPressed: _smartSearch,
-                  tooltip: 'Smart Search',
+                  tooltip: l10n.smartSearch,
                 ),
               ),
               onChanged: (_) {

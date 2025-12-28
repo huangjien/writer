@@ -461,5 +461,36 @@
   "errorRateLimited": "Too many requests",
   "errorInternal": "Internal server error",
   "errorBadGateway": "Bad gateway",
-  "errorGatewayTimeout": "Gateway timeout"
+  "errorGatewayTimeout": "Gateway timeout",
+  "loginFailed": "Login failed",
+  "invalidResponseFromServer": "Invalid response from server",
+  "signUp": "Sign Up",
+  "forgotPassword": "Forgot Password?",
+  "signupFailed": "Signup failed",
+  "accountCreatedCheckEmail": "Account created! Please check your email to verify.",
+  "backToSignIn": "Back to Sign In",
+  "createAccount": "Create Account",
+  "alreadyHaveAccountSignIn": "Already have an account? Sign In",
+  "requestFailed": "Request failed",
+  "ifAccountExistsResetLinkSent": "If an account exists, a reset link has been sent to your email.",
+  "enterEmailForResetLink": "Enter your email address to receive a password reset link.",
+  "sendResetLink": "Send Reset Link",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "sessionInvalidLoginAgain": "Session invalid. Please login or use the reset link again.",
+  "updateFailed": "Update failed",
+  "passwordUpdatedSuccessfully": "Password updated successfully!",
+  "resetPassword": "Reset Password",
+  "newPassword": "New Password",
+  "confirmPassword": "Confirm Password",
+  "updatePassword": "Update Password",
+  "noActiveSessionFound": "No active session found. Please log in again.",
+  "authenticationFailedSignInAgain": "Authentication failed. Please sign in again.",
+  "accessDeniedNoAdminPrivileges": "Access denied. You don't have admin privileges.",
+  "failedToLoadUsers": "Failed to load users: {statusCode} - {errorBody}",
+  "@failedToLoadUsers": {
+    "placeholders": {
+      "statusCode": {"type": "int"},
+      "errorBody": {"type": "String"}
+    }
+  },
 }

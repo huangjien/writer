@@ -1211,4 +1211,152 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorGatewayTimeout => 'Gateway timeout';
+
+  @override
+  String get loginFailed => 'Login failed';
+
+  @override
+  String get invalidResponseFromServer => 'Invalid response from server';
+
+  @override
+  String get signUp => 'Sign Up';
+
+  @override
+  String get forgotPassword => 'Forgot Password?';
+
+  @override
+  String get signupFailed => 'Signup failed';
+
+  @override
+  String get accountCreatedCheckEmail =>
+      'Account created! Please check your email to verify.';
+
+  @override
+  String get backToSignIn => 'Back to Sign In';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get alreadyHaveAccountSignIn => 'Already have an account? Sign In';
+
+  @override
+  String get requestFailed => 'Request failed';
+
+  @override
+  String get ifAccountExistsResetLinkSent =>
+      'If an account exists, a reset link has been sent to your email.';
+
+  @override
+  String get enterEmailForResetLink =>
+      'Enter your email address to receive a password reset link.';
+
+  @override
+  String get sendResetLink => 'Send Reset Link';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get sessionInvalidLoginAgain =>
+      'Session invalid. Please login or use the reset link again.';
+
+  @override
+  String get passwordUpdatedSuccessfully => 'Password updated successfully!';
+
+  @override
+  String get resetPassword => 'Reset Password';
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get updatePassword => 'Update Password';
+
+  @override
+  String get noActiveSessionFound =>
+      'No active session found. Please log in again.';
+
+  @override
+  String get authenticationFailedSignInAgain =>
+      'Authentication failed. Please sign in again.';
+
+  @override
+  String get accessDeniedNoAdminPrivileges =>
+      'Access denied. You don\'t have admin privileges.';
+
+  @override
+  String get updateFailed => 'Update failed';
+
+  @override
+  String failedToLoadUsers(int statusCode, String errorBody) {
+    return 'Failed to load users: $statusCode - $errorBody';
+  }
+
+  @override
+  String get sessionExpired => 'Session expired';
+
+  @override
+  String get errorLoadingUsers => 'Error loading users';
+
+  @override
+  String get unknownError => 'Unknown error';
+
+  @override
+  String get goBack => 'Go Back';
+
+  @override
+  String userIdCreated(String id, String createdAt) {
+    return 'ID: $id\nCreated: $createdAt';
+  }
+
+  @override
+  String get searchNovels => 'Search novels...';
+
+  @override
+  String get allFilter => 'All';
+
+  @override
+  String get readingFilter => 'Reading';
+
+  @override
+  String get completedFilter => 'Completed';
+
+  @override
+  String get downloadedFilter => 'Downloaded';
+
+  @override
+  String get tryAdjustingSearchCreateNovel =>
+      'Try adjusting your search or create a new novel';
+
+  @override
+  String get continueReading => 'Continue reading';
+
+  @override
+  String get removeFromLibrary => 'Remove from library';
+
+  @override
+  String get listView => 'List view';
+
+  @override
+  String get gridView => 'Grid view';
+
+  @override
+  String get smartSearchRequiresSignIn => 'Smart search requires sign in';
+
+  @override
+  String get smartSearch => 'Smart Search';
+
+  @override
+  String get failedToPersistTemplate => 'Failed to persist template';
+
+  @override
+  String get youDontHavePermission => 'You don\'t have permission to do that.';
+
+  @override
+  String get unableToLoadAsset =>
+      'Unable to load asset: "assetmanifest.bin.json"';
 }

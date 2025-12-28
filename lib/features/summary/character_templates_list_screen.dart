@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:writer/l10n/app_localizations.dart';
-import 'package:writer/l10n/app_localizations_en.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/character_template_row.dart';
 import '../../shared/constants.dart';
 import '../../repositories/template_repository.dart';
@@ -81,15 +80,16 @@ class _CharacterTemplatesListScreenState
     }).toList();
   }
 
-  Future<void> _smartSearch() async {
+  Future<void> _smartSearch(BuildContext context) async {
     final q = _searchCtrl.text.trim();
     if (q.isEmpty) return;
 
     final isSignedIn = ref.read(isSignedInProvider);
     if (!isSignedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Smart search requires sign in')),
-      );
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.smartSearchRequiresSignIn)));
       return;
     }
 
@@ -145,7 +145,7 @@ class _CharacterTemplatesListScreenState
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+    final l10n = AppLocalizations.of(context)!;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -200,8 +200,8 @@ class _CharacterTemplatesListScreenState
                         labelText: l10n.searchLabel,
                         suffixIcon: IconButton(
                           icon: const Icon(Icons.auto_awesome),
-                          tooltip: 'Smart Search',
-                          onPressed: _smartSearch,
+                          tooltip: l10n.smartSearch,
+                          onPressed: () => _smartSearch(context),
                         ),
                       ),
                       onChanged: (_) {
@@ -209,7 +209,7 @@ class _CharacterTemplatesListScreenState
                           _localSearch();
                         });
                       },
-                      onSubmitted: (_) => _smartSearch(),
+                      onSubmitted: (_) => _smartSearch(context),
                     ),
                   ),
                   Expanded(

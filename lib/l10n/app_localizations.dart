@@ -2359,6 +2359,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gateway timeout'**
   String get errorGatewayTimeout;
+
+  /// No description provided for @loginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed'**
+  String get loginFailed;
+
+  /// No description provided for @invalidResponseFromServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid response from server'**
+  String get invalidResponseFromServer;
+
+  /// No description provided for @signUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get signUp;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password?'**
+  String get forgotPassword;
+
+  /// No description provided for @signupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Signup failed'**
+  String get signupFailed;
+
+  /// No description provided for @accountCreatedCheckEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created! Please check your email to verify.'**
+  String get accountCreatedCheckEmail;
+
+  /// No description provided for @backToSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Sign In'**
+  String get backToSignIn;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get createAccount;
+
+  /// No description provided for @alreadyHaveAccountSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Sign In'**
+  String get alreadyHaveAccountSignIn;
+
+  /// No description provided for @requestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Request failed'**
+  String get requestFailed;
+
+  /// No description provided for @ifAccountExistsResetLinkSent.
+  ///
+  /// In en, this message translates to:
+  /// **'If an account exists, a reset link has been sent to your email.'**
+  String get ifAccountExistsResetLinkSent;
+
+  /// No description provided for @enterEmailForResetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address to receive a password reset link.'**
+  String get enterEmailForResetLink;
+
+  /// No description provided for @sendResetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Reset Link'**
+  String get sendResetLink;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @sessionInvalidLoginAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Session invalid. Please login or use the reset link again.'**
+  String get sessionInvalidLoginAgain;
+
+  /// No description provided for @passwordUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated successfully!'**
+  String get passwordUpdatedSuccessfully;
+
+  /// No description provided for @resetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newPassword;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPassword;
+
+  /// No description provided for @updatePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Password'**
+  String get updatePassword;
+
+  /// No description provided for @noActiveSessionFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No active session found. Please log in again.'**
+  String get noActiveSessionFound;
+
+  /// No description provided for @authenticationFailedSignInAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication failed. Please sign in again.'**
+  String get authenticationFailedSignInAgain;
+
+  /// No description provided for @accessDeniedNoAdminPrivileges.
+  ///
+  /// In en, this message translates to:
+  /// **'Access denied. You don't have admin privileges.'**
+  String get accessDeniedNoAdminPrivileges;
+
+  /// No description provided for @updateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Update failed'**
+  String get updateFailed;
+
+  /// No description provided for @failedToLoadUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load users: {statusCode} - {errorBody}'**
+  String failedToLoadUsers(int statusCode, String errorBody);
+
+  /// No description provided for @sessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired'**
+  String get sessionExpired;
+
+  /// No description provided for @errorLoadingUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading users'**
+  String get errorLoadingUsers;
+
+  /// No description provided for @unknownError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown error'**
+  String get unknownError;
+
+  /// No description provided for @goBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Back'**
+  String get goBack;
+
+  /// No description provided for @userIdCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'ID: {id}\nCreated: {createdAt}'**
+  String userIdCreated(String id, String createdAt);
+
+  /// No description provided for @searchNovels.
+  ///
+  /// In en, this message translates to:
+  /// **'Search novels...'**
+  String get searchNovels;
+
+  /// No description provided for @allFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allFilter;
+
+  /// No description provided for @readingFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading'**
+  String get readingFilter;
+
+  /// No description provided for @completedFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completedFilter;
+
+  /// No description provided for @downloadedFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded'**
+  String get downloadedFilter;
+
+  /// No description provided for @tryAdjustingSearchCreateNovel.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adjusting your search or create a new novel'**
+  String get tryAdjustingSearchCreateNovel;
+
+  /// No description provided for @continueReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue reading'**
+  String get continueReading;
+
+  /// No description provided for @removeFromLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from library'**
+  String get removeFromLibrary;
+
+  /// No description provided for @listView.
+  ///
+  /// In en, this message translates to:
+  /// **'List view'**
+  String get listView;
+
+  /// No description provided for @gridView.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid view'**
+  String get gridView;
+
+  /// No description provided for @smartSearchRequiresSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart search requires sign in'**
+  String get smartSearchRequiresSignIn;
+
+  /// No description provided for @smartSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Search'**
+  String get smartSearch;
+
+  /// No description provided for @failedToPersistTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to persist template'**
+  String get failedToPersistTemplate;
+
+  /// No description provided for @youDontHavePermission.
+  ///
+  /// In en, this message translates to:
+  /// **'You don't have permission to do that.'**
+  String get youDontHavePermission;
+
+  /// No description provided for @unableToLoadAsset.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load asset: "assetmanifest.bin.json"'**
+  String get unableToLoadAsset;
 }
 
 class _AppLocalizationsDelegate

@@ -1189,4 +1189,143 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get errorGatewayTimeout => '网关超时';
+
+  @override
+  String get loginFailed => '登录失败';
+
+  @override
+  String get invalidResponseFromServer => '服务器响应无效';
+
+  @override
+  String get signUp => '注册';
+
+  @override
+  String get forgotPassword => '忘记密码？';
+
+  @override
+  String get signupFailed => '注册失败';
+
+  @override
+  String get accountCreatedCheckEmail => '账户已创建！请检查您的邮箱以验证。';
+
+  @override
+  String get backToSignIn => '返回登录';
+
+  @override
+  String get createAccount => '创建账户';
+
+  @override
+  String get alreadyHaveAccountSignIn => '已有账户？登录';
+
+  @override
+  String get requestFailed => '请求失败';
+
+  @override
+  String get ifAccountExistsResetLinkSent => '如果账户存在，重置链接已发送到您的邮箱。';
+
+  @override
+  String get enterEmailForResetLink => '输入您的邮箱地址以接收密码重置链接。';
+
+  @override
+  String get sendResetLink => '发送重置链接';
+
+  @override
+  String get passwordsDoNotMatch => '密码不匹配';
+
+  @override
+  String get sessionInvalidLoginAgain => '会话无效。请重新登录或再次使用重置链接。';
+
+  @override
+  String get passwordUpdatedSuccessfully => '密码已成功更新！';
+
+  @override
+  String get resetPassword => '重置密码';
+
+  @override
+  String get newPassword => '新密码';
+
+  @override
+  String get confirmPassword => '确认密码';
+
+  @override
+  String get updatePassword => '更新密码';
+
+  @override
+  String get noActiveSessionFound => '未找到活动会话。请重新登录。';
+
+  @override
+  String get authenticationFailedSignInAgain => '身份验证失败。请重新登录。';
+
+  @override
+  String get accessDeniedNoAdminPrivileges => '访问被拒绝。您没有管理员权限。';
+
+  @override
+  String get updateFailed => '更新失败';
+
+  @override
+  String failedToLoadUsers(int statusCode, String errorBody) {
+    return '加载用户失败：$statusCode - $errorBody';
+  }
+
+  @override
+  String get sessionExpired => '会话已过期';
+
+  @override
+  String get errorLoadingUsers => '加载用户时出错';
+
+  @override
+  String get unknownError => '未知错误';
+
+  @override
+  String get goBack => '返回';
+
+  @override
+  String userIdCreated(String id, String createdAt) {
+    return 'ID：$id\n创建时间：$createdAt';
+  }
+
+  @override
+  String get searchNovels => '搜索小说...';
+
+  @override
+  String get allFilter => '全部';
+
+  @override
+  String get readingFilter => '阅读中';
+
+  @override
+  String get completedFilter => '已完成';
+
+  @override
+  String get downloadedFilter => '已下载';
+
+  @override
+  String get tryAdjustingSearchCreateNovel => '尝试调整搜索或创建新小说';
+
+  @override
+  String get continueReading => '继续阅读';
+
+  @override
+  String get removeFromLibrary => '从文库中移除';
+
+  @override
+  String get listView => '列表视图';
+
+  @override
+  String get gridView => '网格视图';
+
+  @override
+  String get smartSearchRequiresSignIn => '智能搜索需要登录';
+
+  @override
+  String get smartSearch => '智能搜索';
+
+  @override
+  String get failedToPersistTemplate => '保存模板失败';
+
+  @override
+  String get youDontHavePermission => '您没有权限执行此操作。';
+
+  @override
+  String get unableToLoadAsset => '无法加载资源："assetmanifest.bin.json"';
 }

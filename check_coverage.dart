@@ -47,7 +47,12 @@ void main(List<String> args) {
 
     final pct = hitLines / totalLines * 100.0;
     if (pct < threshold) {
-      below.add((file: normalized, lines: totalLines, hits: hitLines, pct: pct));
+      below.add((
+        file: normalized,
+        lines: totalLines,
+        hits: hitLines,
+        pct: pct,
+      ));
     }
   }
 

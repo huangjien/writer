@@ -5,12 +5,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:writer/features/auth/user_management_screen.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/user_state.dart';
 
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class MockSessionNotifier extends SessionNotifier {
   MockSessionNotifier(String? initial) : super(null) {
@@ -31,17 +33,33 @@ void main() {
   testWidgets('UserManagementScreen shows access denied for non-admin', (
     tester,
   ) async {
+    final client = MockClient((request) async {
+      // No session provider mock, so session will be null
+      return http.Response('Not Found', 404);
+    });
+
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          userProvider.overrideWith(
-            (ref) => MockUserStateNotifier(
-              ref,
-              const AsyncValue.data(null), // Not logged in or not admin
+      UncontrolledProviderScope(
+        container: ProviderContainer(
+          overrides: [
+            sessionProvider.overrideWith(
+              (ref) => MockSessionNotifier(null),
+            ), // No session
+            userProvider.overrideWith(
+              (ref) => MockUserStateNotifier(ref, null),
             ),
-          ),
-        ],
-        child: const MaterialApp(home: UserManagementScreen()),
+          ],
+        ),
+        child: MaterialApp(
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          home: UserManagementScreen(client: client),
+        ),
       ),
     );
 
@@ -91,26 +109,35 @@ void main() {
           headers: {'content-type': 'application/json; charset=utf-8'},
         );
       }
-      return http.Response('Not found', 500);
+      return http.Response('Not Found', 404);
     });
 
+    final mockSession = MockSessionNotifier('s-123');
+
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          sessionProvider.overrideWith((ref) => MockSessionNotifier('s-123')),
-          userProvider.overrideWith(
-            (ref) => MockUserStateNotifier(
-              ref,
-              AsyncValue.data(User(id: 'admin', isAdmin: true)),
+      UncontrolledProviderScope(
+        container: ProviderContainer(
+          overrides: [
+            sessionProvider.overrideWith((ref) => mockSession),
+            userProvider.overrideWith(
+              (ref) => MockUserStateNotifier(ref, null),
             ),
-          ),
-        ],
-        child: MaterialApp(home: UserManagementScreen(client: client)),
+          ],
+        ),
+        child: MaterialApp(
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          home: UserManagementScreen(client: client),
+        ),
       ),
     );
 
     await tester.pumpAndSettle();
-
     expect(find.text('user1@example.com'), findsOneWidget);
     expect(find.text('user2@example.com'), findsOneWidget);
     expect(find.byType(Switch), findsNWidgets(2));
@@ -158,19 +185,30 @@ void main() {
       return http.Response('Not found', 404);
     });
 
+    final mockSession = MockSessionNotifier('s-123');
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          sessionProvider.overrideWith((ref) => MockSessionNotifier('s-123')),
-          userProvider.overrideWith(
-            (ref) => MockUserStateNotifier(
-              ref,
-              AsyncValue.data(User(id: 'admin', isAdmin: true)),
+      UncontrolledProviderScope(
+        container: ProviderContainer(
+          overrides: [
+            sessionProvider.overrideWith((ref) => mockSession),
+            userProvider.overrideWith(
+              (ref) => MockUserStateNotifier(ref, null),
             ),
-          ),
-          aiServiceProvider.overrideWith((ref) => AiServiceNotifier(mockPrefs)),
-        ],
-        child: MaterialApp(home: UserManagementScreen(client: client)),
+            aiServiceProvider.overrideWith(
+              (ref) => AiServiceNotifier(mockPrefs),
+            ),
+          ],
+        ),
+        child: MaterialApp(
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          home: UserManagementScreen(client: client),
+        ),
       ),
     );
 

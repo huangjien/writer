@@ -315,7 +315,7 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
                                 templateId = null; // or fake
                               }
                               if (templateId == null) {
-                                throw Exception('Failed to persist template');
+                                throw Exception(l10n.failedToPersistTemplate);
                               }
 
                               final persisted = await templateRepo
