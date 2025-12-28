@@ -2612,6 +2612,12 @@ abstract class AppLocalizations {
   /// **'Unable to load asset'**
   String get unableToLoadAsset;
 
+  /// No description provided for @youDontHavePermission.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have permission to perform this action.'**
+  String get youDontHavePermission;
+
   /// No description provided for @continueReading.
   ///
   /// In en, this message translates to:

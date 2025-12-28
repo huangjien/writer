@@ -1315,10 +1315,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get unknownError => '未知错误';
 
   @override
-  String get goBack => 'Go Back';
+  String get goBack => '返回';
 
   @override
-  String get unableToLoadAsset => '无法加载资源：\"assetmanifest.bin.json\"';
+  String get unableToLoadAsset => '无法加载资源：\\\"assetmanifest.bin.json\\\"';
+
+  @override
+  String get youDontHavePermission => '您没有权限执行此操作。';
 
   @override
   String get continueReading => '继续阅读';

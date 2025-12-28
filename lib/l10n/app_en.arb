@@ -504,6 +504,7 @@
   "unknownError": "Unknown error",
   "goBack": "Go Back",
   "unableToLoadAsset": "Unable to load asset",
+  "youDontHavePermission": "You don't have permission to perform this action.",
   "continueReading": "Continue Reading",
   "removeFromLibrary": "Remove from Library",
   "@userIdCreated": {

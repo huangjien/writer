@@ -1,7 +1,7 @@
 {
+  "@@locale": "zh",
   "helloWorld": "你好世界！",
   "settings": "设置",
-  "adminMode": "管理员模式",
   "appTitle": "写手",
   "about": "关于",
   "aboutDescription": "阅读和管理小说，支持云端存储、离线模式和文本转语音播放。使用“文库”浏览、搜索并打开章节；登录以同步进度；在设置中调整主题、排版和动效。",
@@ -125,8 +125,7 @@
         "type": "String"
       }
     }
-  }
-  ,
+  },
   "chapters": "章节",
   "noChaptersFound": "未找到章节。",
   "indexLabel": "第 {index} 章",
@@ -141,8 +140,12 @@
   "indexOutOfRange": "索引必须在 {min}-{max} 之间",
   "@indexOutOfRange": {
     "placeholders": {
-      "min": {"type": "int"},
-      "max": {"type": "int"}
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "indexUnchanged": "索引未变化",
@@ -171,8 +174,7 @@
   "colorTheme": "配色主题",
   "themeLight": "浅色",
   "themeSepia": "仿古纸",
-  "themeHighContrast": "高对比"
-  ,
+  "themeHighContrast": "高对比",
   "themeDefault": "默认",
   "themeSolarized": "Solarized",
   "themeSolarizedTan": "Solarized Tan",
@@ -185,8 +187,7 @@
   "typographyPreset": "阅读排版",
   "typographyComfortable": "舒适",
   "typographyCompact": "紧凑",
-  "typographySerifLike": "仿衬线"
-  ,
+  "typographySerifLike": "仿衬线",
   "fontPack": "字体方案",
   "separateTypographyPresets": "为浅色/深色使用独立排版",
   "typographyLight": "浅色排版",
@@ -204,8 +205,7 @@
   "errorLoadingUsage": "加载使用量出错",
   "bundleNordCalm": "Nord Calm",
   "bundleSolarizedFocus": "Solarized Focus",
-  "bundleHighContrastReadability": "高对比可读性"
-  ,
+  "bundleHighContrastReadability": "高对比可读性",
   "customFontFamily": "自定义字体",
   "commonFonts": "常见字体",
   "readerFontSize": "阅读字体大小",
@@ -216,9 +216,9 @@
   "depthHigh": "深",
   "select": "选择",
   "clear": "清除",
+  "adminMode": "管理员模式",
   "reduceMotion": "减少动效",
-  "reduceMotionDescription": "为舒适体验尽量减少动画"
-  ,
+  "reduceMotionDescription": "为舒适体验尽量减少动画",
   "gesturesEnabled": "启用手势",
   "gesturesEnabledDescription": "在阅读器中启用滑动和点击手势",
   "readerSwipeSensitivity": "阅读器滑动灵敏度",
@@ -230,11 +230,12 @@
   "confirmDeleteDescription": "将从云端删除“{title}”。是否确认？",
   "@confirmDeleteDescription": {
     "placeholders": {
-      "title": {"type": "String"}
+      "title": {
+        "type": "String"
+      }
     }
   },
-  "delete": "删除"
-  ,
+  "delete": "删除",
   "reachedFirstChapter": "已到第一章",
   "previousChapter": "上一章",
   "nextChapter": "下一章",
@@ -246,8 +247,7 @@
   "prefetchNextChapter": "预取下一章",
   "prefetchNextChapterDescription": "预加载下一章以减少等待。",
   "clearOfflineCache": "清除离线缓存",
-  "offlineCacheCleared": "离线缓存已清除"
-  ,
+  "offlineCacheCleared": "离线缓存已清除",
   "edit": "编辑",
   "exitEdit": "退出编辑",
   "enterEditMode": "进入编辑模式",
@@ -256,8 +256,7 @@
   "save": "保存",
   "createNextChapter": "创建下一章",
   "enterChapterTitle": "输入章节标题",
-  "enterChapterContent": "输入章节内容"
-  ,
+  "enterChapterContent": "输入章节内容",
   "discardChangesTitle": "放弃更改？",
   "discardChangesMessage": "你有未保存的更改。是否要放弃？",
   "keepEditing": "继续编辑",
@@ -289,8 +288,7 @@
   "invalidUrl": "请输入有效的 http(s) 链接且不包含空格。",
   "urlTooLong": "URL 必须少于 2048 个字符。",
   "urlContainsSpaces": "URL 不能包含空格。",
-  "urlInvalidScheme": "URL 必须以 http:// 或 https:// 开头。"
-  ,
+  "urlInvalidScheme": "URL 必须以 http:// 或 https:// 开头。",
   "embeddingUpdated": "嵌入已更新",
   "embeddingFailed": "嵌入失败",
   "saved": "已保存",
@@ -300,25 +298,48 @@
   "locationLabel": "地点",
   "languageLabel": "语言：{code}",
   "@languageLabel": {
-    "placeholders": {"code": {"type": "String"}}
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
   },
   "publicLabel": "公开",
   "privateLabel": "私密",
   "chaptersCount": "章节：{count}",
   "@chaptersCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "avgWordsPerChapter": "平均每章字数：{avg}",
   "@avgWordsPerChapter": {
-    "placeholders": {"avg": {"type": "int"}}
+    "placeholders": {
+      "avg": {
+        "type": "int"
+      }
+    }
   },
   "chapterLabel": "第{idx}章",
   "@chapterLabel": {
-    "placeholders": {"idx": {"type": "int"}}
+    "placeholders": {
+      "idx": {
+        "type": "int"
+      }
+    }
   },
   "chapterWithTitle": "第{idx}章：{title}",
   "@chapterWithTitle": {
-    "placeholders": {"idx": {"type": "int"}, "title": {"type": "String"}}
+    "placeholders": {
+      "idx": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
   },
   "refreshTooltip": "刷新",
   "untitled": "未命名",
@@ -331,21 +352,41 @@
   "contributorEmailLabel": "协作者邮箱",
   "contributorEmailHint": "输入用户邮箱以添加为协作者",
   "addContributor": "添加协作者",
-  "contributorAdded": "协作者已添加"
-  ,
+  "contributorAdded": "协作者已添加",
   "pdf": "PDF",
   "generatingPdf": "正在生成 PDF…",
   "pdfFailed": "生成 PDF 失败",
   "tableOfContents": "目录",
   "byAuthor": "作者：{name}",
-  "@byAuthor": {"placeholders": {"name": {"type": "String"}}},
+  "@byAuthor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "pageOfTotal": "第{page}/{total}页",
-  "@pageOfTotal": {"placeholders": {"page": {"type": "int"}, "total": {"type": "int"}}},
+  "@pageOfTotal": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "close": "关闭",
   "copy": "复制",
   "copiedToClipboard": "已复制到剪贴板",
   "showingCachedPublicData": "{msg} — 显示缓存/公共数据",
-  "@showingCachedPublicData": {"placeholders": {"msg": {"type": "String"}}},
+  "@showingCachedPublicData": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
   "menu": "菜单",
   "metaLabel": "元数据",
   "aiServiceUnavailable": "AI 服务不可用",
@@ -381,17 +422,41 @@
   "editPattern": "编辑模式",
   "editStoryLine": "编辑故事线",
   "deletedWithTitle": "已删除：{title}",
-  "@deletedWithTitle": {"placeholders": {"title": {"type": "String"}}},
+  "@deletedWithTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "deleteFailedWithTitle": "删除失败：{title}",
-  "@deleteFailedWithTitle": {"placeholders": {"title": {"type": "String"}}},
+  "@deleteFailedWithTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "deleteErrorWithMessage": "删除出错：{error}",
-  "@deleteErrorWithMessage": {"placeholders": {"error": {"type": "String"}}},
+  "@deleteErrorWithMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "makePublic": "设为公开",
   "noPrompts": "没有提示",
   "noPatterns": "没有模式",
   "noStoryLines": "没有故事线",
   "conversionFailed": "转换失败：{error}",
-  "@conversionFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@conversionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "failedToAnalyze": "分析失败",
   "aiCoachAnalyzing": "AI 教练正在分析...",
   "retry": "重试",
@@ -407,14 +472,57 @@
   "aiConvert": "AI 转换",
   "toggleAiCoach": "切换 AI 教练",
   "retrieveFailed": "获取失败：{error}",
-  "@retrieveFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@retrieveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "confirm": "确认",
   "lastRead": "上次阅读",
   "noRecentChapters": "没有最近章节",
   "failedToLoadConfig": "配置加载失败",
   "makePublicPromptConfirm": "将提示 \"{promptKey}\"（{language}）设为公开？",
-  "@makePublicPromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}}
-  ,
+  "@makePublicPromptConfirm": {
+    "placeholders": {
+      "promptKey": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "content": "内容",
+  "invalidKey": "键无效",
+  "invalidLanguage": "语言无效",
+  "invalidInput": "输入无效",
+  "charsCount": "字符数：{count}",
+  "@charsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deletePromptConfirm": "删除提示词 \"{promptKey}\"（{language}）？",
+  "@deletePromptConfirm": {
+    "placeholders": {
+      "promptKey": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "profileRetrieved": "已获取个人资料",
+  "noProfileFound": "未找到个人资料",
+  "templateName": "模板名称",
+  "retrieveProfile": "获取个人资料",
+  "previewLabel": "预览",
+  "markdownHint": "用 Markdown 输入描述...",
   "templateNameExists": "模板名称已存在",
   "aiServiceUrlHint": "输入 AI 服务 URL（http/https）",
   "urlLabel": "链接",
@@ -425,7 +533,6 @@
   "newPatternTitle": "新建模式",
   "editStoryLineTitle": "编辑故事线",
   "newStoryLineTitle": "新建故事线",
-  "descriptionLabel": "描述",
   "usageRulesLabel": "使用规则 (JSON)",
   "publicPatternLabel": "公开模式",
   "publicStoryLineLabel": "公开故事线",
@@ -435,21 +542,6 @@
   "invalidJson": "无效的 JSON",
   "deleteFailed": "删除失败",
   "lockPattern": "锁定模式",
-
-  "previewLabel": "预览",
-  "content": "内容",
-  "markdownHint": "用 Markdown 输入描述...",
-  "templateName": "模板名称",
-  "retrieveProfile": "获取个人资料",
-  "profileRetrieved": "已获取个人资料",
-  "noProfileFound": "未找到个人资料",
-  "invalidInput": "输入无效",
-  "invalidKey": "键无效",
-  "invalidLanguage": "语言无效",
-  "charsCount": "字符数：{count}",
-  "@charsCount": {"placeholders": {"count": {"type": "int"}}},
-  "deletePromptConfirm": "删除提示词 \"{promptKey}\"（{language}）？",
-  "@deletePromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}},
   "errorUnauthorized": "未授权",
   "errorForbidden": "禁止访问",
   "errorSessionExpired": "会话已过期",
@@ -477,7 +569,6 @@
   "ifAccountExistsResetLinkSent": "如果账户存在，重置链接已发送到您的邮箱。",
   "enterEmailForResetLink": "输入您的邮箱地址以接收密码重置链接。",
   "sendResetLink": "发送重置链接",
-  "updateFailed": "更新失败",
   "passwordsDoNotMatch": "密码不匹配",
   "sessionInvalidLoginAgain": "会话无效。请重新登录或再次使用重置链接。",
   "updateFailed": "更新失败",
@@ -490,37 +581,44 @@
   "authenticationFailedSignInAgain": "身份验证失败。请重新登录。",
   "accessDeniedNoAdminPrivileges": "访问被拒绝。您没有管理员权限。",
   "failedToLoadUsers": "加载用户失败：{statusCode} - {errorBody}",
-  "@failedToLoadUsers": {
-    "placeholders": {
-      "statusCode": {"type": "int"},
-      "errorBody": {"type": "String"}
-    }
-  },
-  "sessionExpired": "会话已过期",
-  "userManagement": "用户管理",
-  "errorLoadingUsers": "加载用户时出错",
-  "unknownError": "未知错误",
+  "smartSearchRequiresSignIn": "智能搜索需要登录",
+  "smartSearch": "智能搜索",
+  "failedToPersistTemplate": "保存模板失败",
+  "listView": "列表视图",
+  "gridView": "网格视图",
   "userIdCreated": "ID：{id}\n创建时间：{createdAt}",
-  "@userIdCreated": {
-    "placeholders": {
-      "id": {"type": "String"},
-      "createdAt": {"type": "String"}
-    }
-  },
   "searchNovels": "搜索小说...",
   "allFilter": "全部",
   "readingFilter": "阅读中",
   "completedFilter": "已完成",
   "downloadedFilter": "已下载",
   "tryAdjustingSearchCreateNovel": "尝试调整搜索或创建新小说",
-  "downloadChapters": "下载章节",
+  "sessionExpired": "会话已过期",
+  "errorLoadingUsers": "加载用户时出错",
+  "unknownError": "未知错误",
+  "goBack": "返回",
+  "unableToLoadAsset": "无法加载资源：\\\"assetmanifest.bin.json\\\"",
+  "youDontHavePermission": "您没有权限执行此操作。",
   "continueReading": "继续阅读",
   "removeFromLibrary": "从文库中移除",
-  "listView": "列表视图",
-  "gridView": "网格视图",
-  "smartSearchRequiresSignIn": "智能搜索需要登录",
-  "smartSearch": "智能搜索",
-  "failedToPersistTemplate": "保存模板失败",
-  "youDontHavePermission": "您没有权限执行此操作。",
-  "unableToLoadAsset": "无法加载资源：\"assetmanifest.bin.json\""
+  "@userIdCreated": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "createdAt": {
+        "type": "String"
+      }
+    }
+  },
+  "@failedToLoadUsers": {
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      },
+      "errorBody": {
+        "type": "String"
+      }
+    }
+  }
 }

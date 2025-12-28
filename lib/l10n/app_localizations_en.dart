@@ -1351,6 +1351,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unableToLoadAsset => 'Unable to load asset';
 
   @override
+  String get youDontHavePermission =>
+      'You don\'t have permission to perform this action.';
+
+  @override
   String get continueReading => 'Continue Reading';
 
   @override
