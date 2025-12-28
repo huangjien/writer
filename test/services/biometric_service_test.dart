@@ -174,5 +174,113 @@ void main() {
         false,
       );
     });
+
+    test('getAvailableBiometrics returns empty list on error', () async {
+      when(
+        () => mockLocalAuth.getAvailableBiometrics(),
+      ).thenThrow(Exception('test error'));
+
+      expect(await biometricService.getAvailableBiometrics(), isEmpty);
+    });
+
+    test('enableBiometricAuth throws exception on storage error', () async {
+      when(
+        () => mockStorage.write(
+          key: any(named: 'key'),
+          value: any(named: 'value'),
+        ),
+      ).thenThrow(Exception('storage error'));
+
+      expect(
+        () => biometricService.enableBiometricAuth('token'),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('isBiometricEnabled returns false on error', () async {
+      when(
+        () => mockStorage.read(key: 'biometric_enabled_v2'),
+      ).thenThrow(Exception('read error'));
+
+      expect(await biometricService.isBiometricEnabled(), false);
+    });
+
+    test('getSessionToken returns null on error', () async {
+      when(
+        () => mockStorage.read(key: 'biometric_session_token_v2'),
+      ).thenThrow(Exception('read error'));
+
+      expect(await biometricService.getSessionToken(), isNull);
+    });
+
+    test('disableBiometricAuth throws exception on storage error', () async {
+      when(
+        () => mockStorage.delete(key: any(named: 'key')),
+      ).thenThrow(Exception('delete error'));
+
+      expect(
+        () => biometricService.disableBiometricAuth(),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('clearBiometricData deletes all keys', () async {
+      when(
+        () => mockStorage.delete(key: any(named: 'key')),
+      ).thenAnswer((_) async {});
+
+      await biometricService.clearBiometricData();
+
+      verify(() => mockStorage.delete(key: 'biometric_enabled_v2')).called(1);
+      verify(
+        () => mockStorage.delete(key: 'biometric_session_token_v2'),
+      ).called(1);
+      verify(
+        () => mockStorage.delete(key: 'biometric_setup_completed_v2'),
+      ).called(1);
+    });
+
+    test('clearBiometricData throws exception on error', () async {
+      when(
+        () => mockStorage.delete(key: any(named: 'key')),
+      ).thenThrow(Exception('delete error'));
+
+      expect(
+        () => biometricService.clearBiometricData(),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('hasCompletedSetup returns true when setup is complete', () async {
+      when(
+        () => mockStorage.read(key: 'biometric_setup_completed_v2'),
+      ).thenAnswer((_) async => 'true');
+
+      expect(await biometricService.hasCompletedSetup(), true);
+    });
+
+    test('hasCompletedSetup returns false when not setup', () async {
+      when(
+        () => mockStorage.read(key: 'biometric_setup_completed_v2'),
+      ).thenAnswer((_) async => null);
+
+      expect(await biometricService.hasCompletedSetup(), false);
+    });
+
+    test('hasCompletedSetup returns false on error', () async {
+      when(
+        () => mockStorage.read(key: 'biometric_setup_completed_v2'),
+      ).thenThrow(Exception('read error'));
+
+      expect(await biometricService.hasCompletedSetup(), false);
+    });
+
+    test('validateStoredToken returns false on error', () async {
+      when(
+        () => mockStorage.read(key: 'biometric_session_token_v2'),
+      ).thenThrow(Exception('read error'));
+
+      expect(await biometricService.validateStoredToken('token'), false);
+    });
   });
 }

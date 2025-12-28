@@ -8,6 +8,8 @@ MockClient _mockClient({
   bool listResponse = false,
   bool improveReturnsInvalid = false,
   bool deleteReturnsFalse = false,
+  bool withErrorResponse = false,
+  bool smartSearch = false,
 }) {
   return MockClient((request) async {
     final m = request.method;
@@ -43,6 +45,16 @@ MockClient _mockClient({
     if (m == 'GET' && path.startsWith('/story_lines/')) {
       final id = path.split('/').last;
       if (id == 'forbidden') {
+        if (withErrorResponse) {
+          return http.Response(
+            jsonEncode({
+              'code': 'STORY_LINE_NOT_FOUND',
+              'message': 'Story line not found',
+              'user_message_key': 'story_line_not_found',
+            }),
+            403,
+          );
+        }
         return http.Response('Forbidden', 403);
       }
       final data = {
@@ -110,6 +122,16 @@ MockClient _mockClient({
         return http.Response(jsonEncode({'deleted': false}), 200);
       }
       return http.Response(jsonEncode({'deleted': true}), 200);
+    }
+
+    if (m == 'POST' && path == '/story_lines/search_vector') {
+      if (smartSearch) {
+        final items = [
+          {'id': 'sv1', 'title': 'Smart Result', 'content': 'Content'},
+        ];
+        return http.Response(jsonEncode({'items': items}), 200);
+      }
+      return http.Response(jsonEncode([]), 200);
     }
 
     return http.Response('Not found', 404);
@@ -220,4 +242,158 @@ void main() {
       expect(ok, isFalse);
     },
   );
+
+  test('isLoading reflects loading state', () async {
+    final client = MockClient((request) async {
+      await Future.delayed(const Duration(milliseconds: 10));
+      return http.Response(jsonEncode({'items': []}), 200);
+    });
+    final svc = StoryLinesService(baseUrl: 'http://any', client: client);
+    expect(svc.isLoading, false);
+    final future = svc.fetchStoryLines();
+    expect(svc.isLoading, true);
+    await future;
+    expect(svc.isLoading, false);
+  });
+
+  test('setAuthToken updates auth token', () {
+    final svc = StoryLinesService(baseUrl: 'http://any');
+    expect(svc.authToken, isNull);
+    svc.setAuthToken('new_token');
+    expect(svc.authToken, 'new_token');
+    svc.setAuthToken(null);
+    expect(svc.authToken, isNull);
+  });
+
+  test('smartSearchStoryLines returns list', () async {
+    final svc = StoryLinesService(
+      baseUrl: 'http://any',
+      client: _mockClient(smartSearch: true),
+    );
+    final results = await svc.smartSearchStoryLines(
+      'query',
+      limit: 10,
+      offset: 0,
+    );
+    expect(results.length, 1);
+    expect(results.first.id, 'sv1');
+    expect(results.first.title, 'Smart Result');
+  });
+
+  test('smartSearchStoryLines with custom limit and offset', () async {
+    final client = MockClient((request) async {
+      if (request.method == 'POST' &&
+          request.url.path == '/story_lines/search_vector') {
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        expect(body['limit'], 20);
+        expect(body['offset'], 10);
+        return http.Response(jsonEncode({'items': []}), 200);
+      }
+      return http.Response('Not found', 404);
+    });
+    final svc = StoryLinesService(baseUrl: 'http://any', client: client);
+    await svc.smartSearchStoryLines('query', limit: 20, offset: 10);
+  });
+
+  test('createStoryLine with optional fields', () async {
+    final client = MockClient((request) async {
+      if (request.method == 'POST' &&
+          (request.url.path == '/story_lines' ||
+              request.url.path == '/story_lines/')) {
+        final auth = request.headers['authorization'];
+        if (auth == null || !auth.startsWith('Bearer ')) {
+          return http.Response('Forbidden', 403);
+        }
+        final data = jsonDecode(request.body) as Map<String, dynamic>;
+        return http.Response(
+          jsonEncode({
+            'id': 'new',
+            'title': data['title'],
+            'description': data['description'],
+            'content': data['content'],
+            'usage_rules': data['usage_rules'],
+            if (data['language'] != null) 'language': data['language'],
+            if (data['is_public'] != null) 'is_public': data['is_public'],
+          }),
+          200,
+        );
+      }
+      return http.Response('Not found', 404);
+    });
+    final svc = StoryLinesService(
+      baseUrl: 'http://any',
+      authToken: 't',
+      client: client,
+    );
+    final created = await svc.createStoryLine(
+      title: 'Title',
+      description: 'Desc',
+      content: 'C',
+      usageRules: {'x': true},
+      language: 'zh',
+      isPublic: true,
+    );
+    expect(created.language, 'zh');
+    expect(created.isPublic, true);
+  });
+
+  test('updateStoryLine with all optional fields', () async {
+    final client = MockClient((request) async {
+      if (request.method == 'PATCH' &&
+          request.url.path.startsWith('/story_lines/')) {
+        final data = jsonDecode(request.body) as Map<String, dynamic>;
+        return http.Response(
+          jsonEncode({
+            'id': 'id',
+            'title': data['title'] ?? 'T',
+            'description': data['description'],
+            'content': data['content'] ?? 'C',
+            if (data['usage_rules'] != null) 'usage_rules': data['usage_rules'],
+            if (data['language'] != null) 'language': data['language'],
+            if (data['is_public'] != null) 'is_public': data['is_public'],
+            if (data['locked'] != null) 'locked': data['locked'],
+          }),
+          200,
+        );
+      }
+      return http.Response('Not found', 404);
+    });
+    final svc = StoryLinesService(baseUrl: 'http://any', client: client);
+    final updated = await svc.updateStoryLine(
+      id: 'id',
+      title: 'Updated',
+      description: 'New Desc',
+      content: 'New Content',
+      usageRules: {'y': false},
+      language: 'zh',
+      isPublic: false,
+      locked: true,
+    );
+    expect(updated.title, 'Updated');
+    expect(updated.description, 'New Desc');
+    expect(updated.content, 'New Content');
+    expect(updated.locked, true);
+  });
+
+  test('deleteStoryLine without auth throws ApiException', () async {
+    final client = MockClient((request) async {
+      if (request.method == 'DELETE' &&
+          request.url.path.startsWith('/story_lines/')) {
+        final auth = request.headers['authorization'];
+        if (auth == null || !auth.startsWith('Bearer ')) {
+          return http.Response('Forbidden', 403);
+        }
+        return http.Response(jsonEncode({'deleted': true}), 200);
+      }
+      return http.Response('Not found', 404);
+    });
+    final svc = StoryLinesService(baseUrl: 'http://any', client: client);
+    try {
+      await svc.deleteStoryLine('test');
+      fail('expected ApiException');
+    } catch (e) {
+      expect(e, isA<ApiException>());
+      expect((e as ApiException).statusCode, 403);
+    }
+  });
 }

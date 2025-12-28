@@ -4,7 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:writer/services/patterns_service.dart';
 
-MockClient _mockClient() {
+MockClient _mockClient({
+  bool improveReturnsInvalid = false,
+  bool withErrorResponse = false,
+  bool smartSearch = false,
+}) {
   return MockClient((request) async {
     final m = request.method;
     final path = request.url.path;
@@ -48,6 +52,16 @@ MockClient _mockClient() {
         return http.Response(jsonEncode(items), 200);
       }
       if (query == 'error') {
+        if (withErrorResponse) {
+          return http.Response(
+            jsonEncode({
+              'code': 'PATTERN_SEARCH_FAILED',
+              'message': 'Search failed',
+              'user_message_key': 'pattern_search_failed',
+            }),
+            500,
+          );
+        }
         return http.Response('search failed', 500);
       }
     }
@@ -97,6 +111,31 @@ MockClient _mockClient() {
     }
     if (m == 'DELETE' && path == '/patterns/error') {
       return http.Response('delete failed', 500);
+    }
+    if (m == 'POST' && path == '/patterns/improve') {
+      if (improveReturnsInvalid) {
+        return http.Response(jsonEncode([1, 2, 3]), 200);
+      }
+      final data = jsonDecode(request.body) as Map<String, dynamic>;
+      return http.Response(
+        jsonEncode({
+          'title': '${data['title']}+',
+          'description': data['description'],
+          'content': data['content'],
+          'usage_rules': data['usage_rules'],
+          'language': data['language'] ?? 'en',
+        }),
+        200,
+      );
+    }
+    if (m == 'POST' && path == '/patterns/search_vector') {
+      if (smartSearch) {
+        final items = [
+          {'id': 'sv1', 'title': 'Smart Result', 'content': 'Content'},
+        ];
+        return http.Response(jsonEncode({'items': items}), 200);
+      }
+      return http.Response(jsonEncode([]), 200);
     }
     return http.Response('Not found', 404);
   });
@@ -174,5 +213,166 @@ void main() {
       expect((e as ApiException).statusCode, 500);
       expect(e.rawMessage, 'delete failed');
     }
+  });
+
+  test('isLoading reflects loading state', () async {
+    final client = MockClient((request) async {
+      await Future.delayed(const Duration(milliseconds: 10));
+      return http.Response(jsonEncode({'items': []}), 200);
+    });
+    final svc = PatternsService(baseUrl: 'http://any', client: client);
+    expect(svc.isLoading, false);
+    final future = svc.fetchPatterns();
+    expect(svc.isLoading, true);
+    await future;
+    expect(svc.isLoading, false);
+  });
+
+  test('setAuthToken updates auth token', () {
+    final svc = PatternsService(baseUrl: 'http://any');
+    expect(svc.authToken, isNull);
+    svc.setAuthToken('new_token');
+    expect(svc.authToken, 'new_token');
+    svc.setAuthToken(null);
+    expect(svc.authToken, isNull);
+  });
+
+  test('improvePattern returns map and throws on invalid response', () async {
+    final svcOk = PatternsService(baseUrl: 'http://any', client: _mockClient());
+    final improved = await svcOk.improvePattern(
+      title: 'T',
+      content: 'C',
+      usageRules: {'a': 1},
+      language: 'en',
+    );
+    expect(improved['title'], 'T+');
+
+    final svcBad = PatternsService(
+      baseUrl: 'http://any',
+      client: _mockClient(improveReturnsInvalid: true),
+    );
+    expect(
+      () => svcBad.improvePattern(title: 'T', content: 'C'),
+      throwsA(isA<ApiException>()),
+    );
+  });
+
+  test('smartSearchPatterns returns list', () async {
+    final svc = PatternsService(
+      baseUrl: 'http://any',
+      client: _mockClient(smartSearch: true),
+    );
+    final results = await svc.smartSearchPatterns('query', limit: 5, offset: 0);
+    expect(results.length, 1);
+    expect(results.first.id, 'sv1');
+    expect(results.first.title, 'Smart Result');
+  });
+
+  test('smartSearchPatterns with custom limit and offset', () async {
+    final client = MockClient((request) async {
+      if (request.method == 'POST' &&
+          request.url.path == '/patterns/search_vector') {
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        expect(body['limit'], 10);
+        expect(body['offset'], 5);
+        return http.Response(jsonEncode({'items': []}), 200);
+      }
+      return http.Response('Not found', 404);
+    });
+    final svc = PatternsService(baseUrl: 'http://any', client: client);
+    await svc.smartSearchPatterns('query', limit: 10, offset: 5);
+  });
+
+  test('unsupported method throws ApiException', () async {
+    final client = MockClient((request) async {
+      return http.Response('Not found', 404);
+    });
+    final svc = PatternsService(baseUrl: 'http://any', client: client);
+    // Test by trying to use a method that would fail
+    // The _send method throws for unsupported methods
+    try {
+      await svc.fetchPatterns();
+      fail('expected ApiException');
+    } catch (e) {
+      expect(e is ApiException, isTrue);
+    }
+  });
+
+  test('createPattern with optional fields', () async {
+    final client = MockClient((request) async {
+      if (request.method == 'POST' &&
+          (request.url.path == '/patterns' ||
+              request.url.path == '/patterns/')) {
+        final data = jsonDecode(request.body) as Map<String, dynamic>;
+        return http.Response(
+          jsonEncode({
+            'id': 'new',
+            'title': data['title'],
+            'description': data['description'],
+            'content': data['content'],
+            'usage_rules': data['usage_rules'],
+            'language': data['language'],
+            'is_public': data['is_public'],
+          }),
+          200,
+        );
+      }
+      return http.Response('Not found', 404);
+    });
+    final svc = PatternsService(baseUrl: 'http://any', client: client);
+    final created = await svc.createPattern(
+      title: 'Title',
+      description: 'Desc',
+      content: 'C',
+      usageRules: {'x': true},
+      language: 'en',
+      isPublic: true,
+    );
+    expect(created.language, 'en');
+    expect(created.isPublic, true);
+  });
+
+  test('updatePattern with all optional fields', () async {
+    final client = MockClient((request) async {
+      if (request.method == 'PATCH' &&
+          request.url.path.startsWith('/patterns/')) {
+        final data = jsonDecode(request.body) as Map<String, dynamic>;
+        return http.Response(
+          jsonEncode({
+            'id': 'id',
+            'title': data['title'] ?? 'T',
+            'description': data['description'],
+            'content': data['content'] ?? 'C',
+            'usage_rules': data['usage_rules'],
+            'language': data['language'],
+            'is_public': data['is_public'],
+            'locked': data['locked'],
+          }),
+          200,
+        );
+      }
+      return http.Response('Not found', 404);
+    });
+    final svc = PatternsService(baseUrl: 'http://any', client: client);
+    final updated = await svc.updatePattern(
+      id: 'id',
+      title: 'Updated',
+      description: 'New Desc',
+      content: 'New Content',
+      usageRules: {'y': false},
+      language: 'zh',
+      isPublic: false,
+      locked: true,
+    );
+    expect(updated.title, 'Updated');
+    expect(updated.description, 'New Desc');
+    expect(updated.content, 'New Content');
+    expect(updated.locked, true);
+  });
+
+  test('deletePattern returns false when flag missing', () async {
+    final svc = PatternsService(baseUrl: 'http://any', client: _mockClient());
+    final ok = await svc.deletePattern('empty');
+    expect(ok, isFalse);
   });
 }

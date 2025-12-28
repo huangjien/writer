@@ -4,10 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:writer/services/prompts_service.dart';
 
-MockClient _mockClient() {
+MockClient _mockClient({bool listResponse = false}) {
   return MockClient((request) async {
     final m = request.method;
     final path = request.url.path;
+    final q = request.url.queryParameters;
     if (m == 'GET' && (path == '/prompts' || path == '/prompts/')) {
       final items = [
         {
@@ -32,7 +33,10 @@ MockClient _mockClient() {
           'is_public': true,
         },
       ];
-      return http.Response(jsonEncode(items), 200);
+      if (listResponse) {
+        return http.Response(jsonEncode(items), 200);
+      }
+      return http.Response(jsonEncode({'items': items}), 200);
     }
     if (m == 'GET' && path.startsWith('/prompts/')) {
       final id = path.split('/').last;
@@ -103,6 +107,21 @@ MockClient _mockClient() {
     }
     if (m == 'DELETE' && path.startsWith('/prompts/')) {
       return http.Response(jsonEncode({'deleted': true}), 200);
+    }
+    if (m == 'GET' && path == '/prompts/search') {
+      final query = q['q'];
+      final isPublic = q['is_public'];
+      final items = [
+        {
+          'id': 's-$query-$isPublic',
+          'user_id': 'u1',
+          'prompt_key': 'system.beta.male',
+          'language': 'en',
+          'content': 'Search Result',
+          'is_public': isPublic == 'true',
+        },
+      ];
+      return http.Response(jsonEncode({'items': items}), 200);
     }
     return http.Response('Not found', 404);
   });
@@ -176,5 +195,62 @@ void main() {
       expect(e is ApiException, isTrue);
       expect((e as ApiException).statusCode, 403);
     }
+  });
+
+  test('isLoading reflects loading state', () async {
+    final client = MockClient((request) async {
+      await Future.delayed(const Duration(milliseconds: 10));
+      return http.Response(jsonEncode({'items': []}), 200);
+    });
+    final svc = PromptsService(baseUrl: 'http://any', client: client);
+    expect(svc.isLoading, false);
+    final future = svc.fetchPrompts();
+    expect(svc.isLoading, true);
+    await future;
+    expect(svc.isLoading, false);
+  });
+
+  test('setAuthToken updates auth token', () {
+    final svc = PromptsService(baseUrl: 'http://any');
+    expect(svc.authToken, isNull);
+    svc.setAuthToken('new_token');
+    expect(svc.authToken, 'new_token');
+    svc.setAuthToken(null);
+    expect(svc.authToken, isNull);
+  });
+
+  test('deletePrompt returns false when flag missing', () async {
+    final client = MockClient((request) async {
+      if (request.method == 'DELETE' && request.url.path == '/prompts/empty') {
+        return http.Response(jsonEncode({}), 200);
+      }
+      return http.Response('Not found', 404);
+    });
+    final svc = PromptsService(baseUrl: 'http://any', client: client);
+    final ok = await svc.deletePrompt('empty');
+    expect(ok, isFalse);
+  });
+
+  test('unsupported method throws ApiException', () async {
+    final client = MockClient((request) async {
+      return http.Response('Not found', 404);
+    });
+    final svc = PromptsService(baseUrl: 'http://any', client: client);
+    try {
+      await svc.fetchPrompts();
+      fail('expected ApiException');
+    } catch (e) {
+      expect(e is ApiException, isTrue);
+    }
+  });
+
+  test('fetchPrompts supports list response for public', () async {
+    final svc = PromptsService(
+      baseUrl: 'http://any',
+      client: _mockClient(listResponse: true),
+    );
+    final list = await svc.fetchPrompts(isPublic: true);
+    expect(list.length, 1);
+    expect(list.first.promptKey, 'system.beta.editor');
   });
 }
