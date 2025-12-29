@@ -1028,6 +1028,30 @@ abstract class AppLocalizations {
   /// **'Error loading usage'**
   String get errorLoadingUsage;
 
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @totalRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Records: {count}'**
+  String totalRecords(int count);
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @noUsageHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No Usage History'**
+  String get noUsageHistory;
+
   /// No description provided for @bundleNordCalm.
   ///
   /// In en, this message translates to:
@@ -2629,30 +2653,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove from Library'**
   String get removeFromLibrary;
-
-  /// No description provided for @noUsageHistory.
-  ///
-  /// In en, this message translates to:
-  /// **'No usage history'**
-  String get noUsageHistory;
-
-  /// No description provided for @totalRecords.
-  ///
-  /// In en, this message translates to:
-  /// **'Total records: {count}'**
-  String totalRecords(int count);
-
-  /// No description provided for @total.
-  ///
-  /// In en, this message translates to:
-  /// **'Total'**
-  String get total;
-
-  /// No description provided for @refresh.
-  ///
-  /// In en, this message translates to:
-  /// **'Refresh'**
-  String get refresh;
 }
 
 class _AppLocalizationsDelegate

@@ -506,6 +506,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorLoadingUsage => 'Error loading usage';
 
   @override
+  String get refresh => 'Refresh';
+
+  @override
+  String totalRecords(int count) {
+    return 'Total Records: $count';
+  }
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get noUsageHistory => 'No Usage History';
+
+  @override
   String get bundleNordCalm => 'Nord Calm';
 
   @override
@@ -1359,18 +1373,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get removeFromLibrary => 'Remove from Library';
-
-  @override
-  String get noUsageHistory => 'No usage history';
-
-  @override
-  String totalRecords(int count) {
-    return 'Total records: $count';
-  }
-
-  @override
-  String get total => 'Total';
-
-  @override
-  String get refresh => 'Refresh';
 }

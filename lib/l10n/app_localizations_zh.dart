@@ -491,6 +491,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String get errorLoadingUsage => '加载使用量出错';
 
   @override
+  String get refresh => '刷新';
+
+  @override
+  String totalRecords(int count) {
+    return '总记录数：$count';
+  }
+
+  @override
+  String get total => '总计';
+
+  @override
+  String get noUsageHistory => '暂无使用历史';
+
+  @override
   String get bundleNordCalm => 'Nord Calm';
 
   @override
@@ -1328,18 +1342,4 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get removeFromLibrary => '从文库中移除';
-
-  @override
-  String get noUsageHistory => '暂无使用历史';
-
-  @override
-  String totalRecords(int count) {
-    return '总记录数：$count';
-  }
-
-  @override
-  String get total => '总计';
-
-  @override
-  String get refresh => '刷新';
 }

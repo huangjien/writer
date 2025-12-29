@@ -201,6 +201,17 @@
   "noUsageThisMonth": "No usage this month",
   "startUsingAiFeatures": "Start using AI features to see your token consumption",
   "errorLoadingUsage": "Error loading usage",
+  "refresh": "Refresh",
+  "totalRecords": "Total Records: {count}",
+  "@totalRecords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "total": "Total",
+  "noUsageHistory": "No Usage History",
   "bundleNordCalm": "Nord Calm",
   "bundleSolarizedFocus": "Solarized Focus",
   "bundleHighContrastReadability": "High Contrast Readability"
