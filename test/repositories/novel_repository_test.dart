@@ -208,7 +208,9 @@ void main() {
   });
 
   test('fetchSummaries handles invalid response', () async {
-    when(() => remote.get('summaries/novel/n1')).thenAnswer((_) async => 'invalid');
+    when(
+      () => remote.get('summaries/novel/n1'),
+    ).thenAnswer((_) async => 'invalid');
     final summaries = await repo.fetchSummaries('n1');
     expect(summaries, isEmpty);
   });
@@ -251,10 +253,7 @@ void main() {
     );
 
     when(() => remote.post(any(), any())).thenAnswer((_) async => 'invalid');
-    expect(
-      () => repo.createSummary(summary),
-      throwsException,
-    );
+    expect(() => repo.createSummary(summary), throwsException);
   });
 
   test('updateSummary patches summary and returns mapped result', () async {
@@ -273,7 +272,7 @@ void main() {
         'idx': 1,
         'title': 'Updated Summary',
         'sentence_summary': 'Updated content',
-        'language_code': 'en'
+        'language_code': 'en',
       };
     });
 
@@ -293,10 +292,7 @@ void main() {
     );
 
     when(() => remote.patch(any(), any())).thenAnswer((_) async => 'invalid');
-    expect(
-      () => repo.updateSummary(summary),
-      throwsException,
-    );
+    expect(() => repo.updateSummary(summary), throwsException);
   });
 
   test('createNovel with all fields', () async {
@@ -324,16 +320,18 @@ void main() {
     );
     expect(created.id, 'n9');
     expect(captured.single.keys.toSet(), {
-      'title', 'author', 'description', 'cover_url', 'language_code', 'is_public'
+      'title',
+      'author',
+      'description',
+      'cover_url',
+      'language_code',
+      'is_public',
     });
   });
 
   test('createNovel throws exception on failure', () async {
     when(() => remote.post(any(), any())).thenAnswer((_) async => 'invalid');
-    expect(
-      () => repo.createNovel(title: 'Test'),
-      throwsException,
-    );
+    expect(() => repo.createNovel(title: 'Test'), throwsException);
   });
 
   test('fetchPublicNovels handles invalid response', () async {
@@ -343,7 +341,9 @@ void main() {
   });
 
   test('fetchChaptersByNovel handles invalid response', () async {
-    when(() => remote.get('novels/n1/chapters')).thenAnswer((_) async => 'invalid');
+    when(
+      () => remote.get('novels/n1/chapters'),
+    ).thenAnswer((_) async => 'invalid');
     final chapters = await repo.fetchChaptersByNovel('n1');
     expect(chapters, isEmpty);
   });
@@ -370,7 +370,7 @@ void main() {
     ).thenAnswer((_) async => []);
 
     await repo.fetchMemberNovels();
-    
+
     verify(
       () => remote.get(
         'novels/member',

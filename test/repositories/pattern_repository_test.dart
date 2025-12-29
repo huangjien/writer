@@ -191,8 +191,14 @@ void main() {
     expect(p.description, 'D');
     expect(p.language, 'en');
     expect(captured.single.keys.toSet(), {
-      'title', 'description', 'content', 'usage_rules', 
-      'embedding', 'language', 'is_public', 'locked'
+      'title',
+      'description',
+      'content',
+      'usage_rules',
+      'embedding',
+      'language',
+      'is_public',
+      'locked',
     });
   });
 
@@ -227,25 +233,25 @@ void main() {
     expect(p.title, 'U');
     expect(p.language, 'zh');
     expect(captured.single.keys.toSet(), {
-      'title', 'description', 'content', 'usage_rules',
-      'embedding', 'language', 'is_public', 'locked'
+      'title',
+      'description',
+      'content',
+      'usage_rules',
+      'embedding',
+      'language',
+      'is_public',
+      'locked',
     });
   });
 
   test('createPattern throws exception on failure', () async {
     when(() => remote.post(any(), any())).thenAnswer((_) async => 'invalid');
-    expect(
-      () => repo.createPattern(title: 'T', content: 'C'),
-      throwsException,
-    );
+    expect(() => repo.createPattern(title: 'T', content: 'C'), throwsException);
   });
 
   test('updatePattern throws exception on failure', () async {
     when(() => remote.patch(any(), any())).thenAnswer((_) async => 'invalid');
-    expect(
-      () => repo.updatePattern(id: 'p1', title: 'U'),
-      throwsException,
-    );
+    expect(() => repo.updatePattern(id: 'p1', title: 'U'), throwsException);
   });
 
   test('listPatterns with custom limit', () async {

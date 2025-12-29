@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/state/ai_service_settings.dart';
-import 'package:writer/models/token_usage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -293,18 +292,20 @@ void main() {
         return http.Response(jsonEncode({'result': 'data'}), 200);
       });
       final repo = RemoteRepository('http://example.com/', client: client);
-      await repo.get('test', queryParameters: {'param': 'value', 'limit': '10'});
+      await repo.get(
+        'test',
+        queryParameters: {'param': 'value', 'limit': '10'},
+      );
       expect(capturedUri.queryParameters['param'], 'value');
       expect(capturedUri.queryParameters['limit'], '10');
     });
 
     test('get method throws on error status code', () async {
-      final client = MockClient((request) async => http.Response('Not found', 404));
-      final repo = RemoteRepository('http://example.com/', client: client);
-      expect(
-        () => repo.get('test'),
-        throwsException,
+      final client = MockClient(
+        (request) async => http.Response('Not found', 404),
       );
+      final repo = RemoteRepository('http://example.com/', client: client);
+      expect(() => repo.get('test'), throwsException);
     });
 
     test('post method with retryUnauthorized flag', () async {
@@ -353,7 +354,7 @@ void main() {
 
   group('RemoteRepository auth retry logic', () {
     var unauthorizedCallCount = 0;
-    
+
     setUp(() {
       unauthorizedCallCount = 0;
     });
@@ -366,7 +367,7 @@ void main() {
         }
         return http.Response(jsonEncode({'result': 'retry-success'}), 200);
       });
-      
+
       var onUnauthorizedCalled = false;
       final repo = RemoteRepository(
         'http://example.com/',
@@ -376,7 +377,7 @@ void main() {
           onUnauthorizedCalled = true;
         },
       );
-      
+
       final result = await repo.get('test');
       expect(onUnauthorizedCalled, isTrue);
       expect(result['result'], 'retry-success');
@@ -390,15 +391,17 @@ void main() {
         }
         return http.Response(jsonEncode({'result': 'retry-success'}), 200);
       });
-      
+
       final repo = RemoteRepository(
         'http://example.com/',
         client: client,
         authToken: () async => 'token',
         onUnauthorized: () async {},
       );
-      
-      final result = await repo.post('test', {'data': 'value'}, retryUnauthorized: true);
+
+      final result = await repo.post('test', {
+        'data': 'value',
+      }, retryUnauthorized: true);
       expect(result['result'], 'retry-success');
     });
 
@@ -406,14 +409,14 @@ void main() {
       final client = MockClient((request) async {
         return http.Response('Unauthorized', 401);
       });
-      
+
       final repo = RemoteRepository(
         'http://example.com/',
         client: client,
         authToken: () async => 'token',
         onUnauthorized: () async {},
       );
-      
+
       expect(
         () => repo.post('test', {'data': 'value'}, retryUnauthorized: false),
         throwsException,
@@ -448,10 +451,7 @@ void main() {
     test('getCurrentMonthUsage throws on failure', () async {
       final client = MockClient((request) async => http.Response('Error', 500));
       final repo = RemoteRepository('http://example.com/', client: client);
-      expect(
-        () => repo.getCurrentMonthUsage(),
-        throwsException,
-      );
+      expect(() => repo.getCurrentMonthUsage(), throwsException);
     });
 
     test('getUsageHistory with date parameters', () async {
@@ -469,7 +469,7 @@ void main() {
                 'input_tokens': 50,
                 'output_tokens': 50,
                 'created_at': '2024-01-01T12:00:00Z',
-              }
+              },
             ],
             'total_count': 1,
           }),
@@ -505,10 +505,7 @@ void main() {
     test('getAdminLogs throws on failure', () async {
       final client = MockClient((request) async => http.Response('Error', 500));
       final repo = RemoteRepository('http://example.com/', client: client);
-      expect(
-        () => repo.getAdminLogs(),
-        throwsException,
-      );
+      expect(() => repo.getAdminLogs(), throwsException);
     });
   });
 
@@ -542,10 +539,7 @@ void main() {
         return http.Response('Invalid JSON {', 200);
       });
       final repo = RemoteRepository('http://example.com/', client: client);
-      expect(
-        () => repo.get('test'),
-        throwsException,
-      );
+      expect(() => repo.get('test'), throwsException);
     });
 
     test('rethrows exceptions from HTTP client', () async {
@@ -553,10 +547,7 @@ void main() {
         throw Exception('Network error');
       });
       final repo = RemoteRepository('http://example.com/', client: client);
-      expect(
-        () => repo.get('test'),
-        throwsException,
-      );
+      expect(() => repo.get('test'), throwsException);
     });
   });
 }

@@ -21,7 +21,6 @@ import 'sync_service_test.mocks.dart';
   NetworkMonitor,
   SharedPreferences,
 ])
-
 void main() {
   group('SyncService', () {
     late SyncService syncService;
@@ -35,7 +34,7 @@ void main() {
       mockRemote = MockRemoteRepository();
       mockNetworkMonitor = MockNetworkMonitor();
       mockPrefs = MockSharedPreferences();
-      
+
       syncService = SyncService(
         offlineQueue: mockOfflineQueue,
         remote: mockRemote,
@@ -63,20 +62,25 @@ void main() {
     });
 
     group('network monitoring', () {
-      test('should start network monitoring when startMonitoring is called', () {
-        // Mock connectivityStream
-        when(mockNetworkMonitor.connectivityStream)
-            .thenAnswer((_) => Stream.empty());
-        
-        syncService.startMonitoring();
-        verify(mockNetworkMonitor.startMonitoring()).called(1);
-      });
+      test(
+        'should start network monitoring when startMonitoring is called',
+        () {
+          // Mock connectivityStream
+          when(
+            mockNetworkMonitor.connectivityStream,
+          ).thenAnswer((_) => Stream.empty());
+
+          syncService.startMonitoring();
+          verify(mockNetworkMonitor.startMonitoring()).called(1);
+        },
+      );
 
       test('should stop network monitoring when stopMonitoring is called', () {
         // Mock connectivityStream
-        when(mockNetworkMonitor.connectivityStream)
-            .thenAnswer((_) => Stream.empty());
-        
+        when(
+          mockNetworkMonitor.connectivityStream,
+        ).thenAnswer((_) => Stream.empty());
+
         syncService.stopMonitoring();
         verify(mockNetworkMonitor.stopMonitoring()).called(1);
       });
@@ -84,12 +88,14 @@ void main() {
       test('should trigger sync when network becomes online', () async {
         // Setup connectivity stream
         final connectivityController = StreamController<bool>();
-        when(mockNetworkMonitor.connectivityStream)
-            .thenAnswer((_) => connectivityController.stream);
+        when(
+          mockNetworkMonitor.connectivityStream,
+        ).thenAnswer((_) => connectivityController.stream);
 
         // Mock pending operations
-        when(mockOfflineQueue.getPendingOperations())
-            .thenAnswer((_) async => []);
+        when(
+          mockOfflineQueue.getPendingOperations(),
+        ).thenAnswer((_) async => []);
 
         syncService.startMonitoring();
 
@@ -100,15 +106,14 @@ void main() {
         await Future.delayed(Duration(milliseconds: 2100));
 
         verify(mockOfflineQueue.getPendingOperations()).called(1);
-        
+
         await connectivityController.close();
       });
     });
 
     group('pending operations', () {
       test('should return pending operations count', () async {
-        when(mockOfflineQueue.getPendingCount())
-            .thenAnswer((_) async => 5);
+        when(mockOfflineQueue.getPendingCount()).thenAnswer((_) async => 5);
 
         final count = await syncService.pendingOperationsCount;
         expect(count, 5);
@@ -116,8 +121,9 @@ void main() {
       });
 
       test('should return 0 when no pending operations exist', () async {
-        when(mockOfflineQueue.getPendingOperations())
-            .thenAnswer((_) async => []);
+        when(
+          mockOfflineQueue.getPendingOperations(),
+        ).thenAnswer((_) async => []);
 
         await syncService.syncPendingOperations();
 
@@ -141,27 +147,31 @@ void main() {
           createdAt: DateTime.now(),
         );
 
-        when(mockOfflineQueue.getPendingOperations())
-            .thenAnswer((_) async => [operation]);
-        
-        when(mockRemote.post('chapters', any))
-            .thenAnswer((_) async => {'id': 'server123'});
-        
-        when(mockPrefs.getString('offline_op_op1'))
-            .thenAnswer((_) => jsonEncode(operation.toJson()));
-        when(mockPrefs.setString(any, any))
-            .thenAnswer((_) async => true);
+        when(
+          mockOfflineQueue.getPendingOperations(),
+        ).thenAnswer((_) async => [operation]);
+
+        when(
+          mockRemote.post('chapters', any),
+        ).thenAnswer((_) async => {'id': 'server123'});
+
+        when(
+          mockPrefs.getString('offline_op_op1'),
+        ).thenAnswer((_) => jsonEncode(operation.toJson()));
+        when(mockPrefs.setString(any, any)).thenAnswer((_) async => true);
 
         await syncService.syncPendingOperations();
 
-        verify(mockRemote.post('chapters', {
-          'novel_id': 'novel1',
-          'idx': 1,
-          'title': 'Test Chapter',
-          'content': 'Test content',
-          'language_code': 'en',
-        })).called(1);
-        
+        verify(
+          mockRemote.post('chapters', {
+            'novel_id': 'novel1',
+            'idx': 1,
+            'title': 'Test Chapter',
+            'content': 'Test content',
+            'language_code': 'en',
+          }),
+        ).called(1);
+
         verify(mockOfflineQueue.markCompleted('op1')).called(1);
         verify(mockOfflineQueue.clearCompleted()).called(1);
       });
@@ -172,31 +182,32 @@ void main() {
           type: OperationType.updateChapter,
           chapterId: 'chapter123',
           novelId: 'novel1',
-          data: {
-            'title': 'Updated Chapter',
-            'content': 'Updated content',
-          },
+          data: {'title': 'Updated Chapter', 'content': 'Updated content'},
           createdAt: DateTime.now(),
         );
 
-        when(mockOfflineQueue.getPendingOperations())
-            .thenAnswer((_) async => [operation]);
-        
-        when(mockRemote.patch('chapters/chapter123', any))
-            .thenAnswer((_) async => {'id': 'chapter123'});
-        
-        when(mockPrefs.getString('offline_op_op2'))
-            .thenAnswer((_) => jsonEncode(operation.toJson()));
-        when(mockPrefs.setString(any, any))
-            .thenAnswer((_) async => true);
+        when(
+          mockOfflineQueue.getPendingOperations(),
+        ).thenAnswer((_) async => [operation]);
+
+        when(
+          mockRemote.patch('chapters/chapter123', any),
+        ).thenAnswer((_) async => {'id': 'chapter123'});
+
+        when(
+          mockPrefs.getString('offline_op_op2'),
+        ).thenAnswer((_) => jsonEncode(operation.toJson()));
+        when(mockPrefs.setString(any, any)).thenAnswer((_) async => true);
 
         await syncService.syncPendingOperations();
 
-        verify(mockRemote.patch('chapters/chapter123', {
-          'title': 'Updated Chapter',
-          'content': 'Updated content',
-        })).called(1);
-        
+        verify(
+          mockRemote.patch('chapters/chapter123', {
+            'title': 'Updated Chapter',
+            'content': 'Updated content',
+          }),
+        ).called(1);
+
         verify(mockOfflineQueue.markCompleted('op2')).called(1);
       });
 
@@ -209,11 +220,13 @@ void main() {
           createdAt: DateTime.now(),
         );
 
-        when(mockOfflineQueue.getPendingOperations())
-            .thenAnswer((_) async => [operation]);
-        
-        when(mockRemote.delete('chapters/chapter123'))
-            .thenAnswer((_) async => {});
+        when(
+          mockOfflineQueue.getPendingOperations(),
+        ).thenAnswer((_) async => [operation]);
+
+        when(
+          mockRemote.delete('chapters/chapter123'),
+        ).thenAnswer((_) async => {});
 
         await syncService.syncPendingOperations();
 
@@ -231,11 +244,13 @@ void main() {
           createdAt: DateTime.now(),
         );
 
-        when(mockOfflineQueue.getPendingOperations())
-            .thenAnswer((_) async => [operation]);
-        
-        when(mockRemote.patch('chapters/chapter123', any))
-            .thenAnswer((_) async => {});
+        when(
+          mockOfflineQueue.getPendingOperations(),
+        ).thenAnswer((_) async => [operation]);
+
+        when(
+          mockRemote.patch('chapters/chapter123', any),
+        ).thenAnswer((_) async => {});
 
         await syncService.syncPendingOperations();
 
@@ -260,9 +275,10 @@ void main() {
           retryCount: 0,
         );
 
-        when(mockOfflineQueue.getPendingOperations())
-            .thenAnswer((_) async => [operation]);
-        
+        when(
+          mockOfflineQueue.getPendingOperations(),
+        ).thenAnswer((_) async => [operation]);
+
         // First call fails, second succeeds
         var callCount = 0;
         when(mockRemote.post('chapters', any)).thenAnswer((_) async {
@@ -272,15 +288,13 @@ void main() {
           }
           return {'id': 'server123'};
         });
-        
-        when(mockPrefs.getString('offline_op_op5'))
-            .thenAnswer((_) => jsonEncode(operation.toJson()));
-        when(mockPrefs.setString(any, any))
-            .thenAnswer((_) async => true);
-        when(mockOfflineQueue.markCompleted('op5'))
-            .thenAnswer((_) async => {});
-        when(mockOfflineQueue.clearCompleted())
-            .thenAnswer((_) async => {});
+
+        when(
+          mockPrefs.getString('offline_op_op5'),
+        ).thenAnswer((_) => jsonEncode(operation.toJson()));
+        when(mockPrefs.setString(any, any)).thenAnswer((_) async => true);
+        when(mockOfflineQueue.markCompleted('op5')).thenAnswer((_) async => {});
+        when(mockOfflineQueue.clearCompleted()).thenAnswer((_) async => {});
 
         await syncService.syncPendingOperations();
 
@@ -304,16 +318,20 @@ void main() {
           retryCount: RetryPolicy.maxRetries,
         );
 
-        when(mockOfflineQueue.getPendingOperations())
-            .thenAnswer((_) async => [operation]);
-        
-        when(mockRemote.post('chapters', any))
-            .thenThrow(Exception('Persistent network error'));
+        when(
+          mockOfflineQueue.getPendingOperations(),
+        ).thenAnswer((_) async => [operation]);
+
+        when(
+          mockRemote.post('chapters', any),
+        ).thenThrow(Exception('Persistent network error'));
 
         await syncService.syncPendingOperations();
 
         verify(mockRemote.post('chapters', any)).called(1);
-        verify(mockOfflineQueue.markFailed('op6', 'Max retries exceeded')).called(1);
+        verify(
+          mockOfflineQueue.markFailed('op6', 'Max retries exceeded'),
+        ).called(1);
       });
     });
 
@@ -332,30 +350,38 @@ void main() {
           createdAt: DateTime.now(),
         );
 
-        when(mockOfflineQueue.getPendingOperations())
-            .thenAnswer((_) async => [operation]);
-        
-        when(mockRemote.post('chapters', any))
-            .thenAnswer((_) async => {'id': 'server123'});
-        
-        when(mockPrefs.getString('offline_op_op7'))
-            .thenAnswer((_) => jsonEncode(operation.toJson()));
-        when(mockPrefs.setString(any, any))
-            .thenAnswer((_) async => true);
+        when(
+          mockOfflineQueue.getPendingOperations(),
+        ).thenAnswer((_) async => [operation]);
+
+        when(
+          mockRemote.post('chapters', any),
+        ).thenAnswer((_) async => {'id': 'server123'});
+
+        when(
+          mockPrefs.getString('offline_op_op7'),
+        ).thenAnswer((_) => jsonEncode(operation.toJson()));
+        when(mockPrefs.setString(any, any)).thenAnswer((_) async => true);
 
         final states = <SyncState>[];
         final subscription = syncService.syncStatusStream.listen(states.add);
 
         await syncService.syncPendingOperations();
-        
+
         // Add small delay to ensure all stream events are captured
         await Future.delayed(Duration(milliseconds: 10));
 
         // Should have at least syncing and synced states
         expect(states.length, greaterThanOrEqualTo(2));
-        expect(states.any((state) => state.status == SyncStatus.syncing), isTrue);
-        expect(states.any((state) => state.status == SyncStatus.synced), isTrue);
-        
+        expect(
+          states.any((state) => state.status == SyncStatus.syncing),
+          isTrue,
+        );
+        expect(
+          states.any((state) => state.status == SyncStatus.synced),
+          isTrue,
+        );
+
         await subscription.cancel();
       });
 
@@ -373,16 +399,18 @@ void main() {
           createdAt: DateTime.now(),
         );
 
-        when(mockOfflineQueue.getPendingOperations())
-            .thenAnswer((_) async => [operation]);
-        
-        when(mockRemote.post('chapters', any))
-            .thenAnswer((_) async => {'id': 'server123'});
-        
-        when(mockPrefs.getString('offline_op_op8'))
-            .thenAnswer((_) => jsonEncode(operation.toJson()));
-        when(mockPrefs.setString(any, any))
-            .thenAnswer((_) async => true);
+        when(
+          mockOfflineQueue.getPendingOperations(),
+        ).thenAnswer((_) async => [operation]);
+
+        when(
+          mockRemote.post('chapters', any),
+        ).thenAnswer((_) async => {'id': 'server123'});
+
+        when(
+          mockPrefs.getString('offline_op_op8'),
+        ).thenAnswer((_) => jsonEncode(operation.toJson()));
+        when(mockPrefs.setString(any, any)).thenAnswer((_) async => true);
 
         final states = <SyncState>[];
         final subscription = syncService.syncStatusStream.listen(states.add);
@@ -390,15 +418,17 @@ void main() {
         final beforeSync = DateTime.now();
         await syncService.syncPendingOperations();
         final afterSync = DateTime.now();
-        
+
         // Add small delay to ensure all stream events are captured
         await Future.delayed(Duration(milliseconds: 10));
 
         await subscription.cancel();
 
-        final syncedStates = states.where((state) => state.status == SyncStatus.synced);
+        final syncedStates = states.where(
+          (state) => state.status == SyncStatus.synced,
+        );
         expect(syncedStates.isNotEmpty, isTrue);
-        
+
         final finalState = syncedStates.last;
         expect(finalState.lastSyncTime, isNotNull);
         expect(finalState.lastSyncTime!.isAfter(beforeSync), isTrue);
