@@ -11,6 +11,7 @@ import 'package:writer/theme/no_animation_transitions.dart';
 import 'package:writer/theme/fade_through_page_transitions.dart';
 import 'routing/app_router.dart';
 import 'l10n/app_localizations.dart';
+import 'services/app_lifecycle_monitor.dart';
 
 class App extends ConsumerWidget {
   const App({super.key});
@@ -118,24 +119,26 @@ class App extends ConsumerWidget {
       );
     }
 
-    return MaterialApp.router(
-      title: 'Writer',
-      theme: applyMotion(themeLight),
-      darkTheme: applyMotion(themeDark),
-      themeMode: themeState.mode,
-      routerConfig: router,
-      locale: Locale(appSettings.languageCode),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      builder: (context, child) {
-        final mq = MediaQuery.of(context);
-        return MediaQuery(
-          data: mq.copyWith(
-            textScaler: TextScaler.linear(themeState.fontScale),
-          ),
-          child: child ?? const SizedBox.shrink(),
-        );
-      },
+    return AppLifecycleMonitor(
+      child: MaterialApp.router(
+        title: 'Writer',
+        theme: applyMotion(themeLight),
+        darkTheme: applyMotion(themeDark),
+        themeMode: themeState.mode,
+        routerConfig: router,
+        locale: Locale(appSettings.languageCode),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        builder: (context, child) {
+          final mq = MediaQuery.of(context);
+          return MediaQuery(
+            data: mq.copyWith(
+              textScaler: TextScaler.linear(themeState.fontScale),
+            ),
+            child: child ?? const SizedBox.shrink(),
+          );
+        },
+      ),
     );
   }
 }

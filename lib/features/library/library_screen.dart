@@ -20,6 +20,8 @@ import 'widgets/library_item_row.dart';
 import 'widgets/library_grid_item.dart';
 import 'widgets/enhanced_search_bar.dart';
 import '../../shared/widgets/empty_state.dart';
+import '../../widgets/offline_banner.dart';
+import '../../widgets/sync_status_indicator.dart';
 
 // Basic diacritics normalization for case-insensitive, accent-insensitive matching.
 String _normalizeForSearch(String input) {
@@ -222,6 +224,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
               );
             },
           ),
+          const SyncStatusIndicator(showLabel: true),
           if (isSignedIn)
             IconButton(
               tooltip: l10n.createNovel,
@@ -247,193 +250,204 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
         ],
       ),
       drawer: const AppDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          Spacing.l,
-          Spacing.m,
-          Spacing.l,
-          Spacing.l,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SessionSection(isSignedIn: isSignedIn),
-            if (isSignedIn) ...[
-              ExpansionTile(
-                tilePadding: EdgeInsets.zero,
-                title: Text(
-                  l10n.recentlyRead,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+      body: Column(
+        children: [
+          const OfflineBanner(),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                Spacing.l,
+                Spacing.m,
+                Spacing.l,
+                Spacing.l,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SessionSection(isSignedIn: isSignedIn),
+                  if (isSignedIn) ...[
+                    ExpansionTile(
+                      tilePadding: EdgeInsets.zero,
+                      title: Text(
+                        l10n.recentlyRead,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      children: const [
+                        SizedBox(height: 8),
+                        SizedBox(height: 150, child: RecentChapters()),
+                      ],
+                    ),
+                    const SizedBox(height: Spacing.s),
+                  ],
+                  EnhancedSearchBar(
+                    onChanged: (query) {
+                      setState(() {
+                        _searchQuery = query;
+                      });
+                    },
+                    hintText: l10n.searchNovels,
+                    onClear: () {
+                      setState(() {
+                        _searchQuery = '';
+                      });
+                    },
+                    showFilters: true,
+                    filters: [
+                      LibraryFilterChip(
+                        label: l10n.allFilter,
+                        selected: _filter == LibraryFilter.all,
+                        onTap: () =>
+                            setState(() => _filter = LibraryFilter.all),
+                        icon: Icons.apps,
+                      ),
+                      LibraryFilterChip(
+                        label: l10n.readingFilter,
+                        selected: _filter == LibraryFilter.reading,
+                        onTap: () =>
+                            setState(() => _filter = LibraryFilter.reading),
+                        icon: Icons.menu_book,
+                      ),
+                      LibraryFilterChip(
+                        label: l10n.completedFilter,
+                        selected: _filter == LibraryFilter.completed,
+                        onTap: () =>
+                            setState(() => _filter = LibraryFilter.completed),
+                        icon: Icons.check_circle,
+                      ),
+                      LibraryFilterChip(
+                        label: l10n.downloadedFilter,
+                        selected: _filter == LibraryFilter.downloaded,
+                        onTap: () =>
+                            setState(() => _filter = LibraryFilter.downloaded),
+                        icon: Icons.download_done,
+                      ),
+                    ],
                   ),
-                ),
-                children: const [
-                  SizedBox(height: 8),
-                  SizedBox(height: 150, child: RecentChapters()),
+                  const SizedBox(height: Spacing.m),
+                  Expanded(
+                    child: novelsAsync.when(
+                      data: (novels) {
+                        final visible = _filterNovels(novels, removedIds);
+                        // Apply sort order
+                        visible.sort((a, b) {
+                          switch (_sort) {
+                            case LibrarySort.titleAsc:
+                              return a.title.toLowerCase().compareTo(
+                                b.title.toLowerCase(),
+                              );
+                            case LibrarySort.authorAsc:
+                              final aAuth = (a.author ?? '').toLowerCase();
+                              final bAuth = (b.author ?? '').toLowerCase();
+                              return aAuth.compareTo(bAuth);
+                          }
+                        });
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            LibraryListHeader(
+                              visibleCount: visible.length,
+                              totalCount: novels.length,
+                              sortValue: _sort == LibrarySort.titleAsc
+                                  ? 'titleAsc'
+                                  : 'authorAsc',
+                              onSortChanged: (v) {
+                                if (v == 'titleAsc') {
+                                  setState(() => _sort = LibrarySort.titleAsc);
+                                } else if (v == 'authorAsc') {
+                                  setState(() => _sort = LibrarySort.authorAsc);
+                                }
+                              },
+                              viewMode: _viewMode,
+                              onViewModeChanged: (mode) {
+                                setState(() => _viewMode = mode);
+                              },
+                            ),
+                            if (visible.isEmpty)
+                              Expanded(
+                                child: EmptyState(
+                                  icon: Icons.menu_book_outlined,
+                                  title: l10n.noNovelsFound,
+                                  subtitle: l10n.tryAdjustingSearchCreateNovel,
+                                  actionLabel: l10n.createNovel,
+                                  onAction: () =>
+                                      context.pushNamed('createNovel'),
+                                ),
+                              )
+                            else
+                              Expanded(
+                                child: PageTransitionSwitcher(
+                                  duration: Duration(
+                                    milliseconds: motion.reduceMotion ? 0 : 300,
+                                  ),
+                                  transitionBuilder:
+                                      (
+                                        Widget child,
+                                        Animation<double> primaryAnimation,
+                                        Animation<double> secondaryAnimation,
+                                      ) {
+                                        return FadeThroughTransition(
+                                          animation: primaryAnimation,
+                                          secondaryAnimation:
+                                              secondaryAnimation,
+                                          child: child,
+                                        );
+                                      },
+                                  child: _viewMode == LibraryViewMode.list
+                                      ? ListView.separated(
+                                          key: const Key('libraryListView'),
+                                          itemCount: visible.length,
+                                          separatorBuilder: (_, _) =>
+                                              const Divider(height: 1),
+                                          itemBuilder: (context, index) {
+                                            final n = visible[index];
+                                            return LibraryItemRow(
+                                              novel: n,
+                                              isSignedIn: isSignedIn,
+                                              canRemove: canRemove,
+                                              canDownload: canDownload,
+                                            );
+                                          },
+                                        )
+                                      : GridView.builder(
+                                          key: const Key('libraryGridView'),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 8,
+                                          ),
+                                          gridDelegate:
+                                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 2,
+                                                childAspectRatio: 0.7,
+                                                crossAxisSpacing: 16,
+                                                mainAxisSpacing: 16,
+                                              ),
+                                          itemCount: visible.length,
+                                          itemBuilder: (context, index) {
+                                            final n = visible[index];
+                                            return LibraryGridItem(
+                                              novel: n,
+                                              isSignedIn: isSignedIn,
+                                              canRemove: canRemove,
+                                              canDownload: canDownload,
+                                            );
+                                          },
+                                        ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                      loading: () => LibraryLoadingList(),
+                      error: (e, _) => LibraryErrorSection(error: e),
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: Spacing.s),
-            ],
-            EnhancedSearchBar(
-              onChanged: (query) {
-                setState(() {
-                  _searchQuery = query;
-                });
-              },
-              hintText: l10n.searchNovels,
-              onClear: () {
-                setState(() {
-                  _searchQuery = '';
-                });
-              },
-              showFilters: true,
-              filters: [
-                LibraryFilterChip(
-                  label: l10n.allFilter,
-                  selected: _filter == LibraryFilter.all,
-                  onTap: () => setState(() => _filter = LibraryFilter.all),
-                  icon: Icons.apps,
-                ),
-                LibraryFilterChip(
-                  label: l10n.readingFilter,
-                  selected: _filter == LibraryFilter.reading,
-                  onTap: () => setState(() => _filter = LibraryFilter.reading),
-                  icon: Icons.menu_book,
-                ),
-                LibraryFilterChip(
-                  label: l10n.completedFilter,
-                  selected: _filter == LibraryFilter.completed,
-                  onTap: () =>
-                      setState(() => _filter = LibraryFilter.completed),
-                  icon: Icons.check_circle,
-                ),
-                LibraryFilterChip(
-                  label: l10n.downloadedFilter,
-                  selected: _filter == LibraryFilter.downloaded,
-                  onTap: () =>
-                      setState(() => _filter = LibraryFilter.downloaded),
-                  icon: Icons.download_done,
-                ),
-              ],
             ),
-            const SizedBox(height: Spacing.m),
-            Expanded(
-              child: novelsAsync.when(
-                data: (novels) {
-                  final visible = _filterNovels(novels, removedIds);
-                  // Apply sort order
-                  visible.sort((a, b) {
-                    switch (_sort) {
-                      case LibrarySort.titleAsc:
-                        return a.title.toLowerCase().compareTo(
-                          b.title.toLowerCase(),
-                        );
-                      case LibrarySort.authorAsc:
-                        final aAuth = (a.author ?? '').toLowerCase();
-                        final bAuth = (b.author ?? '').toLowerCase();
-                        return aAuth.compareTo(bAuth);
-                    }
-                  });
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      LibraryListHeader(
-                        visibleCount: visible.length,
-                        totalCount: novels.length,
-                        sortValue: _sort == LibrarySort.titleAsc
-                            ? 'titleAsc'
-                            : 'authorAsc',
-                        onSortChanged: (v) {
-                          if (v == 'titleAsc') {
-                            setState(() => _sort = LibrarySort.titleAsc);
-                          } else if (v == 'authorAsc') {
-                            setState(() => _sort = LibrarySort.authorAsc);
-                          }
-                        },
-                        viewMode: _viewMode,
-                        onViewModeChanged: (mode) {
-                          setState(() => _viewMode = mode);
-                        },
-                      ),
-                      if (visible.isEmpty)
-                        Expanded(
-                          child: EmptyState(
-                            icon: Icons.menu_book_outlined,
-                            title: l10n.noNovelsFound,
-                            subtitle: l10n.tryAdjustingSearchCreateNovel,
-                            actionLabel: l10n.createNovel,
-                            onAction: () => context.pushNamed('createNovel'),
-                          ),
-                        )
-                      else
-                        Expanded(
-                          child: PageTransitionSwitcher(
-                            duration: Duration(
-                              milliseconds: motion.reduceMotion ? 0 : 300,
-                            ),
-                            transitionBuilder:
-                                (
-                                  Widget child,
-                                  Animation<double> primaryAnimation,
-                                  Animation<double> secondaryAnimation,
-                                ) {
-                                  return FadeThroughTransition(
-                                    animation: primaryAnimation,
-                                    secondaryAnimation: secondaryAnimation,
-                                    child: child,
-                                  );
-                                },
-                            child: _viewMode == LibraryViewMode.list
-                                ? ListView.separated(
-                                    key: const Key('libraryListView'),
-                                    itemCount: visible.length,
-                                    separatorBuilder: (_, _) =>
-                                        const Divider(height: 1),
-                                    itemBuilder: (context, index) {
-                                      final n = visible[index];
-                                      return LibraryItemRow(
-                                        novel: n,
-                                        isSignedIn: isSignedIn,
-                                        canRemove: canRemove,
-                                        canDownload: canDownload,
-                                      );
-                                    },
-                                  )
-                                : GridView.builder(
-                                    key: const Key('libraryGridView'),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 8,
-                                    ),
-                                    gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          childAspectRatio: 0.7,
-                                          crossAxisSpacing: 16,
-                                          mainAxisSpacing: 16,
-                                        ),
-                                    itemCount: visible.length,
-                                    itemBuilder: (context, index) {
-                                      final n = visible[index];
-                                      return LibraryGridItem(
-                                        novel: n,
-                                        isSignedIn: isSignedIn,
-                                        canRemove: canRemove,
-                                        canDownload: canDownload,
-                                      );
-                                    },
-                                  ),
-                          ),
-                        ),
-                    ],
-                  );
-                },
-                loading: () => LibraryLoadingList(),
-                error: (e, _) => LibraryErrorSection(error: e),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

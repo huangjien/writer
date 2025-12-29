@@ -6,15 +6,19 @@ import 'package:writer/models/chapter_cache.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/services/network_monitor.dart';
 
 class MockRemoteRepository extends Mock implements RemoteRepository {}
 
 class MockLocalStorageRepository extends Mock
     implements LocalStorageRepository {}
 
+class MockNetworkMonitor extends Mock implements NetworkMonitor {}
+
 void main() {
   late MockRemoteRepository remote;
   late MockLocalStorageRepository mockLocal;
+  late MockNetworkMonitor mockNetworkMonitor;
   late ChapterRepository repo;
 
   setUpAll(() {
@@ -33,10 +37,16 @@ void main() {
   setUp(() {
     remote = MockRemoteRepository();
     mockLocal = MockLocalStorageRepository();
+    mockNetworkMonitor = MockNetworkMonitor();
     when(() => mockLocal.getChapter(any())).thenAnswer((_) async => null);
     when(() => mockLocal.saveChapter(any())).thenAnswer((_) async {});
     when(() => mockLocal.removeChapter(any())).thenAnswer((_) async {});
-    repo = ChapterRepository(remote, mockLocal);
+    when(() => mockNetworkMonitor.isConnected).thenAnswer((_) async => true);
+    repo = ChapterRepository(
+      remote,
+      mockLocal,
+      networkMonitor: mockNetworkMonitor,
+    );
   });
 
   group('ChapterRepository', () {

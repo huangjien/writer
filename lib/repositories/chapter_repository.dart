@@ -8,18 +8,38 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import '../repositories/local_storage_repository.dart';
 import '../main.dart';
+import '../services/offline_queue_service.dart';
+import '../services/network_monitor.dart';
+import '../models/offline_operation.dart';
+import '../common/errors/offline_exception.dart';
+import '../state/network_monitor_provider.dart';
 
 final chapterRepositoryProvider = Provider<ChapterPort>((ref) {
   final remote = ref.watch(remoteRepositoryProvider);
   final localStorage = ref.watch(localStorageRepositoryProvider);
-  return ChapterRepository(remote, localStorage);
+  final offlineQueue = ref.watch(offlineQueueServiceProvider);
+  final networkMonitor = ref.watch(networkMonitorProvider);
+  return ChapterRepository(
+    remote,
+    localStorage,
+    offlineQueue: offlineQueue,
+    networkMonitor: networkMonitor,
+  );
 });
 
 class ChapterRepository implements ChapterPort {
   final RemoteRepository _remote;
   final LocalStorageRepository _localStorage;
+  final OfflineQueueService _offlineQueue;
+  final NetworkMonitor _networkMonitor;
 
-  ChapterRepository(this._remote, this._localStorage);
+  ChapterRepository(
+    this._remote,
+    this._localStorage, {
+    OfflineQueueService? offlineQueue,
+    NetworkMonitor? networkMonitor,
+  }) : _offlineQueue = offlineQueue ?? OfflineQueueService(),
+       _networkMonitor = networkMonitor ?? NetworkMonitor();
 
   @override
   Future<List<Chapter>> getChapters(String novelId) async {
@@ -83,6 +103,54 @@ class ChapterRepository implements ChapterPort {
 
   @override
   Future<void> updateChapter(Chapter chapter) async {
+    // Check network status
+    final isConnected = await _networkMonitor.isConnected;
+
+    if (!isConnected) {
+      // Offline: Queue the operation for later sync
+      String? sha;
+      if (chapter.content != null) {
+        final bytes = utf8.encode(chapter.content!);
+        sha = sha256.convert(bytes).toString();
+      }
+
+      final operation = OfflineOperation(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        type: OperationType.updateChapter,
+        chapterId: chapter.id,
+        novelId: chapter.novelId,
+        data: {
+          'title': chapter.title,
+          'content': chapter.content,
+          if (sha != null) 'sha': sha,
+        },
+        baseSha: chapter.sha,
+        createdAt: DateTime.now(),
+      );
+
+      await _offlineQueue.enqueue(operation);
+
+      // Save to local cache immediately
+      if (chapter.content != null) {
+        await _localStorage.saveChapter(
+          ChapterCache(
+            chapterId: chapter.id,
+            novelId: chapter.novelId,
+            idx: chapter.idx,
+            title: chapter.title,
+            content: chapter.content!,
+            lastUpdated: DateTime.now(),
+          ),
+        );
+      }
+
+      throw OfflineException(
+        'No internet connection. Chapter changes queued for sync.',
+        operationId: operation.id,
+      );
+    }
+
+    // Online: Update immediately
     try {
       String? sha;
       if (chapter.content != null) {
@@ -117,6 +185,50 @@ class ChapterRepository implements ChapterPort {
 
   @override
   Future<void> updateChapterIdx(String chapterId, int newIdx) async {
+    // Check network status
+    final isConnected = await _networkMonitor.isConnected;
+
+    if (!isConnected) {
+      // Offline: Queue the index update for later sync
+      // Get the cached chapter to get novelId
+      String novelId = '';
+      try {
+        final cached = await _localStorage.getChapter(chapterId);
+        if (cached != null) {
+          novelId = cached.novelId;
+          // Update local cache immediately
+          await _localStorage.saveChapter(
+            ChapterCache(
+              chapterId: cached.chapterId,
+              novelId: cached.novelId,
+              idx: newIdx,
+              title: cached.title,
+              content: cached.content,
+              lastUpdated: DateTime.now(),
+            ),
+          );
+        }
+      } catch (_) {}
+
+      final operation = OfflineOperation(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        type: OperationType.updateChapterIdx,
+        chapterId: chapterId,
+        novelId: novelId,
+        data: {'chapter_id': chapterId, 'new_idx': newIdx},
+        baseSha: null,
+        createdAt: DateTime.now(),
+      );
+
+      await _offlineQueue.enqueue(operation);
+
+      throw OfflineException(
+        'No internet connection. Chapter index update queued for sync.',
+        operationId: operation.id,
+      );
+    }
+
+    // Online: Update immediately
     try {
       await _remote.patch('chapters/$chapterId', {'idx': newIdx});
 
@@ -176,13 +288,58 @@ class ChapterRepository implements ChapterPort {
     String? title,
     String? content,
   }) async {
+    // Check network status
+    final isConnected = await _networkMonitor.isConnected;
+
+    if (!isConnected) {
+      // Offline: Create a temporary chapter with a local ID
+      final tempId = 'local_${DateTime.now().millisecondsSinceEpoch}';
+      final sha = sha256.convert(utf8.encode(content ?? '')).toString();
+
+      // Queue the operation for later sync
+      final operation = OfflineOperation(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        type: OperationType.createChapter,
+        chapterId: tempId,
+        novelId: novelId,
+        data: {
+          'novel_id': novelId,
+          'idx': idx,
+          'title': title,
+          'content': content,
+          'sha': sha,
+          'language_code': 'en',
+        },
+        baseSha: null,
+        createdAt: DateTime.now(),
+      );
+
+      await _offlineQueue.enqueue(operation);
+
+      // Save to local cache
+      await _localStorage.saveChapter(
+        ChapterCache(
+          chapterId: tempId,
+          novelId: novelId,
+          idx: idx,
+          title: title ?? 'Untitled',
+          content: content ?? '',
+          lastUpdated: DateTime.now(),
+        ),
+      );
+
+      throw OfflineException(
+        'No internet connection. Chapter creation queued for sync.',
+        operationId: operation.id,
+      );
+    }
+
+    // Online: Create immediately
     final body = {
       'novel_id': novelId,
       'idx': idx,
       'title': title,
       'content': content,
-      // 'sha' calculated by backend or we can send it? Library.py creates SHA if not present?
-      // Library.py takes Sha.
       'sha': sha256.convert(utf8.encode(content ?? '')).toString(),
       'language_code': 'en',
     };
@@ -208,6 +365,35 @@ class ChapterRepository implements ChapterPort {
 
   @override
   Future<void> deleteChapter(String chapterId) async {
+    // Check network status
+    final isConnected = await _networkMonitor.isConnected;
+
+    if (!isConnected) {
+      // Offline: Queue the deletion for later sync
+      final operation = OfflineOperation(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        type: OperationType.deleteChapter,
+        chapterId: chapterId,
+        novelId: '',
+        data: {'chapter_id': chapterId},
+        baseSha: null,
+        createdAt: DateTime.now(),
+      );
+
+      await _offlineQueue.enqueue(operation);
+
+      // Remove from local cache immediately
+      try {
+        await _localStorage.removeChapter(chapterId);
+      } catch (_) {}
+
+      throw OfflineException(
+        'No internet connection. Chapter deletion queued for sync.',
+        operationId: operation.id,
+      );
+    }
+
+    // Online: Delete immediately
     await _remote.delete('chapters/$chapterId');
     try {
       await _localStorage.removeChapter(chapterId);

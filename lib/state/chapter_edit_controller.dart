@@ -6,6 +6,7 @@ import '../repositories/chapter_port.dart';
 import '../services/vector_service.dart';
 import 'providers.dart';
 import 'package:writer/shared/constants.dart';
+import '../common/errors/offline_exception.dart';
 
 enum EditRequest { idle, saving, creating, deleting }
 
@@ -23,6 +24,8 @@ class ChapterEditState {
   final EditRequest request;
   final bool embeddingInFlight;
   final String? embeddingStatus;
+  final bool isQueuedForSync;
+  final String? offlineMessage;
 
   const ChapterEditState({
     required this.chapterId,
@@ -36,6 +39,8 @@ class ChapterEditState {
     this.request = EditRequest.idle,
     this.embeddingInFlight = false,
     this.embeddingStatus,
+    this.isQueuedForSync = false,
+    this.offlineMessage,
   });
 
   ChapterEditState copyWith({
@@ -50,6 +55,8 @@ class ChapterEditState {
     EditRequest? request,
     bool? embeddingInFlight,
     String? embeddingStatus,
+    bool? isQueuedForSync,
+    String? offlineMessage,
   }) {
     return ChapterEditState(
       chapterId: chapterId ?? this.chapterId,
@@ -63,6 +70,8 @@ class ChapterEditState {
       request: request ?? this.request,
       embeddingInFlight: embeddingInFlight ?? this.embeddingInFlight,
       embeddingStatus: embeddingStatus,
+      isQueuedForSync: isQueuedForSync ?? this.isQueuedForSync,
+      offlineMessage: offlineMessage,
     );
   }
 }
@@ -117,6 +126,7 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
       isSaving: true,
       request: EditRequest.saving,
       errorMessage: null,
+      offlineMessage: null,
     );
     try {
       final updated = Chapter(
@@ -132,8 +142,19 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
         isSaving: false,
         request: EditRequest.idle,
         isDirty: false,
+        isQueuedForSync: false,
+        offlineMessage: null,
       );
       return true;
+    } on OfflineException catch (e) {
+      // Offline: Show queued message, keep isDirty true
+      state = state.copyWith(
+        isSaving: false,
+        request: EditRequest.idle,
+        isQueuedForSync: true,
+        offlineMessage: e.message,
+      );
+      return true; // Return true because save succeeded locally
     } catch (e) {
       state = state.copyWith(
         isSaving: false,
@@ -153,6 +174,7 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
       isSaving: true,
       request: EditRequest.creating,
       errorMessage: null,
+      offlineMessage: null,
     );
     try {
       final nextIdx = await _repo.getNextIdx(state.novelId);
@@ -166,8 +188,19 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
         isSaving: false,
         request: EditRequest.idle,
         isDirty: false,
+        isQueuedForSync: false,
+        offlineMessage: null,
       );
       return created;
+    } on OfflineException catch (e) {
+      // Offline: Show queued message
+      state = state.copyWith(
+        isSaving: false,
+        request: EditRequest.idle,
+        isQueuedForSync: true,
+        offlineMessage: e.message,
+      );
+      return null;
     } catch (e) {
       state = state.copyWith(
         isSaving: false,
@@ -239,6 +272,7 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
       isSaving: true,
       request: EditRequest.deleting,
       errorMessage: null,
+      offlineMessage: null,
     );
     try {
       final novelId = state.novelId;
@@ -248,8 +282,19 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
         isSaving: false,
         request: EditRequest.idle,
         isDirty: false,
+        isQueuedForSync: false,
+        offlineMessage: null,
       );
       return true;
+    } on OfflineException catch (e) {
+      // Offline: Show queued message
+      state = state.copyWith(
+        isSaving: false,
+        request: EditRequest.idle,
+        isQueuedForSync: true,
+        offlineMessage: e.message,
+      );
+      return true; // Return true because deletion succeeded locally
     } catch (e) {
       state = state.copyWith(
         isSaving: false,
