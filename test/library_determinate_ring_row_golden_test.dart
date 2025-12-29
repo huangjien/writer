@@ -10,6 +10,8 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
+import 'package:writer/state/admin_settings.dart';
+import 'package:writer/state/providers.dart';
 import 'helpers/test_utils.dart';
 
 void main() {
@@ -42,6 +44,11 @@ void main() {
     final app = await buildAppScope(
       prefs: prefs,
       extraOverrides: [
+        // Authentication providers
+        isSignedInProvider.overrideWith((ref) => false),
+        isAdminProvider.overrideWith((ref) => false),
+        adminModeProvider.overrideWith((ref) => AdminModeNotifier(prefs)),
+
         libraryNovelsProvider.overrideWith(
           (ref) async => [
             const Novel(
@@ -158,6 +165,11 @@ void main() {
     final app = await buildAppScope(
       prefs: prefs,
       extraOverrides: [
+        // Authentication providers
+        isSignedInProvider.overrideWith((ref) => false),
+        isAdminProvider.overrideWith((ref) => false),
+        adminModeProvider.overrideWith((ref) => AdminModeNotifier(prefs)),
+
         libraryNovelsProvider.overrideWith(
           (ref) async => [
             const Novel(

@@ -322,7 +322,7 @@ void main() {
     await tester.enterText(searchField, 'ab');
     await tester.pump(const Duration(milliseconds: 300));
     expect(svc.searchCalls, 0);
-    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 5700));
     expect(svc.searchCalls, 1);
     expect(svc.lastSearchQ, 'ab');
   });

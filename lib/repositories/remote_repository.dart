@@ -318,4 +318,15 @@ class RemoteRepository {
     if (data == null) return null;
     return TokenUsage.fromJson(data);
   }
+
+  Future<String?> getAdminLogs({int lines = 1000}) async {
+    final data = await get(
+      'admin/logs',
+      queryParameters: {'lines': lines.toString()},
+    );
+    if (data is Map<String, dynamic>) {
+      return data['logs'] as String?;
+    }
+    return null;
+  }
 }

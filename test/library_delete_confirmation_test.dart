@@ -99,6 +99,11 @@ class _NoopRemoteRepository implements RemoteRepository {
   Future<TokenUsage?> getCurrentMonthUsage() async {
     throw UnimplementedError();
   }
+
+  @override
+  Future<String?> getAdminLogs({int lines = 1000}) async {
+    throw UnimplementedError();
+  }
 }
 
 class _FakeLocalStorageRepository extends LocalStorageRepository {

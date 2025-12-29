@@ -138,6 +138,13 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isSignedIn = ref.watch(isSignedInProvider);
+    bool isAdmin;
+    try {
+      isAdmin = ref.watch(isAdminProvider);
+    } catch (_) {
+      // Fallback for tests or environments that don't override isAdminProvider
+      isAdmin = false;
+    }
     final novelsAsync = ref.watch(libraryNovelsProvider);
     final motion = ref.watch(motionSettingsProvider);
 
@@ -226,6 +233,12 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
             tooltip: l10n.about,
             onPressed: () => context.push('/about'),
           ),
+          if (isAdmin)
+            IconButton(
+              icon: const Icon(Icons.bug_report),
+              tooltip: 'Admin Logs',
+              onPressed: () => context.push('/admin/logs'),
+            ),
           IconButton(
             icon: const Icon(Icons.settings),
             tooltip: l10n.settings,

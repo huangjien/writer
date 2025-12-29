@@ -3,14 +3,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/library_screen.dart';
+import 'package:writer/features/library/library_providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/admin_settings.dart';
+
 import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/progress_providers.dart';
+import 'package:writer/state/providers.dart';
 
 void main() {
   testWidgets('Remove hides item and undo restores it (offline)', (
     tester,
   ) async {
+    final prefs = await SharedPreferences.getInstance();
     SharedPreferences.setMockInitialValues({});
 
     final novels = <Novel>[
@@ -37,8 +43,17 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          // Authentication providers
+          isSignedInProvider.overrideWith((ref) => false),
+          isAdminProvider.overrideWith((ref) => false),
+          adminModeProvider.overrideWith((ref) => AdminModeNotifier(prefs)),
+
+          // Library providers
           libraryNovelsProvider.overrideWith((ref) async => novels),
           memberNovelsProvider.overrideWith((ref) async => const []),
+          chaptersProvider.overrideWith((ref, novelId) async => const []),
+          lastProgressProvider.overrideWith((ref, novelId) async => null),
+          removedNovelIdsProvider.overrideWith((ref) => <String>{}),
         ],
         child: MaterialApp(
           locale: const Locale('en'),

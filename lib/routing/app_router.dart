@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import '../features/admin/admin_logs_screen.dart';
 import '../features/library/library_screen.dart';
 import '../features/library/create_novel_screen.dart';
 import '../features/settings/settings_screen.dart';
@@ -123,6 +124,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/admin/users',
         name: 'userManagement',
         builder: (context, state) => const UserManagementScreen(),
+      ),
+      GoRoute(
+        path: '/admin/logs',
+        name: 'adminLogs',
+        builder: (context, state) => const AdminLogsScreen(),
       ),
       GoRoute(
         path: '/my-novels',
