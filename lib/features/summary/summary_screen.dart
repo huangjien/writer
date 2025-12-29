@@ -35,6 +35,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
 
   // Coach State
   bool _showCoach = false;
+  bool _showSentenceCoach = false;
 
   @override
   void initState() {
@@ -123,6 +124,24 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                     decoration: InputDecoration(
                       labelText: l10n.sentenceSummary,
                       border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _showSentenceCoach
+                              ? Icons.chat_bubble
+                              : Icons.chat_bubble_outline,
+                          color: _showSentenceCoach ? Colors.purple : null,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _showSentenceCoach = !_showSentenceCoach;
+                            // Ensure only one coach is active at a time
+                            if (_showSentenceCoach) {
+                              _showCoach = false;
+                            }
+                          });
+                        },
+                        tooltip: 'AI sentence summary',
+                      ),
                     ),
                     maxLines: 2,
                     onChanged: (_) => _onFieldChanged(),
@@ -169,6 +188,10 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                         onPressed: () {
                           setState(() {
                             _showCoach = !_showCoach;
+                            // Ensure only one coach is active at a time
+                            if (_showCoach) {
+                              _showSentenceCoach = false;
+                            }
                           });
                         },
                         tooltip: l10n.toggleAiCoach,
@@ -291,7 +314,25 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          if (_showCoach) {
+          if (_showCoach || _showSentenceCoach) {
+            final activeCoachContent = _showSentenceCoach
+                ? SnowflakeCoachWidget(
+                    novelId: widget.novelId,
+                    currentSummary: _sentenceController.text,
+                    onSummaryUpdated: (newSummary) {
+                      _sentenceController.text = newSummary;
+                      _onFieldChanged();
+                    },
+                  )
+                : SnowflakeCoachWidget(
+                    novelId: widget.novelId,
+                    currentSummary: _expandedController.text,
+                    onSummaryUpdated: (newSummary) {
+                      _expandedController.text = newSummary;
+                      _onFieldChanged();
+                    },
+                  );
+
             // Split View on large screens, or BottomSheet style on small?
             // Since this is likely a desktop app, let's just split 50/50 or use a sidebar
             if (constraints.maxWidth > 800) {
@@ -299,17 +340,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                 children: [
                   Expanded(flex: 2, child: buildMainContent()),
                   const VerticalDivider(width: 1),
-                  Expanded(
-                    flex: 1,
-                    child: SnowflakeCoachWidget(
-                      novelId: widget.novelId,
-                      currentSummary: _expandedController.text,
-                      onSummaryUpdated: (newSummary) {
-                        _expandedController.text = newSummary;
-                        _onFieldChanged();
-                      },
-                    ),
-                  ),
+                  Expanded(flex: 1, child: activeCoachContent),
                 ],
               );
             } else {
@@ -319,17 +350,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                 children: [
                   Expanded(flex: 1, child: buildMainContent()),
                   const Divider(height: 1),
-                  Expanded(
-                    flex: 1,
-                    child: SnowflakeCoachWidget(
-                      novelId: widget.novelId,
-                      currentSummary: _expandedController.text,
-                      onSummaryUpdated: (newSummary) {
-                        _expandedController.text = newSummary;
-                        _onFieldChanged();
-                      },
-                    ),
-                  ),
+                  Expanded(flex: 1, child: activeCoachContent),
                 ],
               );
             }

@@ -3,10 +3,13 @@ import 'package:mocktail/mocktail.dart';
 import 'dart:io';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/models/chapter_cache.dart';
+import 'package:writer/models/offline_operation.dart';
+import 'package:writer/common/errors/offline_exception.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/services/network_monitor.dart';
+import 'package:writer/services/offline_queue_service.dart';
 
 class MockRemoteRepository extends Mock implements RemoteRepository {}
 
@@ -15,10 +18,13 @@ class MockLocalStorageRepository extends Mock
 
 class MockNetworkMonitor extends Mock implements NetworkMonitor {}
 
+class MockOfflineQueueService extends Mock implements OfflineQueueService {}
+
 void main() {
   late MockRemoteRepository remote;
   late MockLocalStorageRepository mockLocal;
   late MockNetworkMonitor mockNetworkMonitor;
+  late MockOfflineQueueService mockOfflineQueue;
   late ChapterRepository repo;
 
   setUpAll(() {
@@ -32,16 +38,27 @@ void main() {
         lastUpdated: DateTime.now(),
       ),
     );
+    registerFallbackValue(
+      OfflineOperation(
+        id: 'test-id',
+        type: OperationType.updateChapter,
+        chapterId: 'test-chapter',
+        novelId: 'test-novel',
+        createdAt: DateTime.now(),
+      ),
+    );
   });
 
   setUp(() {
     remote = MockRemoteRepository();
     mockLocal = MockLocalStorageRepository();
     mockNetworkMonitor = MockNetworkMonitor();
+    mockOfflineQueue = MockOfflineQueueService();
     when(() => mockLocal.getChapter(any())).thenAnswer((_) async => null);
     when(() => mockLocal.saveChapter(any())).thenAnswer((_) async {});
     when(() => mockLocal.removeChapter(any())).thenAnswer((_) async {});
     when(() => mockNetworkMonitor.isConnected).thenAnswer((_) async => true);
+    when(() => mockOfflineQueue.enqueue(any())).thenAnswer((_) async {});
     repo = ChapterRepository(
       remote,
       mockLocal,
@@ -235,7 +252,7 @@ void main() {
     });
 
     test('deleteChapter handles local cache failure gracefully', () async {
-      when(() => remote.delete(any())).thenAnswer((_) async {});
+      when(() => remote.delete(any())).thenAnswer((_) async => {});
       when(
         () => mockLocal.removeChapter('c1'),
       ).thenThrow(Exception('Cache remove fail'));
@@ -243,6 +260,142 @@ void main() {
       await repo.deleteChapter('c1');
       // Should not throw
       verify(() => remote.delete('chapters/c1')).called(1);
+    });
+
+    test('getChapters handles invalid response format', () async {
+      when(() => remote.get('novels/n1/chapters')).thenAnswer((_) async => 'invalid');
+      final chapters = await repo.getChapters('n1');
+      expect(chapters, isEmpty);
+    });
+
+    test('getChapter handles invalid response format', () async {
+      when(() => remote.get('chapters/c1')).thenAnswer((_) async => 'invalid');
+      final chap = Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
+      
+      expect(() => repo.getChapter(chap), throwsException);
+    });
+
+    test('getChapter returns chapter with null content when network returns no content', () async {
+      when(() => remote.get('chapters/c1')).thenAnswer((_) async {
+        return {'content': null, 'sha': null};
+      });
+
+      final chap = Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
+      final res = await repo.getChapter(chap);
+
+      expect(res.content, isNull);
+      expect(res.sha, isNull);
+      
+      // Should not save to cache when content is null
+      verifyNever(() => mockLocal.saveChapter(any()));
+    });
+
+    group('SHA generation', () {
+      test('updateChapter generates SHA for content', () async {
+        when(() => remote.patch(any(), any())).thenAnswer((_) async => {});
+        
+        final chap = Chapter(
+          id: 'c1',
+          novelId: 'n1',
+          idx: 1,
+          title: 'T1',
+          content: 'test content',
+        );
+        
+        await repo.updateChapter(chap);
+        
+        final captured = verify(() => remote.patch('chapters/c1', captureAny())).captured;
+        final body = captured.first as Map<String, dynamic>;
+        expect(body, contains('sha'));
+        expect(body['sha'], isNotNull);
+      });
+
+      test('createChapter generates SHA for content', () async {
+        final created = <String, dynamic>{
+          'id': 'c9',
+          'novel_id': 'n1',
+          'idx': 9,
+          'title': 'New',
+          'content': 'test content',
+        };
+        when(() => remote.post(any(), any())).thenAnswer((_) async => created);
+        
+        await repo.createChapter(
+          novelId: 'n1',
+          idx: 9,
+          title: 'New',
+          content: 'test content',
+        );
+        
+        final captured = verify(() => remote.post('chapters', captureAny())).captured;
+        final body = captured.first as Map<String, dynamic>;
+        expect(body, contains('sha'));
+        expect(body['sha'], isNotNull);
+      });
+
+      test('updateChapter handles null content without SHA', () async {
+        when(() => remote.patch(any(), any())).thenAnswer((_) async => {});
+        
+        final chap = Chapter(
+          id: 'c1',
+          novelId: 'n1',
+          idx: 1,
+          title: 'T1',
+          content: null,
+        );
+        
+        await repo.updateChapter(chap);
+        
+        final captured = verify(() => remote.patch('chapters/c1', captureAny())).captured;
+        final body = captured.first as Map<String, dynamic>;
+        expect(body, isNot(contains('sha')));
+      });
+    });
+
+    group('Error handling', () {
+      test('bulkShiftIdx handles getChapters error gracefully', () async {
+        when(() => remote.get('novels/n1/chapters')).thenThrow(Exception('Network error'));
+        
+        expect(
+          () => repo.bulkShiftIdx('n1', 1, 3),
+          throwsException,
+        );
+      });
+
+      test('createChapter throws exception on invalid response', () async {
+        when(() => remote.post(any(), any())).thenAnswer((_) async => 'invalid');
+        
+        expect(
+          () => repo.createChapter(novelId: 'n1', idx: 1),
+          throwsException,
+        );
+      });
+
+      test('updateChapter handles network error gracefully', () async {
+        when(() => remote.patch(any(), any())).thenThrow(Exception('Network error'));
+        
+        final chap = Chapter(
+          id: 'c1',
+          novelId: 'n1',
+          idx: 1,
+          title: 'T1',
+          content: 'content',
+        );
+        
+        expect(
+          () => repo.updateChapter(chap),
+          throwsException,
+        );
+      });
+
+      test('updateChapterIdx handles network error gracefully', () async {
+        when(() => remote.patch(any(), any())).thenThrow(Exception('Network error'));
+        
+        expect(
+          () => repo.updateChapterIdx('c1', 5),
+          throwsException,
+        );
+      });
     });
   });
 }

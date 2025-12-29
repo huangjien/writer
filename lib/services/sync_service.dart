@@ -84,7 +84,12 @@ class SyncService {
         if (op.retryCount < RetryPolicy.maxRetries) {
           final delay = RetryPolicy.getDelay(op.retryCount);
           await Future.delayed(delay);
-          await _syncOperation(op);
+          final retrySuccess = await _syncOperation(op);
+          if (retrySuccess) {
+            await _offlineQueue.markCompleted(op.id);
+          } else {
+            await _offlineQueue.markFailed(op.id, 'Max retries exceeded');
+          }
         } else {
           await _offlineQueue.markFailed(op.id, 'Max retries exceeded');
         }

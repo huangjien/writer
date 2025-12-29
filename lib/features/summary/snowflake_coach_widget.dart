@@ -105,7 +105,11 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, color: Colors.red, size: 32),
+            Icon(
+              Icons.error_outline,
+              color: Theme.of(context).colorScheme.error,
+              size: 32,
+            ),
             const SizedBox(height: 8),
             Text(_error!),
             ElevatedButton(
@@ -151,13 +155,16 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.auto_awesome, color: Colors.purple),
+                    Icon(
+                      Icons.auto_awesome,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       isDone ? l10n.refinementComplete : l10n.coachQuestion,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.purple,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ],
@@ -166,15 +173,22 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.purple.shade50,
+                    color: Theme.of(context).colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.purple.shade100),
+                    border: Border.all(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Text(
                     isDone
                         ? (output.critique ?? l10n.summaryLooksGood)
                         : (output.aiQuestion ?? l10n.howToImprove),
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    ),
                   ),
                 ),
                 if (messages.isNotEmpty) ...[
@@ -189,13 +203,20 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                         child: DecoratedBox(
                           decoration: BoxDecoration(
                             color: (msg['role'] == 'user')
-                                ? Colors.blue.shade50
-                                : Colors.purple.shade50,
+                                ? Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHighest
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.primaryContainer,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
                               color: (msg['role'] == 'user')
-                                  ? Colors.blue.shade100
-                                  : Colors.purple.shade100,
+                                  ? Theme.of(
+                                      context,
+                                    ).colorScheme.outline.withValues(alpha: 0.3)
+                                  : Theme.of(context).colorScheme.primary
+                                        .withValues(alpha: 0.3),
                             ),
                           ),
                           child: Padding(
@@ -209,14 +230,25 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                                       ? Icons.person
                                       : Icons.auto_awesome,
                                   color: (msg['role'] == 'user')
-                                      ? Colors.blue
-                                      : Colors.purple,
+                                      ? Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant
+                                      : Theme.of(context).colorScheme.primary,
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     msg['content'] ?? '',
-                                    style: const TextStyle(fontSize: 16),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: (msg['role'] == 'user')
+                                          ? Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant
+                                          : Theme.of(
+                                              context,
+                                            ).colorScheme.onPrimaryContainer,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -234,9 +266,15 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                         constraints: const BoxConstraints(maxWidth: 520),
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            color: Colors.green.shade50,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.green.shade100),
+                            border: Border.all(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.outline.withValues(alpha: 0.3),
+                            ),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(10),
@@ -244,15 +282,20 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.check_circle,
-                                  color: Colors.green,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     output.critique!,
-                                    style: const TextStyle(fontSize: 16),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                    ),
                                   ),
                                 ),
                               ],

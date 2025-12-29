@@ -282,9 +282,17 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // Toggle coach via suffix icon button. Use ensureVisible.
-    final toggleBtn = find.byTooltip('Toggle AI Coach');
-    await tester.ensureVisible(toggleBtn);
+    // Toggle coach via expanded summary suffix icon button. Use ensureVisible.
+    // Find the expanded summary field and then its toggle button
+    final expandedField = find.widgetWithText(
+      TextFormField,
+      'Expanded Summary',
+    );
+    await tester.ensureVisible(expandedField);
+    final toggleBtn = find.descendant(
+      of: expandedField,
+      matching: find.byTooltip('Toggle AI Coach'),
+    );
     await tester.tap(toggleBtn);
     await tester.pumpAndSettle();
 
@@ -347,11 +355,84 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Toggle AI Coach'));
+    // Find the expanded summary field and then its toggle button
+    final expandedField = find.widgetWithText(
+      TextFormField,
+      'Expanded Summary',
+    );
+    await tester.ensureVisible(expandedField);
+    final toggleBtn = find.descendant(
+      of: expandedField,
+      matching: find.byTooltip('Toggle AI Coach'),
+    );
+    await tester.tap(toggleBtn);
     await tester.pumpAndSettle();
 
     expect(find.byType(SnowflakeCoachWidget), findsOneWidget);
     // Wide layout includes a VerticalDivider between panels
     expect(find.byType(VerticalDivider), findsOneWidget);
+  });
+
+  testWidgets('SummaryScreen can toggle AI coach for sentence summary', (
+    tester,
+  ) async {
+    final repo = MockNovelRepository();
+    final novel = const Novel(
+      id: 'n-1',
+      title: 'Test Novel',
+      author: 'Author',
+      description: 'Existing description',
+      coverUrl: null,
+      languageCode: 'en',
+      isPublic: true,
+    );
+    final client = MockClient((request) async {
+      if (request.method == 'POST' &&
+          request.url.path.endsWith('snowflake/refine')) {
+        return http.Response(
+          '{"novel_id":"n-1","summary_content":"AI update for sentence","status":"refined"}',
+          200,
+        );
+      }
+      return http.Response('not found', 404);
+    });
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          novelRepositoryProvider.overrideWithValue(repo),
+          novelProvider('n-1').overrideWithValue(AsyncValue.data(novel)),
+          chaptersProvider('n-1').overrideWithValue(AsyncValue.data([])),
+          snowflakeServiceProvider.overrideWithValue(
+            SnowflakeService(
+              RemoteRepository('http://example.com/', client: client),
+            ),
+          ),
+        ],
+        child: const MaterialApp(home: SummaryScreen(novelId: 'n-1')),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Toggle sentence summary AI coach via suffix icon button
+    final sentenceField = find.widgetWithText(
+      TextFormField,
+      'Sentence Summary',
+    );
+    await tester.ensureVisible(sentenceField);
+    final toggleBtn = find.descendant(
+      of: sentenceField,
+      matching: find.byTooltip('AI sentence summary'),
+    );
+    await tester.tap(toggleBtn);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SnowflakeCoachWidget), findsOneWidget);
+    // Should have the coach visible and apply updates to sentence summary
+    expect(find.text('AI update for sentence'), findsOneWidget);
+
+    // Verify the sentence summary field was updated
+    final sentenceFieldWidget = tester.widget<TextFormField>(sentenceField);
+    expect(sentenceFieldWidget.controller?.text, 'AI update for sentence');
   });
 }

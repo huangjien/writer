@@ -120,4 +120,147 @@ void main() {
     await repo.deletePattern('p1');
     verify(() => remote.delete('patterns/p1')).called(1);
   });
+
+  test('listPatterns handles items response format', () async {
+    final response = {
+      'items': [
+        {
+          'id': 'p1',
+          'title': 'A',
+          'content': 'X',
+          'created_at': '2024-01-01T00:00:00Z',
+        },
+      ],
+    };
+    when(
+      () => remote.get(
+        'patterns',
+        queryParameters: any(named: 'queryParameters'),
+      ),
+    ).thenAnswer((_) async => response);
+    final items = await repo.listPatterns();
+    expect(items.length, 1);
+    expect(items.first.id, 'p1');
+  });
+
+  test('listPatterns handles invalid response format', () async {
+    when(
+      () => remote.get(
+        'patterns',
+        queryParameters: any(named: 'queryParameters'),
+      ),
+    ).thenAnswer((_) async => 'invalid');
+    final items = await repo.listPatterns();
+    expect(items, isEmpty);
+  });
+
+  test('getPattern handles null response', () async {
+    when(() => remote.get('patterns/p1')).thenAnswer((_) async => null);
+    final p = await repo.getPattern('p1');
+    expect(p, isNull);
+  });
+
+  test('createPattern with all optional fields', () async {
+    final created = {
+      'id': 'new',
+      'title': 'T',
+      'content': 'C',
+      'description': 'D',
+      'usage_rules': {'x': true},
+      'embedding': [0.1, 0.2],
+      'language': 'en',
+      'is_public': true,
+      'locked': false,
+    };
+    final captured = <Map<String, dynamic>>[];
+    when(() => remote.post(any(), any())).thenAnswer((inv) async {
+      captured.add(inv.positionalArguments[1] as Map<String, dynamic>);
+      return created;
+    });
+    final p = await repo.createPattern(
+      title: 'T',
+      description: 'D',
+      content: 'C',
+      usageRules: {'x': true},
+      embedding: const [0.1, 0.2],
+      language: 'en',
+      isPublic: true,
+      locked: false,
+    );
+    expect(p.title, 'T');
+    expect(p.description, 'D');
+    expect(p.language, 'en');
+    expect(captured.single.keys.toSet(), {
+      'title', 'description', 'content', 'usage_rules', 
+      'embedding', 'language', 'is_public', 'locked'
+    });
+  });
+
+  test('updatePattern with all fields', () async {
+    final updated = {
+      'id': 'p1',
+      'title': 'U',
+      'description': 'D',
+      'content': 'C2',
+      'usage_rules': {'y': false},
+      'embedding': [0.3, 0.4],
+      'language': 'zh',
+      'is_public': false,
+      'locked': true,
+    };
+    final captured = <Map<String, dynamic>>[];
+    when(() => remote.patch(any(), any())).thenAnswer((inv) async {
+      captured.add(inv.positionalArguments[1] as Map<String, dynamic>);
+      return updated;
+    });
+    final p = await repo.updatePattern(
+      id: 'p1',
+      title: 'U',
+      description: 'D',
+      content: 'C2',
+      usageRules: {'y': false},
+      embedding: const [0.3, 0.4],
+      language: 'zh',
+      isPublic: false,
+      locked: true,
+    );
+    expect(p.title, 'U');
+    expect(p.language, 'zh');
+    expect(captured.single.keys.toSet(), {
+      'title', 'description', 'content', 'usage_rules',
+      'embedding', 'language', 'is_public', 'locked'
+    });
+  });
+
+  test('createPattern throws exception on failure', () async {
+    when(() => remote.post(any(), any())).thenAnswer((_) async => 'invalid');
+    expect(
+      () => repo.createPattern(title: 'T', content: 'C'),
+      throwsException,
+    );
+  });
+
+  test('updatePattern throws exception on failure', () async {
+    when(() => remote.patch(any(), any())).thenAnswer((_) async => 'invalid');
+    expect(
+      () => repo.updatePattern(id: 'p1', title: 'U'),
+      throwsException,
+    );
+  });
+
+  test('listPatterns with custom limit', () async {
+    when(
+      () => remote.get(
+        'patterns',
+        queryParameters: any(named: 'queryParameters'),
+      ),
+    ).thenAnswer((_) async => []);
+    await repo.listPatterns(limit: 100);
+    verify(
+      () => remote.get(
+        'patterns',
+        queryParameters: {'limit': '100', 'offset': '0'},
+      ),
+    ).called(1);
+  });
 }
