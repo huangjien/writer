@@ -23,6 +23,9 @@ class AdminModeNotifier extends StateNotifier<bool> {
   Future<void> resetToDefault() => setAdmin(_defaultAdminMode);
 }
 
-final adminModeProvider = StateNotifierProvider<AdminModeNotifier, bool>((ref) {
+final adminModeProvider = StateNotifierProvider<AdminModeNotifier, bool>((
+  ref,
+) {
+  // This will be overridden in main.dart
   throw UnimplementedError();
 });

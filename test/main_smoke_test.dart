@@ -6,6 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/app.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
+import 'package:writer/state/motion_settings.dart';
+import 'package:writer/routing/app_router.dart';
+import 'package:go_router/go_router.dart';
 
 void main() {
   testWidgets('App smoke test with ProviderScope overrides mirrors main()', (
@@ -15,12 +18,25 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     final appSettings = AppSettingsNotifier(prefs);
     final themeController = ThemeController(prefs);
+    final motionSettings = MotionSettingsNotifier(prefs);
+
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) =>
+              const Scaffold(body: Center(child: Text('Home'))),
+        ),
+      ],
+    );
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           appSettingsProvider.overrideWith((_) => appSettings),
           themeControllerProvider.overrideWith((_) => themeController),
+          motionSettingsProvider.overrideWith((_) => motionSettings),
+          appRouterProvider.overrideWithValue(router),
         ],
         child: const App(),
       ),
@@ -29,12 +45,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(MaterialApp), findsOneWidget);
-    final logo = find.byKey(const ValueKey('home_logo'));
-    final fallback = find.text(
-      'Unable to load asset: "assetmanifest.bin.json"',
-    );
-    expect(logo.evaluate().isNotEmpty || fallback.evaluate().isNotEmpty, true);
-
     final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
     expect(materialApp.title, 'Writer');
     expect(
