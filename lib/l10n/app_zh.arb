@@ -620,5 +620,16 @@
         "type": "String"
       }
     }
-  }
+  },
+  "noUsageHistory": "暂无使用历史",
+  "totalRecords": "总记录数：{count}",
+  "@totalRecords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "total": "总计",
+  "refresh": "刷新"
 }

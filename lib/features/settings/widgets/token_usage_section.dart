@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:writer/features/settings/state/token_usage_providers.dart';
 import 'package:writer/models/token_usage.dart';
 import 'package:intl/intl.dart';
@@ -142,9 +143,7 @@ class _UsageData extends StatelessWidget {
           const SizedBox(height: Spacing.m),
           // View history button
           TextButton.icon(
-            onPressed: () {
-              // TODO: Navigate to history screen
-            },
+            onPressed: () => context.push('/settings/token-usage-history'),
             icon: const Icon(Icons.history),
             label: Text(l10n.viewHistory),
           ),

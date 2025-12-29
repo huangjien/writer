@@ -319,6 +319,28 @@ class RemoteRepository {
     return TokenUsage.fromJson(data);
   }
 
+  Future<TokenUsageHistory?> getUsageHistory({
+    String? startDate,
+    String? endDate,
+    int limit = 100,
+    int offset = 0,
+  }) async {
+    final queryParams = <String, dynamic>{
+      'limit': limit.toString(),
+      'offset': offset.toString(),
+    };
+    if (startDate != null) {
+      queryParams['start_date'] = startDate;
+    }
+    if (endDate != null) {
+      queryParams['end_date'] = endDate;
+    }
+
+    final data = await get('token-usage/history', queryParameters: queryParams);
+    if (data == null) return null;
+    return TokenUsageHistory.fromJson(data);
+  }
+
   Future<String?> getAdminLogs({int lines = 1000}) async {
     final data = await get(
       'admin/logs',

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import '../features/admin/admin_logs_screen.dart';
 import '../features/library/library_screen.dart';
+import '../features/settings/token_usage_history_screen.dart';
 import '../features/library/create_novel_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/reader/reader_screen.dart';
@@ -144,6 +145,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+        routes: [
+          GoRoute(
+            path: 'token-usage-history',
+            name: 'tokenUsageHistory',
+            builder: (context, state) => const TokenUsageHistoryScreen(),
+          ),
+        ],
       ),
       GoRoute(
         path: '/about',

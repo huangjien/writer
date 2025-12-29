@@ -1359,4 +1359,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get removeFromLibrary => 'Remove from Library';
+
+  @override
+  String get noUsageHistory => 'No usage history';
+
+  @override
+  String totalRecords(int count) {
+    return 'Total records: $count';
+  }
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get refresh => 'Refresh';
 }

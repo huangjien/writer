@@ -1328,4 +1328,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get removeFromLibrary => '从文库中移除';
+
+  @override
+  String get noUsageHistory => '暂无使用历史';
+
+  @override
+  String totalRecords(int count) {
+    return '总记录数：$count';
+  }
+
+  @override
+  String get total => '总计';
+
+  @override
+  String get refresh => '刷新';
 }
