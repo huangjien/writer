@@ -14,7 +14,6 @@ final syncServiceProvider = Provider<SyncService>((ref) {
     offlineQueue: offlineQueue,
     remote: remote,
     networkMonitor: networkMonitor,
-    ref: ref,
   );
   return syncService;
 });

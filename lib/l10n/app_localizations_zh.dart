@@ -273,6 +273,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get enableTTS => '启用 TTS';
 
   @override
+  String get sentenceSummary => '一句话总结';
+
+  @override
+  String get paragraphSummary => '段落总结';
+
+  @override
+  String get pageSummary => '页面总结';
+
+  @override
+  String get expandedSummary => '扩展总结';
+
+  @override
+  String get pitch => 'Pitch';
+
+  @override
   String get signInWithBiometrics => '使用生物识别登录';
 
   @override

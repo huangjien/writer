@@ -608,6 +608,36 @@ abstract class AppLocalizations {
   /// **'Enable TTS'**
   String get enableTTS;
 
+  /// No description provided for @sentenceSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentence Summary'**
+  String get sentenceSummary;
+
+  /// No description provided for @paragraphSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Paragraph Summary'**
+  String get paragraphSummary;
+
+  /// No description provided for @pageSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Page Summary'**
+  String get pageSummary;
+
+  /// No description provided for @expandedSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Expanded Summary'**
+  String get expandedSummary;
+
+  /// No description provided for @pitch.
+  ///
+  /// In en, this message translates to:
+  /// **'Pitch'**
+  String get pitch;
+
   /// No description provided for @signInWithBiometrics.
   ///
   /// In en, this message translates to:

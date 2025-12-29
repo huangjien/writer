@@ -283,6 +283,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enableTTS => 'Enable TTS';
 
   @override
+  String get sentenceSummary => 'Sentence Summary';
+
+  @override
+  String get paragraphSummary => 'Paragraph Summary';
+
+  @override
+  String get pageSummary => 'Page Summary';
+
+  @override
+  String get expandedSummary => 'Expanded Summary';
+
+  @override
+  String get pitch => 'Pitch';
+
+  @override
   String get signInWithBiometrics => 'Sign in with biometrics';
 
   @override

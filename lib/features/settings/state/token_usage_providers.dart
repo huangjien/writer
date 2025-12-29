@@ -47,4 +47,23 @@ class UsageHistoryParams {
       offset: offset ?? this.offset,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is UsageHistoryParams &&
+        other.startDate == startDate &&
+        other.endDate == endDate &&
+        other.limit == limit &&
+        other.offset == offset;
+  }
+
+  @override
+  int get hashCode {
+    return startDate.hashCode ^
+        endDate.hashCode ^
+        limit.hashCode ^
+        offset.hashCode;
+  }
 }

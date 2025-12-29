@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/novel.dart';
 import '../models/chapter.dart';
+import '../models/summary.dart';
 import 'remote_repository.dart';
 
 final novelRepositoryProvider = Provider<NovelRepository>((ref) {
@@ -98,6 +99,33 @@ class NovelRepository {
 
     if (body.isEmpty) return;
     await remote.patch('novels/$novelId', body);
+  }
+
+  Future<List<Summary>> fetchSummaries(String novelId) async {
+    final res = await remote.get('summaries/novel/$novelId');
+    if (res is List) {
+      final list = res.cast<Map<String, dynamic>>();
+      return list.map(Summary.fromJson).toList();
+    }
+    return [];
+  }
+
+  Future<Summary> createSummary(Summary summary) async {
+    final body = summary.toJson()..remove('id');
+    final res = await remote.post('summaries', body);
+    if (res is Map<String, dynamic>) {
+      return Summary.fromJson(res);
+    }
+    throw Exception('Failed to create summary');
+  }
+
+  Future<Summary> updateSummary(Summary summary) async {
+    final body = summary.toJson();
+    final res = await remote.patch('summaries/${summary.id}', body);
+    if (res is Map<String, dynamic>) {
+      return Summary.fromJson(res);
+    }
+    throw Exception('Failed to update summary');
   }
 
   Future<void> addContributor({

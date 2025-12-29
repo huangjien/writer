@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/offline_operation.dart';
 import '../models/sync_state.dart';
 import '../repositories/remote_repository.dart';
@@ -21,7 +20,6 @@ class SyncService {
     required OfflineQueueService offlineQueue,
     required RemoteRepository remote,
     required NetworkMonitor networkMonitor,
-    required Ref ref,
     Future<SharedPreferences> Function()? prefs,
   }) : _offlineQueue = offlineQueue,
        _remote = remote,

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/state/novel_providers.dart';
-import 'package:writer/state/providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
+import 'package:writer/models/summary.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/features/summary/snowflake_coach_widget.dart';
 import 'package:writer/repositories/novel_repository.dart';
-import '../../main.dart';
 
 class SummaryScreen extends ConsumerStatefulWidget {
   const SummaryScreen({super.key, required this.novelId});
@@ -21,12 +20,18 @@ class SummaryScreen extends ConsumerStatefulWidget {
 
 class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _summaryController = TextEditingController();
+
+  final _sentenceController = TextEditingController();
+  final _paragraphController = TextEditingController();
+  final _pageController = TextEditingController();
+  final _expandedController = TextEditingController();
+
   bool _saving = false;
   String? _error;
   bool _refreshing = false;
   bool _isDirty = false;
-  String _baseSummary = '';
+
+  Summary? _baseSummary;
 
   // Coach State
   bool _showCoach = false;
@@ -38,29 +43,56 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   }
 
   Future<void> _load() async {
-    final local = ref.read(localStorageRepositoryProvider);
-    final cached = await local.getSummaryText(widget.novelId);
-    if (cached != null) {
-      _summaryController.text = cached;
-    } else {
-      final resolved = await ref.read(novelProvider(widget.novelId).future);
-      final desc = resolved?.description ?? '';
-      _summaryController.text = desc;
+    setState(() => _refreshing = true);
+    try {
+      final repo = ref.read(novelRepositoryProvider);
+      final summaries = await repo.fetchSummaries(widget.novelId);
+      if (summaries.isNotEmpty) {
+        _baseSummary = summaries.first;
+      } else {
+        _baseSummary = Summary(id: '', novelId: widget.novelId, idx: 0);
+      }
+
+      _sentenceController.text = _baseSummary?.sentenceSummary ?? '';
+      _paragraphController.text = _baseSummary?.paragraphSummary ?? '';
+      _pageController.text = _baseSummary?.pageSummary ?? '';
+      _expandedController.text = _baseSummary?.expandedSummary ?? '';
+
+      _isDirty = false;
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      if (mounted) setState(() => _refreshing = false);
     }
-    _baseSummary = _summaryController.text;
-    _isDirty = false;
-    setState(() {});
   }
 
   @override
   void dispose() {
-    _summaryController.dispose();
+    _sentenceController.dispose();
+    _paragraphController.dispose();
+    _pageController.dispose();
+    _expandedController.dispose();
     super.dispose();
+  }
+
+  void _onFieldChanged() {
+    final dirty =
+        _sentenceController.text.trim() !=
+            (_baseSummary?.sentenceSummary ?? '').trim() ||
+        _paragraphController.text.trim() !=
+            (_baseSummary?.paragraphSummary ?? '').trim() ||
+        _pageController.text.trim() !=
+            (_baseSummary?.pageSummary ?? '').trim() ||
+        _expandedController.text.trim() !=
+            (_baseSummary?.expandedSummary ?? '').trim();
+
+    if (dirty != _isDirty) {
+      setState(() => _isDirty = dirty);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isSignedIn = ref.watch(isSignedInProvider);
     final chaptersAsync = ref.watch(chaptersProvider(widget.novelId));
 
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
@@ -85,10 +117,48 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Sentence Summary
                   TextFormField(
-                    controller: _summaryController,
+                    controller: _sentenceController,
                     decoration: InputDecoration(
-                      labelText: l10n.descriptionLabel,
+                      labelText: l10n.sentenceSummary,
+                      border: const OutlineInputBorder(),
+                    ),
+                    maxLines: 2,
+                    onChanged: (_) => _onFieldChanged(),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Paragraph Summary
+                  TextFormField(
+                    controller: _paragraphController,
+                    decoration: InputDecoration(
+                      labelText: l10n.paragraphSummary,
+                      border: const OutlineInputBorder(),
+                    ),
+                    maxLines: 4,
+                    onChanged: (_) => _onFieldChanged(),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Page Summary
+                  TextFormField(
+                    controller: _pageController,
+                    decoration: InputDecoration(
+                      labelText: l10n.pageSummary,
+                      border: const OutlineInputBorder(),
+                    ),
+                    maxLines: 8,
+                    onChanged: (_) => _onFieldChanged(),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Expanded Summary (with Coach)
+                  TextFormField(
+                    controller: _expandedController,
+                    decoration: InputDecoration(
+                      labelText: l10n.expandedSummary,
+                      border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _showCoach
@@ -104,18 +174,11 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                         tooltip: l10n.toggleAiCoach,
                       ),
                     ),
-                    minLines: 4,
+                    minLines: 10,
                     maxLines: null,
-                    validator: (v) =>
-                        v == null || v.trim().isEmpty ? l10n.required : null,
-                    onChanged: (_) {
-                      final dirty =
-                          _summaryController.text.trim() != _baseSummary.trim();
-                      if (dirty != _isDirty) {
-                        setState(() => _isDirty = dirty);
-                      }
-                    },
+                    onChanged: (_) => _onFieldChanged(),
                   ),
+
                   const SizedBox(height: 12),
                   Row(
                     children: [
@@ -131,23 +194,35 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                                   _error = null;
                                 });
                                 try {
-                                  final local = ref.read(
-                                    localStorageRepositoryProvider,
+                                  final repo = ref.read(
+                                    novelRepositoryProvider,
                                   );
-                                  await local.saveSummaryText(
-                                    widget.novelId,
-                                    _summaryController.text.trim(),
+                                  final newSummary = _baseSummary!.copyWith(
+                                    sentenceSummary: _sentenceController.text
+                                        .trim(),
+                                    paragraphSummary: _paragraphController.text
+                                        .trim(),
+                                    pageSummary: _pageController.text.trim(),
+                                    expandedSummary: _expandedController.text
+                                        .trim(),
                                   );
-                                  if (isSignedIn) {
-                                    final repo = ref.read(
-                                      novelRepositoryProvider,
+
+                                  Summary saved;
+                                  if (newSummary.id.isEmpty) {
+                                    saved = await repo.createSummary(
+                                      newSummary,
                                     );
-                                    await repo.updateNovelMetadata(
-                                      widget.novelId,
-                                      description: _summaryController.text
-                                          .trim(),
+                                  } else {
+                                    saved = await repo.updateSummary(
+                                      newSummary,
                                     );
                                   }
+
+                                  setState(() {
+                                    _baseSummary = saved;
+                                    _isDirty = false;
+                                  });
+
                                   if (!context.mounted) return;
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text(l10n.saved)),
@@ -228,16 +303,10 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                     flex: 1,
                     child: SnowflakeCoachWidget(
                       novelId: widget.novelId,
-                      currentSummary: _summaryController.text,
+                      currentSummary: _expandedController.text,
                       onSummaryUpdated: (newSummary) {
-                        _summaryController.text = newSummary;
-                        // Trigger dirty check manually since controller doesn't notify on programmatic change
-                        final dirty =
-                            _summaryController.text.trim() !=
-                            _baseSummary.trim();
-                        if (dirty != _isDirty) {
-                          setState(() => _isDirty = dirty);
-                        }
+                        _expandedController.text = newSummary;
+                        _onFieldChanged();
                       },
                     ),
                   ),
@@ -254,15 +323,10 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                     flex: 1,
                     child: SnowflakeCoachWidget(
                       novelId: widget.novelId,
-                      currentSummary: _summaryController.text,
+                      currentSummary: _expandedController.text,
                       onSummaryUpdated: (newSummary) {
-                        _summaryController.text = newSummary;
-                        final dirty =
-                            _summaryController.text.trim() !=
-                            _baseSummary.trim();
-                        if (dirty != _isDirty) {
-                          setState(() => _isDirty = dirty);
-                        }
+                        _expandedController.text = newSummary;
+                        _onFieldChanged();
                       },
                     ),
                   ),
