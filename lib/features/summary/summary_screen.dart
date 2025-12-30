@@ -181,8 +181,8 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                       suffixIcon: IconButton(
                         icon: Icon(
                           _showCoach
-                              ? Icons.chat_bubble
-                              : Icons.chat_bubble_outline,
+                              ? Icons.auto_awesome
+                              : Icons.auto_awesome_outlined,
                           color: _showCoach ? Colors.purple : null,
                         ),
                         onPressed: () {

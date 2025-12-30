@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../state/ai_service_settings.dart';
 import '../../state/session_state.dart';
 import '../../state/biometric_session_state.dart';
+import '../../state/redirect_provider.dart';
 import '../../l10n/app_localizations.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
@@ -106,7 +107,15 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
   void _navigateToSuccess() {
     if (mounted) {
-      if (Navigator.of(context).canPop()) {
+      // Navigate back to the original route if it was saved
+      final redirectRoute = ref
+          .read(authRedirectProvider.notifier)
+          .getRedirectRoute();
+      if (redirectRoute != '/') {
+        // There was a saved route, navigate back to it
+        ref.read(authRedirectProvider.notifier).clearRedirect();
+        context.go(redirectRoute);
+      } else if (Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
       } else {
         context.go('/settings');

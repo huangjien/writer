@@ -5,8 +5,10 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/api_error_response.dart';
+import 'package:writer/services/auth_redirect_service.dart';
 
 /// Service for localizing error messages from API responses
 class ErrorLocalizationService {
@@ -71,19 +73,30 @@ class ErrorLocalizationService {
   /// Displays a SnackBar with the localized error message.
   /// Optionally includes the request ID for debugging.
   ///
+  /// For authentication errors (unauthorized, session_expired), this will
+  /// redirect to the login page instead of showing an error message.
+  ///
   /// Args:
   ///   context: The build context
   ///   error: The error response from the backend
   ///   fallback: Optional fallback message to use if code is unknown
   ///   duration: How long to show the snackbar
   ///   showRequestId: Whether to include request ID in the message
+  ///   ref: The Ref for accessing providers (required for redirect)
   static void showErrorSnackBar(
     BuildContext context,
     ApiErrorResponse error, {
     String? fallback,
     Duration duration = const Duration(seconds: 3),
     bool showRequestId = false,
+    Ref? ref,
   }) {
+    // For auth errors, redirect to login instead of showing error
+    if (isAuthError(error) && ref != null) {
+      AuthRedirectService.redirectToLogin(ref);
+      return;
+    }
+
     String message = getLocalizedMessage(context, error, fallback: fallback);
 
     // Append request ID if enabled and available
@@ -105,15 +118,26 @@ class ErrorLocalizationService {
   /// Displays an AlertDialog with the localized error message.
   /// Includes an OK button to dismiss the dialog.
   ///
+  /// For authentication errors (unauthorized, session_expired), this will
+  /// redirect to the login page instead of showing an error dialog.
+  ///
   /// Args:
   ///   context: The build context
   ///   error: The error response from the backend
   ///   fallback: Optional fallback message to use if code is unknown
+  ///   ref: The Ref for accessing providers (required for redirect)
   static Future<void> showErrorDialog(
     BuildContext context,
     ApiErrorResponse error, {
     String? fallback,
+    Ref? ref,
   }) async {
+    // For auth errors, redirect to login instead of showing error
+    if (isAuthError(error) && ref != null) {
+      AuthRedirectService.redirectToLogin(ref);
+      return;
+    }
+
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(

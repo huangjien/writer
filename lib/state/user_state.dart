@@ -82,6 +82,8 @@ class UserStateNotifier extends StateNotifier<AsyncValue<User?>> {
         );
         if (res.statusCode == 401) {
           ref.read(sessionProvider.notifier).clear();
+          // Note: Cannot redirect here as we don't have access to navigator from user state
+          // The RemoteRepository will handle the redirect when it receives 401
         }
       }
     } catch (e, st) {

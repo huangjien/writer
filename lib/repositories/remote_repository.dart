@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/models/token_usage.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/session_state.dart';
+import 'package:writer/services/auth_redirect_service.dart';
 
 final remoteRepositoryProvider = Provider<RemoteRepository>((ref) {
   String baseUrl;
@@ -16,7 +17,10 @@ final remoteRepositoryProvider = Provider<RemoteRepository>((ref) {
   return RemoteRepository(
     baseUrl,
     authToken: () async => sessionId,
-    onUnauthorized: () async => ref.read(sessionProvider.notifier).clear(),
+    onUnauthorized: () async {
+      await ref.read(sessionProvider.notifier).clear();
+      await AuthRedirectService.redirectToLogin(ref);
+    },
   );
 });
 
