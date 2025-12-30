@@ -8,6 +8,7 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/tts_settings.dart';
 import 'package:writer/state/edit_permissions.dart';
+import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'helpers/test_utils.dart';
 import 'helpers/fake_chapter_port.dart';
@@ -69,6 +70,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
           chapterRepositoryProvider.overrideWithValue(FakeChapterPort()),

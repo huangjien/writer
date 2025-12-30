@@ -5,8 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/settings/widgets/performance_section.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/performance_settings.dart';
+import 'package:writer/state/providers.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
-import 'package:writer/main.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockLocalStorageRepository extends Mock

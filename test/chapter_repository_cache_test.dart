@@ -5,6 +5,7 @@ import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/models/chapter_cache.dart';
+import 'package:writer/state/storage_service_provider.dart';
 
 class FailingRemoteRepository extends RemoteRepository {
   FailingRemoteRepository() : super('http://test/');
@@ -25,7 +26,9 @@ void main() {
   });
 
   test('getChapter returns cached Chapter when available', () async {
-    final local = LocalStorageRepository();
+    final prefs = await SharedPreferences.getInstance();
+    final storageService = LocalStorageService(prefs);
+    final local = LocalStorageRepository(storageService);
     await local.saveChapter(
       ChapterCache(
         chapterId: 'c1',

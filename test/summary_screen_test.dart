@@ -7,23 +7,29 @@ import 'package:writer/state/mock_providers.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
-import 'package:writer/main.dart';
+
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/features/summary/snowflake_service.dart';
 import 'package:writer/features/summary/snowflake_coach_widget.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/state/providers.dart';
 import 'package:http/testing.dart';
 import 'package:http/http.dart' as http;
+import 'package:mocktail/mocktail.dart';
 
 import 'package:writer/models/summary.dart';
 
 import 'package:writer/repositories/novel_repository.dart';
 
-class CapturingLocalRepo extends LocalStorageRepository {
+class MockLocalStorageRepository extends Mock
+    implements LocalStorageRepository {}
+
+class CapturingLocalRepo extends MockLocalStorageRepository {
   final Map<String, String> savedSummaries = {};
   @override
   Future<void> saveSummaryText(String novelId, String text) async {
     savedSummaries[novelId] = text;
+    await super.saveSummaryText(novelId, text);
   }
 }
 
@@ -122,12 +128,14 @@ class MockNovelRepository implements NovelRepository {
 
 void main() {
   setUp(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
     SharedPreferences.setMockInitialValues({});
   });
 
   testWidgets('SummaryScreen loads description and saves summary', (
     tester,
   ) async {
+    final prefs = await SharedPreferences.getInstance();
     final repo = CapturingLocalRepo();
     final novel = const Novel(
       id: 'n-1',
@@ -158,6 +166,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           localStorageRepositoryProvider.overrideWith((_) => repo),
           mockNovelsProvider.overrideWith((ref) async => [novel]),
           mockChaptersProvider.overrideWith((ref, id) async => chapters),
@@ -203,6 +212,7 @@ void main() {
   });
 
   testWidgets('SummaryScreen save disabled until changes', (tester) async {
+    final prefs = await SharedPreferences.getInstance();
     final repo = CapturingLocalRepo();
     final novel = const Novel(
       id: 'n-1',
@@ -216,6 +226,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           localStorageRepositoryProvider.overrideWith((_) => repo),
           mockNovelsProvider.overrideWith((ref) async => [novel]),
           novelProvider.overrideWith((ref, id) async => novel),
@@ -242,6 +253,7 @@ void main() {
   testWidgets('SummaryScreen toggles AI Coach and shows widget (small layout)', (
     tester,
   ) async {
+    final prefs = await SharedPreferences.getInstance();
     final repo = CapturingLocalRepo();
     final novel = const Novel(
       id: 'n-1',
@@ -267,6 +279,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           localStorageRepositoryProvider.overrideWith((_) => repo),
           mockNovelsProvider.overrideWith((ref) async => [novel]),
           novelProvider.overrideWith((ref, id) async => novel),
@@ -310,6 +323,7 @@ void main() {
   testWidgets('SummaryScreen shows split view with coach on wide screens', (
     tester,
   ) async {
+    final prefs = await SharedPreferences.getInstance();
     final repo = CapturingLocalRepo();
     final novel = const Novel(
       id: 'n-1',
@@ -342,6 +356,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           localStorageRepositoryProvider.overrideWith((_) => repo),
           mockNovelsProvider.overrideWith((ref) async => [novel]),
           novelProvider.overrideWith((ref, id) async => novel),
@@ -376,6 +391,7 @@ void main() {
   testWidgets('SummaryScreen can toggle AI coach for sentence summary', (
     tester,
   ) async {
+    final prefs = await SharedPreferences.getInstance();
     final repo = MockNovelRepository();
     final novel = const Novel(
       id: 'n-1',
@@ -400,6 +416,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           novelRepositoryProvider.overrideWithValue(repo),
           novelProvider('n-1').overrideWithValue(AsyncValue.data(novel)),
           chaptersProvider('n-1').overrideWithValue(AsyncValue.data([])),

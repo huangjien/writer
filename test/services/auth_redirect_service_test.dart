@@ -17,6 +17,9 @@ void main() {
       container = ProviderContainer(
         overrides: [
           globalNavigatorKeyProvider.overrideWithValue(mockNavigatorKey),
+          authRedirectServiceProvider.overrideWithValue(
+            AuthRedirectService(mockNavigatorKey),
+          ),
         ],
       );
     });
@@ -114,7 +117,7 @@ void main() {
 
     group('navigateBackToOriginal behavior', () {
       test('clears redirect after navigating back', () {
-        // Simulate the navigateBackToOriginal flow
+        // Simulate navigateBackToOriginal flow
         container
             .read(authRedirectProvider.notifier)
             .saveRouteAndRedirect('/library');
@@ -124,7 +127,7 @@ void main() {
             .getRedirectRoute();
         expect(redirectRoute, '/library');
 
-        // The service clears the redirect
+        // The service clears redirect
         container.read(authRedirectProvider.notifier).clearRedirect();
 
         final clearedRoute = container
@@ -187,7 +190,7 @@ void main() {
   });
 
   group('AuthRedirectService with test provider', () {
-    // Create a test provider that exercises the AuthRedirectService methods
+    // Create a test provider that exercises AuthRedirectService methods
     final testRedirectProvider = Provider.autoDispose((ref) {
       return _TestRedirectHelper(ref);
     });
@@ -200,6 +203,9 @@ void main() {
       container = ProviderContainer(
         overrides: [
           globalNavigatorKeyProvider.overrideWithValue(mockNavigatorKey),
+          authRedirectServiceProvider.overrideWithValue(
+            AuthRedirectService(mockNavigatorKey),
+          ),
         ],
       );
     });
@@ -315,7 +321,7 @@ void main() {
   });
 }
 
-/// Helper class to test AuthRedirectService static methods
+/// Helper class to test AuthRedirectService instance methods
 class _TestRedirectHelper {
   final Ref ref;
 
@@ -323,7 +329,8 @@ class _TestRedirectHelper {
 
   /// Wrapper to call AuthRedirectService.redirectToLogin
   Future<void> callRedirectToLogin({String? currentPath}) async {
-    return AuthRedirectService.redirectToLogin(ref, currentPath: currentPath);
+    final service = ref.read(authRedirectServiceProvider);
+    return service.redirectToLogin(ref, currentPath: currentPath);
   }
 
   /// Wrapper to call AuthRedirectService.navigateBackToOriginal without context
@@ -334,7 +341,8 @@ class _TestRedirectHelper {
 
   /// Wrapper to call AuthRedirectService.navigateBackToOriginal with context
   void callNavigateBackToOriginalWithContext(BuildContext context) {
-    AuthRedirectService.navigateBackToOriginal(ref, context);
+    final service = ref.read(authRedirectServiceProvider);
+    service.navigateBackToOriginal(ref, context);
   }
 }
 

@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/app.dart';
+import 'package:writer/state/storage_service_provider.dart';
 
 void main() {
   testWidgets('App smoke test: shows Library screen', (
     WidgetTester tester,
   ) async {
-    // Pump the real app wrapped in ProviderScope.
-    await tester.pumpWidget(const ProviderScope(child: App()));
+    // Set up mock SharedPreferences
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+
+    // Pump the real app wrapped in ProviderScope with mocked providers.
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        child: const App(),
+      ),
+    );
     await tester.pumpAndSettle();
 
     // Verify key UI elements from the Library screen are present.

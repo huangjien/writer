@@ -7,6 +7,7 @@ import 'package:writer/models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
+import 'package:writer/state/storage_service_provider.dart';
 
 void main() {
   testWidgets('Library shows skeleton loading while fetching novels', (
@@ -26,9 +27,11 @@ void main() {
       ),
     ];
 
+    final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           memberNovelsProvider.overrideWith((ref) async => const []),
           chaptersProvider.overrideWith((ref, novelId) async => const []),
           lastProgressProvider.overrideWith((ref, novelId) async => null),

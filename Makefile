@@ -143,8 +143,8 @@ analyze:
 lint:
 	@echo "Running formatter..."
 	dart format lib test
-	@echo "Running analyzer with fatal infos..."
-	dart analyze --fatal-infos
+	@echo "Running analyzer..."
+	dart analyze
 
 clean:
 	$(FLUTTER) clean

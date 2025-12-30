@@ -106,6 +106,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        overrides: [
+          lastProgressProvider.overrideWith((ref, id) async => null),
+          chaptersProvider.overrideWith((ref, id) async => []),
+        ],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -628,6 +632,8 @@ void main() {
           motionSettingsProvider.overrideWith(
             (_) => MotionSettingsNotifier(prefs),
           ),
+          lastProgressProvider.overrideWith((ref, id) async => null),
+          chaptersProvider.overrideWith((ref, id) async => []),
         ],
         child: MaterialApp(
           locale: const Locale('en'),

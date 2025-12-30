@@ -1,7 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/state/pattern_providers.dart';
 import 'package:writer/state/providers.dart';
+
+import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/services/patterns_service.dart';
 import 'package:writer/models/pattern.dart';
 
@@ -32,8 +35,14 @@ class FakePatternsService extends PatternsService {
 
 void main() {
   test('patternsProvider returns empty when signed out', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final container = ProviderContainer(
-      overrides: [authStateProvider.overrideWith((_) => null)],
+      overrides: [
+        authStateProvider.overrideWith((_) => null),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
+      ],
     );
     addTearDown(container.dispose);
     final result = await container.read(patternsProvider.future);
@@ -43,11 +52,15 @@ void main() {
   });
 
   test('patterns providers return from service when signed in', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final fake = FakePatternsService();
     final container = ProviderContainer(
       overrides: [
         isSignedInProvider.overrideWith((_) => true),
         authStateProvider.overrideWith((_) => 'session'),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
         patternsServiceRefProvider.overrideWith((_) => fake),
       ],
     );

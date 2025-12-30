@@ -6,11 +6,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/admin/admin_logs_screen.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/state/session_state.dart';
+import 'package:writer/state/storage_service_provider.dart';
 
 class MockRemoteRepository extends Mock implements RemoteRepository {}
 
 void main() {
-  setUp(() {
+  setUp(() async {
     SharedPreferences.setMockInitialValues({});
   });
 
@@ -18,9 +19,11 @@ void main() {
     late MockRemoteRepository mockRemoteRepository;
     late SessionNotifier sessionNotifier;
 
-    setUp(() {
+    setUp(() async {
       mockRemoteRepository = MockRemoteRepository();
-      sessionNotifier = SessionNotifier();
+      final prefs = await SharedPreferences.getInstance();
+      final storageService = LocalStorageService(prefs);
+      sessionNotifier = SessionNotifier(storageService);
     });
 
     testWidgets('displays loading state initially', (tester) async {

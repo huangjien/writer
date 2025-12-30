@@ -20,5 +20,7 @@ final appSettingsProvider = StateNotifierProvider<AppSettingsNotifier, Locale>((
   ref,
 ) {
   // This will be overridden in main.dart
-  throw UnimplementedError();
+  throw UnimplementedError(
+    'appSettingsProvider must be overridden in ProviderScope/main.dart',
+  );
 });

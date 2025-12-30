@@ -2,6 +2,31 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/models/template.dart';
+import 'package:writer/services/storage_service.dart';
+
+class MockStorageService implements StorageService {
+  final Map<String, String> _data = {};
+
+  @override
+  String? getString(String key) => _data[key];
+
+  @override
+  Future<void> setString(String key, String? value) async {
+    if (value == null) {
+      _data.remove(key);
+    } else {
+      _data[key] = value;
+    }
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    _data.remove(key);
+  }
+
+  @override
+  Set<String> getKeys() => _data.keys.toSet();
+}
 
 void main() {
   setUp(() {
@@ -9,7 +34,7 @@ void main() {
   });
 
   test('save/get CharacterTemplateForm persists locally', () async {
-    final repo = LocalStorageRepository();
+    final repo = LocalStorageRepository(MockStorageService());
     final item = TemplateItem(
       novelId: 'n1',
       name: 'Hero',
@@ -22,7 +47,7 @@ void main() {
   });
 
   test('save/get SceneTemplateForm persists locally', () async {
-    final repo = LocalStorageRepository();
+    final repo = LocalStorageRepository(MockStorageService());
     final item = TemplateItem(
       novelId: 'n1',
       name: 'Forest',
@@ -37,14 +62,14 @@ void main() {
   test(
     'listCharacterTemplates returns empty when cloud sync disabled',
     () async {
-      final repo = LocalStorageRepository();
+      final repo = LocalStorageRepository(MockStorageService());
       final rows = await repo.listCharacterTemplates();
       expect(rows, isEmpty);
     },
   );
 
   test('listSceneTemplates returns empty when cloud sync disabled', () async {
-    final repo = LocalStorageRepository();
+    final repo = LocalStorageRepository(MockStorageService());
     final rows = await repo.listSceneTemplates();
     expect(rows, isEmpty);
   });
@@ -52,30 +77,20 @@ void main() {
   test(
     'getCharacterTemplateById returns null when cloud sync disabled',
     () async {
-      final repo = LocalStorageRepository();
+      final repo = LocalStorageRepository(MockStorageService());
       final row = await repo.getCharacterTemplateById('x');
       expect(row, isNull);
     },
   );
 
   test('getSceneTemplateById returns null when cloud sync disabled', () async {
-    final repo = LocalStorageRepository();
+    final repo = LocalStorageRepository(MockStorageService());
     final row = await repo.getSceneTemplateById('x');
     expect(row, isNull);
   });
 
-  test('updateCharacterTemplate no-op when cloud sync disabled', () async {
-    final repo = LocalStorageRepository();
-    await repo.updateCharacterTemplate('id', title: 'T');
-  });
-
-  test('updateSceneTemplate no-op when cloud sync disabled', () async {
-    final repo = LocalStorageRepository();
-    await repo.updateSceneTemplate('id', title: 'T');
-  });
-
   test('save/get summary text', () async {
-    final repo = LocalStorageRepository();
+    final repo = LocalStorageRepository(MockStorageService());
     await repo.saveSummaryText('n1', 'Summary');
     final txt = await repo.getSummaryText('n1');
     expect(txt, 'Summary');

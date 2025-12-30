@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
@@ -10,7 +11,6 @@ import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/models/user_progress.dart';
-import 'package:writer/main.dart'; // Import main.dart to access localStorageRepositoryProvider
 
 // Mocks
 class MockNovelRepository extends Mock implements NovelRepository {}
@@ -29,6 +29,8 @@ void main() {
 
   group('Novel Providers', () {
     test('novelsProvider fetches public novels', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
       final novels = [
         const Novel(
           id: '1',
@@ -42,6 +44,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           novelRepositoryProvider.overrideWithValue(mockRepo),
           isSignedInProvider.overrideWithValue(true),
         ],
@@ -54,6 +57,8 @@ void main() {
     });
 
     test('memberNovelsProvider fetches member novels', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
       final novels = [
         const Novel(
           id: '2',
@@ -67,6 +72,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           novelRepositoryProvider.overrideWithValue(mockRepo),
           isSignedInProvider.overrideWithValue(true),
         ],
@@ -79,6 +85,8 @@ void main() {
     });
 
     test('libraryNovelsProvider merges public and member novels', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
       final public = [
         const Novel(
           id: '1',
@@ -104,6 +112,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           localStorageRepositoryProvider.overrideWithValue(mockLocalRepo),
           // Override fetching providers to return static data immediately
           novelsProvider.overrideWith((ref) async => public),
@@ -123,6 +132,8 @@ void main() {
     }, skip: true);
 
     test('libraryNovelsProvider falls back to local cache on error', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
       final public = [
         const Novel(
           id: '1',
@@ -148,6 +159,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           localStorageRepositoryProvider.overrideWithValue(mockLocalRepo),
           novelsProvider.overrideWith((ref) async => public),
           // Mock memberNovelsProvider to complete with error

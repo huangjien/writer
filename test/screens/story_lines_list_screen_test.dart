@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/story_line.dart';
 import 'package:writer/screens/story_lines_list_screen.dart';
@@ -368,12 +369,16 @@ void main() {
   });
 
   testWidgets('Shows sign-in prompt when signed out', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final fake = FakeStoryLinesService()..items = [];
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           storyLinesProvider.overrideWith((ref) async => const []),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
+          isSignedInProvider.overrideWithValue(false),
+          sharedPreferencesProvider.overrideWithValue(prefs),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

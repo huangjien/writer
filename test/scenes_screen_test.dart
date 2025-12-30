@@ -9,7 +9,7 @@ import 'package:writer/state/mock_providers.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/scene.dart';
-import 'package:writer/main.dart';
+
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/models/scene_template_row.dart';
 import 'package:writer/repositories/remote_repository.dart';
@@ -18,9 +18,43 @@ import 'package:writer/repositories/template_repository.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/template.dart';
 import 'package:writer/state/providers.dart';
+import 'package:writer/services/storage_service.dart';
+import 'package:mocktail/mocktail.dart';
 
-class CapturingLocalRepo extends LocalStorageRepository {
+class MockLocalStorageRepository extends Mock
+    implements LocalStorageRepository {}
+
+class _MockStorageService implements StorageService {
+  String? _data;
+
+  @override
+  String? getString(String key) => _data;
+
+  @override
+  Future<void> setString(String key, String? value) async {
+    _data = value;
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    _data = null;
+  }
+
+  @override
+  Set<String> getKeys() => const {};
+}
+
+class CapturingLocalRepo extends MockLocalStorageRepository {
   Scene? lastScene;
+
+  @override
+  Future<int> nextSceneIdx(String novelId) async {
+    return 1;
+  }
+
+  @override
+  Future<Scene?> getSceneForm(String novelId, {int? idx}) async => null;
+
   @override
   Future<void> saveSceneForm(String novelId, Scene scene, {int? idx}) async {
     lastScene = scene;
@@ -29,7 +63,7 @@ class CapturingLocalRepo extends LocalStorageRepository {
 
 class TemplatesLocalRepo extends CapturingLocalRepo {
   @override
-  Future<List<SceneTemplateRow>> listSceneTemplates({int limit = 200}) async {
+  Future<List<SceneTemplateRow>> listSceneTemplates({int? limit}) async {
     return [
       SceneTemplateRow(
         id: 't-1',
@@ -112,8 +146,8 @@ class FakeTemplateRepo extends TemplateRepository {
   Future<void> refreshSceneTemplateEmbedding(String id) async {}
 
   @override
-  Future<List<SceneTemplateRow>> listSceneTemplates({int limit = 200}) async {
-    return _rows.values.take(limit).toList();
+  Future<List<SceneTemplateRow>> listSceneTemplates({int? limit}) async {
+    return _rows.values.take(limit ?? 200).toList();
   }
 
   @override
@@ -139,6 +173,8 @@ class FakeTemplateRepo extends TemplateRepository {
 class EndToEndLocalRepo extends LocalStorageRepository {
   final List<SceneTemplateRow> _templates = [];
   Scene? lastScene;
+
+  EndToEndLocalRepo() : super(_MockStorageService());
 
   @override
   Future<TemplateItem?> getSceneTemplateForm(String novelId) async {
@@ -169,7 +205,7 @@ class EndToEndLocalRepo extends LocalStorageRepository {
   }
 
   @override
-  Future<List<SceneTemplateRow>> listSceneTemplates({int limit = 200}) async {
+  Future<List<SceneTemplateRow>> listSceneTemplates({int? limit}) async {
     return List<SceneTemplateRow>.from(_templates);
   }
 
@@ -203,6 +239,7 @@ void main() {
   });
 
   testWidgets('ScenesScreen validates and saves', (tester) async {
+    final prefs = await SharedPreferences.getInstance();
     final repo = CapturingLocalRepo();
     final ai = FakeAiChatService({});
     final novel = const Novel(
@@ -218,6 +255,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           localStorageRepositoryProvider.overrideWith((_) => repo),
           aiChatServiceProvider.overrideWithValue(ai),
           mockNovelsProvider.overrideWith((ref) async => [novel]),
@@ -232,8 +270,14 @@ void main() {
     final locField = find.widgetWithText(TextFormField, 'Location');
     await tester.enterText(locField, 'X');
     await tester.pump();
+
+    final btn = tester.widget<ElevatedButton>(
+      find.widgetWithText(ElevatedButton, 'Save'),
+    );
+    expect(btn.onPressed, isNotNull, reason: 'Save button should be enabled');
+
     await tester.tap(find.text('Save'));
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(find.text('Required'), findsOneWidget);
 
     // Fill fields and save.
@@ -243,8 +287,19 @@ void main() {
     await tester.enterText(titleField, 'Opening Scene');
     await tester.enterText(locField2, 'Forest');
     await tester.enterText(sumField, 'Introduces the journey.');
-    await tester.tap(find.text('Save'));
     await tester.pump();
+
+    final btn2 = tester.widget<ElevatedButton>(
+      find.widgetWithText(ElevatedButton, 'Save'),
+    );
+    expect(
+      btn2.onPressed,
+      isNotNull,
+      reason: 'Save button should be enabled after filling fields',
+    );
+
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
 
     expect(repo.lastScene?.title, 'Opening Scene');
     expect(repo.lastScene?.location, 'Forest');
@@ -253,6 +308,8 @@ void main() {
   });
 
   testWidgets('ScenesScreen converts scene using template', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final repo = TemplatesLocalRepo();
     final remote = FakeRemoteRepo();
     final ai = FakeAiChatService({'Battle': null});
@@ -269,6 +326,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           localStorageRepositoryProvider.overrideWithValue(repo),
           remoteRepositoryProvider.overrideWithValue(remote),
           aiChatServiceProvider.overrideWithValue(ai),
@@ -306,6 +364,8 @@ void main() {
   });
 
   testWidgets('Scene templates to scene conversion flow works', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final repo = EndToEndLocalRepo();
     final remote = FakeRemoteRepo();
     final ai = FakeAiChatService({'Battle': null});
@@ -323,6 +383,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           localStorageRepositoryProvider.overrideWithValue(repo),
           remoteRepositoryProvider.overrideWithValue(remote),
           aiChatServiceProvider.overrideWithValue(ai),
@@ -370,6 +431,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           localStorageRepositoryProvider.overrideWithValue(repo),
           remoteRepositoryProvider.overrideWithValue(remote),
           aiChatServiceProvider.overrideWithValue(ai),
@@ -433,6 +495,8 @@ void main() {
   testWidgets('ScenesScreen template search uses vector results', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final remote = FakeRemoteRepo();
     final ai = FakeAiChatService({
       'Query': [1.0],
@@ -452,6 +516,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           localStorageRepositoryProvider.overrideWithValue(repo),
           remoteRepositoryProvider.overrideWithValue(remote),
           aiChatServiceProvider.overrideWithValue(ai),
@@ -490,6 +555,8 @@ void main() {
   testWidgets('ScenesScreen language change clears template selection', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final remote = FakeRemoteRepo();
     final ai = FakeAiChatService({'Battle': null, 'Zh': null});
     final novel = const Novel(
@@ -507,6 +574,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           localStorageRepositoryProvider.overrideWithValue(repo),
           remoteRepositoryProvider.overrideWithValue(remote),
           aiChatServiceProvider.overrideWithValue(ai),
@@ -566,8 +634,10 @@ void main() {
 }
 
 class _VectorSearchRepo extends LocalStorageRepository {
+  _VectorSearchRepo() : super(_MockStorageService());
+
   @override
-  Future<List<SceneTemplateRow>> listSceneTemplates({int limit = 200}) async {
+  Future<List<SceneTemplateRow>> listSceneTemplates({int? limit}) async {
     return [
       SceneTemplateRow(
         id: 't-1',
@@ -586,8 +656,7 @@ class _VectorSearchRepo extends LocalStorageRepository {
   @override
   Future<List<SceneTemplateRow>> searchSceneTemplates(
     String query, {
-    int limit = 10,
-    int offset = 0,
+    int? limit,
     String? languageCode,
   }) async {
     return [
@@ -616,8 +685,10 @@ class _VectorSearchRepo extends LocalStorageRepository {
 }
 
 class _MultiLangTemplatesRepo extends LocalStorageRepository {
+  _MultiLangTemplatesRepo() : super(_MockStorageService());
+
   @override
-  Future<List<SceneTemplateRow>> listSceneTemplates({int limit = 200}) async {
+  Future<List<SceneTemplateRow>> listSceneTemplates({int? limit}) async {
     return [
       SceneTemplateRow(
         id: 't-en',

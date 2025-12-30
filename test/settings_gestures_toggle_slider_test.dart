@@ -9,6 +9,14 @@ import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/features/settings/widgets/app_settings_section.dart';
+import 'package:writer/state/biometric_session_state.dart';
+import 'package:writer/services/biometric_service.dart';
+import 'package:writer/state/providers.dart';
+
+class MockBiometricService extends BiometricService {
+  @override
+  Future<bool> isBiometricAvailable() async => false;
+}
 
 void main() {
   setUp(() async {
@@ -22,6 +30,8 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        biometricServiceProvider.overrideWithValue(MockBiometricService()),
         themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
         motionSettingsProvider.overrideWith(
           (_) => MotionSettingsNotifier(null),
@@ -67,6 +77,8 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        biometricServiceProvider.overrideWithValue(MockBiometricService()),
         themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
         motionSettingsProvider.overrideWith(
           (_) => MotionSettingsNotifier(null),

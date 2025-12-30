@@ -1,80 +1,69 @@
 import 'dart:convert';
-
-import 'package:shared_preferences/shared_preferences.dart';
+import '../services/storage_service.dart';
 import '../models/chapter_cache.dart';
 import '../models/novel.dart';
 import '../models/character.dart';
-import '../models/scene.dart';
-import '../models/template.dart';
 import '../models/character_note.dart';
+import '../models/scene.dart';
 import '../models/scene_note.dart';
+import '../models/template.dart';
 import '../models/character_template_row.dart';
 import '../models/scene_template_row.dart';
 
+/// Repository for local storage operations
+///
+/// This repository uses the StorageService abstraction for better testability.
 class LocalStorageRepository {
-  final Future<SharedPreferences> Function() _prefs;
-  final DateTime Function() _now;
+  final StorageService _storage;
 
-  LocalStorageRepository({
-    Future<SharedPreferences> Function()? prefs,
-    DateTime Function()? now,
-  }) : _prefs = prefs ?? SharedPreferences.getInstance,
-       _now = now ?? DateTime.now;
+  LocalStorageRepository(this._storage);
 
+  /// Save a chapter to cache
   Future<void> saveChapter(ChapterCache chapter) async {
-    final prefs = await _prefs();
-    await prefs.setString(chapter.chapterId, jsonEncode(chapter.toJson()));
+    await _storage.setString(
+      'chapter_${chapter.chapterId}',
+      jsonEncode(chapter.toJson()),
+    );
   }
 
+  /// Get a chapter from cache
   Future<ChapterCache?> getChapter(String chapterId) async {
-    final prefs = await _prefs();
-    final chapterJson = prefs.getString(chapterId);
-    if (chapterJson != null) {
-      return ChapterCache.fromJson(jsonDecode(chapterJson));
+    final json = _storage.getString('chapter_$chapterId');
+    if (json == null) return null;
+    try {
+      return ChapterCache.fromJson(jsonDecode(json));
+    } catch (_) {
+      return null;
     }
-    return null;
   }
 
+  /// Save multiple chapters to cache
   Future<void> saveChapters(List<ChapterCache> chapters) async {
-    final prefs = await _prefs();
     for (final chapter in chapters) {
-      await prefs.setString(chapter.chapterId, jsonEncode(chapter.toJson()));
+      await saveChapter(chapter);
     }
   }
 
+  /// Remove a chapter from cache
   Future<void> removeChapter(String chapterId) async {
-    final prefs = await _prefs();
-    await prefs.remove(chapterId);
+    await _storage.remove('chapter_$chapterId');
   }
 
+  /// Clear all chapter cache entries
   Future<int> clearChapterCache() async {
-    final prefs = await _prefs();
-    final keys = prefs.getKeys();
+    final keys = _storage.getKeys();
     int removed = 0;
     for (final key in keys) {
-      final value = prefs.getString(key);
-      if (value == null) continue;
-      try {
-        final decoded = jsonDecode(value);
-        if (decoded is Map<String, dynamic>) {
-          final hasShape =
-              decoded.containsKey('chapterId') &&
-              decoded.containsKey('novelId') &&
-              decoded.containsKey('idx') &&
-              decoded.containsKey('content') &&
-              decoded.containsKey('lastUpdated');
-          if (hasShape) {
-            await prefs.remove(key);
-            removed++;
-          }
-        }
-      } catch (_) {}
+      if (key.startsWith('chapter_')) {
+        await _storage.remove(key);
+        removed++;
+      }
     }
     return removed;
   }
 
+  /// Save library novels to cache
   Future<void> saveLibraryNovels(List<Novel> novels) async {
-    final prefs = await _prefs();
     final list = novels
         .map(
           (n) => {
@@ -88,56 +77,56 @@ class LocalStorageRepository {
           },
         )
         .toList();
-    await prefs.setString('library_novels_cache', jsonEncode(list));
+    await _storage.setString('library_novels_cache', jsonEncode(list));
   }
 
+  /// Get library novels from cache
   Future<List<Novel>> getLibraryNovels() async {
-    final prefs = await _prefs();
-    final raw = prefs.getString('library_novels_cache');
-    if (raw == null) return <Novel>[];
+    final json = _storage.getString('library_novels_cache');
+    if (json == null) return <Novel>[];
     try {
-      final decoded = jsonDecode(raw);
+      final decoded = jsonDecode(json);
       if (decoded is List) {
         return decoded.cast<Map<String, dynamic>>().map(Novel.fromMap).toList();
       }
-    } catch (_) {}
+    } catch (_) {
+      return <Novel>[];
+    }
     return <Novel>[];
   }
 
+  /// Save summary text
   Future<void> saveSummaryText(String novelId, String text) async {
-    final prefs = await _prefs();
-    await prefs.setString('summary_text_$novelId', text);
+    await _storage.setString('summary_text_$novelId', text);
   }
 
+  /// Get summary text
   Future<String?> getSummaryText(String novelId) async {
-    final prefs = await _prefs();
-    return prefs.getString('summary_text_$novelId');
+    return _storage.getString('summary_text_$novelId');
   }
 
+  /// Save character form
   Future<void> saveCharacterForm(
     String novelId,
     Character character, {
     int? idx,
   }) async {
-    final prefs = await _prefs();
-    await prefs.setString(
-      'character_form_$novelId',
-      jsonEncode(character.toMap()),
-    );
+    final payload = character.toMap();
+    await _storage.setString('character_form_$novelId', jsonEncode(payload));
   }
 
+  /// Get character form
   Future<Character?> getCharacterForm(String novelId, {int? idx}) async {
-    final prefs = await _prefs();
-    final raw = prefs.getString('character_form_$novelId');
-    if (raw != null) {
-      try {
-        final decoded = jsonDecode(raw) as Map<String, dynamic>;
-        return Character.fromMap(decoded);
-      } catch (_) {}
+    final json = _storage.getString('character_form_$novelId');
+    if (json == null) return null;
+    try {
+      return Character.fromMap(jsonDecode(json) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
     }
-    return null;
   }
 
+  /// Save character note form
   Future<void> saveCharacterNoteForm(
     String novelId, {
     String? title,
@@ -146,217 +135,188 @@ class LocalStorageRepository {
     String languageCode = 'en',
     int? idx,
   }) async {
-    final prefs = await _prefs();
     final payload = {
       'title': title,
       'character_summaries': summaries,
       'character_synopses': synopses,
       'language_code': languageCode,
+      'idx': idx,
     };
-    await prefs.setString('character_note_form_$novelId', jsonEncode(payload));
+    await _storage.setString(
+      'character_note_form_$novelId',
+      jsonEncode(payload),
+    );
   }
 
+  /// Get character note form
   Future<Map<String, dynamic>?> getCharacterNoteForm(
     String novelId, {
     int? idx,
   }) async {
-    final prefs = await _prefs();
-    final raw = prefs.getString('character_note_form_$novelId');
-    if (raw != null) {
-      try {
-        return jsonDecode(raw) as Map<String, dynamic>;
-      } catch (_) {}
+    final json = _storage.getString('character_note_form_$novelId');
+    if (json == null) return null;
+    try {
+      return jsonDecode(json) as Map<String, dynamic>;
+    } catch (_) {
+      return null;
     }
-    return null;
   }
 
+  /// Save scene form
   Future<void> saveSceneForm(String novelId, Scene scene, {int? idx}) async {
-    final prefs = await _prefs();
-    await prefs.setString('scene_form_$novelId', jsonEncode(scene.toMap()));
+    final payload = {
+      'novel_id': novelId,
+      'title': scene.title,
+      'summary': scene.summary,
+      'location': scene.location,
+      'language_code': 'en',
+      'idx': idx,
+    };
+    await _storage.setString('scene_form_$novelId', jsonEncode(payload));
   }
 
+  /// Get scene form
   Future<Scene?> getSceneForm(String novelId, {int? idx}) async {
-    final prefs = await _prefs();
-    final raw = prefs.getString('scene_form_$novelId');
-    if (raw != null) {
-      try {
-        final decoded = jsonDecode(raw) as Map<String, dynamic>;
-        return Scene.fromMap(decoded);
-      } catch (_) {}
+    final json = _storage.getString('scene_form_$novelId');
+    if (json == null) return null;
+    try {
+      return Scene.fromMap(jsonDecode(json) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
     }
-    return null;
   }
 
+  /// Save character template form
   Future<void> saveCharacterTemplateForm(
     String novelId,
     TemplateItem item,
   ) async {
-    final prefs = await _prefs();
-    await prefs.setString(
+    await _storage.setString(
       'character_template_form_$novelId',
       jsonEncode(item.toMap()),
     );
   }
 
+  /// Get character template form
   Future<TemplateItem?> getCharacterTemplateForm(String novelId) async {
-    final prefs = await _prefs();
-    final raw = prefs.getString('character_template_form_$novelId');
-    if (raw != null) {
-      try {
-        final decoded = jsonDecode(raw) as Map<String, dynamic>;
-        return TemplateItem.fromMap(decoded);
-      } catch (_) {}
+    final json = _storage.getString('character_template_form_$novelId');
+    if (json == null) return null;
+    try {
+      return TemplateItem.fromMap(jsonDecode(json) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
     }
-    return null;
   }
 
+  /// Save scene template form
   Future<void> saveSceneTemplateForm(
     String novelId,
     TemplateItem item, {
     String languageCode = 'en',
   }) async {
-    final prefs = await _prefs();
-    await prefs.setString(
+    final payload = {...item.toMap(), 'language_code': languageCode};
+    await _storage.setString(
       'scene_template_form_$novelId',
-      jsonEncode(item.toMap()),
+      jsonEncode(payload),
     );
   }
 
+  /// Get scene template form
   Future<TemplateItem?> getSceneTemplateForm(String novelId) async {
-    final prefs = await _prefs();
-    final raw = prefs.getString('scene_template_form_$novelId');
-    if (raw != null) {
-      try {
-        final decoded = jsonDecode(raw) as Map<String, dynamic>;
-        return TemplateItem.fromMap(decoded);
-      } catch (_) {}
+    final json = _storage.getString('scene_template_form_$novelId');
+    if (json == null) return null;
+    try {
+      return TemplateItem.fromMap(jsonDecode(json) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
     }
-    return null;
   }
 
-  // List methods used to return Sync+Local. Now they only return local default if implemented, or empty?
-  // The implementations below were previously mixed.
-  // Ideally, these list methods should be removed from here and moved to NotesRepository entirely,
-  // but to preserve existing contract for non-sync usage (if any), I'll keep them returning empty or local defaults.
-  // Actually, listCharacterNotes returned [local] if offline.
+  /// Delete character form
+  Future<void> deleteCharacterForm(String novelId) async {
+    await _storage.remove('character_form_$novelId');
+  }
+
+  /// Delete character note form
+  Future<void> deleteCharacterNoteForm(String novelId) async {
+    await _storage.remove('character_note_form_$novelId');
+  }
+
+  /// Delete scene form
+  Future<void> deleteSceneForm(String novelId) async {
+    await _storage.remove('scene_form_$novelId');
+  }
+
+  /// Delete character template
+  Future<void> deleteCharacterTemplate(String id) async {
+    await _storage.remove('character_template_form_$id');
+  }
+
+  /// Delete scene template
+  Future<void> deleteSceneTemplate(String id) async {
+    await _storage.remove('scene_template_form_$id');
+  }
+
+  /// Get all keys
+  Future<Set<String>> getKeys() async {
+    return _storage.getKeys();
+  }
 
   Future<List<CharacterNote>> listCharacterNotes(String novelId) async {
-    final cached = await getCharacterNoteForm(novelId);
-    if (cached == null) return <CharacterNote>[];
-    final now = _now();
-    return [
-      CharacterNote(
-        id: 'local-$novelId-1',
-        novelId: novelId,
-        idx: 1,
-        title: cached['title'] as String?,
-        characterSummaries: cached['character_summaries'] as String?,
-        characterSynopses: cached['character_synopses'] as String?,
-        languageCode: (cached['language_code'] as String?) ?? 'en',
-        createdAt: now,
-        updatedAt: now,
-      ),
-    ];
-  }
-
-  Future<int> nextCharacterIdx(String novelId) async {
-    return 2; // Default
-  }
-
-  Future<void> deleteCharacterNoteById(String id) async {
-    // Local delete not supported/needed by ID.
-  }
-
-  Future<void> deleteCharacterNoteByIdx(String novelId, int idx) async {
-    final prefs = await _prefs();
-    await prefs.remove('character_note_form_$novelId');
+    final json = _storage.getString('character_note_form_$novelId');
+    if (json == null) return [];
+    try {
+      final map = jsonDecode(json) as Map<String, dynamic>;
+      return [
+        CharacterNote(
+          id: 'temp',
+          novelId: novelId,
+          idx: map['idx'] ?? 0,
+          title: map['title'],
+          characterSummaries: map['character_summaries'],
+          characterSynopses: map['character_synopses'],
+          languageCode: map['language_code'] ?? 'en',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+      ];
+    } catch (_) {
+      return [];
+    }
   }
 
   Future<List<SceneNote>> listSceneNotes(String novelId) async {
-    final cached = await getSceneForm(novelId);
-    if (cached == null) return <SceneNote>[];
-    final now = _now();
-    return [
-      SceneNote(
-        id: 'local-$novelId-1',
-        novelId: novelId,
-        idx: 1,
-        title: cached.title,
-        sceneSummaries: cached.summary,
-        sceneSynopses: cached.location,
-        languageCode: 'en',
-        createdAt: now,
-        updatedAt: now,
-      ),
-    ];
+    final json = _storage.getString('scene_form_$novelId');
+    if (json == null) return [];
+    try {
+      final map = jsonDecode(json) as Map<String, dynamic>;
+      return [
+        SceneNote(
+          id: 'temp',
+          novelId: novelId,
+          idx: map['idx'] ?? 0,
+          title: map['title'],
+          sceneSummaries: map['summary'],
+          languageCode: map['language_code'] ?? 'en',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+      ];
+    } catch (_) {
+      return [];
+    }
   }
 
-  Future<int> nextSceneIdx(String novelId) async {
-    return 2;
-  }
-
-  Future<void> deleteSceneNoteById(String id) async {}
-
-  Future<void> deleteSceneNoteByIdx(String novelId, int idx) async {
-    final prefs = await _prefs();
-    await prefs.remove('scene_form_$novelId');
-  }
-
-  Future<List<CharacterTemplateRow>> listCharacterTemplates() async {
-    return <CharacterTemplateRow>[];
-  }
-
-  Future<void> deleteCharacterTemplate(String id) async {}
-
-  Future<CharacterTemplateRow?> getCharacterTemplateById(String id) async {
-    return null;
-  }
-
-  Future<void> updateCharacterTemplate(
-    String id, {
-    String? title,
-    String? summaries,
-    String? synopses,
-    String languageCode = 'en',
-  }) async {}
-
-  Future<List<SceneTemplateRow>> listSceneTemplates({int limit = 200}) async {
-    return <SceneTemplateRow>[];
-  }
-
+  Future<List<CharacterTemplateRow>> listCharacterTemplates() async => [];
+  Future<List<SceneTemplateRow>> listSceneTemplates({int? limit}) async => [];
   Future<List<SceneTemplateRow>> searchSceneTemplates(
     String query, {
-    int limit = 5,
-    int offset = 0,
+    int? limit,
     String? languageCode,
-  }) async {
-    return <SceneTemplateRow>[];
-  }
-
-  Future<List<CharacterTemplateRow>> searchCharacterTemplates(
-    String query, {
-    int limit = 10,
-    int offset = 0,
-    String? languageCode,
-  }) async {
-    return <CharacterTemplateRow>[];
-  }
-
-  Future<void> refreshSceneTemplateEmbedding(String templateId) async {}
-
-  Future<void> refreshCharacterTemplateEmbedding(String templateId) async {}
-
-  Future<void> deleteSceneTemplate(String id) async {}
-
-  Future<SceneTemplateRow?> getSceneTemplateById(String id) async {
-    return null;
-  }
-
-  Future<void> updateSceneTemplate(
-    String id, {
-    String? title,
-    String? summaries,
-    String? synopses,
-    String languageCode = 'en',
-  }) async {}
+  }) async => [];
+  Future<int> nextCharacterIdx(String novelId) async => 2;
+  Future<int> nextSceneIdx(String novelId) async => 2;
+  Future<CharacterTemplateRow?> getCharacterTemplateById(String id) async =>
+      null;
+  Future<SceneTemplateRow?> getSceneTemplateById(String id) async => null;
 }

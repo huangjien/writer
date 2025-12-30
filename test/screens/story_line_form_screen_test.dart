@@ -2,12 +2,21 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/story_line.dart';
 import 'package:writer/screens/story_line_form_screen.dart';
 import 'package:writer/services/story_lines_service.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/story_line_providers.dart';
+import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/storage_service_provider.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/state/session_state.dart';
+import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
+import 'package:writer/state/tts_settings.dart';
+import 'package:writer/state/motion_settings.dart';
 
 class FakeStoryLinesService extends StoryLinesService {
   FakeStoryLinesService() : super(baseUrl: 'http://example.com');
@@ -167,12 +176,36 @@ Finder _textFormField(String labelOrHint) {
   return allFields.first;
 }
 
+List<dynamic> createCommonProviderOverrides(SharedPreferences prefs) {
+  final appSettings = AppSettingsNotifier(prefs);
+  final ttsSettings = TtsSettingsNotifier(prefs);
+  final motion = MotionSettingsNotifier(prefs);
+  final storageService = LocalStorageService(prefs);
+
+  return [
+    sharedPreferencesProvider.overrideWithValue(prefs),
+    localStorageRepositoryProvider.overrideWithValue(
+      LocalStorageRepository(storageService),
+    ),
+    sessionProvider.overrideWith((ref) => SessionNotifier(storageService)),
+    appSettingsProvider.overrideWith((_) => appSettings),
+    ttsSettingsProvider.overrideWith((_) => ttsSettings),
+    motionSettingsProvider.overrideWith((_) => motion),
+    aiChatServiceProvider.overrideWith(
+      (ref) => AiChatService(RemoteRepository('http://localhost:5600/')),
+    ),
+  ];
+}
+
 void main() {
   testWidgets('StoryLineFormScreen requires content to save', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          ...createCommonProviderOverrides(prefs),
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
@@ -198,10 +231,13 @@ void main() {
   });
 
   testWidgets('StoryLineFormScreen create calls service', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          ...createCommonProviderOverrides(prefs),
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
@@ -239,10 +275,13 @@ void main() {
   testWidgets('StoryLineFormScreen invalid JSON shows error but still saves', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          ...createCommonProviderOverrides(prefs),
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
@@ -274,6 +313,8 @@ void main() {
   });
 
   testWidgets('StoryLineFormScreen edit calls update', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService();
     final initial = const StoryLine(
       id: 's1',
@@ -286,6 +327,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          ...createCommonProviderOverrides(prefs),
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
@@ -312,6 +354,8 @@ void main() {
   testWidgets('StoryLineFormScreen lock toggle updates and saves', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService();
     final initial = const StoryLine(
       id: 's1',
@@ -322,6 +366,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          ...createCommonProviderOverrides(prefs),
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
@@ -347,6 +392,8 @@ void main() {
   testWidgets('StoryLineFormScreen language dropdown updates state and saves', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService();
     final initial = const StoryLine(
       id: 's1',
@@ -357,6 +404,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          ...createCommonProviderOverrides(prefs),
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
@@ -380,10 +428,13 @@ void main() {
   });
 
   testWidgets('AI button triggers improve and updates fields', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          ...createCommonProviderOverrides(prefs),
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
@@ -409,10 +460,13 @@ void main() {
   });
 
   testWidgets('AI ignores invalid JSON usage rules', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          ...createCommonProviderOverrides(prefs),
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
@@ -447,6 +501,8 @@ void main() {
   testWidgets('Edit save falls back to initial usage rules when empty', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService();
     final initial = const StoryLine(
       id: 's1',
@@ -458,6 +514,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          ...createCommonProviderOverrides(prefs),
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
@@ -488,10 +545,13 @@ void main() {
   });
 
   testWidgets('Improve error shows error text', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService()..throwImprove = true;
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          ...createCommonProviderOverrides(prefs),
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
@@ -516,10 +576,13 @@ void main() {
   });
 
   testWidgets('Create error shows error text', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService()..throwCreate = true;
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          ...createCommonProviderOverrides(prefs),
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
@@ -544,13 +607,33 @@ void main() {
   });
 
   testWidgets('Shows spinner during save', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService()..pauseSave();
     final initial = const StoryLine(id: 's1', title: 'Old', content: 'A');
+    final appSettings = AppSettingsNotifier(prefs);
+    final ttsSettings = TtsSettingsNotifier(prefs);
+    final motion = MotionSettingsNotifier(prefs);
+    final storageService = LocalStorageService(prefs);
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          localStorageRepositoryProvider.overrideWithValue(
+            LocalStorageRepository(storageService),
+          ),
+          sessionProvider.overrideWith(
+            (ref) => SessionNotifier(storageService),
+          ),
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
+          appSettingsProvider.overrideWith((_) => appSettings),
+          ttsSettingsProvider.overrideWith((_) => ttsSettings),
+          motionSettingsProvider.overrideWith((_) => motion),
+          aiChatServiceProvider.overrideWith(
+            (ref) => AiChatService(RemoteRepository('http://localhost:5600/')),
+          ),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

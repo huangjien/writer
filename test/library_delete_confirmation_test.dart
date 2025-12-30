@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
+import 'package:writer/state/providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/user_progress.dart';
 import 'package:writer/l10n/app_localizations.dart';
@@ -14,8 +15,33 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/models/token_usage.dart';
 import 'package:writer/state/session_state.dart';
-import 'package:writer/main.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/services/storage_service.dart';
+
+class MockStorageService implements StorageService {
+  String? _sessionId;
+
+  @override
+  String? getString(String key) =>
+      key == 'backend_session_id' ? _sessionId : null;
+
+  @override
+  Future<void> setString(String key, String? value) async {
+    if (key == 'backend_session_id') {
+      _sessionId = value;
+    }
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    if (key == 'backend_session_id') {
+      _sessionId = null;
+    }
+  }
+
+  @override
+  Set<String> getKeys() => {'backend_session_id'};
+}
 
 class FakeNovelRepository extends NovelRepository {
   FakeNovelRepository() : super(_NoopRemoteRepository());
@@ -117,6 +143,8 @@ class _NoopRemoteRepository implements RemoteRepository {
 }
 
 class _FakeLocalStorageRepository extends LocalStorageRepository {
+  _FakeLocalStorageRepository(super.storage);
+
   List<Novel> _cachedNovels = const [];
 
   @override
@@ -156,8 +184,9 @@ void main() {
       ];
 
       final fakeRepo = FakeNovelRepository();
-      final sessionNotifier = SessionNotifier()..state = 'test-session';
-      final fakeLocal = _FakeLocalStorageRepository();
+      final sessionNotifier = SessionNotifier(MockStorageService())
+        ..state = 'test-session';
+      final fakeLocal = _FakeLocalStorageRepository(MockStorageService());
 
       await tester.pumpWidget(
         ProviderScope(

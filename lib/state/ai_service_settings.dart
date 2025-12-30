@@ -28,5 +28,7 @@ final aiServiceProvider = StateNotifierProvider<AiServiceNotifier, String>((
   ref,
 ) {
   // This will be overridden in main.dart
-  throw UnimplementedError();
+  throw UnimplementedError(
+    'aiServiceProvider must be overridden in ProviderScope/main.dart',
+  );
 });

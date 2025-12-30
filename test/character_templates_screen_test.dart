@@ -3,13 +3,41 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/summary/character_templates_screen.dart';
-import 'package:writer/main.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/models/template.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/services/storage_service.dart';
+
+class MockStorageService implements StorageService {
+  String? _sessionId;
+
+  @override
+  String? getString(String key) =>
+      key == 'backend_session_id' ? _sessionId : null;
+
+  @override
+  Future<void> setString(String key, String? value) async {
+    if (key == 'backend_session_id') {
+      _sessionId = value;
+    }
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    if (key == 'backend_session_id') {
+      _sessionId = null;
+    }
+  }
+
+  @override
+  Set<String> getKeys() => {'backend_session_id'};
+}
 
 class CapturingLocalRepo extends LocalStorageRepository {
+  CapturingLocalRepo() : super(MockStorageService());
+
   TemplateItem? lastItem;
   @override
   Future<void> saveCharacterTemplateForm(
@@ -49,10 +77,14 @@ void main() {
   });
 
   testWidgets('CharacterTemplatesScreen validates and saves', (tester) async {
+    final prefs = await SharedPreferences.getInstance();
     final repo = CapturingLocalRepo();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [localStorageRepositoryProvider.overrideWith((_) => repo)],
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          localStorageRepositoryProvider.overrideWith((_) => repo),
+        ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -98,6 +130,7 @@ void main() {
   });
 
   testWidgets('CharacterTemplatesScreen retrieves profile', (tester) async {
+    final prefs = await SharedPreferences.getInstance();
     final localRepo = CapturingLocalRepo();
     final remoteRepo = MockRemoteRepo();
     remoteRepo.mockResponse = '''
@@ -109,6 +142,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           localStorageRepositoryProvider.overrideWith((_) => localRepo),
           remoteRepositoryProvider.overrideWith((_) => remoteRepo),
         ],
@@ -171,12 +205,16 @@ void main() {
   testWidgets('CharacterTemplatesScreen handles retrieve error', (
     tester,
   ) async {
+    final prefs = await SharedPreferences.getInstance();
     final remoteRepo = MockRemoteRepo();
     remoteRepo.shouldFail = true;
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [remoteRepositoryProvider.overrideWith((_) => remoteRepo)],
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          remoteRepositoryProvider.overrideWith((_) => remoteRepo),
+        ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,

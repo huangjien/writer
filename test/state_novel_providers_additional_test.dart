@@ -4,17 +4,20 @@ import 'package:writer/state/novel_providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/repositories/novel_repository.dart';
-import 'package:writer/main.dart' as app_main;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/state/providers.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class CapturingLocalRepo extends LocalStorageRepository {
+class MockLocalStorageRepository extends Mock
+    implements LocalStorageRepository {}
+
+class CapturingLocalRepo extends MockLocalStorageRepository {
   List<Novel>? lastSaved;
+
   @override
   Future<void> saveLibraryNovels(List<Novel> novels) async {
     lastSaved = novels;
-    await super.saveLibraryNovels(novels);
   }
 }
 
@@ -31,7 +34,7 @@ void main() {
         overrides: [
           isSignedInProvider.overrideWith((_) => true),
           authStateProvider.overrideWith((_) => 'session'),
-          app_main.localStorageRepositoryProvider.overrideWith((_) => cache),
+          localStorageRepositoryProvider.overrideWith((_) => cache),
           novelsProvider.overrideWith(
             (ref) async => const [
               Novel(

@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
-import 'package:writer/main.dart' as app_main;
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/state/providers.dart';
+import 'package:writer/state/storage_service_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FakeNovelRepository extends NovelRepository {
   FakeNovelRepository() : super(RemoteRepository('http://example.com'));
@@ -40,14 +42,18 @@ class FakeNovelRepository extends NovelRepository {
 
 void main() {
   test('novels and chapters providers return from repository', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final storageService = LocalStorageService(prefs);
     final fake = FakeNovelRepository();
     final container = ProviderContainer(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        localStorageRepositoryProvider.overrideWith(
+          (_) => LocalStorageRepository(storageService),
+        ),
         novelRepositoryProvider.overrideWith((_) => fake),
         isSignedInProvider.overrideWithValue(true),
-        app_main.localStorageRepositoryProvider.overrideWith(
-          (_) => throw UnimplementedError(),
-        ),
       ],
     );
     addTearDown(container.dispose);

@@ -9,6 +9,7 @@ import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/routing/app_router.dart';
 import 'package:go_router/go_router.dart';
+import 'package:writer/state/storage_service_provider.dart';
 
 void main() {
   testWidgets('App smoke test with ProviderScope overrides mirrors main()', (
@@ -33,6 +34,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           appSettingsProvider.overrideWith((_) => appSettings),
           themeControllerProvider.overrideWith((_) => themeController),
           motionSettingsProvider.overrideWith((_) => motionSettings),

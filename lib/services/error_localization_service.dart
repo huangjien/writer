@@ -93,7 +93,8 @@ class ErrorLocalizationService {
   }) {
     // For auth errors, redirect to login instead of showing error
     if (isAuthError(error) && ref != null) {
-      AuthRedirectService.redirectToLogin(ref);
+      final service = ref.read(authRedirectServiceProvider);
+      service.redirectToLogin(ref);
       return;
     }
 
@@ -134,7 +135,8 @@ class ErrorLocalizationService {
   }) async {
     // For auth errors, redirect to login instead of showing error
     if (isAuthError(error) && ref != null) {
-      AuthRedirectService.redirectToLogin(ref);
+      final service = ref.read(authRedirectServiceProvider);
+      service.redirectToLogin(ref);
       return;
     }
 

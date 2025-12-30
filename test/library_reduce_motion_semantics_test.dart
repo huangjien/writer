@@ -8,12 +8,14 @@ import 'package:writer/models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
+import 'package:writer/state/providers.dart';
 
 void main() {
   testWidgets('Progress ring uses zero-duration animation when reduce motion', (
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
 
     final novels = <Novel>[
       const Novel(
@@ -28,12 +30,13 @@ void main() {
     ];
 
     // Prepare motion settings and set reduce motion to true
-    final motion = MotionSettingsNotifier.lazy();
-    motion.setReduceMotion(true);
+    final motion = MotionSettingsNotifier(prefs);
+    await motion.setReduceMotion(true);
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           libraryNovelsProvider.overrideWith((ref) async => novels),
           memberNovelsProvider.overrideWith((ref) async => const []),
           lastProgressProvider.overrideWith((ref, novelId) async => null),

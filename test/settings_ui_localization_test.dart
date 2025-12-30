@@ -9,6 +9,7 @@ import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/motion_settings.dart';
+import 'package:writer/state/storage_service_provider.dart';
 
 void main() {
   setUp(() async {
@@ -25,11 +26,12 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           appSettingsProvider.overrideWith((_) => appNotifier),
           themeControllerProvider.overrideWith((_) => themeController),
           aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
           motionSettingsProvider.overrideWith(
-            (_) => MotionSettingsNotifier(null),
+            (_) => MotionSettingsNotifier(prefs),
           ),
         ],
         child: MaterialApp(
@@ -58,11 +60,12 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           appSettingsProvider.overrideWith((_) => appNotifier),
           themeControllerProvider.overrideWith((_) => themeController),
           aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
           motionSettingsProvider.overrideWith(
-            (_) => MotionSettingsNotifier(null),
+            (_) => MotionSettingsNotifier(prefs),
           ),
         ],
         child: MaterialApp(

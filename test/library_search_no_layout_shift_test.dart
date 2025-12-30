@@ -7,11 +7,17 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   testWidgets('Changing sort does not cause list height layout shift', (
     tester,
   ) async {
+    final prefs = await SharedPreferences.getInstance();
     final novels = [
       const Novel(
         id: 'n1',
@@ -45,6 +51,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           isSignedInProvider.overrideWithValue(false),
           memberNovelsProvider.overrideWith((ref) async => const []),
           libraryNovelsProvider.overrideWith((ref) async => novels),

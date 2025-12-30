@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
-import '../../main.dart';
+
 import '../../models/template.dart';
 import '../../l10n/app_localizations.dart';
 import '../../repositories/remote_repository.dart';

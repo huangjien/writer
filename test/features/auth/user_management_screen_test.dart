@@ -7,21 +7,56 @@ import 'package:http/testing.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:writer/features/auth/user_management_screen.dart';
+import 'package:writer/models/user.dart';
+import 'package:writer/services/storage_service.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/user_state.dart';
-
+import 'package:writer/repositories/user_repository.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/l10n/app_localizations.dart';
 
+class MockUserRepository implements UserRepository {
+  @override
+  Future<User?> fetchUser(String sessionId) async {
+    return User(id: 'admin', email: 'admin@example.com');
+  }
+}
+
+class MockStorageService implements StorageService {
+  String? _sessionId;
+
+  @override
+  String? getString(String key) =>
+      key == 'backend_session_id' ? _sessionId : null;
+
+  @override
+  Future<void> setString(String key, String? value) async {
+    if (key == 'backend_session_id') {
+      _sessionId = value;
+    }
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    if (key == 'backend_session_id') {
+      _sessionId = null;
+    }
+  }
+
+  @override
+  Set<String> getKeys() => {'backend_session_id'};
+}
+
 class MockSessionNotifier extends SessionNotifier {
-  MockSessionNotifier(String? initial) : super(null) {
+  MockSessionNotifier(String? initial) : super(MockStorageService()) {
     state = initial;
   }
 }
 
 class MockUserStateNotifier extends UserStateNotifier {
-  MockUserStateNotifier(super.ref, super.initial);
+  MockUserStateNotifier(Ref ref, AsyncValue<User?>? initial)
+    : super(ref, MockUserRepository(), initial);
 
   @override
   void init() {}

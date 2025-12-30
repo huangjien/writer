@@ -9,6 +9,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/tts_settings.dart';
+import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/theme/themes.dart';
 
 /// Builds a ProviderScope with common overrides for app/theme.
@@ -29,6 +30,7 @@ Future<ProviderScope> buildAppScope({
       appSettingsProvider.overrideWith((_) => app),
       themeControllerProvider.overrideWith((_) => theme),
       ttsSettingsProvider.overrideWith((_) => tts),
+      sharedPreferencesProvider.overrideWithValue(p),
       ...?extraOverrides,
     ],
     child: child,

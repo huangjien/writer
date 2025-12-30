@@ -9,6 +9,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/repositories/template_repository.dart';
 import 'package:writer/state/session_state.dart';
+import 'package:writer/state/storage_service_provider.dart';
 
 class CapturingTemplateRepo extends TemplateRepository {
   CapturingTemplateRepo() : super(RemoteRepository('http://test/'));
@@ -77,11 +78,13 @@ void main() {
   testWidgets('SceneTemplatesScreen validates and saves', (tester) async {
     SharedPreferences.setMockInitialValues({'backend_session_id': 's-1'});
     final prefs = await SharedPreferences.getInstance();
-    final session = SessionNotifier(prefs);
+    final storageService = LocalStorageService(prefs);
+    final session = SessionNotifier(storageService);
     final templates = CapturingTemplateRepo();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           sessionProvider.overrideWith((_) => session),
           templateRepositoryProvider.overrideWithValue(templates),
         ],
@@ -130,10 +133,14 @@ void main() {
   testWidgets('SceneTemplatesScreen retrieves profile and enables Save', (
     tester,
   ) async {
+    final prefs = await SharedPreferences.getInstance();
     final remote = FakeRemoteRepo('# Profile');
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [remoteRepositoryProvider.overrideWithValue(remote)],
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          remoteRepositoryProvider.overrideWithValue(remote),
+        ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -162,10 +169,14 @@ void main() {
   testWidgets('SceneTemplatesScreen shows no-profile snackbar when null', (
     tester,
   ) async {
+    final prefs = await SharedPreferences.getInstance();
     final remote = FakeRemoteRepo(null);
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [remoteRepositoryProvider.overrideWithValue(remote)],
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          remoteRepositoryProvider.overrideWithValue(remote),
+        ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -192,12 +203,14 @@ void main() {
   ) async {
     SharedPreferences.setMockInitialValues({'backend_session_id': 's-1'});
     final prefs = await SharedPreferences.getInstance();
-    final session = SessionNotifier(prefs);
+    final storageService = LocalStorageService(prefs);
+    final session = SessionNotifier(storageService);
     final templates = CapturingTemplateRepo();
     templates.upsertedLanguageCode = 'zh';
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           sessionProvider.overrideWith((_) => session),
           templateRepositoryProvider.overrideWithValue(templates),
         ],

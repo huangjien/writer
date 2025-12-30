@@ -133,7 +133,9 @@ class NovelRepository {
     required String userId,
   }) async {
     // Feature currently not supported by backend proxy
-    // throw UnimplementedError('Backend does not support adding contributors yet.');
+    throw UnimplementedError(
+      'Backend does not support adding contributors yet.',
+    );
   }
 
   Future<List<Novel>> fetchMemberNovels({
@@ -157,5 +159,8 @@ class NovelRepository {
     required String email,
   }) async {
     // Feature currently not supported by backend proxy
+    throw UnimplementedError(
+      'Backend does not support adding contributors yet.',
+    );
   }
 }

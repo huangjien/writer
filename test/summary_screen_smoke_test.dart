@@ -7,12 +7,15 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/providers.dart';
 
 void main() {
   testWidgets('Summary screen shows for novel route', (tester) async {
     SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final container = ProviderContainer(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         novelProvider.overrideWith((ref, novelId) async {
           return const Novel(
             id: 'novel-001',

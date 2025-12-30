@@ -156,6 +156,7 @@ void main() {
 
     final container = ProviderContainer(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         ttsDriverProvider.overrideWithValue(mockTtsDriver),
         chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
         appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -231,6 +232,7 @@ void main() {
 
     final container = ProviderContainer(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         ttsDriverProvider.overrideWithValue(mockTtsDriver),
         chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
         appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -281,6 +283,7 @@ void main() {
 
     final container = ProviderContainer(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         ttsDriverProvider.overrideWithValue(mockTtsDriver),
         chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
         appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -332,6 +335,7 @@ void main() {
     );
     final container = ProviderContainer(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         ttsDriverProvider.overrideWithValue(mockTtsDriver),
         chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
         appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -393,6 +397,7 @@ void main() {
     await perf.setPrefetchNextChapter(false);
     final container = ProviderContainer(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         ttsDriverProvider.overrideWithValue(mockTtsDriver),
         chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
         appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -431,6 +436,7 @@ void main() {
     );
     final container = ProviderContainer(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         ttsDriverProvider.overrideWithValue(mockTtsDriver),
         chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
         appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -513,6 +519,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(consistencyMockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -593,6 +600,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(consistencyMockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -675,6 +683,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(stateConsistencyMockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -749,6 +758,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(stateConsistencyMockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -799,6 +809,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -852,6 +863,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -910,6 +922,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -968,6 +981,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -1025,6 +1039,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -1078,6 +1093,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -1126,6 +1142,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -1182,6 +1199,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -1243,6 +1261,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -1296,6 +1315,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -1343,6 +1363,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -1401,6 +1422,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -1455,6 +1477,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => appSettings),
@@ -1515,6 +1538,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => appSettings),
@@ -1571,6 +1595,7 @@ void main() {
       expect(
         () => ProviderContainer(
           overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
             ttsDriverProvider.overrideWithValue(mockTtsDriver),
             chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
             appSettingsProvider.overrideWith(
@@ -1617,6 +1642,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -1677,6 +1703,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(errorMockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -1732,6 +1759,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -1782,6 +1810,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -1840,6 +1869,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -1901,6 +1931,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(mockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
@@ -1995,6 +2026,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           ttsDriverProvider.overrideWithValue(freshMockTtsDriver),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),

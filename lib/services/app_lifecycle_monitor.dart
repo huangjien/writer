@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../state/sync_service_provider.dart';
+import '../services/sync_service.dart';
 
 /// Monitors app lifecycle events to start/stop sync monitoring
 /// Starts sync when app comes to foreground, stops when in background
@@ -17,6 +18,8 @@ class AppLifecycleMonitor extends ConsumerStatefulWidget {
 
 class _AppLifecycleMonitorState extends ConsumerState<AppLifecycleMonitor>
     with WidgetsBindingObserver {
+  SyncService? _syncService;
+
   @override
   void initState() {
     super.initState();
@@ -52,8 +55,8 @@ class _AppLifecycleMonitorState extends ConsumerState<AppLifecycleMonitor>
 
   void _startSyncMonitoring() {
     try {
-      final syncService = ref.read(syncServiceProvider);
-      syncService.startMonitoring();
+      _syncService = ref.read(syncServiceProvider);
+      _syncService?.startMonitoring();
     } catch (e) {
       // Provider might not be initialized yet, ignore
       if (kDebugMode) {
@@ -64,8 +67,7 @@ class _AppLifecycleMonitorState extends ConsumerState<AppLifecycleMonitor>
 
   void _stopSyncMonitoring() {
     try {
-      final syncService = ref.read(syncServiceProvider);
-      syncService.stopMonitoring();
+      _syncService?.stopMonitoring();
     } catch (e) {
       // Provider might not be initialized, ignore
       if (kDebugMode) {

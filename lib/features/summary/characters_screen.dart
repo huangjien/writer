@@ -9,7 +9,6 @@ import 'package:writer/repositories/remote_repository.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:writer/repositories/notes_repository.dart';
 import '../../state/providers.dart';
-import '../../main.dart';
 
 class CharactersScreen extends ConsumerStatefulWidget {
   const CharactersScreen({super.key, required this.novelId, this.idx});

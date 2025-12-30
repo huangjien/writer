@@ -3,10 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/reader/chapter_reader_screen.dart';
+import 'package:writer/helpers/fake_chapter_port.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/performance_settings.dart';
+import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/state/tts_settings.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 
@@ -22,8 +26,13 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
           ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
+          performanceSettingsProvider.overrideWith(
+            (ref) => PerformanceSettingsNotifier(prefs),
+          ),
+          chapterRepositoryProvider.overrideWithValue(FakeChapterPort()),
           aiChatServiceProvider.overrideWith(
             (ref) => AiChatService(RemoteRepository('http://localhost:5600/')),
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../repositories/remote_repository.dart';
+import '../repositories/local_storage_repository.dart';
 import '../services/prompts_service.dart';
 import '../services/patterns_service.dart';
 import '../services/vector_service.dart';
@@ -7,6 +8,13 @@ import '../services/story_lines_service.dart';
 import 'ai_service_settings.dart';
 import 'admin_settings.dart';
 import 'session_state.dart';
+import 'storage_service_provider.dart';
+
+// Export localStorageRepositoryProvider for use in tests
+export 'providers.dart' show localStorageRepositoryProvider;
+
+// Export sharedPreferencesProvider for use in tests
+export 'storage_service_provider.dart' show sharedPreferencesProvider;
 
 final isSignedInProvider = Provider<bool>((ref) {
   final sessionId = ref.watch(sessionProvider);
@@ -67,8 +75,12 @@ final vectorServiceProvider = Provider<VectorService>((ref) {
   } catch (_) {
     baseUrl = 'http://localhost:5600/';
   }
-  final sessionId = ref.watch(sessionProvider);
-  return VectorService(baseUrl: baseUrl, sessionId: sessionId);
+  return RemoteVectorService(baseUrl: baseUrl);
+});
+
+final localStorageRepositoryProvider = Provider<LocalStorageRepository>((ref) {
+  final storage = ref.watch(storageServiceProvider);
+  return LocalStorageRepository(storage);
 });
 
 final storyLinesServiceProvider = Provider<StoryLinesService>((ref) {

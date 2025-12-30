@@ -12,6 +12,7 @@ import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/tts_settings.dart';
+import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/repositories/chapter_port.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 
@@ -147,6 +148,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           motionSettingsProvider.overrideWith(
             (ref) => MotionSettingsNotifier(prefs),
           ),

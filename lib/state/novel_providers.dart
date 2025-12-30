@@ -5,7 +5,6 @@ import '../models/recent_progress_details.dart';
 import '../repositories/novel_repository.dart';
 import 'providers.dart';
 import 'progress_providers.dart';
-import '../main.dart';
 
 final novelsProvider = FutureProvider<List<Novel>>((ref) async {
   // Re-run when auth state changes to keep Library fresh after login/logout

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../state/performance_settings.dart';
-import '../../../main.dart';
+import '../../../state/providers.dart';
 
 class PerformanceSection extends ConsumerWidget {
   const PerformanceSection({super.key});

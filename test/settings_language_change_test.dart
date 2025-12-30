@@ -6,6 +6,7 @@ import 'package:writer/features/settings/settings_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/ai_service_settings.dart';
+import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/state/theme_controller.dart';
 
 void main() {
@@ -17,6 +18,7 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     final container = ProviderContainer(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
         themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
         aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),

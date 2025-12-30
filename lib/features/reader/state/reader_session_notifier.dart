@@ -19,7 +19,9 @@ final readerSessionProvider =
       ReaderSessionNotifier,
       ReaderSessionState
     >((ref) {
-      throw UnimplementedError('Must be overridden');
+      throw UnimplementedError(
+        'readerSessionProvider must be overridden (scoped) for the specific novel/session',
+      );
     });
 
 class ReaderSessionNotifier extends StateNotifier<ReaderSessionState> {

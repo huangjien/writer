@@ -75,5 +75,7 @@ class TtsSettingsNotifier extends StateNotifier<TtsSettings> {
 
 final ttsSettingsProvider =
     StateNotifierProvider<TtsSettingsNotifier, TtsSettings>((ref) {
-      throw UnimplementedError('Must be overridden');
+      throw UnimplementedError(
+        'ttsSettingsProvider must be overridden in ProviderScope/main.dart',
+      );
     });

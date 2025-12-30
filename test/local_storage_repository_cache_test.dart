@@ -6,6 +6,31 @@ import 'package:writer/models/novel.dart';
 import 'package:writer/models/character.dart';
 import 'package:writer/models/scene.dart';
 import 'package:writer/models/template.dart';
+import 'package:writer/services/storage_service.dart';
+
+class MockStorageService implements StorageService {
+  final Map<String, String> _data = {};
+
+  @override
+  String? getString(String key) => _data[key];
+
+  @override
+  Future<void> setString(String key, String? value) async {
+    if (value == null) {
+      _data.remove(key);
+    } else {
+      _data[key] = value;
+    }
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    _data.remove(key);
+  }
+
+  @override
+  Set<String> getKeys() => _data.keys.toSet();
+}
 
 void main() {
   setUp(() {
@@ -15,7 +40,7 @@ void main() {
   test(
     'save/get/remove ChapterCache and clearChapterCache shape filter',
     () async {
-      final repo = LocalStorageRepository();
+      final repo = LocalStorageRepository(MockStorageService());
       final c1 = ChapterCache(
         chapterId: 'c1',
         novelId: 'n1',
@@ -55,7 +80,7 @@ void main() {
   );
 
   test('save/get Library novels', () async {
-    final repo = LocalStorageRepository();
+    final repo = LocalStorageRepository(MockStorageService());
     final novels = [
       const Novel(
         id: 'n1',
@@ -83,7 +108,7 @@ void main() {
   });
 
   test('character form save/get and note payload save/get', () async {
-    final repo = LocalStorageRepository();
+    final repo = LocalStorageRepository(MockStorageService());
     final ch = const Character(
       novelId: 'n1',
       name: 'Alice',
@@ -110,7 +135,7 @@ void main() {
   });
 
   test('scene form save/get and listSceneNotes offline fallback', () async {
-    final repo = LocalStorageRepository();
+    final repo = LocalStorageRepository(MockStorageService());
     final scene = const Scene(
       novelId: 'n1',
       title: 'S1',
@@ -127,7 +152,7 @@ void main() {
   });
 
   test('template save/get and summary text save/get', () async {
-    final repo = LocalStorageRepository();
+    final repo = LocalStorageRepository(MockStorageService());
     final itemC = const TemplateItem(
       novelId: 'n1',
       name: 'Char',

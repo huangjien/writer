@@ -4,6 +4,7 @@ import 'package:writer/models/story_line.dart';
 import 'package:writer/services/story_lines_service.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/story_line_providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FakeStoryLinesService extends StoryLinesService {
   FakeStoryLinesService() : super(baseUrl: 'http://example.com');
@@ -31,11 +32,18 @@ class FakeStoryLinesService extends StoryLinesService {
 }
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   test('storyLinesProvider returns empty when signed out', () async {
     final fake = FakeStoryLinesService();
+    final prefs = await SharedPreferences.getInstance();
     final container = ProviderContainer(
       overrides: [
-        authStateProvider.overrideWith((_) => null),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        isSignedInProvider.overrideWithValue(false),
+        authStateProvider.overrideWithValue(null),
         storyLinesServiceRefProvider.overrideWith((_) => fake),
       ],
     );
@@ -48,9 +56,12 @@ void main() {
 
   test('storyLineByIdProvider returns null when signed out', () async {
     final fake = FakeStoryLinesService();
+    final prefs = await SharedPreferences.getInstance();
     final container = ProviderContainer(
       overrides: [
-        authStateProvider.overrideWith((_) => null),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        isSignedInProvider.overrideWithValue(false),
+        authStateProvider.overrideWithValue(null),
         storyLinesServiceRefProvider.overrideWith((_) => fake),
       ],
     );
@@ -63,10 +74,12 @@ void main() {
 
   test('storyLinesProvider calls service when signed in', () async {
     final fake = FakeStoryLinesService();
+    final prefs = await SharedPreferences.getInstance();
     final container = ProviderContainer(
       overrides: [
-        isSignedInProvider.overrideWith((_) => true),
-        authStateProvider.overrideWith((_) => 'session'),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        isSignedInProvider.overrideWithValue(true),
+        authStateProvider.overrideWithValue('session'),
         storyLinesServiceRefProvider.overrideWith((_) => fake),
       ],
     );
@@ -80,10 +93,12 @@ void main() {
 
   test('storyLineByIdProvider calls service when signed in', () async {
     final fake = FakeStoryLinesService();
+    final prefs = await SharedPreferences.getInstance();
     final container = ProviderContainer(
       overrides: [
-        isSignedInProvider.overrideWith((_) => true),
-        authStateProvider.overrideWith((_) => 'session'),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        isSignedInProvider.overrideWithValue(true),
+        authStateProvider.overrideWithValue('session'),
         storyLinesServiceRefProvider.overrideWith((_) => fake),
       ],
     );

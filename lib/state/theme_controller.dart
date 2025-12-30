@@ -254,5 +254,7 @@ final themeControllerProvider = StateNotifierProvider<ThemeController, ThemeStat
   ref,
 ) {
   // Will be overridden in main.dart with a real instance using SharedPreferences
-  throw UnimplementedError();
+  throw UnimplementedError(
+    'themeControllerProvider must be overridden in ProviderScope/main.dart',
+  );
 });

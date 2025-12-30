@@ -7,12 +7,14 @@ import 'chapter_port.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import '../repositories/local_storage_repository.dart';
-import '../main.dart';
+
 import '../services/offline_queue_service.dart';
 import '../services/network_monitor.dart';
 import '../models/offline_operation.dart';
 import '../common/errors/offline_exception.dart';
 import '../state/network_monitor_provider.dart';
+import '../state/providers.dart';
+import '../services/connectivity_checker.dart';
 
 final chapterRepositoryProvider = Provider<ChapterPort>((ref) {
   final remote = ref.watch(remoteRepositoryProvider);
@@ -39,7 +41,8 @@ class ChapterRepository implements ChapterPort {
     OfflineQueueService? offlineQueue,
     NetworkMonitor? networkMonitor,
   }) : _offlineQueue = offlineQueue ?? OfflineQueueService(),
-       _networkMonitor = networkMonitor ?? NetworkMonitor();
+       _networkMonitor =
+           networkMonitor ?? NetworkMonitor(RealConnectivityChecker());
 
   @override
   Future<List<Chapter>> getChapters(String novelId) async {

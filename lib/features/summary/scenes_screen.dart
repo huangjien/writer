@@ -9,7 +9,7 @@ import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/models/scene_template_row.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/repositories/template_repository.dart';
-import '../../main.dart';
+
 import '../../models/scene.dart';
 import 'package:writer/repositories/notes_repository.dart';
 import '../../state/providers.dart';

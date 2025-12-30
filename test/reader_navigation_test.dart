@@ -7,6 +7,8 @@ import 'package:writer/state/app_settings.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/features/reader/reader_screen.dart';
 import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/state/theme_controller.dart';
 
 void main() {
   testWidgets(
@@ -36,6 +38,11 @@ void main() {
         ProviderScope(
           overrides: [
             appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
+            themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            isSignedInProvider.overrideWithValue(false),
+            authStateProvider.overrideWithValue(null),
+            currentUserProvider.overrideWith((ref) async => null),
             chaptersProvider.overrideWith((ref, novelId) async => chapters),
           ],
           child: MaterialApp(

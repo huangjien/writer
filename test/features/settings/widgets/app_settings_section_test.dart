@@ -8,6 +8,10 @@ import 'package:writer/state/motion_settings.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:writer/state/session_state.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/state/storage_service_provider.dart';
 
 void main() {
   testWidgets('AppSettingsSection renders correctly', (
@@ -15,10 +19,18 @@ void main() {
   ) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
+    final storageService = LocalStorageService(prefs);
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          localStorageRepositoryProvider.overrideWithValue(
+            LocalStorageRepository(storageService),
+          ),
+          sessionProvider.overrideWith(
+            (ref) => SessionNotifier(storageService),
+          ),
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
           motionSettingsProvider.overrideWith(
@@ -50,10 +62,18 @@ void main() {
   testWidgets('AppSettingsSection changes language', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
+    final storageService = LocalStorageService(prefs);
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          localStorageRepositoryProvider.overrideWithValue(
+            LocalStorageRepository(storageService),
+          ),
+          sessionProvider.overrideWith(
+            (ref) => SessionNotifier(storageService),
+          ),
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
           motionSettingsProvider.overrideWith(
@@ -99,10 +119,18 @@ void main() {
   testWidgets('AppSettingsSection changes theme', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
+    final storageService = LocalStorageService(prefs);
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          localStorageRepositoryProvider.overrideWithValue(
+            LocalStorageRepository(storageService),
+          ),
+          sessionProvider.overrideWith(
+            (ref) => SessionNotifier(storageService),
+          ),
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
           motionSettingsProvider.overrideWith(
@@ -138,10 +166,18 @@ void main() {
   testWidgets('AppSettingsSection opens AI Service URL dialog', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
+    final storageService = LocalStorageService(prefs);
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          localStorageRepositoryProvider.overrideWithValue(
+            LocalStorageRepository(storageService),
+          ),
+          sessionProvider.overrideWith(
+            (ref) => SessionNotifier(storageService),
+          ),
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
           motionSettingsProvider.overrideWith(

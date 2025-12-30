@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/features/library/create_novel_screen.dart';
 import 'package:writer/state/session_state.dart';
+import 'package:writer/state/storage_service_provider.dart';
 
 void main() {
   testWidgets('Enabled path renders form and validates cover URL', (
     tester,
   ) async {
-    final session = SessionNotifier();
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final storageService = LocalStorageService(prefs);
+    final session = SessionNotifier(storageService);
     await session.setSessionId('test-session-id');
 
     await tester.pumpWidget(

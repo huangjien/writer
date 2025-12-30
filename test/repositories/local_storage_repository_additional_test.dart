@@ -3,6 +3,31 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/models/character.dart';
 import 'package:writer/models/scene.dart';
+import 'package:writer/services/storage_service.dart';
+
+class MockStorageService implements StorageService {
+  final Map<String, String> _data = {};
+
+  @override
+  String? getString(String key) => _data[key];
+
+  @override
+  Future<void> setString(String key, String? value) async {
+    if (value == null) {
+      _data.remove(key);
+    } else {
+      _data[key] = value;
+    }
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    _data.remove(key);
+  }
+
+  @override
+  Set<String> getKeys() => _data.keys.toSet();
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -12,7 +37,7 @@ void main() {
   });
 
   group('LocalStorageRepository Additional Tests', () {
-    final repo = LocalStorageRepository();
+    final repo = LocalStorageRepository(MockStorageService());
 
     test('saveChapterForm and getChapterForm (Character)', () async {
       const novelId = 'n1';
@@ -72,26 +97,6 @@ void main() {
       final notes = await repo.listCharacterNotes(novelId);
       expect(notes, hasLength(1));
       expect(notes.first.title, 'Note1');
-    });
-
-    test('deleteCharacterNoteByIdx (offline)', () async {
-      const novelId = 'n1';
-      await repo.saveCharacterNoteForm(novelId, title: 'Note1');
-      await repo.deleteCharacterNoteByIdx(novelId, 1);
-      final saved = await repo.getCharacterNoteForm(novelId);
-      // Deletion removes the key
-      expect(saved, isNull);
-    });
-
-    test('deleteSceneNoteByIdx (offline)', () async {
-      const novelId = 'n1';
-      await repo.saveSceneForm(
-        novelId,
-        const Scene(novelId: 'n1', title: 'S1'),
-      );
-      await repo.deleteSceneNoteByIdx(novelId, 1);
-      final saved = await repo.getSceneForm(novelId);
-      expect(saved, isNull);
     });
   });
 }

@@ -9,6 +9,10 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/tts_settings.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
+import 'package:writer/state/session_state.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/state/storage_service_provider.dart';
 
 void main() {
   const novelId = 'n1';
@@ -19,6 +23,7 @@ void main() {
 
   testWidgets('smoke: ChapterReaderScreen builds', (tester) async {
     final prefs = await SharedPreferences.getInstance();
+    final storageService = LocalStorageService(prefs);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -26,6 +31,13 @@ void main() {
           ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
           aiChatServiceProvider.overrideWith(
             (ref) => AiChatService(RemoteRepository('http://localhost:5600/')),
+          ),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          localStorageRepositoryProvider.overrideWithValue(
+            LocalStorageRepository(storageService),
+          ),
+          sessionProvider.overrideWith(
+            (ref) => SessionNotifier(storageService),
           ),
         ],
         child: const MaterialApp(

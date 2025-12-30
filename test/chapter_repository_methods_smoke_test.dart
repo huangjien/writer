@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/state/storage_service_provider.dart';
 
 void main() {
   test('ChapterRepository constructs and getNextIdx returns int', () async {
@@ -19,7 +20,9 @@ void main() {
       return http.Response('not found', 404);
     });
     final remote = RemoteRepository('http://example.com', client: client);
-    final local = LocalStorageRepository();
+    final prefs = await SharedPreferences.getInstance();
+    final storageService = LocalStorageService(prefs);
+    final local = LocalStorageRepository(storageService);
     final repo = ChapterRepository(remote, local);
     expect(await repo.getNextIdx('non-existent'), isA<int>());
   });

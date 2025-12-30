@@ -3,26 +3,39 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:writer/main.dart' as app_main;
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/tts_settings.dart';
+import 'package:writer/state/providers.dart';
 import 'package:writer/app.dart';
 
 void main() {
-  test('localStorageRepositoryProvider provides LocalStorageRepository', () {
-    final container = ProviderContainer();
-    addTearDown(container.dispose);
-    final repo = container.read(app_main.localStorageRepositoryProvider);
-    expect(repo, isA<LocalStorageRepository>());
-  });
+  test(
+    'localStorageRepositoryProvider provides LocalStorageRepository',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final container = ProviderContainer(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      );
+      addTearDown(container.dispose);
+      final repo = container.read(localStorageRepositoryProvider);
+      expect(repo, isA<LocalStorageRepository>());
+    },
+  );
 
   group('main function component tests', () {
     testWidgets('main function initializes app with providers', (tester) async {
       SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
 
-      await tester.pumpWidget(const ProviderScope(child: App()));
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+          child: const App(),
+        ),
+      );
 
       await tester.pumpAndSettle();
 
@@ -90,6 +103,7 @@ void main() {
 
       final providerScope = ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
         ],
         child: const App(),

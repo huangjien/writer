@@ -9,7 +9,11 @@ import 'package:writer/models/pattern.dart';
 import 'package:writer/screens/pattern_form_screen.dart';
 import 'package:writer/state/pattern_providers.dart';
 import 'package:writer/state/providers.dart';
+
+import 'package:writer/state/theme_controller.dart';
+import 'package:writer/state/app_settings.dart';
 import 'package:writer/services/patterns_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FakePatternsService extends PatternsService {
   FakePatternsService() : super(baseUrl: 'http://example.com');
@@ -147,14 +151,36 @@ void main() {
     registerFallbackValue(<String, dynamic>{});
   });
 
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
+  createCommonOverrides(
+    SharedPreferences prefs,
+    FakePatternsService svc, {
+    bool isSignedIn = false,
+    String? authState,
+    Future<BackendUser?> Function(Ref)? currentUser,
+    bool isAdmin = false,
+  }) {
+    return [
+      appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
+      themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
+      sharedPreferencesProvider.overrideWithValue(prefs),
+      isSignedInProvider.overrideWithValue(isSignedIn),
+      authStateProvider.overrideWithValue(authState),
+      currentUserProvider.overrideWith(currentUser ?? (ref) async => null),
+      patternsServiceRefProvider.overrideWith((_) => svc),
+      isAdminProvider.overrideWithValue(isAdmin),
+    ];
+  }
+
   testWidgets('PatternFormScreen requires title and content', (tester) async {
     final svc = FakePatternsService();
+    final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          patternsServiceRefProvider.overrideWith((_) => svc),
-          isAdminProvider.overrideWithValue(false),
-        ],
+        overrides: createCommonOverrides(prefs, svc),
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -170,12 +196,10 @@ void main() {
 
   testWidgets('PatternFormScreen create calls repository', (tester) async {
     final svc = FakePatternsService();
+    final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          patternsServiceRefProvider.overrideWith((_) => svc),
-          isAdminProvider.overrideWithValue(false),
-        ],
+        overrides: createCommonOverrides(prefs, svc),
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -212,12 +236,10 @@ void main() {
 
   testWidgets('PatternFormScreen invalid JSON shows error', (tester) async {
     final svc = FakePatternsService();
+    final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          patternsServiceRefProvider.overrideWith((_) => svc),
-          isAdminProvider.overrideWithValue(false),
-        ],
+        overrides: createCommonOverrides(prefs, svc),
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -252,6 +274,7 @@ void main() {
 
   testWidgets('PatternFormScreen edit calls update', (tester) async {
     final svc = FakePatternsService();
+    final prefs = await SharedPreferences.getInstance();
     final initial = const Pattern(
       id: 'p1',
       title: 'Old',
@@ -261,10 +284,7 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          patternsServiceRefProvider.overrideWith((_) => svc),
-          isAdminProvider.overrideWithValue(false),
-        ],
+        overrides: createCommonOverrides(prefs, svc),
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -292,6 +312,7 @@ void main() {
     tester,
   ) async {
     final svc = FakePatternsService();
+    final prefs = await SharedPreferences.getInstance();
     final initial = const Pattern(
       id: 'p1',
       title: 'Old',
@@ -300,10 +321,7 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          patternsServiceRefProvider.overrideWith((_) => svc),
-          isAdminProvider.overrideWithValue(false),
-        ],
+        overrides: createCommonOverrides(prefs, svc),
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -338,6 +356,7 @@ void main() {
     tester,
   ) async {
     final svc = FakePatternsService();
+    final prefs = await SharedPreferences.getInstance();
     final initial = const Pattern(
       id: 'p1',
       title: 'Old',
@@ -346,10 +365,7 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          patternsServiceRefProvider.overrideWith((_) => svc),
-          isAdminProvider.overrideWithValue(false),
-        ],
+        overrides: createCommonOverrides(prefs, svc),
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -384,15 +400,13 @@ void main() {
 
   testWidgets('PatternFormScreen shows spinner during save', (tester) async {
     final svc = FakePatternsService();
+    final prefs = await SharedPreferences.getInstance();
     svc.pauseSave();
 
     final initial = const Pattern(id: 'p1', title: 'Old', content: 'A');
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          patternsServiceRefProvider.overrideWith((_) => svc),
-          isAdminProvider.overrideWithValue(false),
-        ],
+        overrides: createCommonOverrides(prefs, svc),
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -434,6 +448,7 @@ void main() {
     tester,
   ) async {
     final svc = FakePatternsService();
+    final prefs = await SharedPreferences.getInstance();
     svc.improveResponse = <String, dynamic>{
       'title': 'Better',
       'description': 'D2',
@@ -446,10 +461,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          patternsServiceRefProvider.overrideWith((_) => svc),
-          isAdminProvider.overrideWithValue(false),
-        ],
+        overrides: createCommonOverrides(prefs, svc),
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -475,13 +487,11 @@ void main() {
 
   testWidgets('PatternFormScreen AI error shows message', (tester) async {
     final svc = FakePatternsService();
+    final prefs = await SharedPreferences.getInstance();
     svc.improveError = Exception('Boom');
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          patternsServiceRefProvider.overrideWith((_) => svc),
-          isAdminProvider.overrideWithValue(false),
-        ],
+        overrides: createCommonOverrides(prefs, svc),
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,

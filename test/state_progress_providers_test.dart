@@ -4,6 +4,7 @@ import 'package:writer/state/progress_providers.dart' as pp;
 import 'package:writer/models/user_progress.dart';
 import 'package:writer/repositories/progress_port.dart';
 import 'package:writer/state/providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FakeProgressRepo implements ProgressPort {
   @override
@@ -26,9 +27,16 @@ class FakeProgressRepo implements ProgressPort {
 }
 
 void main() {
+  setUp(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
+  });
+
   test('lastProgressProvider returns value from repo', () async {
+    final prefs = await SharedPreferences.getInstance();
     final container = ProviderContainer(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         pp.progressRepositoryProvider.overrideWith((_) => FakeProgressRepo()),
         isSignedInProvider.overrideWith((_) => true),
       ],

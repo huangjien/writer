@@ -5,6 +5,31 @@ import 'package:writer/models/character.dart';
 import 'package:writer/models/scene.dart';
 import 'package:writer/models/chapter_cache.dart';
 import 'package:writer/models/novel.dart';
+import 'package:writer/services/storage_service.dart';
+
+class MockStorageService implements StorageService {
+  final Map<String, String> _data = {};
+
+  @override
+  String? getString(String key) => _data[key];
+
+  @override
+  Future<void> setString(String key, String? value) async {
+    if (value == null) {
+      _data.remove(key);
+    } else {
+      _data[key] = value;
+    }
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    _data.remove(key);
+  }
+
+  @override
+  Set<String> getKeys() => _data.keys.toSet();
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +40,7 @@ void main() {
 
   group('LocalStorageRepository character notes', () {
     test('save/get character note form via local storage', () async {
-      final repo = LocalStorageRepository();
+      final repo = LocalStorageRepository(MockStorageService());
       await repo.saveCharacterNoteForm(
         'novel1',
         title: 'Protagonist',
@@ -36,13 +61,13 @@ void main() {
       expect(list.first.idx, 1);
       expect(list.first.title, 'Protagonist');
 
-      await repo.deleteCharacterNoteByIdx('novel1', 1);
+      await repo.deleteCharacterNoteForm('novel1');
       final afterDelete = await repo.listCharacterNotes('novel1');
       expect(afterDelete, isEmpty);
     });
 
     test('character form save/get via local storage', () async {
-      final repo = LocalStorageRepository();
+      final repo = LocalStorageRepository(MockStorageService());
       final c = Character(
         novelId: 'n1',
         name: 'Alice',
@@ -58,7 +83,7 @@ void main() {
     });
 
     test('nextCharacterIdx returns 2 when cloud sync disabled', () async {
-      final repo = LocalStorageRepository();
+      final repo = LocalStorageRepository(MockStorageService());
       final next = await repo.nextCharacterIdx('n1');
       expect(next, 2);
     });
@@ -66,7 +91,7 @@ void main() {
 
   group('LocalStorageRepository scenes', () {
     test('save/get scene form via local storage', () async {
-      final repo = LocalStorageRepository();
+      final repo = LocalStorageRepository(MockStorageService());
       final scene = Scene(
         novelId: 'n1',
         title: 'Opening',
@@ -85,13 +110,13 @@ void main() {
       expect(list.first.idx, 1);
       expect(list.first.title, 'Opening');
 
-      await repo.deleteSceneNoteByIdx('n1', 1);
+      await repo.deleteSceneForm('n1');
       final afterDelete = await repo.listSceneNotes('n1');
       expect(afterDelete, isEmpty);
     });
 
     test('nextSceneIdx returns 2 when cloud sync disabled', () async {
-      final repo = LocalStorageRepository();
+      final repo = LocalStorageRepository(MockStorageService());
       final next = await repo.nextSceneIdx('n1');
       expect(next, 2);
     });
@@ -99,14 +124,14 @@ void main() {
 
   group('LocalStorageRepository summary and chapters', () {
     test('save/get summary text via local storage', () async {
-      final repo = LocalStorageRepository();
+      final repo = LocalStorageRepository(MockStorageService());
       await repo.saveSummaryText('n1', 'Summary text');
       final got = await repo.getSummaryText('n1');
       expect(got, 'Summary text');
     });
 
     test('save/get/clear ChapterCache via local storage', () async {
-      final repo = LocalStorageRepository();
+      final repo = LocalStorageRepository(MockStorageService());
       final cache = ChapterCache(
         chapterId: 'c1',
         novelId: 'n1',
@@ -129,7 +154,7 @@ void main() {
 
   group('LocalStorageRepository library novels cache', () {
     test('save/get library novels', () async {
-      final repo = LocalStorageRepository();
+      final repo = LocalStorageRepository(MockStorageService());
       final novels = [
         Novel(
           id: 'a',

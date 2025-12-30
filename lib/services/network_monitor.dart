@@ -1,41 +1,38 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import '../services/connectivity_checker.dart';
 
+/// Monitor for network connectivity
+///
+/// This class monitors network connectivity using the ConnectivityChecker abstraction.
 class NetworkMonitor {
+  final ConnectivityChecker _connectivityChecker;
   final StreamController<bool> _connectivityController;
   bool _isOnline = true;
-  Timer? _debounceTimer;
-  StreamSubscription<List<ConnectivityResult>>? _subscription;
 
-  NetworkMonitor()
+  NetworkMonitor(this._connectivityChecker)
     : _connectivityController = StreamController<bool>.broadcast();
 
   /// Current online status
   bool get isOnline => _isOnline;
 
-  /// Stream of connectivity changes (debounced by 2 seconds)
+  /// Stream of connectivity changes
   Stream<bool> get connectivityStream => _connectivityController.stream;
 
   /// Check if currently connected (synchronous check)
   Future<bool> get isConnected async {
-    final connectivity = Connectivity();
-    final results = await connectivity.checkConnectivity();
-    return results.any((result) => result != ConnectivityResult.none);
+    return await _connectivityChecker.checkConnectivity();
   }
 
   /// Start monitoring network connectivity
   void startMonitoring() {
-    final connectivity = Connectivity();
-    _subscription = connectivity.onConnectivityChanged.listen(
-      _onConnectivityChanged,
-    );
+    _connectivityChecker.onConnectivityChanged.listen(_onConnectivityChanged);
     _updateConnectivity();
   }
 
   /// Stop monitoring network connectivity
   void stopMonitoring() {
-    _debounceTimer?.cancel();
-    _subscription?.cancel();
+    _connectivityController.close();
   }
 
   void _onConnectivityChanged(List<ConnectivityResult> results) {
@@ -51,17 +48,14 @@ class NetworkMonitor {
     }
   }
 
-  void _updateConnectivity() async {
-    final connectivity = Connectivity();
-    final List<ConnectivityResult> results = await connectivity
-        .checkConnectivity();
-    _onConnectivityChanged(results);
+  Future<void> _updateConnectivity() async {
+    // Initial check
+    _isOnline = await _connectivityChecker.checkConnectivity();
+    _connectivityController.add(_isOnline);
   }
 
   /// Dispose resources
   void dispose() {
-    _debounceTimer?.cancel();
-    _subscription?.cancel();
     _connectivityController.close();
   }
 }

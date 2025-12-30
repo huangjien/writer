@@ -9,13 +9,19 @@ import 'package:writer/models/novel.dart';
 import 'package:writer/models/user_progress.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
+import 'package:writer/state/storage_service_provider.dart';
+import 'flutter_test_config.dart';
 
 void main() {
+  tearDown(() async {
+    await resetSharedPreferences();
+  });
   testWidgets('0% ring with Not started when no progress exists', (
     tester,
   ) async {
     // Ensure a clean preferences state
     SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
 
     final novels = <Novel>[
       const Novel(
@@ -32,6 +38,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           libraryNovelsProvider.overrideWith((ref) async => novels),
           memberNovelsProvider.overrideWith((ref) async => const []),
           chaptersProvider.overrideWith((ref, novelId) async {
@@ -77,6 +84,7 @@ void main() {
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
 
     final novels = <Novel>[
       const Novel(
@@ -96,6 +104,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           libraryNovelsProvider.overrideWith((ref) async => novels),
           memberNovelsProvider.overrideWith((ref) async => const []),
           chaptersProvider.overrideWith((ref, novelId) async {

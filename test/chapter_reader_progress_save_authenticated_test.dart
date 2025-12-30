@@ -12,6 +12,7 @@ import 'package:writer/models/user_progress.dart';
 import 'package:writer/features/reader/state/reader_session_notifier.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/session_state.dart';
+import 'package:writer/state/storage_service_provider.dart';
 
 class CapturingProgressPort implements ProgressPort {
   int saveCalls = 0;
@@ -50,7 +51,8 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     final appNotifier = AppSettingsNotifier(prefs);
     final fakeRepo = CapturingProgressPort();
-    final sessionNotifier = SessionNotifier(prefs);
+    final storageService = LocalStorageService(prefs);
+    final sessionNotifier = SessionNotifier(storageService);
     await sessionNotifier.setSessionId('test-session');
 
     await tester.pumpWidget(

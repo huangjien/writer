@@ -14,12 +14,27 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/session_state.dart';
+import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/tts_settings.dart';
 import 'package:writer/state/ai_service_settings.dart';
+import 'package:writer/state/user_state.dart';
+import 'package:writer/state/progress_providers.dart';
+import 'package:writer/repositories/user_repository.dart';
+import 'package:writer/models/user.dart';
 import 'package:writer/theme/font_packs.dart';
 import 'package:writer/theme/reader_typography.dart';
 import 'package:writer/theme/themes.dart';
+
+class MockUserRepository implements UserRepository {
+  @override
+  Future<User?> fetchUser(String sessionId) async {
+    if (sessionId == 'test-session') {
+      return User(id: 'u1', email: 'a@b.com', isAdmin: false);
+    }
+    return null;
+  }
+}
 
 void main() {
   setUp(() {
@@ -33,6 +48,7 @@ void main() {
       ProviderScope(
         overrides: [
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
+          sharedPreferencesProvider.overrideWithValue(prefs),
           themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
           ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
           aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
@@ -99,6 +115,7 @@ void main() {
       ProviderScope(
         overrides: [
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
+          sharedPreferencesProvider.overrideWithValue(prefs),
           themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
           ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
           aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
@@ -125,6 +142,7 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
+        sharedPreferencesProvider.overrideWithValue(prefs),
         themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
         ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
         aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
@@ -170,13 +188,17 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     final themeController = ThemeController(prefs);
 
-    final sessionNotifier = SessionNotifier(prefs);
+    final storageService = LocalStorageService(prefs);
+    final sessionNotifier = SessionNotifier(storageService);
     await sessionNotifier.setSessionId('test-session');
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           sessionProvider.overrideWith((ref) => sessionNotifier),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          userRepositoryProvider.overrideWithValue(MockUserRepository()),
+          latestUserProgressProvider.overrideWith((ref) async => null),
           currentUserProvider.overrideWith((ref) async {
             final sid = ref.watch(sessionProvider);
             if (sid == null || sid.isEmpty) return null;

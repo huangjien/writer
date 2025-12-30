@@ -8,6 +8,11 @@ import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/tts_settings.dart';
+import 'package:writer/state/motion_settings.dart';
+import 'package:writer/state/storage_service_provider.dart';
+import 'package:writer/state/session_state.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 
 void main() {
@@ -19,13 +24,29 @@ void main() {
 
   testWidgets('end drawer opens via menu button', (tester) async {
     final prefs = await SharedPreferences.getInstance();
+    final appSettings = AppSettingsNotifier(prefs);
+    final ttsSettings = TtsSettingsNotifier(prefs);
+    final motion = MotionSettingsNotifier(prefs);
+    final storageService = LocalStorageService(prefs);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
-          ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
+          // Standard provider overrides
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          localStorageRepositoryProvider.overrideWithValue(
+            LocalStorageRepository(storageService),
+          ),
+          sessionProvider.overrideWith(
+            (ref) => SessionNotifier(storageService),
+          ),
+          appSettingsProvider.overrideWith((ref) => appSettings),
+          ttsSettingsProvider.overrideWith((ref) => ttsSettings),
+          motionSettingsProvider.overrideWith((ref) => motion),
+          remoteRepositoryProvider.overrideWith(
+            (ref) => RemoteRepository('http://localhost:5600/'),
+          ),
           aiChatServiceProvider.overrideWith(
-            (ref) => AiChatService(RemoteRepository('http://localhost:5600/')),
+            (ref) => AiChatService(ref.read(remoteRepositoryProvider)),
           ),
         ],
         child: const MaterialApp(

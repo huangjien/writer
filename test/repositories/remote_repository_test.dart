@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/state/ai_service_settings.dart';
+import 'package:writer/state/storage_service_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -13,8 +14,11 @@ void main() {
   });
 
   group('remoteRepositoryProvider', () {
-    test('falls back when aiServiceProvider is not overridden', () {
-      final container = ProviderContainer();
+    test('falls back when aiServiceProvider is not overridden', () async {
+      final prefs = await SharedPreferences.getInstance();
+      final container = ProviderContainer(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      );
       addTearDown(container.dispose);
 
       final repo = container.read(remoteRepositoryProvider);
@@ -27,6 +31,7 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           aiServiceProvider.overrideWith((ref) => AiServiceNotifier(prefs)),
         ],
       );

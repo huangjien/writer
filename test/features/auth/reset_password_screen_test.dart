@@ -5,12 +5,38 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:writer/features/auth/reset_password_screen.dart';
+import 'package:writer/services/storage_service.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+class MockStorageService implements StorageService {
+  String? _sessionId;
+
+  @override
+  String? getString(String key) =>
+      key == 'backend_session_id' ? _sessionId : null;
+
+  @override
+  Future<void> setString(String key, String? value) async {
+    if (key == 'backend_session_id') {
+      _sessionId = value;
+    }
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    if (key == 'backend_session_id') {
+      _sessionId = null;
+    }
+  }
+
+  @override
+  Set<String> getKeys() => {'backend_session_id'};
+}
+
 class MockSessionNotifier extends SessionNotifier {
-  MockSessionNotifier(String? initial) : super(null) {
+  MockSessionNotifier(String? initial) : super(MockStorageService()) {
     state = initial;
   }
 }

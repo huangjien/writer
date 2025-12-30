@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/state/edit_permissions.dart';
+import 'package:writer/state/providers.dart';
 
 void main() {
   group('editPermissionsProvider maps role to canEdit', () {
@@ -8,6 +9,7 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           editRoleProvider.overrideWith((ref, novelId) async => EditRole.owner),
+          authStateProvider.overrideWithValue('test-user'),
         ],
       );
       addTearDown(container.dispose);
@@ -23,6 +25,7 @@ void main() {
           editRoleProvider.overrideWith(
             (ref, novelId) async => EditRole.contributor,
           ),
+          authStateProvider.overrideWithValue('test-user'),
         ],
       );
       addTearDown(container.dispose);
@@ -36,6 +39,7 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           editRoleProvider.overrideWith((ref, novelId) async => EditRole.none),
+          authStateProvider.overrideWithValue('test-user'),
         ],
       );
       addTearDown(container.dispose);

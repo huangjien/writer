@@ -42,6 +42,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           // Authentication providers
           isSignedInProvider.overrideWith((ref) => false),
           isAdminProvider.overrideWith((ref) => false),

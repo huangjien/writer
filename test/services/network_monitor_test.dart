@@ -1,17 +1,35 @@
 import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/services/network_monitor.dart';
+import 'package:writer/services/connectivity_checker.dart';
+
+class MockConnectivityChecker implements ConnectivityChecker {
+  final _controller = StreamController<List<ConnectivityResult>>.broadcast();
+
+  @override
+  Future<bool> checkConnectivity() async => true;
+
+  @override
+  Stream<List<ConnectivityResult>> get onConnectivityChanged =>
+      _controller.stream;
+
+  void dispose() => _controller.close();
+}
 
 void main() {
   group('NetworkMonitor', () {
     late NetworkMonitor networkMonitor;
+    late MockConnectivityChecker mockChecker;
 
     setUp(() {
-      networkMonitor = NetworkMonitor();
+      mockChecker = MockConnectivityChecker();
+      networkMonitor = NetworkMonitor(mockChecker);
     });
 
     tearDown(() {
       networkMonitor.dispose();
+      mockChecker.dispose();
     });
 
     test('should initialize with isOnline = true', () {
@@ -23,31 +41,38 @@ void main() {
     });
 
     test('should dispose properly', () {
-      final monitor = NetworkMonitor();
+      final checker = MockConnectivityChecker();
+      final monitor = NetworkMonitor(checker);
 
       // Should not throw when disposing
       expect(() => monitor.dispose(), returnsNormally);
+      checker.dispose();
     });
 
     test('should handle disposal without prior start/stop', () {
-      final monitor = NetworkMonitor();
+      final checker = MockConnectivityChecker();
+      final monitor = NetworkMonitor(checker);
       monitor.dispose();
 
       // Should not throw
       expect(() => monitor.dispose(), returnsNormally);
+      checker.dispose();
     });
 
     test('should handle multiple disposals', () {
-      final monitor = NetworkMonitor();
+      final checker = MockConnectivityChecker();
+      final monitor = NetworkMonitor(checker);
       monitor.dispose();
       monitor.dispose();
 
       // Should not throw
       expect(() => monitor.dispose(), returnsNormally);
+      checker.dispose();
     });
 
     test('should maintain consistent isOnline state', () {
-      final monitor = NetworkMonitor();
+      final checker = MockConnectivityChecker();
+      final monitor = NetworkMonitor(checker);
       final initialOnline = monitor.isOnline;
 
       // State should remain consistent
@@ -55,6 +80,7 @@ void main() {
 
       monitor.dispose();
       expect(monitor.isOnline, equals(initialOnline));
+      checker.dispose();
     });
 
     test(
@@ -148,8 +174,10 @@ void main() {
 
     test('should handle rapid disposal', () {
       for (int i = 0; i < 5; i++) {
-        final monitor = NetworkMonitor();
+        final checker = MockConnectivityChecker();
+        final monitor = NetworkMonitor(checker);
         monitor.dispose();
+        checker.dispose();
       }
 
       // Should not throw

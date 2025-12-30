@@ -170,12 +170,18 @@ void main() {
     verify(() => remote.delete('novels/n1')).called(1);
   });
 
-  test('addContributor is a no-op', () async {
-    await repo.addContributor(novelId: 'n1', userId: 'u1');
+  test('addContributor throws UnimplementedError', () async {
+    expect(
+      () => repo.addContributor(novelId: 'n1', userId: 'u1'),
+      throwsA(isA<UnimplementedError>()),
+    );
   });
 
-  test('addContributorByEmail is a no-op', () async {
-    await repo.addContributorByEmail(novelId: 'n1', email: 'e');
+  test('addContributorByEmail throws UnimplementedError', () async {
+    expect(
+      () => repo.addContributorByEmail(novelId: 'n1', email: 'e'),
+      throwsA(isA<UnimplementedError>()),
+    );
   });
 
   test('fetchSummaries maps list result', () async {

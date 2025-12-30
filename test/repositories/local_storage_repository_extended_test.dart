@@ -2,6 +2,31 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/models/chapter_cache.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/services/storage_service.dart';
+
+class MockStorageService implements StorageService {
+  final Map<String, String> _data = {};
+
+  @override
+  String? getString(String key) => _data[key];
+
+  @override
+  Future<void> setString(String key, String? value) async {
+    if (value == null) {
+      _data.remove(key);
+    } else {
+      _data[key] = value;
+    }
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    _data.remove(key);
+  }
+
+  @override
+  Set<String> getKeys() => _data.keys.toSet();
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -12,7 +37,7 @@ void main() {
 
   group('LocalStorageRepository Extended', () {
     test('saveChapters saves multiple chapters', () async {
-      final repo = LocalStorageRepository();
+      final repo = LocalStorageRepository(MockStorageService());
       final c1 = ChapterCache(
         chapterId: 'c1',
         novelId: 'n1',
@@ -42,7 +67,7 @@ void main() {
     });
 
     test('removeChapter removes chapter', () async {
-      final repo = LocalStorageRepository();
+      final repo = LocalStorageRepository(MockStorageService());
       final c1 = ChapterCache(
         chapterId: 'c1',
         novelId: 'n1',

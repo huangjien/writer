@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/tts_settings.dart';
+import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/features/reader/reader_screen.dart';
 
 void main() {
@@ -39,6 +40,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           appSettingsProvider.overrideWith((_) => appNotifier),
           ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
         ],
@@ -82,6 +84,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           appSettingsProvider.overrideWith((_) => appNotifier),
           ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
         ],
@@ -122,6 +125,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
             appSettingsProvider.overrideWith((_) => appNotifier),
             ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
           ],

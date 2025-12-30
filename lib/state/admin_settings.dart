@@ -25,5 +25,7 @@ class AdminModeNotifier extends StateNotifier<bool> {
 
 final adminModeProvider = StateNotifierProvider<AdminModeNotifier, bool>((ref) {
   // This will be overridden in main.dart
-  throw UnimplementedError();
+  throw UnimplementedError(
+    'adminModeProvider must be overridden in ProviderScope/main.dart',
+  );
 });

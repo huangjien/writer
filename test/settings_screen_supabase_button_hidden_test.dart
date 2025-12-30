@@ -8,6 +8,11 @@ import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/motion_settings.dart';
+import 'package:writer/state/storage_service_provider.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/state/session_state.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/state/tts_settings.dart';
 
 void main() {
   setUp(() {
@@ -16,15 +21,27 @@ void main() {
 
   testWidgets('Login/logout not shown when signed out', (tester) async {
     final prefs = await SharedPreferences.getInstance();
+    final appSettings = AppSettingsNotifier(prefs);
+    final themeController = ThemeController(prefs);
+    final aiService = AiServiceNotifier(prefs);
+    final motion = MotionSettingsNotifier(null);
+    final ttsSettings = TtsSettingsNotifier(prefs);
+    final storageService = LocalStorageService(prefs);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
-          themeControllerProvider.overrideWith((ref) => ThemeController(prefs)),
-          aiServiceProvider.overrideWith((ref) => AiServiceNotifier(prefs)),
-          motionSettingsProvider.overrideWith(
-            (ref) => MotionSettingsNotifier(null),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          localStorageRepositoryProvider.overrideWithValue(
+            LocalStorageRepository(storageService),
           ),
+          sessionProvider.overrideWith(
+            (ref) => SessionNotifier(storageService),
+          ),
+          appSettingsProvider.overrideWith((ref) => appSettings),
+          themeControllerProvider.overrideWith((ref) => themeController),
+          aiServiceProvider.overrideWith((ref) => aiService),
+          motionSettingsProvider.overrideWith((ref) => motion),
+          ttsSettingsProvider.overrideWith((ref) => ttsSettings),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

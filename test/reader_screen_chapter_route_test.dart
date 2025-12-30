@@ -8,6 +8,9 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/mock_providers.dart';
 import 'package:writer/state/novel_providers.dart';
+import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
+import 'package:writer/state/theme_controller.dart';
+import 'package:writer/state/providers.dart';
 
 void main() {
   const novelId = 'n1';
@@ -26,6 +29,12 @@ void main() {
       ProviderScope(
         overrides: [
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
+          themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          isSignedInProvider.overrideWith((_) => true),
+          authStateProvider.overrideWith((_) => 'test-session'),
+          currentUserProvider.overrideWith((_) async => null),
+          aiChatUiProvider.overrideWith((_) => AiChatUiNotifier()),
           mockChaptersProvider(novelId).overrideWith(
             (ref) =>
                 Future.delayed(const Duration(seconds: 1), () => mockChapters),
@@ -54,6 +63,12 @@ void main() {
       ProviderScope(
         overrides: [
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
+          themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          isSignedInProvider.overrideWith((_) => true),
+          authStateProvider.overrideWith((_) => 'test-session'),
+          currentUserProvider.overrideWith((_) async => null),
+          aiChatUiProvider.overrideWith((_) => AiChatUiNotifier()),
           mockChaptersProvider(
             novelId,
           ).overrideWith((ref) => Future.error('Load failed')),

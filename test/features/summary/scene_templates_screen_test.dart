@@ -5,13 +5,40 @@ import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 import 'package:writer/features/summary/scene_templates_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
-import 'package:writer/main.dart';
 import 'package:writer/models/template.dart';
 import 'package:writer/models/scene_template_row.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/repositories/template_repository.dart';
+import 'package:writer/state/providers.dart';
 import 'package:writer/state/session_state.dart';
+import 'package:writer/services/storage_service.dart';
+import 'package:writer/state/storage_service_provider.dart';
 import 'package:mocktail/mocktail.dart';
+
+class MockStorageService implements StorageService {
+  String? _sessionId;
+
+  @override
+  String? getString(String key) =>
+      key == 'backend_session_id' ? _sessionId : null;
+
+  @override
+  Future<void> setString(String key, String? value) async {
+    if (key == 'backend_session_id') {
+      _sessionId = value;
+    }
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    if (key == 'backend_session_id') {
+      _sessionId = null;
+    }
+  }
+
+  @override
+  Set<String> getKeys() => {'backend_session_id'};
+}
 
 class MockLocalStorageRepository extends Mock
     implements LocalStorageRepository {}
@@ -113,7 +140,10 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [localStorageRepositoryProvider.overrideWithValue(mockRepo)],
+        overrides: [
+          localStorageRepositoryProvider.overrideWithValue(mockRepo),
+          storageServiceProvider.overrideWithValue(MockStorageService()),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -158,7 +188,7 @@ void main() {
           localStorageRepositoryProvider.overrideWithValue(mockRepo),
           templateRepositoryProvider.overrideWithValue(mockTemplateRepo),
           sessionProvider.overrideWith(
-            (_) => SessionNotifier(null)..state = 's-1',
+            (_) => SessionNotifier(MockStorageService())..state = 's-1',
           ),
         ],
         child: MaterialApp(

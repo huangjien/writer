@@ -4,9 +4,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/features/reader/chapter_reader_screen.dart';
+import 'helpers/fake_chapter_port.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/performance_settings.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/state/session_state.dart';
+import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/state/tts_settings.dart';
 
 class FakeAiChatServiceOk extends AiChatService {
@@ -42,12 +49,24 @@ void main() {
 
   testWidgets('Beta evaluation success opens dialog', (tester) async {
     final prefs = await SharedPreferences.getInstance();
+    final storageService = LocalStorageService(prefs);
+    final session = SessionNotifier(storageService);
+    await session.setSessionId('test-session');
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           aiChatServiceProvider.overrideWith((ref) => FakeAiChatServiceOk()),
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
+          performanceSettingsProvider.overrideWith(
+            (_) => PerformanceSettingsNotifier(prefs),
+          ),
+          sessionProvider.overrideWith((_) => session),
+          localStorageRepositoryProvider.overrideWithValue(
+            LocalStorageRepository(storageService),
+          ),
+          chapterRepositoryProvider.overrideWithValue(FakeChapterPort()),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -86,12 +105,24 @@ void main() {
 
   testWidgets('Beta evaluation fails on empty content', (tester) async {
     final prefs = await SharedPreferences.getInstance();
+    final storageService = LocalStorageService(prefs);
+    final session = SessionNotifier(storageService);
+    await session.setSessionId('test-session');
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           aiChatServiceProvider.overrideWith((ref) => FakeAiChatServiceOk()),
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
+          performanceSettingsProvider.overrideWith(
+            (_) => PerformanceSettingsNotifier(prefs),
+          ),
+          sessionProvider.overrideWith((_) => session),
+          localStorageRepositoryProvider.overrideWithValue(
+            LocalStorageRepository(storageService),
+          ),
+          chapterRepositoryProvider.overrideWithValue(FakeChapterPort()),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -125,12 +156,24 @@ void main() {
 
   testWidgets('Beta evaluation null result shows failure', (tester) async {
     final prefs = await SharedPreferences.getInstance();
+    final storageService = LocalStorageService(prefs);
+    final session = SessionNotifier(storageService);
+    await session.setSessionId('test-session');
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           aiChatServiceProvider.overrideWith((ref) => FakeAiChatServiceNull()),
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
+          performanceSettingsProvider.overrideWith(
+            (_) => PerformanceSettingsNotifier(prefs),
+          ),
+          sessionProvider.overrideWith((_) => session),
+          localStorageRepositoryProvider.overrideWithValue(
+            LocalStorageRepository(storageService),
+          ),
+          chapterRepositoryProvider.overrideWithValue(FakeChapterPort()),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

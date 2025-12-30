@@ -19,7 +19,8 @@ final remoteRepositoryProvider = Provider<RemoteRepository>((ref) {
     authToken: () async => sessionId,
     onUnauthorized: () async {
       await ref.read(sessionProvider.notifier).clear();
-      await AuthRedirectService.redirectToLogin(ref);
+      final authRedirectService = ref.read(authRedirectServiceProvider);
+      await authRedirectService.redirectToLogin(ref);
     },
   );
 });

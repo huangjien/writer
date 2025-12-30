@@ -22,6 +22,7 @@ void main() {
     tester,
   ) async {
     // SharedPreferences mock is initialized in setUp; no instance needed here.
+    final prefs = await SharedPreferences.getInstance();
 
     final novels = <Novel>[
       const Novel(
@@ -38,6 +39,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           isSignedInProvider.overrideWithValue(true),
           memberNovelsProvider.overrideWith((ref) async => const []),
           libraryNovelsProvider.overrideWith((ref) async => novels),
@@ -92,6 +94,7 @@ void main() {
     tester,
   ) async {
     // SharedPreferences mock is initialized in setUp; no instance needed here.
+    final prefs = await SharedPreferences.getInstance();
 
     final novels = <Novel>[
       const Novel(
@@ -110,6 +113,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           isSignedInProvider.overrideWithValue(true),
           memberNovelsProvider.overrideWith((ref) async => const []),
           libraryNovelsProvider.overrideWith((ref) async => novels),
@@ -193,6 +197,7 @@ void main() {
     tester,
   ) async {
     // SharedPreferences mock is initialized in setUp; no instance needed here.
+    final prefs = await SharedPreferences.getInstance();
 
     final novels = <Novel>[
       const Novel(
@@ -209,6 +214,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           isSignedInProvider.overrideWithValue(true),
           memberNovelsProvider.overrideWith((ref) async => const []),
           libraryNovelsProvider.overrideWith((ref) async => novels),
@@ -262,6 +268,7 @@ void main() {
     tester,
   ) async {
     // SharedPreferences mock is initialized in setUp; no instance needed here.
+    final prefs = await SharedPreferences.getInstance();
 
     final novels = <Novel>[
       const Novel(
@@ -280,6 +287,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           isSignedInProvider.overrideWithValue(true),
           memberNovelsProvider.overrideWith((ref) async => const []),
           libraryNovelsProvider.overrideWith((ref) async => novels),

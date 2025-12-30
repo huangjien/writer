@@ -7,15 +7,30 @@ import 'package:writer/features/library/library_providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/admin_settings.dart';
+import 'package:writer/models/sync_state.dart';
+import 'package:writer/state/sync_service_provider.dart';
 
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
 
+// Create a custom SyncStatusIndicator without label to prevent overflow
+class CompactSyncStatusIndicator extends StatelessWidget {
+  const CompactSyncStatusIndicator({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return const Icon(Icons.cloud_done, size: 20);
+  }
+}
+
 void main() {
   testWidgets('Remove hides item and undo restores it (offline)', (
     tester,
   ) async {
+    // Set a larger screen size to prevent AppBar overflow
+    tester.view.physicalSize = const Size(1200, 800);
+    tester.view.devicePixelRatio = 1.0;
+
     final prefs = await SharedPreferences.getInstance();
     SharedPreferences.setMockInitialValues({});
 
@@ -47,13 +62,16 @@ void main() {
           isSignedInProvider.overrideWith((ref) => false),
           isAdminProvider.overrideWith((ref) => false),
           adminModeProvider.overrideWith((ref) => AdminModeNotifier(prefs)),
-
-          // Library providers
           libraryNovelsProvider.overrideWith((ref) async => novels),
           memberNovelsProvider.overrideWith((ref) async => const []),
           chaptersProvider.overrideWith((ref, novelId) async => const []),
           lastProgressProvider.overrideWith((ref, novelId) async => null),
           removedNovelIdsProvider.overrideWith((ref) => <String>{}),
+          // Override sync providers to prevent AppBar overflow from SyncStatusIndicator
+          syncStateValueProvider.overrideWith(
+            (ref) => const SyncState(status: SyncStatus.synced),
+          ),
+          hasPendingOperationsProvider.overrideWith((ref) => false),
         ],
         child: MaterialApp(
           locale: const Locale('en'),

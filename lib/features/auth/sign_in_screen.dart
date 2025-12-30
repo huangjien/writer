@@ -1,19 +1,15 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
-import '../../state/ai_service_settings.dart';
 import '../../state/session_state.dart';
 import '../../state/biometric_session_state.dart';
 import '../../state/redirect_provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/auth_service.dart';
+import '../../state/auth_service_provider.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
-  const SignInScreen({super.key, this.client});
-
-  final http.Client? client;
+  const SignInScreen({super.key});
 
   @override
   ConsumerState<SignInScreen> createState() => _SignInScreenState();
@@ -25,26 +21,15 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   bool _loading = false;
   bool _biometricLoading = false;
   String? _error;
-  late final http.Client _client;
-  late final bool _disposeClient;
+  late final AuthService _authService;
 
   @override
   void initState() {
     super.initState();
-    _client = widget.client ?? http.Client();
-    _disposeClient = widget.client == null;
-
+    _authService = ref.read(authServiceProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(biometricSessionProvider.notifier).checkBiometricAvailability();
     });
-  }
-
-  String _urlJoin(String baseUrl, String path) {
-    final b = baseUrl.endsWith('/')
-        ? baseUrl.substring(0, baseUrl.length - 1)
-        : baseUrl;
-    final p = path.startsWith('/') ? path : '/$path';
-    return '$b$p';
   }
 
   Future<void> _signIn(BuildContext context) async {
@@ -54,49 +39,24 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       _error = null;
     });
     try {
-      String baseUrl;
-      try {
-        baseUrl = ref.read(aiServiceProvider);
-      } catch (_) {
-        baseUrl = 'http://localhost:5600/';
-      }
-
-      final url = _urlJoin(baseUrl, '/auth/login');
-      final res = await _client.post(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': _emailController.text.trim(),
-          'password': _passwordController.text,
-        }),
+      final result = await _authService.signIn(
+        _emailController.text.trim(),
+        _passwordController.text,
       );
 
-      if (res.statusCode != 200) {
-        String msg = l10n.loginFailed;
-        try {
-          final decoded = jsonDecode(res.body);
-          if (decoded['detail'] != null) {
-            msg = decoded['detail'].toString();
-          }
-        } catch (_) {}
-        throw Exception(msg);
+      if (!result.success) {
+        throw Exception(result.errorMessage ?? l10n.loginFailed);
       }
 
-      final data = jsonDecode(utf8.decode(res.bodyBytes));
-      final sessionId = data['session_id'];
-      if (sessionId is String && sessionId.isNotEmpty) {
-        await ref.read(sessionProvider.notifier).setSessionId(sessionId);
+      await ref.read(sessionProvider.notifier).setSessionId(result.sessionId!);
 
-        final biometricState = ref.read(biometricSessionProvider);
-        if (biometricState != BiometricAuthState.unavailable &&
-            biometricState != BiometricAuthState.enabled) {
-          if (!mounted) return;
-          _showBiometricSetupDialog(this.context, sessionId);
-        } else {
-          _navigateToSuccess();
-        }
+      final biometricState = ref.read(biometricSessionProvider);
+      if (biometricState != BiometricAuthState.unavailable &&
+          biometricState != BiometricAuthState.enabled) {
+        if (!mounted) return;
+        _showBiometricSetupDialog(this.context, result.sessionId!);
       } else {
-        throw Exception(l10n.invalidResponseFromServer);
+        _navigateToSuccess();
       }
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());
@@ -202,9 +162,6 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    if (_disposeClient) {
-      _client.close();
-    }
     super.dispose();
   }
 

@@ -8,6 +8,13 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/features/reader/reader_screen.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/motion_settings.dart';
+import 'package:writer/state/storage_service_provider.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/state/session_state.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
+import 'package:writer/state/tts_settings.dart';
 
 void main() {
   const MethodChannel ttsChannel = MethodChannel('flutter_tts');
@@ -30,12 +37,25 @@ void main() {
     await prefs.setBool('reduce_motion_enabled', true);
     final motion = MotionSettingsNotifier(prefs);
     final appSettings = AppSettingsNotifier(prefs);
+    final ttsSettings = TtsSettingsNotifier(prefs);
+    final storageService = LocalStorageService(prefs);
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          localStorageRepositoryProvider.overrideWithValue(
+            LocalStorageRepository(storageService),
+          ),
+          sessionProvider.overrideWith(
+            (ref) => SessionNotifier(storageService),
+          ),
           motionSettingsProvider.overrideWith((_) => motion),
           appSettingsProvider.overrideWith((_) => appSettings),
+          ttsSettingsProvider.overrideWith((_) => ttsSettings),
+          aiChatServiceProvider.overrideWith(
+            (ref) => AiChatService(RemoteRepository('http://localhost:5600/')),
+          ),
         ],
         child: MaterialApp(
           locale: const Locale('en'),

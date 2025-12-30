@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/network_monitor.dart';
 import '../services/offline_queue_service.dart';
+import '../services/connectivity_checker.dart';
 
 /// Provider for NetworkMonitor singleton
 final networkMonitorProvider = Provider<NetworkMonitor>((ref) {
-  final monitor = NetworkMonitor();
+  final monitor = NetworkMonitor(RealConnectivityChecker());
   ref.onDispose(() {
     monitor.stopMonitoring();
   });

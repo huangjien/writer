@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
+import 'package:writer/state/storage_service_provider.dart';
 
 void main() {
   testWidgets('Search filter matches diacritics-insensitive titles', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final novels = [
       const Novel(
         id: 'n1',
@@ -45,6 +49,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           libraryNovelsProvider.overrideWith((ref) async => novels),
           memberNovelsProvider.overrideWith((ref) async => const []),
           chaptersProvider.overrideWith((ref, novelId) async => const []),

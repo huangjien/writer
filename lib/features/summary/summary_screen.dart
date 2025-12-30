@@ -3,11 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
-import 'package:writer/models/summary.dart';
+
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/features/summary/snowflake_coach_widget.dart';
 import 'package:writer/repositories/novel_repository.dart';
+import 'summary_controller.dart';
 
 class SummaryScreen extends ConsumerStatefulWidget {
   const SummaryScreen({super.key, required this.novelId});
@@ -31,7 +32,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   bool _refreshing = false;
   bool _isDirty = false;
 
-  Summary? _baseSummary;
+  late final SummaryController _controller;
 
   // Coach State
   bool _showCoach = false;
@@ -40,24 +41,20 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   @override
   void initState() {
     super.initState();
+    _controller = SummaryController(ref.read(novelRepositoryProvider));
     _load();
   }
 
   Future<void> _load() async {
     setState(() => _refreshing = true);
     try {
-      final repo = ref.read(novelRepositoryProvider);
-      final summaries = await repo.fetchSummaries(widget.novelId);
-      if (summaries.isNotEmpty) {
-        _baseSummary = summaries.first;
-      } else {
-        _baseSummary = Summary(id: '', novelId: widget.novelId, idx: 0);
-      }
+      await _controller.load(widget.novelId);
 
-      _sentenceController.text = _baseSummary?.sentenceSummary ?? '';
-      _paragraphController.text = _baseSummary?.paragraphSummary ?? '';
-      _pageController.text = _baseSummary?.pageSummary ?? '';
-      _expandedController.text = _baseSummary?.expandedSummary ?? '';
+      _sentenceController.text = _controller.baseSummary?.sentenceSummary ?? '';
+      _paragraphController.text =
+          _controller.baseSummary?.paragraphSummary ?? '';
+      _pageController.text = _controller.baseSummary?.pageSummary ?? '';
+      _expandedController.text = _controller.baseSummary?.expandedSummary ?? '';
 
       _isDirty = false;
     } catch (e) {
@@ -77,15 +74,12 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   }
 
   void _onFieldChanged() {
-    final dirty =
-        _sentenceController.text.trim() !=
-            (_baseSummary?.sentenceSummary ?? '').trim() ||
-        _paragraphController.text.trim() !=
-            (_baseSummary?.paragraphSummary ?? '').trim() ||
-        _pageController.text.trim() !=
-            (_baseSummary?.pageSummary ?? '').trim() ||
-        _expandedController.text.trim() !=
-            (_baseSummary?.expandedSummary ?? '').trim();
+    final dirty = _controller.isDirty(
+      sentence: _sentenceController.text,
+      paragraph: _paragraphController.text,
+      page: _pageController.text,
+      expanded: _expandedController.text,
+    );
 
     if (dirty != _isDirty) {
       setState(() => _isDirty = dirty);
@@ -217,32 +211,14 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                                   _error = null;
                                 });
                                 try {
-                                  final repo = ref.read(
-                                    novelRepositoryProvider,
+                                  await _controller.save(
+                                    sentence: _sentenceController.text,
+                                    paragraph: _paragraphController.text,
+                                    page: _pageController.text,
+                                    expanded: _expandedController.text,
                                   );
-                                  final newSummary = _baseSummary!.copyWith(
-                                    sentenceSummary: _sentenceController.text
-                                        .trim(),
-                                    paragraphSummary: _paragraphController.text
-                                        .trim(),
-                                    pageSummary: _pageController.text.trim(),
-                                    expandedSummary: _expandedController.text
-                                        .trim(),
-                                  );
-
-                                  Summary saved;
-                                  if (newSummary.id.isEmpty) {
-                                    saved = await repo.createSummary(
-                                      newSummary,
-                                    );
-                                  } else {
-                                    saved = await repo.updateSummary(
-                                      newSummary,
-                                    );
-                                  }
 
                                   setState(() {
-                                    _baseSummary = saved;
                                     _isDirty = false;
                                   });
 
