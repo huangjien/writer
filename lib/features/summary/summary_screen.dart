@@ -121,8 +121,8 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                       suffixIcon: IconButton(
                         icon: Icon(
                           _showSentenceCoach
-                              ? Icons.chat_bubble
-                              : Icons.chat_bubble_outline,
+                              ? Icons.auto_awesome
+                              : Icons.auto_awesome_outlined,
                           color: _showSentenceCoach ? Colors.purple : null,
                         ),
                         onPressed: () {
@@ -148,6 +148,16 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                     decoration: InputDecoration(
                       labelText: l10n.paragraphSummary,
                       border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          Icons.auto_awesome_outlined,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          // TODO: Implement paragraph AI coach functionality
+                        },
+                        tooltip: 'AI paragraph summary',
+                      ),
                     ),
                     maxLines: 4,
                     onChanged: (_) => _onFieldChanged(),
@@ -160,6 +170,16 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                     decoration: InputDecoration(
                       labelText: l10n.pageSummary,
                       border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          Icons.auto_awesome_outlined,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          // TODO: Implement page AI coach functionality
+                        },
+                        tooltip: 'AI page summary',
+                      ),
                     ),
                     maxLines: 8,
                     onChanged: (_) => _onFieldChanged(),
