@@ -73,6 +73,49 @@ class Radii {
   static const double xl = 36.0;
 }
 
+/// Mobile-specific spacing tokens
+class MobileSpacing {
+  // Safe area insets
+  static const double safeAreaTop = 44.0; // Status bar + notch
+  static const double safeAreaBottom = 34.0; // Home indicator
+
+  // Touch targets
+  static const double touchTargetMin = 48.0;
+  static const double touchTargetComfortable = 56.0;
+
+  // Bottom navigation
+  static const double bottomNavHeight = 56.0;
+  static const double fabMargin = 16.0;
+
+  // Card spacing
+  static const double cardPaddingMobile = 12.0;
+  static const double cardGapMobile = 8.0;
+}
+
+/// Mobile-specific typography tokens
+class MobileTypography {
+  // Larger base sizes for readability
+  static const double bodyLargeMobile = 16.0;
+  static const double bodyMediumMobile = 14.0;
+  static const double bodySmallMobile = 12.0;
+
+  // Condensed headings for small screens
+  static const double headingCondensed = 18.0;
+  static const double titleCondensed = 16.0;
+}
+
+/// Responsive breakpoints
+class Breakpoints {
+  static const double mobile = 0; // < 600dp
+  static const double tablet = 600; // 600-840dp
+  static const double desktop = 840; // > 840dp
+
+  // Mobile-specific breakpoints
+  static const double mobileSmall = 360; // Small phones
+  static const double mobileMedium = 390; // Medium phones
+  static const double mobileLarge = 414; // Large phones
+}
+
 class Motion {
   static const Duration instant = Duration(milliseconds: 50);
   static const Duration fast = Duration(milliseconds: 150);
@@ -90,4 +133,19 @@ class Motion {
   // Spring animations
   static const Curve springFast = Curves.fastOutSlowIn;
   static const Curve springMedium = Cubic(0.4, 0.0, 0.2, 1.0);
+}
+
+/// Mobile-specific motion tokens
+class MobileMotion {
+  // Faster transitions for mobile
+  static const Duration bottomSheetEnter = Duration(milliseconds: 250);
+  static const Duration bottomSheetExit = Duration(milliseconds: 200);
+
+  // Swipe animation
+  static const Duration swipeReveal = Duration(milliseconds: 200);
+  static const Duration swipeSnap = Duration(milliseconds: 300);
+
+  // FAB animation
+  static const Duration fabExpand = Duration(milliseconds: 200);
+  static const Duration fabCollapse = Duration(milliseconds: 150);
 }

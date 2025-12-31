@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:writer/app.dart';
 import 'package:writer/routing/app_router.dart';
 import 'package:writer/state/motion_settings.dart';
+import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/theme/no_animation_transitions.dart';
 import 'package:writer/theme/fade_through_page_transitions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,6 +23,7 @@ Future<ProviderScope> _buildScope({required bool reduceMotion}) async {
 
   return ProviderScope(
     overrides: [
+      sharedPreferencesProvider.overrideWithValue(prefs),
       appRouterProvider.overrideWithValue(router),
       motionSettingsProvider.overrideWith(
         (ref) => MotionSettingsNotifier(prefs),

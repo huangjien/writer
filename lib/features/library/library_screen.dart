@@ -20,6 +20,11 @@ import 'widgets/library_item_row.dart';
 import 'widgets/library_grid_item.dart';
 import 'widgets/enhanced_search_bar.dart';
 import '../../shared/widgets/empty_state.dart';
+import '../../shared/widgets/mobile_bottom_nav_bar.dart';
+import '../../shared/widgets/mobile_fab.dart';
+import '../../shared/widgets/mobile_novel_card.dart';
+import '../../shared/widgets/mobile_bottom_sheet.dart';
+import '../../shared/widgets/mobile_gestures.dart';
 import '../../widgets/offline_banner.dart';
 import '../../widgets/sync_status_indicator.dart';
 
@@ -103,6 +108,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   LibraryViewMode _viewMode = LibraryViewMode.list;
   LibraryFilter _filter = LibraryFilter.all;
   String _searchQuery = '';
+  MobileNavTab _currentTab = MobileNavTab.home;
 
   List<Novel> _filterNovels(List<Novel> novels, Set<String> removedIds) {
     final query = _normalizeForSearch(_searchQuery.trim());
@@ -167,89 +173,14 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     const canRemove = true;
     final canDownload = isSignedIn;
 
+    // Use mobile layout for small screens
+    final isMobile = MediaQuery.of(context).size.width < Breakpoints.tablet;
+
     return Scaffold(
-      appBar: AppBar(
-        title: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.centerLeft,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Builder(
-                builder: (ctx) => GestureDetector(
-                  onTap: () => Scaffold.of(ctx).openDrawer(),
-                  child: kIsWeb
-                      ? Image.network(
-                          '/icons/Icon-192.png',
-                          height: 40,
-                          key: const ValueKey('home_logo'),
-                          errorBuilder: (context, error, stack) => Text(
-                            l10n.unableToLoadAsset,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.redAccent,
-                            ),
-                          ),
-                        )
-                      : Image.asset(
-                          'web/icons/Icon-192.png',
-                          height: 40,
-                          key: const ValueKey('home_logo'),
-                          errorBuilder: (context, error, stack) => Text(
-                            l10n.unableToLoadAsset,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.redAccent,
-                            ),
-                          ),
-                        ),
-                ),
-              ),
-              const SizedBox(width: Spacing.xs),
-              const Icon(Icons.info_outline, size: 16),
-              const SizedBox(width: Spacing.xs),
-            ],
-          ),
-        ),
-        actions: [
-          Consumer(
-            builder: (context, ref, _) {
-              return IconButton(
-                tooltip: l10n.reload,
-                icon: const Icon(Icons.refresh),
-                onPressed: () {
-                  ref.invalidate(libraryNovelsProvider);
-                  ref.invalidate(memberNovelsProvider);
-                },
-              );
-            },
-          ),
-          const SyncStatusIndicator(showLabel: true),
-          if (isSignedIn)
-            IconButton(
-              tooltip: l10n.createNovel,
-              icon: const Icon(Icons.add),
-              onPressed: () => context.pushNamed('createNovel'),
-            ),
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            tooltip: l10n.about,
-            onPressed: () => context.push('/about'),
-          ),
-          if (isAdmin)
-            IconButton(
-              icon: const Icon(Icons.bug_report),
-              tooltip: 'Admin Logs',
-              onPressed: () => context.push('/admin/logs'),
-            ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: l10n.settings,
-            onPressed: () => context.push('/settings'),
-          ),
-        ],
-      ),
-      drawer: const AppDrawer(),
+      appBar: isMobile
+          ? _buildMobileAppBar(context, l10n, isAdmin)
+          : _buildDesktopAppBar(context, l10n, isSignedIn, isAdmin),
+      drawer: isMobile ? null : const AppDrawer(),
       body: Column(
         children: [
           const OfflineBanner(),
@@ -395,44 +326,19 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                                           child: child,
                                         );
                                       },
-                                  child: _viewMode == LibraryViewMode.list
-                                      ? ListView.separated(
-                                          key: const Key('libraryListView'),
-                                          itemCount: visible.length,
-                                          separatorBuilder: (_, _) =>
-                                              const Divider(height: 1),
-                                          itemBuilder: (context, index) {
-                                            final n = visible[index];
-                                            return LibraryItemRow(
-                                              novel: n,
-                                              isSignedIn: isSignedIn,
-                                              canRemove: canRemove,
-                                              canDownload: canDownload,
-                                            );
-                                          },
+                                  child: isMobile
+                                      ? _buildMobileList(
+                                          context,
+                                          visible,
+                                          canRemove,
+                                          canDownload,
                                         )
-                                      : GridView.builder(
-                                          key: const Key('libraryGridView'),
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 8,
-                                          ),
-                                          gridDelegate:
-                                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 2,
-                                                childAspectRatio: 0.7,
-                                                crossAxisSpacing: 16,
-                                                mainAxisSpacing: 16,
-                                              ),
-                                          itemCount: visible.length,
-                                          itemBuilder: (context, index) {
-                                            final n = visible[index];
-                                            return LibraryGridItem(
-                                              novel: n,
-                                              isSignedIn: isSignedIn,
-                                              canRemove: canRemove,
-                                              canDownload: canDownload,
-                                            );
-                                          },
+                                      : _buildDesktopView(
+                                          context,
+                                          visible,
+                                          canRemove,
+                                          canDownload,
+                                          motion,
                                         ),
                                 ),
                               ),
@@ -448,6 +354,406 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: isMobile
+          ? MobileFab(
+              onPressed: () {
+                MobileGestures.mediumImpact();
+                context.pushNamed('createNovel');
+              },
+              label: l10n.createNovel,
+              icon: Icons.add,
+              type: MobileFabType.primary,
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      bottomNavigationBar: isMobile
+          ? MobileBottomNavBar(
+              currentTab: _currentTab,
+              onTabChanged: _onTabChanged,
+            )
+          : null,
+    );
+  }
+
+  PreferredSizeWidget _buildMobileAppBar(
+    BuildContext context,
+    AppLocalizations l10n,
+    bool isAdmin,
+  ) {
+    final theme = Theme.of(context);
+    return AppBar(
+      title: Row(
+        children: [
+          Icon(Icons.menu_book, color: theme.colorScheme.primary, size: 24),
+          const SizedBox(width: Spacing.s),
+          Text(
+            'Library',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.more_vert),
+          onPressed: () {
+            MobileGestures.lightImpact();
+            _showMoreMenu(context, l10n, isAdmin);
+          },
+        ),
+      ],
+    );
+  }
+
+  PreferredSizeWidget _buildDesktopAppBar(
+    BuildContext context,
+    AppLocalizations l10n,
+    bool isSignedIn,
+    bool isAdmin,
+  ) {
+    return AppBar(
+      title: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerLeft,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Builder(
+              builder: (ctx) => GestureDetector(
+                onTap: () => Scaffold.of(ctx).openDrawer(),
+                child: kIsWeb
+                    ? Image.network(
+                        '/icons/Icon-192.png',
+                        height: 40,
+                        key: const ValueKey('home_logo'),
+                        errorBuilder: (context, error, stack) => Text(
+                          l10n.unableToLoadAsset,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.redAccent,
+                          ),
+                        ),
+                      )
+                    : Image.asset(
+                        'web/icons/Icon-192.png',
+                        height: 40,
+                        key: const ValueKey('home_logo'),
+                        errorBuilder: (context, error, stack) => Text(
+                          l10n.unableToLoadAsset,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.redAccent,
+                          ),
+                        ),
+                      ),
+              ),
+            ),
+            const SizedBox(width: Spacing.xs),
+            const Icon(Icons.info_outline, size: 16),
+            const SizedBox(width: Spacing.xs),
+          ],
+        ),
+      ),
+      actions: [
+        Consumer(
+          builder: (context, ref, _) {
+            return IconButton(
+              tooltip: l10n.reload,
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                ref.invalidate(libraryNovelsProvider);
+                ref.invalidate(memberNovelsProvider);
+              },
+            );
+          },
+        ),
+        const SyncStatusIndicator(showLabel: true),
+        if (isSignedIn)
+          IconButton(
+            tooltip: l10n.createNovel,
+            icon: const Icon(Icons.add),
+            onPressed: () => context.pushNamed('createNovel'),
+          ),
+        IconButton(
+          icon: const Icon(Icons.info_outline),
+          tooltip: l10n.about,
+          onPressed: () => context.push('/about'),
+        ),
+        if (isAdmin)
+          IconButton(
+            icon: const Icon(Icons.bug_report),
+            tooltip: 'Admin Logs',
+            onPressed: () => context.push('/admin/logs'),
+          ),
+        IconButton(
+          icon: const Icon(Icons.settings),
+          tooltip: l10n.settings,
+          onPressed: () => context.push('/settings'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMobileList(
+    BuildContext context,
+    List<Novel> visible,
+    bool canRemove,
+    bool canDownload,
+  ) {
+    return ListView.separated(
+      key: const Key('mobileLibraryListView'),
+      itemCount: visible.length,
+      padding: const EdgeInsets.only(bottom: 100),
+      separatorBuilder: (_, _) => const SizedBox(height: Spacing.m),
+      itemBuilder: (context, index) {
+        final n = visible[index];
+        return MobileNovelCard(
+          novel: n,
+          onTap: () => context.push('/novel/${n.id}'),
+          onDownload: canDownload ? () => _downloadNovel(n.id) : null,
+          onDelete: canRemove ? () => _deleteNovel(n.id) : null,
+        );
+      },
+    );
+  }
+
+  Widget _buildDesktopView(
+    BuildContext context,
+    List<Novel> visible,
+    bool canRemove,
+    bool canDownload,
+    MotionSettings motion,
+  ) {
+    return PageTransitionSwitcher(
+      duration: Duration(milliseconds: motion.reduceMotion ? 0 : 300),
+      transitionBuilder:
+          (
+            Widget child,
+            Animation<double> primaryAnimation,
+            Animation<double> secondaryAnimation,
+          ) {
+            return FadeThroughTransition(
+              animation: primaryAnimation,
+              secondaryAnimation: secondaryAnimation,
+              child: child,
+            );
+          },
+      child: _viewMode == LibraryViewMode.list
+          ? ListView.separated(
+              key: const Key('libraryListView'),
+              itemCount: visible.length,
+              separatorBuilder: (_, _) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                final n = visible[index];
+                return LibraryItemRow(
+                  novel: n,
+                  isSignedIn: true,
+                  canRemove: canRemove,
+                  canDownload: canDownload,
+                );
+              },
+            )
+          : GridView.builder(
+              key: const Key('libraryGridView'),
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.7,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
+              itemCount: visible.length,
+              itemBuilder: (context, index) {
+                final n = visible[index];
+                return LibraryGridItem(
+                  novel: n,
+                  isSignedIn: true,
+                  canRemove: canRemove,
+                  canDownload: canDownload,
+                );
+              },
+            ),
+    );
+  }
+
+  void _onTabChanged(MobileNavTab tab) {
+    MobileGestures.lightImpact();
+    setState(() {
+      _currentTab = tab;
+    });
+    _handleTabNavigation(tab, context);
+  }
+
+  void _handleTabNavigation(MobileNavTab tab, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (tab) {
+      case MobileNavTab.home:
+        // Already on home
+        break;
+      case MobileNavTab.write:
+        // Navigate to write screen
+        break;
+      case MobileNavTab.read:
+        // Navigate to reading screen
+        break;
+      case MobileNavTab.tools:
+        _showToolsMenu(context, l10n);
+        break;
+      case MobileNavTab.more:
+        _showMoreMenu(context, l10n, false);
+        break;
+    }
+  }
+
+  void _showToolsMenu(BuildContext context, AppLocalizations l10n) {
+    MobileGestures.lightImpact();
+    MobileBottomSheet.showActionSheet(
+      context: context,
+      items: [
+        ActionSheetItem(
+          label: l10n.characterTemplates,
+          icon: Icons.person,
+          value: 'characters',
+          onPressed: () {
+            MobileGestures.selectionClick();
+            _navigateToCharacterTemplates(context);
+          },
+        ),
+        ActionSheetItem(
+          label: l10n.sceneTemplates,
+          icon: Icons.movie,
+          value: 'scenes',
+          onPressed: () {
+            MobileGestures.selectionClick();
+            _navigateToSceneTemplates(context);
+          },
+        ),
+        ActionSheetItem(
+          label: l10n.prompts,
+          icon: Icons.chat_bubble,
+          value: 'prompts',
+          onPressed: () {
+            MobileGestures.selectionClick();
+            context.push('/prompts');
+          },
+        ),
+        ActionSheetItem(
+          label: l10n.patterns,
+          icon: Icons.auto_awesome,
+          value: 'patterns',
+          onPressed: () {
+            MobileGestures.selectionClick();
+            context.push('/patterns');
+          },
+        ),
+        ActionSheetItem(
+          label: l10n.storyLines,
+          icon: Icons.timeline,
+          value: 'storylines',
+          onPressed: () {
+            MobileGestures.selectionClick();
+            context.push('/story_lines');
+          },
+        ),
+      ],
+    );
+  }
+
+  void _showMoreMenu(
+    BuildContext context,
+    AppLocalizations l10n,
+    bool isAdmin,
+  ) {
+    MobileGestures.lightImpact();
+    final items = <ActionSheetItem>[
+      ActionSheetItem(
+        label: l10n.settings,
+        icon: Icons.settings,
+        value: 'settings',
+        onPressed: () {
+          MobileGestures.selectionClick();
+          context.push('/settings');
+        },
+      ),
+      ActionSheetItem(
+        label: l10n.about,
+        icon: Icons.info,
+        value: 'about',
+        onPressed: () {
+          MobileGestures.selectionClick();
+          context.push('/about');
+        },
+      ),
+    ];
+
+    if (isAdmin) {
+      items.add(
+        ActionSheetItem(
+          label: 'Admin Logs',
+          icon: Icons.bug_report,
+          value: 'admin',
+          onPressed: () {
+            MobileGestures.selectionClick();
+            context.push('/admin/logs');
+          },
+        ),
+      );
+    }
+
+    MobileBottomSheet.showActionSheet(context: context, items: items);
+  }
+
+  void _navigateToCharacterTemplates(BuildContext context) {
+    final libraryAsync = ref.read(libraryNovelsProvider);
+    final defaultNovelId = libraryAsync.maybeWhen(
+      data: (list) => list.isNotEmpty ? list.first.id : null,
+      orElse: () => null,
+    );
+    if (defaultNovelId != null) {
+      context.push('/novel/$defaultNovelId/character-templates');
+    } else {
+      context.push('/my-novels');
+    }
+  }
+
+  void _navigateToSceneTemplates(BuildContext context) {
+    final libraryAsync = ref.read(libraryNovelsProvider);
+    final defaultNovelId = libraryAsync.maybeWhen(
+      data: (list) => list.isNotEmpty ? list.first.id : null,
+      orElse: () => null,
+    );
+    if (defaultNovelId != null) {
+      context.push('/novel/$defaultNovelId/scene-templates');
+    } else {
+      context.push('/my-novels');
+    }
+  }
+
+  void _downloadNovel(String novelId) {
+    // TODO: Implement download functionality
+  }
+
+  void _deleteNovel(String novelId) {
+    final l10n = AppLocalizations.of(context)!;
+
+    ref
+        .read(removedNovelIdsProvider.notifier)
+        .update((state) => <String>{...state, novelId});
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.removedFromLibrary),
+        action: SnackBarAction(
+          label: l10n.undo,
+          onPressed: () {
+            ref.read(removedNovelIdsProvider.notifier).update((state) {
+              final next = <String>{...state};
+              next.remove(novelId);
+              return next;
+            });
+          },
+        ),
       ),
     );
   }

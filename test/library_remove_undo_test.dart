@@ -27,8 +27,8 @@ void main() {
   testWidgets('Remove hides item and undo restores it (offline)', (
     tester,
   ) async {
-    // Set a larger screen size to prevent AppBar overflow
-    tester.view.physicalSize = const Size(1200, 800);
+    // Set mobile screen size to ensure MobileNovelCard is used but prevent overflow
+    tester.view.physicalSize = const Size(550, 800);
     tester.view.devicePixelRatio = 1.0;
 
     final prefs = await SharedPreferences.getInstance();
@@ -91,10 +91,16 @@ void main() {
     expect(find.text('Quiet City Nights'), findsOneWidget);
     expect(find.text('The Whispering Forest'), findsOneWidget);
 
-    // Tap remove icon on the first tile
-    final deleteButtons = find.byIcon(Icons.delete_outline);
-    expect(deleteButtons, findsWidgets);
-    await tester.tap(deleteButtons.first);
+    // Tap more menu icon on the first tile
+    final moreMenuButtons = find.byIcon(Icons.more_vert);
+    expect(moreMenuButtons, findsWidgets);
+    await tester.tap(moreMenuButtons.first);
+    await tester.pumpAndSettle();
+
+    // Tap delete action in the menu
+    final deleteOptions = find.text('Delete');
+    expect(deleteOptions, findsOneWidget);
+    await tester.tap(deleteOptions);
     await tester.pump();
     // Ensure SnackBar fully animates in before interacting
     await tester.pumpAndSettle();

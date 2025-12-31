@@ -6,13 +6,22 @@ import 'package:writer/services/connectivity_checker.dart';
 
 class MockConnectivityChecker implements ConnectivityChecker {
   final _controller = StreamController<List<ConnectivityResult>>.broadcast();
+  bool _isConnected = true;
 
   @override
-  Future<bool> checkConnectivity() async => true;
+  Future<bool> checkConnectivity() async => _isConnected;
 
   @override
   Stream<List<ConnectivityResult>> get onConnectivityChanged =>
       _controller.stream;
+
+  void setConnected(bool connected) {
+    _isConnected = connected;
+  }
+
+  void emitConnectivityChange(List<ConnectivityResult> results) {
+    _controller.add(results);
+  }
 
   void dispose() => _controller.close();
 }
@@ -229,6 +238,235 @@ void main() {
       // but both subscriptions should be able to listen to the same broadcast stream
       expect(events1, isEmpty);
       expect(events2, isEmpty);
+    });
+
+    test('startMonitoring begins listening to connectivity changes', () async {
+      final checker = MockConnectivityChecker();
+      final monitor = NetworkMonitor(checker);
+
+      // Start monitoring
+      monitor.startMonitoring();
+
+      // Emit a connectivity change
+      checker.emitConnectivityChange([ConnectivityResult.wifi]);
+
+      // Wait for the change to propagate
+      await Future.delayed(Duration(milliseconds: 50));
+
+      // Verify the monitor received the change
+      expect(monitor.isOnline, isTrue);
+
+      monitor.dispose();
+      checker.dispose();
+    });
+
+    test('startMonitoring updates initial connectivity state', () async {
+      final checker = MockConnectivityChecker();
+      checker.setConnected(false);
+      final monitor = NetworkMonitor(checker);
+
+      // Start monitoring
+      monitor.startMonitoring();
+
+      // Wait for initial check
+      await Future.delayed(Duration(milliseconds: 100));
+
+      // Verify the monitor reflects the initial state
+      expect(monitor.isOnline, isFalse);
+
+      monitor.dispose();
+      checker.dispose();
+    });
+
+    test('onConnectivityChanged updates isOnline state', () async {
+      final checker = MockConnectivityChecker();
+      final monitor = NetworkMonitor(checker);
+      final connectivityEvents = <bool>[];
+
+      final subscription = monitor.connectivityStream.listen((event) {
+        connectivityEvents.add(event);
+      });
+
+      // Start monitoring
+      monitor.startMonitoring();
+
+      // Emit offline event
+      checker.emitConnectivityChange([ConnectivityResult.none]);
+      await Future.delayed(Duration(milliseconds: 50));
+      expect(monitor.isOnline, isFalse);
+
+      // Emit online event
+      checker.emitConnectivityChange([ConnectivityResult.wifi]);
+      await Future.delayed(Duration(milliseconds: 50));
+      expect(monitor.isOnline, isTrue);
+
+      // Emit multiple connectivity types (all online)
+      checker.emitConnectivityChange([
+        ConnectivityResult.wifi,
+        ConnectivityResult.ethernet,
+      ]);
+      await Future.delayed(Duration(milliseconds: 50));
+      expect(monitor.isOnline, isTrue);
+
+      await subscription.cancel();
+      monitor.dispose();
+      checker.dispose();
+    });
+
+    test('isConnected returns current connectivity status', () async {
+      final checker = MockConnectivityChecker();
+      final monitor = NetworkMonitor(checker);
+
+      // Initially connected
+      expect(await monitor.isConnected, isTrue);
+
+      // Change to disconnected
+      checker.setConnected(false);
+      expect(await monitor.isConnected, isFalse);
+
+      // Change back to connected
+      checker.setConnected(true);
+      expect(await monitor.isConnected, isTrue);
+
+      monitor.dispose();
+      checker.dispose();
+    });
+
+    test('connectivityStream emits initial state on startMonitoring', () async {
+      final checker = MockConnectivityChecker();
+      final monitor = NetworkMonitor(checker);
+      final events = <bool>[];
+
+      final subscription = monitor.connectivityStream.listen(events.add);
+
+      // Start monitoring
+      monitor.startMonitoring();
+
+      // Wait for initial state
+      await Future.delayed(Duration(milliseconds: 100));
+
+      // Should have received initial state
+      expect(events, isNotEmpty);
+      expect(events.first, isTrue);
+
+      await subscription.cancel();
+      monitor.dispose();
+      checker.dispose();
+    });
+
+    test('handles ConnectivityResult.none correctly', () async {
+      final checker = MockConnectivityChecker();
+      final monitor = NetworkMonitor(checker);
+      final events = <bool>[];
+
+      final subscription = monitor.connectivityStream.listen(events.add);
+
+      monitor.startMonitoring();
+
+      // Emit none (offline)
+      checker.emitConnectivityChange([ConnectivityResult.none]);
+      await Future.delayed(Duration(milliseconds: 50));
+
+      expect(monitor.isOnline, isFalse);
+      expect(events.last, isFalse);
+
+      // Emit wifi (online)
+      checker.emitConnectivityChange([ConnectivityResult.wifi]);
+      await Future.delayed(Duration(milliseconds: 50));
+
+      expect(monitor.isOnline, isTrue);
+      expect(events.last, isTrue);
+
+      await subscription.cancel();
+      monitor.dispose();
+      checker.dispose();
+    });
+
+    test('handles mixed connectivity results', () async {
+      final checker = MockConnectivityChecker();
+      final monitor = NetworkMonitor(checker);
+      final events = <bool>[];
+
+      final subscription = monitor.connectivityStream.listen(events.add);
+
+      monitor.startMonitoring();
+
+      // Emit mixed results (none + wifi) - should be online
+      checker.emitConnectivityChange([
+        ConnectivityResult.none,
+        ConnectivityResult.wifi,
+      ]);
+      await Future.delayed(Duration(milliseconds: 50));
+
+      expect(monitor.isOnline, isTrue);
+
+      // Emit only none
+      checker.emitConnectivityChange([ConnectivityResult.none]);
+      await Future.delayed(Duration(milliseconds: 50));
+
+      expect(monitor.isOnline, isFalse);
+
+      await subscription.cancel();
+      monitor.dispose();
+      checker.dispose();
+    });
+
+    test('does not emit duplicate connectivity states', () async {
+      final checker = MockConnectivityChecker();
+      final monitor = NetworkMonitor(checker);
+      final events = <bool>[];
+
+      final subscription = monitor.connectivityStream.listen(events.add);
+
+      monitor.startMonitoring();
+
+      // Emit same state multiple times
+      checker.emitConnectivityChange([ConnectivityResult.wifi]);
+      await Future.delayed(Duration(milliseconds: 50));
+
+      checker.emitConnectivityChange([ConnectivityResult.wifi]);
+      await Future.delayed(Duration(milliseconds: 50));
+
+      checker.emitConnectivityChange([ConnectivityResult.wifi]);
+      await Future.delayed(Duration(milliseconds: 50));
+
+      // Should only have initial + one change (no duplicates)
+      expect(events.length, lessThanOrEqualTo(2));
+
+      await subscription.cancel();
+      monitor.dispose();
+      checker.dispose();
+    });
+
+    test('startMonitoring begins listening to connectivity changes', () async {
+      final checker = MockConnectivityChecker();
+      final monitor = NetworkMonitor(checker);
+
+      // Start monitoring
+      monitor.startMonitoring();
+
+      // Emit a connectivity change
+      checker.emitConnectivityChange([ConnectivityResult.wifi]);
+
+      // Wait for the change to propagate
+      await Future.delayed(Duration(milliseconds: 50));
+
+      // Verify the monitor received the change
+      expect(monitor.isOnline, isTrue);
+
+      monitor.dispose();
+      checker.dispose();
+    });
+
+    test('stopMonitoring without startMonitoring does not throw', () async {
+      final checker = MockConnectivityChecker();
+      final monitor = NetworkMonitor(checker);
+
+      // Stop without starting
+      expect(() => monitor.stopMonitoring(), returnsNormally);
+
+      monitor.dispose();
+      checker.dispose();
     });
   });
 }

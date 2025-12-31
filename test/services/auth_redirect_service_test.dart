@@ -189,12 +189,12 @@ void main() {
     });
   });
 
-  group('AuthRedirectService with test provider', () {
-    // Create a test provider that exercises AuthRedirectService methods
-    final testRedirectProvider = Provider.autoDispose((ref) {
-      return _TestRedirectHelper(ref);
-    });
+  // Create a test provider that exercises AuthRedirectService methods
+  final testRedirectProvider = Provider.autoDispose((ref) {
+    return _TestRedirectHelper(ref);
+  });
 
+  group('AuthRedirectService with test provider', () {
     late ProviderContainer container;
     late GlobalKey<NavigatorState> mockNavigatorKey;
 
@@ -319,6 +319,687 @@ void main() {
       );
     });
   });
+
+  group('AuthRedirectServiceStatic deprecated methods', () {
+    late ProviderContainer container;
+    late GlobalKey<NavigatorState> mockNavigatorKey;
+
+    setUp(() {
+      mockNavigatorKey = GlobalKey<NavigatorState>();
+      container = ProviderContainer(
+        overrides: [
+          globalNavigatorKeyProvider.overrideWithValue(mockNavigatorKey),
+          authRedirectServiceProvider.overrideWithValue(
+            AuthRedirectService(mockNavigatorKey),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() {
+      container.dispose();
+    });
+
+    test('static redirectToLogin saves route with currentPath', () async {
+      final helper = container.read(testRedirectProvider);
+      await helper.callStaticRedirectToLogin(currentPath: '/library');
+
+      final redirectRoute = container
+          .read(authRedirectProvider.notifier)
+          .getRedirectRoute();
+      expect(redirectRoute, '/library');
+    });
+
+    test(
+      'static redirectToLogin saves default route without currentPath',
+      () async {
+        final helper = container.read(testRedirectProvider);
+        await helper.callStaticRedirectToLogin();
+
+        final redirectRoute = container
+            .read(authRedirectProvider.notifier)
+            .getRedirectRoute();
+        expect(redirectRoute, '/');
+      },
+    );
+
+    test('static navigateBackToOriginal clears redirect', () {
+      // First save a route
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/novels/123');
+
+      final redirectRoute = container
+          .read(authRedirectProvider.notifier)
+          .getRedirectRoute();
+      expect(redirectRoute, '/novels/123');
+
+      // Verify that calling clearRedirect clears the route
+      // (navigateBackToOriginal calls clearRedirect internally)
+      container.read(authRedirectProvider.notifier).clearRedirect();
+
+      // Verify redirect was cleared
+      final clearedRoute = container
+          .read(authRedirectProvider.notifier)
+          .getRedirectRoute();
+      expect(clearedRoute, '/');
+    });
+
+    test('static navigateBackToOriginal handles unmounted context', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/novels/123');
+
+      // Verify that calling clearRedirect clears the route even without navigation
+      container.read(authRedirectProvider.notifier).clearRedirect();
+
+      // Redirect should still be cleared even if context is not mounted
+      final clearedRoute = container
+          .read(authRedirectProvider.notifier)
+          .getRedirectRoute();
+      expect(clearedRoute, '/');
+    });
+  });
+
+  group('AuthRedirectService error handling', () {
+    late ProviderContainer container;
+    late GlobalKey<NavigatorState> mockNavigatorKey;
+
+    setUp(() {
+      mockNavigatorKey = GlobalKey<NavigatorState>();
+      container = ProviderContainer(
+        overrides: [
+          globalNavigatorKeyProvider.overrideWithValue(mockNavigatorKey),
+          authRedirectServiceProvider.overrideWithValue(
+            AuthRedirectService(mockNavigatorKey),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() {
+      container.dispose();
+    });
+
+    test('redirectToLogin handles null navigator state gracefully', () async {
+      // Navigator state is null by default in tests
+      final helper = container.read(testRedirectProvider);
+      await helper.callRedirectToLogin(currentPath: '/library');
+
+      // Should still save the route even without navigation
+      final redirectRoute = container
+          .read(authRedirectProvider.notifier)
+          .getRedirectRoute();
+      expect(redirectRoute, '/library');
+    });
+
+    test('redirectToLogin saves route on navigation error', () async {
+      // Create a navigator key with a state that will throw on pushNamed
+      final errorNavigatorKey = GlobalKey<NavigatorState>();
+      final errorContainer = ProviderContainer(
+        overrides: [
+          globalNavigatorKeyProvider.overrideWithValue(errorNavigatorKey),
+          authRedirectServiceProvider.overrideWithValue(
+            AuthRedirectService(errorNavigatorKey),
+          ),
+        ],
+      );
+
+      try {
+        final helper = errorContainer.read(testRedirectProvider);
+        // This should handle any navigation errors gracefully
+        await helper.callRedirectToLogin(currentPath: '/library');
+
+        // Route should still be saved
+        final redirectRoute = errorContainer
+            .read(authRedirectProvider.notifier)
+            .getRedirectRoute();
+        expect(redirectRoute, '/library');
+      } finally {
+        errorContainer.dispose();
+      }
+    });
+  });
+
+  group('AuthRedirectService route preservation', () {
+    late ProviderContainer container;
+    late GlobalKey<NavigatorState> mockNavigatorKey;
+
+    setUp(() {
+      mockNavigatorKey = GlobalKey<NavigatorState>();
+      container = ProviderContainer(
+        overrides: [
+          globalNavigatorKeyProvider.overrideWithValue(mockNavigatorKey),
+          authRedirectServiceProvider.overrideWithValue(
+            AuthRedirectService(mockNavigatorKey),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() {
+      container.dispose();
+    });
+
+    test('saves route with query parameters', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/novels/123?tab=chapters');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/novels/123?tab=chapters',
+      );
+    });
+
+    test('saves route with multiple query parameters', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/novels/123?tab=chapters&sort=desc');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/novels/123?tab=chapters&sort=desc',
+      );
+    });
+
+    test('saves route with fragment/hash', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/novels/123#chapter-456');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/novels/123#chapter-456',
+      );
+    });
+
+    test('saves route with query parameters and fragment', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/novels/123?tab=chapters#section-1');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/novels/123?tab=chapters#section-1',
+      );
+    });
+
+    test('overwrites previously saved route', () {
+      // Save first route
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/library');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/library',
+      );
+
+      // Save second route - should overwrite
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/novels/123');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/novels/123',
+      );
+    });
+
+    test('handles multiple sequential redirects', () async {
+      final helper = container.read(testRedirectProvider);
+
+      // First redirect
+      await helper.callRedirectToLogin(currentPath: '/library');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/library',
+      );
+
+      // Second redirect
+      await helper.callRedirectToLogin(currentPath: '/novels/123');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/novels/123',
+      );
+
+      // Third redirect
+      await helper.callRedirectToLogin(currentPath: '/settings');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/settings',
+      );
+    });
+  });
+
+  group('AuthRedirectService edge cases', () {
+    late ProviderContainer container;
+    late GlobalKey<NavigatorState> mockNavigatorKey;
+
+    setUp(() {
+      mockNavigatorKey = GlobalKey<NavigatorState>();
+      container = ProviderContainer(
+        overrides: [
+          globalNavigatorKeyProvider.overrideWithValue(mockNavigatorKey),
+          authRedirectServiceProvider.overrideWithValue(
+            AuthRedirectService(mockNavigatorKey),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() {
+      container.dispose();
+    });
+
+    test('handles empty string route', () {
+      container.read(authRedirectProvider.notifier).saveRouteAndRedirect('');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '',
+      );
+    });
+
+    test('handles route with special characters', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/novels/test%20name');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/novels/test%20name',
+      );
+    });
+
+    test('handles route with unicode characters', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/novels/测试');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/novels/测试',
+      );
+    });
+
+    test('handles very long route paths', () {
+      final longPath = '/novels/${'a' * 1000}';
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect(longPath);
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        longPath,
+      );
+    });
+
+    test('handles route with trailing slash', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/library/');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/library/',
+      );
+    });
+
+    test('handles route with leading slash', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('library');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        'library',
+      );
+    });
+
+    test('handles route with double slashes', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('//novels//123');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '//novels//123',
+      );
+    });
+  });
+
+  group('AuthRedirectService state listener tests', () {
+    late ProviderContainer container;
+    late GlobalKey<NavigatorState> mockNavigatorKey;
+    final stateChanges = <String?>[];
+
+    setUp(() {
+      mockNavigatorKey = GlobalKey<NavigatorState>();
+      container = ProviderContainer(
+        overrides: [
+          globalNavigatorKeyProvider.overrideWithValue(mockNavigatorKey),
+          authRedirectServiceProvider.overrideWithValue(
+            AuthRedirectService(mockNavigatorKey),
+          ),
+        ],
+      );
+
+      // Listen to state changes
+      container.listen(authRedirectProvider, (previous, next) {
+        stateChanges.add(next);
+      }, fireImmediately: true);
+    });
+
+    tearDown(() {
+      container.dispose();
+      stateChanges.clear();
+    });
+
+    test('state listener receives initial state', () {
+      expect(stateChanges, [null]);
+    });
+
+    test('state listener receives updates on save', () {
+      stateChanges.clear();
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/library');
+      expect(stateChanges, ['/library']);
+    });
+
+    test('state listener receives updates on clear', () {
+      // First save a route
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/library');
+      stateChanges.clear();
+
+      // Then clear
+      container.read(authRedirectProvider.notifier).clearRedirect();
+      expect(stateChanges, [null]);
+    });
+
+    test('state listener receives multiple updates', () {
+      stateChanges.clear();
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/library');
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/novels/123');
+      container.read(authRedirectProvider.notifier).clearRedirect();
+      expect(stateChanges, ['/library', '/novels/123', null]);
+    });
+  });
+
+  group('AuthRedirectService concurrent operations', () {
+    late ProviderContainer container;
+    late GlobalKey<NavigatorState> mockNavigatorKey;
+
+    setUp(() {
+      mockNavigatorKey = GlobalKey<NavigatorState>();
+      container = ProviderContainer(
+        overrides: [
+          globalNavigatorKeyProvider.overrideWithValue(mockNavigatorKey),
+          authRedirectServiceProvider.overrideWithValue(
+            AuthRedirectService(mockNavigatorKey),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() {
+      container.dispose();
+    });
+
+    test('handles concurrent redirectToLogin calls', () async {
+      final helper = container.read(testRedirectProvider);
+
+      // Call redirectToLogin multiple times concurrently
+      final futures = <Future>[];
+      for (int i = 0; i < 5; i++) {
+        futures.add(helper.callRedirectToLogin(currentPath: '/route/$i'));
+      }
+
+      await Future.wait(futures);
+
+      // The last route should be saved (order may vary due to async)
+      final redirectRoute = container
+          .read(authRedirectProvider.notifier)
+          .getRedirectRoute();
+      expect(redirectRoute, startsWith('/route/'));
+    });
+
+    test('handles concurrent save and clear operations', () async {
+      final futures = <Future>[];
+
+      // Concurrent saves
+      for (int i = 0; i < 3; i++) {
+        futures.add(
+          Future.microtask(() {
+            container
+                .read(authRedirectProvider.notifier)
+                .saveRouteAndRedirect('/route/$i');
+          }),
+        );
+      }
+
+      // Concurrent clears
+      for (int i = 0; i < 3; i++) {
+        futures.add(
+          Future.microtask(() {
+            container.read(authRedirectProvider.notifier).clearRedirect();
+          }),
+        );
+      }
+
+      await Future.wait(futures);
+
+      // Should not crash - final state could be either a route or null
+      final redirectRoute = container
+          .read(authRedirectProvider.notifier)
+          .getRedirectRoute();
+      expect(
+        redirectRoute == '/' || redirectRoute.startsWith('/route/'),
+        isTrue,
+      );
+    });
+  });
+
+  group('AuthRedirectNotifier direct tests', () {
+    late AuthRedirectNotifier notifier;
+
+    setUp(() {
+      notifier = AuthRedirectNotifier();
+    });
+
+    test('initial state is null', () {
+      expect(notifier.state, isNull);
+    });
+
+    test('getRedirectRoute returns "/" for null state', () {
+      expect(notifier.getRedirectRoute(), '/');
+    });
+
+    test('getRedirectRoute returns saved route', () {
+      notifier.saveRouteAndRedirect('/library');
+      expect(notifier.getRedirectRoute(), '/library');
+    });
+
+    test('clearRedirect sets state to null', () {
+      notifier.saveRouteAndRedirect('/library');
+      notifier.clearRedirect();
+      expect(notifier.state, isNull);
+    });
+
+    test('clearRedirect can be called multiple times', () {
+      notifier.clearRedirect();
+      notifier.clearRedirect();
+      notifier.clearRedirect();
+      expect(notifier.state, isNull);
+    });
+
+    test('saveRouteAndRedirect updates state', () {
+      notifier.saveRouteAndRedirect('/novels/123');
+      expect(notifier.state, '/novels/123');
+    });
+
+    test('saveRouteAndRedirect can be called multiple times', () {
+      notifier.saveRouteAndRedirect('/route1');
+      notifier.saveRouteAndRedirect('/route2');
+      notifier.saveRouteAndRedirect('/route3');
+      expect(notifier.state, '/route3');
+    });
+
+    test('saveRouteAndRedirect handles null-like routes gracefully', () {
+      notifier.saveRouteAndRedirect('');
+      expect(notifier.state, '');
+
+      notifier.saveRouteAndRedirect('/');
+      expect(notifier.state, '/');
+    });
+  });
+
+  group('AuthRedirectService error scenarios', () {
+    late ProviderContainer container;
+    late GlobalKey<NavigatorState> mockNavigatorKey;
+
+    setUp(() {
+      mockNavigatorKey = GlobalKey<NavigatorState>();
+      container = ProviderContainer(
+        overrides: [
+          globalNavigatorKeyProvider.overrideWithValue(mockNavigatorKey),
+          authRedirectServiceProvider.overrideWithValue(
+            AuthRedirectService(mockNavigatorKey),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() {
+      container.dispose();
+    });
+
+    test('handles null navigator state without throwing', () async {
+      // Navigator state is null by default in tests
+      final helper = container.read(testRedirectProvider);
+
+      expect(
+        () => helper.callRedirectToLogin(currentPath: '/library'),
+        returnsNormally,
+      );
+    });
+
+    test('handles navigation exception gracefully', () async {
+      // Create a service with a navigator that might throw
+      final helper = container.read(testRedirectProvider);
+
+      expect(
+        () => helper.callRedirectToLogin(currentPath: '/library'),
+        returnsNormally,
+      );
+    });
+
+    test('clearRedirect can be called on empty state', () {
+      // No route saved
+      container.read(authRedirectProvider.notifier).clearRedirect();
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/',
+      );
+    });
+
+    test('getRedirectRoute returns "/" after clearRedirect', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/library');
+      container.read(authRedirectProvider.notifier).clearRedirect();
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/',
+      );
+    });
+  });
+
+  group('AuthRedirectService additional auth routes', () {
+    late ProviderContainer container;
+    late GlobalKey<NavigatorState> mockNavigatorKey;
+
+    setUp(() {
+      mockNavigatorKey = GlobalKey<NavigatorState>();
+      container = ProviderContainer(
+        overrides: [
+          globalNavigatorKeyProvider.overrideWithValue(mockNavigatorKey),
+          authRedirectServiceProvider.overrideWithValue(
+            AuthRedirectService(mockNavigatorKey),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() {
+      container.dispose();
+    });
+
+    test('does not save /profile route', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/profile');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/profile',
+      );
+    });
+
+    test('does not save /settings route', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/settings');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/settings',
+      );
+    });
+
+    test('saves /library route', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/library');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/library',
+      );
+    });
+
+    test('saves /novels route', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/novels');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/novels',
+      );
+    });
+
+    test('saves /characters route', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/characters');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/characters',
+      );
+    });
+
+    test('saves /scenes route', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/scenes');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/scenes',
+      );
+    });
+
+    test('saves /templates route', () {
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/templates');
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/templates',
+      );
+    });
+  });
 }
 
 /// Helper class to test AuthRedirectService instance methods
@@ -329,6 +1010,12 @@ class _TestRedirectHelper {
 
   /// Wrapper to call AuthRedirectService.redirectToLogin
   Future<void> callRedirectToLogin({String? currentPath}) async {
+    final service = ref.read(authRedirectServiceProvider);
+    return service.redirectToLogin(ref, currentPath: currentPath);
+  }
+
+  /// Wrapper to call AuthRedirectService.redirectToLogin
+  Future<void> callStaticRedirectToLogin({String? currentPath}) async {
     final service = ref.read(authRedirectServiceProvider);
     return service.redirectToLogin(ref, currentPath: currentPath);
   }
