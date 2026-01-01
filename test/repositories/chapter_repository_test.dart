@@ -9,6 +9,7 @@ import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/services/network_monitor.dart';
 import 'package:writer/services/offline_queue_service.dart';
+import 'package:writer/common/errors/offline_exception.dart';
 
 class MockRemoteRepository extends Mock implements RemoteRepository {}
 
@@ -61,6 +62,7 @@ void main() {
     repo = ChapterRepository(
       remote,
       mockLocal,
+      offlineQueue: mockOfflineQueue,
       networkMonitor: mockNetworkMonitor,
     );
   });
@@ -404,6 +406,282 @@ void main() {
         ).thenThrow(Exception('Network error'));
 
         expect(() => repo.updateChapterIdx('c1', 5), throwsException);
+      });
+    });
+
+    group('Offline functionality', () {
+      setUp(() {
+        // Override the default setup for offline tests
+        when(
+          () => mockNetworkMonitor.isConnected,
+        ).thenAnswer((_) async => false);
+        // Ensure offline queue is mocked for offline tests
+        when(() => mockOfflineQueue.enqueue(any())).thenAnswer((_) async {});
+
+        // Re-create repository with offline settings
+        repo = ChapterRepository(
+          remote,
+          mockLocal,
+          offlineQueue: mockOfflineQueue,
+          networkMonitor: mockNetworkMonitor,
+        );
+      });
+
+      group('updateChapter offline', () {
+        test('queues update operation when offline', () async {
+          final chap = Chapter(
+            id: 'c1',
+            novelId: 'n1',
+            idx: 1,
+            title: 'Updated Title',
+            content: 'Updated content',
+          );
+
+          try {
+            await repo.updateChapter(chap);
+            fail('Expected OfflineException');
+          } catch (e) {
+            expect(e, isA<OfflineException>());
+          }
+
+          verify(() => mockLocal.saveChapter(any())).called(1);
+
+          final captured = verify(
+            () => mockOfflineQueue.enqueue(captureAny()),
+          ).captured;
+          expect(captured.length, 1);
+          final operation = captured.first as OfflineOperation;
+          expect(operation.type, OperationType.updateChapter);
+          expect(operation.chapterId, 'c1');
+          expect(operation.novelId, 'n1');
+          expect(operation.data!['title'], 'Updated Title');
+          expect(operation.data!['content'], 'Updated content');
+        });
+
+        test('handles update without content when offline', () async {
+          final chap = Chapter(
+            id: 'c1',
+            novelId: 'n1',
+            idx: 1,
+            title: 'Updated Title',
+            content: null,
+          );
+
+          try {
+            await repo.updateChapter(chap);
+            fail('Expected OfflineException');
+          } catch (e) {
+            expect(e, isA<OfflineException>());
+          }
+
+          // Use captureAny to see what was actually called
+          final captured = verify(
+            () => mockOfflineQueue.enqueue(captureAny()),
+          ).captured;
+          expect(captured.length, 1);
+          verifyNever(() => mockLocal.saveChapter(any()));
+        });
+
+        test('generates SHA for content when offline', () async {
+          final chap = Chapter(
+            id: 'c1',
+            novelId: 'n1',
+            idx: 1,
+            title: 'Title',
+            content: 'test content',
+          );
+
+          try {
+            await repo.updateChapter(chap);
+            fail('Expected OfflineException');
+          } catch (e) {
+            expect(e, isA<OfflineException>());
+          }
+
+          final captured = verify(
+            () => mockOfflineQueue.enqueue(captureAny()),
+          ).captured;
+          expect(captured.length, 1);
+          final operation = captured.first as OfflineOperation;
+          expect(operation.data!['sha'], isNotNull);
+          expect(operation.data!['sha'], isA<String>());
+        });
+      });
+
+      group('updateChapterIdx offline', () {
+        test('queues index update operation when offline', () async {
+          final cache = ChapterCache(
+            chapterId: 'c1',
+            novelId: 'n1',
+            idx: 1,
+            title: 'Original Title',
+            content: 'Original content',
+            lastUpdated: DateTime.now(),
+          );
+          when(() => mockLocal.getChapter('c1')).thenAnswer((_) async => cache);
+
+          expect(
+            () => repo.updateChapterIdx('c1', 5),
+            throwsA(isA<OfflineException>()),
+          );
+
+          verify(() => mockOfflineQueue.enqueue(any())).called(1);
+          verify(() => mockLocal.saveChapter(any())).called(1);
+
+          final captured = verify(
+            () => mockOfflineQueue.enqueue(captureAny()),
+          ).captured;
+          final operation = captured.first as OfflineOperation;
+          expect(operation.type, OperationType.updateChapterIdx);
+          expect(operation.chapterId, 'c1');
+          expect(operation.novelId, 'n1');
+          expect(operation.data!['chapter_id'], 'c1');
+          expect(operation.data!['new_idx'], 5);
+        });
+
+        test('handles missing cache gracefully when offline', () async {
+          when(() => mockLocal.getChapter('c1')).thenAnswer((_) async => null);
+
+          try {
+            await repo.updateChapterIdx('c1', 5);
+            fail('Expected OfflineException');
+          } catch (e) {
+            expect(e, isA<OfflineException>());
+          }
+
+          final captured = verify(
+            () => mockOfflineQueue.enqueue(captureAny()),
+          ).captured;
+          expect(captured.length, 1);
+          verifyNever(() => mockLocal.saveChapter(any()));
+
+          final operation = captured.first as OfflineOperation;
+          expect(operation.type, OperationType.updateChapterIdx);
+          expect(operation.chapterId, 'c1');
+          expect(operation.data!['chapter_id'], 'c1');
+          expect(operation.data!['new_idx'], 5);
+        });
+      });
+
+      group('createChapter offline', () {
+        test(
+          'queues create operation and saves to cache when offline',
+          () async {
+            try {
+              await repo.createChapter(
+                novelId: 'n1',
+                idx: 1,
+                title: 'New Chapter',
+                content: 'New content',
+              );
+              fail('Expected OfflineException');
+            } catch (e) {
+              expect(e, isA<OfflineException>());
+            }
+
+            final captured = verify(
+              () => mockOfflineQueue.enqueue(captureAny()),
+            ).captured;
+            expect(captured.length, 1);
+            verify(() => mockLocal.saveChapter(any())).called(1);
+            final operation = captured.first as OfflineOperation;
+            expect(operation.type, OperationType.createChapter);
+            expect(operation.novelId, 'n1');
+            expect(operation.data!['novel_id'], 'n1');
+            expect(operation.data!['idx'], 1);
+            expect(operation.data!['title'], 'New Chapter');
+            expect(operation.data!['content'], 'New content');
+            expect(operation.data!['sha'], isNotNull);
+          },
+        );
+
+        test('generates temporary local ID when offline', () async {
+          final startTime = DateTime.now().millisecondsSinceEpoch;
+
+          try {
+            await repo.createChapter(novelId: 'n1', idx: 1);
+            fail('Expected OfflineException');
+          } catch (e) {
+            expect(e, isA<OfflineException>());
+          }
+
+          final captured = verify(
+            () => mockOfflineQueue.enqueue(captureAny()),
+          ).captured;
+          expect(captured.length, 1);
+          final operation = captured.first as OfflineOperation;
+          expect(operation.chapterId, startsWith('local_'));
+          // The timestamp should be close to our start time (within 2 seconds)
+          final timestampStr = operation.chapterId!.replaceFirst('local_', '');
+          final timestamp = int.parse(timestampStr);
+          expect(timestamp, greaterThanOrEqualTo(startTime));
+          expect(timestamp, lessThan(startTime + 2000));
+        });
+
+        test('handles creation without content when offline', () async {
+          try {
+            await repo.createChapter(
+              novelId: 'n1',
+              idx: 1,
+              title: 'Untitled',
+              content: null,
+            );
+            fail('Expected OfflineException');
+          } catch (e) {
+            expect(e, isA<OfflineException>());
+          }
+
+          final captured = verify(
+            () => mockOfflineQueue.enqueue(captureAny()),
+          ).captured;
+          expect(captured.length, 1);
+          final operation = captured.first as OfflineOperation;
+          expect(operation.data!['content'], isNull);
+          expect(operation.data!['sha'], isNotNull);
+        });
+      });
+
+      group('deleteChapter offline', () {
+        test(
+          'queues delete operation and removes from cache when offline',
+          () async {
+            try {
+              await repo.deleteChapter('c1');
+              fail('Expected OfflineException');
+            } catch (e) {
+              expect(e, isA<OfflineException>());
+            }
+
+            verify(() => mockLocal.removeChapter('c1')).called(1);
+
+            final captured = verify(
+              () => mockOfflineQueue.enqueue(captureAny()),
+            ).captured;
+            expect(captured.length, 1);
+            final operation = captured.first as OfflineOperation;
+            expect(operation.type, OperationType.deleteChapter);
+            expect(operation.chapterId, 'c1');
+            expect(operation.data!['chapter_id'], 'c1');
+          },
+        );
+
+        test('handles cache removal failure gracefully when offline', () async {
+          when(
+            () => mockLocal.removeChapter('c1'),
+          ).thenThrow(Exception('Cache error'));
+
+          try {
+            await repo.deleteChapter('c1');
+            fail('Expected OfflineException');
+          } catch (e) {
+            expect(e, isA<OfflineException>());
+          }
+
+          final captured = verify(
+            () => mockOfflineQueue.enqueue(captureAny()),
+          ).captured;
+          expect(captured.length, 1);
+        });
       });
     });
   });

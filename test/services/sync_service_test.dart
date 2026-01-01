@@ -35,6 +35,11 @@ void main() {
       mockNetworkMonitor = MockNetworkMonitor();
       mockPrefs = MockSharedPreferences();
 
+      // Stub the isOnline getter
+      when(mockNetworkMonitor.isOnline).thenReturn(true);
+      // Stub the getPendingCount method
+      when(mockOfflineQueue.getPendingCount()).thenAnswer((_) async => 0);
+
       syncService = SyncService(
         offlineQueue: mockOfflineQueue,
         remote: mockRemote,
@@ -113,6 +118,11 @@ void main() {
 
     group('pending operations', () {
       test('should return pending operations count', () async {
+        // Reset mock to clear initialization call from constructor
+        reset(mockOfflineQueue);
+        // Re-stub isOnline getter after reset
+        when(mockNetworkMonitor.isOnline).thenReturn(true);
+
         when(mockOfflineQueue.getPendingCount()).thenAnswer((_) async => 5);
 
         final count = await syncService.pendingOperationsCount;
