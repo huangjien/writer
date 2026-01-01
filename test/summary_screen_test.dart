@@ -467,4 +467,61 @@ void main() {
     final sentenceFieldWidget = tester.widget<TextFormField>(sentenceField);
     expect(sentenceFieldWidget.controller?.text, 'AI update for sentence');
   });
+
+  testWidgets('SummaryScreen handles rapid AI coach toggling without error', (
+    tester,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    final repo = MockNovelRepository();
+    final novel = const Novel(
+      id: 'n-1',
+      title: 'Test Novel',
+      author: 'Author',
+      description: 'Existing description',
+      coverUrl: null,
+      languageCode: 'en',
+      isPublic: true,
+    );
+    final client = MockClient((request) async {
+      return http.Response('not found', 404);
+    });
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          novelRepositoryProvider.overrideWithValue(repo),
+          novelProvider('n-1').overrideWithValue(AsyncValue.data(novel)),
+          chaptersProvider('n-1').overrideWithValue(AsyncValue.data([])),
+          snowflakeServiceProvider.overrideWithValue(
+            SnowflakeService(
+              RemoteRepository('http://example.com/', client: client),
+            ),
+          ),
+        ],
+        child: const MaterialApp(home: SummaryScreen(novelId: 'n-1')),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final sentenceField = find.widgetWithText(
+      TextFormField,
+      'Sentence Summary',
+    );
+    await tester.ensureVisible(sentenceField);
+    final toggleBtn = find.descendant(
+      of: sentenceField,
+      matching: find.byTooltip('AI sentence summary'),
+    );
+
+    // Rapid toggling
+    for (int i = 0; i < 5; i++) {
+      await tester.tap(toggleBtn);
+      await tester.pump(); // Pump a frame but don't settle
+    }
+
+    await tester.pumpAndSettle();
+
+    // Should verify that no exception was thrown (implicit in test passing)
+  });
 }

@@ -520,17 +520,19 @@ void main() {
           );
           when(() => mockLocal.getChapter('c1')).thenAnswer((_) async => cache);
 
-          expect(
-            () => repo.updateChapterIdx('c1', 5),
-            throwsA(isA<OfflineException>()),
-          );
+          try {
+            await repo.updateChapterIdx('c1', 5);
+            fail('Expected OfflineException');
+          } catch (e) {
+            expect(e, isA<OfflineException>());
+          }
 
-          verify(() => mockOfflineQueue.enqueue(any())).called(1);
           verify(() => mockLocal.saveChapter(any())).called(1);
 
           final captured = verify(
             () => mockOfflineQueue.enqueue(captureAny()),
           ).captured;
+          expect(captured.length, 1);
           final operation = captured.first as OfflineOperation;
           expect(operation.type, OperationType.updateChapterIdx);
           expect(operation.chapterId, 'c1');

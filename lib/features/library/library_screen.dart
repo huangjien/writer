@@ -7,6 +7,7 @@ import '../../state/motion_settings.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../state/novel_providers.dart';
+import '../../repositories/novel_repository.dart';
 import '../../models/novel.dart';
 import '../../widgets/recent_chapters.dart';
 import '../../widgets/app_drawer.dart';
@@ -552,6 +553,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                   isSignedIn: true,
                   canRemove: canRemove,
                   canDownload: canDownload,
+                  onRemove: canRemove ? () => _handleDeleteNovel(n) : null,
                 );
               },
             )
@@ -733,6 +735,66 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
 
   void _downloadNovel(String novelId) {
     // TODO: Implement download functionality
+  }
+
+  Future<void> _handleDeleteNovel(Novel n) async {
+    final l10n = AppLocalizations.of(context)!;
+    final isSignedIn = ref.read(isSignedInProvider);
+
+    if (isSignedIn) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(l10n.confirmDelete),
+          content: Text(l10n.confirmDeleteDescription(n.title)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: Text(l10n.delete),
+            ),
+          ],
+        ),
+      );
+      if (confirmed == true) {
+        try {
+          final repo = ref.read(novelRepositoryProvider);
+          await repo.deleteNovel(n.id);
+          ref
+              .read(removedNovelIdsProvider.notifier)
+              .update((state) => <String>{...state, n.id});
+          ref.invalidate(novelsProvider);
+          if (!mounted) return;
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.removedFromLibrary),
+              action: SnackBarAction(
+                label: l10n.undo,
+                onPressed: () {
+                  ref.read(removedNovelIdsProvider.notifier).update((state) {
+                    final next = <String>{...state};
+                    next.remove(n.id);
+                    return next;
+                  });
+                },
+              ),
+            ),
+          );
+        } catch (_) {
+          if (!mounted) return;
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.error)));
+        }
+      }
+    } else {
+      _deleteNovel(n.id);
+    }
   }
 
   void _deleteNovel(String novelId) {

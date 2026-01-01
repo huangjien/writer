@@ -44,16 +44,12 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
     super.initState();
     _lastOutput = widget.lastOutput;
     if (widget.autoAnalyze) {
-      _showChatbot();
+      _chatbotVisible = true;
+      _loadChatHistory();
     }
   }
 
-  Future<void> _showChatbot() async {
-    setState(() {
-      _chatbotVisible = true;
-      _error = null;
-    });
-
+  Future<void> _loadChatHistory() async {
     // Load existing chat history
     try {
       final service = ref.read(snowflakeServiceProvider);
@@ -69,6 +65,15 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());
     }
+  }
+
+  Future<void> _showChatbot() async {
+    setState(() {
+      _chatbotVisible = true;
+      _error = null;
+    });
+
+    await _loadChatHistory();
   }
 
   Future<void> _analyze({String? userResponse}) async {
@@ -160,6 +165,21 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
     }
   }
 
+  String _getCoachTitle(AppLocalizations l10n) {
+    switch (widget.summaryType) {
+      case 'sentence':
+        return 'AI ${l10n.sentenceSummary}';
+      case 'paragraph':
+        return 'AI ${l10n.paragraphSummary}';
+      case 'page':
+        return 'AI ${l10n.pageSummary}';
+      case 'expanded':
+        return 'AI ${l10n.expandedSummary}';
+      default:
+        return 'AI Coach';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
@@ -203,7 +223,7 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
         child: ElevatedButton.icon(
           onPressed: _showChatbot,
           icon: const Icon(Icons.chat),
-          label: Text('AI Sentence Summary'),
+          label: Text(_getCoachTitle(l10n)),
         ),
       );
     }
@@ -236,7 +256,7 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'AI Sentence Summary',
+                    _getCoachTitle(l10n),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -675,52 +695,49 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                     ),
                   ),
                 ],
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _inputController,
-                        decoration: InputDecoration(
-                          hintText: isDone
-                              ? 'Ask a follow-up question or start new analysis...'
-                              : l10n.reviewSuggestionsHint,
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                        ),
-                        onSubmitted: (val) {
-                          if (val.trim().isNotEmpty) {
-                            _analyze(userResponse: val.trim());
-                            _inputController.clear();
-                          }
-                        },
+                TextField(
+                  controller: _inputController,
+                  decoration: InputDecoration(
+                    hintText: isDone
+                        ? 'Ask a follow-up question or start new analysis...'
+                        : l10n.reviewSuggestionsHint,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: IconButton(
+                        onPressed: _loading
+                            ? null
+                            : () {
+                                final val = _inputController.text.trim();
+                                if (val.isNotEmpty) {
+                                  _analyze(userResponse: val);
+                                  _inputController.clear();
+                                }
+                              },
+                        icon: _loading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.send),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    IconButton.filled(
-                      onPressed: _loading
-                          ? null
-                          : () {
-                              final val = _inputController.text.trim();
-                              if (val.isNotEmpty) {
-                                _analyze(userResponse: val);
-                                _inputController.clear();
-                              }
-                            },
-                      icon: _loading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : const Icon(Icons.send),
-                    ),
-                  ],
+                  ),
+                  onSubmitted: (val) {
+                    if (val.trim().isNotEmpty) {
+                      _analyze(userResponse: val.trim());
+                      _inputController.clear();
+                    }
+                  },
                 ),
               ],
             ),

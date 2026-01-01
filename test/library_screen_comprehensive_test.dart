@@ -9,10 +9,16 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
-import 'package:writer/state/storage_service_provider.dart';
+
 import 'package:writer/state/providers.dart';
 import 'package:writer/shared/widgets/mobile_bottom_nav_bar.dart';
 import 'package:writer/shared/widgets/mobile_fab.dart';
+import 'package:writer/features/library/widgets/enhanced_search_bar.dart';
+import 'package:writer/features/library/widgets/library_item_row.dart';
+import 'package:writer/features/library/widgets/library_grid_item.dart';
+import 'package:writer/repositories/novel_repository.dart';
+import 'package:writer/features/library/library_providers.dart';
+import 'package:writer/widgets/recent_chapters.dart';
 
 void main() {
   group('LibraryScreen - Search Functionality', () {
@@ -39,6 +45,7 @@ void main() {
             memberNovelsProvider.overrideWith((ref) async => const []),
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
+            isSignedInProvider.overrideWith((ref) => true),
           ],
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -863,4 +870,465 @@ void main() {
       expect(find.text('Test Novel for Search'), findsOneWidget);
     });
   });
+
+  group('LibraryScreen - Filtering', () {
+    testWidgets('filter chips update state', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final novels = [
+        const Novel(
+          id: 'n1',
+          title: 'Novel 1',
+          description: '',
+          author: 'Author 1',
+          coverUrl: null,
+          languageCode: 'en',
+          isPublic: true,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            libraryNovelsProvider.overrideWith((ref) async => novels),
+            memberNovelsProvider.overrideWith((ref) async => const []),
+            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            lastProgressProvider.overrideWith((ref, novelId) async => null),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const LibraryScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final readingChip = find.widgetWithIcon(
+        LibraryFilterChip,
+        Icons.menu_book,
+      );
+      expect(readingChip, findsOneWidget);
+      await tester.tap(readingChip);
+      await tester.pumpAndSettle();
+
+      final completedChip = find.widgetWithIcon(
+        LibraryFilterChip,
+        Icons.check_circle,
+      );
+      await tester.tap(completedChip);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Novel 1'), findsNothing);
+      expect(find.text('No novels found.'), findsOneWidget);
+    });
+  });
+
+  group('LibraryScreen - View Mode', () {
+    testWidgets('switches between list and grid view', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final novels = [
+        const Novel(
+          id: 'n1',
+          title: 'Novel 1',
+          description: '',
+          author: 'Author 1',
+          coverUrl: null,
+          languageCode: 'en',
+          isPublic: true,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            libraryNovelsProvider.overrideWith((ref) async => novels),
+            memberNovelsProvider.overrideWith((ref) async => const []),
+            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            lastProgressProvider.overrideWith((ref, novelId) async => null),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const MediaQuery(
+              data: MediaQueryData(size: Size(1200, 800)),
+              child: LibraryScreen(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(LibraryItemRow), findsOneWidget);
+      expect(find.byType(LibraryGridItem), findsNothing);
+
+      final gridButton = find.byIcon(Icons.grid_view);
+      await tester.tap(gridButton);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(LibraryGridItem), findsOneWidget);
+      expect(find.byType(LibraryItemRow), findsNothing);
+
+      final listButton = find.byIcon(Icons.view_list);
+      await tester.tap(listButton);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(LibraryItemRow), findsOneWidget);
+    });
+  });
+
+  group('LibraryScreen - Sorting Logic', () {
+    testWidgets('sorts by title and author', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final novels = [
+        const Novel(
+          id: 'n1',
+          title: 'A Novel',
+          description: '',
+          author: 'Z Author',
+          coverUrl: null,
+          languageCode: 'en',
+          isPublic: true,
+        ),
+        const Novel(
+          id: 'n2',
+          title: 'B Novel',
+          description: '',
+          author: 'A Author',
+          coverUrl: null,
+          languageCode: 'en',
+          isPublic: true,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            libraryNovelsProvider.overrideWith((ref) async => novels),
+            memberNovelsProvider.overrideWith((ref) async => const []),
+            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            lastProgressProvider.overrideWith((ref, novelId) async => null),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const MediaQuery(
+              data: MediaQueryData(size: Size(1200, 800)),
+              child: LibraryScreen(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final rows = find.byType(LibraryItemRow);
+      final firstRow = tester.widget<LibraryItemRow>(rows.at(0));
+      final secondRow = tester.widget<LibraryItemRow>(rows.at(1));
+
+      expect(firstRow.novel.title, 'A Novel');
+      expect(secondRow.novel.title, 'B Novel');
+
+      final dropdown = find.byKey(const Key('sortDropdown'));
+      await tester.tap(dropdown);
+      await tester.pumpAndSettle();
+
+      final dropdownItem = find.text('Author').last;
+      await tester.tap(dropdownItem);
+      await tester.pumpAndSettle();
+
+      final rowsAfter = find.byType(LibraryItemRow);
+      final firstRowAfter = tester.widget<LibraryItemRow>(rowsAfter.at(0));
+      final secondRowAfter = tester.widget<LibraryItemRow>(rowsAfter.at(1));
+
+      expect(firstRowAfter.novel.title, 'B Novel');
+      expect(secondRowAfter.novel.title, 'A Novel');
+    });
+  });
+
+  group('LibraryScreen - Delete and Undo', () {
+    testWidgets('shows delete confirmation dialog on desktop', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final novels = [
+        const Novel(
+          id: 'n1',
+          title: 'Delete Me',
+          description: '',
+          author: 'Author',
+          coverUrl: null,
+          languageCode: 'en',
+          isPublic: true,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            libraryNovelsProvider.overrideWith((ref) async => novels),
+            memberNovelsProvider.overrideWith((ref) async => const []),
+            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            lastProgressProvider.overrideWith((ref, novelId) async => null),
+            isSignedInProvider.overrideWith((ref) => true),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const MediaQuery(
+              data: MediaQueryData(size: Size(1200, 800)),
+              child: LibraryScreen(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final deleteBtn = find.byKey(const Key('removeButton_n1'));
+      expect(deleteBtn, findsOneWidget);
+
+      await tester.tap(deleteBtn);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+
+      // Cancel
+      final cancelButton = find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.text('Cancel'),
+      );
+      await tester.tap(cancelButton);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+  });
+
+  group('LibraryScreen - Undo Functionality', () {
+    testWidgets('shows undo snackbar and restores novel', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final novels = [
+        const Novel(
+          id: 'n1',
+          title: 'Undo Test Novel',
+          description: '',
+          author: 'Author',
+          coverUrl: null,
+          languageCode: 'en',
+          isPublic: true,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            libraryNovelsProvider.overrideWith((ref) async => novels),
+            memberNovelsProvider.overrideWith((ref) async => const []),
+            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            lastProgressProvider.overrideWith((ref, novelId) async => null),
+            novelRepositoryProvider.overrideWithValue(MockNovelRepository()),
+            removedNovelIdsProvider.overrideWith((ref) => {}),
+            isSignedInProvider.overrideWith((ref) => true),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const MediaQuery(
+              data: MediaQueryData(size: Size(1200, 800)),
+              child: LibraryScreen(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify novel is present
+      expect(find.text('Undo Test Novel'), findsOneWidget);
+
+      // Delete
+      final deleteBtn = find.byKey(const Key('removeButton_n1'));
+      await tester.tap(deleteBtn);
+      await tester.pumpAndSettle();
+
+      // Confirm
+      final confirmBtn = find.text('Delete');
+      await tester.tap(confirmBtn);
+      await tester.pumpAndSettle();
+
+      // Verify removed (in UI logic, filtered out by removedIds)
+      expect(find.text('Undo Test Novel'), findsNothing);
+
+      // Undo
+      final undoBtn = find.text('Undo');
+      expect(undoBtn, findsOneWidget);
+      await tester.tap(undoBtn);
+      await tester.pumpAndSettle();
+
+      // Verify restored
+      expect(find.text('Undo Test Novel'), findsOneWidget);
+    });
+  });
+
+  group('LibraryScreen - Mobile Navigation', () {
+    testWidgets('shows tools and more menus', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            libraryNovelsProvider.overrideWith((ref) async => const []),
+            memberNovelsProvider.overrideWith((ref) async => const []),
+            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            lastProgressProvider.overrideWith((ref, novelId) async => null),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const MediaQuery(
+              data: MediaQueryData(size: Size(375, 812)),
+              child: LibraryScreen(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap Tools tab
+      final toolsTab = find.text('Tools');
+      await tester.tap(toolsTab);
+      await tester.pumpAndSettle();
+
+      // Verify Tools menu items (checking for one item is enough to verify menu opened)
+      // "Prompts" is in the tools menu
+      expect(find.text('Prompts'), findsOneWidget);
+
+      // Close bottom sheet
+      await tester.tapAt(const Offset(10, 10)); // Tap outside
+      await tester.pumpAndSettle();
+
+      // Tap More tab
+      final moreTab = find.text('More');
+      await tester.tap(moreTab);
+      await tester.pumpAndSettle();
+
+      // Verify More menu items
+      // "Settings" is in the more menu
+      expect(find.text('Settings'), findsOneWidget);
+    });
+  });
+
+  group('LibraryScreen - Admin Features', () {
+    testWidgets('shows admin controls when admin', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            libraryNovelsProvider.overrideWith((ref) async => const []),
+            memberNovelsProvider.overrideWith((ref) async => const []),
+            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            lastProgressProvider.overrideWith((ref, novelId) async => null),
+            isAdminProvider.overrideWith((ref) => true),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const MediaQuery(
+              data: MediaQueryData(size: Size(1200, 800)),
+              child: LibraryScreen(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify Admin Logs button
+      expect(find.byIcon(Icons.bug_report), findsOneWidget);
+    });
+
+    testWidgets('hides admin controls when not admin', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            libraryNovelsProvider.overrideWith((ref) async => const []),
+            memberNovelsProvider.overrideWith((ref) async => const []),
+            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            lastProgressProvider.overrideWith((ref, novelId) async => null),
+            isAdminProvider.overrideWith((ref) => false),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const MediaQuery(
+              data: MediaQueryData(size: Size(1200, 800)),
+              child: LibraryScreen(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify Admin Logs button is absent
+      expect(find.byIcon(Icons.bug_report), findsNothing);
+    });
+  });
+
+  group('LibraryScreen - Recent Chapters', () {
+    testWidgets('shows recent chapters when signed in', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            libraryNovelsProvider.overrideWith((ref) async => const []),
+            memberNovelsProvider.overrideWith((ref) async => const []),
+            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            lastProgressProvider.overrideWith((ref, novelId) async => null),
+            isSignedInProvider.overrideWith((ref) => true),
+            // Mock recentProgressDetailsProvider if needed, assuming default is empty list or similar
+            recentProgressDetailsProvider.overrideWith((ref) => []),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const MediaQuery(
+              data: MediaQueryData(size: Size(1200, 800)),
+              child: LibraryScreen(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Recently Read'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Recently Read'), findsOneWidget);
+      expect(find.byType(RecentChapters), findsOneWidget);
+    });
+  });
+}
+
+class MockNovelRepository implements NovelRepository {
+  @override
+  Future<void> deleteNovel(String id) async {}
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

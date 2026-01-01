@@ -316,6 +316,54 @@ void main() {
                       isSignedIn: true,
                       canRemove: true,
                       canDownload: false,
+                      onRemove: () async {
+                        // Show confirmation dialog for signed-in users
+                        final confirmed = await showDialog<bool>(
+                          context: tester.element(find.byType(Scaffold)),
+                          builder: (ctx) => AlertDialog(
+                            title: const Text('Confirm Delete'),
+                            content: Text('Are you sure you want to delete ${n.title}?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(ctx).pop(false),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(ctx).pop(true),
+                                child: const Text('Delete'),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirmed == true) {
+                          await fakeRepo.deleteNovel(n.id);
+                          // Update provider through Consumer's ref
+                          final container = ProviderScope.containerOf(
+                            tester.element(find.byType(MaterialApp)),
+                          );
+                          container
+                              .read(lib_providers.removedNovelIdsProvider.notifier)
+                              .update((state) => <String>{...state, n.id});
+                          // Show snackbar
+                          ScaffoldMessenger.of(tester.element(find.byType(Scaffold))).showSnackBar(
+                            SnackBar(
+                              content: const Text('Removed from Library'),
+                              action: SnackBarAction(
+                                label: 'Undo',
+                                onPressed: () {
+                                  container
+                                      .read(lib_providers.removedNovelIdsProvider.notifier)
+                                      .update((state) {
+                                    final next = <String>{...state};
+                                    next.remove(n.id);
+                                    return next;
+                                  });
+                                },
+                              ),
+                            ),
+                          );
+                        }
+                      },
                     ),
                     Text('Removed count: ${removedIds.length}'),
                     if (removedIds.contains(n.id)) const Text('Novel Removed'),
@@ -394,6 +442,33 @@ void main() {
                       isSignedIn: false,
                       canRemove: true,
                       canDownload: false,
+                      onRemove: () {
+                        // For local users, delete immediately without dialog
+                        final container = ProviderScope.containerOf(
+                          tester.element(find.byType(MaterialApp)),
+                        );
+                        container
+                            .read(lib_providers.removedNovelIdsProvider.notifier)
+                            .update((state) => <String>{...state, n.id});
+                        // Show snackbar
+                        ScaffoldMessenger.of(tester.element(find.byType(Scaffold))).showSnackBar(
+                          SnackBar(
+                            content: const Text('Removed from Library'),
+                            action: SnackBarAction(
+                              label: 'Undo',
+                              onPressed: () {
+                                container
+                                    .read(lib_providers.removedNovelIdsProvider.notifier)
+                                    .update((state) {
+                                  final next = <String>{...state};
+                                  next.remove(n.id);
+                                  return next;
+                                });
+                              },
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     if (removedIds.contains(n.id)) const Text('Novel Removed'),
                   ],
@@ -469,6 +544,35 @@ void main() {
                       isSignedIn: true,
                       canRemove: true,
                       canDownload: true,
+                      onRemove: () async {
+                        // Show confirmation dialog for signed-in users
+                        final confirmed = await showDialog<bool>(
+                          context: tester.element(find.byType(Scaffold)),
+                          builder: (ctx) => AlertDialog(
+                            title: const Text('Confirm Delete'),
+                            content: Text('Are you sure you want to delete ${n.title}?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(ctx).pop(false),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(ctx).pop(true),
+                                child: const Text('Delete'),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirmed == true) {
+                          // Update provider through Consumer's ref
+                          final container = ProviderScope.containerOf(
+                            tester.element(find.byType(MaterialApp)),
+                          );
+                          container
+                              .read(lib_providers.removedNovelIdsProvider.notifier)
+                              .update((state) => <String>{...state, n.id});
+                        }
+                      },
                     ),
                     if (removedIds.contains(n.id)) const Text('Novel Removed'),
                   ],

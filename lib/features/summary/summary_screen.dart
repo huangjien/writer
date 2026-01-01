@@ -41,6 +41,13 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   bool _showParagraphCoach = false;
   bool _showPageCoach = false;
 
+  void _resetCoaches() {
+    _showCoach = false;
+    _showSentenceCoach = false;
+    _showParagraphCoach = false;
+    _showPageCoach = false;
+  }
+
   // AI satisfaction flags - true means user is satisfied, no auto AI calls
   bool _sentenceAiSatisfied = false;
   bool _paragraphAiSatisfied = false;
@@ -166,12 +173,11 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                             ),
                             onPressed: () {
                               setState(() {
-                                _showSentenceCoach = !_showSentenceCoach;
-                                // Ensure only one coach is active at a time
                                 if (_showSentenceCoach) {
-                                  _showCoach = false;
-                                  _showParagraphCoach = false;
-                                  _showPageCoach = false;
+                                  _showSentenceCoach = false;
+                                } else {
+                                  _resetCoaches();
+                                  _showSentenceCoach = true;
                                 }
                               });
                             },
@@ -438,12 +444,15 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          if (_showCoach ||
+          final showCoach =
+              _showCoach ||
               _showSentenceCoach ||
               _showParagraphCoach ||
-              _showPageCoach) {
-            Widget activeCoachContent;
+              _showPageCoach;
 
+          Widget? activeCoachContent;
+
+          if (showCoach) {
             if (_showSentenceCoach) {
               activeCoachContent = SnowflakeCoachWidget(
                 novelId: widget.novelId,
@@ -517,30 +526,29 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                 },
               );
             }
+          }
 
-            // Split View on large screens, or BottomSheet style on small?
-            // Since this is likely a desktop app, let's just split 50/50 or use a sidebar
-            if (constraints.maxWidth > 800) {
-              return Row(
-                children: [
-                  Expanded(flex: 2, child: buildMainContent()),
+          if (constraints.maxWidth > 800) {
+            return Row(
+              children: [
+                Expanded(flex: 2, child: buildMainContent()),
+                if (showCoach && activeCoachContent != null) ...[
                   const VerticalDivider(width: 1),
                   Expanded(flex: 1, child: activeCoachContent),
                 ],
-              );
-            } else {
-              // On smaller screens, maybe column? Or just take space below?
-              // Let's use column for now
-              return Column(
-                children: [
-                  Expanded(flex: 1, child: buildMainContent()),
+              ],
+            );
+          } else {
+            return Column(
+              children: [
+                Expanded(flex: 1, child: buildMainContent()),
+                if (showCoach && activeCoachContent != null) ...[
                   const Divider(height: 1),
                   Expanded(flex: 1, child: activeCoachContent),
                 ],
-              );
-            }
+              ],
+            );
           }
-          return buildMainContent();
         },
       ),
     );

@@ -78,6 +78,7 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
         languageCode: _languageCode,
         isPublic: _isPublic,
       );
+      ref.invalidate(novelProvider(widget.novelId));
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)!.progressSaved)),

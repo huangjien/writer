@@ -10,7 +10,6 @@ import '../../../state/novel_providers.dart';
 import '../../../state/progress_providers.dart';
 import '../../../shared/image_utils.dart';
 import '../../../repositories/chapter_repository.dart';
-import '../../../repositories/novel_repository.dart';
 import '../../../models/chapter.dart';
 import '../../../models/user_progress.dart';
 import '../../library/library_providers.dart';
@@ -34,11 +33,13 @@ class LibraryItemRow extends ConsumerWidget {
     required this.isSignedIn,
     required this.canRemove,
     required this.canDownload,
+    this.onRemove,
   });
   final Novel novel;
   final bool isSignedIn;
   final bool canRemove;
   final bool canDownload;
+  final VoidCallback? onRemove;
 
   Widget _progressNotStarted(AppLocalizations l10n, MotionSettings motion) {
     final percentLabel = '${l10n.currentProgress}: 0%';
@@ -273,7 +274,7 @@ class LibraryItemRow extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
-    if (!canRemove) return const SizedBox.shrink();
+    if (!canRemove || onRemove == null) return const SizedBox.shrink();
     return FocusTraversalOrder(
       order: const NumericFocusOrder(3.0),
       child: Tooltip(
@@ -285,81 +286,7 @@ class LibraryItemRow extends ConsumerWidget {
           child: IconButton(
             key: Key('removeButton_${n.id}'),
             icon: const Icon(Icons.delete_outline),
-            onPressed: () async {
-              if (isSignedIn) {
-                final confirmed = await showDialog<bool>(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: Text(l10n.confirmDelete),
-                    content: Text(l10n.confirmDeleteDescription(n.title)),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(ctx).pop(false),
-                        child: Text(l10n.cancel),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.of(ctx).pop(true),
-                        child: Text(l10n.delete),
-                      ),
-                    ],
-                  ),
-                );
-                if (confirmed == true) {
-                  try {
-                    final repo = ref.read(novelRepositoryProvider);
-                    await repo.deleteNovel(n.id);
-                    ref
-                        .read(removedNovelIdsProvider.notifier)
-                        .update((state) => <String>{...state, n.id});
-                    ref.invalidate(novelsProvider);
-                    if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(l10n.removedFromLibrary),
-                        action: SnackBarAction(
-                          label: l10n.undo,
-                          onPressed: () {
-                            ref.read(removedNovelIdsProvider.notifier).update((
-                              state,
-                            ) {
-                              final next = <String>{...state};
-                              next.remove(n.id);
-                              return next;
-                            });
-                          },
-                        ),
-                      ),
-                    );
-                  } catch (_) {
-                    if (!context.mounted) return;
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(l10n.error)));
-                  }
-                }
-              } else {
-                ref
-                    .read(removedNovelIdsProvider.notifier)
-                    .update((state) => <String>{...state, n.id});
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.removedFromLibrary),
-                    action: SnackBarAction(
-                      label: l10n.undo,
-                      onPressed: () {
-                        ref.read(removedNovelIdsProvider.notifier).update((
-                          state,
-                        ) {
-                          final next = <String>{...state};
-                          next.remove(n.id);
-                          return next;
-                        });
-                      },
-                    ),
-                  ),
-                );
-              }
-            },
+            onPressed: onRemove,
           ),
         ),
       ),
@@ -421,81 +348,9 @@ class LibraryItemRow extends ConsumerWidget {
           ),
           if (canRemove)
             _RemoveIntent: CallbackAction<_RemoveIntent>(
-              onInvoke: (_) async {
-                if (isSignedIn) {
-                  final confirmed = await showDialog<bool>(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      title: Text(l10n.confirmDelete),
-                      content: Text(l10n.confirmDeleteDescription(n.title)),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(ctx).pop(false),
-                          child: Text(l10n.cancel),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.of(ctx).pop(true),
-                          child: Text(l10n.delete),
-                        ),
-                      ],
-                    ),
-                  );
-                  if (confirmed == true) {
-                    try {
-                      final repo = ref.read(novelRepositoryProvider);
-                      await repo.deleteNovel(n.id);
-                      ref
-                          .read(removedNovelIdsProvider.notifier)
-                          .update((state) => <String>{...state, n.id});
-                      ref.invalidate(novelsProvider);
-                      if (!context.mounted) return null;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l10n.removedFromLibrary),
-                          action: SnackBarAction(
-                            label: l10n.undo,
-                            onPressed: () {
-                              ref.read(removedNovelIdsProvider.notifier).update(
-                                (state) {
-                                  final next = <String>{...state};
-                                  next.remove(n.id);
-                                  return next;
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                    } catch (_) {
-                      if (!context.mounted) return null;
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text(l10n.error)));
-                    }
-                  }
-                } else {
-                  ref
-                      .read(removedNovelIdsProvider.notifier)
-                      .update((state) => <String>{...state, n.id});
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(l10n.removedFromLibrary),
-                        action: SnackBarAction(
-                          label: l10n.undo,
-                          onPressed: () {
-                            ref.read(removedNovelIdsProvider.notifier).update((
-                              state,
-                            ) {
-                              final next = <String>{...state};
-                              next.remove(n.id);
-                              return next;
-                            });
-                          },
-                        ),
-                      ),
-                    );
-                  }
+              onInvoke: (_) {
+                if (canRemove && onRemove != null) {
+                  onRemove!();
                 }
                 return null;
               },

@@ -179,12 +179,17 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(labelText: l10n.email),
+              textInputAction: TextInputAction.next,
+              onSubmitted: (_) {
+                FocusScope.of(context).nextFocus();
+              },
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(labelText: l10n.password),
+              onSubmitted: (_) => _signIn(context),
             ),
             const SizedBox(height: 20),
             if (_error != null) ...[

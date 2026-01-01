@@ -38,6 +38,7 @@ void main() {
               isSignedIn: false,
               canRemove: true,
               canDownload: true,
+              onRemove: () {},
             ),
           ),
         ),
