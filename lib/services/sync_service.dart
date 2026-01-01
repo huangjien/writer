@@ -15,6 +15,12 @@ class SyncService {
   final NetworkMonitor _networkMonitor;
   late final StreamController<SyncState> _syncStateController;
   final Future<SharedPreferences> Function() _prefs;
+  SyncState _currentSyncState = const SyncState(
+    status: SyncStatus.synced,
+    pendingOperations: 0,
+    errorMessage: null,
+    lastSyncTime: null,
+  );
 
   SyncService({
     required OfflineQueueService offlineQueue,
@@ -25,25 +31,54 @@ class SyncService {
        _remote = remote,
        _networkMonitor = networkMonitor,
        _prefs = prefs ?? SharedPreferences.getInstance,
-       _syncStateController = StreamController<SyncState>();
+       _syncStateController = StreamController<SyncState>() {
+    // Initialize with current network status
+    _initializeSyncState().then((_) {});
+  }
 
   /// Stream of sync state updates
   Stream<SyncState> get syncStatusStream => _syncStateController.stream;
 
   /// Current sync state
   SyncState get currentSyncState {
-    // Return the last emitted state or a default synced state
-    return SyncState(
-      status: SyncStatus.synced,
-      pendingOperations: 0,
-      errorMessage: null,
-      lastSyncTime: null,
-    );
+    return _currentSyncState;
   }
 
   /// Get pending operations count
   Future<int> get pendingOperationsCount async {
     return await _offlineQueue.getPendingCount();
+  }
+
+  /// Initialize sync state based on current network status
+  Future<void> _initializeSyncState() async {
+    final isOnline = _networkMonitor.isOnline;
+    final pendingCount = await _offlineQueue.getPendingCount();
+
+    if (!isOnline) {
+      _currentSyncState = SyncState(
+        status: SyncStatus.offline,
+        pendingOperations: pendingCount,
+        errorMessage: null,
+        lastSyncTime: null,
+      );
+    } else if (pendingCount > 0) {
+      _currentSyncState = SyncState(
+        status: SyncStatus.syncing,
+        pendingOperations: pendingCount,
+        errorMessage: null,
+        lastSyncTime: null,
+      );
+    } else {
+      _currentSyncState = const SyncState(
+        status: SyncStatus.synced,
+        pendingOperations: 0,
+        errorMessage: null,
+        lastSyncTime: null,
+      );
+    }
+
+    // Emit the initial state
+    _syncStateController.add(_currentSyncState);
   }
 
   /// Start monitoring and syncing
@@ -52,9 +87,18 @@ class SyncService {
     _networkMonitor.startMonitoring();
 
     // Listen to connectivity changes and trigger sync
-    _networkMonitor.connectivityStream.listen((isOnline) {
+    _networkMonitor.connectivityStream.listen((isOnline) async {
       if (isOnline) {
         _scheduleSync();
+      } else {
+        // Update state to offline when network is lost
+        final pendingCount = await _offlineQueue.getPendingCount();
+        _emitSyncState(
+          status: SyncStatus.offline,
+          pendingOperations: pendingCount,
+          errorMessage: null,
+          lastSyncTime: null,
+        );
       }
     });
   }
@@ -223,14 +267,13 @@ class SyncService {
     required String? errorMessage,
     DateTime? lastSyncTime,
   }) {
-    _syncStateController.add(
-      SyncState(
-        status: status,
-        pendingOperations: pendingOperations,
-        errorMessage: errorMessage,
-        lastSyncTime: lastSyncTime,
-      ),
+    _currentSyncState = SyncState(
+      status: status,
+      pendingOperations: pendingOperations,
+      errorMessage: errorMessage,
+      lastSyncTime: lastSyncTime,
     );
+    _syncStateController.add(_currentSyncState);
   }
 
   /// Dispose resources

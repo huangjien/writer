@@ -451,16 +451,18 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                                         ClipboardData(text: content),
                                       );
                                       if (mounted) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              'Copied to clipboard',
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Copied to clipboard',
+                                              ),
+                                              duration: Duration(seconds: 1),
                                             ),
-                                            duration: Duration(seconds: 1),
-                                          ),
-                                        );
+                                          );
+                                        }
                                       }
                                     }
                                   },

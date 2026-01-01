@@ -34,13 +34,32 @@ class AuthRedirectService {
       }
 
       // Get current route if not provided
-      final path = currentPath ?? '/';
+      var path = currentPath;
+      if (path == null) {
+        final context = currentState.context;
+        if (context.mounted) {
+          try {
+            // GoRouterState.of(context) might fail if context is not under a GoRoute builder.
+            // Attempts to get the current location from the router directly.
+            path = GoRouter.of(
+              context,
+            ).routeInformationProvider.value.uri.toString();
+          } catch (_) {
+            path = '/';
+          }
+        }
+      }
+
+      path ??= '/';
 
       // Save the route and navigate to login
       ref.read(authRedirectProvider.notifier).saveRouteAndRedirect(path);
 
       // Navigate to login page
-      currentState.pushNamed('/auth');
+      final context = currentState.context;
+      if (context.mounted) {
+        context.pushNamed('auth');
+      }
     } catch (e) {
       // If navigation fails, just save the redirect route
       ref
