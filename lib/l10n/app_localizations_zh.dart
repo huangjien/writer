@@ -1047,6 +1047,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reviewSuggestionsHint => '查看建议或输入回答...';
 
   @override
+  String get aiGenerationComplete => 'AI 生成完成';
+
+  @override
+  String get clickRegenerateForNew => '点击重新生成获取新建议';
+
+  @override
+  String get regenerate => '重新生成';
+
+  @override
+  String get imSatisfied => '我满意了';
+
+  @override
   String get templateLabel => '模板';
 
   @override

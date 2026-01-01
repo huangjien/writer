@@ -2084,6 +2084,30 @@ abstract class AppLocalizations {
   /// **'Review suggestions or type answer...'**
   String get reviewSuggestionsHint;
 
+  /// No description provided for @aiGenerationComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'AI generation complete'**
+  String get aiGenerationComplete;
+
+  /// No description provided for @clickRegenerateForNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Click Regenerate for new suggestions'**
+  String get clickRegenerateForNew;
+
+  /// No description provided for @regenerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Regenerate'**
+  String get regenerate;
+
+  /// No description provided for @imSatisfied.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m satisfied'**
+  String get imSatisfied;
+
   /// No description provided for @templateLabel.
   ///
   /// In en, this message translates to:

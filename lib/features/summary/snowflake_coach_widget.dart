@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/summary/snowflake_service.dart';
 import 'package:writer/l10n/app_localizations.dart';
@@ -7,14 +8,22 @@ import 'package:writer/models/snowflake.dart';
 
 class SnowflakeCoachWidget extends ConsumerStatefulWidget {
   final String novelId;
+  final String summaryType;
   final String currentSummary;
   final ValueChanged<String> onSummaryUpdated;
+  final bool autoAnalyze;
+  final Function(SnowflakeRefinementOutput)? onAiCompleted;
+  final SnowflakeRefinementOutput? lastOutput;
 
   const SnowflakeCoachWidget({
     super.key,
     required this.novelId,
+    required this.summaryType,
     required this.currentSummary,
     required this.onSummaryUpdated,
+    this.autoAnalyze = true,
+    this.onAiCompleted,
+    this.lastOutput,
   });
 
   @override
@@ -25,6 +34,7 @@ class SnowflakeCoachWidget extends ConsumerStatefulWidget {
 class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
   final _inputController = TextEditingController();
   bool _loading = false;
+  bool _chatbotVisible = false;
   SnowflakeRefinementOutput? _lastOutput;
   String? _error;
   bool _appliedUpdate = false;
@@ -32,7 +42,33 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
   @override
   void initState() {
     super.initState();
-    _analyze();
+    _lastOutput = widget.lastOutput;
+    if (widget.autoAnalyze) {
+      _showChatbot();
+    }
+  }
+
+  Future<void> _showChatbot() async {
+    setState(() {
+      _chatbotVisible = true;
+      _error = null;
+    });
+
+    // Load existing chat history
+    try {
+      final service = ref.read(snowflakeServiceProvider);
+      final history = await service.getChatHistory(
+        widget.novelId,
+        widget.summaryType,
+      );
+      if (history != null && mounted) {
+        setState(() {
+          _lastOutput = history;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _error = e.toString());
+    }
   }
 
   Future<void> _analyze({String? userResponse}) async {
@@ -43,19 +79,24 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
 
     try {
       final service = ref.read(snowflakeServiceProvider);
+
       final input = SnowflakeRefinementInput(
         novelId: widget.novelId,
+        summaryType: widget.summaryType,
         summaryContent: widget.currentSummary,
         userResponse: userResponse,
       );
+
       final result = await service.refineSummary(input);
       if (result != null) {
         if (mounted) {
           setState(() {
             _lastOutput = result;
+            _chatbotVisible = true;
           });
           widget.onSummaryUpdated(result.summaryContent);
           _appliedUpdate = true;
+          widget.onAiCompleted?.call(result);
         }
       } else {
         if (mounted) {
@@ -80,7 +121,43 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
   void didUpdateWidget(covariant SnowflakeCoachWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     _appliedUpdate = false;
-    _analyze();
+    if (widget.autoAnalyze) {
+      _showChatbot();
+    }
+  }
+
+  String _formatTimestamps(String? createdAt, String? updatedAt) {
+    if (createdAt == null && updatedAt == null) return '';
+
+    final now = DateTime.now();
+    final buffer = StringBuffer();
+
+    if (createdAt != null) {
+      final created = DateTime.parse(createdAt);
+      final diff = now.difference(created);
+      buffer.write('Created ${_formatDuration(diff)} ago');
+    }
+
+    if (updatedAt != null && updatedAt != createdAt) {
+      if (buffer.isNotEmpty) buffer.write(' • ');
+      final updated = DateTime.parse(updatedAt);
+      final diff = now.difference(updated);
+      buffer.write('Updated ${_formatDuration(diff)} ago');
+    }
+
+    return buffer.toString();
+  }
+
+  String _formatDuration(Duration duration) {
+    if (duration.inDays > 0) {
+      return '${duration.inDays}d';
+    } else if (duration.inHours > 0) {
+      return '${duration.inHours}h';
+    } else if (duration.inMinutes > 0) {
+      return '${duration.inMinutes}m';
+    } else {
+      return '${duration.inSeconds}s';
+    }
   }
 
   @override
@@ -121,17 +198,103 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
       );
     }
 
-    if (_lastOutput == null) {
+    if (!_chatbotVisible) {
       return Center(
         child: ElevatedButton.icon(
-          onPressed: () => _analyze(),
-          icon: const Icon(Icons.auto_awesome),
-          label: Text(l10n.startAiCoaching),
+          onPressed: _showChatbot,
+          icon: const Icon(Icons.chat),
+          label: Text('AI Sentence Summary'),
         ),
       );
     }
 
-    final output = _lastOutput!;
+    final output = _lastOutput;
+    if (output == null) {
+      // Show empty chatbot interface when no history exists
+      return Column(
+        children: [
+          // Top bar with analyze button
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainer,
+              border: Border(
+                bottom: BorderSide(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.outline.withValues(alpha: 0.2),
+                ),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.chat,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'AI Sentence Summary',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: _loading ? null : () => _analyze(),
+                  icon: const Icon(Icons.analytics, size: 16),
+                  label: Text('Analyze'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Empty state
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.chat_outlined,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.3),
+                    size: 64,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No chat history yet',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Click "Analyze" to start improving your summary',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     final isDone = output.status == 'refined';
     final messages = output.history ?? const [];
     if (isDone && !_appliedUpdate) {
@@ -146,6 +309,51 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
 
     return Column(
       children: [
+        // Top bar with regenerate button
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainer,
+            border: Border(
+              bottom: BorderSide(
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
+              ),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.auto_awesome,
+                color: Theme.of(context).colorScheme.primary,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  isDone ? l10n.refinementComplete : l10n.coachQuestion,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+              if (!widget.autoAnalyze)
+                ElevatedButton.icon(
+                  onPressed: _loading ? null : () => _analyze(),
+                  icon: const Icon(Icons.analytics, size: 16),
+                  label: Text('Analyze'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+
         // AI Message Area
         Expanded(
           child: SingleChildScrollView(
@@ -153,23 +361,6 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.auto_awesome,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      isDone ? l10n.refinementComplete : l10n.coachQuestion,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -251,6 +442,40 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                                     ),
                                   ),
                                 ),
+                                const SizedBox(width: 4),
+                                GestureDetector(
+                                  onTap: () async {
+                                    final content = msg['content'] ?? '';
+                                    if (content.isNotEmpty) {
+                                      await Clipboard.setData(
+                                        ClipboardData(text: content),
+                                      );
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              'Copied to clipboard',
+                                            ),
+                                            duration: Duration(seconds: 1),
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  },
+                                  child: Icon(
+                                    Icons.copy,
+                                    size: 16,
+                                    color: (msg['role'] == 'user')
+                                        ? Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant
+                                              .withValues(alpha: 0.6)
+                                        : Theme.of(context).colorScheme.primary
+                                              .withValues(alpha: 0.6),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -306,6 +531,49 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                     ),
                   ],
                 ],
+                // Timestamps
+                if (_lastOutput?.createdAt != null ||
+                    _lastOutput?.updatedAt != null) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainer.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.schedule,
+                          size: 14,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          _formatTimestamps(
+                            _lastOutput?.createdAt,
+                            _lastOutput?.updatedAt,
+                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.6),
+                                fontSize: 12,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 // Suggestions
                 if (!isDone && (output.suggestions?.isNotEmpty ?? false)) ...[
                   const SizedBox(height: 16),
@@ -318,13 +586,53 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                     spacing: 8,
                     runSpacing: 8,
                     children: output.suggestions!.map((s) {
-                      return ActionChip(
-                        label: Text(s),
-                        onPressed: _loading
+                      return GestureDetector(
+                        onTap: _loading
                             ? null
                             : () {
                                 _inputController.text = s;
                               },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _loading
+                                ? Theme.of(context).colorScheme.surfaceContainer
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: _loading
+                                  ? Theme.of(
+                                      context,
+                                    ).colorScheme.outline.withValues(alpha: 0.2)
+                                  : Theme.of(context).colorScheme.primary
+                                        .withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width - 100,
+                            ),
+                            child: Text(
+                              s,
+                              style: TextStyle(
+                                color: _loading
+                                    ? Theme.of(context).colorScheme.onSurface
+                                          .withValues(alpha: 0.5)
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimaryContainer,
+                                fontSize: 14,
+                              ),
+                              softWrap: true,
+                              maxLines: null,
+                            ),
+                          ),
+                        ),
                       );
                     }).toList(),
                   ),
@@ -334,52 +642,83 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
           ),
         ),
 
-        // Input Area
-        if (!isDone)
-          Padding(
+        // Input Area - always visible when chatbot is shown
+        if (_chatbotVisible)
+          Container(
             padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _inputController,
-                    decoration: InputDecoration(
-                      hintText: l10n.reviewSuggestionsHint,
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                    ),
-                    onSubmitted: (val) {
-                      if (val.trim().isNotEmpty) {
-                        _analyze(userResponse: val.trim());
-                        _inputController.clear();
-                      }
-                    },
-                  ),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              border: Border(
+                top: BorderSide(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.outline.withValues(alpha: 0.2),
                 ),
-                const SizedBox(width: 8),
-                IconButton.filled(
-                  onPressed: _loading
-                      ? null
-                      : () {
-                          final val = _inputController.text.trim();
-                          if (val.isNotEmpty) {
-                            _analyze(userResponse: val);
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (isDone) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Text(
+                      'Chat completed - Start a new analysis or ask questions',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _inputController,
+                        decoration: InputDecoration(
+                          hintText: isDone
+                              ? 'Ask a follow-up question or start new analysis...'
+                              : l10n.reviewSuggestionsHint,
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                        ),
+                        onSubmitted: (val) {
+                          if (val.trim().isNotEmpty) {
+                            _analyze(userResponse: val.trim());
                             _inputController.clear();
                           }
                         },
-                  icon: _loading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Icon(Icons.send),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton.filled(
+                      onPressed: _loading
+                          ? null
+                          : () {
+                              final val = _inputController.text.trim();
+                              if (val.isNotEmpty) {
+                                _analyze(userResponse: val);
+                                _inputController.clear();
+                              }
+                            },
+                      icon: _loading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Icon(Icons.send),
+                    ),
+                  ],
                 ),
               ],
             ),

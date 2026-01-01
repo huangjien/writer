@@ -8,6 +8,7 @@ import 'package:writer/l10n/app_localizations.dart';
 
 class FakeSnowflakeService extends Fake implements SnowflakeService {
   SnowflakeRefinementOutput? response;
+  SnowflakeRefinementOutput? historyResponse;
   bool shouldFail = false;
   SnowflakeRefinementInput? lastInput;
 
@@ -20,6 +21,17 @@ class FakeSnowflakeService extends Fake implements SnowflakeService {
     // Simulate network delay
     await Future.delayed(const Duration(milliseconds: 100));
     return response;
+  }
+
+  @override
+  Future<SnowflakeRefinementOutput?> getChatHistory(
+    String novelId,
+    String summaryType,
+  ) async {
+    if (shouldFail) throw Exception('API Error');
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 100));
+    return historyResponse;
   }
 }
 
@@ -35,6 +47,8 @@ void main() {
   Widget createWidget({
     String novelId = '123',
     String currentSummary = 'My summary',
+    bool autoAnalyze = true,
+    Key? key,
   }) {
     return ProviderScope(
       overrides: [snowflakeServiceProvider.overrideWithValue(fakeService)],
@@ -43,38 +57,43 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: SnowflakeCoachWidget(
+            key: key,
             novelId: novelId,
+            summaryType: 'sentence',
             currentSummary: currentSummary,
             onSummaryUpdated: (summary) => updatedSummary = summary,
+            autoAnalyze: autoAnalyze,
           ),
         ),
       ),
     );
   }
 
-  testWidgets(
-    'SnowflakeCoachWidget calls refineSummary on init and shows result',
-    (tester) async {
-      fakeService.response = SnowflakeRefinementOutput(
-        novelId: '123',
-        summaryContent: 'Refined summary',
-        status: 'question',
-        aiQuestion: 'How can we improve?',
-        history: [],
-      );
+  testWidgets('SnowflakeCoachWidget loads history on init and shows result', (
+    tester,
+  ) async {
+    fakeService.historyResponse = SnowflakeRefinementOutput(
+      novelId: '123',
+      summaryContent: 'Refined summary',
+      status: 'question',
+      aiQuestion: 'How can we improve?',
+      history: [],
+      critique: '',
+      suggestions: [],
+    );
 
-      await tester.pumpWidget(createWidget());
+    await tester.pumpWidget(createWidget());
 
-      // Loading
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(find.text('AI Coach is analyzing...'), findsOneWidget);
+    // Should not show loading on init (only loads history, no AI call)
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.text('AI Coach is analyzing...'), findsNothing);
 
-      await tester.pumpAndSettle();
+    await tester.pumpAndSettle();
 
-      expect(find.text('How can we improve?'), findsOneWidget);
-      expect(find.byIcon(Icons.auto_awesome), findsOneWidget);
-    },
-  );
+    // Should show the chatbot with history
+    expect(find.text('How can we improve?'), findsOneWidget);
+    expect(find.byIcon(Icons.auto_awesome), findsOneWidget);
+  });
 
   testWidgets('SnowflakeCoachWidget shows error on failure', (tester) async {
     fakeService.shouldFail = true;
@@ -91,12 +110,14 @@ void main() {
   testWidgets('SnowflakeCoachWidget handles input and submission', (
     tester,
   ) async {
-    fakeService.response = SnowflakeRefinementOutput(
+    fakeService.historyResponse = SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Refined summary',
       status: 'question',
       aiQuestion: 'How can we improve?',
       history: [],
+      critique: '',
+      suggestions: [],
     );
 
     await tester.pumpWidget(createWidget());
@@ -122,9 +143,18 @@ void main() {
   testWidgets('SnowflakeCoachWidget shows error when service returns null', (
     tester,
   ) async {
-    fakeService.response = null;
+    fakeService.historyResponse = null; // No history
+    fakeService.response = null; // Service returns null
 
-    await tester.pumpWidget(createWidget());
+    await tester.pumpWidget(createWidget(autoAnalyze: false));
+    await tester.pumpAndSettle();
+
+    // Click "AI Sentence Summary" to show chatbot
+    await tester.tap(find.text('AI Sentence Summary'));
+    await tester.pumpAndSettle();
+
+    // Click "Analyze" to trigger service call
+    await tester.tap(find.text('Analyze'));
     await tester.pumpAndSettle();
 
     // When service returns null, should show error state
@@ -136,15 +166,17 @@ void main() {
   testWidgets('SnowflakeCoachWidget handles refined status completion', (
     tester,
   ) async {
-    fakeService.response = SnowflakeRefinementOutput(
+    fakeService.historyResponse = SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Final refined summary',
       status: 'refined',
-      critique: 'The summary is now much better',
+      aiQuestion: 'How can I help you improve your summary?',
       history: [
         {'role': 'user', 'content': 'Make it shorter'},
         {'role': 'assistant', 'content': 'I will make it more concise'},
       ],
+      critique: 'The summary is now much better',
+      suggestions: [],
     );
 
     await tester.pumpWidget(createWidget());
@@ -161,17 +193,18 @@ void main() {
   testWidgets('SnowflakeCoachWidget shows suggestions when available', (
     tester,
   ) async {
-    fakeService.response = SnowflakeRefinementOutput(
+    fakeService.historyResponse = SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Refined summary',
       status: 'question',
       aiQuestion: 'How can we improve?',
+      history: [],
+      critique: '',
       suggestions: [
         'Make it shorter',
         'Add more details',
         'Focus on main plot',
       ],
-      history: [],
     );
 
     await tester.pumpWidget(createWidget());
@@ -186,13 +219,14 @@ void main() {
   testWidgets(
     'SnowflakeCoachWidget populates text field when suggestion tapped',
     (tester) async {
-      fakeService.response = SnowflakeRefinementOutput(
+      fakeService.historyResponse = SnowflakeRefinementOutput(
         novelId: '123',
         summaryContent: 'Refined summary',
         status: 'question',
         aiQuestion: 'How can we improve?',
-        suggestions: ['Make it shorter'],
         history: [],
+        critique: '',
+        suggestions: ['Make it shorter'],
       );
 
       await tester.pumpWidget(createWidget());
@@ -212,7 +246,7 @@ void main() {
   );
 
   testWidgets('SnowflakeCoachWidget shows message history', (tester) async {
-    fakeService.response = SnowflakeRefinementOutput(
+    fakeService.historyResponse = SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Refined summary',
       status: 'question',
@@ -223,6 +257,8 @@ void main() {
         {'role': 'user', 'content': 'Add more drama'},
         {'role': 'assistant', 'content': 'I will add dramatic elements'},
       ],
+      critique: '',
+      suggestions: [],
     );
 
     await tester.pumpWidget(createWidget());
@@ -237,37 +273,75 @@ void main() {
   testWidgets('SnowflakeCoachWidget updates summary on widget change', (
     tester,
   ) async {
-    // Initial widget
-    await tester.pumpWidget(createWidget());
-
-    fakeService.response = SnowflakeRefinementOutput(
+    // Set up history response for initial widget load
+    fakeService.historyResponse = SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Updated summary',
       status: 'refined',
-      critique: 'Good summary',
+      aiQuestion: 'How can I help you improve your summary?',
       history: [],
+      critique: 'Good summary',
+      suggestions: [],
     );
 
+    // Initial widget
+    await tester.pumpWidget(createWidget());
     await tester.pumpAndSettle();
     expect(updatedSummary, 'Updated summary');
 
-    // Update widget with different summary
-    await tester.pumpWidget(createWidget(currentSummary: 'Different summary'));
+    // Set no history for second widget load
+    fakeService.historyResponse = null;
+
+    // Update widget with different summary - should not auto-trigger analysis
+    await tester.pumpWidget(
+      createWidget(
+        currentSummary: 'Different summary',
+        autoAnalyze: false,
+        key: UniqueKey(), // Force widget recreation to reset state
+      ),
+    );
     await tester.pumpAndSettle();
 
-    // Should trigger new analysis
+    // Should not trigger analysis automatically with new design
+    expect(fakeService.lastInput, isNull);
+
+    // Click "AI Sentence Summary" to show chatbot
+    await tester.tap(find.text('AI Sentence Summary'));
+    await tester.pumpAndSettle();
+
+    // Click "Analyze" to trigger analysis with new summary
+    await tester.tap(find.text('Analyze'));
+    await tester.pumpAndSettle();
+
+    // Should trigger new analysis with the updated summary content
     expect(fakeService.lastInput?.summaryContent, 'Different summary');
   });
 
   testWidgets('SnowflakeCoachWidget handles text field submission', (
     tester,
   ) async {
-    fakeService.response = SnowflakeRefinementOutput(
+    // Set up history with a question to show the text field
+    fakeService.historyResponse = SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Refined summary',
       status: 'question',
       aiQuestion: 'How can we improve?',
       history: [],
+      critique: '',
+      suggestions: [],
+    );
+
+    fakeService.response = SnowflakeRefinementOutput(
+      novelId: '123',
+      summaryContent: 'Refined summary with user input',
+      status: 'refined',
+      aiQuestion: 'How can I help you improve your summary?',
+      history: [
+        {'role': 'assistant', 'content': 'How can we improve?'},
+        {'role': 'user', 'content': 'Make it more engaging'},
+      ],
+      critique: 'Good improvement!',
+      suggestions: [],
     );
 
     await tester.pumpWidget(createWidget());
@@ -288,48 +362,81 @@ void main() {
   testWidgets('SnowflakeCoachWidget disables controls during loading', (
     tester,
   ) async {
-    // Test the initial loading state when widget first loads
-    // Don't set up response to trigger initial loading
-    await tester.pumpWidget(createWidget());
-    await tester.pump(); // Don't use pumpAndSettle to avoid timer issues
-
-    // Should show loading indicator initially
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    expect(find.text('AI Coach is analyzing...'), findsOneWidget);
-
-    // Now set up response and complete loading
+    // Set up response for when analyze is clicked
     fakeService.response = SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Refined summary',
       status: 'question',
       aiQuestion: 'How can we improve?',
-      suggestions: ['Make it shorter'],
       history: [],
+      critique: '',
+      suggestions: ['Make it shorter'],
     );
 
+    // Set no history to show the analyze button
+    fakeService.historyResponse = null;
+
+    await tester.pumpWidget(createWidget(autoAnalyze: false));
+    await tester.pumpAndSettle();
+
+    // Click "AI Sentence Summary" to show chatbot
+    await tester.tap(find.text('AI Sentence Summary'));
+    await tester.pumpAndSettle();
+
+    // Click "Analyze" to trigger loading
+    await tester.tap(find.text('Analyze'));
+    await tester.pump(); // Don't use pumpAndSettle to catch loading state
+
+    // Should show loading indicator when analyzing
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.text('AI Coach is analyzing...'), findsOneWidget);
+
+    // Complete loading
     await tester.pumpAndSettle();
 
     // Now should have input controls that are enabled
     expect(find.byIcon(Icons.send), findsOneWidget);
-    expect(find.byType(ActionChip), findsOneWidget);
+    expect(find.text('Make it shorter'), findsOneWidget);
 
     // Test that controls are enabled when not loading
     final sendButton = tester.widget<IconButton>(find.byType(IconButton));
     expect(sendButton.onPressed, isNotNull);
-    final suggestionChip = tester.widget<ActionChip>(find.byType(ActionChip));
-    expect(suggestionChip.onPressed, isNotNull);
+
+    // Find the suggestion container (which replaces ActionChip)
+    final suggestionContainer = find.byWidgetPredicate(
+      (widget) =>
+          widget is Container &&
+          widget.child != null &&
+          widget.child is ConstrainedBox,
+    );
+    expect(suggestionContainer, findsOneWidget);
   });
 
   testWidgets('SnowflakeCoachWidget passes correct parameters to service', (
     tester,
   ) async {
+    // Set no history to show the analyze button
+    fakeService.historyResponse = null;
+
     await tester.pumpWidget(
       createWidget(
         novelId: 'novel-456',
         currentSummary: 'Test summary content',
+        autoAnalyze: false,
       ),
     );
 
+    await tester.pumpAndSettle();
+
+    // Click "AI Sentence Summary" to show chatbot
+    await tester.tap(find.text('AI Sentence Summary'));
+    await tester.pumpAndSettle();
+
+    // Initially, refineSummary should not be called (only getChatHistory is called)
+    expect(fakeService.lastInput, isNull);
+
+    // Click "Analyze" button to trigger refineSummary
+    await tester.tap(find.text('Analyze'));
     await tester.pumpAndSettle();
 
     expect(fakeService.lastInput?.novelId, 'novel-456');
@@ -339,8 +446,13 @@ void main() {
 
   testWidgets('SnowflakeCoachWidget handles retry after error', (tester) async {
     fakeService.shouldFail = true;
+    fakeService.historyResponse = null;
 
-    await tester.pumpWidget(createWidget());
+    await tester.pumpWidget(createWidget(autoAnalyze: false));
+    await tester.pumpAndSettle();
+
+    // Click "AI Sentence Summary" to trigger error
+    await tester.tap(find.text('AI Sentence Summary'));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('API Error'), findsOneWidget);
@@ -352,8 +464,10 @@ void main() {
       novelId: '123',
       summaryContent: 'Success summary',
       status: 'refined',
-      critique: 'Great work!',
+      aiQuestion: 'How can I help you improve your summary?',
       history: [],
+      critique: 'Great work!',
+      suggestions: [],
     );
 
     await tester.tap(find.text('Retry'));
@@ -370,12 +484,15 @@ void main() {
   testWidgets(
     'SnowflakeCoachWidget shows critique when refined and has critique',
     (tester) async {
-      fakeService.response = SnowflakeRefinementOutput(
+      // Set up history with refined status and critique
+      fakeService.historyResponse = SnowflakeRefinementOutput(
         novelId: '123',
         summaryContent: 'Final summary',
         status: 'refined',
-        critique: 'The summary captures the essence well',
+        aiQuestion: 'How can I help you improve your summary?',
         history: [],
+        critique: 'The summary captures the essence well',
+        suggestions: [],
       );
 
       await tester.pumpWidget(createWidget());

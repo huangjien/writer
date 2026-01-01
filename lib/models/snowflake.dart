@@ -1,11 +1,13 @@
 class SnowflakeRefinementInput {
   final String novelId;
+  final String summaryType;
   final String summaryContent;
   final String? userResponse;
   final String language;
 
   const SnowflakeRefinementInput({
     required this.novelId,
+    required this.summaryType,
     required this.summaryContent,
     this.userResponse,
     this.language = 'en',
@@ -14,6 +16,7 @@ class SnowflakeRefinementInput {
   Map<String, dynamic> toJson() {
     return {
       'novel_id': novelId,
+      'summary_type': summaryType,
       'summary_content': summaryContent,
       if (userResponse != null) 'user_response': userResponse,
       'language': language,
@@ -30,6 +33,9 @@ class SnowflakeRefinementOutput {
   final String? critique;
   final List<Map<String, String>>? history;
 
+  final String? createdAt;
+  final String? updatedAt;
+
   const SnowflakeRefinementOutput({
     required this.novelId,
     required this.summaryContent,
@@ -38,6 +44,8 @@ class SnowflakeRefinementOutput {
     this.suggestions,
     this.critique,
     this.history,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory SnowflakeRefinementOutput.fromJson(Map<String, dynamic> json) {
@@ -64,6 +72,8 @@ class SnowflakeRefinementOutput {
           .toList(),
       critique: json['critique'] as String?,
       history: hist,
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
     );
   }
 }

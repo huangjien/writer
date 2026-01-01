@@ -7,6 +7,7 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/features/summary/snowflake_coach_widget.dart';
+import 'package:writer/models/snowflake.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'summary_controller.dart';
 
@@ -37,6 +38,20 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   // Coach State
   bool _showCoach = false;
   bool _showSentenceCoach = false;
+  bool _showParagraphCoach = false;
+  bool _showPageCoach = false;
+
+  // AI satisfaction flags - true means user is satisfied, no auto AI calls
+  bool _sentenceAiSatisfied = false;
+  bool _paragraphAiSatisfied = false;
+  bool _pageAiSatisfied = false;
+  bool _expandedAiSatisfied = false;
+
+  // Store last AI outputs to preserve chat history
+  SnowflakeRefinementOutput? _sentenceLastOutput;
+  SnowflakeRefinementOutput? _paragraphLastOutput;
+  SnowflakeRefinementOutput? _pageLastOutput;
+  SnowflakeRefinementOutput? _expandedLastOutput;
 
   @override
   void initState() {
@@ -74,6 +89,25 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   }
 
   void _onFieldChanged() {
+    // Reset AI satisfaction flags when user manually edits content
+    if (_sentenceController.text != _controller.baseSummary?.sentenceSummary) {
+      _sentenceAiSatisfied = false;
+      _sentenceLastOutput = null;
+    }
+    if (_paragraphController.text !=
+        _controller.baseSummary?.paragraphSummary) {
+      _paragraphAiSatisfied = false;
+      _paragraphLastOutput = null;
+    }
+    if (_pageController.text != _controller.baseSummary?.pageSummary) {
+      _pageAiSatisfied = false;
+      _pageLastOutput = null;
+    }
+    if (_expandedController.text != _controller.baseSummary?.expandedSummary) {
+      _expandedAiSatisfied = false;
+      _expandedLastOutput = null;
+    }
+
     final dirty = _controller.isDirty(
       sentence: _sentenceController.text,
       paragraph: _paragraphController.text,
@@ -118,23 +152,42 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                     decoration: InputDecoration(
                       labelText: l10n.sentenceSummary,
                       border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _showSentenceCoach
-                              ? Icons.auto_awesome
-                              : Icons.auto_awesome_outlined,
-                          color: _showSentenceCoach ? Colors.purple : null,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _showSentenceCoach = !_showSentenceCoach;
-                            // Ensure only one coach is active at a time
-                            if (_showSentenceCoach) {
-                              _showCoach = false;
-                            }
-                          });
-                        },
-                        tooltip: 'AI sentence summary',
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              _showSentenceCoach
+                                  ? Icons.auto_awesome
+                                  : Icons.auto_awesome_outlined,
+                              color: _showSentenceCoach || _sentenceAiSatisfied
+                                  ? Colors.purple
+                                  : null,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _showSentenceCoach = !_showSentenceCoach;
+                                // Ensure only one coach is active at a time
+                                if (_showSentenceCoach) {
+                                  _showCoach = false;
+                                  _showParagraphCoach = false;
+                                  _showPageCoach = false;
+                                }
+                              });
+                            },
+                            tooltip: 'AI sentence summary',
+                          ),
+                          if (_sentenceAiSatisfied && !_showSentenceCoach) ...[
+                            IconButton(
+                              icon: const Icon(Icons.check_circle, size: 18),
+                              color: Colors.green,
+                              onPressed: () {
+                                setState(() => _sentenceAiSatisfied = false);
+                              },
+                              tooltip: l10n.imSatisfied,
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                     maxLines: 2,
@@ -148,15 +201,44 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                     decoration: InputDecoration(
                       labelText: l10n.paragraphSummary,
                       border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          Icons.auto_awesome_outlined,
-                          color: Colors.grey,
-                        ),
-                        onPressed: () {
-                          // TODO: Implement paragraph AI coach functionality
-                        },
-                        tooltip: 'AI paragraph summary',
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              _showParagraphCoach
+                                  ? Icons.auto_awesome
+                                  : Icons.auto_awesome_outlined,
+                              color:
+                                  _showParagraphCoach || _paragraphAiSatisfied
+                                  ? Colors.purple
+                                  : null,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _showParagraphCoach = !_showParagraphCoach;
+                                // Ensure only one coach is active at a time
+                                if (_showParagraphCoach) {
+                                  _showCoach = false;
+                                  _showSentenceCoach = false;
+                                  _showPageCoach = false;
+                                }
+                              });
+                            },
+                            tooltip: 'AI paragraph summary',
+                          ),
+                          if (_paragraphAiSatisfied &&
+                              !_showParagraphCoach) ...[
+                            IconButton(
+                              icon: const Icon(Icons.check_circle, size: 18),
+                              color: Colors.green,
+                              onPressed: () {
+                                setState(() => _paragraphAiSatisfied = false);
+                              },
+                              tooltip: l10n.imSatisfied,
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                     maxLines: 4,
@@ -170,15 +252,42 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                     decoration: InputDecoration(
                       labelText: l10n.pageSummary,
                       border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          Icons.auto_awesome_outlined,
-                          color: Colors.grey,
-                        ),
-                        onPressed: () {
-                          // TODO: Implement page AI coach functionality
-                        },
-                        tooltip: 'AI page summary',
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              _showPageCoach
+                                  ? Icons.auto_awesome
+                                  : Icons.auto_awesome_outlined,
+                              color: _showPageCoach || _pageAiSatisfied
+                                  ? Colors.purple
+                                  : null,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _showPageCoach = !_showPageCoach;
+                                // Ensure only one coach is active at a time
+                                if (_showPageCoach) {
+                                  _showCoach = false;
+                                  _showSentenceCoach = false;
+                                  _showParagraphCoach = false;
+                                }
+                              });
+                            },
+                            tooltip: 'AI page summary',
+                          ),
+                          if (_pageAiSatisfied && !_showPageCoach) ...[
+                            IconButton(
+                              icon: const Icon(Icons.check_circle, size: 18),
+                              color: Colors.green,
+                              onPressed: () {
+                                setState(() => _pageAiSatisfied = false);
+                              },
+                              tooltip: l10n.imSatisfied,
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                     maxLines: 8,
@@ -192,23 +301,42 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                     decoration: InputDecoration(
                       labelText: l10n.expandedSummary,
                       border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _showCoach
-                              ? Icons.auto_awesome
-                              : Icons.auto_awesome_outlined,
-                          color: _showCoach ? Colors.purple : null,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _showCoach = !_showCoach;
-                            // Ensure only one coach is active at a time
-                            if (_showCoach) {
-                              _showSentenceCoach = false;
-                            }
-                          });
-                        },
-                        tooltip: l10n.toggleAiCoach,
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              _showCoach
+                                  ? Icons.auto_awesome
+                                  : Icons.auto_awesome_outlined,
+                              color: _showCoach || _expandedAiSatisfied
+                                  ? Colors.purple
+                                  : null,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _showCoach = !_showCoach;
+                                // Ensure only one coach is active at a time
+                                if (_showCoach) {
+                                  _showSentenceCoach = false;
+                                  _showParagraphCoach = false;
+                                  _showPageCoach = false;
+                                }
+                              });
+                            },
+                            tooltip: l10n.toggleAiCoach,
+                          ),
+                          if (_expandedAiSatisfied && !_showCoach) ...[
+                            IconButton(
+                              icon: const Icon(Icons.check_circle, size: 18),
+                              color: Colors.green,
+                              onPressed: () {
+                                setState(() => _expandedAiSatisfied = false);
+                              },
+                              tooltip: l10n.imSatisfied,
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                     minLines: 10,
@@ -310,24 +438,85 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          if (_showCoach || _showSentenceCoach) {
-            final activeCoachContent = _showSentenceCoach
-                ? SnowflakeCoachWidget(
-                    novelId: widget.novelId,
-                    currentSummary: _sentenceController.text,
-                    onSummaryUpdated: (newSummary) {
-                      _sentenceController.text = newSummary;
-                      _onFieldChanged();
-                    },
-                  )
-                : SnowflakeCoachWidget(
-                    novelId: widget.novelId,
-                    currentSummary: _expandedController.text,
-                    onSummaryUpdated: (newSummary) {
-                      _expandedController.text = newSummary;
-                      _onFieldChanged();
-                    },
-                  );
+          if (_showCoach ||
+              _showSentenceCoach ||
+              _showParagraphCoach ||
+              _showPageCoach) {
+            Widget activeCoachContent;
+
+            if (_showSentenceCoach) {
+              activeCoachContent = SnowflakeCoachWidget(
+                novelId: widget.novelId,
+                summaryType: 'sentence',
+                currentSummary: _sentenceController.text,
+                onSummaryUpdated: (newSummary) {
+                  _sentenceController.text = newSummary;
+                  _onFieldChanged();
+                },
+                autoAnalyze: !_sentenceAiSatisfied,
+                lastOutput: _sentenceLastOutput,
+                onAiCompleted: (output) {
+                  setState(() {
+                    _sentenceAiSatisfied = true;
+                    _sentenceLastOutput = output;
+                  });
+                },
+              );
+            } else if (_showParagraphCoach) {
+              activeCoachContent = SnowflakeCoachWidget(
+                novelId: widget.novelId,
+                summaryType: 'paragraph',
+                currentSummary: _paragraphController.text,
+                onSummaryUpdated: (newSummary) {
+                  _paragraphController.text = newSummary;
+                  _onFieldChanged();
+                },
+                autoAnalyze: !_paragraphAiSatisfied,
+                lastOutput: _paragraphLastOutput,
+                onAiCompleted: (output) {
+                  setState(() {
+                    _paragraphAiSatisfied = true;
+                    _paragraphLastOutput = output;
+                  });
+                },
+              );
+            } else if (_showPageCoach) {
+              activeCoachContent = SnowflakeCoachWidget(
+                novelId: widget.novelId,
+                summaryType: 'page',
+                currentSummary: _pageController.text,
+                onSummaryUpdated: (newSummary) {
+                  _pageController.text = newSummary;
+                  _onFieldChanged();
+                },
+                autoAnalyze: !_pageAiSatisfied,
+                lastOutput: _pageLastOutput,
+                onAiCompleted: (output) {
+                  setState(() {
+                    _pageAiSatisfied = true;
+                    _pageLastOutput = output;
+                  });
+                },
+              );
+            } else {
+              activeCoachContent = SnowflakeCoachWidget(
+                novelId: widget.novelId,
+                summaryType: 'expanded',
+                currentSummary: _expandedController.text,
+                onSummaryUpdated: (newSummary) {
+                  _expandedController.text = newSummary;
+                  _onFieldChanged();
+                },
+                autoAnalyze: !_expandedAiSatisfied,
+                lastOutput: _expandedLastOutput,
+                onAiCompleted: (output) {
+                  setState(() {
+                    _expandedAiSatisfied = true;
+                    _expandedLastOutput = output;
+                  });
+                },
+              );
+            }
 
             // Split View on large screens, or BottomSheet style on small?
             // Since this is likely a desktop app, let's just split 50/50 or use a sidebar

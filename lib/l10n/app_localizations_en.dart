@@ -1069,6 +1069,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviewSuggestionsHint => 'Review suggestions or type answer...';
 
   @override
+  String get aiGenerationComplete => 'AI generation complete';
+
+  @override
+  String get clickRegenerateForNew => 'Click Regenerate for new suggestions';
+
+  @override
+  String get regenerate => 'Regenerate';
+
+  @override
+  String get imSatisfied => 'I\'m satisfied';
+
+  @override
   String get templateLabel => 'Template';
 
   @override

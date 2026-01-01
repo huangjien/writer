@@ -9,6 +9,7 @@ class NetworkMonitor {
   final ConnectivityChecker _connectivityChecker;
   final StreamController<bool> _connectivityController;
   bool _isOnline = true;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
 
   NetworkMonitor(this._connectivityChecker)
     : _connectivityController = StreamController<bool>.broadcast();
@@ -26,16 +27,22 @@ class NetworkMonitor {
 
   /// Start monitoring network connectivity
   void startMonitoring() {
-    _connectivityChecker.onConnectivityChanged.listen(_onConnectivityChanged);
+    _connectivitySubscription = _connectivityChecker.onConnectivityChanged
+        .listen(_onConnectivityChanged);
     _updateConnectivity();
   }
 
   /// Stop monitoring network connectivity
   void stopMonitoring() {
+    _connectivitySubscription?.cancel();
+    _connectivitySubscription = null;
     _connectivityController.close();
   }
 
   void _onConnectivityChanged(List<ConnectivityResult> results) {
+    // Don't process if controller is closed
+    if (_connectivityController.isClosed) return;
+
     // Determine if we have any network connection
     final hasConnection = results.any(
       (result) => result != ConnectivityResult.none,
@@ -44,14 +51,18 @@ class NetworkMonitor {
     // Update status if changed
     if (hasConnection != _isOnline) {
       _isOnline = hasConnection;
-      _connectivityController.add(_isOnline);
+      if (!_connectivityController.isClosed) {
+        _connectivityController.add(_isOnline);
+      }
     }
   }
 
   Future<void> _updateConnectivity() async {
     // Initial check
     _isOnline = await _connectivityChecker.checkConnectivity();
-    _connectivityController.add(_isOnline);
+    if (!_connectivityController.isClosed) {
+      _connectivityController.add(_isOnline);
+    }
   }
 
   /// Dispose resources

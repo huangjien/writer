@@ -269,7 +269,14 @@ void main() {
       if (request.method == 'POST' &&
           request.url.path.endsWith('snowflake/refine')) {
         return http.Response(
-          '{"novel_id":"n-1","summary_content":"AI update","status":"refined"}',
+          '{"novel_id":"n-1","summary_content":"AI update","status":"refined","ai_question":"How can I help you improve your summary?","history":[],"critique":"","suggestions":[]}',
+          200,
+        );
+      }
+      if (request.method == 'GET' &&
+          request.url.path.endsWith('snowflake/history/n-1/expanded')) {
+        return http.Response(
+          '{"novel_id":"n-1","summary_content":"AI update","status":"refined","ai_question":"How can I help you improve your summary?","history":[],"critique":"","suggestions":[]}',
           200,
         );
       }
@@ -406,7 +413,14 @@ void main() {
       if (request.method == 'POST' &&
           request.url.path.endsWith('snowflake/refine')) {
         return http.Response(
-          '{"novel_id":"n-1","summary_content":"AI update for sentence","status":"refined"}',
+          '{"novel_id":"n-1","summary_content":"AI update for sentence","status":"refined","ai_question":"How can I help you improve your summary?","history":[],"critique":"","suggestions":[]}',
+          200,
+        );
+      }
+      if (request.method == 'GET' &&
+          request.url.path.endsWith('snowflake/history/n-1/sentence')) {
+        return http.Response(
+          '{"novel_id":"n-1","summary_content":"AI update for sentence","status":"refined","ai_question":"How can I help you improve your summary?","history":[],"critique":"","suggestions":[]}',
           200,
         );
       }
@@ -446,7 +460,8 @@ void main() {
 
     expect(find.byType(SnowflakeCoachWidget), findsOneWidget);
     // Should have the coach visible and apply updates to sentence summary
-    expect(find.text('AI update for sentence'), findsOneWidget);
+    // The AI update text is no longer displayed directly in the UI, but the field should be updated
+    await tester.pumpAndSettle();
 
     // Verify the sentence summary field was updated
     final sentenceFieldWidget = tester.widget<TextFormField>(sentenceField);

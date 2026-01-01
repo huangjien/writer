@@ -20,6 +20,21 @@ class SnowflakeService {
       return null;
     }
   }
+
+  Future<SnowflakeRefinementOutput?> getChatHistory(
+    String novelId,
+    String summaryType,
+  ) async {
+    try {
+      final res = await remote.get('snowflake/history/$novelId/$summaryType');
+      if (res is Map<String, dynamic>) {
+        return SnowflakeRefinementOutput.fromJson(res);
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
 }
 
 final snowflakeServiceProvider = Provider<SnowflakeService>((ref) {

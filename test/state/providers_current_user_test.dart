@@ -45,6 +45,7 @@ void main() {
   });
 
   test('isSignedInProvider is false for whitespace session id', () async {
+    SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final storageService = LocalStorageService(prefs);
     final session = SessionNotifier(storageService);
@@ -57,6 +58,7 @@ void main() {
   });
 
   test('currentUserProvider returns null when signed out', () async {
+    SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final storageService = LocalStorageService(prefs);
     final container = ProviderContainer(
@@ -70,6 +72,7 @@ void main() {
   });
 
   test('currentUserProvider maps backend user when signed in', () async {
+    SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final storageService = LocalStorageService(prefs);
     final remote = MockRemoteRepository();
@@ -94,6 +97,7 @@ void main() {
   });
 
   test('currentUserProvider returns null for invalid response', () async {
+    SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final storageService = LocalStorageService(prefs);
     final remote = MockRemoteRepository();
@@ -115,6 +119,7 @@ void main() {
   });
 
   test('currentUserProvider propagates remote errors', () async {
+    SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final storageService = LocalStorageService(prefs);
     final didCallRemote = Completer<void>();
