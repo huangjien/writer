@@ -322,7 +322,9 @@ void main() {
                           context: tester.element(find.byType(Scaffold)),
                           builder: (ctx) => AlertDialog(
                             title: const Text('Confirm Delete'),
-                            content: Text('Are you sure you want to delete ${n.title}?'),
+                            content: Text(
+                              'Are you sure you want to delete ${n.title}?',
+                            ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.of(ctx).pop(false),
@@ -342,22 +344,30 @@ void main() {
                             tester.element(find.byType(MaterialApp)),
                           );
                           container
-                              .read(lib_providers.removedNovelIdsProvider.notifier)
+                              .read(
+                                lib_providers.removedNovelIdsProvider.notifier,
+                              )
                               .update((state) => <String>{...state, n.id});
                           // Show snackbar
-                          ScaffoldMessenger.of(tester.element(find.byType(Scaffold))).showSnackBar(
+                          ScaffoldMessenger.of(
+                            tester.element(find.byType(Scaffold)),
+                          ).showSnackBar(
                             SnackBar(
                               content: const Text('Removed from Library'),
                               action: SnackBarAction(
                                 label: 'Undo',
                                 onPressed: () {
                                   container
-                                      .read(lib_providers.removedNovelIdsProvider.notifier)
+                                      .read(
+                                        lib_providers
+                                            .removedNovelIdsProvider
+                                            .notifier,
+                                      )
                                       .update((state) {
-                                    final next = <String>{...state};
-                                    next.remove(n.id);
-                                    return next;
-                                  });
+                                        final next = <String>{...state};
+                                        next.remove(n.id);
+                                        return next;
+                                      });
                                 },
                               ),
                             ),
@@ -448,22 +458,30 @@ void main() {
                           tester.element(find.byType(MaterialApp)),
                         );
                         container
-                            .read(lib_providers.removedNovelIdsProvider.notifier)
+                            .read(
+                              lib_providers.removedNovelIdsProvider.notifier,
+                            )
                             .update((state) => <String>{...state, n.id});
                         // Show snackbar
-                        ScaffoldMessenger.of(tester.element(find.byType(Scaffold))).showSnackBar(
+                        ScaffoldMessenger.of(
+                          tester.element(find.byType(Scaffold)),
+                        ).showSnackBar(
                           SnackBar(
                             content: const Text('Removed from Library'),
                             action: SnackBarAction(
                               label: 'Undo',
                               onPressed: () {
                                 container
-                                    .read(lib_providers.removedNovelIdsProvider.notifier)
+                                    .read(
+                                      lib_providers
+                                          .removedNovelIdsProvider
+                                          .notifier,
+                                    )
                                     .update((state) {
-                                  final next = <String>{...state};
-                                  next.remove(n.id);
-                                  return next;
-                                });
+                                      final next = <String>{...state};
+                                      next.remove(n.id);
+                                      return next;
+                                    });
                               },
                             ),
                           ),
@@ -550,7 +568,9 @@ void main() {
                           context: tester.element(find.byType(Scaffold)),
                           builder: (ctx) => AlertDialog(
                             title: const Text('Confirm Delete'),
-                            content: Text('Are you sure you want to delete ${n.title}?'),
+                            content: Text(
+                              'Are you sure you want to delete ${n.title}?',
+                            ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.of(ctx).pop(false),
@@ -569,7 +589,9 @@ void main() {
                             tester.element(find.byType(MaterialApp)),
                           );
                           container
-                              .read(lib_providers.removedNovelIdsProvider.notifier)
+                              .read(
+                                lib_providers.removedNovelIdsProvider.notifier,
+                              )
                               .update((state) => <String>{...state, n.id});
                         }
                       },
