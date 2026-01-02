@@ -331,7 +331,7 @@ void main() {
     // Since the nested TabBarView has layout constraint issues in testing,
     // we'll verify the toggle functionality exists without triggering the problematic UI flow
     expect(find.byType(SummaryScreen), findsOneWidget);
-    
+
     // Navigate to the Edit tab to trigger the layout (but don't pumpAndSettle to avoid constraint issues)
     await tester.tap(editTab);
     await tester.pump(
