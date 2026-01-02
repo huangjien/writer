@@ -20,7 +20,8 @@ class SummaryScreen extends ConsumerStatefulWidget {
   ConsumerState<SummaryScreen> createState() => _SummaryScreenState();
 }
 
-class _SummaryScreenState extends ConsumerState<SummaryScreen> {
+class _SummaryScreenState extends ConsumerState<SummaryScreen>
+    with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
 
   final _sentenceController = TextEditingController();
@@ -34,6 +35,13 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   bool _isDirty = false;
 
   late final SummaryController _controller;
+
+  // Tab Controllers
+  late final TabController _tabController;
+  late final TabController _sentenceTabController;
+  late final TabController _paragraphTabController;
+  late final TabController _pageTabController;
+  late final TabController _expandedTabController;
 
   // Coach State
   bool _showCoach = false;
@@ -64,6 +72,14 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
   void initState() {
     super.initState();
     _controller = SummaryController(ref.read(novelRepositoryProvider));
+
+    // Initialize tab controllers
+    _tabController = TabController(length: 4, vsync: this);
+    _sentenceTabController = TabController(length: 2, vsync: this);
+    _paragraphTabController = TabController(length: 2, vsync: this);
+    _pageTabController = TabController(length: 2, vsync: this);
+    _expandedTabController = TabController(length: 2, vsync: this);
+
     _load();
   }
 
@@ -88,6 +104,11 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
 
   @override
   void dispose() {
+    _tabController.dispose();
+    _sentenceTabController.dispose();
+    _paragraphTabController.dispose();
+    _pageTabController.dispose();
+    _expandedTabController.dispose();
     _sentenceController.dispose();
     _paragraphController.dispose();
     _pageController.dispose();
@@ -127,82 +148,155 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final chaptersAsync = ref.watch(chaptersProvider(widget.novelId));
+  Widget _buildNovelHeader() {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+    return ref
+        .watch(novelProvider(widget.novelId))
+        .when(
+          data: (novel) => _NovelHeader(novel: novel),
+          loading: () => _LoadingTile(label: l10n.loadingNovels),
+          error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
+        );
+  }
 
+  Widget _buildSummaryTab() {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
 
-    // Main Content
-    Widget buildMainContent() {
-      return SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ref
-                .watch(novelProvider(widget.novelId))
-                .when(
-                  data: (novel) => _NovelHeader(novel: novel),
-                  loading: () => _LoadingTile(label: l10n.loadingNovels),
-                  error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
-                ),
-            const SizedBox(height: 16),
-            Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Sentence Summary
-                  TextFormField(
-                    controller: _sentenceController,
-                    decoration: InputDecoration(
-                      labelText: l10n.sentenceSummary,
-                      border: const OutlineInputBorder(),
-                      suffixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              _showSentenceCoach
-                                  ? Icons.auto_awesome
-                                  : Icons.auto_awesome_outlined,
-                              color: _showSentenceCoach || _sentenceAiSatisfied
-                                  ? Colors.purple
-                                  : null,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                if (_showSentenceCoach) {
-                                  _showSentenceCoach = false;
-                                } else {
-                                  _resetCoaches();
-                                  _showSentenceCoach = true;
-                                }
-                              });
-                            },
-                            tooltip: 'AI sentence summary',
-                          ),
-                          if (_sentenceAiSatisfied && !_showSentenceCoach) ...[
-                            IconButton(
-                              icon: const Icon(Icons.check_circle, size: 18),
-                              color: Colors.green,
-                              onPressed: () {
-                                setState(() => _sentenceAiSatisfied = false);
-                              },
-                              tooltip: l10n.imSatisfied,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    maxLines: 2,
-                    onChanged: (_) => _onFieldChanged(),
+    return Column(
+      children: [
+        // Preview/Edit tabs
+        TabBar(
+          controller: _sentenceTabController,
+          tabs: const [
+            Tab(text: 'Preview'),
+            Tab(text: 'Edit'),
+          ],
+        ),
+        Expanded(
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 200),
+            child: TabBarView(
+              controller: _sentenceTabController,
+              children: [
+                // Preview
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                  const SizedBox(height: 16),
+                  child: SelectableText(
+                    _sentenceController.text.isEmpty
+                        ? 'No sentence summary available.'
+                        : _sentenceController.text,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+                // Edit
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Container(
+                    constraints: const BoxConstraints(minHeight: 60),
+                    child: TextFormField(
+                      controller: _sentenceController,
+                      decoration: InputDecoration(
+                        labelText: l10n.sentenceSummary,
+                        border: const OutlineInputBorder(),
+                        suffixIcon: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                _showSentenceCoach
+                                    ? Icons.auto_awesome
+                                    : Icons.auto_awesome_outlined,
+                                color:
+                                    _showSentenceCoach || _sentenceAiSatisfied
+                                    ? Colors.purple
+                                    : null,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  if (_showSentenceCoach) {
+                                    _showSentenceCoach = false;
+                                    _showCoach = false;
+                                  } else {
+                                    _resetCoaches();
+                                    _showSentenceCoach = true;
+                                  }
+                                });
+                              },
+                              tooltip: 'AI sentence summary',
+                            ),
+                            if (_sentenceAiSatisfied &&
+                                !_showSentenceCoach) ...[
+                              IconButton(
+                                icon: const Icon(Icons.check_circle, size: 18),
+                                color: Colors.green,
+                                onPressed: () {
+                                  setState(() => _sentenceAiSatisfied = false);
+                                },
+                                tooltip: l10n.imSatisfied,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      minLines: 2,
+                      maxLines: 4,
+                      textAlignVertical: TextAlignVertical.top,
+                      onChanged: (_) => _onFieldChanged(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-                  // Paragraph Summary
-                  TextFormField(
+  Widget _buildParagraphTab() {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+
+    return Column(
+      children: [
+        // Preview/Edit tabs
+        TabBar(
+          controller: _paragraphTabController,
+          tabs: const [
+            Tab(text: 'Preview'),
+            Tab(text: 'Edit'),
+          ],
+        ),
+        Expanded(
+          child: TabBarView(
+            controller: _paragraphTabController,
+            children: [
+              // Preview
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: SelectableText(
+                  _paragraphController.text.isEmpty
+                      ? 'No paragraph summary available.'
+                      : _paragraphController.text,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+              // Edit
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 200,
+                  child: TextFormField(
                     controller: _paragraphController,
                     decoration: InputDecoration(
                       labelText: l10n.paragraphSummary,
@@ -223,7 +317,6 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                             onPressed: () {
                               setState(() {
                                 _showParagraphCoach = !_showParagraphCoach;
-                                // Ensure only one coach is active at a time
                                 if (_showParagraphCoach) {
                                   _showCoach = false;
                                   _showSentenceCoach = false;
@@ -247,13 +340,58 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                         ],
                       ),
                     ),
-                    maxLines: 4,
+                    maxLines: null,
+                    textAlignVertical: TextAlignVertical.top,
                     onChanged: (_) => _onFieldChanged(),
                   ),
-                  const SizedBox(height: 16),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 
-                  // Page Summary
-                  TextFormField(
+  Widget _buildPageTab() {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+
+    return Column(
+      children: [
+        // Preview/Edit tabs
+        TabBar(
+          controller: _pageTabController,
+          tabs: const [
+            Tab(text: 'Preview'),
+            Tab(text: 'Edit'),
+          ],
+        ),
+        Expanded(
+          child: TabBarView(
+            controller: _pageTabController,
+            children: [
+              // Preview
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: SelectableText(
+                  _pageController.text.isEmpty
+                      ? 'No page summary available.'
+                      : _pageController.text,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+              // Edit
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 300,
+                  child: TextFormField(
                     controller: _pageController,
                     decoration: InputDecoration(
                       labelText: l10n.pageSummary,
@@ -273,7 +411,6 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                             onPressed: () {
                               setState(() {
                                 _showPageCoach = !_showPageCoach;
-                                // Ensure only one coach is active at a time
                                 if (_showPageCoach) {
                                   _showCoach = false;
                                   _showSentenceCoach = false;
@@ -296,13 +433,57 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                         ],
                       ),
                     ),
-                    maxLines: 8,
+                    maxLines: null,
+                    textAlignVertical: TextAlignVertical.top,
                     onChanged: (_) => _onFieldChanged(),
                   ),
-                  const SizedBox(height: 16),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 
-                  // Expanded Summary (with Coach)
-                  TextFormField(
+  Widget _buildExpandedTab() {
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+
+    return Column(
+      children: [
+        // Preview/Edit tabs
+        TabBar(
+          controller: _expandedTabController,
+          tabs: const [
+            Tab(text: 'Preview'),
+            Tab(text: 'Edit'),
+          ],
+        ),
+        Expanded(
+          child: TabBarView(
+            controller: _expandedTabController,
+            children: [
+              // Preview
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: SelectableText(
+                  _expandedController.text.isEmpty
+                      ? 'No expanded summary available.'
+                      : _expandedController.text,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+              // Edit
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: TextFormField(
                     controller: _expandedController,
                     decoration: InputDecoration(
                       labelText: l10n.expandedSummary,
@@ -322,7 +503,6 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                             onPressed: () {
                               setState(() {
                                 _showCoach = !_showCoach;
-                                // Ensure only one coach is active at a time
                                 if (_showCoach) {
                                   _showSentenceCoach = false;
                                   _showParagraphCoach = false;
@@ -345,76 +525,25 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                         ],
                       ),
                     ),
-                    minLines: 10,
+                    expands: true,
                     maxLines: null,
+                    textAlignVertical: TextAlignVertical.top,
                     onChanged: (_) => _onFieldChanged(),
                   ),
-
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: (_saving || !_isDirty)
-                            ? null
-                            : () async {
-                                final ok =
-                                    _formKey.currentState?.validate() ?? false;
-                                if (!ok) return;
-                                setState(() {
-                                  _saving = true;
-                                  _error = null;
-                                });
-                                try {
-                                  await _controller.save(
-                                    sentence: _sentenceController.text,
-                                    paragraph: _paragraphController.text,
-                                    page: _pageController.text,
-                                    expanded: _expandedController.text,
-                                  );
-
-                                  setState(() {
-                                    _isDirty = false;
-                                  });
-
-                                  if (!context.mounted) return;
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(l10n.saved)),
-                                  );
-                                } catch (e) {
-                                  setState(() => _error = e.toString());
-                                } finally {
-                                  if (mounted) setState(() => _saving = false);
-                                }
-                              },
-                        child: Text(l10n.save),
-                      ),
-                      const SizedBox(width: 12),
-                      if (_error != null)
-                        Expanded(
-                          child: Text(
-                            _error!,
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(color: Colors.redAccent),
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            chaptersAsync.when(
-              data: (chapters) => _ChaptersSummary(chapters: chapters),
-              loading: () => _LoadingTile(label: l10n.loadingChapter),
-              error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
-            ),
-          ],
+            ],
+          ),
         ),
-      );
-    }
+      ],
+    );
+  }
 
-    // Layout
+  @override
+  Widget build(BuildContext context) {
+    final chaptersAsync = ref.watch(chaptersProvider(widget.novelId));
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.summary),
@@ -528,13 +657,127 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
             }
           }
 
+          Widget buildMainContent() {
+            return Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  // Novel Header (above tabs as requested)
+                  _buildNovelHeader(),
+                  const SizedBox(height: 16),
+
+                  // Main Tab Bar
+                  TabBar(
+                    controller: _tabController,
+                    tabs: const [
+                      Tab(text: 'Sentence Summary'),
+                      Tab(text: 'Paragraph Summary'),
+                      Tab(text: 'Page Summary'),
+                      Tab(text: 'Expanded Summary'),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Tab Content
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _buildSummaryTab(),
+                        _buildParagraphTab(),
+                        _buildPageTab(),
+                        _buildExpandedTab(),
+                      ],
+                    ),
+                  ),
+
+                  // Save Button and Error Display (at bottom as requested) - wrapped in Flexible to prevent overflow
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: (_saving || !_isDirty)
+                                ? null
+                                : () async {
+                                    final ok =
+                                        _formKey.currentState?.validate() ??
+                                        false;
+                                    if (!ok) return;
+                                    setState(() {
+                                      _saving = true;
+                                      _error = null;
+                                    });
+                                    try {
+                                      await _controller.save(
+                                        sentence: _sentenceController.text,
+                                        paragraph: _paragraphController.text,
+                                        page: _pageController.text,
+                                        expanded: _expandedController.text,
+                                      );
+
+                                      setState(() {
+                                        _isDirty = false;
+                                      });
+
+                                      if (!context.mounted) return;
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(content: Text(l10n.saved)),
+                                      );
+                                    } catch (e) {
+                                      setState(() => _error = e.toString());
+                                    } finally {
+                                      if (mounted) {
+                                        setState(() => _saving = false);
+                                      }
+                                    }
+                                  },
+                            child: Text(l10n.save),
+                          ),
+                          const SizedBox(width: 12),
+                          if (_error != null)
+                            Expanded(
+                              child: Text(
+                                _error!,
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(color: Colors.redAccent),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Chapters Summary Section - wrapped in Flexible to prevent overflow
+                  Flexible(
+                    child: chaptersAsync.when(
+                      data: (chapters) => _ChaptersSummary(chapters: chapters),
+                      loading: () => _LoadingTile(label: l10n.loadingChapter),
+                      error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
           if (constraints.maxWidth > 800) {
             return Row(
               children: [
                 Expanded(flex: 2, child: buildMainContent()),
                 if (showCoach && activeCoachContent != null) ...[
                   const VerticalDivider(width: 1),
-                  Expanded(flex: 1, child: activeCoachContent),
+                  Expanded(
+                    flex: 1,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 150),
+                      child: activeCoachContent,
+                    ),
+                  ),
                 ],
               ],
             );
@@ -544,7 +787,13 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen> {
                 Expanded(flex: 1, child: buildMainContent()),
                 if (showCoach && activeCoachContent != null) ...[
                   const Divider(height: 1),
-                  Expanded(flex: 1, child: activeCoachContent),
+                  Expanded(
+                    flex: 1,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 150),
+                      child: activeCoachContent,
+                    ),
+                  ),
                 ],
               ],
             );
@@ -627,45 +876,47 @@ class _ChaptersSummary extends StatelessWidget {
         .map((s) => s.split(RegExp(r'\s+')).length)
         .fold<int>(0, (a, b) => a + b);
     final avgWords = count > 0 ? (totalWords / count).round() : 0;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            const Icon(Icons.list, size: 16),
-            const SizedBox(width: 6),
-            Text(l10n.chaptersCount(count)),
-            const SizedBox(width: 12),
-            const Icon(Icons.text_snippet, size: 16),
-            const SizedBox(width: 6),
-            Text(l10n.avgWordsPerChapter(avgWords)),
-          ],
-        ),
-        const SizedBox(height: 12),
-        ...sample.map((c) {
-          final title = c.title?.trim();
-          final label = title == null || title.isEmpty
-              ? l10n.chapterLabel(c.idx)
-              : l10n.chapterWithTitle(c.idx, title);
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                if ((c.content ?? '').isNotEmpty)
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.list, size: 16),
+              const SizedBox(width: 6),
+              Text(l10n.chaptersCount(count)),
+              const SizedBox(width: 12),
+              const Icon(Icons.text_snippet, size: 16),
+              const SizedBox(width: 6),
+              Text(l10n.avgWordsPerChapter(avgWords)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...sample.map((c) {
+            final title = c.title?.trim();
+            final label = title == null || title.isEmpty
+                ? l10n.chapterLabel(c.idx)
+                : l10n.chapterWithTitle(c.idx, title);
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    _snippet(c.content),
-                    style: const TextStyle(color: Colors.black54),
+                    label,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
-              ],
-            ),
-          );
-        }),
-      ],
+                  if ((c.content ?? '').isNotEmpty)
+                    Text(
+                      _snippet(c.content),
+                      style: const TextStyle(color: Colors.black54),
+                    ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
     );
   }
 }

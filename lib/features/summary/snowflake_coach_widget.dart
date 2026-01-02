@@ -695,49 +695,55 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                     ),
                   ),
                 ],
-                TextField(
-                  controller: _inputController,
-                  decoration: InputDecoration(
-                    hintText: isDone
-                        ? 'Ask a follow-up question or start new analysis...'
-                        : l10n.reviewSuggestionsHint,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    suffixIcon: Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: IconButton(
-                        onPressed: _loading
-                            ? null
-                            : () {
-                                final val = _inputController.text.trim();
-                                if (val.isNotEmpty) {
-                                  _analyze(userResponse: val);
-                                  _inputController.clear();
-                                }
-                              },
-                        icon: _loading
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Icons.send),
+                Container(
+                  constraints: const BoxConstraints(minHeight: 48),
+                  child: TextField(
+                    controller: _inputController,
+                    decoration: InputDecoration(
+                      hintText: isDone
+                          ? 'Ask a follow-up question or start new analysis...'
+                          : l10n.reviewSuggestionsHint,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.only(right: 4),
+                        child: IconButton(
+                          onPressed: _loading
+                              ? null
+                              : () {
+                                  final val = _inputController.text.trim();
+                                  if (val.isNotEmpty) {
+                                    _analyze(userResponse: val);
+                                    _inputController.clear();
+                                  }
+                                },
+                          icon: _loading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.send),
+                        ),
                       ),
                     ),
+                    minLines: 1,
+                    maxLines: 3,
+                    textAlignVertical: TextAlignVertical.top,
+                    onSubmitted: (val) {
+                      if (val.trim().isNotEmpty) {
+                        _analyze(userResponse: val.trim());
+                        _inputController.clear();
+                      }
+                    },
                   ),
-                  onSubmitted: (val) {
-                    if (val.trim().isNotEmpty) {
-                      _analyze(userResponse: val.trim());
-                      _inputController.clear();
-                    }
-                  },
                 ),
               ],
             ),
