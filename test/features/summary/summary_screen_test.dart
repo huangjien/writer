@@ -199,9 +199,6 @@ void main() {
     // Since we are mocking everything, we can't easily check initial values populated from remote without more mocking.
     // But we can check the field exists.
 
-    // Chapters summary shows counts and average words.
-    expect(find.text('Chapters: 2'), findsOneWidget);
-
     // Save a new summary.
     await tester.enterText(summaryField, 'New summary text');
     await tester.pumpAndSettle();

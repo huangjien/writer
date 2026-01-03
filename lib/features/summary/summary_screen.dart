@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/models/novel.dart';
-import 'package:writer/models/chapter.dart';
 
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
@@ -541,7 +540,6 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
 
   @override
   Widget build(BuildContext context) {
-    final chaptersAsync = ref.watch(chaptersProvider(widget.novelId));
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
 
     return Scaffold(
@@ -562,7 +560,6 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
               onPressed: () async {
                 setState(() => _refreshing = true);
                 ref.invalidate(novelProvider(widget.novelId));
-                ref.invalidate(chaptersProvider(widget.novelId));
                 await _load();
                 if (mounted) setState(() => _refreshing = false);
               },
@@ -751,15 +748,6 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                       ),
                     ),
                   ),
-
-                  // Chapters Summary Section - wrapped in Flexible to prevent overflow
-                  Flexible(
-                    child: chaptersAsync.when(
-                      data: (chapters) => _ChaptersSummary(chapters: chapters),
-                      loading: () => _LoadingTile(label: l10n.loadingChapter),
-                      error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
-                    ),
-                  ),
                 ],
               ),
             );
@@ -847,76 +835,6 @@ class _NovelHeader extends StatelessWidget {
           ],
         ),
       ],
-    );
-  }
-}
-
-class _ChaptersSummary extends StatelessWidget {
-  const _ChaptersSummary({required this.chapters});
-  final List<Chapter> chapters;
-
-  String _snippet(String? content) {
-    if (content == null || content.isEmpty) return '';
-    final s = content.trim();
-    if (s.length <= 140) return s;
-    return '${s.substring(0, 140)}…';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
-    if (chapters.isEmpty) {
-      return Text(l10n.noChaptersFound);
-    }
-    final count = chapters.length;
-    final sample = chapters.take(5).toList();
-    final totalWords = chapters
-        .map((c) => (c.content ?? '').trim())
-        .where((s) => s.isNotEmpty)
-        .map((s) => s.split(RegExp(r'\s+')).length)
-        .fold<int>(0, (a, b) => a + b);
-    final avgWords = count > 0 ? (totalWords / count).round() : 0;
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.list, size: 16),
-              const SizedBox(width: 6),
-              Text(l10n.chaptersCount(count)),
-              const SizedBox(width: 12),
-              const Icon(Icons.text_snippet, size: 16),
-              const SizedBox(width: 6),
-              Text(l10n.avgWordsPerChapter(avgWords)),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ...sample.map((c) {
-            final title = c.title?.trim();
-            final label = title == null || title.isEmpty
-                ? l10n.chapterLabel(c.idx)
-                : l10n.chapterWithTitle(c.idx, title);
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  if ((c.content ?? '').isNotEmpty)
-                    Text(
-                      _snippet(c.content),
-                      style: const TextStyle(color: Colors.black54),
-                    ),
-                ],
-              ),
-            );
-          }),
-        ],
-      ),
     );
   }
 }

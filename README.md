@@ -46,6 +46,16 @@ A Flutter application for reading novels with localization and Text-To-Speech (T
 ## Tests
 - Run tests with coverage summary: `make test`
 
+### Router Coverage
+- `test/routing/app_router_coverage_test.dart` provides comprehensive coverage for the app router.
+- It validates navigation to over 20 routes including:
+  - Auth screens (`/signup`, `/forgot-password`, etc.)
+  - Simple screens (`/about`, `/my-novels`, etc.)
+  - List screens (`/prompts`, `/patterns`, etc.)
+  - Admin screens (`/admin/users`, `/admin/logs`)
+  - Nested novel routes (`/novel/:id/summary`, `/novel/:id/characters`, etc.)
+- These tests use `Fake` repositories and services to isolate routing logic from backend dependencies.
+
 ### Attach token to backend requests
 - Obtain the access token from the current session:
   - `final token = ref.watch(sessionProvider);`

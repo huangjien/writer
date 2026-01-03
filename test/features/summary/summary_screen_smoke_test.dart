@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/routing/app_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
-import 'package:writer/models/chapter.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/providers.dart';
@@ -27,17 +26,6 @@ void main() {
             isPublic: true,
           );
         }),
-        chaptersProvider.overrideWith((ref, novelId) async {
-          return const [
-            Chapter(
-              id: 'chap-001-01',
-              novelId: 'novel-001',
-              idx: 1,
-              title: 'Into the Woods',
-              content: 'Hello world',
-            ),
-          ];
-        }),
       ],
     );
     addTearDown(container.dispose);
@@ -56,6 +44,5 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Summary'), findsOneWidget);
-    expect(find.textContaining('Chapters'), findsWidgets);
   });
 }
