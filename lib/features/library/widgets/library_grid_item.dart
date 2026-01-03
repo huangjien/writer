@@ -15,12 +15,14 @@ class LibraryGridItem extends ConsumerWidget {
     required this.isSignedIn,
     required this.canRemove,
     required this.canDownload,
+    this.onRemove,
   });
 
   final Novel novel;
   final bool isSignedIn;
   final bool canRemove;
   final bool canDownload;
+  final VoidCallback? onRemove;
 
   Widget _buildCover(
     BuildContext context, {
@@ -155,11 +157,11 @@ class LibraryGridItem extends ConsumerWidget {
     final motion = ref.watch(motionSettingsProvider);
 
     return OpenContainer(
-      closedElevation: 2,
+      closedElevation: 0, // Set to 0 to avoid double shadow with Card
       closedShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Radii.m),
       ),
-      closedColor: theme.colorScheme.surface,
+      closedColor: Colors.transparent, // Set to transparent
       openElevation: 8,
       openShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Radii.l),
@@ -168,65 +170,85 @@ class LibraryGridItem extends ConsumerWidget {
       transitionDuration: Duration(milliseconds: motion.reduceMotion ? 0 : 400),
       transitionType: ContainerTransitionType.fadeThrough,
       closedBuilder: (context, action) {
-        return Card(
-          elevation: 2,
-          shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.1),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Radii.m),
-          ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(Radii.m),
-            onTap: () {
-              action();
-              context.push('/novel/${novel.id}');
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(Spacing.s),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Cover image
-                  Center(child: _buildCover(context)),
-                  const SizedBox(height: Spacing.s),
+        return Stack(
+          children: [
+            Card(
+              elevation: 2,
+              shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(Radii.m),
+              ),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(Radii.m),
+                onTap: () {
+                  action();
+                  context.push('/novel/${novel.id}');
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(Spacing.s),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Cover image
+                      Center(child: _buildCover(context)),
+                      const SizedBox(height: Spacing.s),
 
-                  // Title and author
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          novel.title,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            height: 1.2,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (novel.author != null &&
-                            novel.author!.isNotEmpty) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            novel.author!,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                      // Title and author
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              novel.title,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                height: 1.2,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ],
-                    ),
+                            if (novel.author != null &&
+                                novel.author!.isNotEmpty) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                novel.author!,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: Spacing.xs),
+
+                      // Progress indicator
+                      _buildProgressIndicator(context),
+                    ],
                   ),
-
-                  const SizedBox(height: Spacing.xs),
-
-                  // Progress indicator
-                  _buildProgressIndicator(context),
-                ],
+                ),
               ),
             ),
-          ),
+            if (canRemove)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert),
+                  onSelected: (value) {
+                    if (value == 'delete') {
+                      onRemove?.call();
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                  ],
+                ),
+              ),
+          ],
         );
       },
       openBuilder: (context, action) {

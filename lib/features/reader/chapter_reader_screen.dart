@@ -385,7 +385,14 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     final bgColor = readerBackgroundColor(Theme.of(context).colorScheme, depth);
 
     final current = state.allChapters.isNotEmpty
-        ? state.allChapters[state.currentIdx]
+        ? state.allChapters[state.currentIdx].copyWith(
+            title: state.title.isNotEmpty
+                ? state.title
+                : state.allChapters[state.currentIdx].title,
+            content: state.content?.isNotEmpty == true
+                ? state.content
+                : state.allChapters[state.currentIdx].content,
+          )
         : Chapter(
             id: state.chapterId,
             novelId: widget.novelId,

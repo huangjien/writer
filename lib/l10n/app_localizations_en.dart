@@ -9,6 +9,12 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get newChapter => 'New Chapter';
+
+  @override
+  String get back => 'Back';
+
+  @override
   String get helloWorld => 'Hello World!';
 
   @override
@@ -493,6 +499,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tokenUsage => 'Token Usage';
 
   @override
+  String removedNovel(String title) {
+    return 'Removed $title';
+  }
+
+  @override
+  String get discover => 'Discover';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get libraryTitle => 'Library';
+
+  @override
+  String get undo => 'Undo';
+
+  @override
+  String get allFilter => 'All';
+
+  @override
+  String get readingFilter => 'Reading';
+
+  @override
+  String get completedFilter => 'Completed';
+
+  @override
+  String get downloadedFilter => 'Downloaded';
+
+  @override
+  String get searchNovels => 'Search novels...';
+
+  @override
+  String get listView => 'List View';
+
+  @override
+  String get gridView => 'Grid View';
+
+  @override
   String get userManagement => 'User Management';
 
   @override
@@ -602,9 +646,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get removedFromLibrary => 'Removed from Library';
-
-  @override
-  String get undo => 'Undo';
 
   @override
   String get confirmDelete => 'Confirm Delete';
@@ -1347,30 +1388,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToPersistTemplate => 'Failed to save template';
 
   @override
-  String get listView => 'List View';
-
-  @override
-  String get gridView => 'Grid View';
-
-  @override
   String userIdCreated(String id, String createdAt) {
     return 'User $id created at $createdAt';
   }
-
-  @override
-  String get searchNovels => 'Search novels...';
-
-  @override
-  String get allFilter => 'All';
-
-  @override
-  String get readingFilter => 'Reading';
-
-  @override
-  String get completedFilter => 'Completed';
-
-  @override
-  String get downloadedFilter => 'Downloaded';
 
   @override
   String get tryAdjustingSearchCreateNovel =>

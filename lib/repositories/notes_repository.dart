@@ -18,7 +18,7 @@ class NotesRepository {
   Future<List<CharacterNote>> listCharacterNotes(String novelId) async {
     try {
       final res = await _remote.get(
-        'notes/characters',
+        'characters',
         queryParameters: {'novel_id': novelId},
       );
       if (res is List) {
@@ -55,16 +55,16 @@ class NotesRepository {
       'character_synopses': synopses,
       'language_code': languageCode ?? 'en',
     };
-    await _remote.post('notes/characters', body);
+    await _remote.post('characters', body);
   }
 
   Future<void> deleteCharacterNoteById(String id) async {
-    await _remote.delete('notes/characters/$id');
+    await _remote.delete('characters/$id');
   }
 
   Future<void> deleteCharacterNoteByIdx(String novelId, int idx) async {
     await _remote.delete(
-      'notes/characters',
+      'characters',
       queryParameters: {'novel_id': novelId, 'idx': idx.toString()},
     );
   }
@@ -74,7 +74,7 @@ class NotesRepository {
   Future<List<SceneNote>> listSceneNotes(String novelId) async {
     try {
       final res = await _remote.get(
-        'notes/scenes',
+        'scenes',
         queryParameters: {'novel_id': novelId},
       );
       if (res is List) {
@@ -108,16 +108,16 @@ class NotesRepository {
       'scene_synopses': synopses,
       'language_code': languageCode ?? 'en',
     };
-    await _remote.post('notes/scenes', body);
+    await _remote.post('scenes', body);
   }
 
   Future<void> deleteSceneNoteById(String id) async {
-    await _remote.delete('notes/scenes/$id');
+    await _remote.delete('scenes/$id');
   }
 
   Future<void> deleteSceneNoteByIdx(String novelId, int idx) async {
     await _remote.delete(
-      'notes/scenes',
+      'scenes',
       queryParameters: {'novel_id': novelId, 'idx': idx.toString()},
     );
   }

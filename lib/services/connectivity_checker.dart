@@ -14,7 +14,10 @@ abstract class ConnectivityChecker {
 
 /// Real implementation using connectivity_plus
 class RealConnectivityChecker implements ConnectivityChecker {
-  final Connectivity _connectivity = Connectivity();
+  final Connectivity _connectivity;
+
+  RealConnectivityChecker({Connectivity? connectivity})
+    : _connectivity = connectivity ?? Connectivity();
 
   @override
   Future<bool> checkConnectivity() async {

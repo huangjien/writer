@@ -5,6 +5,7 @@ import '../../theme/design_tokens.dart';
 import '../../widgets/side_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../state/novel_providers.dart';
+import '../../state/edit_permissions.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/chapter.dart';
 import 'chapter_reader_screen.dart' as cr;
@@ -30,6 +31,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final chaptersAsync = ref.watch(chaptersProvider(widget.novelId));
+    final editPermsAsync = ref.watch(editPermissionsProvider(widget.novelId));
+    final canEdit = editPermsAsync.asData?.value ?? false;
 
     if (widget.chapterId != null) {
       return chaptersAsync.when(
@@ -61,6 +64,24 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
         title: Text(l10n.chapters),
         automaticallyImplyLeading: false,
         actions: [
+          if (canEdit)
+            IconButton(
+              icon: const Icon(Icons.add),
+              tooltip: l10n.newLabel,
+              onPressed: () {
+                try {
+                  context.push('/novel/${widget.novelId}/chapters/new');
+                } catch (_) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const Scaffold(
+                        body: Center(child: Text('Navigation error')),
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
           if (_refreshing)
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12),

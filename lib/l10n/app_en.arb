@@ -1,4 +1,6 @@
 {
+  "newChapter": "New Chapter",
+  "back": "Back",
   "helloWorld": "Hello World!",
   "settings": "Settings",
   "appTitle": "Writer",
@@ -197,6 +199,25 @@
   "typographyDark": "Dark Typography",
   "readerBundles": "Reader Theme Bundles",
   "tokenUsage": "Token Usage",
+  "removedNovel": "Removed {title}",
+  "@removedNovel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "discover": "Discover",
+  "profile": "Profile",
+  "libraryTitle": "Library",
+  "undo": "Undo",
+  "allFilter": "All",
+  "readingFilter": "Reading",
+  "completedFilter": "Completed",
+  "downloadedFilter": "Downloaded",
+  "searchNovels": "Search novels...",
+  "listView": "List View",
+  "gridView": "Grid View",
   "userManagement": "User Management",
   "totalThisMonth": "Total This Month",
   "inputTokens": "Input Tokens",
@@ -505,6 +526,17 @@
   "updatePassword": "Update Password",
   "noActiveSessionFound": "No active session found. Please log in again.",
   "authenticationFailedSignInAgain": "Authentication failed. Please sign in again.",
+  "removedNovel": "Removed {title}",
+  "@removedNovel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "discover": "Discover",
+  "profile": "Profile",
+  "libraryTitle": "Library",
   "accessDeniedNoAdminPrivileges": "Access denied. You don't have admin privileges.",
   "failedToLoadUsers": "Failed to load users: {statusCode} - {errorBody}",
   "smartSearchRequiresSignIn": "Please sign in to use smart search",

@@ -262,6 +262,26 @@ class LocalStorageRepository {
     return _storage.getKeys();
   }
 
+  /// Get IDs of novels that have at least one chapter downloaded
+  Future<Set<String>> getDownloadedNovelIds() async {
+    final keys = _storage.getKeys();
+    final novelIds = <String>{};
+    for (final key in keys) {
+      if (key.startsWith('chapter_')) {
+        final json = _storage.getString(key);
+        if (json != null) {
+          try {
+            final map = jsonDecode(json);
+            if (map['novelId'] != null) {
+              novelIds.add(map['novelId'] as String);
+            }
+          } catch (_) {}
+        }
+      }
+    }
+    return novelIds;
+  }
+
   Future<List<CharacterNote>> listCharacterNotes(String novelId) async {
     final json = _storage.getString('character_note_form_$novelId');
     if (json == null) return [];

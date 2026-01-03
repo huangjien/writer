@@ -10,14 +10,13 @@ import 'package:writer/features/library/widgets/library_grid_item.dart';
 import 'package:writer/features/library/widgets/library_item_row.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';
+import 'package:writer/models/user_progress.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
-import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/shared/widgets/mobile_bottom_nav_bar.dart';
 import 'package:writer/shared/widgets/mobile_novel_card.dart';
 import 'package:writer/widgets/sync_status_indicator.dart';
-import 'package:writer/shared/widgets/empty_state.dart';
 
 void main() {
   group('LibraryScreen - Filter Logic', () {
@@ -53,6 +52,7 @@ void main() {
             memberNovelsProvider.overrideWith((ref) async => const []),
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
+            downloadedNovelIdsProvider.overrideWith((ref) async => {'n1'}),
           ],
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -116,8 +116,8 @@ void main() {
       await tester.tap(completedFilterChip);
       await tester.pumpAndSettle();
 
-      // Should show empty state - check for EmptyState widget
-      expect(find.byType(EmptyState), findsOneWidget);
+      // Should show empty state - check for text "No novels found."
+      expect(find.text('No novels found.'), findsOneWidget);
     });
 
     testWidgets('filter by reading shows all novels (current implementation)', (
@@ -145,6 +145,18 @@ void main() {
             memberNovelsProvider.overrideWith((ref) async => const []),
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
+            recentUserProgressProvider.overrideWith(
+              (ref) async => [
+                UserProgress(
+                  userId: 'user1',
+                  novelId: 'n1',
+                  chapterId: 'c1',
+                  scrollOffset: 0,
+                  ttsCharIndex: 0,
+                  updatedAt: DateTime.now(),
+                ),
+              ],
+            ),
           ],
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -194,6 +206,7 @@ void main() {
               memberNovelsProvider.overrideWith((ref) async => const []),
               chaptersProvider.overrideWith((ref, novelId) async => const []),
               lastProgressProvider.overrideWith((ref, novelId) async => null),
+              downloadedNovelIdsProvider.overrideWith((ref) async => {'n1'}),
             ],
             child: MaterialApp(
               localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -233,6 +246,7 @@ void main() {
             memberNovelsProvider.overrideWith((ref) async => const []),
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
+            isSignedInProvider.overrideWithValue(true),
           ],
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -293,6 +307,7 @@ void main() {
             memberNovelsProvider.overrideWith((ref) async => const []),
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
+            isAdminProvider.overrideWith((ref) => true),
           ],
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,

@@ -22,7 +22,7 @@ void main() {
     test('listCharacterNotes maps list response', () async {
       when(
         () => remote.get(
-          'notes/characters',
+          'characters',
           queryParameters: any(named: 'queryParameters'),
         ),
       ).thenAnswer((_) async {
@@ -44,15 +44,14 @@ void main() {
       final items = await repo.listCharacterNotes('n1');
       expect(items.single.id, 'cn1');
       verify(
-        () =>
-            remote.get('notes/characters', queryParameters: {'novel_id': 'n1'}),
+        () => remote.get('characters', queryParameters: {'novel_id': 'n1'}),
       ).called(1);
     });
 
     test('listCharacterNotes maps items response', () async {
       when(
         () => remote.get(
-          'notes/characters',
+          'characters',
           queryParameters: any(named: 'queryParameters'),
         ),
       ).thenAnswer((_) async {
@@ -76,15 +75,14 @@ void main() {
       final items = await repo.listCharacterNotes('n1');
       expect(items.single.id, 'cn2');
       verify(
-        () =>
-            remote.get('notes/characters', queryParameters: {'novel_id': 'n1'}),
+        () => remote.get('characters', queryParameters: {'novel_id': 'n1'}),
       ).called(1);
     });
 
     test('listCharacterNotes returns empty list on error', () async {
       when(
         () => remote.get(
-          'notes/characters',
+          'characters',
           queryParameters: any(named: 'queryParameters'),
         ),
       ).thenThrow(Exception('x'));
@@ -108,7 +106,7 @@ void main() {
         synopses: 'Y',
       );
 
-      verify(() => remote.post('notes/characters', any())).called(1);
+      verify(() => remote.post('characters', any())).called(1);
       expect(captured.single['novel_id'], 'n1');
       expect(captured.single['idx'], 3);
       expect(captured.single['title'], 'T');
@@ -120,7 +118,7 @@ void main() {
     test('deleteCharacterNoteById calls delete', () async {
       when(() => remote.delete(any())).thenAnswer((_) async {});
       await repo.deleteCharacterNoteById('cn9');
-      verify(() => remote.delete('notes/characters/cn9')).called(1);
+      verify(() => remote.delete('characters/cn9')).called(1);
     });
 
     test(
@@ -136,7 +134,7 @@ void main() {
         await repo.deleteCharacterNoteByIdx('n1', 7);
         verify(
           () => remote.delete(
-            'notes/characters',
+            'characters',
             queryParameters: {'novel_id': 'n1', 'idx': '7'},
           ),
         ).called(1);
@@ -156,7 +154,7 @@ void main() {
     test('listSceneNotes maps list response', () async {
       when(
         () => remote.get(
-          'notes/scenes',
+          'scenes',
           queryParameters: any(named: 'queryParameters'),
         ),
       ).thenAnswer((_) async {
@@ -178,7 +176,7 @@ void main() {
       final items = await repo.listSceneNotes('n1');
       expect(items.single.id, 'sn1');
       verify(
-        () => remote.get('notes/scenes', queryParameters: {'novel_id': 'n1'}),
+        () => remote.get('scenes', queryParameters: {'novel_id': 'n1'}),
       ).called(1);
     });
 
@@ -198,7 +196,7 @@ void main() {
         languageCode: 'zh',
       );
 
-      verify(() => remote.post('notes/scenes', any())).called(1);
+      verify(() => remote.post('scenes', any())).called(1);
       expect(captured.single['novel_id'], 'n1');
       expect(captured.single['idx'], 3);
       expect(captured.single['title'], 'T');
@@ -210,7 +208,7 @@ void main() {
     test('deleteSceneNoteById calls delete', () async {
       when(() => remote.delete(any())).thenAnswer((_) async {});
       await repo.deleteSceneNoteById('sn9');
-      verify(() => remote.delete('notes/scenes/sn9')).called(1);
+      verify(() => remote.delete('scenes/sn9')).called(1);
     });
 
     test('deleteSceneNoteByIdx calls delete with query parameters', () async {
@@ -224,7 +222,7 @@ void main() {
       await repo.deleteSceneNoteByIdx('n1', 7);
       verify(
         () => remote.delete(
-          'notes/scenes',
+          'scenes',
           queryParameters: {'novel_id': 'n1', 'idx': '7'},
         ),
       ).called(1);

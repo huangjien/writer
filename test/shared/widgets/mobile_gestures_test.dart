@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/shared/widgets/mobile_gestures.dart';
+import 'package:writer/theme/design_tokens.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -99,74 +100,124 @@ void main() {
     });
   });
 
-  group('LongPressMenu', () {
-    testWidgets('renders child widget initially', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LongPressMenu(
-              menuItems: const [],
-              onItemSelected: (index) {},
-              child: const Text('Menu Child'),
+  Widget buildTestableWidget({
+    required List<MenuItem> menuItems,
+    required ValueChanged<int?> onItemSelected,
+  }) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: SizedBox(
+            width: 300,
+            height: 400,
+            child: LongPressMenu(
+              menuItems: menuItems,
+              onItemSelected: onItemSelected,
+              child: Container(
+                color: Colors.grey[200],
+                alignment: Alignment.center,
+                child: const Text('Menu Child'),
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  group('LongPressMenu', () {
+    testWidgets('renders child widget initially', (tester) async {
+      await tester.pumpWidget(
+        buildTestableWidget(menuItems: const [], onItemSelected: (index) {}),
       );
 
       expect(find.text('Menu Child'), findsOneWidget);
       expect(find.byType(LongPressMenu), findsOneWidget);
     });
 
-    testWidgets('shows menu when selectedIndex is set', (tester) async {
+    testWidgets('shows menu on long press', (tester) async {
       final menuItems = [
         const MenuItem(label: 'Option 1', icon: Icons.star),
         const MenuItem(label: 'Option 2', icon: Icons.favorite),
       ];
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LongPressMenu(
-              menuItems: menuItems,
-              onItemSelected: (index) {},
-              child: const Text('Menu Child'),
-            ),
-          ),
-        ),
+        buildTestableWidget(menuItems: menuItems, onItemSelected: (index) {}),
       );
 
       // Initially, menu should not be visible
       expect(find.text('Option 1'), findsNothing);
-      expect(find.text('Option 2'), findsNothing);
 
-      // Simulate menu selection by accessing internal state
-      // Note: This requires accessing private state, which isn't ideal
-      // In practice, you'd trigger the menu through user interaction
+      // Long press to open menu
+      await tester.longPress(find.text('Menu Child'));
+      await tester.pump();
+
+      // Menu should be visible
+      expect(find.text('Option 1'), findsOneWidget);
+      expect(find.text('Option 2'), findsOneWidget);
     });
 
-    testWidgets('calls onItemSelected when menu item is tapped', (
+    testWidgets('closes menu when tapping outside', (tester) async {
+      final menuItems = [const MenuItem(label: 'Option 1', icon: Icons.star)];
+
+      await tester.pumpWidget(
+        buildTestableWidget(menuItems: menuItems, onItemSelected: (index) {}),
+      );
+
+      // Open menu
+      await tester.longPress(find.text('Menu Child'));
+      await tester.pump();
+      expect(find.text('Option 1'), findsOneWidget);
+
+      // Tap outside (on the overlay background)
+      // We tap at top left which should be covered by overlay
+      // Since we centered the widget, we need to tap within the 300x400 area but outside the menu items
+      // The menu items are at the top of the overlay (Column start).
+      // Let's tap at the bottom of the widget.
+      await tester.tapAt(
+        tester.getBottomRight(find.byType(LongPressMenu)) -
+            const Offset(10, 10),
+      );
+      await tester.pump();
+
+      // Menu should be closed
+      expect(find.text('Option 1'), findsNothing);
+    });
+
+    testWidgets('calls onItemSelected and closes menu when item is tapped', (
       tester,
     ) async {
+      int? selectedIndex;
       final menuItems = [
         const MenuItem(label: 'Option 1', icon: Icons.star),
         const MenuItem(label: 'Option 2', icon: Icons.favorite),
       ];
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LongPressMenu(
-              menuItems: menuItems,
-              onItemSelected: (index) {},
-              child: const Text('Menu Child'),
-            ),
-          ),
+        buildTestableWidget(
+          menuItems: menuItems,
+          onItemSelected: (index) {
+            selectedIndex = index;
+          },
         ),
       );
 
-      // Note: Since the menu overlay appears based on internal state,
-      // we can't easily trigger it without access to private state
-      // This is a limitation in the current design for testing
+      // Open menu
+      await tester.longPress(find.text('Menu Child'));
+      await tester.pump();
+
+      // Tap Option 2 (index 1)
+      await tester.tap(find.text('Option 2'));
+      await tester.pump(); // Update selection
+
+      // Verify callback called
+      expect(selectedIndex, 1);
+
+      // Wait for delay to close menu
+      await tester.pump(const Duration(milliseconds: 200));
+
+      // Menu should be closed
+      expect(find.text('Option 2'), findsNothing);
     });
 
     testWidgets('renders menu items with correct structure', (tester) async {
@@ -176,18 +227,16 @@ void main() {
       ];
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LongPressMenu(
-              menuItems: menuItems,
-              onItemSelected: (index) {},
-              child: const Text('Menu Child'),
-            ),
-          ),
-        ),
+        buildTestableWidget(menuItems: menuItems, onItemSelected: (index) {}),
       );
 
-      expect(find.byType(LongPressMenu), findsOneWidget);
+      // Open menu
+      await tester.longPress(find.text('Menu Child'));
+      await tester.pump();
+
+      expect(find.text('Option 1'), findsOneWidget);
+      expect(find.byIcon(Icons.star), findsOneWidget);
+      expect(find.text('Option 2'), findsOneWidget);
     });
   });
 
@@ -497,102 +546,77 @@ void main() {
     testWidgets('menu overlay uses SafeArea', (tester) async {
       final menuItems = [const MenuItem(label: 'Option 1', icon: Icons.star)];
 
-      // Create a testable widget that can trigger the menu
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Builder(
-              builder: (context) {
-                return ElevatedButton(
-                  onPressed: () {
-                    // This would normally be triggered by long press
-                    // For testing, we need to access the widget state
-                  },
-                  child: LongPressMenu(
-                    menuItems: menuItems,
-                    onItemSelected: (index) {},
-                    child: const Text('Menu Child'),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
+        buildTestableWidget(menuItems: menuItems, onItemSelected: (index) {}),
       );
 
-      expect(find.byType(LongPressMenu), findsOneWidget);
+      // Open menu
+      await tester.longPress(find.text('Menu Child'));
+      await tester.pump();
+
+      expect(find.byType(SafeArea), findsOneWidget);
     });
 
     testWidgets('menu items have correct padding', (tester) async {
       final menuItems = [const MenuItem(label: 'Option 1', icon: Icons.star)];
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LongPressMenu(
-              menuItems: menuItems,
-              onItemSelected: (index) {},
-              child: const Text('Menu Child'),
-            ),
-          ),
-        ),
+        buildTestableWidget(menuItems: menuItems, onItemSelected: (index) {}),
       );
 
-      expect(find.byType(LongPressMenu), findsOneWidget);
-    });
+      // Open menu
+      await tester.longPress(find.text('Menu Child'));
+      await tester.pump();
 
-    testWidgets('LongPressMenu has correct widget structure', (tester) async {
-      final menuItems = [const MenuItem(label: 'Option 1', icon: Icons.star)];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LongPressMenu(
-              menuItems: menuItems,
-              onItemSelected: (index) {},
-              child: const Text('Menu Child'),
-            ),
-          ),
-        ),
+      // Find Container with padding
+      final container = tester.widget<Container>(
+        find
+            .descendant(
+              of: find.byType(InkWell),
+              matching: find.byType(Container),
+            )
+            .first,
       );
 
-      // The LongPressMenu should be present
-      expect(find.byType(LongPressMenu), findsOneWidget);
+      final padding = container.padding as EdgeInsets;
+      expect(padding.left, Spacing.m);
+      expect(padding.right, Spacing.m);
+      expect(padding.top, Spacing.s);
+      expect(padding.bottom, Spacing.s);
     });
 
     testWidgets('menu overlay has semi-transparent background', (tester) async {
       final menuItems = [const MenuItem(label: 'Option 1', icon: Icons.star)];
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LongPressMenu(
-              menuItems: menuItems,
-              onItemSelected: (index) {},
-              child: const Text('Menu Child'),
-            ),
-          ),
-        ),
+        buildTestableWidget(menuItems: menuItems, onItemSelected: (index) {}),
       );
 
-      expect(find.byType(LongPressMenu), findsOneWidget);
+      // Open menu
+      await tester.longPress(find.text('Menu Child'));
+      await tester.pump();
+
+      // Find the overlay container (it's the parent of SafeArea)
+      final overlayFinder = find
+          .ancestor(of: find.byType(SafeArea), matching: find.byType(Container))
+          .first;
+
+      final container = tester.widget<Container>(overlayFinder);
+      expect(container.color, Colors.black54);
     });
 
     testWidgets('handles empty menu items list', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LongPressMenu(
-              menuItems: const [],
-              onItemSelected: (index) {},
-              child: const Text('Menu Child'),
-            ),
-          ),
-        ),
+        buildTestableWidget(menuItems: const [], onItemSelected: (index) {}),
       );
 
-      expect(find.byType(LongPressMenu), findsOneWidget);
-      expect(find.text('Menu Child'), findsOneWidget);
+      // Open menu
+      await tester.longPress(find.text('Menu Child'));
+      await tester.pump();
+
+      // Should show overlay but no items
+      expect(find.byType(SafeArea), findsOneWidget);
+      expect(find.byType(InkWell), findsNothing);
     });
 
     testWidgets('handles multiple menu items', (tester) async {
@@ -603,18 +627,16 @@ void main() {
       ];
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: LongPressMenu(
-              menuItems: menuItems,
-              onItemSelected: (index) {},
-              child: const Text('Menu Child'),
-            ),
-          ),
-        ),
+        buildTestableWidget(menuItems: menuItems, onItemSelected: (index) {}),
       );
 
-      expect(find.byType(LongPressMenu), findsOneWidget);
+      // Open menu
+      await tester.longPress(find.text('Menu Child'));
+      await tester.pump();
+
+      expect(find.text('Option 1'), findsOneWidget);
+      expect(find.text('Option 2'), findsOneWidget);
+      expect(find.text('Option 3'), findsOneWidget);
     });
   });
 

@@ -98,6 +98,18 @@ abstract class AppLocalizations {
     Locale('zh'),
   ];
 
+  /// No description provided for @newChapter.
+  ///
+  /// In en, this message translates to:
+  /// **'New Chapter'**
+  String get newChapter;
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
   /// No description provided for @helloWorld.
   ///
   /// In en, this message translates to:
@@ -1004,6 +1016,78 @@ abstract class AppLocalizations {
   /// **'Token Usage'**
   String get tokenUsage;
 
+  /// No description provided for @removedNovel.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed {title}'**
+  String removedNovel(String title);
+
+  /// No description provided for @discover.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover'**
+  String get discover;
+
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// No description provided for @libraryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get libraryTitle;
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
+
+  /// No description provided for @allFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allFilter;
+
+  /// No description provided for @readingFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading'**
+  String get readingFilter;
+
+  /// No description provided for @completedFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completedFilter;
+
+  /// No description provided for @downloadedFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded'**
+  String get downloadedFilter;
+
+  /// No description provided for @searchNovels.
+  ///
+  /// In en, this message translates to:
+  /// **'Search novels...'**
+  String get searchNovels;
+
+  /// No description provided for @listView.
+  ///
+  /// In en, this message translates to:
+  /// **'List View'**
+  String get listView;
+
+  /// No description provided for @gridView.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid View'**
+  String get gridView;
+
   /// No description provided for @userManagement.
   ///
   /// In en, this message translates to:
@@ -1213,12 +1297,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Removed from Library'**
   String get removedFromLibrary;
-
-  /// No description provided for @undo.
-  ///
-  /// In en, this message translates to:
-  /// **'Undo'**
-  String get undo;
 
   /// No description provided for @confirmDelete.
   ///
@@ -2606,53 +2684,11 @@ abstract class AppLocalizations {
   /// **'Failed to save template'**
   String get failedToPersistTemplate;
 
-  /// No description provided for @listView.
-  ///
-  /// In en, this message translates to:
-  /// **'List View'**
-  String get listView;
-
-  /// No description provided for @gridView.
-  ///
-  /// In en, this message translates to:
-  /// **'Grid View'**
-  String get gridView;
-
   /// No description provided for @userIdCreated.
   ///
   /// In en, this message translates to:
   /// **'User {id} created at {createdAt}'**
   String userIdCreated(String id, String createdAt);
-
-  /// No description provided for @searchNovels.
-  ///
-  /// In en, this message translates to:
-  /// **'Search novels...'**
-  String get searchNovels;
-
-  /// No description provided for @allFilter.
-  ///
-  /// In en, this message translates to:
-  /// **'All'**
-  String get allFilter;
-
-  /// No description provided for @readingFilter.
-  ///
-  /// In en, this message translates to:
-  /// **'Reading'**
-  String get readingFilter;
-
-  /// No description provided for @completedFilter.
-  ///
-  /// In en, this message translates to:
-  /// **'Completed'**
-  String get completedFilter;
-
-  /// No description provided for @downloadedFilter.
-  ///
-  /// In en, this message translates to:
-  /// **'Downloaded'**
-  String get downloadedFilter;
 
   /// No description provided for @tryAdjustingSearchCreateNovel.
   ///

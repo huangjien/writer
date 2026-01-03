@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:writer/services/auth_redirect_service.dart';
 import 'package:writer/state/navigator_key_provider.dart';
 import 'package:writer/state/redirect_provider.dart';
@@ -997,6 +998,126 @@ void main() {
       expect(
         container.read(authRedirectProvider.notifier).getRedirectRoute(),
         '/templates',
+      );
+    });
+  });
+  group('AuthRedirectService Widget Tests', () {
+    testWidgets('redirectToLogin navigates to auth and saves route', (
+      tester,
+    ) async {
+      final navigatorKey = GlobalKey<NavigatorState>();
+      final router = GoRouter(
+        navigatorKey: navigatorKey,
+        initialLocation: '/target',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) => const Scaffold(body: Text('Home')),
+          ),
+          GoRoute(
+            path: '/target',
+            builder: (_, _) => const Scaffold(body: Text('Target')),
+          ),
+          GoRoute(
+            path: '/auth',
+            name: 'auth',
+            builder: (_, _) => const Scaffold(body: Text('Auth')),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            globalNavigatorKeyProvider.overrideWithValue(navigatorKey),
+            authRedirectServiceProvider.overrideWith(
+              (ref) => AuthRedirectService(navigatorKey),
+            ),
+          ],
+          child: MaterialApp.router(routerConfig: router),
+        ),
+      );
+
+      expect(find.text('Target'), findsOneWidget);
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      final helper = container.read(testRedirectProvider);
+
+      // Trigger redirect
+      await helper.callRedirectToLogin();
+      await tester.pumpAndSettle();
+
+      // Verify navigation to auth
+      expect(find.text('Auth'), findsOneWidget);
+
+      // Verify route saved
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/target',
+      );
+    });
+
+    testWidgets('navigateBackToOriginal returns to saved route', (
+      tester,
+    ) async {
+      final navigatorKey = GlobalKey<NavigatorState>();
+      final router = GoRouter(
+        navigatorKey: navigatorKey,
+        initialLocation: '/auth',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) => const Scaffold(body: Text('Home')),
+          ),
+          GoRoute(
+            path: '/target',
+            builder: (_, _) => const Scaffold(body: Text('Target')),
+          ),
+          GoRoute(
+            path: '/auth',
+            name: 'auth',
+            builder: (_, _) => const Scaffold(body: Text('Auth')),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            globalNavigatorKeyProvider.overrideWithValue(navigatorKey),
+            authRedirectServiceProvider.overrideWith(
+              (ref) => AuthRedirectService(navigatorKey),
+            ),
+          ],
+          child: MaterialApp.router(routerConfig: router),
+        ),
+      );
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      final helper = container.read(testRedirectProvider);
+
+      // Pre-set saved route
+      container
+          .read(authRedirectProvider.notifier)
+          .saveRouteAndRedirect('/target');
+
+      // Trigger navigate back
+      // We need to call it with a context that has GoRouter
+      final context = navigatorKey.currentContext!;
+      helper.callNavigateBackToOriginalWithContext(context);
+      await tester.pumpAndSettle();
+
+      // Verify navigation to target
+      expect(find.text('Target'), findsOneWidget);
+
+      // Verify redirect cleared
+      expect(
+        container.read(authRedirectProvider.notifier).getRedirectRoute(),
+        '/',
       );
     });
   });

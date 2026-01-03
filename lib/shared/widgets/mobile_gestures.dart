@@ -97,6 +97,7 @@ class LongPressMenu extends StatefulWidget {
 }
 
 class _LongPressMenuState extends State<LongPressMenu> {
+  bool _isMenuOpen = false;
   int? _selectedIndex;
 
   @override
@@ -104,8 +105,17 @@ class _LongPressMenuState extends State<LongPressMenu> {
     final theme = Theme.of(context);
     return Stack(
       children: [
-        widget.child,
-        if (_selectedIndex != null)
+        GestureDetector(
+          onLongPress: () {
+            MobileGestures.heavyImpact();
+            setState(() {
+              _isMenuOpen = true;
+              _selectedIndex = null;
+            });
+          },
+          child: widget.child,
+        ),
+        if (_isMenuOpen)
           Positioned.fill(child: _buildMenuOverlay(context, theme)),
       ],
     );
@@ -115,6 +125,7 @@ class _LongPressMenuState extends State<LongPressMenu> {
     return GestureDetector(
       onTap: () {
         setState(() {
+          _isMenuOpen = false;
           _selectedIndex = null;
         });
       },
@@ -135,6 +146,15 @@ class _LongPressMenuState extends State<LongPressMenu> {
                   onTap: () {
                     setState(() {
                       _selectedIndex = index;
+                      // Close menu after short delay to show selection
+                      Future.delayed(const Duration(milliseconds: 150), () {
+                        if (mounted) {
+                          setState(() {
+                            _isMenuOpen = false;
+                            _selectedIndex = null;
+                          });
+                        }
+                      });
                     });
                     widget.onItemSelected(index);
                   },

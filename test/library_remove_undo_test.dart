@@ -116,16 +116,17 @@ void main() {
     expect(find.text('Quiet City Nights'), findsOneWidget);
     expect(find.text('The Whispering Forest'), findsOneWidget);
 
-    // Tap more menu icon on the first tile
-    final moreMenuButtons = find.byIcon(Icons.more_vert);
-    expect(moreMenuButtons, findsWidgets);
-    await tester.tap(moreMenuButtons.first);
+    // Tap delete action
+    // MobileNovelCard shows actions in a bottom sheet via more_vert icon
+    final moreButton = find.byIcon(Icons.more_vert);
+    expect(moreButton, findsWidgets);
+    await tester.tap(moreButton.first);
     await tester.pumpAndSettle();
 
-    // Tap delete action in the menu
-    final deleteOptions = find.text('Delete');
-    expect(deleteOptions, findsOneWidget);
-    await tester.tap(deleteOptions);
+    // Tap Delete in the sheet
+    final deleteOption = find.text('Delete');
+    expect(deleteOption, findsOneWidget);
+    await tester.tap(deleteOption);
     await tester.pump();
     // Ensure SnackBar fully animates in before interacting
     await tester.pumpAndSettle();
@@ -136,7 +137,7 @@ void main() {
     expect(find.text('The Whispering Forest'), findsOneWidget);
 
     // SnackBar appears with Undo action
-    expect(find.text('Removed from Library'), findsOneWidget);
+    expect(find.text('Removed Quiet City Nights'), findsOneWidget);
     expect(find.text('Undo'), findsOneWidget);
 
     // Tap Undo to restore

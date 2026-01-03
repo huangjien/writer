@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/features/library/library_providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/sync_state.dart';
 import 'package:writer/state/novel_providers.dart';
@@ -128,7 +129,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap the delete option
-      final deleteOption = find.text('Delete');
+      final deleteOption = find.text(AppLocalizationsEn().delete);
       expect(deleteOption, findsOneWidget);
 
       await tester.tap(deleteOption);
@@ -137,8 +138,11 @@ void main() {
 
       // Should show snackbar with undo option
       expect(find.byType(SnackBar), findsOneWidget);
-      expect(find.text('Removed from Library'), findsOneWidget);
-      expect(find.text('Undo'), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().removedNovel('Café Novel')),
+        findsOneWidget,
+      );
+      expect(find.text(AppLocalizationsEn().undo), findsOneWidget);
     });
 
     testWidgets('undo functionality restores novel to library', (tester) async {
@@ -157,7 +161,7 @@ void main() {
       await tester.tap(moreMenuButtons.first);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Delete'));
+      await tester.tap(find.text(AppLocalizationsEn().delete));
       await tester.pump();
 
       // Novel should be hidden
@@ -167,7 +171,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       // Click undo with a more specific finder
-      final undoButton = find.text('Undo');
+      final undoButton = find.text(AppLocalizationsEn().undo);
       expect(undoButton, findsOneWidget);
       await tester.tap(undoButton, warnIfMissed: false);
       await tester.pumpAndSettle();

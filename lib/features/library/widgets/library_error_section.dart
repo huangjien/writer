@@ -4,8 +4,15 @@ import '../../../l10n/app_localizations.dart';
 import '../../../state/novel_providers.dart';
 
 class LibraryErrorSection extends ConsumerWidget {
-  const LibraryErrorSection({super.key, required this.error});
+  const LibraryErrorSection({
+    super.key,
+    required this.error,
+    this.message,
+    this.onRetry,
+  });
   final Object error;
+  final String? message;
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,16 +26,18 @@ class LibraryErrorSection extends ConsumerWidget {
             child: const Icon(Icons.warning_amber_rounded, size: 48),
           ),
           const SizedBox(height: 8),
-          Text(l10n.error),
+          Text(message ?? l10n.error),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             icon: const Icon(Icons.refresh),
             label: Text(l10n.reload),
-            onPressed: () {
-              ref.invalidate(libraryNovelsProvider);
-              ref.invalidate(memberNovelsProvider);
-              ref.invalidate(novelsProvider);
-            },
+            onPressed:
+                onRetry ??
+                () {
+                  ref.invalidate(libraryNovelsProvider);
+                  ref.invalidate(memberNovelsProvider);
+                  ref.invalidate(novelsProvider);
+                },
           ),
         ],
       ),

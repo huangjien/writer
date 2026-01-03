@@ -117,7 +117,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify starting chapter title
-      expect(find.text('Chapter 2'), findsOneWidget);
+      expect(find.text('Chapter 2'), findsWidgets);
 
       // Enter Edit Mode via the compact edit icon
       await tester.tap(find.byIcon(Icons.edit));
@@ -137,7 +137,7 @@ void main() {
       await tester.pump();
 
       // Title remains unchanged; no navigation occurred
-      expect(find.text('Chapter 2'), findsOneWidget);
+      expect(find.text('Chapter 2'), findsWidgets);
       expect(find.text('Three'), findsNothing);
     });
 

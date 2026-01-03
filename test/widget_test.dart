@@ -23,11 +23,6 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify key UI elements from the Library screen are present.
-    final logo = find.byKey(const ValueKey('home_logo'));
-    final fallback = find.text(
-      'Unable to load asset: "assetmanifest.bin.json"',
-    );
-    expect(logo.evaluate().isNotEmpty || fallback.evaluate().isNotEmpty, true);
-    expect(find.byIcon(Icons.settings), findsOneWidget);
+    expect(find.byIcon(Icons.library_books), findsOneWidget);
   });
 }

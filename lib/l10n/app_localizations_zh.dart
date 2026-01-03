@@ -9,6 +9,12 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get newChapter => 'New Chapter';
+
+  @override
+  String get back => 'Back';
+
+  @override
   String get helloWorld => '你好世界！';
 
   @override
@@ -479,6 +485,44 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tokenUsage => '令牌使用量';
 
   @override
+  String removedNovel(String title) {
+    return 'Removed $title';
+  }
+
+  @override
+  String get discover => 'Discover';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get libraryTitle => 'Library';
+
+  @override
+  String get undo => '撤销';
+
+  @override
+  String get allFilter => '全部';
+
+  @override
+  String get readingFilter => '阅读中';
+
+  @override
+  String get completedFilter => '已完成';
+
+  @override
+  String get downloadedFilter => '已下载';
+
+  @override
+  String get searchNovels => '搜索小说...';
+
+  @override
+  String get listView => '列表视图';
+
+  @override
+  String get gridView => '网格视图';
+
+  @override
   String get userManagement => '用户管理';
 
   @override
@@ -584,9 +628,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get removedFromLibrary => '已从文库中移除';
-
-  @override
-  String get undo => '撤销';
 
   @override
   String get confirmDelete => '确认删除';
@@ -1318,30 +1359,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get failedToPersistTemplate => '保存模板失败';
 
   @override
-  String get listView => '列表视图';
-
-  @override
-  String get gridView => '网格视图';
-
-  @override
   String userIdCreated(String id, String createdAt) {
     return 'ID：$id\n创建时间：$createdAt';
   }
-
-  @override
-  String get searchNovels => '搜索小说...';
-
-  @override
-  String get allFilter => '全部';
-
-  @override
-  String get readingFilter => '阅读中';
-
-  @override
-  String get completedFilter => '已完成';
-
-  @override
-  String get downloadedFilter => '已下载';
 
   @override
   String get tryAdjustingSearchCreateNovel => '尝试调整搜索或创建新小说';

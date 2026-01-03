@@ -1253,7 +1253,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify Admin Logs button
-      expect(find.byIcon(Icons.bug_report), findsOneWidget);
+      expect(find.byIcon(Icons.settings), findsOneWidget);
     });
 
     testWidgets('hides admin controls when not admin', (tester) async {
@@ -1283,7 +1283,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify Admin Logs button is absent
-      expect(find.byIcon(Icons.bug_report), findsNothing);
+      expect(find.byIcon(Icons.settings), findsNothing);
     });
   });
 

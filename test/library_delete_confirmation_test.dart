@@ -227,18 +227,18 @@ void main() {
       await tester.pump();
 
       // Confirmation dialog appears with expected text.
-      expect(find.text('Confirm Delete'), findsOneWidget);
+      expect(find.text(AppLocalizationsEn().confirmDelete), findsOneWidget);
       expect(
         find.text(
           AppLocalizationsEn().confirmDeleteDescription('Quiet City Nights'),
         ),
         findsOneWidget,
       );
-      expect(find.text('Delete'), findsOneWidget);
-      expect(find.text('Cancel'), findsOneWidget);
+      expect(find.text(AppLocalizationsEn().delete), findsOneWidget);
+      expect(find.text(AppLocalizationsEn().cancel), findsOneWidget);
 
       // Confirm deletion.
-      await tester.tap(find.text('Delete'));
+      await tester.tap(find.text(AppLocalizationsEn().delete));
       await tester.pumpAndSettle();
 
       // Repository called and item hidden locally with SnackBar.
@@ -247,7 +247,10 @@ void main() {
 
       // Count updates and SnackBar shown.
       expect(find.text('1 / 2 Novels'), findsOneWidget);
-      expect(find.text('Removed from Library'), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().removedNovel('Quiet City Nights')),
+        findsOneWidget,
+      );
       expect(find.text('Undo'), findsOneWidget);
 
       // Undo restores visibility.
