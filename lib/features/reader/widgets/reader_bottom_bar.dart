@@ -92,8 +92,12 @@ class ReaderBottomBar extends StatelessWidget {
               ),
             ),
           ),
-          const Spacer(),
-          if (!editMode) ...[
+          if (editMode) ...[
+            Expanded(child: Container()),
+            if (editActions != null) editActions!,
+            Expanded(child: Container()),
+          ] else ...[
+            Expanded(child: Container()),
             Semantics(
               button: true,
               label: speaking ? l10n.stopTTS : l10n.speak,
@@ -115,10 +119,8 @@ class ReaderBottomBar extends StatelessWidget {
                 ),
               ),
             ),
-          ] else ...[
-            if (editActions != null) editActions!,
+            Expanded(child: Container()),
           ],
-          const Spacer(),
           if (!editMode && showBeta && onBetaEvaluate != null) ...[
             AnimatedSwitcher(
               duration: reduceMotion
@@ -150,10 +152,12 @@ class ReaderBottomBar extends StatelessWidget {
             SizedBox(width: spacing),
           ],
           if (!editMode)
-            Flexible(
+            IntrinsicWidth(
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
+                  SizedBox(
+                    width: 100,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(Radii.s),
                       child: LinearProgressIndicator(value: scrollProgress),

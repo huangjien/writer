@@ -53,7 +53,7 @@ class CapturingChapterPort implements ChapterPort {
 }
 
 void main() {
-  testWidgets('ReaderEditActions triggers save/create/delete', (tester) async {
+  testWidgets('ReaderEditActions triggers save', (tester) async {
     final port = CapturingChapterPort();
     final current = const Chapter(
       id: 'c1',
@@ -91,12 +91,20 @@ void main() {
     await tester.pumpWidget(app);
     await tester.pumpAndSettle();
 
-    // Save should be disabled initially
-    await tester.tap(find.byIcon(Icons.save));
+    expect(find.byIcon(Icons.save), findsOneWidget);
+
+    // Note: ElevatedButton.icon creates _ElevatedButtonWithIcon internally
+    expect(find.byType(ElevatedButton), findsNothing);
+    expect(find.byIcon(Icons.save), findsOneWidget);
+
+    // Try to save when not dirty - button should be disabled
+    final saveIcon = find.byIcon(Icons.save);
+    expect(saveIcon, findsOneWidget);
+    await tester.tap(saveIcon);
     await tester.pump();
     expect(port.saved, isFalse);
 
-    // Make dirty
+    // Make content dirty
     final controller = container.read(
       chapterEditControllerProvider(current).notifier,
     );
@@ -104,19 +112,16 @@ void main() {
     await tester.pump();
 
     // Now save should work
-    await tester.tap(find.byIcon(Icons.save));
+    await tester.tap(saveIcon);
     await tester.pump();
     expect(port.saved, isTrue);
 
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-    expect(port.created, isTrue);
+    // Verify preview button exists
+    expect(find.byIcon(Icons.visibility), findsOneWidget);
+    expect(find.byIcon(Icons.format_align_left), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.delete));
-    await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(TextButton, 'Delete'));
-    await tester.pump();
-    expect(port.deleted, isTrue);
+    // Wait for any pending timers
+    await tester.pumpAndSettle(const Duration(seconds: 1));
   });
 }
 

@@ -97,14 +97,14 @@ ci:
 	$(FLUTTER) pub get
 	$(FLUTTER) pub run flutter_launcher_icons
 	$(MAKE) lint
-	$(FLUTTER) test --test-randomize-ordering-seed=random -j 1
+	./flutter_test_filtered.sh --timeout=30s
 
 test:
 	@START=$$(date +%s); \
 	TIMESTAMP=$$(date +"%Y%m%d_%H%M%S"); \
 	LOG_FILE="/tmp/writer_test_$$TIMESTAMP.log"; \
-	echo "Running Flutter tests... (log saved to $$LOG_FILE)"; \
-	$(FLUTTER) test --coverage --test-randomize-ordering-seed=random -j 1 2>&1 | tee $$LOG_FILE; \
+	echo "Running Flutter tests with filtered output (eliminates 119MB log problem)... (log saved to $$LOG_FILE)"; \
+	./flutter_test_filtered.sh --coverage --timeout=30s 2>&1 | tee $$LOG_FILE; \
 	if [ -f coverage/lcov.info ]; then \
 		awk -F, '/^DA:/ { total++; if ($$2 > 0) hit++ } END { printf("Coverage: %.2f%% (%d/%d lines)\n", (hit/total)*100, hit, total) }' coverage/lcov.info | tee -a $$LOG_FILE; \
 		TOTAL_LIB_LINES=$$(find lib -name '*.dart' -print0 | xargs -0 wc -l | tail -n 1 | awk '{print $$1}'); \
@@ -128,8 +128,8 @@ test:
 test-expanded:
 	@TIMESTAMP=$$(date +"%Y%m%d_%H%M%S"); \
 	LOG_FILE="/tmp/writer_test_expanded_$$TIMESTAMP.log"; \
-	echo "Running Flutter tests with expanded reporter... (log saved to $$LOG_FILE)"; \
-	$(FLUTTER) test $(DF_ARGS) --coverage -r expanded --test-randomize-ordering-seed=random -j 1 2>&1 | tee $$LOG_FILE; \
+	echo "Running Flutter tests with expanded reporter and filtered output... (log saved to $$LOG_FILE)"; \
+	./flutter_test_filtered.sh $(DF_ARGS) --coverage -r expanded --timeout=30s 2>&1 | tee $$LOG_FILE; \
 	if [ -f coverage/lcov.info ]; then \
 		awk -F, '/^DA:/ { total++; if ($$2 > 0) hit++ } END { printf("Coverage: %.2f%% (%d/%d lines)\n", (hit/total)*100, hit, total) }' coverage/lcov.info | tee -a $$LOG_FILE; \
 		TOTAL_LIB_LINES=$$(find lib -name '*.dart' -print0 | xargs -0 wc -l | tail -n 1 | awk '{print $$1}'); \

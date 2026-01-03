@@ -9,7 +9,12 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/admin_settings.dart';
 import 'package:writer/models/sync_state.dart';
 import 'package:writer/state/sync_service_provider.dart';
+import 'package:writer/state/network_monitor_provider.dart';
+import 'package:writer/services/connectivity_checker.dart';
+import 'package:writer/services/network_monitor.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
+import 'package:writer/state/motion_settings.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
@@ -23,6 +28,15 @@ class CompactSyncStatusIndicator extends StatelessWidget {
   }
 }
 
+class FakeConnectivityChecker implements ConnectivityChecker {
+  @override
+  Future<bool> checkConnectivity() async => true;
+
+  @override
+  Stream<List<ConnectivityResult>> get onConnectivityChanged =>
+      Stream.value([ConnectivityResult.wifi]);
+}
+
 void main() {
   testWidgets('Remove hides item and undo restores it (offline)', (
     tester,
@@ -30,9 +44,10 @@ void main() {
     // Set mobile screen size to ensure MobileNovelCard is used but prevent overflow
     tester.view.physicalSize = const Size(550, 800);
     tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
 
-    final prefs = await SharedPreferences.getInstance();
     SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
 
     final novels = <Novel>[
       const Novel(
@@ -67,11 +82,21 @@ void main() {
           chaptersProvider.overrideWith((ref, novelId) async => const []),
           lastProgressProvider.overrideWith((ref, novelId) async => null),
           removedNovelIdsProvider.overrideWith((ref) => <String>{}),
+          motionSettingsProvider.overrideWith(
+            (ref) => MotionSettingsNotifier(prefs),
+          ),
           // Override sync providers to prevent AppBar overflow from SyncStatusIndicator
           syncStateValueProvider.overrideWith(
             (ref) => const SyncState(status: SyncStatus.synced),
           ),
           hasPendingOperationsProvider.overrideWith((ref) => false),
+          isOnlineProvider.overrideWithValue(true),
+          pendingOperationsCountProvider.overrideWith((ref) => 0),
+          networkMonitorProvider.overrideWith((ref) {
+            final monitor = NetworkMonitor(FakeConnectivityChecker());
+            ref.onDispose(() => monitor.stopMonitoring());
+            return monitor;
+          }),
         ],
         child: MaterialApp(
           locale: const Locale('en'),

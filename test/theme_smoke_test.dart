@@ -6,6 +6,7 @@ import 'package:writer/theme/font_packs.dart';
 
 void main() {
   test('Theme functions produce non-null ThemeData', () {
+    TestWidgetsFlutterBinding.ensureInitialized();
     final light = themeForLight(AppThemeFamily.defaultFamily);
     final dark = themeForDark(AppThemeFamily.defaultFamily);
     expect(light, isA<ThemeData>());

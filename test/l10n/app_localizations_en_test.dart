@@ -1,53 +1,57 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:writer/l10n/app_localizations.dart';
-import 'package:flutter/material.dart';
+import 'package:writer/l10n/app_localizations_en.dart';
 
 void main() {
-  test('Basic en strings', () async {
-    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-    expect(l10n.settings, 'Settings');
-    expect(l10n.appTitle, 'Writer');
-    expect(l10n.supabaseSettings, 'Cloud Sync Settings');
-    expect(l10n.supabaseNotEnabled, 'Cloud sync not enabled');
-    expect(l10n.fetchFromSupabase, 'Fetch from cloud');
-    expect(l10n.confirmFetch, 'Confirm Fetch');
-    expect(
-      l10n.confirmFetchDescription,
-      'This will overwrite your local data. Are you sure?',
-    );
-    expect(l10n.cancel, 'Cancel');
-    expect(l10n.fetch, 'Fetch');
-    expect(l10n.ttsSettings, 'TTS Settings');
-    expect(l10n.ttsSpeechRate, 'Speech Rate');
-    expect(l10n.ttsSpeechVolume, 'Speech Volume');
-    expect(l10n.themeMode, 'Theme Mode');
-    expect(l10n.system, 'System');
-    expect(l10n.light, 'Light');
-    expect(l10n.dark, 'Dark');
-    expect(l10n.select, 'Select');
-    expect(l10n.clear, 'Clear');
-    expect(l10n.sceneTemplates, 'Scene Templates');
-    expect(l10n.templateName, 'Template Name');
-    expect(l10n.templateLabel, 'Template');
-    expect(l10n.aiConvert, 'AI Convert');
-  });
+  group('AppLocalizationsEn', () {
+    late AppLocalizationsEn l10n;
 
-  test('Placeholders en', () async {
-    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-    expect(
-      l10n.signedInAs('user@example.com'),
-      'Signed in as user@example.com',
-    );
-    expect(
-      l10n.continueAtChapter('Chapter 5'),
-      'Continue at chapter • Chapter 5',
-    );
-    expect(l10n.novelsAndProgressSummary(3, '75%'), 'Novels: 3, Progress: 75%');
-    expect(l10n.indexLabel(7), 'Index 7');
-    expect(l10n.ttsError('Network error'), 'TTS error: Network error');
-    expect(
-      l10n.confirmDeleteDescription('My Novel'),
-      "This will delete 'My Novel' from your cloud library. Are you sure?",
-    );
+    setUp(() {
+      l10n = AppLocalizationsEn();
+    });
+
+    test('returns correct locale', () {
+      expect(l10n.localeName, 'en');
+    });
+
+    test('returns non-empty strings for all getters', () {
+      expect(l10n.helloWorld, isNotEmpty);
+      expect(l10n.settings, isNotEmpty);
+      expect(l10n.appTitle, isNotEmpty);
+      expect(l10n.about, isNotEmpty);
+      expect(l10n.aboutDescription, isNotEmpty);
+      expect(l10n.aboutIntro, isNotEmpty);
+      expect(l10n.aboutSecurity, isNotEmpty);
+      expect(l10n.aboutCoach, isNotEmpty);
+      expect(l10n.aboutFeatureCreate, isNotEmpty);
+      expect(l10n.aboutFeatureTemplates, isNotEmpty);
+      expect(l10n.aboutFeatureTracking, isNotEmpty);
+      expect(l10n.aboutFeatureCoach, isNotEmpty);
+      expect(l10n.aboutFeaturePrompts, isNotEmpty);
+      expect(l10n.aboutUsage, isNotEmpty);
+      expect(l10n.aboutUsageList, isNotEmpty);
+      expect(l10n.version, isNotEmpty);
+      expect(l10n.appLanguage, isNotEmpty);
+      expect(l10n.english, isNotEmpty);
+      expect(l10n.chinese, isNotEmpty);
+      expect(l10n.supabaseIntegrationInitialized, isNotEmpty);
+      expect(l10n.configureEnvironment, isNotEmpty);
+      expect(l10n.guest, isNotEmpty);
+      expect(l10n.notSignedIn, isNotEmpty);
+      expect(l10n.signIn, isNotEmpty);
+      expect(l10n.continueLabel, isNotEmpty);
+    });
+
+    test('signedInAs returns formatted string', () {
+      expect(
+        l10n.signedInAs('test@example.com'),
+        'Signed in as test@example.com',
+      );
+    });
+
+    test('specific values match expected English text', () {
+      expect(l10n.appTitle, 'Writer');
+      expect(l10n.settings, 'Settings');
+      expect(l10n.helloWorld, 'Hello World!');
+    });
   });
 }

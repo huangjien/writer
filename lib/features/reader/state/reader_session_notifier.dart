@@ -69,19 +69,22 @@ class ReaderSessionNotifier extends StateNotifier<ReaderSessionState> {
 
   Future<void> loadInitial() async {
     if (state.content != null && state.content!.isNotEmpty) return;
+
+    // Return early if there are no chapters available
+    if (state.allChapters.isEmpty) return;
+
     try {
       final repo = ref.read(chapterRepositoryProvider);
-      // We need to construct Chapter object to fetch.
-      // But we only have ID?
-      // State has currentIdx and allChapters...
-      // If allChapters is empty, we are in trouble.
-      // Assuming allChapters is populated.
-      if (state.allChapters.isEmpty) return;
 
       final current = state.allChapters[state.currentIdx];
+
       final fetched = await repo.getChapter(current);
 
-      state = state.copyWith(content: fetched.content, clearFailure: true);
+      state = state.copyWith(
+        content: fetched.content,
+        title: fetched.title ?? state.title,
+        clearFailure: true,
+      );
       // Setup TTS or other things if needed?
       // For now just content.
     } catch (e) {

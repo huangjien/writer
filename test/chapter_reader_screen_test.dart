@@ -344,6 +344,14 @@ void main() {
   testWidgets('Edit mode toggles between ReaderBody and EditChapterBody', (
     tester,
   ) async {
+    // Set up viewport to prevent RenderFlex overflow
+    tester.view.physicalSize = const Size(1200, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     await pumpScreen(tester);
     await tester.pumpAndSettle();
 
@@ -351,19 +359,31 @@ void main() {
     expect(find.byType(ReaderBody), findsOneWidget);
     expect(find.byType(EditChapterBody), findsNothing);
 
-    // Tap edit button
-    await tester.tap(find.byIcon(Icons.edit));
+    // Find and tap edit button
+    final editButton = find.byIcon(Icons.edit);
+    expect(editButton, findsOneWidget);
+    await tester.tap(editButton);
     await tester.pumpAndSettle();
 
     // Should be in edit mode
     expect(find.byType(ReaderBody), findsNothing);
     expect(find.byType(EditChapterBody), findsOneWidget);
 
-    // Tap edit button again (toggle off) - Note: EditChapterBody might not have the edit icon directly, but the bottom bar does.
-    // When in edit mode, the icon is close
-    await tester.tap(find.byIcon(Icons.close));
-    await tester.pumpAndSettle();
+    // Wait for any pending animations or state transitions
+    await tester.pumpAndSettle(const Duration(seconds: 1));
 
+    // Find the close button in the bottom bar (same button toggles between edit/close)
+    final closeButton = find.byIcon(Icons.close);
+    expect(
+      closeButton,
+      findsOneWidget,
+      reason: 'Close button should be visible in edit mode',
+    );
+
+    await tester.tap(closeButton);
+    await tester.pumpAndSettle(const Duration(seconds: 1));
+
+    // Verify final state - back to reader mode
     expect(find.byType(ReaderBody), findsOneWidget);
     expect(find.byType(EditChapterBody), findsNothing);
   });
@@ -656,6 +676,14 @@ void main() {
   });
 
   testWidgets('Edit mode save triggers repository update', (tester) async {
+    // Set up a larger viewport to ensure bottom bar is visible
+    tester.view.physicalSize = const Size(1200, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     final chapter = const Chapter(
       id: 'c1',
       novelId: novelId,
@@ -689,6 +717,10 @@ void main() {
     final container = ProviderScope.containerOf(element);
     final state = container.read(chapterEditControllerProvider(chapter));
     expect(state.isDirty, isTrue);
+
+    // Scroll to make the save button visible if needed
+    await tester.ensureVisible(saveButton);
+    await tester.pumpAndSettle();
 
     await tester.tap(saveButton);
     await tester.pumpAndSettle();
@@ -902,6 +934,14 @@ void main() {
   });
 
   testWidgets('Edit mode exits when not dirty', (tester) async {
+    // Set up a larger viewport to ensure bottom bar is visible
+    tester.view.physicalSize = const Size(1200, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     await pumpScreen(tester);
     await tester.pumpAndSettle();
 

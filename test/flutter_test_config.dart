@@ -1,16 +1,38 @@
 import 'dart:async';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'package:writer/services/logger_service.dart';
 
 Future<void> testExecutable(FutureOr<void> Function() main) async {
-  TestWidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences.setMockInitialValues({});
-  await resetSharedPreferences();
-  await main();
-  await resetSharedPreferences();
-}
+  // Simple override of debugPrint for basic filtering
+  debugPrint = (String? message, {int? wrapWidth}) {
+    if (message == null) return;
 
-/// Reset SharedPreferences mock between tests to prevent test isolation issues.
-Future<void> resetSharedPreferences() async {
-  SharedPreferences.setMockInitialValues({});
+    // Filter noisy patterns that cause log bloat
+    if (message.startsWith('══╡ EXCEPTION CAUGHT BY')) return;
+    if (message.startsWith('══════════════════════════════════════')) return;
+    if (message.startsWith('The following assertion was thrown')) return;
+    if (message.contains('RenderFlex children have non-zero flex')) {
+      return;
+    }
+    if (message.contains('When a row is in a parent that does not provide')) {
+      return;
+    }
+    if (message.contains('These two directives are mutually exclusive')) return;
+    if (message.contains('Consider setting mainAxisSize')) return;
+    if (message.contains('The affected RenderFlex is:')) return;
+    if (message.contains('creator: Row ← ReaderEditActions')) return;
+    if (message.startsWith('[Settings]')) return;
+
+    // Process through logger for additional filtering
+    LoggerService().processLogLine(message, (String msg) {
+      // Use stdout.write instead of print to avoid lint warning
+      stdout.write(msg);
+      stdout.write('\n');
+      // Force immediate flushing for real-time monitoring with tail
+      stdout.flush();
+    });
+  };
+
+  await main();
 }

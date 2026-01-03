@@ -244,8 +244,8 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
             id: state.chapterId,
             novelId: widget.novelId,
             idx: state.currentIdx + 1,
-            title: state.title,
-            content: state.content,
+            title: state.title.isNotEmpty ? state.title : null,
+            content: state.content?.isNotEmpty == true ? state.content : null,
           );
 
     final dirty = isEditDirty(ref, current);
@@ -390,8 +390,8 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
             id: state.chapterId,
             novelId: widget.novelId,
             idx: state.currentIdx + 1,
-            title: state.title,
-            content: state.content,
+            title: state.title.isNotEmpty ? state.title : null,
+            content: state.content?.isNotEmpty == true ? state.content : null,
           );
 
     final isAiChatOpen = ref.watch(aiChatUiProvider);

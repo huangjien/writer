@@ -13,6 +13,10 @@ import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/tts_settings.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:writer/repositories/remote_repository.dart';
+
+class MockRemoteRepository extends Mock implements RemoteRepository {}
 
 void main() {
   setUp(() {
@@ -27,6 +31,15 @@ void main() {
     final motion = MotionSettingsNotifier(null);
     final ttsSettings = TtsSettingsNotifier(prefs);
     final storageService = LocalStorageService(prefs);
+
+    // Mock remote repository to prevent hanging
+    final mockRemoteRepository = MockRemoteRepository();
+    when(
+      () => mockRemoteRepository.get(
+        any(),
+        queryParameters: any(named: 'queryParameters'),
+      ),
+    ).thenAnswer((_) async => []);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -42,6 +55,10 @@ void main() {
           aiServiceProvider.overrideWith((ref) => aiService),
           motionSettingsProvider.overrideWith((ref) => motion),
           ttsSettingsProvider.overrideWith((ref) => ttsSettings),
+          // Add required provider overrides to prevent hanging
+          authStateProvider.overrideWith((ref) => null),
+          isSignedInProvider.overrideWith((ref) => false),
+          remoteRepositoryProvider.overrideWithValue(mockRemoteRepository),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

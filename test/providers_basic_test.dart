@@ -8,6 +8,8 @@ import 'package:writer/repositories/local_storage_repository.dart';
 
 void main() {
   test('isSignedInProvider is false by default', () async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final storageService = LocalStorageService(prefs);
     final session = SessionNotifier(storageService);

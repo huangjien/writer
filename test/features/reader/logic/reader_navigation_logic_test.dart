@@ -7,6 +7,17 @@ import 'package:writer/state/performance_settings.dart';
 import 'package:writer/repositories/chapter_port.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 
+class MockPerformanceSettingsNotifier extends PerformanceSettingsNotifier {
+  MockPerformanceSettingsNotifier(bool prefetchNextChapter) : super(null) {
+    state = PerformanceSettings(prefetchNextChapter: prefetchNextChapter);
+  }
+
+  @override
+  Future<void> setPrefetchNextChapter(bool value) async {
+    state = PerformanceSettings(prefetchNextChapter: value);
+  }
+}
+
 class CapturingChapterRepo implements ChapterPort {
   Chapter? lastPrefetched;
   @override
@@ -98,24 +109,16 @@ void main() {
     final all = [
       const Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'A', content: 'a'),
     ];
+    // Create a mock notifier with prefetch disabled from the start
+    final notifier = MockPerformanceSettingsNotifier(false);
     final app = ProviderScope(
       overrides: [
-        performanceSettingsProvider.overrideWith(
-          (ref) => PerformanceSettingsNotifier.lazy(),
-        ),
+        performanceSettingsProvider.overrideWith((ref) => notifier),
         chapterRepositoryProvider.overrideWithValue(repo),
       ],
       child: const MaterialApp(home: Scaffold(body: SizedBox.shrink())),
     );
     await tester.pumpWidget(app);
-    final container = ProviderScope.containerOf(
-      tester.element(find.byType(Scaffold)),
-      listen: false,
-    );
-    await container
-        .read(performanceSettingsProvider.notifier)
-        .setPrefetchNextChapter(false);
-    await tester.pump();
     await prefetchNextIfEnabled(
       context: tester.element(find.byType(Scaffold)),
       all: all,

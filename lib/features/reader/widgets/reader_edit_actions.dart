@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../state/chapter_edit_controller.dart';
 import '../../../models/chapter.dart';
-import 'package:go_router/go_router.dart';
 
 class ReaderEditActions extends ConsumerWidget {
   const ReaderEditActions({
@@ -36,102 +35,37 @@ class ReaderEditActions extends ConsumerWidget {
     );
     final bool disabled = editState.isSaving;
     final bool previewEnabled = editState.isDirty;
-    final Widget previewBtn = (isCompact || !isWideForEdit)
-        ? IconButton(
-            key: const ValueKey('btn_preview'),
-            icon: Icon(previewMode ? Icons.visibility_off : Icons.visibility),
-            iconSize: iconSize,
-            onPressed: previewEnabled ? onTogglePreview : null,
-          )
-        : IconButton(
-            key: const ValueKey('btn_preview'),
-            icon: Icon(previewMode ? Icons.visibility_off : Icons.visibility),
-            iconSize: iconSize,
-            onPressed: previewEnabled ? onTogglePreview : null,
-          );
-    final Widget saveBtn = IconButton(
-      icon: const Icon(Icons.save),
+    final Widget previewBtn = IconButton(
+      key: const ValueKey('btn_preview'),
+      icon: Icon(previewMode ? Icons.visibility_off : Icons.visibility),
       iconSize: iconSize,
-      onPressed: (disabled || !editState.isDirty)
-          ? null
-          : () => controller.save(),
-    );
-    final Widget createBtn = IconButton(
-      icon: const Icon(Icons.add),
-      iconSize: iconSize,
-      onPressed: disabled
-          ? null
-          : () => controller.createNextChapter().then((created) {
-              if (created != null) {
-                onCreated(created);
-              }
-            }),
-    );
-    final Widget deleteBtn = IconButton(
-      icon: const Icon(Icons.delete),
-      iconSize: iconSize,
-      onPressed: disabled
-          ? null
-          : () async {
-              final confirmed = await showDialog<bool>(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: Text(l10n.confirmDelete),
-                    content: Text(
-                      l10n.confirmDeleteDescription(
-                        current.title ?? 'Chapter ${current.idx}',
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(false),
-                        child: Text(l10n.cancel),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(true),
-                        child: Text(l10n.delete),
-                      ),
-                    ],
-                  );
-                },
-              );
-              if (confirmed == true) {
-                final ok = await controller.deleteCurrentChapter();
-                if (ok && context.mounted) {
-                  final dest = '/novel/${current.novelId}';
-                  bool navigated = false;
-                  try {
-                    GoRouter.of(context).go(dest);
-                    navigated = true;
-                  } catch (_) {}
-                  if (!navigated) {
-                    final nav = Navigator.of(context);
-                    if (nav.canPop()) {
-                      nav.pop();
-                      navigated = true;
-                    }
-                  }
-                }
-              }
-            },
+      onPressed: previewEnabled ? onTogglePreview : null,
     );
     final Widget formatBtn = IconButton(
       icon: const Icon(Icons.format_align_left),
       iconSize: iconSize,
       onPressed: disabled ? null : () => controller.formatContent(),
     );
+    // Summary edit mode: only show save button prominently
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
+        // Preview and format buttons on the left
         Tooltip(message: 'Review', child: previewBtn),
         SizedBox(width: spacing),
         Tooltip(message: l10n.format, child: formatBtn),
         SizedBox(width: spacing),
-        Tooltip(message: l10n.save, child: saveBtn),
-        SizedBox(width: spacing),
-        Tooltip(message: l10n.createNextChapter, child: createBtn),
-        SizedBox(width: spacing),
-        Tooltip(message: l10n.delete, child: deleteBtn),
+        // Prominent save button
+        ElevatedButton.icon(
+          onPressed: (disabled || !editState.isDirty)
+              ? null
+              : () => controller.save(),
+          icon: const Icon(Icons.save),
+          label: Text(l10n.save),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          ),
+        ),
       ],
     );
   }

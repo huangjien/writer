@@ -225,6 +225,14 @@ void main() {
   testWidgets('EditChapterBody shows NovelMetadataEditor when owner', (
     tester,
   ) async {
+    // Set up viewport to prevent RenderFlex overflow
+    tester.view.physicalSize = const Size(1200, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     final chapter = Chapter(
       id: 'c1',
       novelId: 'n1',
