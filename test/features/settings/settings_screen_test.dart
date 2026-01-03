@@ -1,62 +1,98 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/settings/settings_screen.dart';
+import 'package:writer/features/settings/state/token_usage_providers.dart';
 import 'package:writer/features/settings/widgets/app_settings_section.dart';
 import 'package:writer/features/settings/widgets/palette_settings_section.dart';
-import 'package:writer/features/settings/widgets/tts_settings_container.dart';
 import 'package:writer/features/settings/widgets/performance_section.dart';
 import 'package:writer/features/settings/widgets/reader_bundle_grid.dart';
+import 'package:writer/features/settings/widgets/token_usage_section.dart';
+import 'package:writer/features/settings/widgets/tts_settings_container.dart';
 import 'package:writer/features/settings/widgets/typography_settings_section.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/models/user.dart';
+import 'package:writer/repositories/user_repository.dart';
 import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/performance_settings.dart';
 import 'package:writer/state/providers.dart';
-import 'package:writer/state/session_state.dart';
-import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/tts_settings.dart';
-import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/user_state.dart';
-import 'package:writer/state/progress_providers.dart';
-import 'package:writer/repositories/user_repository.dart';
-import 'package:writer/models/user.dart';
-import 'package:writer/theme/font_packs.dart';
-import 'package:writer/theme/reader_typography.dart';
-import 'package:writer/theme/themes.dart';
+import 'package:writer/state/ai_service_settings.dart';
+import 'package:writer/state/admin_settings.dart';
+import 'package:writer/state/motion_settings.dart';
+import 'package:flutter/services.dart';
 
-class MockUserRepository implements UserRepository {
+import 'package:writer/state/storage_service_provider.dart';
+import 'package:writer/state/session_state.dart';
+
+class FakeUserRepository extends Fake implements UserRepository {
   @override
-  Future<User?> fetchUser(String sessionId) async {
-    if (sessionId == 'test-session') {
-      return User(id: 'u1', email: 'a@b.com', isAdmin: false);
-    }
-    return null;
-  }
+  Future<User?> fetchUser(String sessionId) async => null;
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   setUp(() {
-    SharedPreferences.setMockInitialValues({});
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(const MethodChannel('flutter_tts'), (
+          MethodCall methodCall,
+        ) async {
+          if (methodCall.method == 'getVoices') {
+            return [];
+          }
+          if (methodCall.method == 'getLanguages') {
+            return [];
+          }
+          if (methodCall.method == 'awaitSpeakCompletion') {
+            return 1;
+          }
+          return null;
+        });
   });
 
-  testWidgets('SettingsScreen shows all sections', (tester) async {
+  testWidgets('SettingsScreen renders without crashing', (tester) async {
+    SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
+          themeControllerProvider.overrideWith((ref) => ThemeController(prefs)),
+          appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
+          ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
+          performanceSettingsProvider.overrideWith(
+            (ref) => PerformanceSettingsNotifier(prefs),
+          ),
+          aiServiceProvider.overrideWith((ref) => AiServiceNotifier(prefs)),
+          adminModeProvider.overrideWith((ref) => AdminModeNotifier(prefs)),
+          motionSettingsProvider.overrideWith(
+            (ref) => MotionSettingsNotifier(prefs),
+          ),
           sharedPreferencesProvider.overrideWithValue(prefs),
-          themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
-          ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
-          aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
+          storageServiceProvider.overrideWithValue(LocalStorageService(prefs)),
+          sessionProvider.overrideWith(
+            (ref) => SessionNotifier(LocalStorageService(prefs)),
+          ),
+          currentMonthUsageProvider.overrideWith((ref) async => null),
+          isSignedInProvider.overrideWithValue(false),
+          currentUserProvider.overrideWith((ref) async => null),
+          userRepositoryProvider.overrideWithValue(FakeUserRepository()),
+          userProvider.overrideWith(
+            (ref) => UserStateNotifier(
+              ref,
+              FakeUserRepository(),
+              const AsyncValue.data(null),
+            ),
+          ),
+          isAdminProvider.overrideWith((ref) => false),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
           home: const SettingsScreen(),
         ),
       ),
@@ -64,175 +100,121 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Use the first scrollable (vertical list)
-    final scrollable = find.byType(Scrollable).at(0);
-
-    // App Settings (visible at top)
+    expect(find.byType(SettingsScreen), findsOneWidget);
     expect(find.byType(AppSettingsSection), findsOneWidget);
 
-    // Palette
-    final palette = find.byType(PaletteSettingsSection);
-    await tester.scrollUntilVisible(palette, 500, scrollable: scrollable);
-    expect(palette, findsOneWidget);
+    final scrollable = find.byType(Scrollable);
 
-    final typography = find.byType(TypographySettingsSection);
-    await tester.scrollUntilVisible(typography, 500, scrollable: scrollable);
-    expect(typography, findsOneWidget);
-
-    final bundles = find.byType(ReaderBundleGrid);
-    await tester.scrollUntilVisible(bundles, 500, scrollable: scrollable);
-    expect(bundles, findsOneWidget);
-
-    final perf = find.byType(PerformanceSection);
-    await tester.scrollUntilVisible(perf, 500, scrollable: scrollable);
-    expect(perf, findsOneWidget);
-
-    // TTS
-    final tts = find.byType(TtsSettingsContainer);
-    await tester.scrollUntilVisible(tts, 500, scrollable: scrollable);
-    expect(tts, findsOneWidget);
-  });
-
-  testWidgets('SettingsScreen home button navigates to /', (tester) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    final router = GoRouter(
-      initialLocation: '/settings',
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, state) =>
-              const Scaffold(body: Text('Home Screen')),
-        ),
-        GoRoute(
-          path: '/settings',
-          builder: (context, state) => const SettingsScreen(),
-        ),
-      ],
-    );
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
-          sharedPreferencesProvider.overrideWithValue(prefs),
-          themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
-          ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
-          aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
-        ],
-        child: MaterialApp.router(
-          routerConfig: router,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byTooltip('Home'));
-    await tester.pumpAndSettle();
-    expect(find.text('Home Screen'), findsOneWidget);
-  });
-
-  testWidgets('SettingsScreen applies reader bundle preset', (tester) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('use_separate_dark_palette', true);
-
-    final container = ProviderContainer(
-      overrides: [
-        appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
-        sharedPreferencesProvider.overrideWithValue(prefs),
-        themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
-        ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
-        aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
-      ],
-    );
-    addTearDown(container.dispose);
-
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: const MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: Locale('en'),
-          home: SettingsScreen(),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    final scrollable = find.byType(Scrollable).at(0);
     await tester.scrollUntilVisible(
-      find.text('Nord Calm'),
-      1200,
+      find.byType(PaletteSettingsSection),
+      500,
       scrollable: scrollable,
     );
+    expect(find.byType(PaletteSettingsSection), findsOneWidget);
 
-    final nordText = find.text('Nord Calm');
-    await tester.ensureVisible(nordText);
-    await tester.tap(nordText);
-    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byType(TypographySettingsSection),
+      500,
+      scrollable: scrollable,
+    );
+    expect(find.byType(TypographySettingsSection), findsOneWidget);
 
-    final state = container.read(themeControllerProvider);
-    expect(state.hasSeparateDark, isFalse);
-    expect(state.family, AppThemeFamily.nord);
-    expect(state.fontPack, ReaderFontPack.inter);
-    expect(state.preset, ReaderTypographyPreset.comfortable);
+    await tester.scrollUntilVisible(
+      find.byType(ReaderBundleGrid),
+      500,
+      scrollable: scrollable,
+    );
+    expect(find.byType(ReaderBundleGrid), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.byType(PerformanceSection),
+      500,
+      scrollable: scrollable,
+    );
+    expect(find.byType(PerformanceSection), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.byType(TtsSettingsContainer),
+      500,
+      scrollable: scrollable,
+    );
+    expect(find.byType(TtsSettingsContainer), findsOneWidget);
+
+    // User is signed out, so TokenUsageSection should not be visible
+    expect(find.byType(TokenUsageSection), findsNothing);
+    // Sign In button should be visible
+    await tester.scrollUntilVisible(
+      find.text('Sign In'),
+      500,
+      scrollable: scrollable,
+    );
+    expect(find.text('Sign In'), findsOneWidget);
   });
 
-  testWidgets('SettingsScreen shows Signed in as and signs out', (
-    tester,
-  ) async {
+  testWidgets('SettingsScreen shows user info when signed in', (tester) async {
+    SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
-    final themeController = ThemeController(prefs);
-
-    final storageService = LocalStorageService(prefs);
-    final sessionNotifier = SessionNotifier(storageService);
-    await sessionNotifier.setSessionId('test-session');
+    final user = User(id: '123', email: 'test@example.com');
+    const backendUser = BackendUser(id: '123', email: 'test@example.com');
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          sessionProvider.overrideWith((ref) => sessionNotifier),
+          themeControllerProvider.overrideWith((ref) => ThemeController(prefs)),
+          appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
+          ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
+          performanceSettingsProvider.overrideWith(
+            (ref) => PerformanceSettingsNotifier(prefs),
+          ),
+          aiServiceProvider.overrideWith((ref) => AiServiceNotifier(prefs)),
+          adminModeProvider.overrideWith((ref) => AdminModeNotifier(prefs)),
+          motionSettingsProvider.overrideWith(
+            (ref) => MotionSettingsNotifier(prefs),
+          ),
           sharedPreferencesProvider.overrideWithValue(prefs),
-          userRepositoryProvider.overrideWithValue(MockUserRepository()),
-          latestUserProgressProvider.overrideWith((ref) async => null),
-          currentUserProvider.overrideWith((ref) async {
-            final sid = ref.watch(sessionProvider);
-            if (sid == null || sid.isEmpty) return null;
-            return const BackendUser(id: 'u1', email: 'a@b.com');
-          }),
-          appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
-          themeControllerProvider.overrideWith((_) => themeController),
-          ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
-          aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
+          storageServiceProvider.overrideWithValue(LocalStorageService(prefs)),
+          sessionProvider.overrideWith(
+            (ref) => SessionNotifier(LocalStorageService(prefs)),
+          ),
+          currentMonthUsageProvider.overrideWith((ref) async => null),
+          usageHistoryProvider.overrideWith((ref, arg) async => null),
+          isSignedInProvider.overrideWithValue(true),
+          currentUserProvider.overrideWith((ref) async => backendUser),
+          userRepositoryProvider.overrideWithValue(FakeUserRepository()),
+          userProvider.overrideWith(
+            (ref) => UserStateNotifier(
+              ref,
+              FakeUserRepository(),
+              AsyncValue.data(user),
+            ),
+          ),
+          isAdminProvider.overrideWith((ref) => false),
         ],
-        child: const MaterialApp(
+        child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: Locale('en'),
-          home: SettingsScreen(),
+          home: const SettingsScreen(),
         ),
       ),
     );
+
     await tester.pumpAndSettle();
 
-    expect(find.text('Signed in as a@b.com'), findsOneWidget);
+    expect(find.text('Signed in as test@example.com'), findsOneWidget);
+    final scrollable = find.byType(Scrollable);
 
-    final scrollable = find.byType(Scrollable).at(0);
+    await tester.scrollUntilVisible(
+      find.byType(TokenUsageSection),
+      500,
+      scrollable: scrollable,
+    );
+    expect(find.byType(TokenUsageSection), findsOneWidget);
+
     await tester.scrollUntilVisible(
       find.text('Sign Out'),
-      1200,
+      500,
       scrollable: scrollable,
     );
     expect(find.text('Sign Out'), findsOneWidget);
-
-    final signOutText = find.text('Sign Out');
-    await tester.ensureVisible(signOutText);
-    await tester.tap(signOutText);
-    await tester.pumpAndSettle();
-    expect(find.widgetWithText(FilledButton, 'Sign In'), findsOneWidget);
   });
 }

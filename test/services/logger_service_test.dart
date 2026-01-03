@@ -99,19 +99,34 @@ void main() {
       expect(outputLines[3], '#0 New Frame');
     });
 
-    test('shouldLog implements rate limiting', () {
+    test('shouldLog implements rate limiting', () async {
       // Since _instance is static/singleton, state might persist.
-      // Ideally we'd reset state but fields are private.
       // We can use a unique error key for this test.
       final errorKey = 'UniqueError-${DateTime.now().millisecondsSinceEpoch}';
 
-      expect(logger.shouldLog(errorKey), isTrue);
-      // Repeated same error should be rate limited if logic is implemented
-      // (checking implementation... _shouldLog is called but logic is not shown in snippet read earlier)
-      // Wait, I only read the first 100 lines. Let me check the full implementation if needed.
-      // But assuming standard rate limiting:
-      // expect(logger.shouldLog(errorKey), isTrue); // First time yes
-      // expect(logger.shouldLog(errorKey), isFalse); // Immediate retry no (if rate limit applies)
+      // _maxExceptionsPerWindow is 3
+      expect(
+        logger.shouldLog(errorKey),
+        isTrue,
+        reason: 'First log should pass',
+      );
+      expect(
+        logger.shouldLog(errorKey),
+        isTrue,
+        reason: 'Second log should pass',
+      );
+      expect(
+        logger.shouldLog(errorKey),
+        isTrue,
+        reason: 'Third log should pass',
+      );
+
+      // Fourth log should be blocked
+      expect(
+        logger.shouldLog(errorKey),
+        isFalse,
+        reason: 'Fourth log should be rate limited',
+      );
     });
 
     test('truncateStackTrace reduces stack depth', () {
