@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../models/prompt.dart';
 import '../services/prompts_service.dart';
 import '../l10n/app_localizations.dart';
+import '../shared/api_exception.dart';
 
 const _keys = [
   'system.beta.male',
@@ -161,18 +162,8 @@ class _PromptFormScreenState extends State<PromptFormScreen>
         if (mounted) Navigator.pop(context, res);
       }
     } catch (e) {
-      if (e is ApiException && e.statusCode == 401) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.notSignedIn),
-            action: SnackBarAction(
-              label: AppLocalizations.of(context)!.signIn,
-              onPressed: () => context.push('/auth'),
-            ),
-          ),
-        );
-      } else if (e is ApiException && e.statusCode == 403) {
+      if (e is ApiException && e.statusCode == 401) return;
+      if (e is ApiException && e.statusCode == 403) {
         if (!mounted) return;
         if (!widget.isSignedIn) {
           ScaffoldMessenger.of(context).showSnackBar(

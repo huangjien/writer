@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/shared/api_exception.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/storage_service_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -57,11 +58,13 @@ void main() {
       expect(res, 'bio');
     });
 
-    test('returns null on non-200', () async {
+    test('throws ApiException on non-200', () async {
       final client = MockClient((request) async => http.Response('bad', 500));
       final repo = RemoteRepository('http://example.com', client: client);
-      final res = await repo.fetchCharacterProfile('Bob');
-      expect(res, isNull);
+      expect(
+        () => repo.fetchCharacterProfile('Bob'),
+        throwsA(isA<ApiException>()),
+      );
     });
 
     test('returns null when body missing key', () async {
@@ -78,22 +81,26 @@ void main() {
       expect(res, isNull);
     });
 
-    test('returns null when response is not valid json', () async {
+    test('throws ApiException when response is not valid json', () async {
       final client = MockClient(
         (request) async => http.Response('{"character_profile":', 200),
       );
       final repo = RemoteRepository('http://example.com/', client: client);
-      final res = await repo.fetchCharacterProfile('Alice');
-      expect(res, isNull);
+      expect(
+        () => repo.fetchCharacterProfile('Alice'),
+        throwsA(isA<ApiException>()),
+      );
     });
 
-    test('returns null when http client throws', () async {
+    test('throws ApiException when http client throws', () async {
       final client = MockClient((request) async {
         throw Exception('network');
       });
       final repo = RemoteRepository('http://example.com/', client: client);
-      final res = await repo.fetchCharacterProfile('Alice');
-      expect(res, isNull);
+      expect(
+        () => repo.fetchCharacterProfile('Alice'),
+        throwsA(isA<ApiException>()),
+      );
     });
   });
 
@@ -132,15 +139,17 @@ void main() {
       expect(url.toString(), 'http://example.com/agents/character-convert');
     });
 
-    test('returns null on non-200', () async {
+    test('throws ApiException on non-200', () async {
       final client = MockClient((request) async => http.Response('bad', 500));
       final repo = RemoteRepository('http://example.com/', client: client);
-      final res = await repo.convertCharacter(
-        name: 'Bob',
-        templateContent: 'T',
-        language: 'en',
+      expect(
+        () => repo.convertCharacter(
+          name: 'Bob',
+          templateContent: 'T',
+          language: 'en',
+        ),
+        throwsA(isA<ApiException>()),
       );
-      expect(res, isNull);
     });
 
     test('returns null when body missing key', () async {
@@ -156,30 +165,34 @@ void main() {
       expect(res, isNull);
     });
 
-    test('returns null when response is not valid json', () async {
+    test('throws ApiException when response is not valid json', () async {
       final client = MockClient(
         (request) async => http.Response('{"result":', 200),
       );
       final repo = RemoteRepository('http://example.com/', client: client);
-      final res = await repo.convertCharacter(
-        name: 'Bob',
-        templateContent: 'T',
-        language: 'en',
+      expect(
+        () => repo.convertCharacter(
+          name: 'Bob',
+          templateContent: 'T',
+          language: 'en',
+        ),
+        throwsA(isA<ApiException>()),
       );
-      expect(res, isNull);
     });
 
-    test('returns null when http client throws', () async {
+    test('throws ApiException when http client throws', () async {
       final client = MockClient((request) async {
         throw Exception('network');
       });
       final repo = RemoteRepository('http://example.com/', client: client);
-      final res = await repo.convertCharacter(
-        name: 'Bob',
-        templateContent: 'T',
-        language: 'en',
+      expect(
+        () => repo.convertCharacter(
+          name: 'Bob',
+          templateContent: 'T',
+          language: 'en',
+        ),
+        throwsA(isA<ApiException>()),
       );
-      expect(res, isNull);
     });
   });
 
@@ -198,11 +211,13 @@ void main() {
       expect(res, 'profile');
     });
 
-    test('returns null on non-200', () async {
+    test('throws ApiException on non-200', () async {
       final client = MockClient((request) async => http.Response('bad', 500));
       final repo = RemoteRepository('http://example.com', client: client);
-      final res = await repo.fetchSceneProfile('Scene B');
-      expect(res, isNull);
+      expect(
+        () => repo.fetchSceneProfile('Scene B'),
+        throwsA(isA<ApiException>()),
+      );
     });
   });
 
@@ -305,12 +320,12 @@ void main() {
       expect(capturedUri.queryParameters['limit'], '10');
     });
 
-    test('get method throws on error status code', () async {
+    test('get method throws ApiException on error status code', () async {
       final client = MockClient(
         (request) async => http.Response('Not found', 404),
       );
       final repo = RemoteRepository('http://example.com/', client: client);
-      expect(() => repo.get('test'), throwsException);
+      expect(() => repo.get('test'), throwsA(isA<ApiException>()));
     });
 
     test('post method with retryUnauthorized flag', () async {
@@ -424,7 +439,7 @@ void main() {
 
       expect(
         () => repo.post('test', {'data': 'value'}, retryUnauthorized: false),
-        throwsException,
+        throwsA(isA<ApiException>()),
       );
     });
   });
@@ -453,10 +468,10 @@ void main() {
       expect(usage?.requestCount, 25);
     });
 
-    test('getCurrentMonthUsage throws on failure', () async {
+    test('getCurrentMonthUsage throws ApiException on failure', () async {
       final client = MockClient((request) async => http.Response('Error', 500));
       final repo = RemoteRepository('http://example.com/', client: client);
-      expect(() => repo.getCurrentMonthUsage(), throwsException);
+      expect(() => repo.getCurrentMonthUsage(), throwsA(isA<ApiException>()));
     });
 
     test('getUsageHistory with date parameters', () async {
@@ -507,10 +522,10 @@ void main() {
       expect(logs, 'Log line 1\nLog line 2');
     });
 
-    test('getAdminLogs throws on failure', () async {
+    test('getAdminLogs throws ApiException on failure', () async {
       final client = MockClient((request) async => http.Response('Error', 500));
       final repo = RemoteRepository('http://example.com/', client: client);
-      expect(() => repo.getAdminLogs(), throwsException);
+      expect(() => repo.getAdminLogs(), throwsA(isA<ApiException>()));
     });
   });
 
@@ -544,7 +559,7 @@ void main() {
         return http.Response('Invalid JSON {', 200);
       });
       final repo = RemoteRepository('http://example.com/', client: client);
-      expect(() => repo.get('test'), throwsException);
+      expect(() => repo.get('test'), throwsA(isA<ApiException>()));
     });
 
     test('rethrows exceptions from HTTP client', () async {
@@ -552,7 +567,7 @@ void main() {
         throw Exception('Network error');
       });
       final repo = RemoteRepository('http://example.com/', client: client);
-      expect(() => repo.get('test'), throwsException);
+      expect(() => repo.get('test'), throwsA(isA<ApiException>()));
     });
   });
 }

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/shared/api_exception.dart';
 
 class AiChatService {
   final RemoteRepository remote;
@@ -41,6 +42,11 @@ class AiChatService {
       return true;
     } catch (e) {
       if (e is FormatException) return true;
+      if (e is ApiException &&
+          e.rawMessage != null &&
+          e.rawMessage!.contains('FormatException')) {
+        return true;
+      }
       return false;
     }
   }

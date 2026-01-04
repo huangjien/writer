@@ -6,6 +6,7 @@ import '../../models/scene_template_row.dart';
 import '../../shared/constants.dart';
 import '../../repositories/template_repository.dart';
 import '../../state/providers.dart';
+import '../../shared/api_exception.dart';
 
 class SceneTemplatesListScreen extends ConsumerStatefulWidget {
   const SceneTemplatesListScreen({super.key, required this.novelId});
@@ -47,12 +48,19 @@ class _SceneTemplatesListScreenState
       }
 
       _localSearch();
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
     } catch (e) {
-      _error = e.toString();
-    } finally {
-      setState(() {
-        _loading = false;
-      });
+      if (e is ApiException && e.statusCode == 401) return;
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _loading = false;
+        });
+      }
     }
   }
 
@@ -95,6 +103,7 @@ class _SceneTemplatesListScreenState
       });
     } catch (e) {
       if (!mounted) return;
+      if (e is ApiException && e.statusCode == 401) return;
       setState(() {
         _error = e.toString();
       });
@@ -287,6 +296,10 @@ class _SceneTemplatesListScreenState
                                       if (!context.mounted) return;
                                     } catch (e) {
                                       if (!context.mounted) return;
+                                      if (e is ApiException &&
+                                          e.statusCode == 401) {
+                                        return;
+                                      }
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(

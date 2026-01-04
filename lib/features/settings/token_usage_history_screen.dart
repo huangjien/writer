@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/settings/state/token_usage_providers.dart';
 import 'package:writer/models/token_usage.dart';
+import 'package:writer/shared/api_exception.dart';
 import 'package:writer/theme/design_tokens.dart';
 import 'package:intl/intl.dart';
 import '../../l10n/app_localizations.dart';
@@ -114,7 +115,12 @@ class _TokenUsageHistoryScreenState
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => _ErrorHistory(error: err.toString(), l10n: l10n),
+        error: (err, stack) {
+          if (err is ApiException && err.statusCode == 401) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return _ErrorHistory(error: err.toString(), l10n: l10n);
+        },
       ),
     );
   }

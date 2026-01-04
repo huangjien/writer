@@ -6,6 +6,7 @@ import 'package:writer/services/prompts_service.dart';
 import 'package:writer/screens/prompts_list_screen.dart';
 import 'package:writer/screens/prompt_form_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/shared/api_exception.dart';
 
 class FakePromptsService extends PromptsService {
   FakePromptsService() : super(baseUrl: 'http://test');

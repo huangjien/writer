@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:writer/services/prompts_service.dart';
+import 'package:writer/shared/api_exception.dart';
 
 MockClient _mockClient({bool listResponse = false}) {
   return MockClient((request) async {

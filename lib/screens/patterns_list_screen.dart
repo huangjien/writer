@@ -7,6 +7,7 @@ import '../state/pattern_providers.dart';
 import '../state/providers.dart';
 import '../l10n/app_localizations.dart';
 import '../shared/constants.dart';
+import '../shared/api_exception.dart';
 
 const int _previewLen = kPreviewLenLong;
 const int _searchDebounceMs = kSearchDebounceMs;
@@ -149,6 +150,7 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
           }
         }
       } catch (e) {
+        if (e is ApiException && e.statusCode == 401) return;
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(l10n.deleteErrorWithMessage(e.toString()))),

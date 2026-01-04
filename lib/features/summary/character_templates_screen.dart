@@ -6,6 +6,7 @@ import '../../models/template.dart';
 import '../../repositories/remote_repository.dart';
 import '../../repositories/template_repository.dart';
 import '../../state/providers.dart';
+import '../../shared/api_exception.dart';
 
 class CharacterTemplatesScreen extends ConsumerStatefulWidget {
   const CharacterTemplatesScreen({
@@ -46,22 +47,27 @@ class _CharacterTemplatesScreenState
 
   Future<void> _load() async {
     final repo = ref.read(localStorageRepositoryProvider);
-    if (widget.templateId != null) {
-      if (ref.read(isSignedInProvider)) {
-        final remote = await ref
-            .read(templateRepositoryProvider)
-            .getCharacterTemplateById(widget.templateId!);
-        if (remote != null) {
-          _nameController.text = remote.title ?? '';
-          _descController.text = remote.characterSummaries ?? '';
-        }
-      } else {
-        final row = await repo.getCharacterTemplateById(widget.templateId!);
-        if (row != null) {
-          _nameController.text = row.title ?? '';
-          _descController.text = row.characterSummaries ?? '';
+    try {
+      if (widget.templateId != null) {
+        if (ref.read(isSignedInProvider)) {
+          final remote = await ref
+              .read(templateRepositoryProvider)
+              .getCharacterTemplateById(widget.templateId!);
+          if (remote != null) {
+            _nameController.text = remote.title ?? '';
+            _descController.text = remote.characterSummaries ?? '';
+          }
+        } else {
+          final row = await repo.getCharacterTemplateById(widget.templateId!);
+          if (row != null) {
+            _nameController.text = row.title ?? '';
+            _descController.text = row.characterSummaries ?? '';
+          }
         }
       }
+    } catch (e) {
+      if (e is ApiException && e.statusCode == 401) return;
+      // Optionally handle other errors or just ignore as this is initial load
     }
     _baseName = _nameController.text;
     _baseDesc = _descController.text;
@@ -111,6 +117,7 @@ class _CharacterTemplatesScreenState
       }
     } catch (e) {
       if (mounted) {
+        if (e is ApiException && e.statusCode == 401) return;
         final l10n = AppLocalizations.of(context)!;
         setState(() => _error = l10n.retrieveFailed(e.toString()));
       }
@@ -281,6 +288,9 @@ class _CharacterTemplatesScreenState
                                 SnackBar(content: Text(l10n.saved)),
                               );
                             } catch (e) {
+                              if (e is ApiException && e.statusCode == 401) {
+                                return;
+                              }
                               final msg =
                                   e.toString().contains(
                                     'Duplicate template name',

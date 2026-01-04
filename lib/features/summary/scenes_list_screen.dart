@@ -6,6 +6,7 @@ import 'package:writer/l10n/app_localizations_en.dart';
 import '../../models/scene_note.dart';
 import 'package:writer/repositories/notes_repository.dart';
 import '../../state/providers.dart';
+import '../../shared/api_exception.dart';
 
 class ScenesListScreen extends ConsumerStatefulWidget {
   const ScenesListScreen({super.key, required this.novelId});
@@ -38,12 +39,19 @@ class _ScenesListScreenState extends ConsumerState<ScenesListScreen> {
       } else {
         _items = [];
       }
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
     } catch (e) {
-      _error = e.toString();
-    } finally {
-      setState(() {
-        _loading = false;
-      });
+      if (e is ApiException && e.statusCode == 401) return;
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _loading = false;
+        });
+      }
     }
   }
 

@@ -8,6 +8,7 @@ import '../../repositories/remote_repository.dart';
 import '../../repositories/template_repository.dart';
 import '../../state/providers.dart';
 import '../../state/session_state.dart';
+import '../../shared/api_exception.dart';
 
 class SceneTemplatesScreen extends ConsumerStatefulWidget {
   const SceneTemplatesScreen({
@@ -49,28 +50,33 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
 
   Future<void> _load() async {
     final repo = ref.read(localStorageRepositoryProvider);
-    if (_templateId != null) {
-      if (ref.read(isSignedInProvider)) {
-        final remote = await ref
-            .read(templateRepositoryProvider)
-            .getSceneTemplateById(_templateId!);
-        if (remote != null) {
-          _nameController.text = remote.title ?? '';
-          _descController.text = remote.sceneSummaries ?? '';
-          _languageCode = remote.languageCode;
+    try {
+      if (_templateId != null) {
+        if (ref.read(isSignedInProvider)) {
+          final remote = await ref
+              .read(templateRepositoryProvider)
+              .getSceneTemplateById(_templateId!);
+          if (remote != null) {
+            _nameController.text = remote.title ?? '';
+            _descController.text = remote.sceneSummaries ?? '';
+            _languageCode = remote.languageCode;
+          }
+        } else {
+          final row = await repo.getSceneTemplateById(_templateId!);
+          if (row != null) {
+            _nameController.text = row.title ?? '';
+            _descController.text = row.sceneSummaries ?? '';
+            _languageCode = row.languageCode;
+          }
         }
       } else {
-        final row = await repo.getSceneTemplateById(_templateId!);
-        if (row != null) {
-          _nameController.text = row.title ?? '';
-          _descController.text = row.sceneSummaries ?? '';
-          _languageCode = row.languageCode;
-        }
+        _nameController.text = '';
+        _descController.text = '';
+        _languageCode = 'en';
       }
-    } else {
-      _nameController.text = '';
-      _descController.text = '';
-      _languageCode = 'en';
+    } catch (e) {
+      if (e is ApiException && e.statusCode == 401) return;
+      // Optionally handle other errors
     }
     _baseName = _nameController.text;
     _baseDesc = _descController.text;
@@ -123,6 +129,7 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
       }
     } catch (e) {
       if (mounted) {
+        if (e is ApiException && e.statusCode == 401) return;
         final l10n = AppLocalizations.of(context)!;
         setState(() => _error = l10n.retrieveFailed(e.toString()));
       }
@@ -338,6 +345,9 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
                                 SnackBar(content: Text(l10n.saved)),
                               );
                             } catch (e) {
+                              if (e is ApiException && e.statusCode == 401) {
+                                return;
+                              }
                               final msg =
                                   e.toString().contains(
                                     'Duplicate template name',

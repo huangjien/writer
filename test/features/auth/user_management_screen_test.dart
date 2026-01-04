@@ -12,6 +12,7 @@ import 'package:writer/services/storage_service.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/user_state.dart';
 import 'package:writer/repositories/user_repository.dart';
+import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/l10n/app_localizations.dart';
@@ -83,6 +84,9 @@ void main() {
             userProvider.overrideWith(
               (ref) => MockUserStateNotifier(ref, null),
             ),
+            remoteRepositoryProvider.overrideWith(
+              (ref) => RemoteRepository('http://test', client: client),
+            ),
           ],
         ),
         child: MaterialApp(
@@ -93,7 +97,7 @@ void main() {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [Locale('en')],
-          home: UserManagementScreen(client: client),
+          home: const UserManagementScreen(),
         ),
       ),
     );
@@ -157,6 +161,9 @@ void main() {
             userProvider.overrideWith(
               (ref) => MockUserStateNotifier(ref, null),
             ),
+            remoteRepositoryProvider.overrideWith(
+              (ref) => RemoteRepository('http://test', client: client),
+            ),
           ],
         ),
         child: MaterialApp(
@@ -167,7 +174,7 @@ void main() {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [Locale('en')],
-          home: UserManagementScreen(client: client),
+          home: const UserManagementScreen(),
         ),
       ),
     );
@@ -215,7 +222,7 @@ void main() {
       if (request.method == 'PATCH' &&
           request.url.path.contains('/admin/users/u1/approve')) {
         patchCalled = true;
-        return http.Response('OK', 200);
+        return http.Response('{}', 200);
       }
       return http.Response('Not found', 404);
     });
@@ -232,6 +239,9 @@ void main() {
             aiServiceProvider.overrideWith(
               (ref) => AiServiceNotifier(mockPrefs),
             ),
+            remoteRepositoryProvider.overrideWith(
+              (ref) => RemoteRepository('http://test', client: client),
+            ),
           ],
         ),
         child: MaterialApp(
@@ -242,7 +252,7 @@ void main() {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [Locale('en')],
-          home: UserManagementScreen(client: client),
+          home: const UserManagementScreen(),
         ),
       ),
     );

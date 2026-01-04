@@ -3,6 +3,7 @@ import '../repositories/remote_repository.dart';
 import '../repositories/local_storage_repository.dart';
 import '../services/prompts_service.dart';
 import '../services/patterns_service.dart';
+import '../services/auth_redirect_service.dart';
 
 import '../services/story_lines_service.dart';
 import 'ai_service_settings.dart';
@@ -54,7 +55,15 @@ final promptsServiceProvider = Provider<PromptsService>((ref) {
     baseUrl = 'http://localhost:5600/';
   }
   final sessionId = ref.watch(sessionProvider);
-  return PromptsService(baseUrl: baseUrl, sessionId: sessionId);
+  return PromptsService(
+    baseUrl: baseUrl,
+    sessionId: sessionId,
+    onUnauthorized: () async {
+      await ref.read(sessionProvider.notifier).clear();
+      final authRedirectService = ref.read(authRedirectServiceProvider);
+      await authRedirectService.redirectToLogin(ref);
+    },
+  );
 });
 
 final patternsServiceProvider = Provider<PatternsService>((ref) {
@@ -65,7 +74,15 @@ final patternsServiceProvider = Provider<PatternsService>((ref) {
     baseUrl = 'http://localhost:5600/';
   }
   final sessionId = ref.watch(sessionProvider);
-  return PatternsService(baseUrl: baseUrl, sessionId: sessionId);
+  return PatternsService(
+    baseUrl: baseUrl,
+    sessionId: sessionId,
+    onUnauthorized: () async {
+      await ref.read(sessionProvider.notifier).clear();
+      final authRedirectService = ref.read(authRedirectServiceProvider);
+      await authRedirectService.redirectToLogin(ref);
+    },
+  );
 });
 
 final localStorageRepositoryProvider = Provider<LocalStorageRepository>((ref) {
@@ -81,7 +98,15 @@ final storyLinesServiceProvider = Provider<StoryLinesService>((ref) {
     baseUrl = 'http://localhost:5600/';
   }
   final sessionId = ref.watch(sessionProvider);
-  return StoryLinesService(baseUrl: baseUrl, sessionId: sessionId);
+  return StoryLinesService(
+    baseUrl: baseUrl,
+    sessionId: sessionId,
+    onUnauthorized: () async {
+      await ref.read(sessionProvider.notifier).clear();
+      final authRedirectService = ref.read(authRedirectServiceProvider);
+      await authRedirectService.redirectToLogin(ref);
+    },
+  );
 });
 
 final isAdminProvider = Provider<bool>((ref) {

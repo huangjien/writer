@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:writer/features/settings/state/token_usage_providers.dart';
 import 'package:writer/models/token_usage.dart';
+import 'package:writer/shared/api_exception.dart';
 import 'package:intl/intl.dart';
 import '../../../theme/design_tokens.dart';
 import '../../../l10n/app_localizations.dart';
@@ -55,7 +56,12 @@ class TokenUsageSection extends ConsumerWidget {
             return _UsageData(usage: usage);
           },
           loading: () => _LoadingUsage(),
-          error: (err, stack) => _ErrorUsage(error: err.toString()),
+          error: (err, stack) {
+            if (err is ApiException && err.statusCode == 401) {
+              return const SizedBox.shrink();
+            }
+            return _ErrorUsage(error: err.toString());
+          },
         ),
       ],
     );

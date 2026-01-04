@@ -9,6 +9,7 @@ import 'package:writer/features/library/widgets/library_error_section.dart';
 import 'package:writer/features/library/widgets/session_section.dart';
 import 'package:writer/features/library/widgets/enhanced_search_bar.dart';
 import 'package:writer/features/library/library_providers.dart';
+import 'package:writer/shared/api_exception.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/state/providers.dart';
@@ -362,11 +363,20 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                               );
                             },
                             loading: () => const LibraryLoadingList(),
-                            error: (err, st) => LibraryErrorSection(
-                              error: err,
-                              message: err.toString(),
-                              onRetry: () => ref.refresh(libraryNovelsProvider),
-                            ),
+                            error: (err, st) {
+                              // Suppress 401 errors as they are handled by the repository/service layer
+                              // redirecting to login
+                              if (err is ApiException &&
+                                  err.statusCode == 401) {
+                                return const SizedBox.shrink();
+                              }
+                              return LibraryErrorSection(
+                                error: err,
+                                message: err.toString(),
+                                onRetry: () =>
+                                    ref.refresh(libraryNovelsProvider),
+                              );
+                            },
                           ),
                         ),
                       ],

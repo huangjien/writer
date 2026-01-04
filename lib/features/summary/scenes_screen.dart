@@ -13,6 +13,7 @@ import 'package:writer/repositories/template_repository.dart';
 import '../../models/scene.dart';
 import 'package:writer/repositories/notes_repository.dart';
 import '../../state/providers.dart';
+import 'package:writer/shared/api_exception.dart';
 
 class ScenesScreen extends ConsumerStatefulWidget {
   const ScenesScreen({super.key, required this.novelId, this.idx});
@@ -204,6 +205,7 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
       }
     } catch (e) {
       if (mounted) {
+        if (e is ApiException && e.statusCode == 401) return;
         final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.conversionFailed(e.toString()))),
@@ -553,6 +555,10 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
                                       SnackBar(content: Text(l10n.saved)),
                                     );
                                   } catch (e) {
+                                    if (e is ApiException &&
+                                        e.statusCode == 401) {
+                                      return;
+                                    }
                                     setState(() => _error = e.toString());
                                   } finally {
                                     if (mounted) {

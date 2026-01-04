@@ -7,6 +7,7 @@ import '../services/prompts_service.dart';
 import 'package:go_router/go_router.dart';
 import '../l10n/app_localizations.dart';
 import '../shared/constants.dart';
+import '../shared/api_exception.dart';
 
 const int _previewLen = kPreviewLenShort;
 const int _searchDebounceMs = kSearchDebounceMs;
@@ -56,6 +57,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
         _items = data;
       });
     } catch (e) {
+      if (e is ApiException && e.statusCode == 401) return;
       setState(() {
         _error = e.toString();
       });
@@ -87,6 +89,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
         _items = data;
       });
     } catch (e) {
+      if (e is ApiException && e.statusCode == 401) return;
       _showError(e.toString());
     } finally {
       setState(() {

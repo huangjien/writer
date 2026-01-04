@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:writer/shared/api_exception.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../models/novel.dart';
@@ -70,9 +71,14 @@ class _MemberNovelsList extends ConsumerWidget {
       },
       loading: () =>
           Center(child: Text(l10n?.loadingNovels ?? 'Loading novels…')),
-      error: (err, _) => Center(
-        child: Text(l10n?.errorLoadingNovels ?? 'Error loading novels'),
-      ),
+      error: (err, _) {
+        if (err is ApiException && err.statusCode == 401) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return Center(
+          child: Text(l10n?.errorLoadingNovels ?? 'Error loading novels'),
+        );
+      },
     );
   }
 }

@@ -8,6 +8,7 @@ import 'package:writer/models/character_template_row.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:writer/repositories/notes_repository.dart';
+import 'package:writer/shared/api_exception.dart';
 import '../../state/providers.dart';
 
 class CharactersScreen extends ConsumerStatefulWidget {
@@ -109,6 +110,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
       }
     } catch (e) {
       if (mounted) {
+        if (e is ApiException && e.statusCode == 401) return;
         final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.conversionFailed(e.toString()))),
@@ -426,6 +428,10 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                                       SnackBar(content: Text(l10n.saved)),
                                     );
                                   } catch (e) {
+                                    if (e is ApiException &&
+                                        e.statusCode == 401) {
+                                      return;
+                                    }
                                     setState(() => _error = e.toString());
                                   } finally {
                                     if (mounted) {

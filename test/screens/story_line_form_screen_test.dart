@@ -17,6 +17,7 @@ import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/state/tts_settings.dart';
 import 'package:writer/state/motion_settings.dart';
+import 'package:writer/shared/api_exception.dart';
 
 class FakeStoryLinesService extends StoryLinesService {
   FakeStoryLinesService() : super(baseUrl: 'http://example.com');

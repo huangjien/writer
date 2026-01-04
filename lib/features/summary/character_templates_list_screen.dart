@@ -8,6 +8,7 @@ import '../../models/character_template_row.dart';
 import '../../shared/constants.dart';
 import '../../repositories/template_repository.dart';
 import '../../state/providers.dart';
+import '../../shared/api_exception.dart';
 
 class _EditIntent extends Intent {
   const _EditIntent();
@@ -59,12 +60,19 @@ class _CharacterTemplatesListScreenState
         _items = []; // Or local if we had it
       }
       _localSearch();
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
     } catch (e) {
-      _error = e.toString();
-    } finally {
-      setState(() {
-        _loading = false;
-      });
+      if (e is ApiException && e.statusCode == 401) return;
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _loading = false;
+        });
+      }
     }
   }
 
@@ -107,6 +115,7 @@ class _CharacterTemplatesListScreenState
       });
     } catch (e) {
       if (!mounted) return;
+      if (e is ApiException && e.statusCode == 401) return;
       setState(() {
         _error = e.toString();
       });

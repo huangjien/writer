@@ -5,6 +5,7 @@ import 'package:writer/models/token_usage.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/services/auth_redirect_service.dart';
+import '../shared/api_exception.dart';
 
 final remoteRepositoryProvider = Provider<RemoteRepository>((ref) {
   String baseUrl;
@@ -171,14 +172,13 @@ class RemoteRepository {
         retryUnauthorized: retryUnauthorized,
       );
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw Exception(
-          'Request failed: ${response.statusCode} ${response.body}',
-        );
+        throw ApiException(response.statusCode, response.body);
       }
       if (response.body.isEmpty) return null;
       return jsonDecode(utf8.decode(response.bodyBytes));
     } catch (e) {
-      rethrow;
+      if (e is ApiException) rethrow;
+      throw ApiException(0, e.toString());
     }
   }
 
@@ -194,14 +194,13 @@ class RemoteRepository {
         retryUnauthorized: retryUnauthorized,
       );
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw Exception(
-          'Request failed: ${response.statusCode} ${response.body}',
-        );
+        throw ApiException(response.statusCode, response.body);
       }
       if (response.body.isEmpty) return null;
       return jsonDecode(utf8.decode(response.bodyBytes));
     } catch (e) {
-      rethrow;
+      if (e is ApiException) rethrow;
+      throw ApiException(0, e.toString());
     }
   }
 
@@ -217,14 +216,13 @@ class RemoteRepository {
         retryUnauthorized: retryUnauthorized,
       );
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw Exception(
-          'Request failed: ${response.statusCode} ${response.body}',
-        );
+        throw ApiException(response.statusCode, response.body);
       }
       if (response.body.isEmpty) return null;
       return jsonDecode(utf8.decode(response.bodyBytes));
     } catch (e) {
-      rethrow;
+      if (e is ApiException) rethrow;
+      throw ApiException(0, e.toString());
     }
   }
 
@@ -242,12 +240,11 @@ class RemoteRepository {
         retryUnauthorized: retryUnauthorized,
       );
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw Exception(
-          'Request failed: ${response.statusCode} ${response.body}',
-        );
+        throw ApiException(response.statusCode, response.body);
       }
     } catch (e) {
-      rethrow;
+      if (e is ApiException) rethrow;
+      throw ApiException(0, e.toString());
     }
   }
 
@@ -256,13 +253,9 @@ class RemoteRepository {
     String path,
     Map<String, dynamic> payload,
   ) async {
-    try {
-      final res = await post(path, payload);
-      if (res is Map<String, dynamic>) return res;
-      return null;
-    } catch (_) {
-      return null;
-    }
+    final res = await post(path, payload);
+    if (res is Map<String, dynamic>) return res;
+    return null;
   }
 
   Future<String?> _postStringField(

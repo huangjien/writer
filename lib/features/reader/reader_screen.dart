@@ -10,6 +10,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/chapter.dart';
 import 'chapter_reader_screen.dart' as cr;
 import '../../repositories/chapter_repository.dart';
+import '../../shared/api_exception.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
@@ -60,8 +61,12 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
         },
         loading: () =>
             const Scaffold(body: Center(child: CircularProgressIndicator())),
-        error: (e, _) =>
-            Scaffold(body: Center(child: Text('${l10n.error}: $e'))),
+        error: (e, _) {
+          if (e is ApiException && e.statusCode == 401) {
+            return const SizedBox.shrink();
+          }
+          return Scaffold(body: Center(child: Text('${l10n.error}: $e')));
+        },
       );
     }
 
@@ -354,7 +359,12 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('${l10n.error}: $e')),
+          error: (e, _) {
+            if (e is ApiException && e.statusCode == 401) {
+              return const SizedBox.shrink();
+            }
+            return Center(child: Text('${l10n.error}: $e'));
+          },
         ),
       ),
     );

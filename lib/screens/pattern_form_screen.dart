@@ -6,6 +6,7 @@ import '../models/pattern.dart';
 import '../state/pattern_providers.dart';
 import '../state/providers.dart';
 import '../l10n/app_localizations.dart';
+import '../shared/api_exception.dart';
 
 class PatternFormScreen extends ConsumerStatefulWidget {
   final Pattern? initial;
@@ -177,6 +178,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
       });
       _checkDirty();
     } catch (e) {
+      if (e is ApiException && e.statusCode == 401) return;
       setState(() {
         _error = e.toString();
       });
@@ -227,6 +229,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
         Navigator.pop(context, null);
       }
     } catch (e) {
+      if (e is ApiException && e.statusCode == 401) return;
       setState(() {
         _error = e.toString();
       });
@@ -276,6 +279,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
         if (mounted) Navigator.pop(context, res);
       }
     } catch (e) {
+      if (e is ApiException && e.statusCode == 401) return;
       setState(() {
         _error = e.toString();
       });

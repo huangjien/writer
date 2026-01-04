@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:writer/shared/api_exception.dart';
 import '../../l10n/app_localizations.dart';
 import '../../repositories/chapter_repository.dart';
 import '../../state/novel_providers.dart';
@@ -43,6 +44,7 @@ class _ChapterEditScreenState extends ConsumerState<ChapterEditScreen> {
       context.go('/novel/${widget.novelId}/chapters/${created.id}');
     } catch (e) {
       if (mounted) {
+        if (e is ApiException && e.statusCode == 401) return;
         setState(() {
           _error = e.toString();
           _creating = false;

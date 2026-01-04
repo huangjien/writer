@@ -5,6 +5,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
 import '../../models/character_note.dart';
 import 'package:writer/repositories/notes_repository.dart';
+import 'package:writer/shared/api_exception.dart';
 import '../../state/providers.dart';
 
 class CharactersListScreen extends ConsumerStatefulWidget {
@@ -39,12 +40,19 @@ class _CharactersListScreenState extends ConsumerState<CharactersListScreen> {
       } else {
         _items = []; // Local support removed/needs caching
       }
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
     } catch (e) {
-      _error = e.toString();
-    } finally {
-      setState(() {
-        _loading = false;
-      });
+      if (e is ApiException && e.statusCode == 401) return;
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _loading = false;
+        });
+      }
     }
   }
 

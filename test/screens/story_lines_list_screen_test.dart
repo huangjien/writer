@@ -10,6 +10,7 @@ import 'package:writer/screens/story_lines_list_screen.dart';
 import 'package:writer/services/story_lines_service.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/story_line_providers.dart';
+import 'package:writer/shared/api_exception.dart';
 
 class MockGoRouter extends Mock implements GoRouter {}
 

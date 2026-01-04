@@ -1,15 +1,13 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
-import '../../state/ai_service_settings.dart';
 import '../../state/session_state.dart';
 import '../../state/user_state.dart';
 import '../../l10n/app_localizations.dart';
+import '../../repositories/remote_repository.dart';
+import '../../shared/api_exception.dart';
 
 class UserManagementScreen extends ConsumerStatefulWidget {
-  const UserManagementScreen({super.key, this.client});
-  final http.Client? client;
+  const UserManagementScreen({super.key});
 
   @override
   ConsumerState<UserManagementScreen> createState() =>
@@ -20,14 +18,10 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   bool _loading = false;
   String? _error;
   List<dynamic> _users = [];
-  late final http.Client _client;
-  late final bool _disposeClient;
 
   @override
   void initState() {
     super.initState();
-    _client = widget.client ?? http.Client();
-    _disposeClient = widget.client == null;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _debugCurrentState();
       _validateSession();
@@ -37,9 +31,6 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
 
   @override
   void dispose() {
-    if (_disposeClient) {
-      _client.close();
-    }
     super.dispose();
   }
 
@@ -67,6 +58,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
     setState(() {});
 
     try {
+      final repo = ref.read(remoteRepositoryProvider);
       final sessionId = ref.read(sessionProvider);
       debugPrint('[UserManagement] Session ID: $sessionId');
       if (sessionId == null || sessionId.isEmpty) {
@@ -81,59 +73,12 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
         '[UserManagement] Current user: ${currentUser?.email}, Admin: ${currentUser?.isAdmin}',
       );
 
-      String baseUrl;
-      try {
-        baseUrl = ref.read(aiServiceProvider);
-      } catch (_) {
-        baseUrl = 'http://localhost:5600/';
-      }
-
-      final url = baseUrl.endsWith('/')
-          ? '${baseUrl}admin/users'
-          : '$baseUrl/admin/users';
-
-      debugPrint('[UserManagement] Fetching users from: $url');
-      debugPrint(
-        '[UserManagement] Session ID: ${sessionId.length > 8 ? sessionId.substring(0, 8) : sessionId}...',
-      );
-
-      final res = await _client.get(
-        Uri.parse(url),
-        headers: {'X-Session-Id': sessionId},
-      );
-
-      debugPrint('[UserManagement] Response status: ${res.statusCode}');
-      if (res.statusCode != 200) {
-        String errorBody = '';
-        try {
-          errorBody = utf8.decode(res.bodyBytes);
-        } catch (_) {}
-        debugPrint('[UserManagement] Error response body: $errorBody');
-
-        if (!mounted) {
-          if (res.statusCode == 401) {
-            throw Exception('Authentication failed');
-          } else if (res.statusCode == 403) {
-            throw Exception('Access denied');
-          } else {
-            throw Exception('Failed to load users: ${res.statusCode}');
-          }
-        }
-        final l10n = AppLocalizations.of(context)!;
-        if (res.statusCode == 401) {
-          throw Exception(l10n.authenticationFailedSignInAgain);
-        } else if (res.statusCode == 403) {
-          throw Exception(l10n.accessDeniedNoAdminPrivileges);
-        } else {
-          throw Exception(l10n.failedToLoadUsers(res.statusCode, errorBody));
-        }
-      }
-
-      final data = jsonDecode(utf8.decode(res.bodyBytes));
+      final data = await repo.get('admin/users');
       setState(() {
         _users = data['users'] as List<dynamic>;
       });
     } catch (e) {
+      if (e is ApiException && e.statusCode == 401) return;
       debugPrint('[UserManagement] Error: $e');
       if (mounted) setState(() => _error = e.toString());
     } finally {
@@ -143,38 +88,19 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
 
   Future<void> _validateSession() async {
     try {
+      final repo = ref.read(remoteRepositoryProvider);
       final sessionId = ref.read(sessionProvider);
       if (sessionId == null) {
         debugPrint('[UserManagement] No session ID found');
         return;
       }
 
-      String baseUrl;
-      try {
-        baseUrl = ref.read(aiServiceProvider);
-      } catch (_) {
-        baseUrl = 'http://localhost:5600/';
-      }
-
-      final url = baseUrl.endsWith('/')
-          ? '${baseUrl}auth/verify'
-          : '$baseUrl/auth/verify';
-
-      final res = await _client.get(
-        Uri.parse(url),
-        headers: {'X-Session-Id': sessionId},
-      );
-
-      debugPrint(
-        '[UserManagement] Session validation status: ${res.statusCode}',
-      );
-      if (res.statusCode == 200) {
-        final data = jsonDecode(utf8.decode(res.bodyBytes));
-        debugPrint('[UserManagement] User data: $data');
-        final isAdmin = data['is_admin'] ?? false;
-        debugPrint('[UserManagement] Backend says admin: $isAdmin');
-      }
+      final data = await repo.get('auth/verify');
+      debugPrint('[UserManagement] User data: $data');
+      final isAdmin = data['is_admin'] ?? false;
+      debugPrint('[UserManagement] Backend says admin: $isAdmin');
     } catch (e) {
+      if (e is ApiException && e.statusCode == 401) return;
       debugPrint('[UserManagement] Session validation error: $e');
     }
   }
@@ -182,6 +108,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
   Future<void> _toggleApproval(String userId, bool currentStatus) async {
     try {
       final l10n = AppLocalizations.of(context)!;
+      final repo = ref.read(remoteRepositoryProvider);
       final sessionId = ref.read(sessionProvider);
       if (sessionId == null) {
         if (mounted) {
@@ -192,55 +119,15 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
         return;
       }
 
-      String baseUrl = ref.read(aiServiceProvider);
-      if (!baseUrl.endsWith('/')) baseUrl += '/';
-
-      final url =
-          '${baseUrl}admin/users/$userId/approve?approve=${!currentStatus}';
-
-      debugPrint(
-        '[UserManagement] Toggling approval for $userId to ${!currentStatus}',
+      await repo.patch(
+        'admin/users/$userId/approve?approve=${!currentStatus}',
+        {},
       );
-
-      final res = await _client.patch(
-        Uri.parse(url),
-        headers: {'X-Session-Id': sessionId},
-      );
-
-      debugPrint('[UserManagement] Toggle response status: ${res.statusCode}');
-      if (res.statusCode != 200) {
-        String errorBody = '';
-        try {
-          errorBody = utf8.decode(res.bodyBytes);
-        } catch (_) {}
-        debugPrint('[UserManagement] Toggle error body: $errorBody');
-
-        if (!mounted) {
-          if (res.statusCode == 401) {
-            throw Exception('Authentication failed');
-          } else if (res.statusCode == 403) {
-            throw Exception('Access denied');
-          } else {
-            throw Exception(
-              "Failed to update status: ${res.statusCode}${errorBody.isNotEmpty ? ' - $errorBody' : ''}",
-            );
-          }
-        }
-        final l10n = AppLocalizations.of(context)!;
-        if (res.statusCode == 401) {
-          throw Exception(l10n.authenticationFailedSignInAgain);
-        } else if (res.statusCode == 403) {
-          throw Exception(l10n.accessDeniedNoAdminPrivileges);
-        } else {
-          throw Exception(
-            "Failed to update status: ${res.statusCode}${errorBody.isNotEmpty ? ' - $errorBody' : ''}",
-          );
-        }
-      }
 
       // Refresh list
       await _loadUsers();
     } catch (e) {
+      if (e is ApiException && e.statusCode == 401) return;
       debugPrint('[UserManagement] Toggle error: $e');
       if (mounted) {
         ScaffoldMessenger.of(

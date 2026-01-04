@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../models/story_line.dart';
+import '../shared/api_exception.dart';
 import '../state/story_line_providers.dart';
 import '../state/providers.dart';
 import '../l10n/app_localizations.dart';
@@ -221,6 +222,7 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
         }
       });
     } catch (e) {
+      if (e is ApiException && e.statusCode == 401) return;
       if (!mounted) return;
       setState(() {
         _error = e.toString();

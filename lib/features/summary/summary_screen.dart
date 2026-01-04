@@ -8,6 +8,7 @@ import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/features/summary/snowflake_coach_widget.dart';
 import 'package:writer/models/snowflake.dart';
 import 'package:writer/repositories/novel_repository.dart';
+import 'package:writer/shared/api_exception.dart';
 import 'summary_controller.dart';
 
 class SummaryScreen extends ConsumerStatefulWidget {
@@ -95,7 +96,11 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
 
       _isDirty = false;
     } catch (e) {
-      _error = e.toString();
+      if (e is ApiException && e.statusCode == 401) {
+        // Suppress 401 as it's handled by repo/redirect
+      } else {
+        _error = e.toString();
+      }
     } finally {
       if (mounted) setState(() => _refreshing = false);
     }

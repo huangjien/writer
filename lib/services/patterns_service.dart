@@ -5,22 +5,7 @@ import 'package:http/http.dart' as http;
 import '../models/pattern.dart';
 import '../models/api_error_response.dart';
 import '../shared/constants.dart';
-
-class ApiException implements Exception {
-  final int statusCode;
-  final String? rawMessage;
-  final ApiErrorResponse? errorResponse;
-
-  ApiException(this.statusCode, this.rawMessage, {this.errorResponse});
-
-  @override
-  String toString() {
-    if (errorResponse != null) {
-      return 'ApiException($statusCode): ${errorResponse!.code}';
-    }
-    return 'ApiException($statusCode): $rawMessage';
-  }
-}
+import '../shared/api_exception.dart';
 
 class PatternsService {
   final String baseUrl;
@@ -29,6 +14,7 @@ class PatternsService {
   Duration timeout;
   bool _loading = false;
   final http.Client? _client;
+  final Future<void> Function()? onUnauthorized;
 
   PatternsService({
     required this.baseUrl,
@@ -36,6 +22,7 @@ class PatternsService {
     this.authToken,
     Duration? timeout,
     http.Client? client,
+    this.onUnauthorized,
   }) : timeout = timeout ?? kLlmTimeout,
        _client = client;
 
@@ -94,6 +81,9 @@ class PatternsService {
       }
       final status = res.statusCode;
       final body = res.body;
+      if (status == 401 && onUnauthorized != null) {
+        await onUnauthorized!();
+      }
       if (status >= 400) {
         // Try to parse as new standardized error format
         try {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../repositories/remote_repository.dart';
+import '../../shared/api_exception.dart';
 
 class AdminLogsScreen extends ConsumerStatefulWidget {
   const AdminLogsScreen({super.key});
@@ -47,6 +48,7 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
         _isLoading = false;
       });
     } catch (e) {
+      if (e is ApiException && e.statusCode == 401) return;
       setState(() {
         _errorMessage = 'Failed to load logs: $e';
         _isLoading = false;

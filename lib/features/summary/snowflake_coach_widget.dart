@@ -5,6 +5,7 @@ import 'package:writer/features/summary/snowflake_service.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/models/snowflake.dart';
+import 'package:writer/shared/api_exception.dart';
 
 class SnowflakeCoachWidget extends ConsumerStatefulWidget {
   final String novelId;
@@ -110,6 +111,7 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
         }
       }
     } catch (e) {
+      if (e is ApiException && e.statusCode == 401) return;
       if (mounted) setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _loading = false);

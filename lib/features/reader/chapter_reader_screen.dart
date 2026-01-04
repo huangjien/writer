@@ -28,6 +28,7 @@ import 'state/reader_session_state.dart';
 import 'state/reader_session_notifier.dart';
 import '../../shared/widgets/error_view.dart';
 import '../../common/errors/failures.dart';
+import '../../shared/api_exception.dart';
 
 class ChapterReaderScreen extends ConsumerWidget {
   const ChapterReaderScreen({
@@ -336,7 +337,11 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
           return BetaEvaluationDialog(evaluation: eval);
         },
       );
-    } catch (_) {
+    } catch (e) {
+      if (e is ApiException && e.statusCode == 401) {
+        setState(() => _betaLoading = false);
+        return;
+      }
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
