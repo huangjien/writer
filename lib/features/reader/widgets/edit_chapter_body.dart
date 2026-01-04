@@ -122,12 +122,7 @@ class EditChapterBody extends ConsumerWidget {
                               ),
                             ),
                           ),
-                          textInputAction: TextInputAction.next,
-                          onFieldSubmitted: (_) {
-                            FocusScope.of(
-                              context,
-                            ).requestFocus(_indexFocusNode);
-                          },
+                          textInputAction: TextInputAction.newline,
                           onChanged: controller.setContent,
                           maxLines: null,
                           expands: true,
