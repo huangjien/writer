@@ -3,9 +3,7 @@ import 'dart:async';
 import '../models/chapter.dart';
 import '../repositories/chapter_repository.dart';
 import '../repositories/chapter_port.dart';
-import '../services/vector_service.dart';
-import 'providers.dart';
-import 'package:writer/shared/constants.dart';
+
 import '../common/errors/offline_exception.dart';
 
 enum EditRequest { idle, saving, creating, deleting }
@@ -78,11 +76,8 @@ class ChapterEditState {
 
 class ChapterEditController extends StateNotifier<ChapterEditState> {
   final ChapterPort _repo;
-  final VectorService? _vectors;
-  Timer? _embedTimer;
-  String? _lastEmbeddedContentHash;
 
-  ChapterEditController(Chapter initial, this._repo, [this._vectors])
+  ChapterEditController(Chapter initial, this._repo)
     : super(
         ChapterEditState(
           chapterId: initial.id,
@@ -137,7 +132,6 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
         content: state.content,
       );
       await _repo.updateChapter(updated);
-      _scheduleEmbedding();
       state = state.copyWith(
         isSaving: false,
         request: EditRequest.idle,
@@ -334,76 +328,10 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
       }
     }
   }
-
-  void _scheduleEmbedding() {
-    if (_vectors == null) return;
-    final text = state.content.trim();
-    if (text.isEmpty) return;
-    final hash = text.hashCode.toString();
-    if (_lastEmbeddedContentHash == hash) {
-      return;
-    }
-    _embedTimer?.cancel();
-    var delay = kEmbeddingDebounce;
-    assert(() {
-      delay = Duration.zero;
-      return true;
-    }());
-    if (delay == Duration.zero) {
-      scheduleMicrotask(() {
-        if (!mounted) return;
-        final latest = state.content.trim();
-        if (latest.isEmpty) return;
-        final latestHash = latest.hashCode.toString();
-        state = state.copyWith(embeddingInFlight: true, embeddingStatus: null);
-        _startEmbedding(latest, latestHash);
-      });
-      return;
-    }
-    _embedTimer = Timer(delay, () {
-      if (!mounted) return;
-      final latest = state.content.trim();
-      if (latest.isEmpty) return;
-      final latestHash = latest.hashCode.toString();
-      state = state.copyWith(embeddingInFlight: true, embeddingStatus: null);
-      _startEmbedding(latest, latestHash);
-    });
-  }
-
-  void _startEmbedding(String latest, String latestHash) {
-    Future(() async {
-      try {
-        final vectors = _vectors;
-        if (vectors == null) return;
-        await vectors.refreshChapterEmbedding(state.chapterId);
-        if (mounted) {
-          _lastEmbeddedContentHash = latestHash;
-          state = state.copyWith(
-            embeddingInFlight: false,
-            embeddingStatus: 'embedding_updated',
-          );
-        }
-      } catch (_) {
-        if (mounted) {
-          state = state.copyWith(
-            embeddingInFlight: false,
-            embeddingStatus: 'embedding_failed',
-          );
-        }
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _embedTimer?.cancel();
-    super.dispose();
-  }
 }
 
 final chapterEditControllerProvider = StateNotifierProvider.autoDispose
     .family<ChapterEditController, ChapterEditState, Chapter>((ref, initial) {
       final repo = ref.watch(chapterRepositoryProvider);
-      final vectors = ref.watch(vectorServiceProvider);
-      return ChapterEditController(initial, repo, vectors);
+      return ChapterEditController(initial, repo);
     });

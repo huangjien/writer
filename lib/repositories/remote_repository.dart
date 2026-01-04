@@ -71,11 +71,9 @@ class RemoteRepository {
     var response = await _client.get(uri, headers: headers);
     if (response.statusCode == 401) {
       final hadAuth = headers.containsKey('X-Session-Id');
-      if (hadAuth) {
-        try {
-          await _onUnauthorized?.call();
-        } catch (_) {}
-      }
+      try {
+        await _onUnauthorized?.call();
+      } catch (_) {}
       if (retryUnauthorized && hadAuth) {
         headers = await _headers(withAuth: false);
         response = await _client.get(uri, headers: headers);
@@ -92,11 +90,9 @@ class RemoteRepository {
     var response = await _client.delete(uri, headers: headers);
     if (response.statusCode == 401) {
       final hadAuth = headers.containsKey('X-Session-Id');
-      if (hadAuth) {
-        try {
-          await _onUnauthorized?.call();
-        } catch (_) {}
-      }
+      try {
+        await _onUnauthorized?.call();
+      } catch (_) {}
       if (retryUnauthorized && hadAuth) {
         headers = await _headers(withAuth: false);
         response = await _client.delete(uri, headers: headers);
@@ -118,11 +114,9 @@ class RemoteRepository {
     );
     if (response.statusCode == 401) {
       final hadAuth = headers.containsKey('X-Session-Id');
-      if (hadAuth) {
-        try {
-          await _onUnauthorized?.call();
-        } catch (_) {}
-      }
+      try {
+        await _onUnauthorized?.call();
+      } catch (_) {}
       if (retryUnauthorized && hadAuth) {
         headers = await _headers(withAuth: false);
         response = await _client.post(
@@ -148,11 +142,9 @@ class RemoteRepository {
     );
     if (response.statusCode == 401) {
       final hadAuth = headers.containsKey('X-Session-Id');
-      if (hadAuth) {
-        try {
-          await _onUnauthorized?.call();
-        } catch (_) {}
-      }
+      try {
+        await _onUnauthorized?.call();
+      } catch (_) {}
       if (retryUnauthorized && hadAuth) {
         headers = await _headers(withAuth: false);
         response = await _client.patch(

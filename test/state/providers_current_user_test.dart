@@ -5,11 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/repositories/remote_repository.dart';
-import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/storage_service_provider.dart';
-import 'package:writer/services/vector_service.dart';
 
 class MockRemoteRepository extends Mock implements RemoteRepository {}
 
@@ -156,30 +154,4 @@ void main() {
     );
     expect(err, isA<Exception>());
   });
-
-  test(
-    'vectorServiceProvider uses aiServiceProvider base URL when available',
-    () async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      final storageService = LocalStorageService(prefs);
-      final ai = AiServiceNotifier(prefs);
-      await ai.setAiServiceUrl('http://unit.test/');
-      final session = SessionNotifier(storageService);
-      await session.setSessionId('sid');
-
-      final container = ProviderContainer(
-        overrides: [
-          aiServiceProvider.overrideWith((ref) => ai),
-          sessionProvider.overrideWith((ref) => session),
-        ],
-      );
-      addTearDown(container.dispose);
-
-      final vectors = container.read(vectorServiceProvider);
-      // VectorService no longer exposes baseUrl and sessionId directly
-      // The test should verify the service is properly configured through other means
-      expect(vectors, isA<VectorService>());
-    },
-  );
 }
