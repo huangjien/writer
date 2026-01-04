@@ -800,12 +800,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get urlInvalidScheme => 'URL 必须以 http:// 或 https:// 开头。';
 
   @override
-  String get embeddingUpdated => '嵌入已更新';
-
-  @override
-  String get embeddingFailed => '嵌入失败';
-
-  @override
   String get saved => '已保存';
 
   @override

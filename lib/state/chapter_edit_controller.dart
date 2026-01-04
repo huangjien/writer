@@ -20,8 +20,6 @@ class ChapterEditState {
   final bool isSaving;
   final String? errorMessage;
   final EditRequest request;
-  final bool embeddingInFlight;
-  final String? embeddingStatus;
   final bool isQueuedForSync;
   final String? offlineMessage;
 
@@ -35,8 +33,6 @@ class ChapterEditState {
     this.isSaving = false,
     this.errorMessage,
     this.request = EditRequest.idle,
-    this.embeddingInFlight = false,
-    this.embeddingStatus,
     this.isQueuedForSync = false,
     this.offlineMessage,
   });
@@ -51,8 +47,6 @@ class ChapterEditState {
     bool? isSaving,
     String? errorMessage,
     EditRequest? request,
-    bool? embeddingInFlight,
-    String? embeddingStatus,
     bool? isQueuedForSync,
     String? offlineMessage,
   }) {
@@ -66,8 +60,6 @@ class ChapterEditState {
       isSaving: isSaving ?? this.isSaving,
       errorMessage: errorMessage,
       request: request ?? this.request,
-      embeddingInFlight: embeddingInFlight ?? this.embeddingInFlight,
-      embeddingStatus: embeddingStatus,
       isQueuedForSync: isQueuedForSync ?? this.isQueuedForSync,
       offlineMessage: offlineMessage,
     );
@@ -157,10 +149,6 @@ class ChapterEditController extends StateNotifier<ChapterEditState> {
       );
       return false;
     }
-  }
-
-  void clearEmbeddingStatus() {
-    state = state.copyWith(embeddingStatus: null);
   }
 
   Future<Chapter?> createNextChapter({String? defaultTitle}) async {

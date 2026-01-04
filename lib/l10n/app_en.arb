@@ -327,8 +327,6 @@
   "urlTooLong": "URL must be 2048 characters or less.",
   "urlContainsSpaces": "URL cannot contain spaces.",
   "urlInvalidScheme": "URL must start with http:// or https://.",
-  "embeddingUpdated": "Embedding updated",
-  "embeddingFailed": "Embedding failed",
   "saved": "Saved",
   "required": "Required",
   "summariesLabel": "Summaries",

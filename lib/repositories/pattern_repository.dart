@@ -44,7 +44,6 @@ class PatternRepository {
     String? description,
     required String content,
     Map<String, dynamic>? usageRules,
-    List<double>? embedding,
     String? language,
     bool? isPublic,
     bool? locked,
@@ -54,7 +53,6 @@ class PatternRepository {
       'description': description,
       'content': content,
       'usage_rules': usageRules,
-      'embedding': embedding,
       'language': language,
       'is_public': isPublic,
       'locked': locked,
@@ -72,7 +70,6 @@ class PatternRepository {
     String? description,
     String? content,
     Map<String, dynamic>? usageRules,
-    List<double>? embedding,
     String? language,
     bool? isPublic,
     bool? locked,
@@ -82,7 +79,6 @@ class PatternRepository {
     if (description != null) body['description'] = description;
     if (content != null) body['content'] = content;
     if (usageRules != null) body['usage_rules'] = usageRules;
-    if (embedding != null) body['embedding'] = embedding;
     if (language != null) body['language'] = language;
     if (isPublic != null) body['is_public'] = isPublic;
     if (locked != null) body['locked'] = locked;

@@ -67,28 +67,19 @@ void main() {
     expect(p, isNull);
   });
 
-  test('createPattern includes embedding when provided', () async {
-    final created = {
-      'id': 'new',
-      'title': 'T',
-      'content': 'C',
-      'embedding': [0.1, 0.2],
-    };
+  test('createPattern passes fields', () {
+    final created = {'id': 'new', 'title': 'T', 'content': 'C'};
     final captured = <Map<String, dynamic>>[];
     when(() => remote.post(any(), any())).thenAnswer((inv) async {
       captured.add(inv.positionalArguments[1] as Map<String, dynamic>);
       return created;
     });
-    final p = await repo.createPattern(
+    repo.createPattern(
       title: 'T',
       description: null,
       content: 'C',
       usageRules: {'x': true},
-      embedding: const [0.1, 0.2],
     );
-    expect(p.embedding, isNotNull);
-    expect(p.embedding!.length, 2);
-    expect(captured.single['embedding'], isNotNull);
     verify(() => remote.post('patterns', any())).called(1);
   });
 
@@ -167,7 +158,6 @@ void main() {
       'content': 'C',
       'description': 'D',
       'usage_rules': {'x': true},
-      'embedding': [0.1, 0.2],
       'language': 'en',
       'is_public': true,
       'locked': false,
@@ -182,7 +172,6 @@ void main() {
       description: 'D',
       content: 'C',
       usageRules: {'x': true},
-      embedding: const [0.1, 0.2],
       language: 'en',
       isPublic: true,
       locked: false,
@@ -195,7 +184,6 @@ void main() {
       'description',
       'content',
       'usage_rules',
-      'embedding',
       'language',
       'is_public',
       'locked',
@@ -209,7 +197,6 @@ void main() {
       'description': 'D',
       'content': 'C2',
       'usage_rules': {'y': false},
-      'embedding': [0.3, 0.4],
       'language': 'zh',
       'is_public': false,
       'locked': true,
@@ -225,7 +212,6 @@ void main() {
       description: 'D',
       content: 'C2',
       usageRules: {'y': false},
-      embedding: const [0.3, 0.4],
       language: 'zh',
       isPublic: false,
       locked: true,
@@ -237,7 +223,6 @@ void main() {
       'description',
       'content',
       'usage_rules',
-      'embedding',
       'language',
       'is_public',
       'locked',

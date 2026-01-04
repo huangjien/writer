@@ -27,7 +27,6 @@ class CapturingTemplateRepo extends TemplateRepository {
     String? summaries,
     String? synopses,
     String? languageCode,
-    List<double>? embedding,
   }) async {
     upsertedId = id;
     upsertedTitle = title;
@@ -38,6 +37,7 @@ class CapturingTemplateRepo extends TemplateRepository {
 
   @override
   Future<SceneTemplateRow?> getSceneTemplateById(String id) async {
+    refreshedId = id;
     return SceneTemplateRow(
       id: id,
       idx: 1,
@@ -49,11 +49,6 @@ class CapturingTemplateRepo extends TemplateRepository {
       createdAt: DateTime(2024, 1, 1),
       updatedAt: DateTime(2024, 1, 1),
     );
-  }
-
-  @override
-  Future<void> refreshSceneTemplateEmbedding(String templateId) async {
-    refreshedId = templateId;
   }
 }
 

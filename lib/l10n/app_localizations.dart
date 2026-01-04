@@ -1634,18 +1634,6 @@ abstract class AppLocalizations {
   /// **'URL must start with http:// or https://.'**
   String get urlInvalidScheme;
 
-  /// No description provided for @embeddingUpdated.
-  ///
-  /// In en, this message translates to:
-  /// **'Embedding updated'**
-  String get embeddingUpdated;
-
-  /// No description provided for @embeddingFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Embedding failed'**
-  String get embeddingFailed;
-
   /// No description provided for @saved.
   ///
   /// In en, this message translates to:

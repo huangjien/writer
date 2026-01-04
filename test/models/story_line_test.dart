@@ -3,14 +3,13 @@ import 'package:writer/models/story_line.dart';
 
 void main() {
   group('StoryLine', () {
-    test('fromMap parses fields and embedding', () {
+    test('fromMap parses fields', () {
       final sl = StoryLine.fromMap({
         'id': 's1',
         'title': 'T',
         'description': 'D',
         'content': 'C',
         'usage_rules': {'a': 1},
-        'embedding': [1, 2.5, '3.25', 'bad'],
         'language': 'en',
         'is_public': true,
         'locked': false,
@@ -23,7 +22,6 @@ void main() {
       expect(sl.description, 'D');
       expect(sl.content, 'C');
       expect(sl.usageRules, {'a': 1});
-      expect(sl.embedding, [1.0, 2.5, 3.25, 0.0]);
       expect(sl.language, 'en');
       expect(sl.isPublic, isTrue);
       expect(sl.locked, isFalse);
@@ -53,7 +51,6 @@ void main() {
         description: null,
         content: 'C',
         usageRules: null,
-        embedding: null,
         language: 'zh',
         isPublic: false,
         locked: true,

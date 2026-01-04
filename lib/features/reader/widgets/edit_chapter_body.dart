@@ -31,20 +31,6 @@ class EditChapterBody extends ConsumerWidget {
     final controller = ref.read(
       chapterEditControllerProvider(current).notifier,
     );
-    ref.listen(chapterEditControllerProvider(current), (prev, next) {
-      final prevStatus = prev?.embeddingStatus;
-      final nextStatus = next.embeddingStatus;
-      if (prevStatus != nextStatus && nextStatus != null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          final messenger = ScaffoldMessenger.of(context);
-          final msg = nextStatus == 'embedding_updated'
-              ? l10n.embeddingUpdated
-              : l10n.embeddingFailed;
-          messenger.showSnackBar(SnackBar(content: Text(msg)));
-          controller.clearEmbeddingStatus();
-        });
-      }
-    });
     final roleAsync = ref.watch(editRoleProvider(novelId));
     final isOwner = roleAsync.asData?.value == EditRole.owner;
     final originalTitle = current.title ?? '';
@@ -213,10 +199,6 @@ class EditChapterBody extends ConsumerWidget {
 
           // Status indicators at the bottom
           if (editState.isSaving) ...[
-            const LinearProgressIndicator(),
-            const SizedBox(height: 8),
-          ],
-          if (editState.embeddingInFlight) ...[
             const LinearProgressIndicator(),
             const SizedBox(height: 8),
           ],

@@ -172,12 +172,8 @@ void main() {
         summaries: any(named: 'summaries'),
         synopses: any(named: 'synopses'),
         languageCode: any(named: 'languageCode'),
-        embedding: any(named: 'embedding'),
       ),
     ).thenAnswer((_) async => 't-1');
-    when(
-      () => mockTemplateRepo.refreshSceneTemplateEmbedding(any()),
-    ).thenAnswer((_) async {});
     when(
       () => mockTemplateRepo.getSceneTemplateById(any()),
     ).thenAnswer((_) async => null);
@@ -223,11 +219,7 @@ void main() {
         summaries: 'New Description',
         synopses: any(named: 'synopses'),
         languageCode: any(named: 'languageCode'),
-        embedding: any(named: 'embedding'),
       ),
-    ).called(1);
-    verify(
-      () => mockTemplateRepo.refreshSceneTemplateEmbedding('t-1'),
     ).called(1);
   });
 }

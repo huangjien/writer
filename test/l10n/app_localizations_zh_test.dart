@@ -345,8 +345,6 @@ void main() {
         expect(zh.urlTooLong.isNotEmpty, true);
         expect(zh.urlContainsSpaces.isNotEmpty, true);
         expect(zh.urlInvalidScheme.isNotEmpty, true);
-        expect(zh.embeddingUpdated.isNotEmpty, true);
-        expect(zh.embeddingFailed.isNotEmpty, true);
         expect(zh.saved.isNotEmpty, true);
         expect(zh.aiServiceUnavailable.isNotEmpty, true);
         expect(zh.aiConfigurations.isNotEmpty, true);

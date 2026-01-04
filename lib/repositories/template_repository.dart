@@ -54,14 +54,12 @@ class TemplateRepository {
     String? summaries,
     String? synopses,
     String? languageCode,
-    List<double>? embedding,
   }) async {
     final body = {
       if (title != null) 'title': title,
       if (summaries != null) 'summaries': summaries,
       if (synopses != null) 'synopses': synopses,
       if (languageCode != null) 'language_code': languageCode,
-      if (embedding != null) 'embedding': embedding,
     };
     if (id != null) {
       await _remote.patch('templates/characters/$id', body);
@@ -98,10 +96,6 @@ class TemplateRepository {
     } catch (_) {
       return [];
     }
-  }
-
-  Future<void> refreshCharacterTemplateEmbedding(String id) async {
-    await _remote.post('templates/characters/$id/refresh_embedding', {});
   }
 
   // Scene Templates
@@ -148,14 +142,12 @@ class TemplateRepository {
     String? summaries,
     String? synopses,
     String? languageCode,
-    List<double>? embedding,
   }) async {
     final body = {
       if (title != null) 'title': title,
       if (summaries != null) 'summaries': summaries,
       if (synopses != null) 'synopses': synopses,
       if (languageCode != null) 'language_code': languageCode,
-      if (embedding != null) 'embedding': embedding,
     };
     Map<String, dynamic>? res;
     if (id != null) {
@@ -198,9 +190,5 @@ class TemplateRepository {
     } catch (_) {
       return [];
     }
-  }
-
-  Future<void> refreshSceneTemplateEmbedding(String id) async {
-    await _remote.post('templates/scenes/$id/refresh_embedding', {});
   }
 }

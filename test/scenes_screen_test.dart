@@ -120,7 +120,6 @@ class FakeTemplateRepo extends TemplateRepository {
     String? summaries,
     String? synopses,
     String? languageCode,
-    List<double>? embedding,
   }) async {
     final nextId = id ?? 't-${_rows.length + 1}';
     _rows[nextId] = SceneTemplateRow(
@@ -141,9 +140,6 @@ class FakeTemplateRepo extends TemplateRepository {
   Future<SceneTemplateRow?> getSceneTemplateById(String id) async {
     return _rows[id];
   }
-
-  @override
-  Future<void> refreshSceneTemplateEmbedding(String id) async {}
 
   @override
   Future<List<SceneTemplateRow>> listSceneTemplates({int? limit}) async {

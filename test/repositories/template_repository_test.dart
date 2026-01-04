@@ -164,14 +164,6 @@ void main() {
       });
       verify(() => remote.post('templates/characters/search', any())).called(1);
     });
-
-    test('refreshCharacterTemplateEmbedding posts refresh endpoint', () async {
-      when(() => remote.post(any(), any())).thenAnswer((_) async => {});
-      await repo.refreshCharacterTemplateEmbedding('c1');
-      verify(
-        () => remote.post('templates/characters/c1/refresh_embedding', any()),
-      ).called(1);
-    });
   });
 
   group('TemplateRepository (scenes)', () {
@@ -321,14 +313,6 @@ void main() {
         'language_code': 'en',
       });
       verify(() => remote.post('templates/scenes/search', any())).called(1);
-    });
-
-    test('refreshSceneTemplateEmbedding posts refresh endpoint', () async {
-      when(() => remote.post(any(), any())).thenAnswer((_) async => {});
-      await repo.refreshSceneTemplateEmbedding('s1');
-      verify(
-        () => remote.post('templates/scenes/s1/refresh_embedding', any()),
-      ).called(1);
     });
   });
 }

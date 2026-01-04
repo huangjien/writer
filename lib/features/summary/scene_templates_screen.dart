@@ -326,8 +326,7 @@ class _SceneTemplatesScreenState extends ConsumerState<SceneTemplatesScreen>
                               }
 
                               if (ref.read(isSignedInProvider)) {
-                                await templateRepo
-                                    .refreshSceneTemplateEmbedding(templateId);
+                                // embedding refresh removed
                               }
                               _templateId = templateId;
                               _baseName = _nameController.text;

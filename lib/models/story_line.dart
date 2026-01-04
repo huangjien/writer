@@ -4,7 +4,6 @@ class StoryLine {
   final String? description;
   final String content;
   final Map<String, dynamic>? usageRules;
-  final List<double>? embedding;
   final String? language;
   final bool? isPublic;
   final bool? locked;
@@ -17,7 +16,6 @@ class StoryLine {
     this.description,
     required this.content,
     this.usageRules,
-    this.embedding,
     this.language,
     this.isPublic,
     this.locked,
@@ -27,14 +25,6 @@ class StoryLine {
 
   factory StoryLine.fromMap(Map<String, dynamic> map) {
     final created = map['created_at'];
-    List<double>? emb;
-    final e = map['embedding'];
-    if (e is List) {
-      emb = e.map((v) {
-        if (v is num) return v.toDouble();
-        return double.tryParse(v.toString()) ?? 0.0;
-      }).toList();
-    }
     return StoryLine(
       id: (map['id'] ?? '') as String,
       title: (map['title'] ?? '') as String,
@@ -45,7 +35,6 @@ class StoryLine {
           : (map['usage_rules'] is Map
                 ? Map<String, dynamic>.from(map['usage_rules'] as Map)
                 : null),
-      embedding: emb,
       language: map['language'] as String?,
       isPublic: map['is_public'] as bool?,
       locked: map['locked'] as bool?,
@@ -61,7 +50,6 @@ class StoryLine {
       'description': description,
       'content': content,
       'usage_rules': usageRules,
-      'embedding': embedding,
       'language': language,
       'is_public': isPublic,
       'locked': locked,

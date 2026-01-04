@@ -821,12 +821,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get urlInvalidScheme => 'URL must start with http:// or https://.';
 
   @override
-  String get embeddingUpdated => 'Embedding updated';
-
-  @override
-  String get embeddingFailed => 'Embedding failed';
-
-  @override
   String get saved => 'Saved';
 
   @override
