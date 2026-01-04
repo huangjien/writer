@@ -24,14 +24,12 @@ import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/admin_settings.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:flutter/services.dart';
+import 'package:mocktail/mocktail.dart';
 
 import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/state/session_state.dart';
 
-class FakeUserRepository extends Fake implements UserRepository {
-  @override
-  Future<User?> fetchUser(String sessionId) async => null;
-}
+class MockUserRepository extends Mock implements UserRepository {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -57,6 +55,10 @@ void main() {
   testWidgets('SettingsScreen renders without crashing', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
+    final mockUserRepository = MockUserRepository();
+    when(
+      () => mockUserRepository.fetchUser(any()),
+    ).thenAnswer((_) async => null);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -80,11 +82,11 @@ void main() {
           currentMonthUsageProvider.overrideWith((ref) async => null),
           isSignedInProvider.overrideWithValue(false),
           currentUserProvider.overrideWith((ref) async => null),
-          userRepositoryProvider.overrideWithValue(FakeUserRepository()),
+          userRepositoryProvider.overrideWithValue(mockUserRepository),
           userProvider.overrideWith(
             (ref) => UserStateNotifier(
               ref,
-              FakeUserRepository(),
+              mockUserRepository,
               const AsyncValue.data(null),
             ),
           ),
@@ -156,6 +158,10 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     final user = User(id: '123', email: 'test@example.com');
     const backendUser = BackendUser(id: '123', email: 'test@example.com');
+    final mockUserRepository = MockUserRepository();
+    when(
+      () => mockUserRepository.fetchUser(any()),
+    ).thenAnswer((_) async => user);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -180,11 +186,11 @@ void main() {
           usageHistoryProvider.overrideWith((ref, arg) async => null),
           isSignedInProvider.overrideWithValue(true),
           currentUserProvider.overrideWith((ref) async => backendUser),
-          userRepositoryProvider.overrideWithValue(FakeUserRepository()),
+          userRepositoryProvider.overrideWithValue(mockUserRepository),
           userProvider.overrideWith(
             (ref) => UserStateNotifier(
               ref,
-              FakeUserRepository(),
+              mockUserRepository,
               AsyncValue.data(user),
             ),
           ),
@@ -216,5 +222,87 @@ void main() {
       scrollable: scrollable,
     );
     expect(find.text('Sign Out'), findsOneWidget);
+  });
+
+  testWidgets('SettingsScreen handles sign out', (tester) async {
+    SharedPreferences.setMockInitialValues({'backend_session_id': 'sess_123'});
+    final prefs = await SharedPreferences.getInstance();
+    debugPrint('Prefs session: ${prefs.getString('backend_session_id')}');
+
+    final user = User(id: '123', email: 'test@example.com');
+    const backendUser = BackendUser(id: '123', email: 'test@example.com');
+    final mockUserRepository = MockUserRepository();
+    when(
+      () => mockUserRepository.fetchUser(any()),
+    ).thenAnswer((_) async => user);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          themeControllerProvider.overrideWith((ref) => ThemeController(prefs)),
+          appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
+          ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
+          performanceSettingsProvider.overrideWith(
+            (ref) => PerformanceSettingsNotifier(prefs),
+          ),
+          aiServiceProvider.overrideWith((ref) => AiServiceNotifier(prefs)),
+          adminModeProvider.overrideWith((ref) => AdminModeNotifier(prefs)),
+          motionSettingsProvider.overrideWith(
+            (ref) => MotionSettingsNotifier(prefs),
+          ),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          storageServiceProvider.overrideWithValue(LocalStorageService(prefs)),
+          sessionProvider.overrideWith((ref) {
+            return SessionNotifier(LocalStorageService(prefs));
+          }),
+          currentMonthUsageProvider.overrideWith((ref) async => null),
+          usageHistoryProvider.overrideWith((ref, arg) async => null),
+          // isSignedInProvider is NOT overridden, so it derives from sessionProvider
+          currentUserProvider.overrideWith((ref) async {
+            final session = ref.watch(sessionProvider);
+            if (session == null) return null;
+            return backendUser;
+          }),
+          userRepositoryProvider.overrideWithValue(mockUserRepository),
+          userProvider.overrideWith(
+            (ref) => UserStateNotifier(
+              ref,
+              mockUserRepository,
+              AsyncValue.data(user),
+            ),
+          ),
+          isAdminProvider.overrideWith((ref) => false),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const SettingsScreen(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Ensure Sign Out is in the tree (even if off-screen)
+    // find.text finds widgets even if off-screen in a ListView (if cached/built)
+    // But ListView lazily builds.
+
+    // We try to scroll to it using scrollUntilVisible which is safer than dragUntilVisible
+    await tester.scrollUntilVisible(
+      find.text('Sign Out'),
+      500.0,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    // Verify Sign Out button is visible
+    expect(find.text('Sign Out'), findsOneWidget);
+
+    // Tap Sign Out
+    await tester.tap(find.text('Sign Out'));
+    await tester.pumpAndSettle();
+
+    // Verify session is cleared (Sign In button appears)
+    expect(find.text('Sign In'), findsOneWidget);
   });
 }

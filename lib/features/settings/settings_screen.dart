@@ -96,8 +96,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const PerformanceSection(),
           const Divider(),
           const TtsSettingsContainer(),
+          const Divider(),
           if (currentUser != null) ...[
-            const Divider(),
             ListTile(
               title: Text(
                 l10n.tokenUsage,
@@ -109,12 +109,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ],
           const Divider(),
           if (isAdmin) ...[
-            ListTile(
-              title: Text(l10n.userManagement),
-              leading: const Icon(Icons.people),
-              onTap: () => context.push('/admin/users'),
-            ),
             const Divider(),
+            ListTile(
+              title: Text(
+                l10n.adminMode,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              onTap: () => context.push('/admin'),
+              trailing: const Icon(Icons.chevron_right),
+            ),
           ],
           if (!isSignedIn)
             Padding(

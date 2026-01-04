@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../repositories/chapter_repository.dart';
+import '../../state/novel_providers.dart';
 
 class ChapterEditScreen extends ConsumerStatefulWidget {
   const ChapterEditScreen({super.key, required this.novelId});
@@ -34,6 +35,9 @@ class _ChapterEditScreenState extends ConsumerState<ChapterEditScreen> {
       );
 
       if (!mounted) return;
+
+      // Invalidate the chapters provider to refresh the list
+      ref.invalidate(chaptersProvider(widget.novelId));
 
       // Navigate to the chapter reader in edit mode
       context.go('/novel/${widget.novelId}/chapters/${created.id}');

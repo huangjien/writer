@@ -499,10 +499,4 @@ void main() {
     // If we reach this point, the toggle functionality is working without crashes
     expect(find.byType(SummaryScreen), findsOneWidget);
   });
-
-  // TODO: Fix rapid AI coach toggling test - TextFormField gets 0 height during rapid tab switching
-  // This test is temporarily skipped due to rendering constraint issues
-  // testWidgets('SummaryScreen handles rapid AI coach toggling without error', (tester) async {
-  //   // Test implementation would go here
-  // });
 }

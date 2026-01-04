@@ -119,4 +119,93 @@ void main() {
     expect(find.text('gpt-4'), findsNothing);
     expect(find.byIcon(Icons.history), findsOneWidget);
   });
+
+  testWidgets('TokenUsageHistoryScreen shows error state', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          usageHistoryProvider(
+            UsageHistoryParams(limit: 50, offset: 0),
+          ).overrideWith((ref) => Future.error('Network error')),
+        ],
+        child: const MaterialApp(
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [Locale('en')],
+          home: TokenUsageHistoryScreen(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Network error'), findsOneWidget);
+    expect(find.byIcon(Icons.error_outline), findsOneWidget);
+  });
+
+  testWidgets('TokenUsageHistoryScreen refreshes on button press', (
+    tester,
+  ) async {
+    // Initial state: empty
+    var returnData = false;
+
+    final container = ProviderContainer(
+      overrides: [
+        usageHistoryProvider(
+          UsageHistoryParams(limit: 50, offset: 0),
+        ).overrideWith((ref) {
+          if (returnData) {
+            return Future.value(
+              TokenUsageHistory(
+                records: [
+                  TokenUsageRecord(
+                    operationType: 'chat',
+                    modelName: 'gpt-4',
+                    inputTokens: 10,
+                    outputTokens: 20,
+                    createdAt: DateTime.now(),
+                  ),
+                ],
+                totalCount: 1,
+              ),
+            );
+          }
+          return Future.value(TokenUsageHistory(records: [], totalCount: 0));
+        }),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [Locale('en')],
+          home: TokenUsageHistoryScreen(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.history), findsOneWidget);
+
+    // Update flag to return data on next call
+    returnData = true;
+
+    // Tap refresh
+    await tester.tap(find.byIcon(Icons.refresh));
+    await tester.pumpAndSettle();
+
+    // Should now show the record
+    expect(find.text('gpt-4'), findsOneWidget);
+  });
 }

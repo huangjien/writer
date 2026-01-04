@@ -170,20 +170,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
         routes: [
           GoRoute(
+            path: 'chapters/new',
+            name: 'chapterNew',
+            builder: (context, state) {
+              final novelId = state.pathParameters['id']!;
+              return ChapterEditScreen(novelId: novelId);
+            },
+          ),
+          GoRoute(
             path: 'chapters/:chapterId',
             name: 'chapter',
             builder: (context, state) {
               final novelId = state.pathParameters['id']!;
               final chapterId = state.pathParameters['chapterId']!;
               return ReaderScreen(novelId: novelId, chapterId: chapterId);
-            },
-          ),
-          GoRoute(
-            path: 'chapters/new',
-            name: 'chapterNew',
-            builder: (context, state) {
-              final novelId = state.pathParameters['id']!;
-              return ChapterEditScreen(novelId: novelId);
             },
           ),
           GoRoute(

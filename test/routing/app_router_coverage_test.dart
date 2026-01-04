@@ -6,18 +6,28 @@ import 'package:writer/features/about/about_screen.dart';
 import 'package:writer/features/admin/admin_logs_screen.dart';
 import 'package:writer/features/auth/forgot_password_screen.dart';
 import 'package:writer/features/auth/reset_password_screen.dart';
+import 'package:writer/features/auth/sign_in_screen.dart';
 import 'package:writer/features/auth/sign_up_screen.dart';
 import 'package:writer/features/auth/user_management_screen.dart';
 import 'package:writer/features/library/create_novel_screen.dart';
 import 'package:writer/features/library/library_providers.dart';
 import 'package:writer/features/library/my_novels_screen.dart';
+import 'package:writer/features/reader/chapter_edit_screen.dart';
 import 'package:writer/features/reader/novel_metadata_editor.dart';
+import 'package:writer/features/reader/reader_screen.dart';
+import 'package:writer/features/settings/settings_screen.dart';
+import 'package:writer/features/settings/token_usage_history_screen.dart';
 import 'package:writer/features/summary/character_templates_list_screen.dart';
+import 'package:writer/features/summary/character_templates_screen.dart';
 import 'package:writer/features/summary/characters_list_screen.dart';
+import 'package:writer/features/summary/characters_screen.dart';
 import 'package:writer/features/summary/scene_templates_list_screen.dart';
+import 'package:writer/features/summary/scene_templates_screen.dart';
 import 'package:writer/features/summary/scenes_list_screen.dart';
+import 'package:writer/features/summary/scenes_screen.dart';
 import 'package:writer/features/summary/summary_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/models/chapter.dart';
 import 'package:writer/models/character_note.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/pattern.dart';
@@ -31,9 +41,14 @@ import 'package:writer/repositories/notes_repository.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/repositories/user_repository.dart';
+import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/repositories/chapter_port.dart';
 import 'package:writer/routing/app_router.dart';
+import 'package:writer/screens/pattern_form_screen.dart';
 import 'package:writer/screens/patterns_list_screen.dart';
+import 'package:writer/screens/prompt_form_screen.dart';
 import 'package:writer/screens/prompts_list_screen.dart';
+import 'package:writer/screens/story_line_form_screen.dart';
 import 'package:writer/screens/story_lines_list_screen.dart';
 import 'package:writer/services/patterns_service.dart';
 import 'package:writer/services/prompts_service.dart';
@@ -74,6 +89,13 @@ class FakeNovelRepository extends Fake implements NovelRepository {
     isPublic: false,
     languageCode: 'en',
   );
+
+  @override
+  Future<List<Chapter>> fetchChaptersByNovel(String novelId) async => [];
+
+  @override
+  Future<Chapter?> getChapter(String chapterId) async =>
+      Chapter(id: chapterId, novelId: '123', idx: 1, title: 'Test Chapter');
 }
 
 class FakeNotesRepository extends Fake implements NotesRepository {
@@ -82,6 +104,22 @@ class FakeNotesRepository extends Fake implements NotesRepository {
 
   @override
   Future<List<SceneNote>> listSceneNotes(String novelId) async => [];
+}
+
+class FakeChapterRepository extends Fake implements ChapterPort {
+  @override
+  Future<int> getNextIdx(String novelId) async => 1;
+
+  @override
+  Future<Chapter> createChapter({
+    required String novelId,
+    required int idx,
+    String? title,
+    String? content,
+  }) async {
+    // Simulate failure to keep the screen visible
+    throw Exception('Simulated creation failure for testing');
+  }
 }
 
 class FakePromptsService extends PromptsService {
@@ -155,6 +193,7 @@ List getOverrides(SharedPreferences prefs) {
     patternsServiceProvider.overrideWithValue(FakePatternsService()),
     storyLinesServiceProvider.overrideWithValue(FakeStoryLinesService()),
     remoteRepositoryProvider.overrideWithValue(FakeRemoteRepository()),
+    chapterRepositoryProvider.overrideWithValue(FakeChapterRepository()),
   ];
 }
 
@@ -209,8 +248,13 @@ void main() {
     final router = container.read(appRouterProvider);
     await tester.pumpAndSettle();
 
-    final routes = ['/signup', '/forgot-password', '/reset-password'];
-    final types = [SignUpScreen, ForgotPasswordScreen, ResetPasswordScreen];
+    final routes = ['/auth', '/signup', '/forgot-password', '/reset-password'];
+    final types = [
+      SignInScreen,
+      SignUpScreen,
+      ForgotPasswordScreen,
+      ResetPasswordScreen,
+    ];
 
     for (int i = 0; i < routes.length; i++) {
       router.go(routes[i]);
@@ -237,7 +281,7 @@ void main() {
     }
   });
 
-  testWidgets('navigates to list screens', (tester) async {
+  testWidgets('navigates to list and form screens', (tester) async {
     final container = ProviderContainer(overrides: [...getOverrides(prefs)]);
     addTearDown(container.dispose);
 
@@ -245,9 +289,22 @@ void main() {
     final router = container.read(appRouterProvider);
     await tester.pumpAndSettle();
 
-    // List screens
-    final routes = ['/prompts', '/patterns', '/story_lines'];
-    final types = [PromptsListScreen, PatternsListScreen, StoryLinesListScreen];
+    final routes = [
+      '/prompts',
+      '/patterns',
+      '/story_lines',
+      '/prompt_form',
+      '/pattern_form',
+      '/story_line_form',
+    ];
+    final types = [
+      PromptsListScreen,
+      PatternsListScreen,
+      StoryLinesListScreen,
+      PromptFormScreen,
+      PatternFormScreen,
+      StoryLineFormScreen,
+    ];
 
     for (int i = 0; i < routes.length; i++) {
       router.go(routes[i]);
@@ -274,6 +331,24 @@ void main() {
     }
   });
 
+  testWidgets('navigates to settings screens', (tester) async {
+    final container = ProviderContainer(overrides: [...getOverrides(prefs)]);
+    addTearDown(container.dispose);
+
+    await pumpRouterApp(tester, container: container);
+    final router = container.read(appRouterProvider);
+    await tester.pumpAndSettle();
+
+    final routes = ['/settings', '/settings/token-usage-history'];
+    final types = [SettingsScreen, TokenUsageHistoryScreen];
+
+    for (int i = 0; i < routes.length; i++) {
+      router.go(routes[i]);
+      await tester.pumpAndSettle();
+      expect(find.byType(types[i]), findsOneWidget);
+    }
+  });
+
   testWidgets('navigates to nested novel screens', (tester) async {
     final container = ProviderContainer(overrides: [...getOverrides(prefs)]);
     addTearDown(container.dispose);
@@ -283,20 +358,32 @@ void main() {
     await tester.pumpAndSettle();
 
     final routes = [
+      '/novel/123',
+      '/novel/123/chapters/new',
       '/novel/123/summary',
       '/novel/123/characters',
+      '/novel/123/characters/new',
       '/novel/123/scenes',
+      '/novel/123/scenes/new',
       '/novel/123/character-templates',
+      '/novel/123/character-templates/new',
       '/novel/123/scene-templates',
+      '/novel/123/scene-templates/new',
       '/novel/123/edit',
     ];
     final types = [
+      ReaderScreen,
+      ChapterEditScreen,
       SummaryScreen,
       CharactersListScreen,
+      CharactersScreen,
       ScenesListScreen,
+      ScenesScreen,
       CharacterTemplatesListScreen,
+      CharacterTemplatesScreen,
       SceneTemplatesListScreen,
-      NovelMetadataEditor, // Wrapped in Scaffold
+      SceneTemplatesScreen,
+      NovelMetadataEditor,
     ];
 
     for (int i = 0; i < routes.length; i++) {

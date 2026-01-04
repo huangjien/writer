@@ -37,6 +37,12 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
     if (widget.chapterId != null) {
       return chaptersAsync.when(
         data: (chapters) {
+          if (chapters.isEmpty) {
+            return Scaffold(
+              appBar: AppBar(title: Text(l10n.chapters)),
+              body: Center(child: Text(l10n.noChaptersFound)),
+            );
+          }
           final chapter = chapters.firstWhere(
             (c) => c.id == widget.chapterId,
             orElse: () => chapters.first,
