@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/state/novel_providers.dart';
-import 'package:writer/models/novel.dart';
 
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
@@ -9,6 +8,7 @@ import 'package:writer/features/summary/snowflake_coach_widget.dart';
 import 'package:writer/models/snowflake.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/shared/api_exception.dart';
+import 'package:writer/features/reader/novel_metadata_editor.dart';
 import 'summary_controller.dart';
 
 class SummaryScreen extends ConsumerStatefulWidget {
@@ -153,14 +153,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
   }
 
   Widget _buildNovelHeader() {
-    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
-    return ref
-        .watch(novelProvider(widget.novelId))
-        .when(
-          data: (novel) => _NovelHeader(novel: novel),
-          loading: () => _LoadingTile(label: l10n.loadingNovels),
-          error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
-        );
+    return NovelMetadataEditor(novelId: widget.novelId);
   }
 
   Widget _buildSummaryTab() {
@@ -178,7 +171,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
         ),
         Expanded(
           child: Container(
-            constraints: const BoxConstraints(minHeight: 200),
+            constraints: const BoxConstraints(minHeight: 100),
             child: TabBarView(
               controller: _sentenceTabController,
               children: [
@@ -203,6 +196,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                   child: Container(
                     constraints: const BoxConstraints(minHeight: 60),
                     child: TextFormField(
+                      key: const Key('sentence_summary_field'),
                       controller: _sentenceController,
                       decoration: InputDecoration(
                         labelText: l10n.sentenceSummary,
@@ -211,6 +205,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
+                              key: const Key('sentence_ai_coach_button'),
                               icon: Icon(
                                 _showSentenceCoach
                                     ? Icons.auto_awesome
@@ -793,87 +788,6 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
           }
         },
       ),
-    );
-  }
-}
-
-class _NovelHeader extends StatelessWidget {
-  const _NovelHeader({required this.novel});
-  final Novel? novel;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
-    final title = novel?.title ?? l10n.unknownNovel;
-    final author = novel?.author;
-    final description = novel?.description;
-    final language = novel?.languageCode;
-    final isPublic = novel?.isPublic ?? true;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 8),
-        if (author != null && author.isNotEmpty) Text(author),
-        if (description != null && description.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              description,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            const Icon(Icons.language, size: 16),
-            const SizedBox(width: 6),
-            Text(l10n.languageLabel(language ?? 'en')),
-            const SizedBox(width: 12),
-            const Icon(Icons.lock_open, size: 16),
-            const SizedBox(width: 6),
-            Text(isPublic ? l10n.publicLabel : l10n.privateLabel),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _LoadingTile extends StatelessWidget {
-  const _LoadingTile({required this.label});
-  final String label;
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const CircularProgressIndicator(strokeWidth: 2),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(label, maxLines: 2, overflow: TextOverflow.ellipsis),
-        ),
-      ],
-    );
-  }
-}
-
-class _ErrorTile extends StatelessWidget {
-  const _ErrorTile({required this.label});
-  final String label;
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Icon(Icons.warning_amber_rounded, size: 16),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(label, maxLines: 2, overflow: TextOverflow.ellipsis),
-        ),
-      ],
     );
   }
 }

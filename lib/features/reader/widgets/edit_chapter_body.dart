@@ -5,8 +5,6 @@ import '../../../repositories/chapter_repository.dart';
 import '../../../models/chapter.dart';
 import '../../../state/chapter_edit_controller.dart';
 import '../widgets/preview_panel.dart';
-import '../novel_metadata_editor.dart';
-import '../../../state/edit_permissions.dart';
 
 class EditChapterBody extends ConsumerWidget {
   const EditChapterBody({
@@ -31,22 +29,13 @@ class EditChapterBody extends ConsumerWidget {
     final controller = ref.read(
       chapterEditControllerProvider(current).notifier,
     );
-    final roleAsync = ref.watch(editRoleProvider(novelId));
-    final isOwner = roleAsync.asData?.value == EditRole.owner;
     final originalTitle = current.title ?? '';
     final originalContent = current.content ?? '';
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          // Top metadata section (minimal)
-          if (isOwner) ...[
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 200),
-              child: NovelMetadataEditor(novelId: novelId),
-            ),
-            const SizedBox(height: 16),
-          ],
+          // Top metadata section (minimal) removed
 
           // Expanded content area
           Expanded(

@@ -226,6 +226,11 @@ void main() {
     WidgetTester tester, {
     required ProviderContainer container,
   }) async {
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     final router = container.read(appRouterProvider);
     await tester.pumpWidget(
       UncontrolledProviderScope(

@@ -66,7 +66,7 @@ void main() {
     expect(find.text('Title'), findsOneWidget);
     expect(find.text('Content'), findsOneWidget);
     expect(find.byType(PreviewPanel), findsNothing);
-    expect(find.byType(NovelMetadataEditor), findsNothing); // Not owner
+    expect(find.byType(NovelMetadataEditor), findsNothing);
   });
 
   testWidgets('EditChapterBody updates title and content', (tester) async {
@@ -220,54 +220,5 @@ void main() {
 
     expect(find.byType(PreviewPanel), findsOneWidget);
     expect(find.byType(TextFormField), findsNothing);
-  });
-
-  testWidgets('EditChapterBody shows NovelMetadataEditor when owner', (
-    tester,
-  ) async {
-    // Set up viewport to prevent RenderFlex overflow
-    tester.view.physicalSize = const Size(1200, 800);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
-
-    final chapter = Chapter(
-      id: 'c1',
-      novelId: 'n1',
-      idx: 1,
-      title: 'Title',
-      content: 'Content',
-    );
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          chapterEditControllerProvider(
-            chapter,
-          ).overrideWith((ref) => ChapterEditController(chapter, mockRepo)),
-          editRoleProvider(
-            'n1',
-          ).overrideWith((ref) => Future.value(EditRole.owner)),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          home: Scaffold(
-            body: EditChapterBody(
-              novelId: 'n1',
-              current: chapter,
-              previewMode: false,
-            ),
-          ),
-        ),
-      ),
-    );
-
-    await tester.pumpAndSettle();
-
-    expect(find.byType(NovelMetadataEditor), findsOneWidget);
   });
 }

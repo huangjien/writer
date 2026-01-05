@@ -20,6 +20,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:writer/models/summary.dart';
 
 import 'package:writer/repositories/novel_repository.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/edit_permissions.dart';
 
 class MockLocalStorageRepository extends Mock
     implements LocalStorageRepository {}
@@ -135,6 +137,14 @@ void main() {
   testWidgets('SummaryScreen loads description and saves summary', (
     tester,
   ) async {
+    // Set viewport size to avoid layout overflow
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     final prefs = await SharedPreferences.getInstance();
     final repo = CapturingLocalRepo();
     final novel = const Novel(
@@ -173,16 +183,24 @@ void main() {
           novelProvider.overrideWith((ref, id) async => novel),
           chaptersProvider.overrideWith((ref, id) async => chapters),
           novelRepositoryProvider.overrideWith((ref) => MockNovelRepository()),
+          editRoleProvider(
+            'n-1',
+          ).overrideWith((ref) => Future.value(EditRole.owner)),
         ],
-        child: const MaterialApp(home: SummaryScreen(novelId: 'n-1')),
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: Locale('en'),
+          home: SummaryScreen(novelId: 'n-1'),
+        ),
       ),
     );
 
     await tester.pumpAndSettle();
 
-    // Header shows title and author.
+    // Header shows title (in metadata editor)
     expect(find.text('Test Novel'), findsOneWidget);
-    expect(find.text('Author'), findsOneWidget);
+    // Author is not shown in metadata editor
 
     // Navigate to the Sentence Summary tab and then to Edit subtab
     final sentenceTab = find.text('Sentence Summary');
@@ -193,8 +211,13 @@ void main() {
     await tester.tap(editTab, warnIfMissed: false);
     await tester.pumpAndSettle();
 
-    // Find the text field in the edit mode - it no longer has a label decoration
-    final summaryField = find.byType(TextFormField).first;
+    // Find the text field in the edit mode
+    final summaryField = find
+        .descendant(
+          of: find.byType(TabBarView),
+          matching: find.byType(TextFormField),
+        )
+        .first;
     expect(summaryField, findsOneWidget);
     // Since we are mocking everything, we can't easily check initial values populated from remote without more mocking.
     // But we can check the field exists.
@@ -203,7 +226,7 @@ void main() {
     await tester.enterText(summaryField, 'New summary text');
     await tester.pumpAndSettle();
 
-    final saveButton = find.text('Save');
+    final saveButton = find.widgetWithText(ElevatedButton, 'Save');
     await tester.ensureVisible(saveButton);
     await tester.tap(saveButton);
     await tester.pump();
@@ -215,6 +238,14 @@ void main() {
   });
 
   testWidgets('SummaryScreen save disabled until changes', (tester) async {
+    // Set viewport size to avoid layout overflow
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     final prefs = await SharedPreferences.getInstance();
     final repo = CapturingLocalRepo();
     final novel = const Novel(
@@ -235,7 +266,12 @@ void main() {
           novelProvider.overrideWith((ref, id) async => novel),
           novelRepositoryProvider.overrideWith((ref) => MockNovelRepository()),
         ],
-        child: const MaterialApp(home: SummaryScreen(novelId: 'n-1')),
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: Locale('en'),
+          home: SummaryScreen(novelId: 'n-1'),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -254,7 +290,12 @@ void main() {
     await tester.tap(editTab, warnIfMissed: false);
     await tester.pumpAndSettle();
 
-    final summaryField = find.byType(TextFormField).first;
+    final summaryField = find
+        .descendant(
+          of: find.byType(TabBarView),
+          matching: find.byType(TextFormField),
+        )
+        .first;
     await tester.enterText(summaryField, 'Changed');
     await tester.pump();
     final btn2 = tester.widget<ElevatedButton>(saveButton);
@@ -264,6 +305,14 @@ void main() {
   testWidgets('SummaryScreen toggles AI Coach and shows widget (small layout)', (
     tester,
   ) async {
+    // Set viewport size to avoid layout overflow in test environment
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     final prefs = await SharedPreferences.getInstance();
     final repo = CapturingLocalRepo();
     final novel = const Novel(
@@ -308,7 +357,12 @@ void main() {
             ),
           ),
         ],
-        child: const MaterialApp(home: SummaryScreen(novelId: 'n-1')),
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: Locale('en'),
+          home: SummaryScreen(novelId: 'n-1'),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -392,7 +446,12 @@ void main() {
             ),
           ),
         ],
-        child: const MaterialApp(home: SummaryScreen(novelId: 'n-1')),
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: Locale('en'),
+          home: SummaryScreen(novelId: 'n-1'),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -422,6 +481,14 @@ void main() {
   testWidgets('SummaryScreen can toggle AI coach for sentence summary', (
     tester,
   ) async {
+    // Set viewport size to accommodate split view
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     final prefs = await SharedPreferences.getInstance();
     final repo = MockNovelRepository();
     final novel = const Novel(
@@ -464,7 +531,12 @@ void main() {
             ),
           ),
         ],
-        child: const MaterialApp(home: SummaryScreen(novelId: 'n-1')),
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: Locale('en'),
+          home: SummaryScreen(novelId: 'n-1'),
+        ),
       ),
     );
     await tester.pumpAndSettle();

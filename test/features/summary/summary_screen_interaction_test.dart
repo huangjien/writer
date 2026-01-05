@@ -45,6 +45,11 @@ void main() {
     required ProviderContainer container,
     String novelId = 'novel-1',
   }) async {
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
@@ -140,7 +145,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Find text field and enter text
-    final textField = find.byType(TextFormField).first;
+    final textField = find.byKey(const Key('sentence_summary_field'));
     await tester.enterText(textField, 'New Sentence');
     await tester.pumpAndSettle();
 
