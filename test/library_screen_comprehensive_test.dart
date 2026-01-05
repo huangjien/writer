@@ -1253,6 +1253,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify Admin Logs button
+      expect(find.byIcon(Icons.admin_panel_settings), findsOneWidget);
+      // Verify Settings button is also present
       expect(find.byIcon(Icons.settings), findsOneWidget);
     });
 
@@ -1283,7 +1285,9 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify Admin Logs button is absent
-      expect(find.byIcon(Icons.settings), findsNothing);
+      expect(find.byIcon(Icons.admin_panel_settings), findsNothing);
+      // Verify Settings button is present (available to everyone)
+      expect(find.byIcon(Icons.settings), findsOneWidget);
     });
   });
 

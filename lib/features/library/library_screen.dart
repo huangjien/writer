@@ -448,7 +448,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
             ListTile(
               leading: const Icon(Icons.info_outline),
               title: Text(l10n.about),
-              onTap: () => _showAboutDialog(context, l10n),
+              onTap: () => Navigator.of(context).pushNamed('/about'),
             ),
             ListTile(
               leading: const Icon(Icons.build),
@@ -459,22 +459,6 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _showAboutDialog(BuildContext context, AppLocalizations l10n) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.about),
-        content: Text('Author Console Writer v1.0.0'),
-        actions: [
-          TextButton(
-            child: Text(l10n.close),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
       ),
     );
   }
@@ -496,12 +480,16 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
         SyncStatusIndicator(),
         if (isAdmin)
           IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => Navigator.of(context).pushNamed('/admin'),
+            icon: const Icon(Icons.admin_panel_settings),
+            onPressed: () => Navigator.of(context).pushNamed('/admin/users'),
           ),
         IconButton(
+          icon: const Icon(Icons.settings),
+          onPressed: () => Navigator.of(context).pushNamed('/settings'),
+        ),
+        IconButton(
           icon: const Icon(Icons.info_outline),
-          onPressed: () => _showAboutDialog(context, l10n),
+          onPressed: () => Navigator.of(context).pushNamed('/about'),
         ),
       ],
     );
