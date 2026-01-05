@@ -271,14 +271,10 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
   }
 
   Future<void> _onEditTogglePressed() async {
-    final notifier = ref.read(readerSessionProvider.notifier);
+    // Navigate to mobile editor screen
+    if (!mounted) return;
     final state = ref.read(readerSessionProvider);
-
-    if (!state.editMode) {
-      notifier.setEditMode(true);
-      return;
-    }
-    if (await _handleDirtyEdit()) return;
+    context.push('/novel/${widget.novelId}/chapters/${state.chapterId}/edit');
   }
 
   void _onPlayStopPressed() {

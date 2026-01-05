@@ -6,6 +6,7 @@ import '../services/patterns_service.dart';
 import '../services/auth_redirect_service.dart';
 
 import '../services/story_lines_service.dart';
+import '../services/pdf_service.dart';
 import 'ai_service_settings.dart';
 import 'admin_settings.dart';
 import 'session_state.dart';
@@ -107,6 +108,10 @@ final storyLinesServiceProvider = Provider<StoryLinesService>((ref) {
       await authRedirectService.redirectToLogin(ref);
     },
   );
+});
+
+final pdfServiceProvider = Provider<PdfService>((ref) {
+  return PdfService();
 });
 
 final isAdminProvider = Provider<bool>((ref) {

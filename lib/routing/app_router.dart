@@ -9,7 +9,7 @@ import '../features/settings/token_usage_history_screen.dart';
 import '../features/library/create_novel_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/reader/reader_screen.dart';
-import '../features/reader/chapter_edit_screen.dart';
+import '../features/editor/mobile_editor_screen.dart';
 import '../features/auth/sign_in_screen.dart';
 import '../features/auth/sign_up_screen.dart';
 import '../features/auth/forgot_password_screen.dart';
@@ -174,7 +174,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             name: 'chapterNew',
             builder: (context, state) {
               final novelId = state.pathParameters['id']!;
-              return ChapterEditScreen(novelId: novelId);
+              return MobileEditorScreen(novelId: novelId);
+            },
+          ),
+          GoRoute(
+            path: 'chapters/:chapterId/edit',
+            name: 'chapterEdit',
+            builder: (context, state) {
+              final novelId = state.pathParameters['id']!;
+              final chapterId = state.pathParameters['chapterId']!;
+              return MobileEditorScreen(novelId: novelId, chapterId: chapterId);
             },
           ),
           GoRoute(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/design_tokens.dart';
 import '../../widgets/side_bar.dart';
@@ -11,8 +10,7 @@ import '../../models/chapter.dart';
 import 'chapter_reader_screen.dart' as cr;
 import '../../repositories/chapter_repository.dart';
 import '../../shared/api_exception.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
+import '../../state/providers.dart';
 
 class ReaderScreen extends ConsumerStatefulWidget {
   const ReaderScreen({super.key, required this.novelId, this.chapterId});
@@ -129,21 +127,6 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                     final errMsg = '${l10n.error}: ${l10n.pdfFailed}';
                     setState(() => _pdfGenerating = true);
                     try {
-                      final notoRegular = pw.Font.ttf(
-                        await rootBundle.load(
-                          'assets/fonts/NotoSansSC-Regular.ttf',
-                        ),
-                      );
-                      final notoBold = pw.Font.ttf(
-                        await rootBundle.load(
-                          'assets/fonts/NotoSansSC-Bold.ttf',
-                        ),
-                      );
-                      final pdfTheme = pw.ThemeData.withFont(
-                        base: notoRegular,
-                        bold: notoBold,
-                      );
-
                       final chapters = await ref.read(
                         chaptersProvider(widget.novelId).future,
                       );
@@ -161,126 +144,20 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                         novelProvider(widget.novelId).future,
                       );
 
-                      final chapterPrefix = l10n.chapter;
-                      final doc = pw.Document();
-                      doc.addPage(
-                        pw.Page(
-                          theme: pdfTheme,
-                          build: (context) => pw.Column(
-                            crossAxisAlignment: pw.CrossAxisAlignment.start,
-                            children: [
-                              pw.Spacer(),
-                              pw.Center(
-                                child: pw.Text(
-                                  novel?.title ?? l10n.novel,
-                                  style: pw.TextStyle(
-                                    fontSize: 32,
-                                    fontWeight: pw.FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              if ((novel?.author ?? '').trim().isNotEmpty)
-                                pw.Center(
-                                  child: pw.Padding(
-                                    padding: const pw.EdgeInsets.only(top: 12),
-                                    child: pw.Text(
-                                      l10n.byAuthor(novel!.author!),
-                                      style: const pw.TextStyle(fontSize: 16),
-                                    ),
-                                  ),
-                                ),
-                              pw.Spacer(),
-                              pw.Text(
-                                l10n.languageLabel(novel?.languageCode ?? 'en'),
-                              ),
-                            ],
-                          ),
+                      if (novel == null) throw Exception('Novel not found');
+
+                      final pdfService = ref.read(pdfServiceProvider);
+                      await pdfService.generateAndSharePdf(
+                        novel: novel,
+                        chapters: withContent,
+                        l10nByAuthor: l10n.byAuthor,
+                        l10nChapter: l10n.chapter,
+                        l10nNovel: l10n.novel,
+                        l10nLanguageLabel: l10n.languageLabel(
+                          novel.languageCode,
                         ),
-                      );
-                      doc.addPage(
-                        pw.MultiPage(
-                          theme: pdfTheme,
-                          header: (context) => pw.Container(
-                            alignment: pw.Alignment.centerLeft,
-                            padding: const pw.EdgeInsets.only(bottom: 8),
-                            child: pw.Text(
-                              novel?.title ?? l10n.novel,
-                              style: const pw.TextStyle(fontSize: 12),
-                            ),
-                          ),
-                          footer: (context) => pw.Container(
-                            alignment: pw.Alignment.centerRight,
-                            padding: const pw.EdgeInsets.only(top: 8),
-                            child: pw.Text(
-                              l10n.pageOfTotal(
-                                context.pageNumber,
-                                context.pagesCount,
-                              ),
-                              style: const pw.TextStyle(fontSize: 12),
-                            ),
-                          ),
-                          build: (context) {
-                            final List<pw.Widget> content = [];
-                            content.add(
-                              pw.Header(level: 0, text: l10n.tableOfContents),
-                            );
-                            for (final c in withContent) {
-                              final heading =
-                                  (c.title == null || c.title!.trim().isEmpty)
-                                  ? '$chapterPrefix ${c.idx}'
-                                  : '$chapterPrefix ${c.idx}: ${c.title}';
-                              final anchorName = 'chapter-${c.idx}';
-                              content.add(
-                                pw.Container(
-                                  padding: const pw.EdgeInsets.symmetric(
-                                    vertical: 2,
-                                  ),
-                                  child: pw.Row(
-                                    children: [
-                                      pw.Expanded(
-                                        child: pw.Link(
-                                          destination: anchorName,
-                                          child: pw.Text(heading),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }
-                            content.add(pw.SizedBox(height: 20));
-                            content.add(
-                              pw.Header(
-                                level: 0,
-                                text: novel?.title ?? l10n.novel,
-                              ),
-                            );
-                            for (final c in withContent) {
-                              final heading =
-                                  (c.title == null || c.title!.trim().isEmpty)
-                                  ? '$chapterPrefix ${c.idx}'
-                                  : '$chapterPrefix ${c.idx}: ${c.title}';
-                              final anchorName = 'chapter-${c.idx}';
-                              content.add(
-                                pw.Anchor(
-                                  name: anchorName,
-                                  child: pw.Header(level: 1, text: heading),
-                                ),
-                              );
-                              final body = (c.content ?? '').trim();
-                              if (body.isNotEmpty) {
-                                content.add(pw.Paragraph(text: body));
-                              }
-                            }
-                            return content;
-                          },
-                        ),
-                      );
-                      final bytes = await doc.save();
-                      await Printing.sharePdf(
-                        bytes: bytes,
-                        filename:
-                            '${(novel?.title ?? 'novel').replaceAll(' ', '_')}-${widget.novelId}.pdf',
+                        l10nTableOfContents: l10n.tableOfContents,
+                        l10nPageOfTotal: l10n.pageOfTotal,
                       );
                     } catch (e) {
                       messenger.showSnackBar(SnackBar(content: Text(errMsg)));

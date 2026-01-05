@@ -6,6 +6,9 @@ import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/mobile_bottom_nav_bar.dart';
 import '../../shared/widgets/mobile_fab.dart';
+import '../../repositories/chapter_repository.dart';
+import '../../models/chapter.dart';
+import '../../state/novel_providers.dart';
 
 import '../../shared/widgets/mobile_bottom_sheet.dart';
 
@@ -37,6 +40,9 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
   late TextEditingController _titleController;
   bool _isSaving = false;
   bool _hasUnsavedChanges = false;
+  bool _isLoading = true;
+  Chapter? _chapter;
+
   MobileNavTab _currentTab = MobileNavTab.write;
   bool _isBold = false;
   bool _isItalic = false;
@@ -52,6 +58,14 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
 
     _contentController.addListener(_onContentChanged);
     _titleController.addListener(_onContentChanged);
+
+    if (widget.chapterId != null) {
+      _loadChapter();
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -61,10 +75,45 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
     super.dispose();
   }
 
+  Future<void> _loadChapter() async {
+    try {
+      final chapters = await ref.read(chaptersProvider(widget.novelId).future);
+      final chapter = chapters.firstWhere(
+        (c) => c.id == widget.chapterId,
+        orElse: () => throw Exception('Chapter not found'),
+      );
+
+      // Ensure we have full content
+      final repo = ref.read(chapterRepositoryProvider);
+      final fullChapter = await repo.getChapter(chapter);
+
+      if (mounted) {
+        setState(() {
+          _chapter = fullChapter;
+          _titleController.text = fullChapter.title ?? '';
+          if (widget.initialContent == null) {
+            _contentController.text = fullChapter.content ?? '';
+          }
+          _isLoading = false;
+          _hasUnsavedChanges = false; // Reset after load
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to load chapter: $e')));
+      }
+    }
+  }
+
   void _onContentChanged() {
-    setState(() {
-      _hasUnsavedChanges = true;
-    });
+    if (!_isLoading) {
+      setState(() {
+        _hasUnsavedChanges = true;
+      });
+    }
   }
 
   Future<void> _saveContent() async {
@@ -77,17 +126,52 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
     // Add haptic feedback
     HapticFeedback.lightImpact();
 
-    // Simulate save - replace with actual save logic
-    await Future.delayed(const Duration(milliseconds: 500));
+    try {
+      final repo = ref.read(chapterRepositoryProvider);
 
-    if (mounted) {
-      setState(() {
-        _isSaving = false;
-        _hasUnsavedChanges = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Saved'), duration: Duration(seconds: 2)),
-      );
+      if (_chapter != null) {
+        // Update existing
+        final updated = _chapter!.copyWith(
+          title: _titleController.text,
+          content: _contentController.text,
+        );
+        await repo.updateChapter(updated);
+        _chapter = updated;
+      } else {
+        // Create new
+        final nextIdx = await repo.getNextIdx(widget.novelId);
+        final created = await repo.createChapter(
+          novelId: widget.novelId,
+          idx: nextIdx,
+          title: _titleController.text.isEmpty
+              ? 'Chapter $nextIdx'
+              : _titleController.text,
+          content: _contentController.text,
+        );
+        _chapter = created;
+      }
+
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+          _hasUnsavedChanges = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Saved'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        // Refresh chapters list
+        ref.invalidate(chaptersProvider(widget.novelId));
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Save failed: $e')));
+      }
     }
   }
 
@@ -118,6 +202,13 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
     final theme = Theme.of(context);
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final keyboardHeight = bottomInset > 0 ? bottomInset : 0.0;
+
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Loading...')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       appBar: _buildAppBar(context, l10n),
@@ -373,7 +464,11 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
   void _insertText(String text) {
     final currentText = _contentController.text;
     final selection = _contentController.selection;
-    final cursorPosition = selection.baseOffset;
+
+    // If no selection, append to end or assume start?
+    // Usually selection.baseOffset is -1 if no selection.
+    int cursorPosition = selection.baseOffset;
+    if (cursorPosition < 0) cursorPosition = currentText.length;
 
     final newText =
         currentText.substring(0, cursorPosition) +
@@ -403,6 +498,8 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
         break;
       case MobileNavTab.read:
         // Navigate to reading screen
+        // We need to know which chapter to read? Or just novel view?
+        context.push('/novel/${widget.novelId}');
         break;
       case MobileNavTab.tools:
         // Navigate to tools
@@ -492,7 +589,15 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                 Navigator.of(context).pop();
                 setState(() {
                   _hasUnsavedChanges = false;
-                  _contentController.clear();
+                  // Reload original content if available?
+                  // For now just clear or revert to loaded chapter content
+                  if (_chapter != null) {
+                    _contentController.text = _chapter!.content ?? '';
+                    _titleController.text = _chapter!.title ?? '';
+                  } else {
+                    _contentController.clear();
+                    _titleController.clear();
+                  }
                 });
                 HapticFeedback.heavyImpact();
               },
@@ -505,7 +610,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
         ),
       );
     } else {
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(); // Close sheet
     }
   }
 }
