@@ -38,6 +38,8 @@ class TtsSettingsSection extends ConsumerWidget {
           title: Text(l10n.ttsVoice),
           subtitle: loadingVoices
               ? Text(l10n.loadingVoices)
+              : voiceItems.isEmpty
+              ? const Text('No voices available')
               : DropdownButton<String>(
                   isExpanded: true,
                   value: effectiveSelectedKey,

@@ -27,6 +27,7 @@ import '../features/summary/scene_templates_list_screen.dart';
 import '../features/summary/character_templates_screen.dart';
 import '../features/summary/scene_templates_screen.dart';
 import '../features/reader/novel_metadata_editor.dart';
+import '../features/tools/mobile_tools_screen.dart';
 import '../screens/prompts_list_screen.dart';
 import '../screens/prompt_form_screen.dart';
 import '../screens/patterns_list_screen.dart';
@@ -105,6 +106,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: '/tools',
+        name: 'tools',
+        builder: (context, state) => const MobileToolsScreen(),
+      ),
+      GoRoute(
         path: '/auth',
         name: 'auth',
         builder: (context, state) => const SignInScreen(),
@@ -123,6 +129,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/reset-password',
         name: 'resetPassword',
         builder: (context, state) => const ResetPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/admin',
+        name: 'admin',
+        redirect: (context, state) => '/admin/users',
       ),
       GoRoute(
         path: '/admin/users',

@@ -124,6 +124,19 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
     }
   }
 
+  void _checkDirty() {
+    final dirty =
+        _titleController.text.trim() != _baseTitle.trim() ||
+        _descriptionController.text.trim() != _baseDescription.trim() ||
+        _coverUrlController.text.trim() != _baseCoverUrl.trim() ||
+        _languageCode != _baseLanguageCode ||
+        _isPublic != _baseIsPublic;
+
+    if (dirty != _isDirty) {
+      setState(() => _isDirty = dirty);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -194,16 +207,7 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                               },
                               onChanged: (_) {
                                 _recomputeFormValidity();
-                                final dirty =
-                                    _titleController.text.trim() !=
-                                        _baseTitle.trim() ||
-                                    _descriptionController.text.trim() !=
-                                        _baseDescription.trim() ||
-                                    (_coverUrlController.text.trim() !=
-                                        _baseCoverUrl.trim());
-                                if (dirty != _isDirty) {
-                                  setState(() => _isDirty = dirty);
-                                }
+                                _checkDirty();
                               },
                             ),
                           ),
@@ -213,17 +217,7 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                             onChanged: (code) {
                               if (code == null) return;
                               setState(() => _languageCode = code);
-                              final dirty =
-                                  _titleController.text.trim() !=
-                                      _baseTitle.trim() ||
-                                  _descriptionController.text.trim() !=
-                                      _baseDescription.trim() ||
-                                  (_coverUrlController.text.trim() !=
-                                      _baseCoverUrl.trim()) ||
-                                  (_languageCode != _baseLanguageCode);
-                              if (dirty != _isDirty) {
-                                setState(() => _isDirty = dirty);
-                              }
+                              _checkDirty();
                             },
                             items: [
                               DropdownMenuItem(
@@ -244,17 +238,7 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                                   value: _isPublic,
                                   onChanged: (v) {
                                     setState(() => _isPublic = v);
-                                    final dirty =
-                                        _titleController.text.trim() !=
-                                            _baseTitle.trim() ||
-                                        _descriptionController.text.trim() !=
-                                            _baseDescription.trim() ||
-                                        (_coverUrlController.text.trim() !=
-                                            _baseCoverUrl.trim()) ||
-                                        (_isPublic != _baseIsPublic);
-                                    if (dirty != _isDirty) {
-                                      setState(() => _isDirty = dirty);
-                                    }
+                                    _checkDirty();
                                   },
                                 ),
                                 const SizedBox(width: 4),
@@ -292,16 +276,7 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                         },
                         onChanged: (_) {
                           _recomputeFormValidity();
-                          final dirty =
-                              _titleController.text.trim() !=
-                                  _baseTitle.trim() ||
-                              _descriptionController.text.trim() !=
-                                  _baseDescription.trim() ||
-                              (_coverUrlController.text.trim() !=
-                                  _baseCoverUrl.trim());
-                          if (dirty != _isDirty) {
-                            setState(() => _isDirty = dirty);
-                          }
+                          _checkDirty();
                         },
                       ),
                       const SizedBox(height: 12),
@@ -332,16 +307,7 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                         },
                         onChanged: (s) {
                           _onCoverChanged(s);
-                          final dirty =
-                              _titleController.text.trim() !=
-                                  _baseTitle.trim() ||
-                              _descriptionController.text.trim() !=
-                                  _baseDescription.trim() ||
-                              (_coverUrlController.text.trim() !=
-                                  _baseCoverUrl.trim());
-                          if (dirty != _isDirty) {
-                            setState(() => _isDirty = dirty);
-                          }
+                          _checkDirty();
                         },
                       ),
                       const SizedBox(height: 12),

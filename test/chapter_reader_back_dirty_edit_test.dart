@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/reader/chapter_reader_screen.dart';
 import 'package:writer/features/reader/logic/tts_driver.dart';
@@ -130,6 +131,28 @@ void main() {
     ],
     bool editPermission = true,
   }) async {
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => ChapterReaderScreen(
+            chapterId: 'c1',
+            title: 'One',
+            content: 'Alpha\nBeta',
+            novelId: 'n1',
+            allChapters: allChapters,
+            currentIdx: 0,
+            autoStartTts: false,
+          ),
+        ),
+        GoRoute(
+          path: '/novel/:novelId/chapters/:chapterId/edit',
+          builder: (context, state) =>
+              const Scaffold(body: Text('Edit Screen')),
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -151,19 +174,11 @@ void main() {
           currentUserProvider.overrideWith((ref) async => null),
           chaptersProvider('n1').overrideWith((ref) async => allChapters),
         ],
-        child: MaterialApp(
+        child: MaterialApp.router(
+          routerConfig: router,
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: ChapterReaderScreen(
-            chapterId: 'c1',
-            title: 'One',
-            content: 'Alpha\nBeta',
-            novelId: 'n1',
-            allChapters: allChapters,
-            currentIdx: 0,
-            autoStartTts: false,
-          ),
         ),
       ),
     );
@@ -209,10 +224,9 @@ void main() {
 
     // Enter edit mode
     await tester.tap(editIcons);
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    // Should now be in edit mode
-    expect(find.byType(TextFormField), findsWidgets);
-    expect(find.byIcon(Icons.close), findsOneWidget);
+    // Should now be in edit mode (navigated to edit screen)
+    expect(find.text('Edit Screen'), findsOneWidget);
   });
 }

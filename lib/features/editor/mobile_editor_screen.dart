@@ -41,6 +41,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
   bool _isSaving = false;
   bool _hasUnsavedChanges = false;
   bool _isLoading = true;
+  bool _isDiscarding = false;
   Chapter? _chapter;
 
   MobileNavTab _currentTab = MobileNavTab.write;
@@ -109,7 +110,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
   }
 
   void _onContentChanged() {
-    if (!_isLoading) {
+    if (!_isLoading && !_isDiscarding) {
       setState(() {
         _hasUnsavedChanges = true;
       });
@@ -544,6 +545,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
   }
 
   void _showWordCount(BuildContext context) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     final text = _contentController.text;
     final wordCount = text
         .split(RegExp(r'\s+'))
@@ -559,6 +561,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
   }
 
   void _showCharacterCount(BuildContext context) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     final text = _contentController.text;
     final charCount = text.length;
 
@@ -587,17 +590,19 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
+
+                _isDiscarding = true;
+                if (_chapter != null) {
+                  _contentController.text = _chapter!.content ?? '';
+                  _titleController.text = _chapter!.title ?? '';
+                } else {
+                  _contentController.clear();
+                  _titleController.clear();
+                }
+                _isDiscarding = false;
+
                 setState(() {
                   _hasUnsavedChanges = false;
-                  // Reload original content if available?
-                  // For now just clear or revert to loaded chapter content
-                  if (_chapter != null) {
-                    _contentController.text = _chapter!.content ?? '';
-                    _titleController.text = _chapter!.title ?? '';
-                  } else {
-                    _contentController.clear();
-                    _titleController.clear();
-                  }
                 });
                 HapticFeedback.heavyImpact();
               },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/features/library/widgets/library_list_header.dart';
 import 'package:writer/features/library/widgets/library_grid_item.dart';
@@ -481,15 +482,15 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
         if (isAdmin)
           IconButton(
             icon: const Icon(Icons.admin_panel_settings),
-            onPressed: () => Navigator.of(context).pushNamed('/admin/users'),
+            onPressed: () => context.pushNamed('userManagement'),
           ),
         IconButton(
           icon: const Icon(Icons.settings),
-          onPressed: () => Navigator.of(context).pushNamed('/settings'),
+          onPressed: () => context.pushNamed('settings'),
         ),
         IconButton(
           icon: const Icon(Icons.info_outline),
-          onPressed: () => Navigator.of(context).pushNamed('/about'),
+          onPressed: () => context.pushNamed('about'),
         ),
       ],
     );

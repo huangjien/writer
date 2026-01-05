@@ -12,7 +12,7 @@ import 'package:writer/features/auth/user_management_screen.dart';
 import 'package:writer/features/library/create_novel_screen.dart';
 import 'package:writer/features/library/library_providers.dart';
 import 'package:writer/features/library/my_novels_screen.dart';
-import 'package:writer/features/reader/chapter_edit_screen.dart';
+import 'package:writer/features/editor/mobile_editor_screen.dart';
 import 'package:writer/features/reader/novel_metadata_editor.dart';
 import 'package:writer/features/reader/reader_screen.dart';
 import 'package:writer/features/settings/settings_screen.dart';
@@ -378,7 +378,7 @@ void main() {
     ];
     final types = [
       ReaderScreen,
-      ChapterEditScreen,
+      MobileEditorScreen,
       SummaryScreen,
       CharactersListScreen,
       CharactersScreen,

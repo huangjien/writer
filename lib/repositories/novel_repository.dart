@@ -158,9 +158,7 @@ class NovelRepository {
     required String novelId,
     required String email,
   }) async {
-    // Feature currently not supported by backend proxy
-    throw UnimplementedError(
-      'Backend does not support adding contributors yet.',
-    );
+    final body = {'email': email};
+    await remote.post('novels/$novelId/contributors', body);
   }
 }

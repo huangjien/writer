@@ -177,11 +177,12 @@ void main() {
     );
   });
 
-  test('addContributorByEmail throws UnimplementedError', () async {
-    expect(
-      () => repo.addContributorByEmail(novelId: 'n1', email: 'e'),
-      throwsA(isA<UnimplementedError>()),
-    );
+  test('addContributorByEmail calls post', () async {
+    when(() => remote.post(any(), any())).thenAnswer((_) async => {});
+    await repo.addContributorByEmail(novelId: 'n1', email: 'e');
+    verify(
+      () => remote.post('novels/n1/contributors', {'email': 'e'}),
+    ).called(1);
   });
 
   test('fetchSummaries maps list result', () async {

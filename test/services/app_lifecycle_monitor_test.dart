@@ -114,7 +114,13 @@ void main() {
     );
 
     testWidgets('should handle provider not being available', (tester) async {
-      final containerWithoutSync = ProviderContainer();
+      final containerWithoutSync = ProviderContainer(
+        overrides: [
+          syncServiceProvider.overrideWith(
+            (ref) => throw Exception('Sync service unavailable'),
+          ),
+        ],
+      );
 
       await tester.pumpWidget(
         UncontrolledProviderScope(

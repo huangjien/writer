@@ -123,7 +123,9 @@ test:
 	END=$$(date +%s); \
 	ELAPSED=$$((END-START)); \
 	printf "make test duration: %dm %ds\n" $$((ELAPSED/60)) $$((ELAPSED%60)) | tee -a $$LOG_FILE; \
-	echo "Test log saved to: $$LOG_FILE"
+	echo "Test log saved to: $$LOG_FILE"; \
+	cp $$LOG_FILE ../test.log; \
+	echo "Test log copied to project root: ../test.log"
 
 test-expanded:
 	@TIMESTAMP=$$(date +"%Y%m%d_%H%M%S"); \

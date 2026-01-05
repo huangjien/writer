@@ -97,18 +97,32 @@ void main() {
                   ChapterEditController(initial, FakeChapterPort()),
             ),
           ],
-          child: materialAppFor(
-            themeController: themeController,
-            home: ChapterReaderScreen(
-              chapterId: 'c2',
-              title: 'Chapter 2',
-              content:
-                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-              novelId: 'n1',
-              allChapters: chapters,
-              currentIdx: 1,
-              autoStartTts: false,
+          child: MaterialApp.router(
+            routerConfig: GoRouter(
+              routes: [
+                GoRoute(
+                  path: '/',
+                  builder: (context, state) => ChapterReaderScreen(
+                    chapterId: 'c2',
+                    title: 'Chapter 2',
+                    content:
+                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                    novelId: 'n1',
+                    allChapters: chapters,
+                    currentIdx: 1,
+                    autoStartTts: false,
+                  ),
+                ),
+                GoRoute(
+                  path: '/novel/:novelId/chapters/:chapterId/edit',
+                  builder: (context, state) =>
+                      const Scaffold(body: Text('Edit Screen')),
+                ),
+              ],
             ),
+            theme: themeForLight(AppThemeFamily.defaultFamily),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
           ),
         ),
       );
@@ -170,16 +184,30 @@ void main() {
                   ChapterEditController(initial, FakeChapterPort()),
             ),
           ],
-          child: materialAppFor(
-            themeController: themeController,
-            home: const ChapterReaderScreen(
-              chapterId: 'c1',
-              title: 'Chapter 1',
-              content: 'Hello world',
-              novelId: 'n1',
-              currentIdx: 0,
-              autoStartTts: false,
+          child: MaterialApp.router(
+            routerConfig: GoRouter(
+              routes: [
+                GoRoute(
+                  path: '/',
+                  builder: (context, state) => const ChapterReaderScreen(
+                    chapterId: 'c1',
+                    title: 'Chapter 1',
+                    content: 'Hello world',
+                    novelId: 'n1',
+                    currentIdx: 0,
+                    autoStartTts: false,
+                  ),
+                ),
+                GoRoute(
+                  path: '/novel/:novelId/chapters/:chapterId/edit',
+                  builder: (context, state) =>
+                      const Scaffold(body: Text('Edit Screen')),
+                ),
+              ],
             ),
+            theme: themeForLight(AppThemeFamily.defaultFamily),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
           ),
         ),
       );
@@ -192,34 +220,10 @@ void main() {
 
       // Enter Edit Mode via the compact edit icon
       await tester.tap(find.byIcon(Icons.edit));
-      await tester.pump();
-
-      // Ensure Focus is on the reader bar
-      final focusElt = tester.element(
-        find.byKey(const ValueKey('reader_bar_focus')),
-      );
-      Focus.of(focusElt).requestFocus();
-      await tester.pump();
-
-      // Press Space; shortcuts are disabled in Edit Mode
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.space);
-      await tester.pump();
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.space);
-      await tester.pump();
-
-      // Exit Edit Mode back to View via the close icon
-      await tester.tap(find.byIcon(Icons.close));
       await tester.pumpAndSettle();
 
-      // Play should remain available; Stop should not appear
-      expect(find.byKey(const ValueKey('btn_play')), findsOneWidget);
-      expect(find.byKey(const ValueKey('btn_stop')), findsNothing);
-      expect(
-        find.text(
-          AppLocalizations.of(tester.element(find.byType(Scaffold)))!.stopTTS,
-        ),
-        findsNothing,
-      );
+      // Ensure we navigated to the edit screen
+      expect(find.text('Edit Screen'), findsOneWidget);
     });
 
     testWidgets('R/V do not navigate to Settings while in Edit Mode', (
