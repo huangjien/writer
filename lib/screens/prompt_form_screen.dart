@@ -303,6 +303,8 @@ class _PromptFormScreenState extends State<PromptFormScreen>
                       controller: _contentCtrl,
                       maxLines: null,
                       expands: true,
+                      textAlign: TextAlign.start,
+                      textAlignVertical: TextAlignVertical.top,
                       readOnly: _isEdit && !widget.isSignedIn,
                       onChanged: (_) => _updateDirty(),
                       validator: _validateContent,

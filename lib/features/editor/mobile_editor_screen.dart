@@ -258,6 +258,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                         : TextDecoration.none,
                   ),
                   textAlign: TextAlign.left,
+                  textAlignVertical: TextAlignVertical.top,
                 ),
               ),
             ),

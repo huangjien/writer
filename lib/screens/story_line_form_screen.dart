@@ -457,6 +457,8 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
                       controller: _contentCtrl,
                       maxLines: null,
                       expands: true,
+                      textAlign: TextAlign.start,
+                      textAlignVertical: TextAlignVertical.top,
                       validator: _required,
                       decoration: InputDecoration(
                         hintText: l10n.content,
@@ -468,6 +470,8 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
                       controller: _usageCtrl,
                       maxLines: null,
                       expands: true,
+                      textAlign: TextAlign.start,
+                      textAlignVertical: TextAlignVertical.top,
                       decoration: InputDecoration(
                         hintText: l10n.usageRulesLabel,
                         border: const OutlineInputBorder(),

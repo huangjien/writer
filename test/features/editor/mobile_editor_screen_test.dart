@@ -469,4 +469,30 @@ void main() {
       find.byIcon(Icons.book_outlined),
     ); // MobileNavTab.read icon
   });
+
+  testWidgets('content text field is left aligned and top aligned', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final textFieldFinder = find.widgetWithText(TextField, 'Start writing...');
+    expect(textFieldFinder, findsOneWidget);
+
+    final TextField textField = tester.widget(textFieldFinder);
+    expect(textField.textAlign, TextAlign.left);
+    expect(textField.textAlignVertical, TextAlignVertical.top);
+  });
 }
