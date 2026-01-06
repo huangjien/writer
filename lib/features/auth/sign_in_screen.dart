@@ -92,7 +92,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         content: Text(l10n.enableBiometricLoginDescription),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              Navigator.of(context).pop();
+              _navigateToSuccess();
+            },
             child: Text(l10n.cancel),
           ),
           TextButton(
@@ -196,17 +199,14 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               Text(_error!, style: const TextStyle(color: Colors.red)),
               const SizedBox(height: 8),
             ],
-            ElevatedButton(
-              onPressed: _loading ? null : () => _signIn(context),
-              child: _loading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.signIn),
-            ),
-            const SizedBox(height: 12),
+            if (_loading)
+              const Center(
+                child: SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
             Consumer(
               builder: (context, ref, child) {
                 final biometricState = ref.watch(biometricSessionProvider);

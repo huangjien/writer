@@ -33,5 +33,7 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSFaceIDUsageDescription</key>
+	<string>We use Face ID to secure your account.</string>
 </dict>
 </plist>

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/state/storage_service_provider.dart';
@@ -28,6 +29,26 @@ void main() {
     SharedPreferences? prefs,
     SessionNotifier? sessionNotifier,
   }) {
+    final router = GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(path: '/', builder: (context, state) => const SignInScreen()),
+        GoRoute(
+          path: '/settings',
+          builder: (context, state) => const Scaffold(body: Text('Settings')),
+        ),
+        GoRoute(
+          path: '/signup',
+          builder: (context, state) => const Scaffold(body: Text('Sign Up')),
+        ),
+        GoRoute(
+          path: '/forgot-password',
+          builder: (context, state) =>
+              const Scaffold(body: Text('Forgot Password')),
+        ),
+      ],
+    );
+
     return ProviderScope(
       overrides: [
         if (prefs != null) sharedPreferencesProvider.overrideWithValue(prefs),
@@ -38,11 +59,11 @@ void main() {
         if (sessionNotifier != null)
           sessionProvider.overrideWith((ref) => sessionNotifier),
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
         locale: const Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const SignInScreen(),
+        routerConfig: router,
       ),
     );
   }
@@ -86,7 +107,7 @@ void main() {
 
       await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
       await tester.enterText(find.byType(TextField).at(1), 'password');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pump();
 
       // The biometric button text changes during loading, so we look for the loading indicator
@@ -96,7 +117,9 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('SignInScreen disables button during loading', (tester) async {
+    testWidgets('SignInScreen shows loading indicator during loading', (
+      tester,
+    ) async {
       final prefs = await SharedPreferences.getInstance();
       final mockAuthService = MockAuthService();
       when(() => mockAuthService.signIn(any(), any())).thenAnswer((_) async {
@@ -120,12 +143,10 @@ void main() {
       await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
       await tester.enterText(find.byType(TextField).at(1), 'password');
 
-      // Find button before tapping (text changes during loading)
-      final signInButton = find.widgetWithText(ElevatedButton, 'Sign In');
-      await tester.tap(signInButton);
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pump();
 
-      // Button should be disabled during loading - now shows CircularProgressIndicator
+      // Should show CircularProgressIndicator
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
       await tester.pumpAndSettle();
@@ -210,7 +231,7 @@ void main() {
 
       await tester.enterText(find.byType(TextField).at(0), 'a@b.com');
       await tester.enterText(find.byType(TextField).at(1), 'bad');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
 
       expect(find.textContaining('Invalid credentials'), findsOneWidget);
@@ -245,7 +266,7 @@ void main() {
         '  test@example.com  ',
       );
       await tester.enterText(find.byType(TextField).at(1), 'password');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
 
       expect(emailPassed, 'test@example.com');
@@ -274,7 +295,7 @@ void main() {
       // First attempt - should show error
       await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
       await tester.enterText(find.byType(TextField).at(1), 'wrong');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
 
       expect(find.textContaining('First error'), findsOneWidget);
@@ -285,7 +306,8 @@ void main() {
       ).thenAnswer((_) async => SignInResult.success('test-session'));
 
       // Second attempt - error should be cleared
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
+      await tester.enterText(find.byType(TextField).at(1), 'correct');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pump();
 
       expect(find.textContaining('First error'), findsNothing);
@@ -320,7 +342,7 @@ void main() {
 
       await tester.enterText(find.byType(TextField).at(0), 'a@b.com');
       await tester.enterText(find.byType(TextField).at(1), 'pw');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
 
       expect(sessionNotifier.state, 's-123');
@@ -360,7 +382,7 @@ void main() {
 
       await tester.enterText(find.byType(TextField).at(0), 'a@b.com');
       await tester.enterText(find.byType(TextField).at(1), 'pw');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
 
       // Should show biometric setup dialog
@@ -399,7 +421,7 @@ void main() {
 
       await tester.enterText(find.byType(TextField).at(0), 'a@b.com');
       await tester.enterText(find.byType(TextField).at(1), 'pw');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
 
       // Cancel biometric setup
@@ -408,6 +430,7 @@ void main() {
 
       // Dialog should be gone
       expect(find.text('Enable biometric login'), findsNothing);
+      expect(find.text('Settings'), findsOneWidget);
     });
   });
 

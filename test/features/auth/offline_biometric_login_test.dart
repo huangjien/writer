@@ -103,12 +103,15 @@ void main() {
 
       await tester.pumpAndSettle();
 
+      // Wait for biometric availability check to complete
+      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpAndSettle();
+
       // Verify we are on login screen
       expect(find.byType(SignInScreen), findsOneWidget);
 
       // Verify buttons are present
-      final buttons = find.byType(ElevatedButton);
-      expect(buttons, findsAtLeastNWidgets(1)); // At least Sign In button
+      expect(find.text('Sign in with biometrics'), findsOneWidget);
 
       // Verify initial session state is null
       expect(container.read(sessionProvider), isNull);
