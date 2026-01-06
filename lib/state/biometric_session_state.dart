@@ -50,7 +50,7 @@ class BiometricSessionNotifier extends StateNotifier<BiometricAuthState> {
       }
     } catch (e) {
       state = BiometricAuthState.failed;
-      return false;
+      rethrow;
     }
   }
 
@@ -75,7 +75,7 @@ class BiometricSessionNotifier extends StateNotifier<BiometricAuthState> {
       return false;
     } catch (e) {
       state = BiometricAuthState.failed;
-      return false;
+      rethrow;
     }
   }
 

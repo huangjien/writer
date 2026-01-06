@@ -9,7 +9,11 @@ class BiometricService {
   BiometricService({
     FlutterSecureStorage? storage,
     LocalAuthentication? localAuth,
-  }) : _storage = storage ?? const FlutterSecureStorage(),
+  }) : _storage =
+           storage ??
+           const FlutterSecureStorage(
+             mOptions: _MacOsOptionsLegacy(usesDataProtectionKeychain: false),
+           ),
        _localAuth = localAuth ?? LocalAuthentication();
 
   static const _biometricEnabledKey = 'biometric_enabled_v2';
@@ -55,7 +59,7 @@ class BiometricService {
       await _storage.write(key: _biometricEnabledKey, value: 'true');
       await _storage.write(key: _biometricSetupKey, value: 'true');
     } catch (e) {
-      throw Exception('Failed to enable biometric authentication');
+      throw Exception('Storage Error: $e');
     }
   }
 
@@ -115,4 +119,14 @@ class BiometricService {
       return false;
     }
   }
+}
+
+class _MacOsOptionsLegacy extends MacOsOptions {
+  const _MacOsOptionsLegacy({super.usesDataProtectionKeychain});
+
+  @override
+  Map<String, String> toMap() => <String, String>{
+    ...super.toMap(),
+    'useDataProtectionKeyChain': '$usesDataProtectionKeychain',
+  };
 }
