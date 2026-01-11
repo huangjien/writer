@@ -11,6 +11,8 @@ import '../../models/chapter.dart';
 import '../../state/novel_providers.dart';
 
 import '../../shared/widgets/mobile_bottom_sheet.dart';
+import '../../shared/widgets/micro_interactions.dart';
+import '../../shared/widgets/particles/wave_effect.dart';
 
 /// Mobile-optimized editor screen
 /// Features:
@@ -416,9 +418,9 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
   }) {
     final theme = Theme.of(context);
 
-    return GestureDetector(
+    return WaveTap(
+      borderRadius: BorderRadius.circular(Radii.m),
       onLongPress: () {
-        // Long press for more options
         HapticFeedback.mediumImpact();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -428,36 +430,38 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
         );
       },
       onTap: onTap,
-      child: Container(
-        width: MobileSpacing.touchTargetComfortable,
-        height: MobileSpacing.touchTargetComfortable,
-        decoration: BoxDecoration(
-          color: isActive
-              ? theme.colorScheme.primaryContainer
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(Radii.m),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 20,
-              color: isActive
-                  ? theme.colorScheme.onPrimaryContainer
-                  : theme.colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: theme.textTheme.bodySmall?.copyWith(
+      child: PressScale(
+        child: Container(
+          width: MobileSpacing.touchTargetComfortable,
+          height: MobileSpacing.touchTargetComfortable,
+          decoration: BoxDecoration(
+            color: isActive
+                ? theme.colorScheme.primaryContainer
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(Radii.m),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 20,
                 color: isActive
                     ? theme.colorScheme.onPrimaryContainer
                     : theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
               ),
-            ),
-          ],
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: isActive
+                      ? theme.colorScheme.onPrimaryContainer
+                      : theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

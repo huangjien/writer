@@ -9,6 +9,7 @@ import '../../shared/widgets/mobile_bottom_sheet.dart';
 import '../../shared/widgets/app_buttons.dart';
 import '../../shared/widgets/gradient_background.dart';
 import '../../shared/widgets/glass_card.dart';
+import '../../shared/widgets/animated_list_builder.dart';
 import '../../models/novel.dart';
 import '../../features/reader/reader_screen.dart';
 import '../../state/motion_settings.dart';
@@ -265,36 +266,40 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
                 final novel = widget.novels[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: Spacing.m),
-                  child: OpenContainer(
-                    closedElevation: 0,
-                    closedColor: Colors.transparent,
-                    transitionDuration: Duration(
-                      milliseconds: motion.reduceMotion ? 0 : 400,
+                return AnimatedListItem(
+                  index: index,
+                  reduceMotion: motion.reduceMotion,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: Spacing.m),
+                    child: OpenContainer(
+                      closedElevation: 0,
+                      closedColor: Colors.transparent,
+                      transitionDuration: Duration(
+                        milliseconds: motion.reduceMotion ? 0 : 400,
+                      ),
+                      transitionType: ContainerTransitionType.fadeThrough,
+                      openBuilder: (context, _) {
+                        return ReaderScreen(novelId: novel.id);
+                      },
+                      closedBuilder: (context, action) {
+                        return MobileNovelCard(
+                          novel: novel,
+                          onTap: action,
+                          onDownload: widget.onDownload != null
+                              ? () => widget.onDownload!(novel.id)
+                              : null,
+                          onDelete: widget.onDelete != null
+                              ? () => widget.onDelete!(novel.id)
+                              : null,
+                          onFavorite: widget.onFavorite != null
+                              ? () => widget.onFavorite!(novel.id)
+                              : null,
+                          isFavorite: widget.favorites.contains(novel.id),
+                          progress: widget.progressMap[novel.id] ?? 0.0,
+                          lastRead: widget.lastReadMap[novel.id],
+                        );
+                      },
                     ),
-                    transitionType: ContainerTransitionType.fadeThrough,
-                    openBuilder: (context, _) {
-                      return ReaderScreen(novelId: novel.id);
-                    },
-                    closedBuilder: (context, action) {
-                      return MobileNovelCard(
-                        novel: novel,
-                        onTap: action,
-                        onDownload: widget.onDownload != null
-                            ? () => widget.onDownload!(novel.id)
-                            : null,
-                        onDelete: widget.onDelete != null
-                            ? () => widget.onDelete!(novel.id)
-                            : null,
-                        onFavorite: widget.onFavorite != null
-                            ? () => widget.onFavorite!(novel.id)
-                            : null,
-                        isFavorite: widget.favorites.contains(novel.id),
-                        progress: widget.progressMap[novel.id] ?? 0.0,
-                        lastRead: widget.lastReadMap[novel.id],
-                      );
-                    },
                   ),
                 );
               }, childCount: widget.novels.length),

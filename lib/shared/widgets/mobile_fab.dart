@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
 import 'glass_card.dart';
+import 'spring_animated_container.dart';
 
 /// Mobile-optimized Floating Action Button
 /// Features:
@@ -229,16 +230,22 @@ class _MobileFabWithMenuState extends State<MobileFabWithMenu>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
-              children: widget.items.map((item) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: Spacing.s),
-                  child: _FabMenuItem(
-                    label: item.label,
-                    icon: item.icon,
-                    onTap: () {
-                      _toggle();
-                      item.onTap();
-                    },
+              children: widget.items.asMap().entries.map((entry) {
+                final index = entry.key;
+                final item = entry.value;
+                return SpringAnimatedContainer(
+                  expanded: true,
+                  delay: Duration(milliseconds: 30 * index),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: Spacing.s),
+                    child: _FabMenuItem(
+                      label: item.label,
+                      icon: item.icon,
+                      onTap: () {
+                        _toggle();
+                        item.onTap();
+                      },
+                    ),
                   ),
                 );
               }).toList(),
