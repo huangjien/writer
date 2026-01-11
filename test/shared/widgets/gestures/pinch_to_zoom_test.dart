@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/shared/widgets/gestures/pinch_to_zoom.dart';
@@ -275,9 +278,40 @@ void main() {
   });
 
   group('PinchToZoom.showNetworkImage', () {
-    test('showNetworkImage is a static method', () {
-      // Verify the method exists by checking it's a function
-      expect(PinchToZoom.showNetworkImage, isA<Function>());
+    testWidgets('pushes overlay and closes with X', (tester) async {
+      await HttpOverrides.runZoned(() async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Builder(
+              builder: (context) {
+                return Scaffold(
+                  body: Center(
+                    child: ElevatedButton(
+                      onPressed: () => PinchToZoom.showNetworkImage(
+                        context,
+                        imageUrl: 'https://example.com/test.jpg',
+                        placeholder: const Text('Loading'),
+                      ),
+                      child: const Text('Open'),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+
+        await tester.tap(find.text('Open'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(PinchToZoom), findsOneWidget);
+        expect(find.byIcon(Icons.close), findsOneWidget);
+
+        await tester.tap(find.byIcon(Icons.close));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(PinchToZoom), findsNothing);
+      }, createHttpClient: (_) => _MockHttpClient());
     });
   });
 
@@ -332,4 +366,45 @@ void main() {
       expect(find.text('Overlay'), findsOneWidget);
     });
   });
+}
+
+class _MockHttpClient extends Fake implements HttpClient {
+  @override
+  Future<HttpClientRequest> getUrl(Uri url) async {
+    return _MockHttpClientRequest();
+  }
+}
+
+class _MockHttpClientRequest extends Fake implements HttpClientRequest {
+  @override
+  Future<HttpClientResponse> close() async {
+    return _MockHttpClientResponse();
+  }
+}
+
+class _MockHttpClientResponse extends Fake implements HttpClientResponse {
+  @override
+  int get statusCode => 200;
+
+  @override
+  int get contentLength => 0;
+
+  @override
+  HttpClientResponseCompressionState get compressionState =>
+      HttpClientResponseCompressionState.notCompressed;
+
+  @override
+  StreamSubscription<List<int>> listen(
+    void Function(List<int> event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    return Stream<List<int>>.value([]).listen(
+      onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    );
+  }
 }

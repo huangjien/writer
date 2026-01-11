@@ -27,6 +27,19 @@ void main() {
       initialLocation: '/editor/novel-1',
       routes: [
         GoRoute(
+          path: '/',
+          builder: (context, state) => const Scaffold(body: Text('Home')),
+        ),
+        GoRoute(
+          path: '/settings',
+          builder: (context, state) => const Scaffold(body: Text('Settings')),
+        ),
+        GoRoute(
+          path: '/novel/:novelId',
+          builder: (context, state) =>
+              Scaffold(body: Text('Novel ${state.pathParameters['novelId']}')),
+        ),
+        GoRoute(
           path: '/editor/:novelId',
           builder: (context, state) {
             final novelId = state.pathParameters['novelId']!;
@@ -479,6 +492,8 @@ void main() {
     await tester.tap(
       find.byIcon(Icons.book_outlined),
     ); // MobileNavTab.read icon
+    await tester.pumpAndSettle();
+    expect(find.text('Novel novel-1'), findsOneWidget);
   });
 
   testWidgets('content text field is left aligned and top aligned', (
@@ -505,5 +520,138 @@ void main() {
     final TextField textField = tester.widget(textFieldFinder);
     expect(textField.textAlign, TextAlign.left);
     expect(textField.textAlignVertical, TextAlignVertical.top);
+  });
+
+  testWidgets('zen mode shows ZenModeBar and can exit', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Zen mode'), findsNothing);
+    expect(find.text('Editor'), findsOneWidget);
+    expect(find.widgetWithText(TextField, 'Chapter Title'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate((w) => w is TextField && w.expands),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Zen mode'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Zen mode'), findsOneWidget);
+    expect(find.text('Editor'), findsNothing);
+    expect(find.widgetWithText(TextField, 'Chapter Title'), findsNothing);
+    expect(
+      find.byWidgetPredicate((w) => w is TextField && w.expands),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byTooltip('Preview'));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Exit preview'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Exit preview'));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Preview'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate((w) => w is TextField && w.expands),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byTooltip('Exit Zen mode'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Zen mode'), findsNothing);
+    expect(find.text('Editor'), findsOneWidget);
+    expect(find.widgetWithText(TextField, 'Chapter Title'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate((w) => w is TextField && w.expands),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('focus timer action opens FocusTimerSheet', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Focus timer'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Focus timer'), findsOneWidget);
+    expect(find.text('25:00'), findsOneWidget);
+    expect(find.text('Start'), findsOneWidget);
+    expect(find.text('Reset'), findsOneWidget);
+  });
+
+  testWidgets('writing prompts inserts selected prompt into content', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(1400, 1000);
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    const prompt = 'Write a scene where a small mistake changes everything.';
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Writing prompts'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Writing prompts'), findsOneWidget);
+    expect(find.text('Pick a prompt to insert'), findsOneWidget);
+
+    await tester.tap(find.text(prompt));
+    await tester.pumpAndSettle();
+
+    final contentFieldFinder = find.byWidgetPredicate(
+      (widget) => widget is TextField && widget.expands,
+    );
+    final inserted =
+        tester.widget<TextField>(contentFieldFinder).controller?.text ?? '';
+    expect(inserted, startsWith('$prompt\n\n'));
   });
 }

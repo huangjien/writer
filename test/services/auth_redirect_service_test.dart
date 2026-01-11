@@ -402,6 +402,19 @@ void main() {
     });
   });
 
+  group('authRedirectServiceProvider wiring', () {
+    test('builds service using globalNavigatorKeyProvider', () {
+      final navigatorKey = GlobalKey<NavigatorState>();
+      final container = ProviderContainer(
+        overrides: [globalNavigatorKeyProvider.overrideWithValue(navigatorKey)],
+      );
+      addTearDown(container.dispose);
+
+      final service = container.read(authRedirectServiceProvider);
+      expect(service.navigatorKey, same(navigatorKey));
+    });
+  });
+
   group('AuthRedirectService error handling', () {
     late ProviderContainer container;
     late GlobalKey<NavigatorState> mockNavigatorKey;

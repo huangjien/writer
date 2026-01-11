@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:writer/state/biometric_session_state.dart';
@@ -140,6 +141,58 @@ void main() {
       verifyNever(() => mockSessionNotifier.setSessionId(any()));
     });
 
+    test(
+      'signInWithBiometrics failure when authenticate returns false',
+      () async {
+        when(
+          () => mockBiometricService.authenticate(
+            localizedReason: any(named: 'localizedReason'),
+          ),
+        ).thenAnswer((_) async => false);
+
+        final result = await notifier.signInWithBiometrics();
+
+        expect(result, false);
+        expect(notifier.state, BiometricAuthState.failed);
+        verifyNever(() => mockBiometricService.getSessionToken());
+        verifyNever(() => mockSessionNotifier.setSessionId(any()));
+      },
+    );
+
+    test('enableBiometricAuth sets failed and rethrows on exception', () async {
+      when(
+        () => mockBiometricService.authenticate(
+          localizedReason: any(named: 'localizedReason'),
+        ),
+      ).thenThrow(Exception('boom'));
+
+      expect(
+        () => notifier.enableBiometricAuth('token'),
+        throwsA(isA<Exception>()),
+      );
+      expect(notifier.state, BiometricAuthState.failed);
+      verifyNever(() => mockBiometricService.enableBiometricAuth(any()));
+    });
+
+    test(
+      'signInWithBiometrics sets failed and rethrows on exception',
+      () async {
+        when(
+          () => mockBiometricService.authenticate(
+            localizedReason: any(named: 'localizedReason'),
+          ),
+        ).thenThrow(Exception('boom'));
+
+        expect(
+          () => notifier.signInWithBiometrics(),
+          throwsA(isA<Exception>()),
+        );
+        expect(notifier.state, BiometricAuthState.failed);
+        verifyNever(() => mockBiometricService.getSessionToken());
+        verifyNever(() => mockSessionNotifier.setSessionId(any()));
+      },
+    );
+
     test('disableBiometricAuth success', () async {
       when(
         () => mockBiometricService.disableBiometricAuth(),
@@ -158,6 +211,74 @@ void main() {
       await notifier.clearBiometricData();
 
       expect(notifier.state, BiometricAuthState.disabled);
+    });
+
+    test('resetState resets to disabled unless unavailable', () {
+      notifier.state = BiometricAuthState.enabled;
+      notifier.resetState();
+      expect(notifier.state, BiometricAuthState.disabled);
+
+      notifier.state = BiometricAuthState.unavailable;
+      notifier.resetState();
+      expect(notifier.state, BiometricAuthState.unavailable);
+    });
+
+    test('boolean getters reflect current state', () {
+      notifier.state = BiometricAuthState.unavailable;
+      expect(notifier.isBiometricAvailable, isFalse);
+
+      notifier.state = BiometricAuthState.enabled;
+      expect(notifier.isBiometricEnabled, isTrue);
+      expect(notifier.isAuthenticating, isFalse);
+      expect(notifier.isAuthenticated, isFalse);
+      expect(notifier.hasFailed, isFalse);
+
+      notifier.state = BiometricAuthState.authenticating;
+      expect(notifier.isAuthenticating, isTrue);
+
+      notifier.state = BiometricAuthState.authenticated;
+      expect(notifier.isAuthenticated, isTrue);
+
+      notifier.state = BiometricAuthState.failed;
+      expect(notifier.hasFailed, isTrue);
+    });
+  });
+
+  group('biometric providers', () {
+    test('biometricAvailableProvider reflects service value', () async {
+      final mockBiometricService = MockBiometricService();
+      when(
+        () => mockBiometricService.isBiometricAvailable(),
+      ).thenAnswer((_) async => true);
+
+      final container = ProviderContainer(
+        overrides: [
+          biometricServiceProvider.overrideWithValue(mockBiometricService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final isAvailable = await container.read(
+        biometricAvailableProvider.future,
+      );
+      expect(isAvailable, isTrue);
+    });
+
+    test('biometricEnabledProvider reflects service value', () async {
+      final mockBiometricService = MockBiometricService();
+      when(
+        () => mockBiometricService.isBiometricEnabled(),
+      ).thenAnswer((_) async => false);
+
+      final container = ProviderContainer(
+        overrides: [
+          biometricServiceProvider.overrideWithValue(mockBiometricService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final isEnabled = await container.read(biometricEnabledProvider.future);
+      expect(isEnabled, isFalse);
     });
   });
 }
