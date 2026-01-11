@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/shared/widgets/mobile_novel_card.dart';
+import 'package:writer/shared/widgets/gestures/swipe_actions.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +28,7 @@ void main() {
       expect(find.text('Test Novel Title'), findsOneWidget);
       expect(find.text('Test Author'), findsOneWidget);
       expect(find.byIcon(Icons.menu_book), findsOneWidget);
-      expect(find.byType(Dismissible), findsOneWidget);
+      expect(find.byType(Dismissible), findsNothing);
     });
 
     testWidgets('renders with custom padding and styling', (tester) async {
@@ -222,15 +223,14 @@ void main() {
       expect(find.byIcon(Icons.more_vert), findsOneWidget);
     });
 
-    testWidgets('renders dismissible with correct direction', (tester) async {
+    testWidgets('wraps card with SwipeActions', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(body: MobileNovelCard(novel: mockNovel)),
         ),
       );
 
-      final dismissible = tester.widget<Dismissible>(find.byType(Dismissible));
-      expect(dismissible.direction, DismissDirection.endToStart);
+      expect(find.byType(SwipeActions), findsOneWidget);
     });
 
     testWidgets('handles novel without author', (tester) async {
@@ -285,7 +285,6 @@ void main() {
       );
 
       // Check main structure
-      expect(find.byType(Dismissible), findsOneWidget);
       // IconButton widgets also use InkWell internally, so there are multiple InkWells
       expect(find.byType(InkWell), findsAtLeastNWidgets(1));
       expect(find.byType(Container), findsAtLeastNWidgets(1));
@@ -314,133 +313,105 @@ void main() {
     });
   });
 
-  group('SwipeableCard', () {
+  group('SwipeActions', () {
     testWidgets('renders child widget', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: SwipeableCard(child: const Text('Card Content')),
+            body: SwipeActions(
+              endActions: [
+                SwipeActionItem(
+                  label: 'Delete',
+                  icon: Icons.delete,
+                  isDestructive: true,
+                  onExecute: () async {},
+                ),
+              ],
+              child: const Text('Card Content'),
+            ),
           ),
         ),
       );
 
       expect(find.text('Card Content'), findsOneWidget);
-      expect(find.byType(Dismissible), findsOneWidget);
+      expect(find.byType(Dismissible), findsNothing);
     });
 
-    testWidgets('handles swipe callbacks', (tester) async {
-      bool leftSwiped = false;
-      bool rightSwiped = false;
+    testWidgets('reveals actions and executes on tap', (tester) async {
+      bool executed = false;
 
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: SwipeableCard(
-              leftActions: const [
-                SwipeAction(label: 'Left', icon: Icons.arrow_back),
+            body: SwipeActions(
+              endActions: [
+                SwipeActionItem(
+                  label: 'Delete',
+                  icon: Icons.delete,
+                  isDestructive: true,
+                  onExecute: () async {
+                    executed = true;
+                  },
+                ),
               ],
-              rightActions: const [
-                SwipeAction(label: 'Right', icon: Icons.arrow_forward),
-              ],
-              onSwipeLeft: () => leftSwiped = true,
-              onSwipeRight: () => rightSwiped = true,
               child: const Text('Card Content'),
             ),
           ),
         ),
       );
 
-      // Test left swipe (drag left, which is endToStart direction)
-      await tester.fling(
-        find.text('Card Content'),
-        const Offset(-500, 0),
-        1000,
-      );
+      await tester.drag(find.text('Card Content'), const Offset(-260, 0));
       await tester.pumpAndSettle();
-      expect(leftSwiped, true);
 
-      // Reset and test right swipe
-      leftSwiped = false;
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SwipeableCard(
-              leftActions: const [
-                SwipeAction(label: 'Left', icon: Icons.arrow_back),
-              ],
-              rightActions: const [
-                SwipeAction(label: 'Right', icon: Icons.arrow_forward),
-              ],
-              onSwipeLeft: () => leftSwiped = true,
-              onSwipeRight: () => rightSwiped = true,
-              child: const Text('Card Content 2'),
-            ),
-          ),
-        ),
-      );
-
-      // Test right swipe (drag right, which is startToEnd direction)
-      await tester.fling(
-        find.text('Card Content 2'),
-        const Offset(500, 0),
-        1000,
-      );
+      await tester.tap(find.byIcon(Icons.delete));
       await tester.pumpAndSettle();
-      expect(rightSwiped, true);
+
+      expect(executed, true);
     });
 
     testWidgets('shows swipe actions when provided', (tester) async {
-      final leftActions = [
-        const SwipeAction(label: 'Archive', icon: Icons.archive),
-      ];
-
-      final rightActions = [
-        const SwipeAction(label: 'Delete', icon: Icons.delete),
-      ];
-
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: SwipeableCard(
-              leftActions: leftActions,
-              rightActions: rightActions,
+            body: SwipeActions(
+              startActions: [
+                SwipeActionItem(
+                  label: 'Archive',
+                  icon: Icons.archive,
+                  onExecute: () async {},
+                ),
+              ],
+              endActions: [
+                SwipeActionItem(
+                  label: 'Delete',
+                  icon: Icons.delete,
+                  isDestructive: true,
+                  onExecute: () async {},
+                ),
+              ],
               child: const Text('Card Content'),
             ),
           ),
         ),
       );
 
-      final dismissible = tester.widget<Dismissible>(find.byType(Dismissible));
-      expect(dismissible.direction, DismissDirection.horizontal);
+      await tester.drag(find.text('Card Content'), const Offset(-260, 0));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.delete), findsOneWidget);
     });
   });
 
-  group('SwipeAction', () {
-    test('creates SwipeAction with required parameters', () {
-      const action = SwipeAction(label: 'Test Action', icon: Icons.star);
+  group('SwipeActionItem', () {
+    test('creates SwipeActionItem with required parameters', () {
+      final action = SwipeActionItem(
+        label: 'Test Action',
+        icon: Icons.star,
+        onExecute: () async {},
+      );
 
       expect(action.label, 'Test Action');
       expect(action.icon, Icons.star);
-      expect(action.onTap, null);
-      expect(action.backgroundColor, null);
-      expect(action.iconColor, null);
-      expect(action.labelColor, null);
-    });
-
-    test('creates SwipeAction with all parameters', () {
-      const action = SwipeAction(
-        label: 'Full Action',
-        icon: Icons.favorite,
-        backgroundColor: Colors.red,
-        iconColor: Colors.white,
-        labelColor: Colors.black,
-      );
-
-      expect(action.label, 'Full Action');
-      expect(action.icon, Icons.favorite);
-      expect(action.backgroundColor, Colors.red);
-      expect(action.iconColor, Colors.white);
-      expect(action.labelColor, Colors.black);
+      expect(action.isDestructive, false);
     });
   });
 

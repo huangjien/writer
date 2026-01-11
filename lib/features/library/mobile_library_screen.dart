@@ -10,6 +10,9 @@ import '../../shared/widgets/app_buttons.dart';
 import '../../shared/widgets/gradient_background.dart';
 import '../../shared/widgets/glass_card.dart';
 import '../../shared/widgets/animated_list_builder.dart';
+import '../../shared/widgets/parallax_header.dart';
+import '../../shared/widgets/scroll_reveal.dart';
+import '../../shared/widgets/gestures/pull_to_refresh.dart';
 import '../../models/novel.dart';
 import '../../features/reader/reader_screen.dart';
 import '../../state/motion_settings.dart';
@@ -63,6 +66,7 @@ class MobileLibraryScreen extends ConsumerStatefulWidget {
 class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
   MobileNavTab _currentTab = MobileNavTab.home;
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -74,6 +78,7 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -164,16 +169,10 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
       backgroundColor: Colors.transparent,
       body: GradientBackground(
         child: SafeArea(
-          child: Column(
-            children: [
-              _buildAppBar(context, theme),
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: widget.onRefresh,
-                  child: _buildContent(context, theme, motion),
-                ),
-              ),
-            ],
+          child: PullToRefresh(
+            onRefresh: widget.onRefresh,
+            controller: _scrollController,
+            child: _buildContent(context, theme, motion),
           ),
         ),
       ),
@@ -193,7 +192,11 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
     );
   }
 
-  Widget _buildAppBar(BuildContext context, ThemeData theme) {
+  Widget _buildContent(
+    BuildContext context,
+    ThemeData theme,
+    MotionSettings motion,
+  ) {
     final surfaceColor = theme.brightness == Brightness.dark
         ? AppColors.glassSurfaceDark
         : AppColors.glassSurfaceLight;
@@ -201,62 +204,83 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
         ? AppColors.glassBorderDark
         : AppColors.glassBorderLight;
 
-    return GlassCard(
-      borderRadius: BorderRadius.zero,
-      color: surfaceColor,
-      borderColor: Colors.transparent,
-      blur: GlassTokens.blur,
-      shadow: null,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: Spacing.m,
-          vertical: Spacing.s,
-        ),
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: borderColor)),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.menu_book,
-                    color: theme.colorScheme.primary,
-                    size: 28,
-                  ),
-                  const SizedBox(width: Spacing.s),
-                  Text(
-                    'Library',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.more_vert),
-              onPressed: _showMoreMenu,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContent(
-    BuildContext context,
-    ThemeData theme,
-    MotionSettings motion,
-  ) {
     return CustomScrollView(
+      controller: _scrollController,
       slivers: [
+        ParallaxHeader(
+          minExtent: 64,
+          maxExtent: 112,
+          builder: (context, shrinkOffset, overlaps) {
+            final t = (shrinkOffset / (112 - 64)).clamp(0.0, 1.0);
+            final titleStyle = theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              fontSize: 22 - (4 * t),
+            );
+
+            return GlassCard(
+              borderRadius: BorderRadius.zero,
+              color: surfaceColor,
+              borderColor: Colors.transparent,
+              blur: GlassTokens.blur,
+              shadow: null,
+              child: Container(
+                padding: EdgeInsets.lerp(
+                  const EdgeInsets.symmetric(
+                    horizontal: Spacing.m,
+                    vertical: Spacing.m,
+                  ),
+                  const EdgeInsets.symmetric(
+                    horizontal: Spacing.m,
+                    vertical: Spacing.s,
+                  ),
+                  t,
+                ),
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: borderColor)),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Transform.translate(
+                        offset: Offset(0, -6 * t),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.menu_book,
+                              color: theme.colorScheme.primary,
+                              size: 28,
+                            ),
+                            const SizedBox(width: Spacing.s),
+                            Text('Library', style: titleStyle),
+                          ],
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.more_vert),
+                      onPressed: _showMoreMenu,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
         // Search bar
-        SliverToBoxAdapter(child: _buildSearchBar(context, theme)),
+        SliverToBoxAdapter(
+          child: ScrollReveal(
+            enabled: !motion.reduceMotion,
+            child: _buildSearchBar(context, theme),
+          ),
+        ),
         // Filter chips
         if (widget.filterChips != null && widget.filterChips!.isNotEmpty)
-          SliverToBoxAdapter(child: _buildFilterChips(context, theme)),
+          SliverToBoxAdapter(
+            child: ScrollReveal(
+              enabled: !motion.reduceMotion,
+              child: _buildFilterChips(context, theme),
+            ),
+          ),
         // Novel list
         if (widget.novels.isEmpty)
           SliverFillRemaining(child: _buildEmptyState(context, theme))
@@ -266,40 +290,45 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
                 final novel = widget.novels[index];
+                final item = Padding(
+                  padding: const EdgeInsets.only(bottom: Spacing.m),
+                  child: OpenContainer(
+                    closedElevation: 0,
+                    closedColor: Colors.transparent,
+                    transitionDuration: Duration(
+                      milliseconds: motion.reduceMotion ? 0 : 400,
+                    ),
+                    transitionType: ContainerTransitionType.fadeThrough,
+                    openBuilder: (context, _) {
+                      return ReaderScreen(novelId: novel.id);
+                    },
+                    closedBuilder: (context, action) {
+                      return MobileNovelCard(
+                        novel: novel,
+                        onTap: action,
+                        onDownload: widget.onDownload != null
+                            ? () => widget.onDownload!(novel.id)
+                            : null,
+                        onDelete: widget.onDelete != null
+                            ? () => widget.onDelete!(novel.id)
+                            : null,
+                        onFavorite: widget.onFavorite != null
+                            ? () => widget.onFavorite!(novel.id)
+                            : null,
+                        isFavorite: widget.favorites.contains(novel.id),
+                        progress: widget.progressMap[novel.id] ?? 0.0,
+                        lastRead: widget.lastReadMap[novel.id],
+                      );
+                    },
+                  ),
+                );
+
                 return AnimatedListItem(
                   index: index,
                   reduceMotion: motion.reduceMotion,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: Spacing.m),
-                    child: OpenContainer(
-                      closedElevation: 0,
-                      closedColor: Colors.transparent,
-                      transitionDuration: Duration(
-                        milliseconds: motion.reduceMotion ? 0 : 400,
-                      ),
-                      transitionType: ContainerTransitionType.fadeThrough,
-                      openBuilder: (context, _) {
-                        return ReaderScreen(novelId: novel.id);
-                      },
-                      closedBuilder: (context, action) {
-                        return MobileNovelCard(
-                          novel: novel,
-                          onTap: action,
-                          onDownload: widget.onDownload != null
-                              ? () => widget.onDownload!(novel.id)
-                              : null,
-                          onDelete: widget.onDelete != null
-                              ? () => widget.onDelete!(novel.id)
-                              : null,
-                          onFavorite: widget.onFavorite != null
-                              ? () => widget.onFavorite!(novel.id)
-                              : null,
-                          isFavorite: widget.favorites.contains(novel.id),
-                          progress: widget.progressMap[novel.id] ?? 0.0,
-                          lastRead: widget.lastReadMap[novel.id],
-                        );
-                      },
-                    ),
+                  child: ScrollReveal(
+                    enabled: !motion.reduceMotion,
+                    child: item,
                   ),
                 );
               }, childCount: widget.novels.length),

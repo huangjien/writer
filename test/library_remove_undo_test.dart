@@ -124,9 +124,20 @@ void main() {
     await tester.pumpAndSettle();
 
     // Tap Delete in the sheet
-    final deleteOption = find.text('Delete');
-    expect(deleteOption, findsOneWidget);
-    await tester.tap(deleteOption);
+    final deleteTexts = find.text('Delete');
+    expect(deleteTexts, findsWidgets);
+    final count = deleteTexts.evaluate().length;
+    Finder target = deleteTexts.first;
+    var bestY = tester.getCenter(target).dy;
+    for (var i = 1; i < count; i++) {
+      final f = deleteTexts.at(i);
+      final y = tester.getCenter(f).dy;
+      if (y > bestY) {
+        bestY = y;
+        target = f;
+      }
+    }
+    await tester.tap(target);
     await tester.pump();
     // Ensure SnackBar fully animates in before interacting
     await tester.pumpAndSettle();

@@ -7,6 +7,7 @@ import '../../../models/novel.dart';
 import '../../../theme/design_tokens.dart';
 import '../../../state/motion_settings.dart';
 import '../../../shared/image_utils.dart';
+import '../../../shared/widgets/gestures/pinch_to_zoom.dart';
 import '../../reader/reader_screen.dart';
 
 class LibraryGridItem extends ConsumerWidget {
@@ -33,36 +34,41 @@ class LibraryGridItem extends ConsumerWidget {
     final validCoverUrl = ImageUtils.getFilteredCoverUrl(novel.coverUrl);
 
     if (validCoverUrl != null) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(Radii.m),
-        child: Image.network(
-          validCoverUrl,
-          width: width,
-          height: height,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return _buildGradientCover(context, width: width, height: height);
-          },
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Container(
-              width: width,
-              height: height,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(Radii.m),
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              ),
-              child: Center(
-                child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                      : null,
-                  strokeWidth: 2,
+      return GestureDetector(
+        onLongPress: () {
+          PinchToZoom.showNetworkImage(context, imageUrl: validCoverUrl);
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(Radii.m),
+          child: Image.network(
+            validCoverUrl,
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return _buildGradientCover(context, width: width, height: height);
+            },
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Container(
+                width: width,
+                height: height,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(Radii.m),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 ),
-              ),
-            );
-          },
+                child: Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                        : null,
+                    strokeWidth: 2,
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       );
     } else {
