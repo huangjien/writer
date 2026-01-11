@@ -7,6 +7,7 @@ import 'package:writer/shared/api_exception.dart';
 import 'package:intl/intl.dart';
 import '../../../theme/design_tokens.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/widgets/gradient_background.dart';
 
 /// Enhanced token usage section with modern design
 /// Features:
@@ -85,16 +86,7 @@ class _UsageData extends StatelessWidget {
         children: [
           // Summary card with gradient
           Container(
-            padding: const EdgeInsets.all(Spacing.l),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  theme.colorScheme.primaryContainer,
-                  theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
-                ],
-              ),
               borderRadius: BorderRadius.circular(Radii.m),
               boxShadow: [
                 BoxShadow(
@@ -104,32 +96,43 @@ class _UsageData extends StatelessWidget {
                 ),
               ],
             ),
-            child: Column(
-              children: [
-                Text(
-                  l10n.totalThisMonth,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(Radii.m),
+              child: GradientBackground(
+                colors: [
+                  theme.colorScheme.primaryContainer,
+                  theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
+                ],
+                child: Padding(
+                  padding: const EdgeInsets.all(Spacing.l),
+                  child: Column(
+                    children: [
+                      Text(
+                        l10n.totalThisMonth,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                      const SizedBox(height: Spacing.s),
+                      Text(
+                        formatter.format(usage.totalTokens),
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          color: theme.colorScheme.onPrimaryContainer,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: Spacing.xs),
+                      Text(
+                        '${usage.requestCount} ${l10n.requests.toLowerCase()}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onPrimaryContainer
+                              .withValues(alpha: 0.8),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: Spacing.s),
-                Text(
-                  formatter.format(usage.totalTokens),
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: Spacing.xs),
-                Text(
-                  '${usage.requestCount} ${l10n.requests.toLowerCase()}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer.withValues(
-                      alpha: 0.8,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
           const SizedBox(height: Spacing.m),

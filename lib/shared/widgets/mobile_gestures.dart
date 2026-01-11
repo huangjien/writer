@@ -44,11 +44,13 @@ class HapticTap extends StatelessWidget {
     super.key,
     required this.child,
     this.impact = HapticImpact.light,
+    this.onTap,
     this.onLongPress,
   });
 
   final Widget child;
   final HapticImpact impact;
+  final VoidCallback? onTap;
   final VoidCallback? onLongPress;
 
   @override
@@ -66,6 +68,7 @@ class HapticTap extends StatelessWidget {
             MobileGestures.heavyImpact();
             break;
         }
+        onTap?.call();
       },
       onLongPress: () {
         if (onLongPress != null) {
@@ -243,10 +246,9 @@ class SwipeAction extends StatelessWidget {
       key: ValueKey('swipe_${direction.name}'),
       direction: _getDismissDirection(),
       confirmDismiss: (direction) async {
-        // Provide haptic feedback
         MobileGestures.lightImpact();
         onSwipe();
-        return true;
+        return false;
       },
       background: _buildSwipeBackground(context, direction),
       child: child,
@@ -255,7 +257,7 @@ class SwipeAction extends StatelessWidget {
 
   Widget _buildSwipeBackground(BuildContext context, SwipeDirection direction) {
     final theme = Theme.of(context);
-    final isLeft = direction == SwipeDirection.endToStart;
+    final isLeft = direction == SwipeDirection.startToEnd;
 
     Color getBackgroundColor() {
       switch (direction) {

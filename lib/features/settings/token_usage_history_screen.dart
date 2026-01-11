@@ -6,6 +6,7 @@ import 'package:writer/shared/api_exception.dart';
 import 'package:writer/theme/design_tokens.dart';
 import 'package:intl/intl.dart';
 import '../../l10n/app_localizations.dart';
+import '../../shared/widgets/gradient_background.dart';
 
 /// Screen to display token usage history
 class TokenUsageHistoryScreen extends ConsumerStatefulWidget {
@@ -149,52 +150,53 @@ class _SummaryCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.all(Spacing.m),
-      padding: const EdgeInsets.all(Spacing.l),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(Radii.m)),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(Radii.m),
+        child: GradientBackground(
           colors: [
             theme.colorScheme.primaryContainer,
             theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
           ],
-        ),
-        borderRadius: BorderRadius.circular(Radii.m),
-      ),
-      child: Column(
-        children: [
-          Text(
-            l10n.totalRecords(history.totalCount),
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onPrimaryContainer,
-              fontWeight: FontWeight.bold,
+          child: Padding(
+            padding: const EdgeInsets.all(Spacing.l),
+            child: Column(
+              children: [
+                Text(
+                  l10n.totalRecords(history.totalCount),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: Spacing.m),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _SummaryItem(
+                      label: l10n.inputTokens,
+                      value: formatter.format(totalInputTokens),
+                      color: theme.colorScheme.primary,
+                      icon: Icons.arrow_upward,
+                    ),
+                    _SummaryItem(
+                      label: l10n.outputTokens,
+                      value: formatter.format(totalOutputTokens),
+                      color: theme.colorScheme.secondary,
+                      icon: Icons.arrow_downward,
+                    ),
+                    _SummaryItem(
+                      label: l10n.total,
+                      value: formatter.format(totalTokens),
+                      color: theme.colorScheme.tertiary,
+                      icon: Icons.token_outlined,
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: Spacing.m),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _SummaryItem(
-                label: l10n.inputTokens,
-                value: formatter.format(totalInputTokens),
-                color: theme.colorScheme.primary,
-                icon: Icons.arrow_upward,
-              ),
-              _SummaryItem(
-                label: l10n.outputTokens,
-                value: formatter.format(totalOutputTokens),
-                color: theme.colorScheme.secondary,
-                icon: Icons.arrow_downward,
-              ),
-              _SummaryItem(
-                label: l10n.total,
-                value: formatter.format(totalTokens),
-                color: theme.colorScheme.tertiary,
-                icon: Icons.token_outlined,
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }

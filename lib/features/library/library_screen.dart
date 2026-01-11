@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:animations/animations.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/features/library/widgets/library_list_header.dart';
 import 'package:writer/features/library/widgets/library_grid_item.dart';
@@ -25,6 +26,9 @@ import 'package:writer/widgets/sync_status_indicator.dart';
 import 'package:writer/shared/widgets/mobile_bottom_nav_bar.dart';
 import 'package:writer/shared/widgets/mobile_fab.dart';
 import 'package:writer/shared/widgets/mobile_novel_card.dart';
+import 'package:writer/features/reader/reader_screen.dart';
+import 'package:writer/shared/widgets/empty_state.dart';
+import 'package:writer/shared/widgets/mobile_bottom_sheet.dart';
 
 enum LibrarySort { titleAsc, authorAsc }
 
@@ -263,8 +267,14 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                                   const SizedBox(height: Spacing.m),
                                   if (visible.isEmpty)
                                     Expanded(
-                                      child: Center(
-                                        child: Text(l10n.noNovelsFound),
+                                      child: EmptyState(
+                                        icon: Icons.menu_book_outlined,
+                                        title: l10n.noNovelsFound,
+                                        subtitle:
+                                            'Create your first novel to get started',
+                                        actionLabel: l10n.createNovel,
+                                        onAction: () =>
+                                            context.pushNamed('createNovel'),
                                       ),
                                     )
                                   else
@@ -321,39 +331,44 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                                                     },
                                                   );
                                                 }
-                                                return MobileNovelCard(
-                                                  novel: novel,
-                                                  onTap: () {
-                                                    Navigator.of(
-                                                      context,
-                                                    ).pushNamed(
-                                                      '/novel/${novel.id}',
+                                                return OpenContainer(
+                                                  closedElevation: 0,
+                                                  closedColor:
+                                                      Colors.transparent,
+                                                  transitionType:
+                                                      ContainerTransitionType
+                                                          .fadeThrough,
+                                                  openBuilder: (context, _) {
+                                                    return ReaderScreen(
+                                                      novelId: novel.id,
                                                     );
                                                   },
-                                                  onLongPress: () {
-                                                    // Show delete confirmation dialog
-                                                    _showDeleteConfirmDialog(
-                                                      context,
-                                                      l10n,
-                                                      novel,
-                                                      () => _removeNovel(
-                                                        context,
-                                                        l10n,
-                                                        novel,
-                                                      ),
-                                                    );
-                                                  },
-                                                  onDownload: canDownload
-                                                      ? () {
-                                                          // Handle download
-                                                        }
-                                                      : null,
-                                                  onDelete: () {
-                                                    // Mobile delete immediately without confirmation to support swipe-to-delete pattern
-                                                    _removeNovel(
-                                                      context,
-                                                      l10n,
-                                                      novel,
+                                                  closedBuilder: (context, action) {
+                                                    return MobileNovelCard(
+                                                      novel: novel,
+                                                      onTap: action,
+                                                      onLongPress: () {
+                                                        _showDeleteConfirmDialog(
+                                                          context,
+                                                          l10n,
+                                                          novel,
+                                                          () => _removeNovel(
+                                                            context,
+                                                            l10n,
+                                                            novel,
+                                                          ),
+                                                        );
+                                                      },
+                                                      onDownload: canDownload
+                                                          ? () {}
+                                                          : null,
+                                                      onDelete: () {
+                                                        _removeNovel(
+                                                          context,
+                                                          l10n,
+                                                          novel,
+                                                        );
+                                                      },
                                                     );
                                                   },
                                                 );
@@ -435,32 +450,28 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   }
 
   void _showMoreMenu(BuildContext context, AppLocalizations l10n) {
-    showModalBottomSheet(
+    MobileBottomSheet.showActionSheet(
       context: context,
-      builder: (context) => SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: Text(l10n.settings),
-              onTap: () => Navigator.of(context).pushNamed('/settings'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.info_outline),
-              title: Text(l10n.about),
-              onTap: () => Navigator.of(context).pushNamed('/about'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.build),
-              title: Text(l10n.tools),
-              onTap: () {
-                Navigator.of(context).pushNamed('/tools');
-              },
-            ),
-          ],
+      items: [
+        ActionSheetItem(
+          label: l10n.settings,
+          icon: Icons.settings,
+          value: 'settings',
+          onPressed: () => context.pushNamed('settings'),
         ),
-      ),
+        ActionSheetItem(
+          label: l10n.about,
+          icon: Icons.info_outline,
+          value: 'about',
+          onPressed: () => context.pushNamed('about'),
+        ),
+        ActionSheetItem(
+          label: l10n.tools,
+          icon: Icons.build,
+          value: 'tools',
+          onPressed: () => context.pushNamed('tools'),
+        ),
+      ],
     );
   }
 

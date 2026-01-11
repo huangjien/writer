@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
+import 'glass_card.dart';
 
 /// Mobile-optimized bottom navigation bar
 /// Features:
@@ -25,36 +26,56 @@ class MobileBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final surfaceColor = theme.brightness == Brightness.dark
+        ? AppColors.glassSurfaceDark
+        : AppColors.glassSurfaceLight;
+    final borderColor = theme.brightness == Brightness.dark
+        ? AppColors.glassBorderDark
+        : AppColors.glassBorderLight;
 
     return Container(
-      height: MobileSpacing.bottomNavHeight,
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
+      constraints: BoxConstraints.tightFor(
+        height: MobileSpacing.bottomNavHeight,
+      ),
+      decoration: const BoxDecoration(
         boxShadow: [
           BoxShadow(
             color: AppColors.shadowColor,
             blurRadius: 8,
-            offset: const Offset(0, -2),
+            offset: Offset(0, -2),
           ),
         ],
       ),
-      child: SafeArea(
-        top: false,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: MobileNavTab.values.map((tab) {
-            final isSelected = currentTab == tab;
-            final hasBadge = showBadgeOnTab?.contains(tab) ?? false;
+      child: GlassCard(
+        borderRadius: BorderRadius.zero,
+        color: surfaceColor,
+        borderColor: Colors.transparent,
+        blur: GlassTokens.blur,
+        shadow: const [],
+        child: Container(
+          height: MobileSpacing.bottomNavHeight,
+          decoration: BoxDecoration(
+            border: Border(top: BorderSide(color: borderColor)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: MobileNavTab.values.map((tab) {
+                final isSelected = currentTab == tab;
+                final hasBadge = showBadgeOnTab?.contains(tab) ?? false;
 
-            return _NavTabItem(
-              tab: tab,
-              isSelected: isSelected,
-              hasBadge: hasBadge,
-              onTap: () => onTabChanged(tab),
-              colorScheme: colorScheme,
-              theme: theme,
-            );
-          }).toList(),
+                return _NavTabItem(
+                  tab: tab,
+                  isSelected: isSelected,
+                  hasBadge: hasBadge,
+                  onTap: () => onTabChanged(tab),
+                  colorScheme: colorScheme,
+                  theme: theme,
+                );
+              }).toList(),
+            ),
+          ),
         ),
       ),
     );

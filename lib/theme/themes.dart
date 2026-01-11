@@ -58,6 +58,11 @@ ThemeData _buildFromSeed(Color seed, Brightness brightness) {
   );
 
   return baseTheme.copyWith(
+    textSelectionTheme: TextSelectionThemeData(
+      cursorColor: baseTheme.colorScheme.primary,
+      selectionColor: baseTheme.colorScheme.primary.withValues(alpha: 0.25),
+      selectionHandleColor: baseTheme.colorScheme.primary,
+    ),
     // Enhanced Typography with Merriweather for headings, Inter for body
     textTheme: GoogleFonts.interTextTheme(baseTheme.textTheme).copyWith(
       displayLarge: GoogleFonts.merriweather(
@@ -185,6 +190,11 @@ ThemeData themeForLight(AppThemeFamily family) {
     );
 
     return baseTheme.copyWith(
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: baseTheme.colorScheme.primary,
+        selectionColor: baseTheme.colorScheme.primary.withValues(alpha: 0.35),
+        selectionHandleColor: baseTheme.colorScheme.primary,
+      ),
       textTheme: GoogleFonts.interTextTheme(baseTheme.textTheme).copyWith(
         bodyLarge: GoogleFonts.inter(
           textStyle: baseTheme.textTheme.bodyLarge?.copyWith(height: 1.8),
@@ -230,6 +240,11 @@ ThemeData themeForDark(AppThemeFamily family) {
     );
 
     return baseTheme.copyWith(
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: baseTheme.colorScheme.primary,
+        selectionColor: baseTheme.colorScheme.primary.withValues(alpha: 0.35),
+        selectionHandleColor: baseTheme.colorScheme.primary,
+      ),
       textTheme: GoogleFonts.interTextTheme(baseTheme.textTheme).copyWith(
         bodyLarge: GoogleFonts.inter(
           textStyle: baseTheme.textTheme.bodyLarge?.copyWith(height: 1.8),

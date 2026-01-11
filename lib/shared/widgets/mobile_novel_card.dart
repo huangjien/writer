@@ -3,6 +3,7 @@ import '../../theme/design_tokens.dart';
 import '../../models/novel.dart';
 import 'mobile_bottom_sheet.dart';
 import 'mobile_gestures.dart';
+import '../image_utils.dart';
 
 /// Mobile-optimized novel card
 /// Features:
@@ -83,19 +84,23 @@ class MobileNovelCard extends StatelessWidget {
         },
         onLongPress: () {
           MobileGestures.mediumImpact();
-          onLongPress?.call();
+          if (onLongPress != null) {
+            onLongPress?.call();
+          } else {
+            _showActionMenu(context);
+          }
         },
         borderRadius: BorderRadius.circular(Radii.l),
         child: Container(
           padding: const EdgeInsets.all(MobileSpacing.cardPaddingMobile),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
+            color: theme.colorScheme.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(Radii.l),
             boxShadow: [
               BoxShadow(
                 color: AppColors.shadowColor,
-                blurRadius: 4,
-                offset: const Offset(0, 2),
+                blurRadius: 10,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
@@ -156,17 +161,81 @@ class MobileNovelCard extends StatelessWidget {
   }
 
   Widget _buildCover(BuildContext context, ThemeData theme) {
-    return Container(
-      width: 48,
-      height: 64,
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(Radii.s),
+    const width = 48.0;
+    const height = 64.0;
+    final validCoverUrl = ImageUtils.getFilteredCoverUrl(novel.coverUrl);
+
+    if (validCoverUrl == null) {
+      return _buildGradientCover(context, width: width, height: height);
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(Radii.s),
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            _buildGradientCover(context, width: width, height: height),
+            Image.network(
+              validCoverUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const SizedBox.shrink();
+              },
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    child,
+                    const Center(
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
-      child: Icon(
-        Icons.menu_book,
-        color: theme.colorScheme.onSurfaceVariant,
-        size: 24,
+    );
+  }
+
+  Widget _buildGradientCover(
+    BuildContext context, {
+    required double width,
+    required double height,
+  }) {
+    final titleHash = novel.title.hashCode;
+    final hue = (titleHash % 360).abs();
+    final gradientColors = [
+      HSLColor.fromAHSL(0.8, hue.toDouble(), 0.7, 0.6).toColor(),
+      HSLColor.fromAHSL(0.9, (hue + 60) % 360.0, 0.8, 0.5).toColor(),
+    ];
+
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(Radii.s),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: gradientColors,
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.menu_book,
+          color: Colors.white.withValues(alpha: 0.9),
+          size: 24,
+        ),
       ),
     );
   }

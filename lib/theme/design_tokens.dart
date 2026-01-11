@@ -46,6 +46,17 @@ class AppColors {
   static const Color download = Color(0xFF00BCD4);
   static const Color reading = Color(0xFF9C27B0);
   static const Color completed = Color(0xFF4CAF50);
+
+  static const Color glassSurfaceLight = Color(0xCCFFFFFF);
+  static const Color glassSurfaceDark = Color(0xB31F1F1F);
+  static const Color glassBorderLight = Color(0x33FFFFFF);
+  static const Color glassBorderDark = Color(0x26FFFFFF);
+}
+
+class GlassTokens {
+  static const double blur = 18.0;
+  static const double shadowBlurRadius = 24.0;
+  static const double shadowOpacity = 0.12;
 }
 
 class Spacing {

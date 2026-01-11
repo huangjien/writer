@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
+import 'glass_card.dart';
 
 /// Mobile-optimized bottom sheet
 /// Features:
@@ -24,7 +25,7 @@ class MobileBottomSheet {
       isScrollControlled: isScrollControlled,
       isDismissible: isDismissible,
       enableDrag: enableDrag,
-      backgroundColor: backgroundColor,
+      backgroundColor: backgroundColor ?? Colors.transparent,
       constraints: BoxConstraints(
         maxHeight: maxHeight ?? MediaQuery.of(context).size.height * 0.9,
       ),
@@ -68,6 +69,7 @@ class MobileBottomSheet {
   }) {
     return showModalBottomSheet<T>(
       context: context,
+      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(Radii.l)),
@@ -90,14 +92,24 @@ class _MobileBottomSheetContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final surfaceColor = theme.brightness == Brightness.dark
+        ? AppColors.glassSurfaceDark
+        : AppColors.glassSurfaceLight;
+    final borderColor = theme.brightness == Brightness.dark
+        ? AppColors.glassBorderDark
+        : AppColors.glassBorderLight;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(Radii.l),
+    return GlassCard(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(Radii.l)),
+      color: surfaceColor,
+      borderColor: borderColor,
+      shadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: GlassTokens.shadowOpacity),
+          blurRadius: GlassTokens.shadowBlurRadius,
+          offset: const Offset(0, -6),
         ),
-      ),
+      ],
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -151,89 +163,103 @@ class _ActionSheetContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = cancelLabel ?? 'Cancel';
+    final surfaceColor = theme.brightness == Brightness.dark
+        ? AppColors.glassSurfaceDark
+        : AppColors.glassSurfaceLight;
+    final borderColor = theme.brightness == Brightness.dark
+        ? AppColors.glassBorderDark
+        : AppColors.glassBorderLight;
 
-    return Container(
-      margin: const EdgeInsets.all(Spacing.m),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+    return Padding(
+      padding: const EdgeInsets.all(Spacing.m),
+      child: GlassCard(
         borderRadius: BorderRadius.circular(Radii.l),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (title != null) ...[
-            Padding(
-              padding: const EdgeInsets.all(Spacing.l),
-              child: Text(
-                title!,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.onSurfaceVariant,
+        color: surfaceColor,
+        borderColor: borderColor,
+        shadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: GlassTokens.shadowOpacity),
+            blurRadius: GlassTokens.shadowBlurRadius,
+            offset: const Offset(0, -6),
+          ),
+        ],
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (title != null) ...[
+              Padding(
+                padding: const EdgeInsets.all(Spacing.l),
+                child: Text(
+                  title!,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
-            ),
+              Divider(height: 1, color: theme.dividerColor),
+            ],
+            ...items.map((item) {
+              final isDestructive = item.isDestructive;
+              return InkWell(
+                onTap: () {
+                  Navigator.of(context).pop(item.value);
+                  item.onPressed?.call();
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Spacing.l,
+                    vertical: Spacing.m,
+                  ),
+                  child: Row(
+                    children: [
+                      if (item.icon != null) ...[
+                        Icon(
+                          item.icon,
+                          color: isDestructive
+                              ? theme.colorScheme.error
+                              : theme.colorScheme.primary,
+                          size: 24,
+                        ),
+                        const SizedBox(width: Spacing.m),
+                      ],
+                      Expanded(
+                        child: Text(
+                          item.label,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: isDestructive
+                                ? theme.colorScheme.error
+                                : theme.colorScheme.onSurface,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
             Divider(height: 1, color: theme.dividerColor),
-          ],
-          ...items.map((item) {
-            final isDestructive = item.isDestructive;
-            return InkWell(
-              onTap: () {
-                Navigator.of(context).pop(item.value);
-                item.onPressed?.call();
-              },
+            InkWell(
+              onTap: () => Navigator.of(context).pop(),
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: Spacing.l,
                   vertical: Spacing.m,
                 ),
-                child: Row(
-                  children: [
-                    if (item.icon != null) ...[
-                      Icon(
-                        item.icon,
-                        color: isDestructive
-                            ? theme.colorScheme.error
-                            : theme.colorScheme.primary,
-                        size: 24,
-                      ),
-                      const SizedBox(width: Spacing.m),
-                    ],
-                    Expanded(
-                      child: Text(
-                        item.label,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: isDestructive
-                              ? theme.colorScheme.error
-                              : theme.colorScheme.onSurface,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  l10n,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: cancelColor ?? theme.colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-            );
-          }),
-          Divider(height: 1, color: theme.dividerColor),
-          InkWell(
-            onTap: () => Navigator.of(context).pop(),
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Spacing.l,
-                vertical: Spacing.m,
-              ),
-              child: Text(
-                l10n,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: cancelColor ?? theme.colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
               ),
             ),
-          ),
-          const SizedBox(height: Spacing.s),
-        ],
+            const SizedBox(height: Spacing.s),
+          ],
+        ),
       ),
     );
   }
@@ -253,14 +279,24 @@ class _OptionsSheetContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final surfaceColor = theme.brightness == Brightness.dark
+        ? AppColors.glassSurfaceDark
+        : AppColors.glassSurfaceLight;
+    final borderColor = theme.brightness == Brightness.dark
+        ? AppColors.glassBorderDark
+        : AppColors.glassBorderLight;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(Radii.l),
+    return GlassCard(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(Radii.l)),
+      color: surfaceColor,
+      borderColor: borderColor,
+      shadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: GlassTokens.shadowOpacity),
+          blurRadius: GlassTokens.shadowBlurRadius,
+          offset: const Offset(0, -6),
         ),
-      ),
+      ],
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -391,6 +427,12 @@ class _DraggableBottomSheetState extends State<DraggableBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final surfaceColor = theme.brightness == Brightness.dark
+        ? AppColors.glassSurfaceDark
+        : AppColors.glassSurfaceLight;
+    final borderColor = theme.brightness == Brightness.dark
+        ? AppColors.glassBorderDark
+        : AppColors.glassBorderLight;
 
     return DraggableScrollableSheet(
       initialChildSize: widget.initialChildSize,
@@ -399,20 +441,19 @@ class _DraggableBottomSheetState extends State<DraggableBottomSheet> {
       snap: widget.snap,
       snapSizes: widget.snapSizes,
       builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: widget.backgroundColor ?? theme.colorScheme.surface,
-            borderRadius:
-                widget.borderRadius ??
-                const BorderRadius.vertical(top: Radius.circular(Radii.l)),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.shadowColor,
-                blurRadius: 8,
-                offset: const Offset(0, -2),
-              ),
-            ],
-          ),
+        return GlassCard(
+          borderRadius:
+              widget.borderRadius ??
+              const BorderRadius.vertical(top: Radius.circular(Radii.l)),
+          color: widget.backgroundColor ?? surfaceColor,
+          borderColor: borderColor,
+          shadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: GlassTokens.shadowOpacity),
+              blurRadius: GlassTokens.shadowBlurRadius,
+              offset: const Offset(0, -6),
+            ),
+          ],
           child: Column(
             children: [
               // Drag handle

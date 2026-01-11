@@ -9,6 +9,9 @@ class LibraryLoadingList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final placeholderColor = theme.colorScheme.surfaceContainerHighest;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -23,10 +26,9 @@ class LibraryLoadingList extends StatelessWidget {
         Expanded(
           child: Skeletonizer(
             effect: ShimmerEffect(
-              baseColor: Theme.of(context).colorScheme.surfaceContainer,
-              highlightColor: Theme.of(
-                context,
-              ).colorScheme.surfaceContainerHighest,
+              baseColor: theme.colorScheme.surfaceContainer,
+              highlightColor: theme.colorScheme.surfaceContainerHighest,
+              duration: const Duration(milliseconds: 1500),
             ),
             child: SingleChildScrollView(
               child: Column(
@@ -38,14 +40,14 @@ class LibraryLoadingList extends StatelessWidget {
                           width: 48,
                           height: 48,
                           decoration: BoxDecoration(
-                            color: Colors.grey,
+                            color: placeholderColor,
                             borderRadius: BorderRadius.circular(Radii.s),
                           ),
                         ),
-                        title: Container(height: 16, color: Colors.grey),
+                        title: Container(height: 16, color: placeholderColor),
                         subtitle: Padding(
                           padding: const EdgeInsets.only(top: 8),
-                          child: Container(height: 12, color: Colors.grey),
+                          child: Container(height: 12, color: placeholderColor),
                         ),
                         trailing: const SizedBox(
                           width: 20,

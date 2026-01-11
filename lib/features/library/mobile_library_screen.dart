@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:animations/animations.dart';
 import '../../theme/design_tokens.dart';
 import '../../shared/widgets/mobile_bottom_nav_bar.dart';
 import '../../shared/widgets/mobile_fab.dart';
 import '../../shared/widgets/mobile_novel_card.dart';
 import '../../shared/widgets/mobile_bottom_sheet.dart';
+import '../../shared/widgets/app_buttons.dart';
+import '../../shared/widgets/gradient_background.dart';
+import '../../shared/widgets/glass_card.dart';
 import '../../models/novel.dart';
+import '../../features/reader/reader_screen.dart';
+import '../../state/motion_settings.dart';
 
 /// Mobile-optimized library screen wrapper
 /// Features:
@@ -19,7 +25,6 @@ class MobileLibraryScreen extends ConsumerStatefulWidget {
     super.key,
     required this.novels,
     required this.onRefresh,
-    required this.onNovelTap,
     required this.onCreateNovel,
     this.onDownload,
     this.onDelete,
@@ -36,7 +41,6 @@ class MobileLibraryScreen extends ConsumerStatefulWidget {
 
   final List<Novel> novels;
   final Future<void> Function() onRefresh;
-  final void Function(String novelId) onNovelTap;
   final VoidCallback onCreateNovel;
   final void Function(String novelId)? onDownload;
   final void Function(String novelId)? onDelete;
@@ -153,22 +157,23 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final motion = ref.watch(motionSettingsProvider);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Simplified App Bar
-            _buildAppBar(context, theme),
-            // Content
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: widget.onRefresh,
-                child: _buildContent(context, theme),
+      backgroundColor: Colors.transparent,
+      body: GradientBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildAppBar(context, theme),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: widget.onRefresh,
+                  child: _buildContent(context, theme, motion),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       // FAB
@@ -188,53 +193,62 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
   }
 
   Widget _buildAppBar(BuildContext context, ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Spacing.m,
-        vertical: Spacing.s,
-      ),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowColor,
-            blurRadius: 2,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Logo/Title
-          Expanded(
-            child: Row(
-              children: [
-                Icon(
-                  Icons.menu_book,
-                  color: theme.colorScheme.primary,
-                  size: 28,
-                ),
-                const SizedBox(width: Spacing.s),
-                Text(
-                  'Library',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+    final surfaceColor = theme.brightness == Brightness.dark
+        ? AppColors.glassSurfaceDark
+        : AppColors.glassSurfaceLight;
+    final borderColor = theme.brightness == Brightness.dark
+        ? AppColors.glassBorderDark
+        : AppColors.glassBorderLight;
+
+    return GlassCard(
+      borderRadius: BorderRadius.zero,
+      color: surfaceColor,
+      borderColor: Colors.transparent,
+      blur: GlassTokens.blur,
+      shadow: null,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.m,
+          vertical: Spacing.s,
+        ),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: borderColor)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.menu_book,
+                    color: theme.colorScheme.primary,
+                    size: 28,
                   ),
-                ),
-              ],
+                  const SizedBox(width: Spacing.s),
+                  Text(
+                    'Library',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          // Menu button
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: _showMoreMenu,
-          ),
-        ],
+            IconButton(
+              icon: const Icon(Icons.more_vert),
+              onPressed: _showMoreMenu,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildContent(BuildContext context, ThemeData theme) {
+  Widget _buildContent(
+    BuildContext context,
+    ThemeData theme,
+    MotionSettings motion,
+  ) {
     return CustomScrollView(
       slivers: [
         // Search bar
@@ -253,21 +267,34 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
                 final novel = widget.novels[index];
                 return Padding(
                   padding: const EdgeInsets.only(bottom: Spacing.m),
-                  child: MobileNovelCard(
-                    novel: novel,
-                    onTap: () => widget.onNovelTap(novel.id),
-                    onDownload: widget.onDownload != null
-                        ? () => widget.onDownload!(novel.id)
-                        : null,
-                    onDelete: widget.onDelete != null
-                        ? () => widget.onDelete!(novel.id)
-                        : null,
-                    onFavorite: widget.onFavorite != null
-                        ? () => widget.onFavorite!(novel.id)
-                        : null,
-                    isFavorite: widget.favorites.contains(novel.id),
-                    progress: widget.progressMap[novel.id] ?? 0.0,
-                    lastRead: widget.lastReadMap[novel.id],
+                  child: OpenContainer(
+                    closedElevation: 0,
+                    closedColor: Colors.transparent,
+                    transitionDuration: Duration(
+                      milliseconds: motion.reduceMotion ? 0 : 400,
+                    ),
+                    transitionType: ContainerTransitionType.fadeThrough,
+                    openBuilder: (context, _) {
+                      return ReaderScreen(novelId: novel.id);
+                    },
+                    closedBuilder: (context, action) {
+                      return MobileNovelCard(
+                        novel: novel,
+                        onTap: action,
+                        onDownload: widget.onDownload != null
+                            ? () => widget.onDownload!(novel.id)
+                            : null,
+                        onDelete: widget.onDelete != null
+                            ? () => widget.onDelete!(novel.id)
+                            : null,
+                        onFavorite: widget.onFavorite != null
+                            ? () => widget.onFavorite!(novel.id)
+                            : null,
+                        isFavorite: widget.favorites.contains(novel.id),
+                        progress: widget.progressMap[novel.id] ?? 0.0,
+                        lastRead: widget.lastReadMap[novel.id],
+                      );
+                    },
                   ),
                 );
               }, childCount: widget.novels.length),
@@ -280,36 +307,35 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
   }
 
   Widget _buildSearchBar(BuildContext context, ThemeData theme) {
-    return Container(
-      margin: const EdgeInsets.all(Spacing.m),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
+    return Padding(
+      padding: const EdgeInsets.all(Spacing.m),
+      child: GlassCard(
         borderRadius: BorderRadius.circular(Radii.m),
-      ),
-      child: TextField(
-        controller: _searchController,
-        decoration: InputDecoration(
-          hintText: 'Search novels...',
-          hintStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
-          prefixIcon: Icon(
-            Icons.search,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  icon: Icon(
-                    Icons.clear,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  onPressed: () {
-                    _searchController.clear();
-                  },
-                )
-              : null,
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: Spacing.m,
-            vertical: Spacing.s,
+        child: TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: 'Search novels...',
+            hintStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+            prefixIcon: Icon(
+              Icons.search,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            suffixIcon: _searchController.text.isNotEmpty
+                ? IconButton(
+                    icon: Icon(
+                      Icons.clear,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    onPressed: () {
+                      _searchController.clear();
+                    },
+                  )
+                : null,
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: Spacing.m,
+              vertical: Spacing.s,
+            ),
           ),
         ),
       ),
@@ -317,37 +343,47 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
   }
 
   Widget _buildFilterChips(BuildContext context, ThemeData theme) {
-    return Container(
-      height: 48,
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: widget.filterChips!.length,
-        itemBuilder: (context, index) {
-          final filter = widget.filterChips![index];
-          final isSelected = filter == widget.selectedFilter;
-          return Padding(
-            padding: const EdgeInsets.only(right: Spacing.s),
-            child: FilterChip(
-              label: Text(filter),
-              selected: isSelected,
-              onSelected: (selected) {
-                widget.onFilterChanged?.call(filter);
-              },
-              backgroundColor: theme.colorScheme.surfaceContainerHighest,
-              selectedColor: theme.colorScheme.primaryContainer,
-              labelStyle: TextStyle(
-                color: isSelected
-                    ? theme.colorScheme.onPrimaryContainer
-                    : theme.colorScheme.onSurfaceVariant,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(Radii.m),
-              ),
-            ),
-          );
-        },
+      child: GlassCard(
+        borderRadius: BorderRadius.circular(Radii.m),
+        padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
+        child: SizedBox(
+          height: 48,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: Spacing.s),
+            itemCount: widget.filterChips!.length,
+            itemBuilder: (context, index) {
+              final filter = widget.filterChips![index];
+              final isSelected = filter == widget.selectedFilter;
+              return Padding(
+                padding: const EdgeInsets.only(right: Spacing.s),
+                child: FilterChip(
+                  label: Text(filter),
+                  selected: isSelected,
+                  onSelected: (selected) {
+                    widget.onFilterChanged?.call(filter);
+                  },
+                  backgroundColor: theme.colorScheme.surfaceContainerHighest
+                      .withValues(alpha: 0.6),
+                  selectedColor: theme.colorScheme.primaryContainer,
+                  labelStyle: TextStyle(
+                    color: isSelected
+                        ? theme.colorScheme.onPrimaryContainer
+                        : theme.colorScheme.onSurfaceVariant,
+                    fontWeight: isSelected
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(Radii.m),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }
@@ -375,6 +411,12 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
+          ),
+          const SizedBox(height: Spacing.l),
+          AppButtons.primary(
+            label: 'Create Novel',
+            icon: Icons.add,
+            onPressed: widget.onCreateNovel,
           ),
         ],
       ),

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../state/novel_providers.dart';
 import '../../state/edit_permissions.dart';
 import '../../l10n/app_localizations.dart';
+import '../../l10n/app_localizations_en.dart';
 import '../../models/chapter.dart';
 import 'chapter_reader_screen.dart' as cr;
 import '../../repositories/chapter_repository.dart';
@@ -28,7 +29,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
     final chaptersAsync = ref.watch(chaptersProvider(widget.novelId));
     final editPermsAsync = ref.watch(editPermissionsProvider(widget.novelId));
     final canEdit = editPermsAsync.asData?.value ?? false;

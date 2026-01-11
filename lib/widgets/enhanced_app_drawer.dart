@@ -7,6 +7,7 @@ import '../l10n/app_localizations.dart';
 import '../state/novel_providers.dart';
 import '../state/providers.dart';
 import '../theme/design_tokens.dart';
+import '../shared/widgets/gradient_background.dart';
 
 /// Enhanced app drawer with sectioned navigation
 /// Features:
@@ -28,81 +29,77 @@ class EnhancedAppDrawer extends ConsumerWidget {
       child: Column(
         children: [
           // Header with gradient
-          Container(
+          SizedBox(
             height: 160,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  theme.colorScheme.primary,
-                  theme.colorScheme.primaryContainer,
-                ],
-              ),
-            ),
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(Spacing.l),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Logo and title
-                    Row(
-                      children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.onPrimary,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.menu_book,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(width: Spacing.m),
-                        Text(
-                          'Author Console',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: theme.colorScheme.onPrimary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    // User info
-                    if (isSignedIn)
-                      userAsync.when(
-                        data: (user) => Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: theme.colorScheme.onPrimary,
-                              child: Text(
-                                (user?.email ?? 'U')[0].toUpperCase(),
-                                style: TextStyle(
-                                  color: theme.colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+            child: GradientBackground(
+              colors: [
+                theme.colorScheme.primary,
+                theme.colorScheme.primaryContainer,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(Spacing.l),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.onPrimary,
+                              shape: BoxShape.circle,
                             ),
-                            const SizedBox(width: Spacing.s),
-                            Expanded(
-                              child: Text(
-                                user?.email ?? 'User',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onPrimary,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                            child: const Icon(
+                              Icons.menu_book,
+                              color: Colors.white,
                             ),
-                          ],
-                        ),
-                        loading: () => const SizedBox.shrink(),
-                        error: (_, __) => const SizedBox.shrink(),
+                          ),
+                          const SizedBox(width: Spacing.m),
+                          Text(
+                            'Author Console',
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              color: theme.colorScheme.onPrimary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                  ],
+                      const Spacer(),
+                      if (isSignedIn)
+                        userAsync.when(
+                          data: (user) => Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: theme.colorScheme.onPrimary,
+                                child: Text(
+                                  (user?.email ?? 'U')[0].toUpperCase(),
+                                  style: TextStyle(
+                                    color: theme.colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: Spacing.s),
+                              Expanded(
+                                child: Text(
+                                  user?.email ?? 'User',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onPrimary,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                          loading: () => const SizedBox.shrink(),
+                          error: (_, __) => const SizedBox.shrink(),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),

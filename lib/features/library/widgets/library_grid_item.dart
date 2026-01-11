@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:animations/animations.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../models/novel.dart';
 import '../../../theme/design_tokens.dart';
 import '../../../state/motion_settings.dart';
 import '../../../shared/image_utils.dart';
+import '../../reader/reader_screen.dart';
 
 class LibraryGridItem extends ConsumerWidget {
   const LibraryGridItem({
@@ -181,8 +182,11 @@ class LibraryGridItem extends ConsumerWidget {
               child: InkWell(
                 borderRadius: BorderRadius.circular(Radii.m),
                 onTap: () {
+                  if (GoRouter.maybeOf(context) != null) {
+                    context.push('/novel/${novel.id}');
+                    return;
+                  }
                   action();
-                  context.push('/novel/${novel.id}');
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(Spacing.s),
@@ -252,7 +256,7 @@ class LibraryGridItem extends ConsumerWidget {
         );
       },
       openBuilder: (context, action) {
-        return SizedBox.shrink(); // Navigation will handle the detail view
+        return ReaderScreen(novelId: novel.id);
       },
     );
   }

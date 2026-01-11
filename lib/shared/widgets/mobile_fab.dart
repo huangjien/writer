@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
+import 'glass_card.dart';
 
 /// Mobile-optimized Floating Action Button
 /// Features:
@@ -277,38 +278,40 @@ class _FabMenuItem extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return InkWell(
+    return GlassCard(
       key: ValueKey('fab_menu_item_$label'),
-      onTap: onTap,
       borderRadius: BorderRadius.circular(Radii.m),
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: Spacing.m,
-          vertical: Spacing.s,
+      shadow: [
+        BoxShadow(
+          color: AppColors.shadowColor,
+          blurRadius: 4,
+          offset: const Offset(0, 2),
         ),
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
+      ],
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: onTap,
           borderRadius: BorderRadius.circular(Radii.m),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadowColor,
-              blurRadius: 4,
-              offset: const Offset(0, 2),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Spacing.m,
+              vertical: Spacing.s,
             ),
-          ],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurface,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(width: Spacing.s),
+                Icon(icon, size: 20, color: colorScheme.primary),
+              ],
             ),
-            const SizedBox(width: Spacing.s),
-            Icon(icon, size: 20, color: colorScheme.primary),
-          ],
+          ),
         ),
       ),
     );
