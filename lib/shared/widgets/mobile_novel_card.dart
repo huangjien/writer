@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import '../../theme/design_tokens.dart';
 import '../../models/novel.dart';
 import 'mobile_bottom_sheet.dart';
@@ -9,6 +10,7 @@ import 'gestures/pinch_to_zoom.dart';
 import 'cover_placeholder.dart';
 import 'progress_ring.dart';
 import 'tag_pill.dart';
+import 'focus_wrapper.dart';
 
 /// Mobile-optimized novel card
 /// Features:
@@ -46,6 +48,32 @@ class MobileNovelCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final title = novel.title;
+    final author = novel.author;
+    final percent = (progress * 100).round().clamp(0, 100);
+    final labelParts = <String>[
+      title,
+      if (author != null && author.isNotEmpty) 'by $author',
+      if (progress > 0) '$percent% read',
+    ];
+    final semanticsLabel = labelParts.join(', ');
+    final semanticsActions = <CustomSemanticsAction, VoidCallback>{};
+    if (onFavorite != null) {
+      semanticsActions[CustomSemanticsAction(
+        label: isFavorite ? 'Unfavorite' : 'Favorite',
+      )] = () =>
+          onFavorite?.call();
+    }
+    if (onDownload != null) {
+      semanticsActions[const CustomSemanticsAction(label: 'Download')] = () =>
+          onDownload?.call();
+    }
+    if (onDelete != null) {
+      semanticsActions[const CustomSemanticsAction(label: 'Delete')] = () =>
+          onDelete?.call();
+    }
+    semanticsActions[const CustomSemanticsAction(label: 'More actions')] = () =>
+        _showActionMenu(context);
 
     final endActions = <SwipeActionItem>[
       if (onFavorite != null)
@@ -73,95 +101,105 @@ class MobileNovelCard extends StatelessWidget {
         ),
     ];
 
-    return SwipeActions(
-      endActions: endActions,
-      child: InkWell(
-        onTap: () {
-          MobileGestures.lightImpact();
-          onTap?.call();
-        },
-        onLongPress: () {
-          MobileGestures.mediumImpact();
-          if (onLongPress != null) {
-            onLongPress?.call();
-          } else {
-            _showActionMenu(context);
-          }
-        },
-        borderRadius: BorderRadius.circular(Radii.l),
-        child: Container(
-          padding: const EdgeInsets.all(MobileSpacing.cardPaddingMobile),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerLowest,
+    return Semantics(
+      container: true,
+      button: true,
+      label: semanticsLabel,
+      hint: 'Double tap to open. Long press for actions.',
+      customSemanticsActions: semanticsActions,
+      child: SwipeActions(
+        endActions: endActions,
+        child: FocusWrapper(
+          borderRadius: BorderRadius.circular(Radii.l),
+          child: InkWell(
+            onTap: () {
+              MobileGestures.lightImpact();
+              onTap?.call();
+            },
+            onLongPress: () {
+              MobileGestures.mediumImpact();
+              if (onLongPress != null) {
+                onLongPress?.call();
+              } else {
+                _showActionMenu(context);
+              }
+            },
             borderRadius: BorderRadius.circular(Radii.l),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.shadowColor,
-                blurRadius: 10,
-                offset: const Offset(0, 6),
+            child: Container(
+              padding: const EdgeInsets.all(MobileSpacing.cardPaddingMobile),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerLowest,
+                borderRadius: BorderRadius.circular(Radii.l),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.shadowColor,
+                    blurRadius: 10,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Row(
-            children: [
-              _buildCover(context, theme),
-              const SizedBox(width: Spacing.m),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      novel.title,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: Spacing.xs),
-                    if (novel.author != null && novel.author!.isNotEmpty)
-                      Text(
-                        novel.author!,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    const SizedBox(height: Spacing.xs),
-                    Wrap(
-                      spacing: Spacing.xs,
-                      runSpacing: Spacing.xs,
+              child: Row(
+                children: [
+                  _buildCover(context, theme),
+                  const SizedBox(width: Spacing.m),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        TagPill(
-                          label: novel.languageCode.toUpperCase(),
-                          icon: Icons.language,
+                        Text(
+                          title,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        TagPill(
-                          label: novel.isPublic ? 'Public' : 'Private',
-                          icon: novel.isPublic
-                              ? Icons.public
-                              : Icons.lock_outline,
+                        const SizedBox(height: Spacing.xs),
+                        if (author != null && author.isNotEmpty)
+                          Text(
+                            author,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        const SizedBox(height: Spacing.xs),
+                        Wrap(
+                          spacing: Spacing.xs,
+                          runSpacing: Spacing.xs,
+                          children: [
+                            TagPill(
+                              label: novel.languageCode.toUpperCase(),
+                              icon: Icons.language,
+                            ),
+                            TagPill(
+                              label: novel.isPublic ? 'Public' : 'Private',
+                              icon: novel.isPublic
+                                  ? Icons.public
+                                  : Icons.lock_outline,
+                            ),
+                          ],
                         ),
+                        const SizedBox(height: Spacing.xs),
+                        if (lastRead != null)
+                          Text(
+                            lastRead!,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        if (progress > 0) ...[
+                          const SizedBox(height: Spacing.s),
+                          _buildProgressBar(context, theme),
+                        ],
                       ],
                     ),
-                    const SizedBox(height: Spacing.xs),
-                    if (lastRead != null)
-                      Text(
-                        lastRead!,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    if (progress > 0) ...[
-                      const SizedBox(height: Spacing.s),
-                      _buildProgressBar(context, theme),
-                    ],
-                  ],
-                ),
+                  ),
+                  if (showActions) _buildActions(context, theme),
+                ],
               ),
-              if (showActions) _buildActions(context, theme),
-            ],
+            ),
           ),
         ),
       ),
@@ -273,31 +311,51 @@ class MobileNovelCard extends StatelessWidget {
     return Column(
       children: [
         if (onFavorite != null)
-          IconButton(
-            icon: Icon(
-              isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: isFavorite ? theme.colorScheme.error : null,
-            ),
-            onPressed: () {
-              MobileGestures.toggleImpact();
-              onFavorite?.call();
-            },
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(
-              minWidth: MobileSpacing.touchTargetMin,
-              minHeight: MobileSpacing.touchTargetMin,
+          Tooltip(
+            message: isFavorite ? 'Unfavorite' : 'Favorite',
+            child: Semantics(
+              button: true,
+              label: isFavorite ? 'Unfavorite' : 'Favorite',
+              child: FocusWrapper(
+                borderRadius: BorderRadius.circular(Radii.m),
+                child: IconButton(
+                  icon: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: isFavorite ? theme.colorScheme.error : null,
+                  ),
+                  onPressed: () {
+                    MobileGestures.toggleImpact();
+                    onFavorite?.call();
+                  },
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    minWidth: MobileSpacing.touchTargetMin,
+                    minHeight: MobileSpacing.touchTargetMin,
+                  ),
+                ),
+              ),
             ),
           ),
-        IconButton(
-          icon: const Icon(Icons.more_vert),
-          onPressed: () {
-            MobileGestures.lightImpact();
-            _showActionMenu(context);
-          },
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(
-            minWidth: MobileSpacing.touchTargetMin,
-            minHeight: MobileSpacing.touchTargetMin,
+        Tooltip(
+          message: 'More',
+          child: Semantics(
+            button: true,
+            label: 'More actions',
+            child: FocusWrapper(
+              borderRadius: BorderRadius.circular(Radii.m),
+              child: IconButton(
+                icon: const Icon(Icons.more_vert),
+                onPressed: () {
+                  MobileGestures.lightImpact();
+                  _showActionMenu(context);
+                },
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(
+                  minWidth: MobileSpacing.touchTargetMin,
+                  minHeight: MobileSpacing.touchTargetMin,
+                ),
+              ),
+            ),
           ),
         ),
       ],

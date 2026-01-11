@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
 import 'glass_card.dart';
+import 'focus_wrapper.dart';
 
 /// Mobile-optimized bottom navigation bar
 /// Features:
@@ -146,59 +147,68 @@ class _NavTabItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(Radii.m),
-      child: Container(
-        width: MobileSpacing.touchTargetComfortable,
-        height: MobileSpacing.touchTargetComfortable,
-        alignment: Alignment.center,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
+    final label = _getLabel(context);
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: label,
+      child: FocusWrapper(
+        borderRadius: BorderRadius.circular(Radii.m),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(Radii.m),
+          child: Container(
+            width: MobileSpacing.touchTargetComfortable,
+            height: MobileSpacing.touchTargetComfortable,
+            alignment: Alignment.center,
+            child: Stack(
+              clipBehavior: Clip.none,
               children: [
-                Icon(
-                  isSelected ? _selectedIcon : _icon,
-                  color: isSelected
-                      ? colorScheme.primary
-                      : colorScheme.onSurfaceVariant,
-                  size: 24,
-                ),
-                const SizedBox(height: Spacing.xxs),
-                Flexible(
-                  child: Text(
-                    _getLabel(context),
-                    style: theme.textTheme.labelSmall?.copyWith(
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      isSelected ? _selectedIcon : _icon,
                       color: isSelected
                           ? colorScheme.primary
                           : colorScheme.onSurfaceVariant,
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.normal,
-                      overflow: TextOverflow.ellipsis,
+                      size: 24,
                     ),
-                    maxLines: 1,
-                  ),
+                    const SizedBox(height: Spacing.xxs),
+                    Flexible(
+                      child: Text(
+                        label,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: isSelected
+                              ? colorScheme.primary
+                              : colorScheme.onSurfaceVariant,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
                 ),
+                if (hasBadge)
+                  Positioned(
+                    top: 4,
+                    right: 8,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: colorScheme.error,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
               ],
             ),
-            if (hasBadge)
-              Positioned(
-                top: 4,
-                right: 8,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: colorScheme.error,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-          ],
+          ),
         ),
       ),
     );

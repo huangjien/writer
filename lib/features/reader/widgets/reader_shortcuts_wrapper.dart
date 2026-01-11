@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
+import 'package:writer/shared/widgets/mobile_bottom_sheet.dart';
+import 'package:writer/theme/design_tokens.dart';
 import '../logic/reader_shortcuts.dart';
 
 class ReaderShortcutsWrapper extends ConsumerWidget {
@@ -22,6 +24,37 @@ class ReaderShortcutsWrapper extends ConsumerWidget {
   final VoidCallback onOpenSettings;
   final Widget child;
 
+  void _showShortcutsHelp(BuildContext context) {
+    MobileBottomSheet.show<void>(
+      context: context,
+      title: 'Keyboard shortcuts',
+      builder: (context) {
+        final theme = Theme.of(context);
+        final style = theme.textTheme.bodyMedium;
+        return Padding(
+          padding: const EdgeInsets.all(Spacing.l),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Space: Play / stop', style: style),
+              const SizedBox(height: Spacing.s),
+              Text('← / →: Previous / next', style: style),
+              const SizedBox(height: Spacing.s),
+              Text('Ctrl/⌘ + R: Speech rate', style: style),
+              const SizedBox(height: Spacing.s),
+              Text('Ctrl/⌘ + V: Voice', style: style),
+              const SizedBox(height: Spacing.s),
+              Text('Ctrl/⌘ + /: Show shortcuts', style: style),
+              const SizedBox(height: Spacing.s),
+              Text('Esc: Close', style: style),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chatOpen = ref.watch(aiChatUiProvider);
@@ -39,6 +72,10 @@ class ReaderShortcutsWrapper extends ConsumerWidget {
                 const OpenRateIntent(),
             const SingleActivator(LogicalKeyboardKey.keyV, control: true):
                 const OpenVoiceIntent(),
+            const SingleActivator(LogicalKeyboardKey.slash, control: true):
+                const OpenShortcutsHelpIntent(),
+            const SingleActivator(LogicalKeyboardKey.slash, meta: true):
+                const OpenShortcutsHelpIntent(),
           };
     return Shortcuts(
       shortcuts: shortcutsMap,
@@ -71,6 +108,12 @@ class ReaderShortcutsWrapper extends ConsumerWidget {
           OpenVoiceIntent: CallbackAction<Intent>(
             onInvoke: (_) {
               onOpenSettings();
+              return null;
+            },
+          ),
+          OpenShortcutsHelpIntent: CallbackAction<OpenShortcutsHelpIntent>(
+            onInvoke: (_) {
+              _showShortcutsHelp(context);
               return null;
             },
           ),

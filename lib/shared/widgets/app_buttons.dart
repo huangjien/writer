@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
+import 'focus_wrapper.dart';
 import 'micro_interactions.dart';
 
 /// Collection of styled button components
@@ -17,34 +18,37 @@ class AppButtons {
     bool isLoading = false,
     bool fullWidth = false,
   }) {
-    return PressScale(
-      enabled: !isLoading,
-      child: FilledButton(
-        onPressed: isLoading ? null : onPressed,
-        style: FilledButton.styleFrom(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Spacing.l,
-            vertical: Spacing.m,
+    return FocusWrapper(
+      borderRadius: BorderRadius.circular(Radii.m),
+      child: PressScale(
+        enabled: !isLoading,
+        child: FilledButton(
+          onPressed: isLoading ? null : onPressed,
+          style: FilledButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Spacing.l,
+              vertical: Spacing.m,
+            ),
+            elevation: 2,
+            minimumSize: fullWidth ? const Size(double.infinity, 48) : null,
           ),
-          elevation: 2,
-          minimumSize: fullWidth ? const Size(double.infinity, 48) : null,
-        ),
-        child: isLoading
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (icon != null) ...[
-                    Icon(icon, size: 18),
-                    const SizedBox(width: Spacing.s),
+          child: isLoading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (icon != null) ...[
+                      Icon(icon, size: 18),
+                      const SizedBox(width: Spacing.s),
+                    ],
+                    Text(label),
                   ],
-                  Text(label),
-                ],
-              ),
+                ),
+        ),
       ),
     );
   }
@@ -56,26 +60,29 @@ class AppButtons {
     IconData? icon,
     bool fullWidth = false,
   }) {
-    return PressScale(
-      child: OutlinedButton(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Spacing.l,
-            vertical: Spacing.m,
+    return FocusWrapper(
+      borderRadius: BorderRadius.circular(Radii.m),
+      child: PressScale(
+        child: OutlinedButton(
+          onPressed: onPressed,
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Spacing.l,
+              vertical: Spacing.m,
+            ),
+            side: BorderSide(color: Colors.grey.shade300, width: 1.5),
+            minimumSize: fullWidth ? const Size(double.infinity, 48) : null,
           ),
-          side: BorderSide(color: Colors.grey.shade300, width: 1.5),
-          minimumSize: fullWidth ? const Size(double.infinity, 48) : null,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(icon, size: 18),
-              const SizedBox(width: Spacing.s),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, size: 18),
+                const SizedBox(width: Spacing.s),
+              ],
+              Text(label),
             ],
-            Text(label),
-          ],
+          ),
         ),
       ),
     );
@@ -87,11 +94,14 @@ class AppButtons {
     required VoidCallback onPressed,
     Color? color,
   }) {
-    return PressScale(
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(foregroundColor: color),
-        child: Text(label),
+    return FocusWrapper(
+      borderRadius: BorderRadius.circular(Radii.m),
+      child: PressScale(
+        child: TextButton(
+          onPressed: onPressed,
+          style: TextButton.styleFrom(foregroundColor: color),
+          child: Text(label),
+        ),
       ),
     );
   }
@@ -114,9 +124,18 @@ class AppButtons {
     );
 
     if (tooltip != null) {
-      return Tooltip(message: tooltip, child: button);
+      return Tooltip(
+        message: tooltip,
+        child: FocusWrapper(
+          borderRadius: BorderRadius.circular(Radii.m),
+          child: button,
+        ),
+      );
     }
-    return button;
+    return FocusWrapper(
+      borderRadius: BorderRadius.circular(Radii.m),
+      child: button,
+    );
   }
 
   /// Filled icon button
@@ -140,8 +159,17 @@ class AppButtons {
     );
 
     if (tooltip != null) {
-      return Tooltip(message: tooltip, child: button);
+      return Tooltip(
+        message: tooltip,
+        child: FocusWrapper(
+          borderRadius: BorderRadius.circular(Radii.m),
+          child: button,
+        ),
+      );
     }
-    return button;
+    return FocusWrapper(
+      borderRadius: BorderRadius.circular(Radii.m),
+      child: button,
+    );
   }
 }

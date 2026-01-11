@@ -194,3 +194,10 @@ class MobileMotion {
   static const Duration fabExpand = Duration(milliseconds: 200);
   static const Duration fabCollapse = Duration(milliseconds: 150);
 }
+
+class FocusTokens {
+  static const double borderWidth = 2.0;
+  static const double glowOpacity = 0.28;
+  static const double glowBlurRadius = 10.0;
+  static const Duration duration = Motion.fast;
+}

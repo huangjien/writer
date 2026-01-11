@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
 import 'glass_card.dart';
+import 'focus_wrapper.dart';
 
 /// Mobile-optimized bottom sheet
 /// Features:
@@ -32,9 +34,11 @@ class MobileBottomSheet {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(Radii.l)),
       ),
-      builder: (context) => _MobileBottomSheetContent(
-        title: title,
-        child: Builder(builder: builder),
+      builder: (context) => _SheetFocusTrap(
+        child: _MobileBottomSheetContent(
+          title: title,
+          child: Builder(builder: builder),
+        ),
       ),
     );
   }
@@ -51,11 +55,13 @@ class MobileBottomSheet {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => _ActionSheetContent(
-        title: title,
-        items: items,
-        cancelLabel: cancelLabel,
-        cancelColor: cancelColor,
+      builder: (context) => _SheetFocusTrap(
+        child: _ActionSheetContent(
+          title: title,
+          items: items,
+          cancelLabel: cancelLabel,
+          cancelColor: cancelColor,
+        ),
       ),
     );
   }
@@ -74,10 +80,12 @@ class MobileBottomSheet {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(Radii.l)),
       ),
-      builder: (context) => _OptionsSheetContent(
-        title: title,
-        options: options,
-        selectedValue: selectedValue,
+      builder: (context) => _SheetFocusTrap(
+        child: _OptionsSheetContent(
+          title: title,
+          options: options,
+          selectedValue: selectedValue,
+        ),
       ),
     );
   }
@@ -201,59 +209,73 @@ class _ActionSheetContent extends StatelessWidget {
             ],
             ...items.map((item) {
               final isDestructive = item.isDestructive;
-              return InkWell(
-                onTap: () {
-                  Navigator.of(context).pop(item.value);
-                  item.onPressed?.call();
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Spacing.l,
-                    vertical: Spacing.m,
-                  ),
-                  child: Row(
-                    children: [
-                      if (item.icon != null) ...[
-                        Icon(
-                          item.icon,
-                          color: isDestructive
-                              ? theme.colorScheme.error
-                              : theme.colorScheme.primary,
-                          size: 24,
-                        ),
-                        const SizedBox(width: Spacing.m),
-                      ],
-                      Expanded(
-                        child: Text(
-                          item.label,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: isDestructive
-                                ? theme.colorScheme.error
-                                : theme.colorScheme.onSurface,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+              return Semantics(
+                button: true,
+                label: item.label,
+                child: FocusWrapper(
+                  borderRadius: BorderRadius.zero,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context).pop(item.value);
+                      item.onPressed?.call();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.l,
+                        vertical: Spacing.m,
                       ),
-                    ],
+                      child: Row(
+                        children: [
+                          if (item.icon != null) ...[
+                            Icon(
+                              item.icon,
+                              color: isDestructive
+                                  ? theme.colorScheme.error
+                                  : theme.colorScheme.primary,
+                              size: 24,
+                            ),
+                            const SizedBox(width: Spacing.m),
+                          ],
+                          Expanded(
+                            child: Text(
+                              item.label,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: isDestructive
+                                    ? theme.colorScheme.error
+                                    : theme.colorScheme.onSurface,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               );
             }),
             Divider(height: 1, color: theme.dividerColor),
-            InkWell(
-              onTap: () => Navigator.of(context).pop(),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: Spacing.l,
-                  vertical: Spacing.m,
-                ),
-                child: Text(
-                  l10n,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: cancelColor ?? theme.colorScheme.primary,
-                    fontWeight: FontWeight.w600,
+            Semantics(
+              button: true,
+              label: l10n,
+              child: FocusWrapper(
+                borderRadius: BorderRadius.zero,
+                child: InkWell(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Spacing.l,
+                      vertical: Spacing.m,
+                    ),
+                    child: Text(
+                      l10n,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: cancelColor ?? theme.colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  textAlign: TextAlign.center,
                 ),
               ),
             ),
@@ -326,48 +348,88 @@ class _OptionsSheetContent extends StatelessWidget {
           ],
           ...options.map((option) {
             final isSelected = option.value == selectedValue;
-            return InkWell(
-              onTap: () => Navigator.of(context).pop(option.value),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: Spacing.l,
-                  vertical: Spacing.m,
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? theme.colorScheme.primaryContainer.withValues(
-                          alpha: 0.3,
-                        )
-                      : null,
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        option.label,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: isSelected
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.onSurface,
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                        ),
-                      ),
+            return Semantics(
+              button: true,
+              selected: isSelected,
+              label: option.label,
+              child: FocusWrapper(
+                borderRadius: BorderRadius.zero,
+                child: InkWell(
+                  onTap: () => Navigator.of(context).pop(option.value),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Spacing.l,
+                      vertical: Spacing.m,
                     ),
-                    if (isSelected)
-                      Icon(
-                        Icons.check,
-                        color: theme.colorScheme.primary,
-                        size: 20,
-                      ),
-                  ],
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? theme.colorScheme.primaryContainer.withValues(
+                              alpha: 0.3,
+                            )
+                          : null,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            option.label,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: isSelected
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.onSurface,
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                        if (isSelected)
+                          Icon(
+                            Icons.check,
+                            color: theme.colorScheme.primary,
+                            size: 20,
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             );
           }),
           const SizedBox(height: Spacing.s),
         ],
+      ),
+    );
+  }
+}
+
+class _SheetFocusTrap extends StatelessWidget {
+  const _SheetFocusTrap({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return FocusTraversalGroup(
+      policy: OrderedTraversalPolicy(),
+      child: FocusScope(
+        autofocus: true,
+        child: Shortcuts(
+          shortcuts: const <ShortcutActivator, Intent>{
+            SingleActivator(LogicalKeyboardKey.escape): DismissIntent(),
+          },
+          child: Actions(
+            actions: <Type, Action<Intent>>{
+              DismissIntent: CallbackAction<DismissIntent>(
+                onInvoke: (_) {
+                  Navigator.of(context).maybePop();
+                  return null;
+                },
+              ),
+            },
+            child: child,
+          ),
+        ),
       ),
     );
   }

@@ -49,6 +49,7 @@ class RichTextToolbar extends StatelessWidget {
             _ToolButton(
               icon: preview ? Icons.edit : Icons.visibility,
               label: preview ? 'Edit' : 'Preview',
+              semanticsLabel: preview ? 'Edit mode' : 'Preview mode',
               isActive: preview,
               onPressed: onTogglePreview,
             ),
@@ -56,18 +57,21 @@ class RichTextToolbar extends StatelessWidget {
             _ToolButton(
               icon: Icons.format_bold,
               label: 'B',
+              semanticsLabel: 'Bold',
               isActive: false,
               onPressed: onBold,
             ),
             _ToolButton(
               icon: Icons.format_italic,
               label: 'I',
+              semanticsLabel: 'Italic',
               isActive: false,
               onPressed: onItalic,
             ),
             _ToolButton(
               icon: Icons.format_underlined,
               label: 'U',
+              semanticsLabel: 'Underline',
               isActive: false,
               onPressed: onUnderline,
             ),
@@ -75,18 +79,21 @@ class RichTextToolbar extends StatelessWidget {
             _ToolButton(
               icon: Icons.title,
               label: 'H',
+              semanticsLabel: 'Heading',
               isActive: false,
               onPressed: onHeading,
             ),
             _ToolButton(
               icon: Icons.format_quote,
               label: '❝',
+              semanticsLabel: 'Quote',
               isActive: false,
               onPressed: onQuote,
             ),
             _ToolButton(
               icon: Icons.code,
               label: '</>',
+              semanticsLabel: 'Inline code',
               isActive: false,
               onPressed: onCode,
             ),
@@ -94,12 +101,14 @@ class RichTextToolbar extends StatelessWidget {
             _ToolButton(
               icon: Icons.format_list_bulleted,
               label: '•',
+              semanticsLabel: 'Bulleted list',
               isActive: false,
               onPressed: onBullet,
             ),
             _ToolButton(
               icon: Icons.format_list_numbered,
               label: '1.',
+              semanticsLabel: 'Numbered list',
               isActive: false,
               onPressed: onNumbered,
             ),
@@ -107,6 +116,7 @@ class RichTextToolbar extends StatelessWidget {
             _ToolButton(
               icon: Icons.link,
               label: 'Link',
+              semanticsLabel: 'Insert link',
               isActive: false,
               onPressed: onLink,
             ),
@@ -121,12 +131,14 @@ class _ToolButton extends StatelessWidget {
   const _ToolButton({
     required this.icon,
     required this.label,
+    required this.semanticsLabel,
     required this.isActive,
     required this.onPressed,
   });
 
   final IconData icon;
   final String label;
+  final String semanticsLabel;
   final bool isActive;
   final VoidCallback onPressed;
 
@@ -134,46 +146,50 @@ class _ToolButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return WaveTap(
-      borderRadius: BorderRadius.circular(Radii.m),
-      onLongPress: () => HapticFeedback.mediumImpact(),
-      onTap: () {
-        HapticFeedback.lightImpact();
-        onPressed();
-      },
-      child: PressScale(
-        child: Container(
-          width: MobileSpacing.touchTargetMin,
-          height: MobileSpacing.touchTargetMin,
-          decoration: BoxDecoration(
-            color: isActive ? theme.colorScheme.primaryContainer : null,
-            borderRadius: BorderRadius.circular(Radii.m),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 18,
-                color: isActive
-                    ? theme.colorScheme.onPrimaryContainer
-                    : theme.colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(height: 2),
-              Text(
-                label,
-                overflow: TextOverflow.fade,
-                softWrap: false,
-                style: theme.textTheme.labelSmall?.copyWith(
+    return Semantics(
+      button: true,
+      label: semanticsLabel,
+      child: WaveTap(
+        borderRadius: BorderRadius.circular(Radii.m),
+        onLongPress: () => HapticFeedback.mediumImpact(),
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onPressed();
+        },
+        child: PressScale(
+          child: Container(
+            width: MobileSpacing.touchTargetMin,
+            height: MobileSpacing.touchTargetMin,
+            decoration: BoxDecoration(
+              color: isActive ? theme.colorScheme.primaryContainer : null,
+              borderRadius: BorderRadius.circular(Radii.m),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 18,
                   color: isActive
                       ? theme.colorScheme.onPrimaryContainer
                       : theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w700,
-                  height: 1.0,
                 ),
-              ),
-            ],
+                const SizedBox(height: 2),
+                Text(
+                  label,
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: isActive
+                        ? theme.colorScheme.onPrimaryContainer
+                        : theme.colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w700,
+                    height: 1.0,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

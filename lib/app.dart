@@ -11,6 +11,7 @@ import 'package:writer/theme/reader_background.dart';
 import 'routing/app_router.dart';
 import 'l10n/app_localizations.dart';
 import 'services/app_lifecycle_monitor.dart';
+import 'shared/widgets/error_boundary.dart';
 
 class App extends ConsumerWidget {
   const App({super.key});
@@ -82,24 +83,26 @@ class App extends ConsumerWidget {
     );
 
     return AppLifecycleMonitor(
-      child: MaterialApp.router(
-        title: 'Writer',
-        theme: themeLight,
-        darkTheme: themeDark,
-        themeMode: themeState.mode,
-        routerConfig: router,
-        locale: Locale(appSettings.languageCode),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        builder: (context, child) {
-          final mq = MediaQuery.of(context);
-          return MediaQuery(
-            data: mq.copyWith(
-              textScaler: TextScaler.linear(themeState.fontScale),
-            ),
-            child: child ?? const SizedBox.shrink(),
-          );
-        },
+      child: ErrorBoundary(
+        child: MaterialApp.router(
+          title: 'Writer',
+          theme: themeLight,
+          darkTheme: themeDark,
+          themeMode: themeState.mode,
+          routerConfig: router,
+          locale: Locale(appSettings.languageCode),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          builder: (context, child) {
+            final mq = MediaQuery.of(context);
+            return MediaQuery(
+              data: mq.copyWith(
+                textScaler: TextScaler.linear(themeState.fontScale),
+              ),
+              child: child ?? const SizedBox.shrink(),
+            );
+          },
+        ),
       ),
     );
   }

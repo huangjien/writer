@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
 import 'glass_card.dart';
 import 'spring_animated_container.dart';
+import 'focus_wrapper.dart';
 
 /// Mobile-optimized Floating Action Button
 /// Features:
@@ -92,26 +93,46 @@ class MobileFab extends StatelessWidget {
     }
 
     if (extended) {
-      return FloatingActionButton.extended(
-        heroTag: heroTag ?? 'mobile_fab_$type',
-        onPressed: isLoading ? null : onPressed,
-        backgroundColor: getBackgroundColor(),
-        foregroundColor: getForegroundColor(),
-        elevation: 6,
-        extendedPadding: const EdgeInsets.symmetric(
-          horizontal: Spacing.l,
-          vertical: Spacing.m,
+      return Semantics(
+        button: true,
+        label: label,
+        enabled: !isLoading,
+        child: FocusWrapper(
+          padding: EdgeInsets.zero,
+          borderRadius: BorderRadius.circular(Radii.xl),
+          child: FloatingActionButton.extended(
+            heroTag: heroTag ?? 'mobile_fab_$type',
+            onPressed: isLoading ? null : onPressed,
+            backgroundColor: getBackgroundColor(),
+            foregroundColor: getForegroundColor(),
+            elevation: 6,
+            tooltip: label,
+            extendedPadding: const EdgeInsets.symmetric(
+              horizontal: Spacing.l,
+              vertical: Spacing.m,
+            ),
+            label: buildChild(),
+          ),
         ),
-        label: buildChild(),
       );
     } else {
-      return FloatingActionButton(
-        heroTag: heroTag ?? 'mobile_fab_$type',
-        onPressed: isLoading ? null : onPressed,
-        backgroundColor: getBackgroundColor(),
-        foregroundColor: getForegroundColor(),
-        elevation: 6,
-        child: Icon(icon),
+      return Semantics(
+        button: true,
+        label: label,
+        enabled: !isLoading,
+        child: FocusWrapper(
+          padding: EdgeInsets.zero,
+          borderRadius: BorderRadius.circular(Radii.xl),
+          child: FloatingActionButton(
+            heroTag: heroTag ?? 'mobile_fab_$type',
+            onPressed: isLoading ? null : onPressed,
+            backgroundColor: getBackgroundColor(),
+            foregroundColor: getForegroundColor(),
+            elevation: 6,
+            tooltip: label,
+            child: Icon(icon),
+          ),
+        ),
       );
     }
   }
@@ -141,15 +162,23 @@ class MobileMiniFab extends StatelessWidget {
       key: const ValueKey('mini_fab_container'),
       width: 40,
       height: 40,
-      child: FloatingActionButton.small(
-        heroTag: heroTag ?? 'mini_fab_$tooltip',
-        key: const ValueKey('mini_fab_button'),
-        onPressed: onPressed,
-        backgroundColor: colorScheme.primaryContainer,
-        foregroundColor: colorScheme.onPrimaryContainer,
-        elevation: 4,
-        tooltip: tooltip,
-        child: Icon(icon, size: 20),
+      child: Semantics(
+        button: true,
+        label: tooltip,
+        child: FocusWrapper(
+          padding: EdgeInsets.zero,
+          borderRadius: BorderRadius.circular(Radii.xl),
+          child: FloatingActionButton.small(
+            heroTag: heroTag ?? 'mini_fab_$tooltip',
+            key: const ValueKey('mini_fab_button'),
+            onPressed: onPressed,
+            backgroundColor: colorScheme.primaryContainer,
+            foregroundColor: colorScheme.onPrimaryContainer,
+            elevation: 4,
+            tooltip: tooltip,
+            child: Icon(icon, size: 20),
+          ),
+        ),
       ),
     );
   }
@@ -252,17 +281,25 @@ class _MobileFabWithMenuState extends State<MobileFabWithMenu>
             ),
           ),
         // Main FAB
-        FloatingActionButton.extended(
-          onPressed: _toggle,
-          backgroundColor: colorScheme.primary,
-          foregroundColor: colorScheme.onPrimary,
-          elevation: 6,
-          icon: RotationTransition(
-            key: const ValueKey('fab_menu_rotation'),
-            turns: _rotateAnimation,
-            child: Icon(widget.mainIcon),
+        Semantics(
+          button: true,
+          label: widget.mainLabel,
+          child: FocusWrapper(
+            padding: EdgeInsets.zero,
+            borderRadius: BorderRadius.circular(Radii.xl),
+            child: FloatingActionButton.extended(
+              onPressed: _toggle,
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
+              elevation: 6,
+              icon: RotationTransition(
+                key: const ValueKey('fab_menu_rotation'),
+                turns: _rotateAnimation,
+                child: Icon(widget.mainIcon),
+              ),
+              label: Text(widget.mainLabel),
+            ),
           ),
-          label: Text(widget.mainLabel),
         ),
       ],
     );
@@ -285,38 +322,45 @@ class _FabMenuItem extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return GlassCard(
-      key: ValueKey('fab_menu_item_$label'),
-      borderRadius: BorderRadius.circular(Radii.m),
-      shadow: [
-        BoxShadow(
-          color: AppColors.shadowColor,
-          blurRadius: 4,
-          offset: const Offset(0, 2),
-        ),
-      ],
-      child: Material(
-        type: MaterialType.transparency,
-        child: InkWell(
-          onTap: onTap,
+    return Semantics(
+      button: true,
+      label: label,
+      child: FocusWrapper(
+        borderRadius: BorderRadius.circular(Radii.m),
+        child: GlassCard(
+          key: ValueKey('fab_menu_item_$label'),
           borderRadius: BorderRadius.circular(Radii.m),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Spacing.m,
-              vertical: Spacing.s,
+          shadow: [
+            BoxShadow(
+              color: AppColors.shadowColor,
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  label,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                  ),
+          ],
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(Radii.m),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Spacing.m,
+                  vertical: Spacing.s,
                 ),
-                const SizedBox(width: Spacing.s),
-                Icon(icon, size: 20, color: colorScheme.primary),
-              ],
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      label,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(width: Spacing.s),
+                    Icon(icon, size: 20, color: colorScheme.primary),
+                  ],
+                ),
+              ),
             ),
           ),
         ),

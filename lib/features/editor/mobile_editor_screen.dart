@@ -9,11 +9,57 @@ import '../../shared/widgets/mobile_fab.dart';
 import '../../repositories/chapter_repository.dart';
 import '../../models/chapter.dart';
 import '../../state/novel_providers.dart';
+import '../../state/storage_service_provider.dart';
 
 import '../../shared/widgets/mobile_bottom_sheet.dart';
 import '../../shared/widgets/feedback/enhanced_toast.dart';
-import '../../shared/widgets/rich_text_editor.dart';
-import '../../shared/widgets/rich_text_toolbar.dart';
+import 'focus_timer.dart';
+import 'formatting_toolbar.dart';
+import 'rich_text_editor.dart';
+import 'writing_prompts.dart';
+import 'writing_stats.dart';
+import 'zen_mode.dart';
+
+class _StorageKeys {
+  static const String lastWriteDate = 'writer.editor.last_write_date';
+  static const String streakDays = 'writer.editor.streak_days';
+}
+
+class _SaveIntent extends Intent {
+  const _SaveIntent();
+}
+
+class _TogglePreviewIntent extends Intent {
+  const _TogglePreviewIntent();
+}
+
+class _HelpIntent extends Intent {
+  const _HelpIntent();
+}
+
+class _BoldIntent extends Intent {
+  const _BoldIntent();
+}
+
+class _ItalicIntent extends Intent {
+  const _ItalicIntent();
+}
+
+class _UnderlineIntent extends Intent {
+  const _UnderlineIntent();
+}
+
+class _HeadingIntent extends Intent {
+  const _HeadingIntent();
+}
+
+class _LinkIntent extends Intent {
+  const _LinkIntent();
+}
+
+class _DismissIntent extends Intent {
+  const _DismissIntent();
+}
 
 /// Mobile-optimized editor screen
 /// Features:
@@ -46,7 +92,9 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
   bool _isLoading = true;
   bool _isDiscarding = false;
   bool _preview = false;
+  bool _zenMode = false;
   Chapter? _chapter;
+  int _streakDays = 0;
 
   MobileNavTab _currentTab = MobileNavTab.write;
 
@@ -68,6 +116,8 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
         _isLoading = false;
       });
     }
+
+    _loadWritingStreak();
   }
 
   @override
@@ -157,6 +207,8 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
         _chapter = created;
       }
 
+      await _recordWritingSessionIfNeeded();
+
       if (mounted) {
         setState(() {
           _isSaving = false;
@@ -189,6 +241,138 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
     HapticFeedback.selectionClick();
   }
 
+  Future<void> _loadWritingStreak() async {
+    try {
+      final storage = ref.read(storageServiceProvider);
+      final last = storage.getString(_StorageKeys.lastWriteDate);
+      final streakRaw = storage.getString(_StorageKeys.streakDays);
+      final storedStreak = int.tryParse(streakRaw ?? '') ?? 0;
+
+      if (last == null) {
+        if (mounted) setState(() => _streakDays = 0);
+        return;
+      }
+
+      final lastDate = DateTime.tryParse(last);
+      if (lastDate == null) {
+        if (mounted) setState(() => _streakDays = 0);
+        return;
+      }
+
+      final today = _todayDate();
+      final diff = today.difference(_dateOnly(lastDate)).inDays;
+      final effective = (diff == 0 || diff == 1) ? storedStreak : 0;
+      if (mounted) setState(() => _streakDays = effective);
+    } catch (_) {
+      if (mounted) setState(() => _streakDays = 0);
+    }
+  }
+
+  Future<void> _recordWritingSessionIfNeeded() async {
+    final words = _countWords(_contentController.text);
+    if (words <= 0) return;
+
+    try {
+      final storage = ref.read(storageServiceProvider);
+      final today = _todayDate();
+      final todayKey = _formatDate(today);
+
+      final last = storage.getString(_StorageKeys.lastWriteDate);
+      final streakRaw = storage.getString(_StorageKeys.streakDays);
+      final currentStreak = int.tryParse(streakRaw ?? '') ?? 0;
+
+      if (last == null) {
+        await storage.setString(_StorageKeys.lastWriteDate, todayKey);
+        await storage.setString(_StorageKeys.streakDays, '1');
+        if (mounted) setState(() => _streakDays = 1);
+        return;
+      }
+
+      final lastDate = DateTime.tryParse(last);
+      if (lastDate == null) {
+        await storage.setString(_StorageKeys.lastWriteDate, todayKey);
+        await storage.setString(_StorageKeys.streakDays, '1');
+        if (mounted) setState(() => _streakDays = 1);
+        return;
+      }
+
+      final diff = today.difference(_dateOnly(lastDate)).inDays;
+      if (diff == 0) {
+        if (mounted) setState(() => _streakDays = currentStreak);
+        return;
+      }
+
+      final next = diff == 1 ? (currentStreak <= 0 ? 2 : currentStreak + 1) : 1;
+      await storage.setString(_StorageKeys.lastWriteDate, todayKey);
+      await storage.setString(_StorageKeys.streakDays, '$next');
+      if (mounted) setState(() => _streakDays = next);
+    } catch (_) {
+      return;
+    }
+  }
+
+  static DateTime _todayDate() {
+    return _dateOnly(DateTime.now());
+  }
+
+  static DateTime _dateOnly(DateTime dt) {
+    return DateTime(dt.year, dt.month, dt.day);
+  }
+
+  static String _formatDate(DateTime dt) {
+    final y = dt.year.toString().padLeft(4, '0');
+    final m = dt.month.toString().padLeft(2, '0');
+    final d = dt.day.toString().padLeft(2, '0');
+    return '$y-$m-$d';
+  }
+
+  static int _countWords(String text) {
+    return text.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length;
+  }
+
+  void _enterZenMode() {
+    setState(() => _zenMode = true);
+    HapticFeedback.selectionClick();
+  }
+
+  void _exitZenMode() {
+    setState(() => _zenMode = false);
+    HapticFeedback.selectionClick();
+  }
+
+  void _showFocusTimer(BuildContext context) {
+    MobileBottomSheet.show(
+      context: context,
+      title: 'Focus timer',
+      builder: (_) => const FocusTimerSheet(),
+    );
+  }
+
+  void _showWritingPrompts(BuildContext context) {
+    MobileBottomSheet.show(
+      context: context,
+      title: 'Writing prompts',
+      builder: (sheetContext) => WritingPromptsSheet(
+        onInsert: (prompt) {
+          Navigator.of(sheetContext).pop();
+          _insertTextAtCursor('$prompt\n\n');
+        },
+      ),
+    );
+  }
+
+  void _insertTextAtCursor(String insertion) {
+    final selection = _contentController.selection;
+    final text = _contentController.text;
+    final start = selection.isValid ? selection.start : text.length;
+    final end = selection.isValid ? selection.end : text.length;
+    final updated = text.replaceRange(start, end, insertion);
+    _contentController.value = TextEditingValue(
+      text: updated,
+      selection: TextSelection.collapsed(offset: start + insertion.length),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -203,92 +387,228 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
       );
     }
 
-    return Scaffold(
-      appBar: _buildAppBar(context, l10n),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Title input
-            Padding(
-              padding: const EdgeInsets.all(Spacing.m),
-              child: TextField(
-                controller: _titleController,
-                decoration: InputDecoration(
-                  hintText: 'Chapter Title',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(Radii.m),
-                  ),
-                  filled: true,
-                  fillColor: theme.colorScheme.surfaceContainerHighest,
-                ),
-                style: theme.textTheme.titleLarge,
-              ),
+    return FocusTraversalGroup(
+      policy: OrderedTraversalPolicy(),
+      child: Shortcuts(
+        shortcuts: const <ShortcutActivator, Intent>{
+          SingleActivator(LogicalKeyboardKey.keyS, control: true):
+              _SaveIntent(),
+          SingleActivator(LogicalKeyboardKey.keyS, meta: true): _SaveIntent(),
+          SingleActivator(LogicalKeyboardKey.keyP, control: true):
+              _TogglePreviewIntent(),
+          SingleActivator(LogicalKeyboardKey.keyP, meta: true):
+              _TogglePreviewIntent(),
+          SingleActivator(LogicalKeyboardKey.slash, control: true):
+              _HelpIntent(),
+          SingleActivator(LogicalKeyboardKey.slash, meta: true): _HelpIntent(),
+          SingleActivator(LogicalKeyboardKey.keyB, control: true):
+              _BoldIntent(),
+          SingleActivator(LogicalKeyboardKey.keyB, meta: true): _BoldIntent(),
+          SingleActivator(LogicalKeyboardKey.keyI, control: true):
+              _ItalicIntent(),
+          SingleActivator(LogicalKeyboardKey.keyI, meta: true): _ItalicIntent(),
+          SingleActivator(LogicalKeyboardKey.keyU, control: true):
+              _UnderlineIntent(),
+          SingleActivator(LogicalKeyboardKey.keyU, meta: true):
+              _UnderlineIntent(),
+          SingleActivator(LogicalKeyboardKey.digit1, control: true):
+              _HeadingIntent(),
+          SingleActivator(LogicalKeyboardKey.digit1, meta: true):
+              _HeadingIntent(),
+          SingleActivator(LogicalKeyboardKey.keyK, control: true):
+              _LinkIntent(),
+          SingleActivator(LogicalKeyboardKey.keyK, meta: true): _LinkIntent(),
+          SingleActivator(LogicalKeyboardKey.escape): _DismissIntent(),
+        },
+        child: Actions(
+          actions: <Type, Action<Intent>>{
+            _SaveIntent: CallbackAction<_SaveIntent>(
+              onInvoke: (_) {
+                _saveContent();
+                return null;
+              },
             ),
-            // Formatting toolbar
-            RichTextToolbar(
-              preview: _preview,
-              onTogglePreview: _togglePreview,
-              onBold: () => MarkdownEditActions.toggleBold(_contentController),
-              onItalic: () =>
-                  MarkdownEditActions.toggleItalic(_contentController),
-              onUnderline: () =>
-                  MarkdownEditActions.toggleUnderline(_contentController),
-              onHeading: () =>
-                  MarkdownEditActions.insertHeading(_contentController),
-              onQuote: () =>
-                  MarkdownEditActions.insertQuote(_contentController),
-              onCode: () =>
-                  MarkdownEditActions.toggleInlineCode(_contentController),
-              onBullet: () =>
-                  MarkdownEditActions.insertBullet(_contentController),
-              onNumbered: () =>
-                  MarkdownEditActions.insertNumbered(_contentController),
-              onLink: () => MarkdownEditActions.insertLink(_contentController),
+            _TogglePreviewIntent: CallbackAction<_TogglePreviewIntent>(
+              onInvoke: (_) {
+                _togglePreview();
+                return null;
+              },
             ),
-            // Content editor
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
-                child: RichTextEditor(
-                  controller: _contentController,
-                  preview: _preview,
-                  hintText: 'Start writing...',
-                ),
-              ),
+            _HelpIntent: CallbackAction<_HelpIntent>(
+              onInvoke: (_) {
+                _showShortcutsHelp(context);
+                return null;
+              },
             ),
-            // Auto-save indicator
-            if (_isSaving)
-              Container(
-                padding: EdgeInsets.only(bottom: Spacing.m + keyboardHeight),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+            _BoldIntent: CallbackAction<_BoldIntent>(
+              onInvoke: (_) {
+                MarkdownEditActions.toggleBold(_contentController);
+                return null;
+              },
+            ),
+            _ItalicIntent: CallbackAction<_ItalicIntent>(
+              onInvoke: (_) {
+                MarkdownEditActions.toggleItalic(_contentController);
+                return null;
+              },
+            ),
+            _UnderlineIntent: CallbackAction<_UnderlineIntent>(
+              onInvoke: (_) {
+                MarkdownEditActions.toggleUnderline(_contentController);
+                return null;
+              },
+            ),
+            _HeadingIntent: CallbackAction<_HeadingIntent>(
+              onInvoke: (_) {
+                MarkdownEditActions.insertHeading(_contentController);
+                return null;
+              },
+            ),
+            _LinkIntent: CallbackAction<_LinkIntent>(
+              onInvoke: (_) {
+                MarkdownEditActions.insertLink(_contentController);
+                return null;
+              },
+            ),
+            _DismissIntent: CallbackAction<_DismissIntent>(
+              onInvoke: (_) {
+                if (_preview) {
+                  _togglePreview();
+                  return null;
+                }
+                Navigator.of(context).maybePop();
+                return null;
+              },
+            ),
+          },
+          child: Scaffold(
+            appBar: _zenMode ? null : _buildAppBar(context, l10n),
+            body: SafeArea(
+              child: Column(
+                children: [
+                  if (_zenMode)
+                    ZenModeBar(
+                      onExit: _exitZenMode,
+                      onSave: _saveContent,
+                      preview: _preview,
+                      onTogglePreview: _togglePreview,
                     ),
-                    const SizedBox(width: Spacing.s),
-                    Text('Saving...', style: theme.textTheme.bodyMedium),
-                  ],
-                ),
+                  if (!_zenMode)
+                    Padding(
+                      padding: const EdgeInsets.all(Spacing.m),
+                      child: TextField(
+                        controller: _titleController,
+                        decoration: InputDecoration(
+                          labelText: l10n.chapterTitle,
+                          hintText: l10n.enterChapterTitle,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(Radii.m),
+                          ),
+                          filled: true,
+                          fillColor: theme.colorScheme.surfaceContainerHighest,
+                        ),
+                        style: theme.textTheme.titleLarge,
+                      ),
+                    ),
+                  if (!_zenMode)
+                    RichTextToolbar(
+                      preview: _preview,
+                      onTogglePreview: _togglePreview,
+                      onBold: () =>
+                          MarkdownEditActions.toggleBold(_contentController),
+                      onItalic: () =>
+                          MarkdownEditActions.toggleItalic(_contentController),
+                      onUnderline: () => MarkdownEditActions.toggleUnderline(
+                        _contentController,
+                      ),
+                      onHeading: () =>
+                          MarkdownEditActions.insertHeading(_contentController),
+                      onQuote: () =>
+                          MarkdownEditActions.insertQuote(_contentController),
+                      onCode: () => MarkdownEditActions.toggleInlineCode(
+                        _contentController,
+                      ),
+                      onBullet: () =>
+                          MarkdownEditActions.insertBullet(_contentController),
+                      onNumbered: () => MarkdownEditActions.insertNumbered(
+                        _contentController,
+                      ),
+                      onLink: () =>
+                          MarkdownEditActions.insertLink(_contentController),
+                    ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.m,
+                      ),
+                      child: RichTextEditor(
+                        controller: _contentController,
+                        preview: _preview,
+                        hintText: 'Start writing...',
+                        semanticsLabel: 'Chapter content',
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Spacing.m,
+                      vertical: Spacing.s,
+                    ),
+                    child: WritingStats(
+                      controller: _contentController,
+                      streakDays: _streakDays,
+                    ),
+                  ),
+                  if (_isSaving)
+                    Container(
+                      padding: EdgeInsets.only(
+                        bottom: Spacing.m + keyboardHeight,
+                      ),
+                      child: Semantics(
+                        container: true,
+                        liveRegion: true,
+                        label: 'Saving…',
+                        child: ExcludeSemantics(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                              const SizedBox(width: Spacing.s),
+                              Text(
+                                'Saving...',
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (!_isSaving) SizedBox(height: Spacing.m + keyboardHeight),
+                ],
               ),
-            // Bottom padding for keyboard
-            if (!_isSaving) SizedBox(height: Spacing.m + keyboardHeight),
-          ],
+            ),
+            floatingActionButton: MobileFab(
+              onPressed: _saveContent,
+              label: l10n.save,
+              icon: Icons.save,
+              type: MobileFabType.secondary,
+              isLoading: _isSaving,
+            ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            bottomNavigationBar: _zenMode
+                ? null
+                : MobileBottomNavBar(
+                    currentTab: _currentTab,
+                    onTabChanged: _onTabChanged,
+                  ),
+          ),
         ),
-      ),
-      floatingActionButton: MobileFab(
-        onPressed: _saveContent,
-        label: 'Save',
-        icon: Icons.save,
-        type: MobileFabType.secondary,
-        isLoading: _isSaving,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      bottomNavigationBar: MobileBottomNavBar(
-        currentTab: _currentTab,
-        onTabChanged: _onTabChanged,
       ),
     );
   }
@@ -334,6 +654,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
       actions: [
         IconButton(
           icon: const Icon(Icons.more_vert),
+          tooltip: MaterialLocalizations.of(context).moreButtonTooltip,
           onPressed: () => _showMoreMenu(context, l10n),
         ),
       ],
@@ -374,6 +695,24 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
       context: context,
       items: [
         ActionSheetItem(
+          label: 'Zen mode',
+          icon: Icons.center_focus_strong,
+          value: 'zen',
+          onPressed: _enterZenMode,
+        ),
+        ActionSheetItem(
+          label: 'Focus timer',
+          icon: Icons.timer,
+          value: 'focus_timer',
+          onPressed: () => _showFocusTimer(context),
+        ),
+        ActionSheetItem(
+          label: 'Writing prompts',
+          icon: Icons.lightbulb_outline,
+          value: 'writing_prompts',
+          onPressed: () => _showWritingPrompts(context),
+        ),
+        ActionSheetItem(
           label: 'Word Count',
           icon: Icons.format_size,
           value: 'wordcount',
@@ -397,6 +736,12 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
           icon: Icons.settings,
           value: 'settings',
           onPressed: () => context.push('/settings'),
+        ),
+        ActionSheetItem(
+          label: 'Keyboard shortcuts',
+          icon: Icons.keyboard,
+          value: 'shortcuts',
+          onPressed: () => _showShortcutsHelp(context),
         ),
       ],
     );
@@ -475,5 +820,50 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
     } else {
       Navigator.of(context).pop(); // Close sheet
     }
+  }
+
+  void _showShortcutsHelp(BuildContext context) {
+    MobileBottomSheet.show(
+      context: context,
+      title: 'Keyboard shortcuts',
+      builder: (context) {
+        final items = <(String, String)>[
+          ('Save', 'Ctrl/⌘ + S'),
+          ('Preview', 'Ctrl/⌘ + P'),
+          ('Bold', 'Ctrl/⌘ + B'),
+          ('Italic', 'Ctrl/⌘ + I'),
+          ('Underline', 'Ctrl/⌘ + U'),
+          ('Heading', 'Ctrl/⌘ + 1'),
+          ('Insert link', 'Ctrl/⌘ + K'),
+          ('Shortcuts help', 'Ctrl/⌘ + /'),
+          ('Close', 'Esc'),
+        ];
+        return ListView.separated(
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(Spacing.l),
+          itemBuilder: (context, i) {
+            final it = items[i];
+            return Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    it.$1,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
+                Text(
+                  it.$2,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ],
+            );
+          },
+          separatorBuilder: (context, _) => const SizedBox(height: Spacing.m),
+          itemCount: items.length,
+        );
+      },
+    );
   }
 }

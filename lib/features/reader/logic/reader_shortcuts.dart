@@ -19,3 +19,7 @@ class OpenRateIntent extends Intent {
 class OpenVoiceIntent extends Intent {
   const OpenVoiceIntent();
 }
+
+class OpenShortcutsHelpIntent extends Intent {
+  const OpenShortcutsHelpIntent();
+}

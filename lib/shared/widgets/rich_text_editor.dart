@@ -8,11 +8,13 @@ class RichTextEditor extends StatelessWidget {
     required this.controller,
     required this.preview,
     this.hintText,
+    this.semanticsLabel = 'Editor content',
   });
 
   final TextEditingController controller;
   final bool preview;
   final String? hintText;
+  final String semanticsLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -31,20 +33,24 @@ class RichTextEditor extends StatelessWidget {
       );
     }
 
-    return TextField(
-      controller: controller,
-      maxLines: null,
-      expands: true,
-      decoration: InputDecoration(
-        border: InputBorder.none,
-        hintText: hintText,
-        hintStyle: theme.textTheme.bodyLarge?.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
+    return Semantics(
+      textField: true,
+      label: semanticsLabel,
+      child: TextField(
+        controller: controller,
+        maxLines: null,
+        expands: true,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: hintText,
+          hintStyle: theme.textTheme.bodyLarge?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
+        style: theme.textTheme.bodyLarge?.copyWith(height: 1.8),
+        textAlign: TextAlign.left,
+        textAlignVertical: TextAlignVertical.top,
       ),
-      style: theme.textTheme.bodyLarge?.copyWith(height: 1.8),
-      textAlign: TextAlign.left,
-      textAlignVertical: TextAlignVertical.top,
     );
   }
 }

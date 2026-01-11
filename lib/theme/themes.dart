@@ -193,6 +193,11 @@ ThemeData themeForLight(AppThemeFamily family) {
     );
 
     return baseTheme.copyWith(
+      focusColor: baseTheme.colorScheme.primary.withValues(alpha: 0.18),
+      hoverColor: baseTheme.colorScheme.primary.withValues(alpha: 0.10),
+      highlightColor: baseTheme.colorScheme.primary.withValues(alpha: 0.14),
+      dividerColor: baseTheme.colorScheme.onSurface.withValues(alpha: 0.20),
+      iconTheme: IconThemeData(color: baseTheme.colorScheme.onSurface),
       textSelectionTheme: TextSelectionThemeData(
         cursorColor: baseTheme.colorScheme.primary,
         selectionColor: baseTheme.colorScheme.primary.withValues(alpha: 0.35),
@@ -245,6 +250,11 @@ ThemeData themeForDark(AppThemeFamily family) {
     );
 
     return baseTheme.copyWith(
+      focusColor: baseTheme.colorScheme.primary.withValues(alpha: 0.18),
+      hoverColor: baseTheme.colorScheme.primary.withValues(alpha: 0.10),
+      highlightColor: baseTheme.colorScheme.primary.withValues(alpha: 0.14),
+      dividerColor: baseTheme.colorScheme.onSurface.withValues(alpha: 0.20),
+      iconTheme: IconThemeData(color: baseTheme.colorScheme.onSurface),
       textSelectionTheme: TextSelectionThemeData(
         cursorColor: baseTheme.colorScheme.primary,
         selectionColor: baseTheme.colorScheme.primary.withValues(alpha: 0.35),

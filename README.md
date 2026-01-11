@@ -13,6 +13,8 @@ A Flutter application for reading novels with localization and Text-To-Speech (T
 - Home sidebar includes: Settings, Character Templates, Scene Templates, Prompts, New Novel, About.
 - About page shows a large logo above the title.
 - AI Coach (Snowflake) panel keeps chat history for the current session and persists per-novel coaching state.
+- Editor enhancements: formatting toolbar, markdown preview, writing stats (word/char/read time + streak), Zen mode, focus timer, and writing prompts.
+- UI polish does not require `flutter_animate`/`lottie`/`confetti`/`shimmer`; shimmer uses `skeletonizer` and confetti is implemented in-app.
 
 ## Prerequisites
 - Flutter SDK installed (`flutter --version`).
