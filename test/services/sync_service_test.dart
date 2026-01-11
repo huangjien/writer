@@ -45,6 +45,8 @@ void main() {
         remote: mockRemote,
         networkMonitor: mockNetworkMonitor,
         prefs: () async => mockPrefs,
+        syncDebounceDuration: Duration.zero,
+        delay: (_) async {},
       );
     });
 
@@ -107,8 +109,8 @@ void main() {
         // Simulate network coming online
         connectivityController.add(true);
 
-        // Wait for debounce
-        await Future.delayed(Duration(milliseconds: 2100));
+        await pumpEventQueue();
+        await pumpEventQueue();
 
         verify(mockOfflineQueue.getPendingOperations()).called(1);
 
@@ -382,7 +384,7 @@ void main() {
         await syncService.syncPendingOperations();
 
         // Add small delay to ensure all stream events are captured
-        await Future.delayed(Duration(milliseconds: 10));
+        await pumpEventQueue();
 
         // Should have at least syncing and synced states
         expect(states.length, greaterThanOrEqualTo(2));
@@ -433,7 +435,7 @@ void main() {
         final afterSync = DateTime.now();
 
         // Add small delay to ensure all stream events are captured
-        await Future.delayed(Duration(milliseconds: 10));
+        await pumpEventQueue();
 
         await subscription.cancel();
 

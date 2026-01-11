@@ -33,6 +33,16 @@ void main() {
     );
   }
 
+  Future<void> pumpLoaded(WidgetTester tester) async {
+    await tester.pump();
+    await tester.pump();
+  }
+
+  Future<void> pumpTabChange(WidgetTester tester) async {
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+  }
+
   group('SummaryScreen Coverage', () {
     testWidgets('loads and displays summary data', (tester) async {
       final summary = Summary(
@@ -53,7 +63,7 @@ void main() {
       ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+      await pumpLoaded(tester);
 
       // Check Sentence (default tab)
       expect(find.text('Sentence'), findsOneWidget);
@@ -61,17 +71,17 @@ void main() {
 
       // Switch to Paragraph tab
       await tester.tap(find.text('Paragraph Summary'));
-      await tester.pumpAndSettle();
+      await pumpTabChange(tester);
       expect(find.text('Paragraph'), findsOneWidget);
 
       // Switch to Page tab
       await tester.tap(find.text('Page Summary'));
-      await tester.pumpAndSettle();
+      await pumpTabChange(tester);
       expect(find.text('Page'), findsOneWidget);
 
       // Switch to Expanded tab
       await tester.tap(find.text('Expanded Summary'));
-      await tester.pumpAndSettle();
+      await pumpTabChange(tester);
       expect(find.text('Expanded'), findsOneWidget);
     });
 
@@ -84,7 +94,7 @@ void main() {
       ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+      await pumpLoaded(tester);
 
       expect(find.textContaining('Load failed'), findsOneWidget);
     });
@@ -98,7 +108,7 @@ void main() {
       ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+      await pumpLoaded(tester);
 
       // Should not show error text
       expect(find.textContaining('Unauthorized'), findsNothing);
@@ -122,11 +132,11 @@ void main() {
       ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+      await pumpLoaded(tester);
 
       // Switch to Edit tab for Sentence
       await tester.tap(find.text('Edit').first);
-      await tester.pumpAndSettle();
+      await pumpTabChange(tester);
 
       // Find TextFormField
       final textField = find.widgetWithText(TextFormField, 'Original');
@@ -151,7 +161,7 @@ void main() {
       ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+      await pumpLoaded(tester);
 
       // Trigger dispose by pumping a different widget
       await tester.pumpWidget(const SizedBox());

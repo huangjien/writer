@@ -5,7 +5,9 @@ import 'package:writer/services/network_monitor.dart';
 import 'package:writer/services/connectivity_checker.dart';
 
 class MockConnectivityChecker implements ConnectivityChecker {
-  final _controller = StreamController<List<ConnectivityResult>>.broadcast();
+  final _controller = StreamController<List<ConnectivityResult>>.broadcast(
+    sync: true,
+  );
   bool _isConnected = true;
 
   @override
@@ -100,7 +102,7 @@ void main() {
           connectivityEvents.add(event);
         });
 
-        await Future.delayed(Duration(milliseconds: 50));
+        await pumpEventQueue();
         await subscription.cancel();
 
         // Should handle subscription without throwing
@@ -120,7 +122,7 @@ void main() {
         events2.add(event);
       });
 
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       // Both should handle subscription
       expect(events1, isA<List<bool>>());
@@ -141,7 +143,7 @@ void main() {
         events2.add,
       );
 
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       // Both should receive the same events
       expect(events1.length, equals(events2.length));
@@ -164,7 +166,7 @@ void main() {
         },
       );
 
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
       await subscription.cancel();
 
       // Should handle without throwing
@@ -194,23 +196,20 @@ void main() {
     });
 
     test('should handle concurrent stream operations', () async {
-      final futures = <Future>[];
+      final checker = MockConnectivityChecker();
+      final monitor = NetworkMonitor(checker);
+      monitor.startMonitoring();
 
-      for (int i = 0; i < 3; i++) {
-        futures.add(
-          networkMonitor.connectivityStream.first.timeout(
-            Duration(milliseconds: 100),
-          ),
-        );
-      }
+      final futures = List.generate(3, (_) => monitor.connectivityStream.first);
+      await pumpEventQueue();
 
-      // Should handle concurrent operations without throwing
-      try {
-        await Future.any(futures);
-      } catch (e) {
-        // Timeout is acceptable in test environment
-        expect(e, isA<TimeoutException>());
-      }
+      checker.emitConnectivityChange([ConnectivityResult.none]);
+      checker.emitConnectivityChange([ConnectivityResult.wifi]);
+      await pumpEventQueue();
+
+      await Future.wait(futures);
+      monitor.dispose();
+      checker.dispose();
     });
 
     test('should maintain stream broadcast behavior', () async {
@@ -222,14 +221,14 @@ void main() {
         events1.add,
       );
 
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       // Start second subscription after first
       final subscription2 = networkMonitor.connectivityStream.listen(
         events2.add,
       );
 
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       await subscription1.cancel();
       await subscription2.cancel();
@@ -251,7 +250,7 @@ void main() {
       checker.emitConnectivityChange([ConnectivityResult.wifi]);
 
       // Wait for the change to propagate
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       // Verify the monitor received the change
       expect(monitor.isOnline, isTrue);
@@ -269,7 +268,8 @@ void main() {
       monitor.startMonitoring();
 
       // Wait for initial check
-      await Future.delayed(Duration(milliseconds: 100));
+      await pumpEventQueue();
+      await pumpEventQueue();
 
       // Verify the monitor reflects the initial state
       expect(monitor.isOnline, isFalse);
@@ -292,12 +292,12 @@ void main() {
 
       // Emit offline event
       checker.emitConnectivityChange([ConnectivityResult.none]);
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
       expect(monitor.isOnline, isFalse);
 
       // Emit online event
       checker.emitConnectivityChange([ConnectivityResult.wifi]);
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
       expect(monitor.isOnline, isTrue);
 
       // Emit multiple connectivity types (all online)
@@ -305,7 +305,7 @@ void main() {
         ConnectivityResult.wifi,
         ConnectivityResult.ethernet,
       ]);
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
       expect(monitor.isOnline, isTrue);
 
       await subscription.cancel();
@@ -343,7 +343,8 @@ void main() {
       monitor.startMonitoring();
 
       // Wait for initial state
-      await Future.delayed(Duration(milliseconds: 100));
+      await pumpEventQueue();
+      await pumpEventQueue();
 
       // Should have received initial state
       expect(events, isNotEmpty);
@@ -365,14 +366,14 @@ void main() {
 
       // Emit none (offline)
       checker.emitConnectivityChange([ConnectivityResult.none]);
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       expect(monitor.isOnline, isFalse);
       expect(events.last, isFalse);
 
       // Emit wifi (online)
       checker.emitConnectivityChange([ConnectivityResult.wifi]);
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       expect(monitor.isOnline, isTrue);
       expect(events.last, isTrue);
@@ -396,13 +397,13 @@ void main() {
         ConnectivityResult.none,
         ConnectivityResult.wifi,
       ]);
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       expect(monitor.isOnline, isTrue);
 
       // Emit only none
       checker.emitConnectivityChange([ConnectivityResult.none]);
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       expect(monitor.isOnline, isFalse);
 
@@ -422,13 +423,13 @@ void main() {
 
       // Emit same state multiple times
       checker.emitConnectivityChange([ConnectivityResult.wifi]);
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       checker.emitConnectivityChange([ConnectivityResult.wifi]);
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       checker.emitConnectivityChange([ConnectivityResult.wifi]);
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       // Should only have initial + one change (no duplicates)
       expect(events.length, lessThanOrEqualTo(2));
@@ -449,7 +450,7 @@ void main() {
       checker.emitConnectivityChange([ConnectivityResult.wifi]);
 
       // Wait for the change to propagate
-      await Future.delayed(Duration(milliseconds: 50));
+      await pumpEventQueue();
 
       // Verify the monitor received the change
       expect(monitor.isOnline, isTrue);

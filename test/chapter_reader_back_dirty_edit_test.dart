@@ -224,7 +224,8 @@ void main() {
 
     // Enter edit mode
     await tester.tap(editIcons);
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
 
     // Should now be in edit mode (navigated to edit screen)
     expect(find.text('Edit Screen'), findsOneWidget);

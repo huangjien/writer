@@ -10,6 +10,7 @@ class NetworkMonitor {
   final StreamController<bool> _connectivityController;
   bool _isOnline = true;
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
+  int _connectivityEventCount = 0;
 
   NetworkMonitor(this._connectivityChecker)
     : _connectivityController = StreamController<bool>.broadcast();
@@ -27,6 +28,7 @@ class NetworkMonitor {
 
   /// Start monitoring network connectivity
   void startMonitoring() {
+    _connectivitySubscription?.cancel();
     _connectivitySubscription = _connectivityChecker.onConnectivityChanged
         .listen(_onConnectivityChanged);
     _updateConnectivity();
@@ -36,12 +38,15 @@ class NetworkMonitor {
   void stopMonitoring() {
     _connectivitySubscription?.cancel();
     _connectivitySubscription = null;
-    _connectivityController.close();
+    if (!_connectivityController.isClosed) {
+      _connectivityController.close();
+    }
   }
 
   void _onConnectivityChanged(List<ConnectivityResult> results) {
     // Don't process if controller is closed
     if (_connectivityController.isClosed) return;
+    _connectivityEventCount++;
 
     // Determine if we have any network connection
     final hasConnection = results.any(
@@ -58,8 +63,11 @@ class NetworkMonitor {
   }
 
   Future<void> _updateConnectivity() async {
+    final expectedEventCount = _connectivityEventCount;
     // Initial check
-    _isOnline = await _connectivityChecker.checkConnectivity();
+    final isOnline = await _connectivityChecker.checkConnectivity();
+    if (expectedEventCount != _connectivityEventCount) return;
+    _isOnline = isOnline;
     if (!_connectivityController.isClosed) {
       _connectivityController.add(_isOnline);
     }
@@ -67,6 +75,10 @@ class NetworkMonitor {
 
   /// Dispose resources
   void dispose() {
-    _connectivityController.close();
+    _connectivitySubscription?.cancel();
+    _connectivitySubscription = null;
+    if (!_connectivityController.isClosed) {
+      _connectivityController.close();
+    }
   }
 }

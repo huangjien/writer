@@ -13,8 +13,12 @@ class SyncService {
   final OfflineQueueService _offlineQueue;
   final RemoteRepository _remote;
   final NetworkMonitor _networkMonitor;
+  final Duration _syncDebounceDuration;
+  final Future<void> Function(Duration) _delay;
   late final StreamController<SyncState> _syncStateController;
   final Future<SharedPreferences> Function() _prefs;
+  StreamSubscription<bool>? _connectivitySubscription;
+  Timer? _syncDebounceTimer;
   SyncState _currentSyncState = const SyncState(
     status: SyncStatus.synced,
     pendingOperations: 0,
@@ -27,10 +31,14 @@ class SyncService {
     required RemoteRepository remote,
     required NetworkMonitor networkMonitor,
     Future<SharedPreferences> Function()? prefs,
+    Duration syncDebounceDuration = const Duration(seconds: 2),
+    Future<void> Function(Duration)? delay,
   }) : _offlineQueue = offlineQueue,
        _remote = remote,
        _networkMonitor = networkMonitor,
        _prefs = prefs ?? SharedPreferences.getInstance,
+       _syncDebounceDuration = syncDebounceDuration,
+       _delay = delay ?? Future<void>.delayed,
        _syncStateController = StreamController<SyncState>() {
     // Initialize with current network status
     _initializeSyncState().then((_) {});
@@ -87,7 +95,10 @@ class SyncService {
     _networkMonitor.startMonitoring();
 
     // Listen to connectivity changes and trigger sync
-    _networkMonitor.connectivityStream.listen((isOnline) async {
+    _connectivitySubscription?.cancel();
+    _connectivitySubscription = _networkMonitor.connectivityStream.listen((
+      isOnline,
+    ) async {
       if (isOnline) {
         _scheduleSync();
       } else {
@@ -105,6 +116,8 @@ class SyncService {
 
   /// Stop monitoring and syncing
   void stopMonitoring() {
+    _connectivitySubscription?.cancel();
+    _connectivitySubscription = null;
     _networkMonitor.stopMonitoring();
   }
 
@@ -127,7 +140,7 @@ class SyncService {
         // Retry with backoff if failed
         if (op.retryCount < RetryPolicy.maxRetries) {
           final delay = RetryPolicy.getDelay(op.retryCount);
-          await Future.delayed(delay);
+          await _delay(delay);
           final retrySuccess = await _syncOperation(op);
           if (retrySuccess) {
             await _offlineQueue.markCompleted(op.id);
@@ -254,9 +267,9 @@ class SyncService {
 
   /// Schedule sync with debounce
   void _scheduleSync() {
-    // Debounce sync by 2 seconds
-    Future.delayed(const Duration(seconds: 2), () async {
-      await syncPendingOperations();
+    _syncDebounceTimer?.cancel();
+    _syncDebounceTimer = Timer(_syncDebounceDuration, () {
+      unawaited(syncPendingOperations());
     });
   }
 
@@ -278,6 +291,10 @@ class SyncService {
 
   /// Dispose resources
   void dispose() {
+    _syncDebounceTimer?.cancel();
+    _syncDebounceTimer = null;
+    _connectivitySubscription?.cancel();
+    _connectivitySubscription = null;
     _syncStateController.close();
   }
 }
