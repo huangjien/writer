@@ -6,13 +6,13 @@ import '../../shared/widgets/mobile_bottom_nav_bar.dart';
 import '../../shared/widgets/mobile_fab.dart';
 import '../../shared/widgets/mobile_novel_card.dart';
 import '../../shared/widgets/mobile_bottom_sheet.dart';
-import '../../shared/widgets/app_buttons.dart';
 import '../../shared/widgets/gradient_background.dart';
 import '../../shared/widgets/glass_card.dart';
 import '../../shared/widgets/animated_list_builder.dart';
 import '../../shared/widgets/parallax_header.dart';
 import '../../shared/widgets/scroll_reveal.dart';
 import '../../shared/widgets/gestures/pull_to_refresh.dart';
+import '../../shared/widgets/empty_states/novel_empty_state.dart';
 import '../../models/novel.dart';
 import '../../features/reader/reader_screen.dart';
 import '../../state/motion_settings.dart';
@@ -423,37 +423,11 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
   }
 
   Widget _buildEmptyState(BuildContext context, ThemeData theme) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.menu_book_outlined,
-            size: 64,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(height: Spacing.m),
-          Text(
-            'No novels found',
-            style: theme.textTheme.titleLarge?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: Spacing.s),
-          Text(
-            'Create your first novel to get started',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: Spacing.l),
-          AppButtons.primary(
-            label: 'Create Novel',
-            icon: Icons.add,
-            onPressed: widget.onCreateNovel,
-          ),
-        ],
-      ),
+    return NovelEmptyState(
+      title: 'No novels found',
+      subtitle: 'Create your first novel to get started',
+      actionLabel: 'Create Novel',
+      onAction: widget.onCreateNovel,
     );
   }
 }

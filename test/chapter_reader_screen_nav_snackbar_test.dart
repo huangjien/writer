@@ -88,7 +88,10 @@ void main() {
     expect(find.byIcon(Icons.skip_next), findsOneWidget);
     await tester.tap(find.byIcon(Icons.skip_next));
     await tester.pump();
-    expect(find.byType(SnackBar), findsOneWidget);
+    final l10n = AppLocalizations.of(
+      tester.element(find.byType(ChapterReaderScreen)),
+    )!;
+    expect(find.text(l10n.reachedLastChapter), findsOneWidget);
   });
 
   testWidgets('shows snackbar when prev pressed at first chapter', (
@@ -148,6 +151,9 @@ void main() {
     expect(find.byIcon(Icons.skip_previous), findsOneWidget);
     await tester.tap(find.byIcon(Icons.skip_previous));
     await tester.pump();
-    expect(find.byType(SnackBar), findsOneWidget);
+    final l10n = AppLocalizations.of(
+      tester.element(find.byType(ChapterReaderScreen)),
+    )!;
+    expect(find.text(l10n.reachedFirstChapter), findsOneWidget);
   });
 }

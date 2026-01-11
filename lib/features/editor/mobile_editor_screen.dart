@@ -11,8 +11,9 @@ import '../../models/chapter.dart';
 import '../../state/novel_providers.dart';
 
 import '../../shared/widgets/mobile_bottom_sheet.dart';
-import '../../shared/widgets/micro_interactions.dart';
-import '../../shared/widgets/particles/wave_effect.dart';
+import '../../shared/widgets/feedback/enhanced_toast.dart';
+import '../../shared/widgets/rich_text_editor.dart';
+import '../../shared/widgets/rich_text_toolbar.dart';
 
 /// Mobile-optimized editor screen
 /// Features:
@@ -44,12 +45,10 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
   bool _hasUnsavedChanges = false;
   bool _isLoading = true;
   bool _isDiscarding = false;
+  bool _preview = false;
   Chapter? _chapter;
 
   MobileNavTab _currentTab = MobileNavTab.write;
-  bool _isBold = false;
-  bool _isItalic = false;
-  bool _isUnderline = false;
 
   @override
   void initState() {
@@ -104,9 +103,13 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(
+        showEnhancedToast(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to load chapter: $e')));
+          message: 'Failed to load chapter: $e',
+          tone: EnhancedToastTone.error,
+          actionLabel: 'Retry',
+          onAction: () => _loadChapter(),
+        );
       }
     }
   }
@@ -159,11 +162,10 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
           _isSaving = false;
           _hasUnsavedChanges = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Saved'),
-            duration: Duration(seconds: 2),
-          ),
+        showEnhancedToast(
+          context,
+          message: 'Saved',
+          tone: EnhancedToastTone.success,
         );
         // Refresh chapters list
         ref.invalidate(chaptersProvider(widget.novelId));
@@ -171,32 +173,20 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(
+        showEnhancedToast(
           context,
-        ).showSnackBar(SnackBar(content: Text('Save failed: $e')));
+          message: 'Save failed: $e',
+          tone: EnhancedToastTone.error,
+          actionLabel: 'Retry',
+          onAction: () => _saveContent(),
+        );
       }
     }
   }
 
-  void _toggleBold() {
-    setState(() {
-      _isBold = !_isBold;
-    });
-    HapticFeedback.lightImpact();
-  }
-
-  void _toggleItalic() {
-    setState(() {
-      _isItalic = !_isItalic;
-    });
-    HapticFeedback.lightImpact();
-  }
-
-  void _toggleUnderline() {
-    setState(() {
-      _isUnderline = !_isUnderline;
-    });
-    HapticFeedback.lightImpact();
+  void _togglePreview() {
+    setState(() => _preview = !_preview);
+    HapticFeedback.selectionClick();
   }
 
   @override
@@ -235,32 +225,34 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
               ),
             ),
             // Formatting toolbar
-            _buildFormattingToolbar(context, theme),
+            RichTextToolbar(
+              preview: _preview,
+              onTogglePreview: _togglePreview,
+              onBold: () => MarkdownEditActions.toggleBold(_contentController),
+              onItalic: () =>
+                  MarkdownEditActions.toggleItalic(_contentController),
+              onUnderline: () =>
+                  MarkdownEditActions.toggleUnderline(_contentController),
+              onHeading: () =>
+                  MarkdownEditActions.insertHeading(_contentController),
+              onQuote: () =>
+                  MarkdownEditActions.insertQuote(_contentController),
+              onCode: () =>
+                  MarkdownEditActions.toggleInlineCode(_contentController),
+              onBullet: () =>
+                  MarkdownEditActions.insertBullet(_contentController),
+              onNumbered: () =>
+                  MarkdownEditActions.insertNumbered(_contentController),
+              onLink: () => MarkdownEditActions.insertLink(_contentController),
+            ),
             // Content editor
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
-                child: TextField(
+                child: RichTextEditor(
                   controller: _contentController,
-                  maxLines: null,
-                  expands: true,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Start writing...',
-                    hintStyle: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    height: 1.8,
-                    fontWeight: _isBold ? FontWeight.bold : FontWeight.normal,
-                    fontStyle: _isItalic ? FontStyle.italic : FontStyle.normal,
-                    decoration: _isUnderline
-                        ? TextDecoration.underline
-                        : TextDecoration.none,
-                  ),
-                  textAlign: TextAlign.left,
-                  textAlignVertical: TextAlignVertical.top,
+                  preview: _preview,
+                  hintText: 'Start writing...',
                 ),
               ),
             ),
@@ -345,145 +337,6 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
           onPressed: () => _showMoreMenu(context, l10n),
         ),
       ],
-    );
-  }
-
-  Widget _buildFormattingToolbar(BuildContext context, ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Spacing.m,
-        vertical: Spacing.s,
-      ),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        border: Border(bottom: BorderSide(color: theme.dividerColor, width: 1)),
-      ),
-      child: Row(
-        children: [
-          _buildFormatButton(
-            context: context,
-            icon: Icons.format_bold,
-            label: 'B',
-            isActive: _isBold,
-            onTap: _toggleBold,
-          ),
-          _buildFormatButton(
-            context: context,
-            icon: Icons.format_italic,
-            label: 'I',
-            isActive: _isItalic,
-            onTap: _toggleItalic,
-          ),
-          _buildFormatButton(
-            context: context,
-            icon: Icons.format_underlined,
-            label: 'U',
-            isActive: _isUnderline,
-            onTap: _toggleUnderline,
-          ),
-          const Spacer(),
-          _buildFormatButton(
-            context: context,
-            icon: Icons.format_list_bulleted,
-            label: '•',
-            isActive: false,
-            onTap: () {
-              // Insert bullet point
-              _insertText('• ');
-              HapticFeedback.lightImpact();
-            },
-          ),
-          _buildFormatButton(
-            context: context,
-            icon: Icons.format_list_numbered,
-            label: '1.',
-            isActive: false,
-            onTap: () {
-              // Insert numbered list
-              _insertText('1. ');
-              HapticFeedback.lightImpact();
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFormatButton({
-    required BuildContext context,
-    required IconData icon,
-    required String label,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-
-    return WaveTap(
-      borderRadius: BorderRadius.circular(Radii.m),
-      onLongPress: () {
-        HapticFeedback.mediumImpact();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('$label options'),
-            duration: const Duration(seconds: 1),
-          ),
-        );
-      },
-      onTap: onTap,
-      child: PressScale(
-        child: Container(
-          width: MobileSpacing.touchTargetComfortable,
-          height: MobileSpacing.touchTargetComfortable,
-          decoration: BoxDecoration(
-            color: isActive
-                ? theme.colorScheme.primaryContainer
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(Radii.m),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 20,
-                color: isActive
-                    ? theme.colorScheme.onPrimaryContainer
-                    : theme.colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(height: 2),
-              Text(
-                label,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: isActive
-                      ? theme.colorScheme.onPrimaryContainer
-                      : theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _insertText(String text) {
-    final currentText = _contentController.text;
-    final selection = _contentController.selection;
-
-    // If no selection, append to end or assume start?
-    // Usually selection.baseOffset is -1 if no selection.
-    int cursorPosition = selection.baseOffset;
-    if (cursorPosition < 0) cursorPosition = currentText.length;
-
-    final newText =
-        currentText.substring(0, cursorPosition) +
-        text +
-        currentText.substring(cursorPosition);
-
-    _contentController.value = TextEditingValue(
-      text: newText,
-      selection: TextSelection.collapsed(offset: cursorPosition + text.length),
     );
   }
 

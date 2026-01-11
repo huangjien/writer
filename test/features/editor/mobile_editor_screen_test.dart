@@ -288,15 +288,26 @@ void main() {
     await tester.tap(find.byIcon(Icons.format_underlined));
     await tester.pump();
 
+    final contentFieldFinder = find.byWidgetPredicate(
+      (widget) => widget is TextField && widget.expands,
+    );
+
     // Insert Bullet
     await tester.tap(find.byIcon(Icons.format_list_bulleted));
     await tester.pump();
-    expect(find.text('• '), findsOneWidget);
+    final bulletText =
+        tester.widget<TextField>(contentFieldFinder).controller?.text ?? '';
+    expect(bulletText, startsWith('- '));
 
     // Insert Numbered List
+    await tester.enterText(contentFieldFinder, '$bulletText\n');
+    await tester.pump();
     await tester.tap(find.byIcon(Icons.format_list_numbered));
     await tester.pump();
-    expect(find.text('• 1. '), findsOneWidget);
+    final numberedText =
+        tester.widget<TextField>(contentFieldFinder).controller?.text ?? '';
+    expect(numberedText, startsWith('- '));
+    expect(numberedText, contains('\n1. '));
   });
 
   testWidgets('shows more menu and actions', (tester) async {

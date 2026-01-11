@@ -40,7 +40,7 @@ void main() {
 
       // Check for container with proper structure
       expect(find.byType(Container), findsAtLeastNWidgets(1));
-      expect(find.byType(Row), findsOneWidget);
+      expect(find.byType(Row), findsAtLeastNWidgets(1));
       expect(find.byType(Column), findsAtLeastNWidgets(1));
     });
 
@@ -288,7 +288,7 @@ void main() {
       // IconButton widgets also use InkWell internally, so there are multiple InkWells
       expect(find.byType(InkWell), findsAtLeastNWidgets(1));
       expect(find.byType(Container), findsAtLeastNWidgets(1));
-      expect(find.byType(Row), findsOneWidget);
+      expect(find.byType(Row), findsAtLeastNWidgets(1));
       expect(find.byType(Column), findsAtLeastNWidgets(1));
 
       // Check cover image placeholder

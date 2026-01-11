@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'advanced_typography.dart';
 import 'design_tokens.dart';
 
 /// Reader-friendly theme families. Each family has light and dark variants.
@@ -64,51 +65,53 @@ ThemeData _buildFromSeed(Color seed, Brightness brightness) {
       selectionHandleColor: baseTheme.colorScheme.primary,
     ),
     // Enhanced Typography with Merriweather for headings, Inter for body
-    textTheme: GoogleFonts.interTextTheme(baseTheme.textTheme).copyWith(
-      displayLarge: GoogleFonts.merriweather(
-        textStyle: baseTheme.textTheme.displayLarge,
-        height: 1.6,
-      ),
-      displayMedium: GoogleFonts.merriweather(
-        textStyle: baseTheme.textTheme.displayMedium,
-        height: 1.6,
-      ),
-      displaySmall: GoogleFonts.merriweather(
-        textStyle: baseTheme.textTheme.displaySmall,
-        height: 1.6,
-      ),
-      headlineLarge: GoogleFonts.merriweather(
-        textStyle: baseTheme.textTheme.headlineLarge,
-        height: 1.6,
-      ),
-      headlineMedium: GoogleFonts.merriweather(
-        textStyle: baseTheme.textTheme.headlineMedium,
-        height: 1.6,
-      ),
-      headlineSmall: GoogleFonts.merriweather(
-        textStyle: baseTheme.textTheme.headlineSmall,
-        height: 1.6,
-      ),
-      titleLarge: GoogleFonts.merriweather(
-        textStyle: baseTheme.textTheme.titleLarge,
-        height: 1.6,
-      ),
-      titleMedium: GoogleFonts.merriweather(
-        textStyle: baseTheme.textTheme.titleMedium,
-        height: 1.6,
-      ),
-      titleSmall: GoogleFonts.inter(
-        textStyle: baseTheme.textTheme.titleSmall,
-        height: 1.6,
-      ),
-      bodyLarge: GoogleFonts.inter(
-        textStyle: baseTheme.textTheme.bodyLarge?.copyWith(height: 1.8),
-      ),
-      bodyMedium: GoogleFonts.inter(
-        textStyle: baseTheme.textTheme.bodyMedium?.copyWith(height: 1.8),
-      ),
-      bodySmall: GoogleFonts.inter(
-        textStyle: baseTheme.textTheme.bodySmall?.copyWith(height: 1.8),
+    textTheme: AdvancedTypography.apply(
+      GoogleFonts.interTextTheme(baseTheme.textTheme).copyWith(
+        displayLarge: GoogleFonts.merriweather(
+          textStyle: baseTheme.textTheme.displayLarge,
+          height: 1.6,
+        ),
+        displayMedium: GoogleFonts.merriweather(
+          textStyle: baseTheme.textTheme.displayMedium,
+          height: 1.6,
+        ),
+        displaySmall: GoogleFonts.merriweather(
+          textStyle: baseTheme.textTheme.displaySmall,
+          height: 1.6,
+        ),
+        headlineLarge: GoogleFonts.merriweather(
+          textStyle: baseTheme.textTheme.headlineLarge,
+          height: 1.6,
+        ),
+        headlineMedium: GoogleFonts.merriweather(
+          textStyle: baseTheme.textTheme.headlineMedium,
+          height: 1.6,
+        ),
+        headlineSmall: GoogleFonts.merriweather(
+          textStyle: baseTheme.textTheme.headlineSmall,
+          height: 1.6,
+        ),
+        titleLarge: GoogleFonts.merriweather(
+          textStyle: baseTheme.textTheme.titleLarge,
+          height: 1.6,
+        ),
+        titleMedium: GoogleFonts.merriweather(
+          textStyle: baseTheme.textTheme.titleMedium,
+          height: 1.6,
+        ),
+        titleSmall: GoogleFonts.inter(
+          textStyle: baseTheme.textTheme.titleSmall,
+          height: 1.6,
+        ),
+        bodyLarge: GoogleFonts.inter(
+          textStyle: baseTheme.textTheme.bodyLarge?.copyWith(height: 1.8),
+        ),
+        bodyMedium: GoogleFonts.inter(
+          textStyle: baseTheme.textTheme.bodyMedium?.copyWith(height: 1.8),
+        ),
+        bodySmall: GoogleFonts.inter(
+          textStyle: baseTheme.textTheme.bodySmall?.copyWith(height: 1.8),
+        ),
       ),
     ),
 
@@ -195,15 +198,17 @@ ThemeData themeForLight(AppThemeFamily family) {
         selectionColor: baseTheme.colorScheme.primary.withValues(alpha: 0.35),
         selectionHandleColor: baseTheme.colorScheme.primary,
       ),
-      textTheme: GoogleFonts.interTextTheme(baseTheme.textTheme).copyWith(
-        bodyLarge: GoogleFonts.inter(
-          textStyle: baseTheme.textTheme.bodyLarge?.copyWith(height: 1.8),
-        ),
-        bodyMedium: GoogleFonts.inter(
-          textStyle: baseTheme.textTheme.bodyMedium?.copyWith(height: 1.8),
-        ),
-        bodySmall: GoogleFonts.inter(
-          textStyle: baseTheme.textTheme.bodySmall?.copyWith(height: 1.8),
+      textTheme: AdvancedTypography.apply(
+        GoogleFonts.interTextTheme(baseTheme.textTheme).copyWith(
+          bodyLarge: GoogleFonts.inter(
+            textStyle: baseTheme.textTheme.bodyLarge?.copyWith(height: 1.8),
+          ),
+          bodyMedium: GoogleFonts.inter(
+            textStyle: baseTheme.textTheme.bodyMedium?.copyWith(height: 1.8),
+          ),
+          bodySmall: GoogleFonts.inter(
+            textStyle: baseTheme.textTheme.bodySmall?.copyWith(height: 1.8),
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -245,15 +250,17 @@ ThemeData themeForDark(AppThemeFamily family) {
         selectionColor: baseTheme.colorScheme.primary.withValues(alpha: 0.35),
         selectionHandleColor: baseTheme.colorScheme.primary,
       ),
-      textTheme: GoogleFonts.interTextTheme(baseTheme.textTheme).copyWith(
-        bodyLarge: GoogleFonts.inter(
-          textStyle: baseTheme.textTheme.bodyLarge?.copyWith(height: 1.8),
-        ),
-        bodyMedium: GoogleFonts.inter(
-          textStyle: baseTheme.textTheme.bodyMedium?.copyWith(height: 1.8),
-        ),
-        bodySmall: GoogleFonts.inter(
-          textStyle: baseTheme.textTheme.bodySmall?.copyWith(height: 1.8),
+      textTheme: AdvancedTypography.apply(
+        GoogleFonts.interTextTheme(baseTheme.textTheme).copyWith(
+          bodyLarge: GoogleFonts.inter(
+            textStyle: baseTheme.textTheme.bodyLarge?.copyWith(height: 1.8),
+          ),
+          bodyMedium: GoogleFonts.inter(
+            textStyle: baseTheme.textTheme.bodyMedium?.copyWith(height: 1.8),
+          ),
+          bodySmall: GoogleFonts.inter(
+            textStyle: baseTheme.textTheme.bodySmall?.copyWith(height: 1.8),
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(

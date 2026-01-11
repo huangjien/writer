@@ -8,7 +8,7 @@ import '../../models/novel.dart';
 import '../../state/novel_providers.dart';
 import '../../state/providers.dart';
 import '../../shared/image_utils.dart';
-import '../../shared/widgets/empty_state.dart';
+import '../../shared/widgets/empty_states/novel_empty_state.dart';
 
 class MyNovelsScreen extends ConsumerWidget {
   const MyNovelsScreen({super.key});
@@ -59,8 +59,7 @@ class _MemberNovelsList extends ConsumerWidget {
     return novelsAsync.when(
       data: (novels) {
         if (novels.isEmpty) {
-          return EmptyState(
-            icon: Icons.menu_book_outlined,
+          return NovelEmptyState(
             title: l10n?.noNovelsFound ?? 'No novels found.',
             subtitle: 'Create your first novel to get started.',
             actionLabel: l10n?.createNovel ?? 'Create Novel',

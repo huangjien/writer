@@ -307,7 +307,7 @@ void main() {
     expect(find.byType(LinearProgressIndicator), findsOneWidget);
   });
 
-  testWidgets('Shows snackbar when reaching last chapter', (tester) async {
+  testWidgets('Shows toast when reaching last chapter', (tester) async {
     await pumpScreen(
       tester,
       allChapters: testChapters,
@@ -319,12 +319,10 @@ void main() {
     await tester.tap(find.byIcon(Icons.skip_next));
     await tester.pumpAndSettle();
 
-    // Should show snackbar
-    expect(find.byType(SnackBar), findsOneWidget);
     expect(find.text('Reached last chapter'), findsOneWidget);
   });
 
-  testWidgets('Shows snackbar when reaching first chapter', (tester) async {
+  testWidgets('Shows toast when reaching first chapter', (tester) async {
     await pumpScreen(tester, allChapters: testChapters, currentIdx: 0);
     await tester.pumpAndSettle();
 
@@ -332,12 +330,10 @@ void main() {
     await tester.tap(find.byIcon(Icons.skip_previous));
     await tester.pumpAndSettle();
 
-    // Should show snackbar
-    expect(find.byType(SnackBar), findsOneWidget);
     expect(find.text('Reached first chapter'), findsOneWidget);
   });
 
-  testWidgets('Navigation shows error snackbar on failure', (tester) async {
+  testWidgets('Navigation shows error toast on failure', (tester) async {
     // Setup chapters where the second one needs fetching (null content)
     final chapters = [
       const Chapter(
@@ -369,9 +365,8 @@ void main() {
     await tester.pump(); // Start navigation
     await tester.pump(); // Process error handling
 
-    // Should show snackbar with error message
-    expect(find.byType(SnackBar), findsOneWidget);
     expect(find.text('Load Failed'), findsOneWidget);
+    expect(find.text('Retry'), findsOneWidget);
   });
 
   testWidgets('Auto start TTS shows blocked prompt if delayed', (tester) async {
@@ -382,11 +377,8 @@ void main() {
     // Wait for the timeout in tryAutoStartTts (1.5s)
     await tester.pump(const Duration(milliseconds: 1600));
 
-    // Verify SnackBar with "Autoplay Blocked" message
-    expect(find.byType(SnackBar), findsOneWidget);
-    // Note: Localization might be "Autoplay blocked by browser..."
-    // We can just check for SnackBar existence and action button
-    expect(find.text('Continue'), findsOneWidget);
+    // Verify toast action button
+    expect(find.text('Continue'), findsWidgets);
   });
 
   testWidgets('Initial offset triggers scroll', (tester) async {
@@ -474,16 +466,14 @@ void main() {
     // Tap next chapter button (Fail)
     await tester.tap(find.byIcon(Icons.skip_next));
     await tester.pump(); // Start nav
-    await tester.pump(); // Show snackbar
+    await tester.pump(); // Show toast
 
-    // Verify Error Snackbar
-    expect(find.byType(SnackBar), findsOneWidget);
+    // Verify Error Toast
     expect(find.text('Load Failed'), findsOneWidget);
 
-    // Invoke Retry directly to avoid tap issues with SnackBar
-    final actionFinder = find.byType(SnackBarAction);
-    expect(actionFinder, findsOneWidget);
-    tester.widget<SnackBarAction>(actionFinder).onPressed();
+    final retryFinder = find.widgetWithText(TextButton, 'Retry');
+    expect(retryFinder, findsOneWidget);
+    await tester.tap(retryFinder);
     await tester.pumpAndSettle();
 
     // Should now be on Chapter 2
@@ -545,8 +535,7 @@ void main() {
     await tester.tap(betaButton);
     await tester.pumpAndSettle();
 
-    expect(find.byType(SnackBar), findsOneWidget);
-    // The exact message depends on localization, but we expect a failure snackbar
+    expect(find.text('Beta evaluation failed'), findsOneWidget);
   });
 
   testWidgets('AI Chat sidebar closes on outside tap', (tester) async {

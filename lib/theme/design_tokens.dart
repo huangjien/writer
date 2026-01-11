@@ -115,6 +115,40 @@ class MobileTypography {
   static const double titleCondensed = 16.0;
 }
 
+class TypographyScale {
+  static const double displayLarge = 57.0;
+  static const double displayMedium = 45.0;
+  static const double displaySmall = 36.0;
+
+  static const double headlineLarge = 32.0;
+  static const double headlineMedium = 28.0;
+  static const double headlineSmall = 24.0;
+
+  static const double titleLarge = 22.0;
+  static const double titleMedium = 16.0;
+  static const double titleSmall = 14.0;
+
+  static const double bodyLarge = 16.0;
+  static const double bodyMedium = 14.0;
+  static const double bodySmall = 12.0;
+
+  static const double labelLarge = 14.0;
+  static const double labelMedium = 12.0;
+  static const double labelSmall = 11.0;
+}
+
+class LetterSpacing {
+  static const double tight = -0.2;
+  static const double normal = 0.0;
+  static const double relaxed = 0.2;
+
+  static const double display = -0.6;
+  static const double headline = -0.3;
+  static const double title = -0.1;
+  static const double body = 0.0;
+  static const double label = 0.1;
+}
+
 /// Responsive breakpoints
 class Breakpoints {
   static const double mobile = 0; // < 600dp

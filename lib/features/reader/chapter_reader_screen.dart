@@ -27,6 +27,7 @@ import 'logic/edit_mode.dart';
 import 'state/reader_session_state.dart';
 import 'state/reader_session_notifier.dart';
 import '../../shared/widgets/error_view.dart';
+import '../../shared/widgets/feedback/enhanced_toast.dart';
 import '../../common/errors/failures.dart';
 import '../../shared/api_exception.dart';
 
@@ -155,18 +156,16 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
 
   void _showAutoplayPrompt() {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context)!.autoplayBlocked),
-        action: SnackBarAction(
-          label: AppLocalizations.of(context)!.continueLabel,
-          onPressed: () async {
-            ref.read(readerSessionProvider.notifier).setAutoplayBlocked(false);
-            await ref.read(readerSessionProvider.notifier).startTts();
-          },
-        ),
-        duration: const Duration(seconds: 5),
-      ),
+    showEnhancedToast(
+      context,
+      message: AppLocalizations.of(context)!.autoplayBlocked,
+      tone: EnhancedToastTone.info,
+      actionLabel: AppLocalizations.of(context)!.continueLabel,
+      onAction: () async {
+        ref.read(readerSessionProvider.notifier).setAutoplayBlocked(false);
+        await ref.read(readerSessionProvider.notifier).startTts();
+      },
+      duration: const Duration(seconds: 5),
     );
   }
 
@@ -178,22 +177,20 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     try {
       final success = await notifier.loadNextChapter();
       if (!success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.reachedLastChapter),
-          ),
+        showEnhancedToast(
+          context,
+          message: AppLocalizations.of(context)!.reachedLastChapter,
+          tone: EnhancedToastTone.info,
         );
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e is AppFailure ? e.message : 'Failed to load chapter'),
-          action: SnackBarAction(
-            label: 'Retry',
-            onPressed: () => _onNextPressed(),
-          ),
-        ),
+      showEnhancedToast(
+        context,
+        message: e is AppFailure ? e.message : 'Failed to load chapter',
+        tone: EnhancedToastTone.error,
+        actionLabel: 'Retry',
+        onAction: () => _onNextPressed(),
       );
     }
   }
@@ -206,22 +203,20 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     try {
       final success = await notifier.loadPrevChapter();
       if (!success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.reachedFirstChapter),
-          ),
+        showEnhancedToast(
+          context,
+          message: AppLocalizations.of(context)!.reachedFirstChapter,
+          tone: EnhancedToastTone.info,
         );
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e is AppFailure ? e.message : 'Failed to load chapter'),
-          action: SnackBarAction(
-            label: 'Retry',
-            onPressed: () => _onPrevPressed(),
-          ),
-        ),
+      showEnhancedToast(
+        context,
+        message: e is AppFailure ? e.message : 'Failed to load chapter',
+        tone: EnhancedToastTone.error,
+        actionLabel: 'Retry',
+        onAction: () => _onPrevPressed(),
       );
     }
   }
@@ -295,17 +290,21 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     final state = ref.read(readerSessionProvider);
     final l10n = AppLocalizations.of(context)!;
     if ((state.content ?? '').trim().isEmpty) {
-      ScaffoldMessenger.of(
+      showEnhancedToast(
         context,
-      ).showSnackBar(SnackBar(content: Text(l10n.betaEvaluationFailed)));
+        message: l10n.betaEvaluationFailed,
+        tone: EnhancedToastTone.error,
+      );
       setState(() {
         _betaLoading = false;
       });
       return;
     }
-    ScaffoldMessenger.of(
+    showEnhancedToast(
       context,
-    ).showSnackBar(SnackBar(content: Text(l10n.betaEvaluating)));
+      message: l10n.betaEvaluating,
+      tone: EnhancedToastTone.info,
+    );
     try {
       final service = ref.read(aiChatServiceProvider);
       final eval = await service.betaEvaluateChapter(
@@ -316,17 +315,21 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
       );
       if (!mounted) return;
       if (eval == null) {
-        ScaffoldMessenger.of(
+        showEnhancedToast(
           context,
-        ).showSnackBar(SnackBar(content: Text(l10n.betaEvaluationFailed)));
+          message: l10n.betaEvaluationFailed,
+          tone: EnhancedToastTone.error,
+        );
         setState(() {
           _betaLoading = false;
         });
         return;
       }
-      ScaffoldMessenger.of(
+      showEnhancedToast(
         context,
-      ).showSnackBar(SnackBar(content: Text(l10n.betaEvaluationReady)));
+        message: l10n.betaEvaluationReady,
+        tone: EnhancedToastTone.success,
+      );
       await showDialog(
         context: context,
         builder: (context) {
@@ -339,9 +342,11 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
         return;
       }
       if (!mounted) return;
-      ScaffoldMessenger.of(
+      showEnhancedToast(
         context,
-      ).showSnackBar(SnackBar(content: Text(l10n.betaEvaluationFailed)));
+        message: l10n.betaEvaluationFailed,
+        tone: EnhancedToastTone.error,
+      );
     }
     if (mounted) {
       setState(() {

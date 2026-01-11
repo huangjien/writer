@@ -6,6 +6,9 @@ import 'mobile_gestures.dart';
 import '../image_utils.dart';
 import 'gestures/swipe_actions.dart';
 import 'gestures/pinch_to_zoom.dart';
+import 'cover_placeholder.dart';
+import 'progress_ring.dart';
+import 'tag_pill.dart';
 
 /// Mobile-optimized novel card
 /// Features:
@@ -126,6 +129,23 @@ class MobileNovelCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     const SizedBox(height: Spacing.xs),
+                    Wrap(
+                      spacing: Spacing.xs,
+                      runSpacing: Spacing.xs,
+                      children: [
+                        TagPill(
+                          label: novel.languageCode.toUpperCase(),
+                          icon: Icons.language,
+                        ),
+                        TagPill(
+                          label: novel.isPublic ? 'Public' : 'Private',
+                          icon: novel.isPublic
+                              ? Icons.public
+                              : Icons.lock_outline,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: Spacing.xs),
                     if (lastRead != null)
                       Text(
                         lastRead!,
@@ -154,7 +174,30 @@ class MobileNovelCard extends StatelessWidget {
     final validCoverUrl = ImageUtils.getFilteredCoverUrl(novel.coverUrl);
 
     if (validCoverUrl == null) {
-      return _buildGradientCover(context, width: width, height: height);
+      return SizedBox(
+        width: width,
+        height: height,
+        child: Stack(
+          children: [
+            CoverPlaceholder(
+              seed: novel.title.hashCode,
+              borderRadius: BorderRadius.circular(Radii.s),
+            ),
+            if (progress > 0)
+              Positioned(
+                right: 4,
+                bottom: 4,
+                child: ProgressRing(
+                  value: progress,
+                  size: 18,
+                  strokeWidth: 2.5,
+                  backgroundColor: Colors.white.withValues(alpha: 0.25),
+                  foregroundColor: Colors.white.withValues(alpha: 0.95),
+                ),
+              ),
+          ],
+        ),
+      );
     }
 
     return GestureDetector(
@@ -169,65 +212,26 @@ class MobileNovelCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              _buildGradientCover(context, width: width, height: height),
-              Image.network(
-                validCoverUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const SizedBox.shrink();
-                },
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      child,
-                      const Center(
-                        child: SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      ),
-                    ],
-                  );
-                },
+              BlurUpNetworkImage(
+                imageUrl: validCoverUrl,
+                placeholderSeed: novel.title.hashCode,
+                width: width,
+                height: height,
               ),
+              if (progress > 0)
+                Positioned(
+                  right: 4,
+                  bottom: 4,
+                  child: ProgressRing(
+                    value: progress,
+                    size: 18,
+                    strokeWidth: 2.5,
+                    backgroundColor: Colors.white.withValues(alpha: 0.25),
+                    foregroundColor: Colors.white.withValues(alpha: 0.95),
+                  ),
+                ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGradientCover(
-    BuildContext context, {
-    required double width,
-    required double height,
-  }) {
-    final titleHash = novel.title.hashCode;
-    final hue = (titleHash % 360).abs();
-    final gradientColors = [
-      HSLColor.fromAHSL(0.8, hue.toDouble(), 0.7, 0.6).toColor(),
-      HSLColor.fromAHSL(0.9, (hue + 60) % 360.0, 0.8, 0.5).toColor(),
-    ];
-
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(Radii.s),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: gradientColors,
-        ),
-      ),
-      child: Center(
-        child: Icon(
-          Icons.menu_book,
-          color: Colors.white.withValues(alpha: 0.9),
-          size: 24,
         ),
       ),
     );

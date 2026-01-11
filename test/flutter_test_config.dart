@@ -9,9 +9,6 @@ Future<void> testExecutable(FutureOr<void> Function() main) async {
     if (message == null) return;
 
     // Filter noisy patterns that cause log bloat
-    if (message.startsWith('══╡ EXCEPTION CAUGHT BY')) return;
-    if (message.startsWith('══════════════════════════════════════')) return;
-    if (message.startsWith('The following assertion was thrown')) return;
     if (message.contains('RenderFlex children have non-zero flex')) {
       return;
     }

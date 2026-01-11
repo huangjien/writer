@@ -27,7 +27,7 @@ import 'package:writer/shared/widgets/mobile_bottom_nav_bar.dart';
 import 'package:writer/shared/widgets/mobile_fab.dart';
 import 'package:writer/shared/widgets/mobile_novel_card.dart';
 import 'package:writer/features/reader/reader_screen.dart';
-import 'package:writer/shared/widgets/empty_state.dart';
+import 'package:writer/shared/widgets/empty_states/novel_empty_state.dart';
 import 'package:writer/shared/widgets/mobile_bottom_sheet.dart';
 
 enum LibrarySort { titleAsc, authorAsc }
@@ -267,8 +267,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                                   const SizedBox(height: Spacing.m),
                                   if (visible.isEmpty)
                                     Expanded(
-                                      child: EmptyState(
-                                        icon: Icons.menu_book_outlined,
+                                      child: NovelEmptyState(
                                         title: l10n.noNovelsFound,
                                         subtitle:
                                             'Create your first novel to get started',

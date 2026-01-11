@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import '../../theme/design_tokens.dart';
+import 'loading/loading_story.dart';
+import 'loading/shimmer_skeleton.dart';
+import 'loading/step_progress.dart';
 
 /// Loading state component with skeleton loading support
 /// Features:
@@ -15,27 +17,49 @@ class LoadingState extends StatelessWidget {
     this.size = 48.0,
     this.useSkeleton = false,
     this.skeletonChild,
+    this.stories,
+    this.steps,
+    this.currentStep,
   });
 
   final String? message;
   final double size;
   final bool useSkeleton;
   final Widget? skeletonChild;
+  final List<String>? stories;
+  final List<String>? steps;
+  final int? currentStep;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     if (useSkeleton) {
-      return _SkeletonLoader(child: skeletonChild ?? const _DefaultSkeleton());
+      return ShimmerSkeleton(child: skeletonChild ?? const _DefaultSkeleton());
     }
+
+    final hasSteps = steps != null && steps!.isNotEmpty && currentStep != null;
+    final showStories =
+        (message == null || message!.isEmpty) && (stories?.isNotEmpty ?? false);
 
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _PulsingProgressIndicator(size: size),
-          if (message != null) ...[
+          if (hasSteps)
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 320),
+              child: StepProgress(steps: steps!, currentStep: currentStep!),
+            )
+          else
+            _PulsingProgressIndicator(size: size),
+          if (showStories) ...[
+            const SizedBox(height: Spacing.m),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 320),
+              child: LoadingStory(stories: stories!),
+            ),
+          ] else if (message != null) ...[
             const SizedBox(height: Spacing.m),
             Text(
               message!,
@@ -120,33 +144,6 @@ class _PulsingProgressIndicatorState extends State<_PulsingProgressIndicator>
           ),
         );
       },
-    );
-  }
-}
-
-class _SkeletonLoader extends StatelessWidget {
-  const _SkeletonLoader({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final baseColor = theme.brightness == Brightness.dark
-        ? theme.colorScheme.surfaceContainerHighest
-        : theme.colorScheme.surfaceContainerHigh;
-    final highlightColor = theme.brightness == Brightness.dark
-        ? theme.colorScheme.surfaceContainerHigh
-        : theme.colorScheme.surfaceContainerHighest;
-
-    return Skeletonizer(
-      enabled: true,
-      effect: ShimmerEffect(
-        baseColor: baseColor,
-        highlightColor: highlightColor,
-        duration: const Duration(milliseconds: 1500),
-      ),
-      child: child,
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/design_tokens.dart';
@@ -12,6 +13,8 @@ import 'chapter_reader_screen.dart' as cr;
 import '../../repositories/chapter_repository.dart';
 import '../../shared/api_exception.dart';
 import '../../state/providers.dart';
+import '../../shared/widgets/empty_states/chapter_empty_state.dart';
+import '../../shared/widgets/loading_state.dart';
 
 class ReaderScreen extends ConsumerStatefulWidget {
   const ReaderScreen({super.key, required this.novelId, this.chapterId});
@@ -125,12 +128,56 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                 ? null
                 : () async {
                     final messenger = ScaffoldMessenger.of(context);
+                    final rootNavigator = Navigator.of(
+                      context,
+                      rootNavigator: true,
+                    );
                     final errMsg = '${l10n.error}: ${l10n.pdfFailed}';
                     setState(() => _pdfGenerating = true);
+                    final steps = <String>[
+                      'Preparing chapters',
+                      'Generating PDF',
+                      'Sharing',
+                    ];
+                    final stories = <String>[
+                      'Tip: Write one clear intention per scene.',
+                      'Tip: Strong verbs make sentences feel alive.',
+                      'Tip: If stuck, rewrite the last paragraph.',
+                      'Tip: Dialogue reveals character faster than description.',
+                    ];
+                    final progress = ValueNotifier<int>(0);
+                    unawaited(
+                      showDialog<void>(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) {
+                          return PopScope(
+                            canPop: false,
+                            child: Dialog(
+                              insetPadding: const EdgeInsets.all(Spacing.xl),
+                              child: Padding(
+                                padding: const EdgeInsets.all(Spacing.xl),
+                                child: ValueListenableBuilder<int>(
+                                  valueListenable: progress,
+                                  builder: (context, step, _) {
+                                    return LoadingState(
+                                      steps: steps,
+                                      currentStep: step,
+                                      stories: stories,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
                     try {
                       final chapters = await ref.read(
                         chaptersProvider(widget.novelId).future,
                       );
+                      progress.value = 1;
                       final repo = ref.read(chapterRepositoryProvider);
                       final withContent = <Chapter>[];
                       for (final c in chapters) {
@@ -147,6 +194,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
 
                       if (novel == null) throw Exception('Novel not found');
 
+                      progress.value = 2;
                       final pdfService = ref.read(pdfServiceProvider);
                       await pdfService.generateAndSharePdf(
                         novel: novel,
@@ -163,6 +211,10 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                     } catch (e) {
                       messenger.showSnackBar(SnackBar(content: Text(errMsg)));
                     } finally {
+                      if (mounted && rootNavigator.canPop()) {
+                        rootNavigator.pop();
+                      }
+                      progress.dispose();
                       if (mounted) setState(() => _pdfGenerating = false);
                     }
                   },
@@ -182,7 +234,15 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
         child: chaptersAsync.when(
           data: (chapters) {
             if (chapters.isEmpty) {
-              return Center(child: Text(l10n.noChaptersFound));
+              return ChapterEmptyState(
+                title: l10n.noChaptersFound,
+                subtitle: l10n.createNextChapter,
+                actionLabel: canEdit ? l10n.createNextChapter : null,
+                onAction: canEdit
+                    ? () =>
+                          context.push('/novel/${widget.novelId}/chapters/new')
+                    : null,
+              );
             }
             return ListView.separated(
               itemCount: chapters.length,
