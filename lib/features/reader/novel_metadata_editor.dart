@@ -33,6 +33,7 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
   String _languageCode = 'en';
   bool _isPublic = true;
   bool _isDirty = false;
+  bool _expanded = false;
   String _baseTitle = '';
   String _baseDescription = '';
   String _baseCoverUrl = '';
@@ -157,14 +158,16 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: ListView(
-          shrinkWrap: true,
+        child: ExpansionTile(
+          tilePadding: EdgeInsets.zero,
+          childrenPadding: const EdgeInsets.only(top: 12),
+          initiallyExpanded: _expanded,
+          onExpansionChanged: (value) => setState(() => _expanded = value),
+          title: Text(
+            l10n.novelMetadata,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           children: [
-            Text(
-              l10n.novelMetadata,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 12),
             novelAsync.when(
               data: (novel) {
                 if (!_initialized && novel != null) {

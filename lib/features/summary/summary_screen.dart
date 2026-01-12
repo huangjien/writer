@@ -193,60 +193,70 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                 // Edit
                 Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Container(
-                    constraints: const BoxConstraints(minHeight: 60),
-                    child: TextFormField(
-                      key: const Key('sentence_summary_field'),
-                      controller: _sentenceController,
-                      decoration: InputDecoration(
-                        labelText: l10n.sentenceSummary,
-                        border: const OutlineInputBorder(),
-                        suffixIcon: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              key: const Key('sentence_ai_coach_button'),
-                              icon: Icon(
-                                _showSentenceCoach
-                                    ? Icons.auto_awesome
-                                    : Icons.auto_awesome_outlined,
-                                color:
-                                    _showSentenceCoach || _sentenceAiSatisfied
-                                    ? Colors.purple
-                                    : null,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  if (_showSentenceCoach) {
-                                    _showSentenceCoach = false;
-                                    _showCoach = false;
-                                  } else {
-                                    _resetCoaches();
-                                    _showSentenceCoach = true;
-                                  }
-                                });
-                              },
-                              tooltip: 'AI sentence summary',
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          key: const Key('sentence_summary_field'),
+                          controller: _sentenceController,
+                          decoration: InputDecoration(
+                            labelText: l10n.sentenceSummary,
+                            border: const OutlineInputBorder(),
+                            suffixIcon: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  key: const Key('sentence_ai_coach_button'),
+                                  icon: Icon(
+                                    _showSentenceCoach
+                                        ? Icons.auto_awesome
+                                        : Icons.auto_awesome_outlined,
+                                    color: _showSentenceCoach ||
+                                            _sentenceAiSatisfied
+                                        ? Colors.purple
+                                        : null,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      if (_showSentenceCoach) {
+                                        _showSentenceCoach = false;
+                                        _showCoach = false;
+                                      } else {
+                                        _resetCoaches();
+                                        _showSentenceCoach = true;
+                                      }
+                                    });
+                                  },
+                                  tooltip: 'AI sentence summary',
+                                ),
+                                if (_sentenceAiSatisfied &&
+                                    !_showSentenceCoach) ...[
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.check_circle,
+                                      size: 18,
+                                    ),
+                                    color: Colors.green,
+                                    onPressed: () {
+                                      setState(
+                                        () => _sentenceAiSatisfied = false,
+                                      );
+                                    },
+                                    tooltip: l10n.imSatisfied,
+                                  ),
+                                ],
+                              ],
                             ),
-                            if (_sentenceAiSatisfied &&
-                                !_showSentenceCoach) ...[
-                              IconButton(
-                                icon: const Icon(Icons.check_circle, size: 18),
-                                color: Colors.green,
-                                onPressed: () {
-                                  setState(() => _sentenceAiSatisfied = false);
-                                },
-                                tooltip: l10n.imSatisfied,
-                              ),
-                            ],
-                          ],
+                          ),
+                          expands: true,
+                          minLines: null,
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          textAlignVertical: TextAlignVertical.top,
+                          onChanged: (_) => _onFieldChanged(),
                         ),
                       ),
-                      minLines: 2,
-                      maxLines: 4,
-                      textAlignVertical: TextAlignVertical.top,
-                      onChanged: (_) => _onFieldChanged(),
-                    ),
+                    ],
                   ),
                 ),
               ],
@@ -292,57 +302,67 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
               // Edit
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 200,
-                  child: TextFormField(
-                    controller: _paragraphController,
-                    decoration: InputDecoration(
-                      labelText: l10n.paragraphSummary,
-                      border: const OutlineInputBorder(),
-                      suffixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              _showParagraphCoach
-                                  ? Icons.auto_awesome
-                                  : Icons.auto_awesome_outlined,
-                              color:
-                                  _showParagraphCoach || _paragraphAiSatisfied
-                                  ? Colors.purple
-                                  : null,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _showParagraphCoach = !_showParagraphCoach;
-                                if (_showParagraphCoach) {
-                                  _showCoach = false;
-                                  _showSentenceCoach = false;
-                                  _showPageCoach = false;
-                                }
-                              });
-                            },
-                            tooltip: 'AI paragraph summary',
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _paragraphController,
+                        decoration: InputDecoration(
+                          labelText: l10n.paragraphSummary,
+                          border: const OutlineInputBorder(),
+                          suffixIcon: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(
+                                  _showParagraphCoach
+                                      ? Icons.auto_awesome
+                                      : Icons.auto_awesome_outlined,
+                                  color: _showParagraphCoach ||
+                                          _paragraphAiSatisfied
+                                      ? Colors.purple
+                                      : null,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _showParagraphCoach = !_showParagraphCoach;
+                                    if (_showParagraphCoach) {
+                                      _showCoach = false;
+                                      _showSentenceCoach = false;
+                                      _showPageCoach = false;
+                                    }
+                                  });
+                                },
+                                tooltip: 'AI paragraph summary',
+                              ),
+                              if (_paragraphAiSatisfied &&
+                                  !_showParagraphCoach) ...[
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.check_circle,
+                                    size: 18,
+                                  ),
+                                  color: Colors.green,
+                                  onPressed: () {
+                                    setState(
+                                      () => _paragraphAiSatisfied = false,
+                                    );
+                                  },
+                                  tooltip: l10n.imSatisfied,
+                                ),
+                              ],
+                            ],
                           ),
-                          if (_paragraphAiSatisfied &&
-                              !_showParagraphCoach) ...[
-                            IconButton(
-                              icon: const Icon(Icons.check_circle, size: 18),
-                              color: Colors.green,
-                              onPressed: () {
-                                setState(() => _paragraphAiSatisfied = false);
-                              },
-                              tooltip: l10n.imSatisfied,
-                            ),
-                          ],
-                        ],
+                        ),
+                        expands: true,
+                        minLines: null,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        textAlignVertical: TextAlignVertical.top,
+                        onChanged: (_) => _onFieldChanged(),
                       ),
                     ),
-                    maxLines: null,
-                    textAlignVertical: TextAlignVertical.top,
-                    onChanged: (_) => _onFieldChanged(),
-                  ),
+                  ],
                 ),
               ),
             ],
@@ -387,55 +407,63 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
               // Edit
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 300,
-                  child: TextFormField(
-                    controller: _pageController,
-                    decoration: InputDecoration(
-                      labelText: l10n.pageSummary,
-                      border: const OutlineInputBorder(),
-                      suffixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              _showPageCoach
-                                  ? Icons.auto_awesome
-                                  : Icons.auto_awesome_outlined,
-                              color: _showPageCoach || _pageAiSatisfied
-                                  ? Colors.purple
-                                  : null,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _showPageCoach = !_showPageCoach;
-                                if (_showPageCoach) {
-                                  _showCoach = false;
-                                  _showSentenceCoach = false;
-                                  _showParagraphCoach = false;
-                                }
-                              });
-                            },
-                            tooltip: 'AI page summary',
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _pageController,
+                        decoration: InputDecoration(
+                          labelText: l10n.pageSummary,
+                          border: const OutlineInputBorder(),
+                          suffixIcon: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(
+                                  _showPageCoach
+                                      ? Icons.auto_awesome
+                                      : Icons.auto_awesome_outlined,
+                                  color: _showPageCoach || _pageAiSatisfied
+                                      ? Colors.purple
+                                      : null,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _showPageCoach = !_showPageCoach;
+                                    if (_showPageCoach) {
+                                      _showCoach = false;
+                                      _showSentenceCoach = false;
+                                      _showParagraphCoach = false;
+                                    }
+                                  });
+                                },
+                                tooltip: 'AI page summary',
+                              ),
+                              if (_pageAiSatisfied && !_showPageCoach) ...[
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.check_circle,
+                                    size: 18,
+                                  ),
+                                  color: Colors.green,
+                                  onPressed: () {
+                                    setState(() => _pageAiSatisfied = false);
+                                  },
+                                  tooltip: l10n.imSatisfied,
+                                ),
+                              ],
+                            ],
                           ),
-                          if (_pageAiSatisfied && !_showPageCoach) ...[
-                            IconButton(
-                              icon: const Icon(Icons.check_circle, size: 18),
-                              color: Colors.green,
-                              onPressed: () {
-                                setState(() => _pageAiSatisfied = false);
-                              },
-                              tooltip: l10n.imSatisfied,
-                            ),
-                          ],
-                        ],
+                        ),
+                        expands: true,
+                        minLines: null,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        textAlignVertical: TextAlignVertical.top,
+                        onChanged: (_) => _onFieldChanged(),
                       ),
                     ),
-                    maxLines: null,
-                    textAlignVertical: TextAlignVertical.top,
-                    onChanged: (_) => _onFieldChanged(),
-                  ),
+                  ],
                 ),
               ),
             ],
@@ -480,55 +508,65 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
               // Edit
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: TextFormField(
-                    controller: _expandedController,
-                    decoration: InputDecoration(
-                      labelText: l10n.expandedSummary,
-                      border: const OutlineInputBorder(),
-                      suffixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              _showCoach
-                                  ? Icons.auto_awesome
-                                  : Icons.auto_awesome_outlined,
-                              color: _showCoach || _expandedAiSatisfied
-                                  ? Colors.purple
-                                  : null,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _showCoach = !_showCoach;
-                                if (_showCoach) {
-                                  _showSentenceCoach = false;
-                                  _showParagraphCoach = false;
-                                  _showPageCoach = false;
-                                }
-                              });
-                            },
-                            tooltip: l10n.toggleAiCoach,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _expandedController,
+                        decoration: InputDecoration(
+                          labelText: l10n.expandedSummary,
+                          border: const OutlineInputBorder(),
+                          suffixIcon: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(
+                                  _showCoach
+                                      ? Icons.auto_awesome
+                                      : Icons.auto_awesome_outlined,
+                                  color: _showCoach || _expandedAiSatisfied
+                                      ? Colors.purple
+                                      : null,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _showCoach = !_showCoach;
+                                    if (_showCoach) {
+                                      _showSentenceCoach = false;
+                                      _showParagraphCoach = false;
+                                      _showPageCoach = false;
+                                    }
+                                  });
+                                },
+                                tooltip: l10n.toggleAiCoach,
+                              ),
+                              if (_expandedAiSatisfied && !_showCoach) ...[
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.check_circle,
+                                    size: 18,
+                                  ),
+                                  color: Colors.green,
+                                  onPressed: () {
+                                    setState(
+                                      () => _expandedAiSatisfied = false,
+                                    );
+                                  },
+                                  tooltip: l10n.imSatisfied,
+                                ),
+                              ],
+                            ],
                           ),
-                          if (_expandedAiSatisfied && !_showCoach) ...[
-                            IconButton(
-                              icon: const Icon(Icons.check_circle, size: 18),
-                              color: Colors.green,
-                              onPressed: () {
-                                setState(() => _expandedAiSatisfied = false);
-                              },
-                              tooltip: l10n.imSatisfied,
-                            ),
-                          ],
-                        ],
+                        ),
+                        expands: true,
+                        minLines: null,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        textAlignVertical: TextAlignVertical.top,
+                        onChanged: (_) => _onFieldChanged(),
                       ),
                     ),
-                    expands: true,
-                    maxLines: null,
-                    textAlignVertical: TextAlignVertical.top,
-                    onChanged: (_) => _onFieldChanged(),
-                  ),
+                  ],
                 ),
               ),
             ],

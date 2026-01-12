@@ -41,6 +41,11 @@ void main() {
     await tester.pumpWidget(scope);
     await tester.pumpAndSettle();
 
+    final tile = find.byType(ExpansionTile);
+    expect(tile, findsOneWidget);
+    await tester.tap(tile);
+    await tester.pumpAndSettle();
+
     // Verify localized labels are shown (labels render via InputDecorator)
     expect(find.text('描述'), findsAtLeastNWidgets(1));
     expect(find.text('封面链接'), findsAtLeastNWidgets(1));

@@ -51,6 +51,11 @@ void main() {
 
     await tester.pumpAndSettle();
 
+    final tile = find.byType(ExpansionTile);
+    expect(tile, findsOneWidget);
+    await tester.tap(tile);
+    await tester.pumpAndSettle();
+
     // Find the TextField with minLines 3 (which is likely the description field)
     final textFieldFinder = find.byWidgetPredicate(
       (widget) => widget is TextField && widget.minLines == 3,

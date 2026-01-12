@@ -63,6 +63,11 @@ void main() {
       await tester.pumpWidget(app);
       await tester.pumpAndSettle();
 
+      final tile = find.byType(ExpansionTile);
+      expect(tile, findsOneWidget);
+      await tester.tap(tile);
+      await tester.pumpAndSettle();
+
       // Initial render shows the editor; exact field count can vary
 
       // Enter an invalid URL (wrong scheme and contains space)

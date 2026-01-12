@@ -85,6 +85,11 @@ void main() {
     await tester.pumpWidget(scope);
     await tester.pumpAndSettle();
 
+    final tile = find.byType(ExpansionTile);
+    expect(tile, findsOneWidget);
+    await tester.tap(tile);
+    await tester.pumpAndSettle();
+
     expect(find.text('Public'), findsOneWidget);
     expect(
       find.widgetWithText(TextFormField, 'Contributor Email'),
@@ -127,6 +132,11 @@ void main() {
     await tester.pumpWidget(scope);
     await tester.pumpAndSettle();
 
+    final tile = find.byType(ExpansionTile);
+    expect(tile, findsOneWidget);
+    await tester.tap(tile);
+    await tester.pumpAndSettle();
+
     expect(find.text('Public'), findsNothing);
     expect(
       find.widgetWithText(TextFormField, 'Contributor Email'),
@@ -156,6 +166,11 @@ void main() {
     );
 
     await tester.pumpWidget(scope);
+    await tester.pumpAndSettle();
+
+    final tile = find.byType(ExpansionTile);
+    expect(tile, findsOneWidget);
+    await tester.tap(tile);
     await tester.pumpAndSettle();
 
     final emailField = find.widgetWithText(TextFormField, 'Contributor Email');
@@ -189,6 +204,11 @@ void main() {
     );
 
     await tester.pumpWidget(scope);
+    await tester.pumpAndSettle();
+
+    final tile = find.byType(ExpansionTile);
+    expect(tile, findsOneWidget);
+    await tester.tap(tile);
     await tester.pumpAndSettle();
 
     final emailField = find.widgetWithText(TextFormField, 'Contributor Email');

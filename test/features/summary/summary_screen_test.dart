@@ -198,6 +198,11 @@ void main() {
 
     await tester.pumpAndSettle();
 
+    final metadataTile = find.byType(ExpansionTile);
+    expect(metadataTile, findsOneWidget);
+    await tester.tap(metadataTile);
+    await tester.pumpAndSettle();
+
     // Header shows title (in metadata editor)
     expect(find.text('Test Novel'), findsOneWidget);
     // Author is not shown in metadata editor

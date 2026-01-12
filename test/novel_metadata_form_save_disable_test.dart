@@ -64,6 +64,11 @@ void main() {
       await tester.pumpWidget(scope);
       await tester.pumpAndSettle();
 
+      final tile = find.byType(ExpansionTile);
+      expect(tile, findsOneWidget);
+      await tester.tap(tile);
+      await tester.pumpAndSettle();
+
       final coverField = find.widgetWithText(TextFormField, 'Cover URL');
       final saveTextFinder = find.text('Save');
       final saveButtonFinder = find.ancestor(
