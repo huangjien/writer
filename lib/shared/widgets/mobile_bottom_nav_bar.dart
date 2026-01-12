@@ -17,11 +17,13 @@ class MobileBottomNavBar extends StatelessWidget {
     required this.currentTab,
     required this.onTabChanged,
     this.showBadgeOnTab,
+    this.showLabels = true,
   });
 
   final MobileNavTab currentTab;
   final ValueChanged<MobileNavTab> onTabChanged;
   final Set<MobileNavTab>? showBadgeOnTab;
+  final bool showLabels;
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +75,7 @@ class MobileBottomNavBar extends StatelessWidget {
                   onTap: () => onTabChanged(tab),
                   colorScheme: colorScheme,
                   theme: theme,
+                  showLabel: showLabels,
                 );
               }).toList(),
             ),
@@ -91,6 +94,7 @@ class _NavTabItem extends StatelessWidget {
     required this.onTap,
     required this.colorScheme,
     required this.theme,
+    required this.showLabel,
   });
 
   final MobileNavTab tab;
@@ -99,6 +103,7 @@ class _NavTabItem extends StatelessWidget {
   final VoidCallback onTap;
   final ColorScheme colorScheme;
   final ThemeData theme;
+  final bool showLabel;
 
   IconData get _icon {
     switch (tab) {
@@ -152,61 +157,66 @@ class _NavTabItem extends StatelessWidget {
       button: true,
       selected: isSelected,
       label: label,
-      child: FocusWrapper(
-        borderRadius: BorderRadius.circular(Radii.m),
-        child: InkWell(
-          onTap: onTap,
+      child: Tooltip(
+        message: label,
+        child: FocusWrapper(
           borderRadius: BorderRadius.circular(Radii.m),
-          child: Container(
-            width: MobileSpacing.touchTargetComfortable,
-            height: MobileSpacing.touchTargetComfortable,
-            alignment: Alignment.center,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      isSelected ? _selectedIcon : _icon,
-                      color: isSelected
-                          ? colorScheme.primary
-                          : colorScheme.onSurfaceVariant,
-                      size: 24,
-                    ),
-                    const SizedBox(height: Spacing.xxs),
-                    Flexible(
-                      child: Text(
-                        label,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: isSelected
-                              ? colorScheme.primary
-                              : colorScheme.onSurfaceVariant,
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                          overflow: TextOverflow.ellipsis,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(Radii.m),
+            child: Container(
+              width: MobileSpacing.touchTargetComfortable,
+              height: MobileSpacing.touchTargetComfortable,
+              alignment: Alignment.center,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        isSelected ? _selectedIcon : _icon,
+                        color: isSelected
+                            ? colorScheme.primary
+                            : colorScheme.onSurfaceVariant,
+                        size: 24,
+                      ),
+                      if (showLabel) ...[
+                        const SizedBox(height: Spacing.xxs),
+                        Flexible(
+                          child: Text(
+                            label,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: isSelected
+                                  ? colorScheme.primary
+                                  : colorScheme.onSurfaceVariant,
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            maxLines: 1,
+                          ),
                         ),
-                        maxLines: 1,
-                      ),
-                    ),
-                  ],
-                ),
-                if (hasBadge)
-                  Positioned(
-                    top: 4,
-                    right: 8,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: colorScheme.error,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
+                      ],
+                    ],
                   ),
-              ],
+                  if (hasBadge)
+                    Positioned(
+                      top: 4,
+                      right: 8,
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: colorScheme.error,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ),

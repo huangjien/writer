@@ -567,9 +567,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                     ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Spacing.m,
-                      ),
+                      padding: EdgeInsets.zero,
                       child: RichTextEditor(
                         controller: _contentController,
                         preview: _preview,
@@ -579,10 +577,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: Spacing.m,
-                      vertical: Spacing.s,
-                    ),
+                    padding: EdgeInsets.zero,
                     child: WritingStats(
                       controller: _contentController,
                       streakDays: _streakDays,
@@ -591,9 +586,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                   ),
                   if (_isSaving)
                     Container(
-                      padding: EdgeInsets.only(
-                        bottom: Spacing.m + keyboardHeight,
-                      ),
+                      padding: EdgeInsets.only(bottom: keyboardHeight),
                       child: Semantics(
                         container: true,
                         liveRegion: true,
@@ -619,7 +612,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                         ),
                       ),
                     ),
-                  if (!_isSaving) SizedBox(height: Spacing.m + keyboardHeight),
+                  if (!_isSaving) SizedBox(height: keyboardHeight),
                 ],
               ),
             ),
@@ -629,6 +622,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                 : MobileBottomNavBar(
                     currentTab: _currentTab,
                     onTabChanged: _onTabChanged,
+                    showLabels: false,
                   ),
           ),
         ),
@@ -705,7 +699,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
         context.push('/novel/${widget.novelId}');
         break;
       case MobileNavTab.tools:
-        // Navigate to tools
+        context.pushNamed('tools');
         break;
       case MobileNavTab.more:
         _showMoreMenu(context, AppLocalizations.of(context)!);
