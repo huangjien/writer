@@ -211,7 +211,8 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                                     _showSentenceCoach
                                         ? Icons.auto_awesome
                                         : Icons.auto_awesome_outlined,
-                                    color: _showSentenceCoach ||
+                                    color:
+                                        _showSentenceCoach ||
                                             _sentenceAiSatisfied
                                         ? Colors.purple
                                         : null,
@@ -318,7 +319,8 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                                   _showParagraphCoach
                                       ? Icons.auto_awesome
                                       : Icons.auto_awesome_outlined,
-                                  color: _showParagraphCoach ||
+                                  color:
+                                      _showParagraphCoach ||
                                           _paragraphAiSatisfied
                                       ? Colors.purple
                                       : null,
