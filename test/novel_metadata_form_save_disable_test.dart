@@ -46,7 +46,7 @@ class CapturingNovelRepository extends NovelRepository {
 
 void main() {
   testWidgets(
-    'Save disabled when invalid, enabled when valid, calls repo on save',
+    'Save disabled when clean/invalid, enabled when dirty+valid, disables after save',
     (tester) async {
       SharedPreferences.setMockInitialValues({});
       final fakeRepo = CapturingNovelRepository();
@@ -65,17 +65,32 @@ void main() {
       await tester.pumpAndSettle();
 
       final coverField = find.widgetWithText(TextFormField, 'Cover URL');
-      final saveIcon = find.byIcon(Icons.save);
-      expect(saveIcon, findsOneWidget);
+      final saveTextFinder = find.text('Save');
+      final saveButtonFinder = find.ancestor(
+        of: saveTextFinder,
+        matching: find.byWidgetPredicate((w) => w is ButtonStyleButton),
+      );
       expect(find.text('Cover URL'), findsOneWidget);
+
+      expect(saveTextFinder, findsOneWidget);
+      expect(saveButtonFinder, findsOneWidget);
+      expect(
+        tester.widget<ButtonStyleButton>(saveButtonFinder).onPressed,
+        isNull,
+        reason: 'Save should be disabled when nothing changed',
+      );
 
       // Enter invalid URL -> Save disabled
       await tester.tap(coverField);
       await tester.pump();
       await tester.enterText(coverField, 'http://bad link');
       await tester.pumpAndSettle();
+      expect(
+        tester.widget<ButtonStyleButton>(saveButtonFinder).onPressed,
+        isNull,
+      );
       // Tap Save; invalid input should not call repo
-      await tester.tap(saveIcon);
+      await tester.tap(saveButtonFinder);
       await tester.pump();
       expect(fakeRepo.lastUpdate, isNull);
 
@@ -90,12 +105,17 @@ void main() {
       await tester.pump();
       await tester.enterText(titleField, 'Another Title');
       await tester.pumpAndSettle();
-      await tester.tap(saveIcon);
+      await tester.tap(saveButtonFinder);
       await tester.pumpAndSettle();
       expect(fakeRepo.lastUpdate, isNotNull);
       expect(
         fakeRepo.lastUpdate!['cover_url'],
         equals('http://valid.example/cover.jpg'),
+      );
+      expect(
+        tester.widget<ButtonStyleButton>(saveButtonFinder).onPressed,
+        isNull,
+        reason: 'Save should disable again after successful save',
       );
 
       // Clear the field -> optional (blank is allowed), Save enabled
@@ -103,7 +123,11 @@ void main() {
       await tester.pump();
       await tester.enterText(coverField, '');
       await tester.pumpAndSettle();
-      await tester.tap(saveIcon);
+      expect(
+        tester.widget<ButtonStyleButton>(saveButtonFinder).onPressed,
+        isNotNull,
+      );
+      await tester.tap(saveButtonFinder);
       await tester.pump();
       expect(fakeRepo.lastUpdate, isNotNull);
       expect(fakeRepo.lastUpdate!['novelId'], equals('n-2'));

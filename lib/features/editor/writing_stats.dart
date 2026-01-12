@@ -2,10 +2,18 @@ import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
 
 class WritingStats extends StatelessWidget {
-  const WritingStats({super.key, required this.controller, this.streakDays});
+  const WritingStats({
+    super.key,
+    required this.controller,
+    this.streakDays,
+    this.showCounts = true,
+    this.showStreak = true,
+  });
 
   final TextEditingController controller;
   final int? streakDays;
+  final bool showCounts;
+  final bool showStreak;
 
   @override
   Widget build(BuildContext context) {
@@ -19,12 +27,18 @@ class WritingStats extends StatelessWidget {
 
         final theme = Theme.of(context);
         final chips = <Widget>[
-          _StatChip(label: 'Words', value: '$wordCount'),
-          _StatChip(label: 'Chars', value: '$charCount'),
-          _StatChip(label: 'Read', value: readingTimeLabel),
-          if (streakDays != null && streakDays! > 0)
+          if (showCounts) ...[
+            _StatChip(label: 'Words', value: '$wordCount'),
+            _StatChip(label: 'Chars', value: '$charCount'),
+            _StatChip(label: 'Read', value: readingTimeLabel),
+          ],
+          if (showStreak && streakDays != null && streakDays! > 0)
             _StatChip(label: 'Streak', value: '${streakDays!}d'),
         ];
+
+        if (chips.isEmpty) {
+          return const SizedBox.shrink();
+        }
 
         return Semantics(
           container: true,
@@ -32,7 +46,7 @@ class WritingStats extends StatelessWidget {
             wordCount: wordCount,
             charCount: charCount,
             readingTimeLabel: readingTimeLabel,
-            streakDays: streakDays,
+            streakDays: showStreak ? streakDays : null,
           ),
           child: ExcludeSemantics(
             child: Wrap(

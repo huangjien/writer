@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/mobile_bottom_nav_bar.dart';
-import '../../shared/widgets/mobile_fab.dart';
 import '../../repositories/chapter_repository.dart';
 import '../../models/chapter.dart';
 import '../../state/novel_providers.dart';
@@ -495,24 +494,57 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                     ),
                   if (!_zenMode)
                     Padding(
-                      padding: const EdgeInsets.all(Spacing.m),
-                      child: TextField(
-                        controller: _titleController,
-                        decoration: InputDecoration(
-                          labelText: l10n.chapterTitle,
-                          hintText: l10n.enterChapterTitle,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(Radii.m),
+                      padding: const EdgeInsets.fromLTRB(
+                        Spacing.m,
+                        Spacing.m,
+                        Spacing.m,
+                        Spacing.s,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: SizedBox(
+                              height: 48,
+                              child: TextField(
+                                controller: _titleController,
+                                maxLines: 1,
+                                decoration: InputDecoration(
+                                  labelText: l10n.chapterTitle,
+                                  hintText: l10n.enterChapterTitle,
+                                  isDense: true,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: Spacing.m,
+                                    vertical: 14,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      Radii.m,
+                                    ),
+                                  ),
+                                  filled: true,
+                                  fillColor:
+                                      theme.colorScheme.surfaceContainerHighest,
+                                ),
+                                style: theme.textTheme.titleMedium,
+                              ),
+                            ),
                           ),
-                          filled: true,
-                          fillColor: theme.colorScheme.surfaceContainerHighest,
-                        ),
-                        style: theme.textTheme.titleLarge,
+                          const SizedBox(width: Spacing.s),
+                          SizedBox(
+                            height: 48,
+                            child: FilledButton.icon(
+                              onPressed: _isSaving ? null : _saveContent,
+                              icon: const Icon(Icons.save),
+                              label: Text(l10n.save),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   if (!_zenMode)
                     RichTextToolbar(
                       preview: _preview,
+                      controller: _contentController,
                       onTogglePreview: _togglePreview,
                       onBold: () =>
                           MarkdownEditActions.toggleBold(_contentController),
@@ -557,6 +589,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                     child: WritingStats(
                       controller: _contentController,
                       streakDays: _streakDays,
+                      showCounts: false,
                     ),
                   ),
                   if (_isSaving)
@@ -593,14 +626,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                 ],
               ),
             ),
-            floatingActionButton: MobileFab(
-              onPressed: _saveContent,
-              label: l10n.save,
-              icon: Icons.save,
-              type: MobileFabType.secondary,
-              isLoading: _isSaving,
-            ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            floatingActionButton: null,
             bottomNavigationBar: _zenMode
                 ? null
                 : MobileBottomNavBar(

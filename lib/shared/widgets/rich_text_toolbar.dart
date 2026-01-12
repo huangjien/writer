@@ -8,6 +8,7 @@ class RichTextToolbar extends StatelessWidget {
   const RichTextToolbar({
     super.key,
     required this.preview,
+    required this.controller,
     required this.onTogglePreview,
     required this.onBold,
     required this.onItalic,
@@ -21,6 +22,7 @@ class RichTextToolbar extends StatelessWidget {
   });
 
   final bool preview;
+  final TextEditingController controller;
   final VoidCallback onTogglePreview;
   final VoidCallback onBold;
   final VoidCallback onItalic;
@@ -42,86 +44,94 @@ class RichTextToolbar extends StatelessWidget {
         color: theme.colorScheme.surfaceContainerHighest,
         border: Border(bottom: BorderSide(color: theme.dividerColor, width: 1)),
       ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            _ToolButton(
-              icon: preview ? Icons.edit : Icons.visibility,
-              label: preview ? 'Edit' : 'Preview',
-              semanticsLabel: preview ? 'Edit mode' : 'Preview mode',
-              isActive: preview,
-              onPressed: onTogglePreview,
+      child: Row(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _ToolButton(
+                    icon: preview ? Icons.edit : Icons.visibility,
+                    tooltip: preview ? 'Edit mode' : 'Preview mode',
+                    semanticsLabel: preview ? 'Edit mode' : 'Preview mode',
+                    isActive: preview,
+                    onPressed: onTogglePreview,
+                  ),
+                  const SizedBox(width: Spacing.s),
+                  _ToolButton(
+                    icon: Icons.format_bold,
+                    tooltip: 'Bold',
+                    semanticsLabel: 'Bold',
+                    isActive: false,
+                    onPressed: onBold,
+                  ),
+                  _ToolButton(
+                    icon: Icons.format_italic,
+                    tooltip: 'Italic',
+                    semanticsLabel: 'Italic',
+                    isActive: false,
+                    onPressed: onItalic,
+                  ),
+                  _ToolButton(
+                    icon: Icons.format_underlined,
+                    tooltip: 'Underline',
+                    semanticsLabel: 'Underline',
+                    isActive: false,
+                    onPressed: onUnderline,
+                  ),
+                  const SizedBox(width: Spacing.s),
+                  _ToolButton(
+                    icon: Icons.title,
+                    tooltip: 'Heading',
+                    semanticsLabel: 'Heading',
+                    isActive: false,
+                    onPressed: onHeading,
+                  ),
+                  _ToolButton(
+                    icon: Icons.format_quote,
+                    tooltip: 'Quote',
+                    semanticsLabel: 'Quote',
+                    isActive: false,
+                    onPressed: onQuote,
+                  ),
+                  _ToolButton(
+                    icon: Icons.code,
+                    tooltip: 'Inline code',
+                    semanticsLabel: 'Inline code',
+                    isActive: false,
+                    onPressed: onCode,
+                  ),
+                  const SizedBox(width: Spacing.s),
+                  _ToolButton(
+                    icon: Icons.format_list_bulleted,
+                    tooltip: 'Bulleted list',
+                    semanticsLabel: 'Bulleted list',
+                    isActive: false,
+                    onPressed: onBullet,
+                  ),
+                  _ToolButton(
+                    icon: Icons.format_list_numbered,
+                    tooltip: 'Numbered list',
+                    semanticsLabel: 'Numbered list',
+                    isActive: false,
+                    onPressed: onNumbered,
+                  ),
+                  const SizedBox(width: Spacing.s),
+                  _ToolButton(
+                    icon: Icons.link,
+                    tooltip: 'Insert link',
+                    semanticsLabel: 'Insert link',
+                    isActive: false,
+                    onPressed: onLink,
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(width: Spacing.s),
-            _ToolButton(
-              icon: Icons.format_bold,
-              label: 'B',
-              semanticsLabel: 'Bold',
-              isActive: false,
-              onPressed: onBold,
-            ),
-            _ToolButton(
-              icon: Icons.format_italic,
-              label: 'I',
-              semanticsLabel: 'Italic',
-              isActive: false,
-              onPressed: onItalic,
-            ),
-            _ToolButton(
-              icon: Icons.format_underlined,
-              label: 'U',
-              semanticsLabel: 'Underline',
-              isActive: false,
-              onPressed: onUnderline,
-            ),
-            const SizedBox(width: Spacing.s),
-            _ToolButton(
-              icon: Icons.title,
-              label: 'H',
-              semanticsLabel: 'Heading',
-              isActive: false,
-              onPressed: onHeading,
-            ),
-            _ToolButton(
-              icon: Icons.format_quote,
-              label: '❝',
-              semanticsLabel: 'Quote',
-              isActive: false,
-              onPressed: onQuote,
-            ),
-            _ToolButton(
-              icon: Icons.code,
-              label: '</>',
-              semanticsLabel: 'Inline code',
-              isActive: false,
-              onPressed: onCode,
-            ),
-            const SizedBox(width: Spacing.s),
-            _ToolButton(
-              icon: Icons.format_list_bulleted,
-              label: '•',
-              semanticsLabel: 'Bulleted list',
-              isActive: false,
-              onPressed: onBullet,
-            ),
-            _ToolButton(
-              icon: Icons.format_list_numbered,
-              label: '1.',
-              semanticsLabel: 'Numbered list',
-              isActive: false,
-              onPressed: onNumbered,
-            ),
-            const SizedBox(width: Spacing.s),
-            _ToolButton(
-              icon: Icons.link,
-              label: 'Link',
-              semanticsLabel: 'Insert link',
-              isActive: false,
-              onPressed: onLink,
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(width: Spacing.s),
+          _ToolbarStats(controller: controller),
+        ],
       ),
     );
   }
@@ -130,14 +140,14 @@ class RichTextToolbar extends StatelessWidget {
 class _ToolButton extends StatelessWidget {
   const _ToolButton({
     required this.icon,
-    required this.label,
+    required this.tooltip,
     required this.semanticsLabel,
     required this.isActive,
     required this.onPressed,
   });
 
   final IconData icon;
-  final String label;
+  final String tooltip;
   final String semanticsLabel;
   final bool isActive;
   final VoidCallback onPressed;
@@ -146,53 +156,91 @@ class _ToolButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Semantics(
-      button: true,
-      label: semanticsLabel,
-      child: WaveTap(
-        borderRadius: BorderRadius.circular(Radii.m),
-        onLongPress: () => HapticFeedback.mediumImpact(),
-        onTap: () {
-          HapticFeedback.lightImpact();
-          onPressed();
-        },
-        child: PressScale(
-          child: Container(
-            width: MobileSpacing.touchTargetMin,
-            height: MobileSpacing.touchTargetMin,
-            decoration: BoxDecoration(
-              color: isActive ? theme.colorScheme.primaryContainer : null,
-              borderRadius: BorderRadius.circular(Radii.m),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
+    return Tooltip(
+      message: tooltip,
+      child: Semantics(
+        button: true,
+        label: semanticsLabel,
+        child: WaveTap(
+          borderRadius: BorderRadius.circular(Radii.m),
+          onLongPress: () => HapticFeedback.mediumImpact(),
+          onTap: () {
+            HapticFeedback.lightImpact();
+            onPressed();
+          },
+          child: PressScale(
+            child: Container(
+              width: MobileSpacing.touchTargetMin,
+              height: MobileSpacing.touchTargetMin,
+              decoration: BoxDecoration(
+                color: isActive ? theme.colorScheme.primaryContainer : null,
+                borderRadius: BorderRadius.circular(Radii.m),
+              ),
+              child: Center(
+                child: Icon(
                   icon,
                   size: 18,
                   color: isActive
                       ? theme.colorScheme.onPrimaryContainer
                       : theme.colorScheme.onSurfaceVariant,
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  label,
-                  overflow: TextOverflow.fade,
-                  softWrap: false,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: isActive
-                        ? theme.colorScheme.onPrimaryContainer
-                        : theme.colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w700,
-                    height: 1.0,
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ),
       ),
     );
+  }
+}
+
+class _ToolbarStats extends StatelessWidget {
+  const _ToolbarStats({required this.controller});
+
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ValueListenableBuilder<TextEditingValue>(
+      valueListenable: controller,
+      builder: (context, value, _) {
+        final text = value.text;
+        final wordCount = _countWords(text);
+        final charCount = text.characters.length;
+        final readingTimeLabel = _readingTimeLabel(wordCount);
+        final label =
+            '$wordCount words, $charCount characters, $readingTimeLabel read';
+
+        return Semantics(
+          container: true,
+          label: label,
+          child: ExcludeSemantics(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 190),
+              child: Text(
+                '${wordCount}w • ${charCount}c • $readingTimeLabel',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static int _countWords(String text) {
+    return text.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length;
+  }
+
+  static String _readingTimeLabel(int words) {
+    if (words <= 0) return '<1m';
+    final minutes = (words / 200.0).ceil();
+    return minutes <= 1 ? '<1m' : '${minutes}m';
   }
 }

@@ -54,6 +54,7 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
 
   Future<void> _save() async {
     // Validate before saving; guard against invalid form state.
+    if (!_isDirty) return;
     final currentState = _formKey.currentState;
     if (currentState != null) {
       final valid = currentState.validate();
@@ -80,6 +81,14 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
       );
       ref.invalidate(novelProvider(widget.novelId));
       if (!mounted) return;
+      setState(() {
+        _baseTitle = _titleController.text.trim();
+        _baseDescription = _descriptionController.text.trim();
+        _baseCoverUrl = _coverUrlController.text.trim();
+        _baseLanguageCode = _languageCode;
+        _baseIsPublic = _isPublic;
+        _isDirty = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)!.progressSaved)),
       );
@@ -180,35 +189,39 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _titleController,
-                              focusNode: _titleFocusNode,
-                              decoration: InputDecoration(
-                                labelText: l10n.titleLabel,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                    width: 2,
+                          Flexible(
+                            fit: FlexFit.loose,
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 420),
+                              child: TextFormField(
+                                controller: _titleController,
+                                focusNode: _titleFocusNode,
+                                decoration: InputDecoration(
+                                  labelText: l10n.titleLabel,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                      width: 2,
+                                    ),
                                   ),
                                 ),
+                                textInputAction: TextInputAction.next,
+                                onFieldSubmitted: (_) {
+                                  FocusScope.of(
+                                    context,
+                                  ).requestFocus(_descriptionFocusNode);
+                                },
+                                onChanged: (_) {
+                                  _recomputeFormValidity();
+                                  _checkDirty();
+                                },
                               ),
-                              textInputAction: TextInputAction.next,
-                              onFieldSubmitted: (_) {
-                                FocusScope.of(
-                                  context,
-                                ).requestFocus(_descriptionFocusNode);
-                              },
-                              onChanged: (_) {
-                                _recomputeFormValidity();
-                                _checkDirty();
-                              },
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -246,6 +259,19 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                               ],
                             ),
                           ],
+                          const Spacer(),
+                          FilledButton.icon(
+                            icon: const Icon(Icons.save),
+                            label: Text(l10n.save),
+                            onLongPress: () {
+                              debugPrint(
+                                'Save button longPress: saving=$_saving coverValid=$_coverValid',
+                              );
+                            },
+                            onPressed: (_saving || !_coverValid || !_isDirty)
+                                ? null
+                                : _save,
+                          ),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -378,22 +404,6 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                           ),
                         ),
                       ],
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: FilledButton.icon(
-                          icon: const Icon(Icons.save),
-                          label: Text(l10n.save),
-                          // Debug build trace for tests
-                          onLongPress: () {
-                            debugPrint(
-                              'Save button longPress: saving=$_saving coverValid=$_coverValid',
-                            );
-                          },
-                          onPressed: (_saving || !_coverValid || !_isDirty)
-                              ? null
-                              : _save,
-                        ),
-                      ),
                     ],
                   ),
                 );
