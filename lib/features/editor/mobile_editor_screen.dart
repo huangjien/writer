@@ -9,6 +9,7 @@ import '../../repositories/chapter_repository.dart';
 import '../../models/chapter.dart';
 import '../../state/novel_providers.dart';
 import '../../state/storage_service_provider.dart';
+import '../../shared/strings.dart';
 
 import '../../shared/widgets/mobile_bottom_sheet.dart';
 import '../../shared/widgets/feedback/enhanced_toast.dart';
@@ -268,7 +269,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
   }
 
   Future<void> _recordWritingSessionIfNeeded() async {
-    final words = _countWords(_contentController.text);
+    final words = countWords(_contentController.text);
     if (words <= 0) return;
 
     try {
@@ -323,10 +324,6 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
     final m = dt.month.toString().padLeft(2, '0');
     final d = dt.day.toString().padLeft(2, '0');
     return '$y-$m-$d';
-  }
-
-  static int _countWords(String text) {
-    return text.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length;
   }
 
   void _enterZenMode() {

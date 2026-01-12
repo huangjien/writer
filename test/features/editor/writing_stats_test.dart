@@ -23,6 +23,42 @@ void main() {
     expect(find.bySemanticsLabel(expectedSemantics), findsOneWidget);
   });
 
+  testWidgets('WritingStats counts CJK characters as words', (tester) async {
+    final controller = TextEditingController(text: '你好世界');
+    addTearDown(controller.dispose);
+
+    final charCount = controller.text.characters.length;
+    final expectedSemantics =
+        '4 words, $charCount characters, estimated reading time <1m';
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: WritingStats(controller: controller)),
+      ),
+    );
+
+    expect(find.bySemanticsLabel(expectedSemantics), findsOneWidget);
+  });
+
+  testWidgets('WritingStats counts mixed CJK and English words', (
+    tester,
+  ) async {
+    final controller = TextEditingController(text: '你好 world');
+    addTearDown(controller.dispose);
+
+    final charCount = controller.text.characters.length;
+    final expectedSemantics =
+        '3 words, $charCount characters, estimated reading time <1m';
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: WritingStats(controller: controller)),
+      ),
+    );
+
+    expect(find.bySemanticsLabel(expectedSemantics), findsOneWidget);
+  });
+
   testWidgets('WritingStats updates when controller text changes', (
     tester,
   ) async {

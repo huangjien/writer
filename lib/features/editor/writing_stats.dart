@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
+import '../../shared/strings.dart';
 
 class WritingStats extends StatelessWidget {
   const WritingStats({
@@ -21,7 +22,7 @@ class WritingStats extends StatelessWidget {
       valueListenable: controller,
       builder: (context, value, _) {
         final text = value.text;
-        final wordCount = _countWords(text);
+        final wordCount = countWords(text);
         final charCount = text.characters.length;
         final readingTimeLabel = _readingTimeLabel(wordCount);
 
@@ -67,10 +68,6 @@ class WritingStats extends StatelessWidget {
         );
       },
     );
-  }
-
-  static int _countWords(String text) {
-    return text.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length;
   }
 
   static String _readingTimeLabel(int words) {

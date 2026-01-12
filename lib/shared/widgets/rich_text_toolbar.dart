@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
+import '../strings.dart';
 import 'micro_interactions.dart';
 import 'particles/wave_effect.dart';
 
@@ -205,7 +206,7 @@ class _ToolbarStats extends StatelessWidget {
       valueListenable: controller,
       builder: (context, value, _) {
         final text = value.text;
-        final wordCount = _countWords(text);
+        final wordCount = countWords(text);
         final charCount = text.characters.length;
         final readingTimeLabel = _readingTimeLabel(wordCount);
         final label =
@@ -232,10 +233,6 @@ class _ToolbarStats extends StatelessWidget {
         );
       },
     );
-  }
-
-  static int _countWords(String text) {
-    return text.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length;
   }
 
   static String _readingTimeLabel(int words) {
