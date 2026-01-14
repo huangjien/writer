@@ -16,21 +16,19 @@ class AppButtons {
     required VoidCallback onPressed,
     IconData? icon,
     bool isLoading = false,
+    bool enabled = true,
     bool fullWidth = false,
   }) {
     return FocusWrapper(
       borderRadius: BorderRadius.circular(Radii.m),
       child: PressScale(
-        enabled: !isLoading,
+        enabled: enabled && !isLoading,
         child: FilledButton(
-          onPressed: isLoading ? null : onPressed,
+          onPressed: (enabled && !isLoading) ? onPressed : null,
           style: FilledButton.styleFrom(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Spacing.l,
-              vertical: Spacing.m,
-            ),
-            elevation: 2,
-            minimumSize: fullWidth ? const Size(double.infinity, 48) : null,
+            minimumSize: fullWidth
+                ? const Size(double.infinity, MobileSpacing.touchTargetMin)
+                : null,
           ),
           child: isLoading
               ? const SizedBox(
@@ -58,20 +56,18 @@ class AppButtons {
     required String label,
     required VoidCallback onPressed,
     IconData? icon,
+    bool enabled = true,
     bool fullWidth = false,
   }) {
     return FocusWrapper(
       borderRadius: BorderRadius.circular(Radii.m),
       child: PressScale(
         child: OutlinedButton(
-          onPressed: onPressed,
+          onPressed: enabled ? onPressed : null,
           style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Spacing.l,
-              vertical: Spacing.m,
-            ),
-            side: BorderSide(color: Colors.grey.shade300, width: 1.5),
-            minimumSize: fullWidth ? const Size(double.infinity, 48) : null,
+            minimumSize: fullWidth
+                ? const Size(double.infinity, MobileSpacing.touchTargetMin)
+                : null,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -92,13 +88,14 @@ class AppButtons {
   static Widget text({
     required String label,
     required VoidCallback onPressed,
+    bool enabled = true,
     Color? color,
   }) {
     return FocusWrapper(
       borderRadius: BorderRadius.circular(Radii.m),
       child: PressScale(
         child: TextButton(
-          onPressed: onPressed,
+          onPressed: enabled ? onPressed : null,
           style: TextButton.styleFrom(foregroundColor: color),
           child: Text(label),
         ),
@@ -112,13 +109,14 @@ class AppButtons {
     required VoidCallback onPressed,
     String? tooltip,
     Color? color,
+    bool enabled = true,
     bool filled = false,
   }) {
     final button = PressScale(
       child: IconButton(
         icon: Icon(iconData),
         color: color,
-        onPressed: onPressed,
+        onPressed: enabled ? onPressed : null,
         style: IconButton.styleFrom(padding: const EdgeInsets.all(Spacing.s)),
       ),
     );
@@ -145,6 +143,7 @@ class AppButtons {
     String? tooltip,
     Color? backgroundColor,
     Color? iconColor,
+    bool enabled = true,
   }) {
     final button = PressScale(
       child: IconButton.filled(
@@ -154,7 +153,7 @@ class AppButtons {
           foregroundColor: iconColor,
           padding: const EdgeInsets.all(Spacing.s),
         ),
-        onPressed: onPressed,
+        onPressed: enabled ? onPressed : null,
       ),
     );
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import '../../theme/design_tokens.dart';
 import 'feedback/error_animation.dart';
 
 class ErrorView extends StatelessWidget {
@@ -19,14 +20,14 @@ class ErrorView extends StatelessWidget {
     final theme = Theme.of(context);
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(Spacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             icon == Icons.error_outline
                 ? ErrorAnimation(size: 64, color: theme.colorScheme.error)
                 : Icon(icon, size: 64, color: theme.colorScheme.error),
-            const SizedBox(height: 16),
+            const SizedBox(height: Spacing.l),
             Text(
               message,
               textAlign: TextAlign.center,
@@ -35,7 +36,7 @@ class ErrorView extends StatelessWidget {
               ),
             ),
             if (onRetry != null) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: Spacing.xl),
               RetryPulse(
                 child: FilledButton.icon(
                   onPressed: onRetry,

@@ -16,6 +16,45 @@ A Flutter application for reading novels with localization and Text-To-Speech (T
 - Editor enhancements: formatting toolbar, markdown preview, writing stats (word/char/read time + streak), Zen mode, focus timer, and writing prompts.
 - UI polish does not require `flutter_animate`/`lottie`/`confetti`/`shimmer`; shimmer uses `skeletonizer` and confetti is implemented in-app.
 
+## Design System (UI/UX Rules)
+
+This app uses a token-driven design system to keep the Writer UI visually and functionally consistent.
+
+### 1) Component hierarchy and organization
+- Prefer `ThemeData` for global look-and-feel (buttons, inputs, dialogs, nav) over per-screen styling.
+- Prefer shared primitives in `lib/shared/widgets/` over bespoke one-off components in screens.
+- When adding new UI, reuse an existing primitive or extend it; avoid duplicating variants.
+
+### 2) Color schemes and typography
+- Use `ColorScheme` and tokenized semantic colors in `lib/theme/design_tokens.dart` (avoid hard-coded `Colors.*` for UI).
+- Typography is controlled by theme and typography presets; do not set ad-hoc font sizes in screens unless it’s content-specific.
+
+### 3) Spacing and layout principles
+- Use spacing/radius tokens (`Spacing.*`, `Radii.*`, `MobileSpacing.*`) for padding, gaps, and corner rounding.
+- Maintain minimum tap targets (`MobileSpacing.touchTargetMin`) for interactive controls.
+
+### 4) Interactive behaviors and animations
+- Use shared motion tokens (`Motion.*`) for transitions and repeating animations.
+- Follow the app motion preference (reduce motion disables page transitions via theme builder).
+
+### 5) Error states and validation patterns
+- Inputs use the app `InputDecorationTheme` for focus/error borders and fill colors.
+- Error UX should follow the same pattern: clear message, optional retry, and no layout shifts where possible.
+
+### Reusable component catalog (canonical)
+- Buttons: `lib/shared/widgets/app_buttons.dart` (`AppButtons.primary/secondary/text/icon`)
+- Form controls: `ThemeData.inputDecorationTheme`, `CheckboxThemeData`, `SwitchThemeData`
+- Loading: `lib/shared/widgets/loading_state.dart` (`LoadingState`)
+- Empty/error: `lib/shared/widgets/empty_state.dart`, `lib/shared/widgets/error_view.dart`
+- Notifications: `lib/shared/widgets/feedback/enhanced_toast.dart` (`showEnhancedToast`), `SnackBarThemeData`
+- Modals: `DialogThemeData`, `lib/shared/widgets/mobile_bottom_sheet.dart`
+- Navigation: `NavigationBarThemeData`, `lib/shared/widgets/mobile_bottom_nav_bar.dart`
+
+### Accessibility baseline (WCAG 2.1 AA)
+- Use theme-driven contrast (avoid custom low-contrast grays).
+- Ensure touch targets meet the minimum size and provide semantics/labels for icon-only controls (tooltip where appropriate).
+- Prefer `FilledButton/OutlinedButton/TextButton` and `InputDecorationTheme` so focus and disabled states remain consistent.
+
 ## Prerequisites
 - Flutter SDK installed (`flutter --version`).
 - Platform toolchains as needed:

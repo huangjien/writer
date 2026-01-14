@@ -137,6 +137,18 @@ class TypographyScale {
   static const double labelSmall = 11.0;
 }
 
+class ReaderTypographyScale {
+  static const double displayComfortable = 18.0;
+  static const double bodyLargeComfortable = 16.0;
+  static const double bodyMediumComfortable = 15.0;
+  static const double bodySmallComfortable = 14.0;
+
+  static const double displayCompact = 16.0;
+  static const double bodyLargeCompact = 15.0;
+  static const double bodyMediumCompact = 14.0;
+  static const double bodySmallCompact = 13.0;
+}
+
 class LetterSpacing {
   static const double tight = -0.2;
   static const double normal = 0.0;
@@ -167,6 +179,7 @@ class Motion {
   static const Duration medium = Duration(milliseconds: 300);
   static const Duration slow = Duration(milliseconds: 450);
   static const Duration extraSlow = Duration(milliseconds: 600);
+  static const Duration pulse = Duration(milliseconds: 900);
 
   // Curves for different interactions
   static const Curve easeIn = Curves.easeIn;
@@ -200,4 +213,18 @@ class FocusTokens {
   static const double glowOpacity = 0.28;
   static const double glowBlurRadius = 10.0;
   static const Duration duration = Motion.fast;
+}
+
+class Shadows {
+  static const BoxShadow soft = BoxShadow(
+    color: AppColors.shadowColor,
+    blurRadius: 16,
+    offset: Offset(0, 6),
+  );
+
+  static const BoxShadow softColored = BoxShadow(
+    color: AppColors.shadowColorLight,
+    blurRadius: 20,
+    offset: Offset(0, 8),
+  );
 }

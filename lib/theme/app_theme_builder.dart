@@ -4,6 +4,7 @@ import '../theme/themes.dart';
 import '../theme/reader_typography.dart';
 import '../theme/font_packs.dart' show ReaderFontPack;
 import '../theme/font_packs.dart' as font_packs;
+import '../theme/design_tokens.dart';
 
 import '../theme/no_animation_transitions.dart';
 import '../theme/fade_through_page_transitions.dart';
@@ -72,24 +73,52 @@ class AppThemeBuilder {
         return const TextTheme();
       case ReaderTypographyPreset.comfortable:
         return const TextTheme(
-          displayLarge: TextStyle(fontSize: 18),
-          bodyLarge: TextStyle(fontSize: 16),
-          bodyMedium: TextStyle(fontSize: 15),
-          bodySmall: TextStyle(fontSize: 14),
+          displayLarge: TextStyle(
+            fontSize: ReaderTypographyScale.displayComfortable,
+          ),
+          bodyLarge: TextStyle(
+            fontSize: ReaderTypographyScale.bodyLargeComfortable,
+          ),
+          bodyMedium: TextStyle(
+            fontSize: ReaderTypographyScale.bodyMediumComfortable,
+          ),
+          bodySmall: TextStyle(
+            fontSize: ReaderTypographyScale.bodySmallComfortable,
+          ),
         );
       case ReaderTypographyPreset.compact:
         return const TextTheme(
-          displayLarge: TextStyle(fontSize: 16),
-          bodyLarge: TextStyle(fontSize: 15),
-          bodyMedium: TextStyle(fontSize: 14),
-          bodySmall: TextStyle(fontSize: 13),
+          displayLarge: TextStyle(
+            fontSize: ReaderTypographyScale.displayCompact,
+          ),
+          bodyLarge: TextStyle(
+            fontSize: ReaderTypographyScale.bodyLargeCompact,
+          ),
+          bodyMedium: TextStyle(
+            fontSize: ReaderTypographyScale.bodyMediumCompact,
+          ),
+          bodySmall: TextStyle(
+            fontSize: ReaderTypographyScale.bodySmallCompact,
+          ),
         );
       case ReaderTypographyPreset.serifLike:
         return const TextTheme(
-          displayLarge: TextStyle(fontSize: 18, fontFamily: 'serif'),
-          bodyLarge: TextStyle(fontSize: 16, fontFamily: 'serif'),
-          bodyMedium: TextStyle(fontSize: 15, fontFamily: 'serif'),
-          bodySmall: TextStyle(fontSize: 14, fontFamily: 'serif'),
+          displayLarge: TextStyle(
+            fontSize: ReaderTypographyScale.displayComfortable,
+            fontFamily: 'serif',
+          ),
+          bodyLarge: TextStyle(
+            fontSize: ReaderTypographyScale.bodyLargeComfortable,
+            fontFamily: 'serif',
+          ),
+          bodyMedium: TextStyle(
+            fontSize: ReaderTypographyScale.bodyMediumComfortable,
+            fontFamily: 'serif',
+          ),
+          bodySmall: TextStyle(
+            fontSize: ReaderTypographyScale.bodySmallComfortable,
+            fontFamily: 'serif',
+          ),
         );
     }
   }

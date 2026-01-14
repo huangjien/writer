@@ -91,10 +91,8 @@ class _PulsingProgressIndicatorState extends State<_PulsingProgressIndicator>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    )..repeat(reverse: true);
+    _controller = AnimationController(vsync: this, duration: Motion.pulse)
+      ..repeat(reverse: true);
   }
 
   @override
@@ -153,6 +151,8 @@ class _DefaultSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final surface = theme.colorScheme.surfaceContainerHighest;
     return Padding(
       padding: const EdgeInsets.all(Spacing.l),
       child: Column(
@@ -163,7 +163,7 @@ class _DefaultSkeleton extends StatelessWidget {
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(Radii.s),
-              color: Colors.white,
+              color: surface,
             ),
           ),
           const SizedBox(height: Spacing.m),
@@ -172,7 +172,7 @@ class _DefaultSkeleton extends StatelessWidget {
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(Radii.s),
-              color: Colors.white,
+              color: surface,
             ),
           ),
           const SizedBox(height: Spacing.s),
@@ -183,7 +183,7 @@ class _DefaultSkeleton extends StatelessWidget {
               width: 200,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(Radii.s),
-                color: Colors.white,
+                color: surface,
               ),
             ),
           ),
@@ -195,7 +195,7 @@ class _DefaultSkeleton extends StatelessWidget {
                   height: 44,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(Radii.m),
-                    color: Colors.white,
+                    color: surface,
                   ),
                 ),
               ),
@@ -205,7 +205,7 @@ class _DefaultSkeleton extends StatelessWidget {
                   height: 44,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(Radii.m),
-                    color: Colors.white,
+                    color: surface,
                   ),
                 ),
               ),

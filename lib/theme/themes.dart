@@ -58,6 +58,12 @@ ThemeData _buildFromSeed(Color seed, Brightness brightness) {
     useMaterial3: true,
   );
 
+  final cs = baseTheme.colorScheme;
+  final outline = cs.outlineVariant;
+  final fill = brightness == Brightness.light
+      ? cs.surfaceContainerHighest
+      : cs.surfaceContainerHigh;
+
   return baseTheme.copyWith(
     textSelectionTheme: TextSelectionThemeData(
       cursorColor: baseTheme.colorScheme.primary,
@@ -119,34 +125,30 @@ ThemeData _buildFromSeed(Color seed, Brightness brightness) {
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(Radii.m),
-        borderSide: BorderSide(
-          color: brightness == Brightness.light
-              ? Colors.grey.shade300
-              : Colors.grey.shade600,
-          width: 1.0,
-        ),
+        borderSide: BorderSide(color: outline, width: 1.0),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(Radii.m),
-        borderSide: BorderSide(
-          color: brightness == Brightness.light
-              ? Colors.grey.shade300
-              : Colors.grey.shade600,
-          width: 1.0,
-        ),
+        borderSide: BorderSide(color: outline, width: 1.0),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(Radii.m),
-        borderSide: BorderSide(color: seed, width: 2.0),
+        borderSide: BorderSide(color: cs.primary, width: 2.0),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(Radii.m),
+        borderSide: BorderSide(color: cs.error, width: 1.0),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(Radii.m),
+        borderSide: BorderSide(color: cs.error, width: 2.0),
       ),
       filled: true,
-      fillColor: brightness == Brightness.light
-          ? Colors.grey.shade50
-          : Colors.grey.shade800,
+      fillColor: fill,
       floatingLabelBehavior: FloatingLabelBehavior.auto,
       contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 12.0,
+        horizontal: Spacing.l,
+        vertical: Spacing.m,
       ),
     ),
 
@@ -157,29 +159,138 @@ ThemeData _buildFromSeed(Color seed, Brightness brightness) {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Radii.l),
       ),
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      margin: const EdgeInsets.symmetric(
+        horizontal: Spacing.l,
+        vertical: Spacing.s,
+      ),
     ),
 
     // Enhanced list tile for better readability
     listTileTheme: const ListTileThemeData(
-      contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: Spacing.l,
+        vertical: Spacing.xs,
+      ),
       minLeadingWidth: 24.0,
     ),
 
     // Improved scrollbar styling
     scrollbarTheme: ScrollbarThemeData(
-      thumbColor: WidgetStateProperty.all(
-        brightness == Brightness.light
-            ? Colors.grey.shade400
-            : Colors.grey.shade600,
-      ),
-      trackColor: WidgetStateProperty.all(
-        brightness == Brightness.light
-            ? Colors.grey.shade200
-            : Colors.grey.shade800,
-      ),
+      thumbColor: WidgetStateProperty.all(cs.outline),
+      trackColor: WidgetStateProperty.all(cs.surfaceContainerHighest),
       thickness: WidgetStateProperty.all(6.0),
       radius: const Radius.circular(3.0),
+    ),
+
+    filledButtonTheme: FilledButtonThemeData(
+      style: ButtonStyle(
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(horizontal: Spacing.l, vertical: Spacing.m),
+        ),
+        minimumSize: const WidgetStatePropertyAll(
+          Size(0, MobileSpacing.touchTargetMin),
+        ),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.m)),
+        ),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: ButtonStyle(
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(horizontal: Spacing.l, vertical: Spacing.m),
+        ),
+        minimumSize: const WidgetStatePropertyAll(
+          Size(0, MobileSpacing.touchTargetMin),
+        ),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.m)),
+        ),
+        side: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.disabled)) {
+            return BorderSide(
+              color: cs.onSurface.withValues(alpha: 0.12),
+              width: 1.5,
+            );
+          }
+          return BorderSide(color: cs.outlineVariant, width: 1.5);
+        }),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: ButtonStyle(
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(horizontal: Spacing.m, vertical: Spacing.s),
+        ),
+        minimumSize: const WidgetStatePropertyAll(
+          Size(0, MobileSpacing.touchTargetMin),
+        ),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.m)),
+        ),
+      ),
+    ),
+    iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(
+        minimumSize: const WidgetStatePropertyAll(
+          Size(MobileSpacing.touchTargetMin, MobileSpacing.touchTargetMin),
+        ),
+        padding: const WidgetStatePropertyAll(EdgeInsets.all(Spacing.s)),
+      ),
+    ),
+    checkboxTheme: CheckboxThemeData(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Radii.s),
+      ),
+    ),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return cs.onSurface.withValues(alpha: 0.24);
+        }
+        if (states.contains(WidgetState.selected)) {
+          return cs.onPrimary;
+        }
+        return cs.outline;
+      }),
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return cs.onSurface.withValues(alpha: 0.12);
+        }
+        if (states.contains(WidgetState.selected)) {
+          return cs.primary;
+        }
+        return cs.surfaceContainerHighest;
+      }),
+    ),
+    dialogTheme: DialogThemeData(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Radii.l),
+      ),
+    ),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: cs.inverseSurface,
+      contentTextStyle: baseTheme.textTheme.bodyMedium?.copyWith(
+        color: cs.onInverseSurface,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Radii.m),
+      ),
+    ),
+    bottomSheetTheme: BottomSheetThemeData(
+      showDragHandle: true,
+      backgroundColor: cs.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(Radii.l)),
+      ),
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      height: MobileSpacing.bottomNavHeight,
+      indicatorShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Radii.l),
+      ),
+      labelTextStyle: WidgetStatePropertyAll(baseTheme.textTheme.labelMedium),
     ),
   );
 }
