@@ -188,16 +188,12 @@ void main() {
 
       await repo.bulkShiftIdx('n1', 1, 3);
       verify(
-        () => remote.patch(
-          'novels/n1/chapters/reorder',
-          {
-            'updates': [
-              {'chapter_id': 'c1', 'idx': 4},
-              {'chapter_id': 'c2', 'idx': 5},
-            ],
-          },
-          retryUnauthorized: false,
-        ),
+        () => remote.patch('novels/n1/chapters/reorder', {
+          'updates': [
+            {'chapter_id': 'c1', 'idx': 4},
+            {'chapter_id': 'c2', 'idx': 5},
+          ],
+        }, retryUnauthorized: false),
       ).called(1);
     });
 

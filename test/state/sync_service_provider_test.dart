@@ -26,7 +26,8 @@ class MockNetworkMonitor extends Mock implements NetworkMonitor {
 
 class MockSyncService extends Mock implements SyncService {}
 
-class MockLocalStorageRepository extends Mock implements LocalStorageRepository {}
+class MockLocalStorageRepository extends Mock
+    implements LocalStorageRepository {}
 
 void main() {
   group('sync_service_provider', () {

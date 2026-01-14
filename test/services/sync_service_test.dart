@@ -347,7 +347,10 @@ void main() {
 
         verify(mockRemote.post('chapters', any)).called(1);
         verify(
-          mockOfflineQueue.markFailed('op6', 'Exception: Persistent network error'),
+          mockOfflineQueue.markFailed(
+            'op6',
+            'Exception: Persistent network error',
+          ),
         ).called(1);
       });
     });
