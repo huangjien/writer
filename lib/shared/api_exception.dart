@@ -10,7 +10,10 @@ class ApiException implements Exception {
   @override
   String toString() {
     if (errorResponse != null) {
-      return 'ApiException($statusCode): ${errorResponse!.code}';
+      final rid = errorResponse!.requestId;
+      return rid == null || rid.isEmpty
+          ? 'ApiException($statusCode): ${errorResponse!.code}'
+          : 'ApiException($statusCode): ${errorResponse!.code} (request_id=$rid)';
     }
     return 'ApiException($statusCode): $rawMessage';
   }

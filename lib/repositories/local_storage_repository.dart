@@ -37,6 +37,26 @@ class LocalStorageRepository {
     }
   }
 
+  Future<void> renameChapterId({
+    required String from,
+    required String to,
+  }) async {
+    if (from.trim().isEmpty || to.trim().isEmpty || from == to) return;
+    final cached = await getChapter(from);
+    if (cached == null) return;
+    await saveChapter(
+      ChapterCache(
+        chapterId: to,
+        novelId: cached.novelId,
+        idx: cached.idx,
+        title: cached.title,
+        content: cached.content,
+        lastUpdated: cached.lastUpdated,
+      ),
+    );
+    await removeChapter(from);
+  }
+
   /// Save multiple chapters to cache
   Future<void> saveChapters(List<ChapterCache> chapters) async {
     for (final chapter in chapters) {

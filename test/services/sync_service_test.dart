@@ -12,6 +12,7 @@ import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/services/network_monitor.dart';
 import 'package:writer/services/retry_policy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:crypto/crypto.dart';
 
 import 'sync_service_test.mocks.dart';
 
@@ -220,6 +221,7 @@ void main() {
           mockRemote.patch('chapters/chapter123', {
             'title': 'Updated Chapter',
             'content': 'Updated content',
+            'sha': sha256.convert(utf8.encode('Updated content')).toString(),
           }),
         ).called(1);
 
@@ -345,7 +347,7 @@ void main() {
 
         verify(mockRemote.post('chapters', any)).called(1);
         verify(
-          mockOfflineQueue.markFailed('op6', 'Max retries exceeded'),
+          mockOfflineQueue.markFailed('op6', 'Exception: Persistent network error'),
         ).called(1);
       });
     });

@@ -1,11 +1,15 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:writer/models/api_error_response.dart';
 import 'package:writer/models/token_usage.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/services/auth_redirect_service.dart';
 import '../shared/api_exception.dart';
+
+final httpClientProvider = Provider<http.Client>((ref) => http.Client());
 
 final remoteRepositoryProvider = Provider<RemoteRepository>((ref) {
   String baseUrl;
@@ -15,8 +19,10 @@ final remoteRepositoryProvider = Provider<RemoteRepository>((ref) {
     baseUrl = 'http://localhost:5600/';
   }
   final sessionId = ref.watch(sessionProvider);
+  final client = ref.watch(httpClientProvider);
   return RemoteRepository(
     baseUrl,
+    client: client,
     authToken: () async => sessionId,
     onUnauthorized: () async {
       await ref.read(sessionProvider.notifier).clear();
@@ -33,15 +39,18 @@ class RemoteRepository {
   final http.Client _client;
   final AuthTokenGetter _authToken;
   final Future<void> Function()? _onUnauthorized;
+  final Duration _timeout;
 
   RemoteRepository(
     this.baseUrl, {
     http.Client? client,
     AuthTokenGetter? authToken,
     Future<void> Function()? onUnauthorized,
+    Duration timeout = const Duration(seconds: 20),
   }) : _client = client ?? http.Client(),
        _authToken = authToken ?? (() async => null),
-       _onUnauthorized = onUnauthorized;
+       _onUnauthorized = onUnauthorized,
+       _timeout = timeout;
 
   String _url(String path) {
     if (baseUrl.endsWith('/')) return '$baseUrl$path';
@@ -69,7 +78,7 @@ class RemoteRepository {
     required bool retryUnauthorized,
   }) async {
     var headers = await _headers(withAuth: true);
-    var response = await _client.get(uri, headers: headers);
+    var response = await _client.get(uri, headers: headers).timeout(_timeout);
     if (response.statusCode == 401) {
       final hadAuth = headers.containsKey('X-Session-Id');
       try {
@@ -77,7 +86,7 @@ class RemoteRepository {
       } catch (_) {}
       if (retryUnauthorized && hadAuth) {
         headers = await _headers(withAuth: false);
-        response = await _client.get(uri, headers: headers);
+        response = await _client.get(uri, headers: headers).timeout(_timeout);
       }
     }
     return response;
@@ -88,7 +97,9 @@ class RemoteRepository {
     required bool retryUnauthorized,
   }) async {
     var headers = await _headers(withAuth: true);
-    var response = await _client.delete(uri, headers: headers);
+    var response = await _client
+        .delete(uri, headers: headers)
+        .timeout(_timeout);
     if (response.statusCode == 401) {
       final hadAuth = headers.containsKey('X-Session-Id');
       try {
@@ -96,7 +107,9 @@ class RemoteRepository {
       } catch (_) {}
       if (retryUnauthorized && hadAuth) {
         headers = await _headers(withAuth: false);
-        response = await _client.delete(uri, headers: headers);
+        response = await _client
+            .delete(uri, headers: headers)
+            .timeout(_timeout);
       }
     }
     return response;
@@ -108,11 +121,9 @@ class RemoteRepository {
     required bool retryUnauthorized,
   }) async {
     var headers = await _headers(withAuth: true);
-    var response = await _client.post(
-      uri,
-      headers: headers,
-      body: jsonEncode(body),
-    );
+    var response = await _client
+        .post(uri, headers: headers, body: jsonEncode(body))
+        .timeout(_timeout);
     if (response.statusCode == 401) {
       final hadAuth = headers.containsKey('X-Session-Id');
       try {
@@ -120,11 +131,9 @@ class RemoteRepository {
       } catch (_) {}
       if (retryUnauthorized && hadAuth) {
         headers = await _headers(withAuth: false);
-        response = await _client.post(
-          uri,
-          headers: headers,
-          body: jsonEncode(body),
-        );
+        response = await _client
+            .post(uri, headers: headers, body: jsonEncode(body))
+            .timeout(_timeout);
       }
     }
     return response;
@@ -136,11 +145,9 @@ class RemoteRepository {
     required bool retryUnauthorized,
   }) async {
     var headers = await _headers(withAuth: true);
-    var response = await _client.patch(
-      uri,
-      headers: headers,
-      body: jsonEncode(body),
-    );
+    var response = await _client
+        .patch(uri, headers: headers, body: jsonEncode(body))
+        .timeout(_timeout);
     if (response.statusCode == 401) {
       final hadAuth = headers.containsKey('X-Session-Id');
       try {
@@ -148,14 +155,47 @@ class RemoteRepository {
       } catch (_) {}
       if (retryUnauthorized && hadAuth) {
         headers = await _headers(withAuth: false);
-        response = await _client.patch(
-          uri,
-          headers: headers,
-          body: jsonEncode(body),
-        );
+        response = await _client
+            .patch(uri, headers: headers, body: jsonEncode(body))
+            .timeout(_timeout);
       }
     }
     return response;
+  }
+
+  ApiException _apiExceptionFromResponse(http.Response response) {
+    final headerRequestId = response.headers.entries
+        .firstWhere(
+          (e) => e.key.toLowerCase() == 'x-request-id',
+          orElse: () => const MapEntry('', ''),
+        )
+        .value
+        .trim();
+
+    final raw = response.body;
+    ApiErrorResponse? errorResponse;
+    try {
+      final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+      if (decoded is Map<String, dynamic>) {
+        final parsed = ApiErrorResponse.fromJson(decoded);
+        errorResponse = ApiErrorResponse(
+          code: parsed.code,
+          message: parsed.message,
+          userMessageKey: parsed.userMessageKey,
+          details: parsed.details,
+          requestId:
+              parsed.requestId ??
+              (headerRequestId.isEmpty ? null : headerRequestId),
+        );
+      }
+    } catch (_) {}
+
+    return ApiException(response.statusCode, raw, errorResponse: errorResponse);
+  }
+
+  dynamic _decodeSuccessBody(http.Response response) {
+    if (response.body.isEmpty) return null;
+    return jsonDecode(utf8.decode(response.bodyBytes));
   }
 
   Future<dynamic> get(
@@ -172,10 +212,9 @@ class RemoteRepository {
         retryUnauthorized: retryUnauthorized,
       );
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiException(response.statusCode, response.body);
+        throw _apiExceptionFromResponse(response);
       }
-      if (response.body.isEmpty) return null;
-      return jsonDecode(utf8.decode(response.bodyBytes));
+      return _decodeSuccessBody(response);
     } catch (e) {
       if (e is ApiException) rethrow;
       throw ApiException(0, e.toString());
@@ -194,10 +233,9 @@ class RemoteRepository {
         retryUnauthorized: retryUnauthorized,
       );
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiException(response.statusCode, response.body);
+        throw _apiExceptionFromResponse(response);
       }
-      if (response.body.isEmpty) return null;
-      return jsonDecode(utf8.decode(response.bodyBytes));
+      return _decodeSuccessBody(response);
     } catch (e) {
       if (e is ApiException) rethrow;
       throw ApiException(0, e.toString());
@@ -216,10 +254,9 @@ class RemoteRepository {
         retryUnauthorized: retryUnauthorized,
       );
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiException(response.statusCode, response.body);
+        throw _apiExceptionFromResponse(response);
       }
-      if (response.body.isEmpty) return null;
-      return jsonDecode(utf8.decode(response.bodyBytes));
+      return _decodeSuccessBody(response);
     } catch (e) {
       if (e is ApiException) rethrow;
       throw ApiException(0, e.toString());
@@ -240,7 +277,7 @@ class RemoteRepository {
         retryUnauthorized: retryUnauthorized,
       );
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiException(response.statusCode, response.body);
+        throw _apiExceptionFromResponse(response);
       }
     } catch (e) {
       if (e is ApiException) rethrow;

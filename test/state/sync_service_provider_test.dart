@@ -6,9 +6,11 @@ import 'package:writer/state/sync_service_provider.dart';
 import 'package:writer/services/sync_service.dart';
 import 'package:writer/services/offline_queue_service.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/services/network_monitor.dart';
 import 'package:writer/state/network_monitor_provider.dart';
 import 'package:writer/models/sync_state.dart';
+import 'package:writer/state/providers.dart';
 
 class MockOfflineQueueService extends Mock implements OfflineQueueService {
   @override
@@ -24,16 +26,20 @@ class MockNetworkMonitor extends Mock implements NetworkMonitor {
 
 class MockSyncService extends Mock implements SyncService {}
 
+class MockLocalStorageRepository extends Mock implements LocalStorageRepository {}
+
 void main() {
   group('sync_service_provider', () {
     late MockOfflineQueueService mockOfflineQueue;
     late MockRemoteRepository mockRemote;
     late MockNetworkMonitor mockNetworkMonitor;
+    late MockLocalStorageRepository mockLocalStorage;
 
     setUp(() {
       mockOfflineQueue = MockOfflineQueueService();
       mockRemote = MockRemoteRepository();
       mockNetworkMonitor = MockNetworkMonitor();
+      mockLocalStorage = MockLocalStorageRepository();
     });
 
     test('provides SyncService instance with correct dependencies', () {
@@ -42,6 +48,7 @@ void main() {
           offlineQueueServiceProvider.overrideWithValue(mockOfflineQueue),
           remoteRepositoryProvider.overrideWithValue(mockRemote),
           networkMonitorProvider.overrideWithValue(mockNetworkMonitor),
+          localStorageRepositoryProvider.overrideWithValue(mockLocalStorage),
         ],
       );
       addTearDown(container.dispose);
@@ -56,6 +63,7 @@ void main() {
           offlineQueueServiceProvider.overrideWithValue(mockOfflineQueue),
           remoteRepositoryProvider.overrideWithValue(mockRemote),
           networkMonitorProvider.overrideWithValue(mockNetworkMonitor),
+          localStorageRepositoryProvider.overrideWithValue(mockLocalStorage),
         ],
       );
 

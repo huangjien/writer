@@ -38,9 +38,9 @@ class AppColors {
   static const Color cardDark = Color(0xFF2C2C2C);
 
   /// Elevation colors for depth
-  static const Color elevation1 = Color(0xFF0D000000);
-  static const Color elevation2 = Color(0xFF140000000);
-  static const Color elevation3 = Color(0xFF1F000000);
+  static const Color elevation1 = Color(0x0D000000);
+  static const Color elevation2 = Color(0x14000000);
+  static const Color elevation3 = Color(0x1F000000);
 
   /// Accent colors for different states
   static const Color download = Color(0xFF00BCD4);

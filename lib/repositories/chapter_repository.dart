@@ -15,6 +15,7 @@ import '../common/errors/offline_exception.dart';
 import '../state/network_monitor_provider.dart';
 import '../state/providers.dart';
 import '../services/connectivity_checker.dart';
+import '../shared/api_exception.dart';
 
 final chapterRepositoryProvider = Provider<ChapterPort>((ref) {
   final remote = ref.watch(remoteRepositoryProvider);
@@ -258,12 +259,24 @@ class ChapterRepository implements ChapterPort {
 
   @override
   Future<void> bulkShiftIdx(String novelId, int fromIdx, int delta) async {
-    // Ideally backend should handle this. For now, fetch all and update relevant ones.
     try {
       final chapters = await getChapters(novelId);
       final toUpdate = chapters.where((c) => c.idx >= fromIdx).toList();
+      if (toUpdate.isEmpty) return;
 
-      // We need to update them. doing it sequentially might be slow but safe.
+      final updates = toUpdate
+          .map((c) => {'chapter_id': c.id, 'idx': c.idx + delta})
+          .toList();
+
+      try {
+        await _remote.patch('novels/$novelId/chapters/reorder', {
+          'updates': updates,
+        });
+        return;
+      } on ApiException catch (e) {
+        if (e.statusCode != 404 && e.statusCode != 405) rethrow;
+      }
+
       for (final c in toUpdate) {
         await updateChapterIdx(c.id, c.idx + delta);
       }

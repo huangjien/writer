@@ -187,8 +187,18 @@ void main() {
       when(() => remote.patch(any(), any())).thenAnswer((_) async => {});
 
       await repo.bulkShiftIdx('n1', 1, 3);
-      verify(() => remote.patch('chapters/c1', {'idx': 4})).called(1);
-      verify(() => remote.patch('chapters/c2', {'idx': 5})).called(1);
+      verify(
+        () => remote.patch(
+          'novels/n1/chapters/reorder',
+          {
+            'updates': [
+              {'chapter_id': 'c1', 'idx': 4},
+              {'chapter_id': 'c2', 'idx': 5},
+            ],
+          },
+          retryUnauthorized: false,
+        ),
+      ).called(1);
     });
 
     test('getNextIdx returns 1 when none, else max+1', () async {

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../theme/themes.dart';
 import '../theme/reader_typography.dart';
-import '../theme/font_packs.dart';
+import '../theme/font_packs.dart' show ReaderFontPack;
+import '../theme/font_packs.dart' as font_packs;
 
 import '../theme/no_animation_transitions.dart';
 import '../theme/fade_through_page_transitions.dart';
@@ -40,9 +41,7 @@ class AppThemeBuilder {
     ReaderFontPack fontPack,
     String? customFontFamily,
   ) {
-    return base.copyWith(
-      textTheme: base.textTheme.apply(fontFamily: 'Noto Sans SC'),
-    );
+    return font_packs.applyFontPackOrCustom(base, fontPack, customFontFamily);
   }
 
   /// Apply reader typography preset

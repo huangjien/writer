@@ -1,6 +1,7 @@
 import 'dart:async';
 import '../models/offline_operation.dart';
 import '../models/sync_state.dart';
+import '../repositories/local_storage_repository.dart';
 import '../repositories/remote_repository.dart';
 import '../services/offline_queue_service.dart';
 import '../services/network_monitor.dart';
@@ -13,6 +14,7 @@ class SyncService {
   final OfflineQueueService _offlineQueue;
   final RemoteRepository _remote;
   final NetworkMonitor _networkMonitor;
+  final LocalStorageRepository? _localStorage;
   final Duration _syncDebounceDuration;
   final Future<void> Function(Duration) _delay;
   late final StreamController<SyncState> _syncStateController;
@@ -30,12 +32,14 @@ class SyncService {
     required OfflineQueueService offlineQueue,
     required RemoteRepository remote,
     required NetworkMonitor networkMonitor,
+    LocalStorageRepository? localStorage,
     Future<SharedPreferences> Function()? prefs,
     Duration syncDebounceDuration = const Duration(seconds: 2),
     Future<void> Function(Duration)? delay,
   }) : _offlineQueue = offlineQueue,
        _remote = remote,
        _networkMonitor = networkMonitor,
+       _localStorage = localStorage,
        _prefs = prefs ?? SharedPreferences.getInstance,
        _syncDebounceDuration = syncDebounceDuration,
        _delay = delay ?? Future<void>.delayed,
@@ -132,71 +136,125 @@ class SyncService {
       errorMessage: null,
     );
 
+    String? lastError;
     for (final op in operations) {
-      final success = await _syncOperation(op);
-      if (success) {
-        await _offlineQueue.markCompleted(op.id);
-      } else {
-        // Retry with backoff if failed
-        if (op.retryCount < RetryPolicy.maxRetries) {
-          final delay = RetryPolicy.getDelay(op.retryCount);
-          await _delay(delay);
-          final retrySuccess = await _syncOperation(op);
-          if (retrySuccess) {
-            await _offlineQueue.markCompleted(op.id);
-          } else {
-            await _offlineQueue.markFailed(op.id, 'Max retries exceeded');
-          }
-        } else {
-          await _offlineQueue.markFailed(op.id, 'Max retries exceeded');
+      var retryCount = op.retryCount;
+      while (true) {
+        final result = await _syncOperation(op);
+        if (result.success) {
+          await _offlineQueue.markCompleted(op.id);
+          break;
         }
+
+        final error = result.error ?? 'Sync failed';
+        lastError = error;
+        retryCount += 1;
+        await _offlineQueue.incrementRetry(op.id);
+
+        if (!RetryPolicy.canRetry(retryCount)) {
+          await _offlineQueue.markFailed(op.id, error);
+          break;
+        }
+
+        await _offlineQueue.markFailed(op.id, error);
+        await _delay(RetryPolicy.getDelay(retryCount));
       }
     }
 
     // Clear completed operations
     await _offlineQueue.clearCompleted();
 
-    _emitSyncState(
-      status: SyncStatus.synced,
-      pendingOperations: 0,
-      errorMessage: null,
-      lastSyncTime: DateTime.now(),
-    );
+    final remaining = await _offlineQueue.getPendingCount();
+    if (remaining > 0) {
+      _emitSyncState(
+        status: SyncStatus.error,
+        pendingOperations: remaining,
+        errorMessage: lastError,
+        lastSyncTime: DateTime.now(),
+      );
+    } else {
+      _emitSyncState(
+        status: SyncStatus.synced,
+        pendingOperations: 0,
+        errorMessage: null,
+        lastSyncTime: DateTime.now(),
+      );
+    }
   }
 
   /// Sync a single operation
-  Future<bool> _syncOperation(OfflineOperation op) async {
+  Future<({bool success, String? error})> _syncOperation(
+    OfflineOperation op,
+  ) async {
     try {
       switch (op.type) {
         case OperationType.createChapter:
-          return await _syncCreate(op);
+          return (success: await _syncCreate(op), error: null);
         case OperationType.updateChapter:
-          return await _syncUpdate(op);
+          return (success: await _syncUpdate(op), error: null);
         case OperationType.deleteChapter:
-          return await _syncDelete(op);
+          return (success: await _syncDelete(op), error: null);
         case OperationType.updateChapterIdx:
-          return await _syncMove(op);
+          return (success: await _syncMove(op), error: null);
       }
     } catch (e) {
-      return false;
+      return (success: false, error: e.toString());
     }
+  }
+
+  String? _stringFromData(Map<String, dynamic>? data, List<String> keys) {
+    if (data == null) return null;
+    for (final k in keys) {
+      final v = data[k];
+      if (v is String && v.trim().isNotEmpty) return v;
+    }
+    return null;
+  }
+
+  int? _intFromData(Map<String, dynamic>? data, List<String> keys) {
+    if (data == null) return null;
+    for (final k in keys) {
+      final v = data[k];
+      if (v is int) return v;
+      if (v is String) return int.tryParse(v);
+    }
+    return null;
   }
 
   /// Sync create operation
   Future<bool> _syncCreate(OfflineOperation op) async {
-    final data = op.data!;
+    final data = op.data ?? const <String, dynamic>{};
+    final idx = _intFromData(data, const ['idx']) ?? 1;
+    final title = _stringFromData(data, const ['title']) ?? 'Untitled';
+    final content = _stringFromData(data, const ['content']) ?? '';
+    final languageCode =
+        _stringFromData(data, const ['language_code', 'languageCode']) ?? 'en';
+
     final body = {
-      'novel_id': data['novelId'],
-      'idx': data['idx'],
-      'title': data['title'],
-      'content': data['content'],
-      'language_code': 'en',
+      'novel_id': op.novelId,
+      'idx': idx,
+      'title': title,
+      'content': content,
+      'language_code': languageCode,
     };
 
     final res = await _remote.post('chapters', body);
     if (res is Map<String, dynamic>) {
-      // Update operation with server ID
-      await _updateOperationWithServerId(op.id, res['id']);
+      final serverId = res['id'];
+      if (serverId is String && serverId.isNotEmpty) {
+        await _updateOperationWithServerId(op.id, serverId);
+        final localId = op.chapterId;
+        if (localId != null &&
+            localId.isNotEmpty &&
+            localId != serverId &&
+            localId.startsWith('local_')) {
+          await _offlineQueue.replaceChapterId(fromId: localId, toId: serverId);
+          final localStorage = _localStorage;
+          if (localStorage != null) {
+            await localStorage.renameChapterId(from: localId, to: serverId);
+          }
+        }
+      }
       return true;
     }
     return false;
@@ -204,38 +262,54 @@ class SyncService {
 
   /// Sync update operation
   Future<bool> _syncUpdate(OfflineOperation op) async {
-    final data = op.data!;
-    final chapterId = op.chapterId!;
-    final body = {'title': data['title'], 'content': data['content']};
+    final data = op.data ?? const <String, dynamic>{};
+    final storedServerId = _stringFromData(data, const ['serverId']);
+    final chapterId = storedServerId ?? op.chapterId;
+    if (chapterId == null || chapterId.isEmpty) {
+      throw StateError('Missing chapterId for update operation');
+    }
+    final title = _stringFromData(data, const ['title']);
+    final content = _stringFromData(data, const ['content']);
+    final body = {
+      if (title != null) 'title': title,
+      if (content != null) 'content': content,
+    };
 
     // Calculate SHA for conflict detection
     String? sha;
-    if (data['content'] != null) {
-      final bytes = utf8.encode(data['content'] as String);
+    if (content != null) {
+      final bytes = utf8.encode(content);
       sha = sha256.convert(bytes).toString();
     }
+    if (sha != null) body['sha'] = sha;
 
-    final res = await _remote.patch('chapters/$chapterId', body);
-    if (res is Map<String, dynamic>) {
-      // Update operation SHA
-      await _updateOperationWithServerId(op.id, sha ?? '');
-      return true;
-    }
-    return false;
+    await _remote.patch('chapters/$chapterId', body);
+    return true;
   }
 
   /// Sync delete operation
   Future<bool> _syncDelete(OfflineOperation op) async {
-    final chapterId = op.chapterId!;
+    final chapterId = op.chapterId;
+    if (chapterId == null || chapterId.isEmpty) {
+      throw StateError('Missing chapterId for delete operation');
+    }
     await _remote.delete('chapters/$chapterId');
     return true;
   }
 
   /// Sync move operation (update chapter index)
   Future<bool> _syncMove(OfflineOperation op) async {
-    final data = op.data!;
-    final chapterId = op.chapterId!;
-    final body = {'idx': data['idx']};
+    final data = op.data ?? const <String, dynamic>{};
+    final storedServerId = _stringFromData(data, const ['serverId']);
+    final chapterId = storedServerId ?? op.chapterId;
+    if (chapterId == null || chapterId.isEmpty) {
+      throw StateError('Missing chapterId for move operation');
+    }
+    final newIdx = _intFromData(data, const ['idx', 'new_idx', 'newIdx']);
+    if (newIdx == null) {
+      throw StateError('Missing idx for move operation');
+    }
+    final body = {'idx': newIdx};
 
     await _remote.patch('chapters/$chapterId', body);
     return true;

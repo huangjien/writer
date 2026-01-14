@@ -174,4 +174,37 @@ class OfflineQueueService {
     // Remove operation data
     await prefs.remove('$_opPrefix$operationId');
   }
+
+  Future<void> replaceChapterId({
+    required String fromId,
+    required String toId,
+  }) async {
+    if (fromId.trim().isEmpty || toId.trim().isEmpty) return;
+    final prefs = await _prefs();
+    final queue = await _getQueueList();
+
+    for (final opId in queue) {
+      final opJson = prefs.getString('$_opPrefix$opId');
+      if (opJson == null) continue;
+
+      try {
+        final opMap = jsonDecode(opJson) as Map<String, dynamic>;
+        final op = OfflineOperation.fromJson(opMap);
+        if (op.chapterId != fromId) continue;
+
+        final updatedData = Map<String, dynamic>.from(op.data ?? {});
+        final embeddedChapterId = updatedData['chapter_id'];
+        if (embeddedChapterId == fromId) {
+          updatedData['chapter_id'] = toId;
+        }
+        updatedData['serverId'] = toId;
+
+        final updatedOp = op.copyWith(chapterId: toId, data: updatedData);
+        await prefs.setString(
+          '$_opPrefix$opId',
+          jsonEncode(updatedOp.toJson()),
+        );
+      } catch (_) {}
+    }
+  }
 }

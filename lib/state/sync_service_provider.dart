@@ -3,6 +3,7 @@ import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/services/sync_service.dart';
 import 'package:writer/state/network_monitor_provider.dart';
 import 'package:writer/models/sync_state.dart';
+import 'package:writer/state/providers.dart';
 
 /// Provider for the SyncService singleton.
 /// This service handles syncing offline operations to the remote server.
@@ -10,10 +11,12 @@ final syncServiceProvider = Provider<SyncService>((ref) {
   final offlineQueue = ref.watch(offlineQueueServiceProvider);
   final remote = ref.watch(remoteRepositoryProvider);
   final networkMonitor = ref.watch(networkMonitorProvider);
+  final localStorage = ref.watch(localStorageRepositoryProvider);
   final syncService = SyncService(
     offlineQueue: offlineQueue,
     remote: remote,
     networkMonitor: networkMonitor,
+    localStorage: localStorage,
   );
   return syncService;
 });
