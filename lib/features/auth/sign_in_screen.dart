@@ -7,6 +7,7 @@ import '../../state/redirect_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../../state/auth_service_provider.dart';
+import '../../shared/widgets/app_buttons.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
@@ -216,22 +217,14 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 }
 
                 if (biometricState == BiometricAuthState.enabled) {
-                  return ElevatedButton.icon(
+                  return AppButtons.primary(
                     onPressed: _biometricLoading
-                        ? null
+                        ? () {}
                         : () => _signInWithBiometrics(context),
-                    icon: _biometricLoading
-                        ? const SizedBox(
-                            height: 16,
-                            width: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.fingerprint),
-                    label: Text(l10n.signInWithBiometrics),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey[200],
-                      foregroundColor: Colors.black87,
-                    ),
+                    icon: _biometricLoading ? null : Icons.fingerprint,
+                    label: l10n.signInWithBiometrics,
+                    isLoading: _biometricLoading,
+                    fullWidth: true,
                   );
                 }
 

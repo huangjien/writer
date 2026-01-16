@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
+import '../../theme/neumorphic_styles.dart';
+import 'neumorphic_card.dart';
 
 /// Enhanced card component with modern Material 3 design
 /// Features:
@@ -33,42 +35,67 @@ class EnhancedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+
+    // For Neumorphism, the card color should usually match the background
+    // unless explicitly overridden.
     final cardColor =
-        color ?? (isDark ? AppColors.cardDark : AppColors.cardLight);
+        color ??
+        (isDark
+            ? NeumorphicStyles.darkBackground
+            : NeumorphicStyles.lightBackground);
+
     final radius = borderRadius ?? BorderRadius.circular(Radii.l);
 
-    final card = Container(
-      padding: padding ?? const EdgeInsets.all(Spacing.cardPadding),
-      decoration: BoxDecoration(
-        color: cardColor,
+    if (elevation > 0 && border == null) {
+      return NeumorphicCard(
+        margin: margin,
         borderRadius: radius,
-        border:
-            border ??
-            Border.all(
-              color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
-              width: 1,
-            ),
-      ),
+        padding: padding ?? const EdgeInsets.all(Spacing.cardPadding),
+        depth: elevation * 4.0,
+        color: cardColor,
+        onTap: onTap,
+        child: child,
+      );
+    }
+
+    // If elevation is 0, we might want a flat card or just border.
+    // If elevation > 0, use Neumorphic decoration.
+    final decoration = elevation > 0
+        ? NeumorphicStyles.decoration(
+            isDark: isDark,
+            borderRadius: radius,
+            color: cardColor,
+            depth:
+                elevation *
+                4.0, // Increased multiplier for more depth per elevation unit
+          )
+        : BoxDecoration(
+            color: cardColor,
+            borderRadius: radius,
+            border:
+                border ??
+                Border.all(
+                  color: isDark ? Colors.white10 : Colors.black12,
+                  width: 1,
+                ),
+          );
+
+    final cardContent = Container(
+      padding: padding ?? const EdgeInsets.all(Spacing.cardPadding),
       child: child,
     );
 
     if (onTap == null) {
       return Container(
         margin: margin,
-        decoration: BoxDecoration(
-          borderRadius: radius,
-          boxShadow: _getBoxShadow(elevation, isDark),
-        ),
-        child: card,
+        decoration: decoration,
+        child: cardContent,
       );
     }
 
     return Container(
       margin: margin,
-      decoration: BoxDecoration(
-        borderRadius: radius,
-        boxShadow: _getBoxShadow(elevation, isDark),
-      ),
+      decoration: decoration,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -76,55 +103,11 @@ class EnhancedCard extends StatelessWidget {
           borderRadius: radius,
           splashColor: theme.colorScheme.primary.withValues(alpha: 0.1),
           highlightColor: theme.colorScheme.primary.withValues(alpha: 0.05),
-          child: card,
+          child: cardContent,
         ),
       ),
     );
   }
 
-  List<BoxShadow> _getBoxShadow(int elevation, bool isDark) {
-    switch (elevation) {
-      case 1:
-        return [
-          BoxShadow(
-            color: AppColors.elevation1,
-            offset: const Offset(0, 1),
-            blurRadius: 3,
-            spreadRadius: 0,
-          ),
-        ];
-      case 2:
-        return [
-          BoxShadow(
-            color: AppColors.elevation1,
-            offset: const Offset(0, 2),
-            blurRadius: 6,
-            spreadRadius: 0,
-          ),
-          BoxShadow(
-            color: AppColors.elevation2,
-            offset: const Offset(0, 1),
-            blurRadius: 2,
-            spreadRadius: 0,
-          ),
-        ];
-      case 3:
-        return [
-          BoxShadow(
-            color: AppColors.elevation1,
-            offset: const Offset(0, 4),
-            blurRadius: 12,
-            spreadRadius: 0,
-          ),
-          BoxShadow(
-            color: AppColors.elevation2,
-            offset: const Offset(0, 2),
-            blurRadius: 4,
-            spreadRadius: 0,
-          ),
-        ];
-      default:
-        return [];
-    }
-  }
+  // _getBoxShadow is no longer needed as NeumorphicStyles handles it
 }

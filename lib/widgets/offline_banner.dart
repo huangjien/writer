@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../state/sync_service_provider.dart';
 import '../state/network_monitor_provider.dart';
-import '../shared/widgets/glass_card.dart';
 import '../theme/design_tokens.dart';
+import '../theme/neumorphic_styles.dart';
 
 /// Warning banner displayed when offline with pending operations
 /// Shows at the top of the screen or below the app bar
@@ -53,22 +53,13 @@ class OfflineBanner extends ConsumerWidget {
                   liveRegion: true,
                   label: 'You\'re offline. $message',
                   child: ExcludeSemantics(
-                    child: GlassCard(
-                      borderRadius: BorderRadius.circular(Radii.m),
-                      color: theme.colorScheme.tertiaryContainer.withValues(
-                        alpha: 0.85,
+                    child: Container(
+                      decoration: NeumorphicStyles.decoration(
+                        isDark: theme.brightness == Brightness.dark,
+                        borderRadius: BorderRadius.circular(Radii.m),
+                        color: theme.colorScheme.tertiaryContainer,
+                        depth: 4,
                       ),
-                      borderColor: Colors.transparent,
-                      blur: GlassTokens.blur,
-                      shadow: [
-                        BoxShadow(
-                          color: theme.colorScheme.shadow.withValues(
-                            alpha: 0.12,
-                          ),
-                          blurRadius: 16,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: Spacing.l,

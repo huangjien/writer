@@ -343,33 +343,29 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
   Widget _buildSearchBar(BuildContext context, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.all(Spacing.m),
-      child: GlassCard(
-        borderRadius: BorderRadius.circular(Radii.m),
-        child: TextField(
-          controller: _searchController,
-          decoration: InputDecoration(
-            hintText: 'Search novels...',
-            hintStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
-            prefixIcon: Icon(
-              Icons.search,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            suffixIcon: _searchController.text.isNotEmpty
-                ? IconButton(
-                    icon: Icon(
-                      Icons.clear,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    onPressed: () {
-                      _searchController.clear();
-                    },
-                  )
-                : null,
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: Spacing.m,
-              vertical: Spacing.s,
-            ),
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: 'Search novels...',
+          hintStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+          prefixIcon: Icon(
+            Icons.search,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  icon: Icon(
+                    Icons.clear,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  onPressed: () {
+                    _searchController.clear();
+                  },
+                )
+              : null,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: Spacing.m,
+            vertical: Spacing.s,
           ),
         ),
       ),
@@ -379,44 +375,38 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
   Widget _buildFilterChips(BuildContext context, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
-      child: GlassCard(
-        borderRadius: BorderRadius.circular(Radii.m),
-        padding: const EdgeInsets.symmetric(vertical: Spacing.xs),
-        child: SizedBox(
-          height: 48,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: Spacing.s),
-            itemCount: widget.filterChips!.length,
-            itemBuilder: (context, index) {
-              final filter = widget.filterChips![index];
-              final isSelected = filter == widget.selectedFilter;
-              return Padding(
-                padding: const EdgeInsets.only(right: Spacing.s),
-                child: FilterChip(
-                  label: Text(filter),
-                  selected: isSelected,
-                  onSelected: (selected) {
-                    widget.onFilterChanged?.call(filter);
-                  },
-                  backgroundColor: theme.colorScheme.surfaceContainerHighest
-                      .withValues(alpha: 0.6),
-                  selectedColor: theme.colorScheme.primaryContainer,
-                  labelStyle: TextStyle(
-                    color: isSelected
-                        ? theme.colorScheme.onPrimaryContainer
-                        : theme.colorScheme.onSurfaceVariant,
-                    fontWeight: isSelected
-                        ? FontWeight.w600
-                        : FontWeight.normal,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(Radii.m),
-                  ),
+      child: SizedBox(
+        height: 48,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: Spacing.s),
+          itemCount: widget.filterChips!.length,
+          itemBuilder: (context, index) {
+            final filter = widget.filterChips![index];
+            final isSelected = filter == widget.selectedFilter;
+            return Padding(
+              padding: const EdgeInsets.only(right: Spacing.s),
+              child: FilterChip(
+                label: Text(filter),
+                selected: isSelected,
+                onSelected: (selected) {
+                  widget.onFilterChanged?.call(filter);
+                },
+                backgroundColor: theme.colorScheme.surfaceContainerHighest
+                    .withValues(alpha: 0.6),
+                selectedColor: theme.colorScheme.primaryContainer,
+                labelStyle: TextStyle(
+                  color: isSelected
+                      ? theme.colorScheme.onPrimaryContainer
+                      : theme.colorScheme.onSurfaceVariant,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
-              );
-            },
-          ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(Radii.m),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

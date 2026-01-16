@@ -59,30 +59,23 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    // theme was unused
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Search input
-        Container(
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(Radii.m),
-          ),
-          child: TextField(
-            controller: _controller,
-            decoration: InputDecoration(
-              hintText: widget.hintText ?? 'Search novels...',
-              prefixIcon: const Icon(Icons.search),
-              suffixIcon: _hasText
-                  ? IconButton(icon: const Icon(Icons.clear), onPressed: _clear)
-                  : null,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: Spacing.m,
-                vertical: Spacing.m,
-              ),
+        TextField(
+          controller: _controller,
+          decoration: InputDecoration(
+            hintText: widget.hintText ?? 'Search novels...',
+            prefixIcon: const Icon(Icons.search),
+            suffixIcon: _hasText
+                ? IconButton(icon: const Icon(Icons.clear), onPressed: _clear)
+                : null,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: Spacing.m,
+              vertical: Spacing.m,
             ),
           ),
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'advanced_typography.dart';
 import 'design_tokens.dart';
+import 'neumorphic_styles.dart';
 
 /// Reader-friendly theme families. Each family has light and dark variants.
 enum AppThemeFamily {
@@ -47,22 +48,23 @@ bool _isHighContrast(AppThemeFamily family) =>
     family == AppThemeFamily.highContrast;
 
 ThemeData _buildFromSeed(Color seed, Brightness brightness) {
+  final isLight = brightness == Brightness.light;
   final baseTheme = ThemeData(
     colorScheme: ColorScheme.fromSeed(
       seedColor: seed,
       brightness: brightness,
-      surface: brightness == Brightness.light
-          ? AppColors.surfaceTint
-          : AppColors.surfaceTintDark,
+      surface: isLight
+          ? NeumorphicStyles.lightBackground
+          : NeumorphicStyles.darkBackground,
     ),
+    scaffoldBackgroundColor: isLight
+        ? NeumorphicStyles.lightBackground
+        : NeumorphicStyles.darkBackground,
     useMaterial3: true,
   );
 
   final cs = baseTheme.colorScheme;
-  final outline = cs.outlineVariant;
-  final fill = brightness == Brightness.light
-      ? cs.surfaceContainerHighest
-      : cs.surfaceContainerHigh;
+  // outline and fill were unused
 
   return baseTheme.copyWith(
     textSelectionTheme: TextSelectionThemeData(
@@ -122,40 +124,19 @@ ThemeData _buildFromSeed(Color seed, Brightness brightness) {
     ),
 
     // Modern outline input decorations
-    inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(Radii.m),
-        borderSide: BorderSide(color: outline, width: 1.0),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(Radii.m),
-        borderSide: BorderSide(color: outline, width: 1.0),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(Radii.m),
-        borderSide: BorderSide(color: cs.primary, width: 2.0),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(Radii.m),
-        borderSide: BorderSide(color: cs.error, width: 1.0),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(Radii.m),
-        borderSide: BorderSide(color: cs.error, width: 2.0),
-      ),
-      filled: true,
-      fillColor: fill,
-      floatingLabelBehavior: FloatingLabelBehavior.auto,
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: Spacing.l,
-        vertical: Spacing.m,
-      ),
-    ),
+    inputDecorationTheme:
+        NeumorphicStyles.inputDecorationTheme(isDark: !isLight).copyWith(
+          // Keep some specific overrides if needed, but NeumorphicStyles handles most
+          floatingLabelBehavior: FloatingLabelBehavior.auto,
+        ),
 
     // Softer card elevation with colored shadows
     cardTheme: CardThemeData(
-      elevation: 2.0,
-      shadowColor: AppColors.shadowColorLight,
+      elevation: 0, // Neumorphism uses custom shadows, not elevation
+      color: isLight
+          ? NeumorphicStyles.lightBackground
+          : NeumorphicStyles.darkBackground,
+      shadowColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Radii.l),
       ),
@@ -291,6 +272,14 @@ ThemeData _buildFromSeed(Color seed, Brightness brightness) {
         borderRadius: BorderRadius.circular(Radii.l),
       ),
       labelTextStyle: WidgetStatePropertyAll(baseTheme.textTheme.labelMedium),
+    ),
+    appBarTheme: AppBarTheme(
+      backgroundColor: isLight
+          ? NeumorphicStyles.lightBackground
+          : NeumorphicStyles.darkBackground,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      centerTitle: true,
     ),
   );
 }

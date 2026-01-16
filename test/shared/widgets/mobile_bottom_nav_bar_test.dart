@@ -140,9 +140,11 @@ void main() {
       expect(bottomNavBar.constraints?.maxHeight, equals(56.0));
 
       // Check that it has a box shadow
+      // Neumorphic decoration uses multiple shadows.
+      // With depth 12, blur is 30.0.
       final decoration = bottomNavBar.decoration as BoxDecoration;
       expect(decoration.boxShadow, isNotEmpty);
-      expect(decoration.boxShadow?.first.blurRadius, equals(8.0));
+      expect(decoration.boxShadow?.first.blurRadius, equals(30.0));
     });
 
     testWidgets('handles rapid tab changes', (tester) async {

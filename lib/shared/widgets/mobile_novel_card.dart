@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import '../../theme/design_tokens.dart';
+import '../../theme/neumorphic_styles.dart';
 import '../../models/novel.dart';
 import 'mobile_bottom_sheet.dart';
 import 'mobile_gestures.dart';
 import '../image_utils.dart';
+import 'neumorphic_button.dart';
 import 'gestures/swipe_actions.dart';
 import 'gestures/pinch_to_zoom.dart';
 import 'cover_placeholder.dart';
@@ -127,16 +129,10 @@ class MobileNovelCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(Radii.l),
             child: Container(
               padding: const EdgeInsets.all(MobileSpacing.cardPaddingMobile),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerLowest,
+              decoration: NeumorphicStyles.decoration(
+                isDark: theme.brightness == Brightness.dark,
                 borderRadius: BorderRadius.circular(Radii.l),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.shadowColor,
-                    blurRadius: 10,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
+                depth: 8,
               ),
               child: Row(
                 children: [
@@ -318,19 +314,20 @@ class MobileNovelCard extends StatelessWidget {
               label: isFavorite ? 'Unfavorite' : 'Favorite',
               child: FocusWrapper(
                 borderRadius: BorderRadius.circular(Radii.m),
-                child: IconButton(
-                  icon: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorite ? theme.colorScheme.error : null,
-                  ),
-                  onPressed: () {
-                    MobileGestures.toggleImpact();
-                    onFavorite?.call();
-                  },
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: MobileSpacing.touchTargetMin,
-                    minHeight: MobileSpacing.touchTargetMin,
+                child: SizedBox(
+                  width: MobileSpacing.touchTargetMin,
+                  height: MobileSpacing.touchTargetMin,
+                  child: NeumorphicButton(
+                    onPressed: () {
+                      MobileGestures.toggleImpact();
+                      onFavorite?.call();
+                    },
+                    padding: EdgeInsets.zero,
+                    depth: 4,
+                    child: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? theme.colorScheme.error : null,
+                    ),
                   ),
                 ),
               ),
@@ -343,16 +340,18 @@ class MobileNovelCard extends StatelessWidget {
             label: 'More actions',
             child: FocusWrapper(
               borderRadius: BorderRadius.circular(Radii.m),
-              child: IconButton(
-                icon: const Icon(Icons.more_vert),
-                onPressed: () {
-                  MobileGestures.lightImpact();
-                  _showActionMenu(context);
-                },
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(
-                  minWidth: MobileSpacing.touchTargetMin,
-                  minHeight: MobileSpacing.touchTargetMin,
+              child: SizedBox(
+                width: MobileSpacing.touchTargetMin,
+                height: MobileSpacing.touchTargetMin,
+                child: NeumorphicButton(
+                  key: ValueKey('more_actions_${novel.id}'),
+                  onPressed: () {
+                    MobileGestures.lightImpact();
+                    _showActionMenu(context);
+                  },
+                  padding: EdgeInsets.zero,
+                  depth: 4,
+                  child: const Icon(Icons.more_vert),
                 ),
               ),
             ),

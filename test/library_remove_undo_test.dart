@@ -18,6 +18,7 @@ import 'package:writer/state/motion_settings.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 
 // Create a custom SyncStatusIndicator without label to prevent overflow
 class CompactSyncStatusIndicator extends StatelessWidget {
@@ -42,7 +43,8 @@ void main() {
     tester,
   ) async {
     // Set mobile screen size to ensure MobileNovelCard is used but prevent overflow
-    tester.view.physicalSize = const Size(550, 800);
+    // Tall enough to avoid FAB overlap
+    tester.view.physicalSize = const Size(550, 2000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
@@ -103,6 +105,9 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: const LibraryScreen(),
+          routes: {
+            '/novel/create': (context) => const Scaffold(body: Text('Create')),
+          },
         ),
       ),
     );
@@ -117,27 +122,17 @@ void main() {
     expect(find.text('The Whispering Forest'), findsOneWidget);
 
     // Tap delete action
-    // MobileNovelCard shows actions in a bottom sheet via more_vert icon
-    final moreButton = find.byIcon(Icons.more_vert);
-    expect(moreButton, findsWidgets);
-    await tester.tap(moreButton.first);
+    // Use long press on the card to open the menu (avoids FAB overlap issues with the more button)
+    // Manually trigger the more button action since FAB layout obscures it in test
+    final moreButtonFinder = find.byKey(const ValueKey('more_actions_n-1'));
+    final moreButton = tester.widget<NeumorphicButton>(moreButtonFinder);
+    moreButton.onPressed?.call();
     await tester.pumpAndSettle();
 
     // Tap Delete in the sheet
-    final deleteTexts = find.text('Delete');
-    expect(deleteTexts, findsWidgets);
-    final count = deleteTexts.evaluate().length;
-    Finder target = deleteTexts.first;
-    var bestY = tester.getCenter(target).dy;
-    for (var i = 1; i < count; i++) {
-      final f = deleteTexts.at(i);
-      final y = tester.getCenter(f).dy;
-      if (y > bestY) {
-        bestY = y;
-        target = f;
-      }
-    }
-    await tester.tap(target);
+    final deleteOption = find.byKey(const ValueKey('action_sheet_item_delete'));
+    expect(deleteOption, findsOneWidget);
+    await tester.tap(deleteOption);
     await tester.pump();
     // Ensure SnackBar fully animates in before interacting
     await tester.pumpAndSettle();

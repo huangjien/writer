@@ -213,6 +213,7 @@ class _ActionSheetContent extends StatelessWidget {
                 button: true,
                 label: item.label,
                 child: FocusWrapper(
+                  key: ValueKey('action_sheet_item_${item.value}'),
                   borderRadius: BorderRadius.zero,
                   child: InkWell(
                     onTap: () {

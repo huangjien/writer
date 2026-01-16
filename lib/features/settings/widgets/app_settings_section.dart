@@ -8,7 +8,10 @@ import '../../../state/biometric_session_state.dart';
 import '../../../state/motion_settings.dart';
 import '../../../state/session_state.dart';
 import '../../../state/theme_controller.dart';
+import '../../../theme/design_tokens.dart';
 import '../../../theme/themes.dart';
+import '../../../shared/widgets/neumorphic_slider.dart';
+import 'enhanced_settings_section.dart';
 
 class AppSettingsSection extends ConsumerStatefulWidget {
   const AppSettingsSection({super.key});
@@ -186,34 +189,37 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
               enabled = ref.watch(adminModeProvider);
               notifier = ref.read(adminModeProvider.notifier);
             } catch (_) {}
-            return SwitchListTile.adaptive(
+            return SettingsToggle(
+              title: l10n.adminMode,
               value: enabled,
-              onChanged: notifier == null ? null : (v) => notifier!.setAdmin(v),
-              title: Text(l10n.adminMode),
-              secondary: const Icon(Icons.security),
+              enabled: notifier != null,
+              onChanged: (v) => notifier?.setAdmin(v ?? false),
+              icon: Icons.security,
             );
           },
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SwitchListTile.adaptive(
+          child: SettingsToggle(
             value: ref.watch(motionSettingsProvider).reduceMotion,
-            onChanged: (v) =>
-                ref.read(motionSettingsProvider.notifier).setReduceMotion(v),
-            title: Text(l10n.reduceMotion),
-            subtitle: Text(l10n.reduceMotionDescription),
-            secondary: const Icon(Icons.motion_photos_off),
+            title: l10n.reduceMotion,
+            subtitle: l10n.reduceMotionDescription,
+            icon: Icons.motion_photos_off,
+            onChanged: (v) => ref
+                .read(motionSettingsProvider.notifier)
+                .setReduceMotion(v ?? false),
           ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SwitchListTile.adaptive(
+          child: SettingsToggle(
             value: motion.gesturesEnabled,
-            onChanged: (v) =>
-                ref.read(motionSettingsProvider.notifier).setGesturesEnabled(v),
-            title: Text(l10n.gesturesEnabled),
-            subtitle: Text(l10n.gesturesEnabledDescription),
-            secondary: const Icon(Icons.touch_app),
+            title: l10n.gesturesEnabled,
+            subtitle: l10n.gesturesEnabledDescription,
+            icon: Icons.touch_app,
+            onChanged: (v) => ref
+                .read(motionSettingsProvider.notifier)
+                .setGesturesEnabled(v ?? false),
           ),
         ),
         Padding(
@@ -225,17 +231,23 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(l10n.readerSwipeSensitivityDescription),
-                Slider(
+                const SizedBox(height: Spacing.s),
+                NeumorphicSlider(
                   value: motion.swipeMinVelocity,
-                  onChanged: (value) {
-                    ref
-                        .read(motionSettingsProvider.notifier)
-                        .setSwipeMinVelocity(value);
-                  },
+                  onChanged: (value) => ref
+                      .read(motionSettingsProvider.notifier)
+                      .setSwipeMinVelocity(value),
                   min: 100,
                   max: 2000,
-                  divisions: 19,
-                  label: motion.swipeMinVelocity.round().toString(),
+                  thumbColor: Theme.of(context).colorScheme.primary,
+                  activeTrackColor: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.22),
+                ),
+                const SizedBox(height: Spacing.xs),
+                Text(
+                  motion.swipeMinVelocity.round().toString(),
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
             ),
@@ -243,25 +255,27 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SwitchListTile.adaptive(
+          child: SettingsToggle(
             value: themeState.family == AppThemeFamily.highContrast,
             onChanged: (v) {
               final controller = ref.read(themeControllerProvider.notifier);
               controller.setFamily(
-                v ? AppThemeFamily.highContrast : AppThemeFamily.sepia,
+                (v ?? false)
+                    ? AppThemeFamily.highContrast
+                    : AppThemeFamily.sepia,
               );
             },
-            title: Text(l10n.themeHighContrast),
-            secondary: const Icon(Icons.invert_colors),
+            title: l10n.themeHighContrast,
+            icon: Icons.invert_colors,
           ),
         ),
         if (isBiometricAvailable && sessionId != null)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SwitchListTile.adaptive(
+            child: SettingsToggle(
               value: biometricState == BiometricAuthState.enabled,
               onChanged: (v) async {
-                if (v) {
+                if (v ?? false) {
                   await ref
                       .read(biometricSessionProvider.notifier)
                       .enableBiometricAuth(sessionId);
@@ -271,9 +285,9 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
                       .disableBiometricAuth();
                 }
               },
-              title: Text(l10n.enableBiometricLogin),
-              subtitle: Text(l10n.enableBiometricLoginDescription),
-              secondary: const Icon(Icons.fingerprint),
+              title: l10n.enableBiometricLogin,
+              subtitle: l10n.enableBiometricLoginDescription,
+              icon: Icons.fingerprint,
             ),
           ),
       ],

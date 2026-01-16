@@ -15,6 +15,7 @@ import 'package:writer/state/biometric_session_state.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/services/storage_service.dart';
+import 'package:writer/shared/widgets/neumorphic_switch.dart';
 
 class MockBiometricService extends Mock implements BiometricService {}
 
@@ -96,34 +97,25 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    // Ensure the tile is visible
-    final textFinder = find.text('Reduce motion');
-    expect(
-      textFinder,
-      findsOneWidget,
-      reason: 'Should find text "Reduce motion"',
-    );
+    final tileFinder = find.widgetWithIcon(ListTile, Icons.motion_photos_off);
+    expect(tileFinder, findsOneWidget);
 
-    final tileFinder = find.ancestor(
-      of: textFinder,
-      matching: find.byType(SwitchListTile),
+    final toggleFinder = find.descendant(
+      of: tileFinder,
+      matching: find.byType(NeumorphicSwitch),
     );
-    expect(
-      tileFinder,
-      findsOneWidget,
-      reason: 'Should find SwitchListTile ancestor',
-    );
+    expect(toggleFinder, findsOneWidget);
 
     // Initial state should be false
     expect(container.read(motionSettingsProvider).reduceMotion, isFalse);
 
     // Tap to enable
-    await tester.tap(tileFinder);
+    await tester.tap(toggleFinder);
     await tester.pumpAndSettle();
     expect(container.read(motionSettingsProvider).reduceMotion, isTrue);
 
     // Tap again to disable
-    await tester.tap(tileFinder);
+    await tester.tap(toggleFinder);
     await tester.pumpAndSettle();
     expect(container.read(motionSettingsProvider).reduceMotion, isFalse);
   });

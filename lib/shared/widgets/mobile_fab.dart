@@ -3,6 +3,8 @@ import '../../theme/design_tokens.dart';
 import 'glass_card.dart';
 import 'spring_animated_container.dart';
 import 'focus_wrapper.dart';
+import 'neumorphic_button.dart';
+import '../../theme/neumorphic_styles.dart';
 
 /// Mobile-optimized Floating Action Button
 /// Features:
@@ -39,38 +41,22 @@ class MobileFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
-    Color getBackgroundColor() {
-      switch (type) {
-        case MobileFabType.primary:
-          return colorScheme.primary;
-        case MobileFabType.secondary:
-          return colorScheme.secondary;
-        case MobileFabType.action:
-          return colorScheme.tertiary;
-      }
-    }
-
-    Color getForegroundColor() {
-      switch (type) {
-        case MobileFabType.primary:
-          return colorScheme.onPrimary;
-        case MobileFabType.secondary:
-          return colorScheme.onSecondary;
-        case MobileFabType.action:
-          return colorScheme.onTertiary;
-      }
-    }
+    final fabColor = isDark
+        ? NeumorphicStyles.darkBackground
+        : NeumorphicStyles.lightBackground;
+    final contentColor =
+        getForegroundColor(); // Keep original text/icon colors or use primary
 
     Widget buildChild() {
       if (isLoading) {
-        return const SizedBox(
+        return SizedBox(
           width: 24,
           height: 24,
           child: CircularProgressIndicator(
             strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            valueColor: AlwaysStoppedAnimation<Color>(contentColor),
           ),
         );
       }
@@ -79,18 +65,25 @@ class MobileFab extends StatelessWidget {
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 20),
+            Icon(icon, size: 20, color: contentColor),
             const SizedBox(width: Spacing.s),
             Text(
               label,
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                color: contentColor,
+              ),
             ),
           ],
         );
       }
 
-      return Icon(icon, size: 24);
+      return Icon(icon, size: 24, color: contentColor);
     }
+
+    // Hero tag handling
+    final tag = heroTag ?? 'mobile_fab_$type';
 
     if (extended) {
       return Semantics(
@@ -100,18 +93,19 @@ class MobileFab extends StatelessWidget {
         child: FocusWrapper(
           padding: EdgeInsets.zero,
           borderRadius: BorderRadius.circular(Radii.xl),
-          child: FloatingActionButton.extended(
-            heroTag: heroTag ?? 'mobile_fab_$type',
-            onPressed: isLoading ? null : onPressed,
-            backgroundColor: getBackgroundColor(),
-            foregroundColor: getForegroundColor(),
-            elevation: 6,
-            tooltip: label,
-            extendedPadding: const EdgeInsets.symmetric(
-              horizontal: Spacing.l,
-              vertical: Spacing.m,
+          child: Hero(
+            tag: tag,
+            child: NeumorphicButton(
+              onPressed: isLoading ? null : onPressed,
+              color: fabColor,
+              depth: 16, // Extra floating for FAB
+              borderRadius: BorderRadius.circular(Radii.xl),
+              padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.l,
+                vertical: Spacing.m,
+              ),
+              child: buildChild(),
             ),
-            label: buildChild(),
           ),
         ),
       );
@@ -123,17 +117,34 @@ class MobileFab extends StatelessWidget {
         child: FocusWrapper(
           padding: EdgeInsets.zero,
           borderRadius: BorderRadius.circular(Radii.xl),
-          child: FloatingActionButton(
-            heroTag: heroTag ?? 'mobile_fab_$type',
-            onPressed: isLoading ? null : onPressed,
-            backgroundColor: getBackgroundColor(),
-            foregroundColor: getForegroundColor(),
-            elevation: 6,
-            tooltip: label,
-            child: Icon(icon),
+          child: Hero(
+            tag: tag,
+            child: SizedBox(
+              width: 56,
+              height: 56,
+              child: NeumorphicButton(
+                onPressed: isLoading ? null : onPressed,
+                color: fabColor,
+                depth: 16, // Extra floating for FAB
+                borderRadius: BorderRadius.circular(Radii.xl),
+                padding: EdgeInsets.zero,
+                child: buildChild(),
+              ),
+            ),
           ),
         ),
       );
+    }
+  }
+
+  Color getForegroundColor() {
+    // Use primary color for content to make it pop on the neumorphic background
+    // instead of white on primary.
+    switch (type) {
+      case MobileFabType.primary:
+      case MobileFabType.secondary:
+      case MobileFabType.action:
+        return AppColors.sepiaSeed; // Or use theme.primaryColor
     }
   }
 }

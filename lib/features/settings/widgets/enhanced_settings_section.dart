@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
+import '../../../shared/widgets/enhanced_card.dart';
+import '../../../shared/widgets/neumorphic_switch.dart';
+import '../../../shared/widgets/neumorphic_text.dart';
 
 /// Enhanced settings section component
 /// Features:
@@ -62,8 +65,10 @@ class EnhancedSettingsSection extends StatelessWidget {
           const SizedBox(height: Spacing.s),
         ],
         // Section content card
-        Card(
+        EnhancedCard(
           margin: const EdgeInsets.symmetric(horizontal: Spacing.l),
+          elevation: 2,
+          padding: EdgeInsets.zero,
           child: Column(mainAxisSize: MainAxisSize.min, children: children),
         ),
         const SizedBox(height: Spacing.xl),
@@ -79,6 +84,7 @@ class SettingsToggle extends StatelessWidget {
     required this.title,
     required this.value,
     required this.onChanged,
+    this.enabled = true,
     this.subtitle,
     this.icon,
   });
@@ -86,6 +92,7 @@ class SettingsToggle extends StatelessWidget {
   final String title;
   final bool value;
   final ValueChanged<bool?> onChanged;
+  final bool enabled;
   final String? subtitle;
   final IconData? icon;
 
@@ -93,9 +100,19 @@ class SettingsToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: icon != null ? Icon(icon) : null,
-      title: Text(title),
-      subtitle: subtitle != null ? Text(subtitle!) : null,
-      trailing: Switch(value: value, onChanged: onChanged),
+      title: NeumorphicText(
+        title,
+        style: Theme.of(context).textTheme.bodyLarge,
+        depth: 1,
+      ),
+      subtitle: subtitle != null
+          ? Text(subtitle!, style: Theme.of(context).textTheme.bodySmall)
+          : null,
+      trailing: NeumorphicSwitch(
+        value: value,
+        onChanged: enabled ? (v) => onChanged(v) : null,
+        isEnabled: enabled,
+      ),
     );
   }
 }

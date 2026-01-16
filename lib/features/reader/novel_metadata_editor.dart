@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/novel_providers.dart';
+import 'package:writer/shared/widgets/enhanced_card.dart';
 import 'package:writer/shared/strings.dart';
 import 'package:writer/state/edit_permissions.dart';
 import 'package:writer/repositories/novel_repository.dart';
@@ -153,167 +154,196 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
     final novelAsync = ref.watch(novelProvider(widget.novelId));
     final roleAsync = ref.watch(editRoleProvider(widget.novelId));
     final isOwner = roleAsync.asData?.value == EditRole.owner;
-    return Card(
-      elevation: 0,
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: ExpansionTile(
-          tilePadding: EdgeInsets.zero,
-          childrenPadding: const EdgeInsets.only(top: 12),
-          initiallyExpanded: _expanded,
-          onExpansionChanged: (value) => setState(() => _expanded = value),
-          title: Text(
-            l10n.novelMetadata,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          children: [
-            novelAsync.when(
-              data: (novel) {
-                if (!_initialized && novel != null) {
-                  _titleController.text = novel.title;
-                  _descriptionController.text = novel.description ?? '';
-                  _coverUrlController.text = novel.coverUrl ?? '';
-                  _languageCode = novel.languageCode;
-                  _isPublic = novel.isPublic;
-                  _initialized = true;
-                  _baseTitle = novel.title;
-                  _baseDescription = novel.description ?? '';
-                  _baseCoverUrl = novel.coverUrl ?? '';
-                  _baseLanguageCode = novel.languageCode;
-                  _baseIsPublic = novel.isPublic;
-                  _isDirty = false;
-                }
-                return Form(
-                  key: _formKey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  child: Column(
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Flexible(
-                            fit: FlexFit.loose,
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 420),
-                              child: TextFormField(
-                                controller: _titleController,
-                                focusNode: _titleFocusNode,
-                                decoration: InputDecoration(
-                                  labelText: l10n.titleLabel,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
-                                      width: 2,
-                                    ),
+    return EnhancedCard(
+      elevation: 2,
+      padding: const EdgeInsets.all(12),
+      child: ExpansionTile(
+        tilePadding: EdgeInsets.zero,
+        childrenPadding: const EdgeInsets.only(top: 12),
+        initiallyExpanded: _expanded,
+        onExpansionChanged: (value) => setState(() => _expanded = value),
+        title: Text(
+          l10n.novelMetadata,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        children: [
+          novelAsync.when(
+            data: (novel) {
+              if (!_initialized && novel != null) {
+                _titleController.text = novel.title;
+                _descriptionController.text = novel.description ?? '';
+                _coverUrlController.text = novel.coverUrl ?? '';
+                _languageCode = novel.languageCode;
+                _isPublic = novel.isPublic;
+                _initialized = true;
+                _baseTitle = novel.title;
+                _baseDescription = novel.description ?? '';
+                _baseCoverUrl = novel.coverUrl ?? '';
+                _baseLanguageCode = novel.languageCode;
+                _baseIsPublic = novel.isPublic;
+                _isDirty = false;
+              }
+              return Form(
+                key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          fit: FlexFit.loose,
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 420),
+                            child: TextFormField(
+                              controller: _titleController,
+                              focusNode: _titleFocusNode,
+                              decoration: InputDecoration(
+                                labelText: l10n.titleLabel,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    width: 2,
                                   ),
                                 ),
-                                textInputAction: TextInputAction.next,
-                                onFieldSubmitted: (_) {
-                                  FocusScope.of(
-                                    context,
-                                  ).requestFocus(_descriptionFocusNode);
-                                },
-                                onChanged: (_) {
-                                  _recomputeFormValidity();
+                              ),
+                              textInputAction: TextInputAction.next,
+                              onFieldSubmitted: (_) {
+                                FocusScope.of(
+                                  context,
+                                ).requestFocus(_descriptionFocusNode);
+                              },
+                              onChanged: (_) {
+                                _recomputeFormValidity();
+                                _checkDirty();
+                              },
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        DropdownButton<String>(
+                          value: _languageCode,
+                          onChanged: (code) {
+                            if (code == null) return;
+                            setState(() => _languageCode = code);
+                            _checkDirty();
+                          },
+                          items: [
+                            DropdownMenuItem(
+                              value: 'en',
+                              child: Text(l10n.english),
+                            ),
+                            DropdownMenuItem(
+                              value: 'zh',
+                              child: Text(l10n.chinese),
+                            ),
+                          ],
+                        ),
+                        if (isOwner) ...[
+                          const SizedBox(width: 12),
+                          Row(
+                            children: [
+                              Switch(
+                                value: _isPublic,
+                                onChanged: (v) {
+                                  setState(() => _isPublic = v);
                                   _checkDirty();
                                 },
                               ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          DropdownButton<String>(
-                            value: _languageCode,
-                            onChanged: (code) {
-                              if (code == null) return;
-                              setState(() => _languageCode = code);
-                              _checkDirty();
-                            },
-                            items: [
-                              DropdownMenuItem(
-                                value: 'en',
-                                child: Text(l10n.english),
-                              ),
-                              DropdownMenuItem(
-                                value: 'zh',
-                                child: Text(l10n.chinese),
-                              ),
+                              const SizedBox(width: 4),
+                              Text(l10n.publicLabel),
                             ],
                           ),
-                          if (isOwner) ...[
-                            const SizedBox(width: 12),
-                            Row(
-                              children: [
-                                Switch(
-                                  value: _isPublic,
-                                  onChanged: (v) {
-                                    setState(() => _isPublic = v);
-                                    _checkDirty();
-                                  },
-                                ),
-                                const SizedBox(width: 4),
-                                Text(l10n.publicLabel),
-                              ],
-                            ),
-                          ],
-                          const Spacer(),
-                          FilledButton.icon(
-                            icon: const Icon(Icons.save),
-                            label: Text(l10n.save),
-                            onLongPress: () {
-                              debugPrint(
-                                'Save button longPress: saving=$_saving coverValid=$_coverValid',
-                              );
-                            },
-                            onPressed: (_saving || !_coverValid || !_isDirty)
-                                ? null
-                                : _save,
-                          ),
                         ],
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _descriptionController,
-                        focusNode: _descriptionFocusNode,
-                        minLines: 3,
-                        maxLines: null,
-                        decoration: InputDecoration(
-                          labelText: l10n.descriptionLabel,
-                          alignLabelWithHint: true,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.primary,
-                              width: 2,
-                            ),
+                        const Spacer(),
+                        FilledButton.icon(
+                          icon: const Icon(Icons.save),
+                          label: Text(l10n.save),
+                          onLongPress: () {
+                            debugPrint(
+                              'Save button longPress: saving=$_saving coverValid=$_coverValid',
+                            );
+                          },
+                          onPressed: (_saving || !_coverValid || !_isDirty)
+                              ? null
+                              : _save,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _descriptionController,
+                      focusNode: _descriptionFocusNode,
+                      minLines: 3,
+                      maxLines: null,
+                      decoration: InputDecoration(
+                        labelText: l10n.descriptionLabel,
+                        alignLabelWithHint: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2,
                           ),
                         ),
-                        textInputAction: TextInputAction.next,
-                        onFieldSubmitted: (_) {
+                      ),
+                      textInputAction: TextInputAction.next,
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(_coverUrlFocusNode);
+                      },
+                      onChanged: (_) {
+                        _recomputeFormValidity();
+                        _checkDirty();
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _coverUrlController,
+                      focusNode: _coverUrlFocusNode,
+                      decoration: InputDecoration(
+                        labelText: l10n.coverUrlLabel,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      validator: _validateCoverUrl,
+                      onFieldSubmitted: (_) {
+                        if (isOwner) {
                           FocusScope.of(
                             context,
-                          ).requestFocus(_coverUrlFocusNode);
-                        },
-                        onChanged: (_) {
-                          _recomputeFormValidity();
-                          _checkDirty();
-                        },
-                      ),
-                      const SizedBox(height: 12),
+                          ).requestFocus(_contributorEmailFocusNode);
+                        }
+                      },
+                      onChanged: (s) {
+                        _onCoverChanged(s);
+                        _checkDirty();
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    if (isOwner) ...[
                       TextFormField(
-                        controller: _coverUrlController,
-                        focusNode: _coverUrlFocusNode,
+                        controller: _contributorEmailController,
+                        focusNode: _contributorEmailFocusNode,
                         decoration: InputDecoration(
-                          labelText: l10n.coverUrlLabel,
+                          labelText: l10n.contributorEmailLabel,
+                          hintText: l10n.contributorEmailHint,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -325,97 +355,61 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                             ),
                           ),
                         ),
-                        textInputAction: TextInputAction.next,
-                        validator: _validateCoverUrl,
+                        textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) {
-                          if (isOwner) {
-                            FocusScope.of(
-                              context,
-                            ).requestFocus(_contributorEmailFocusNode);
-                          }
-                        },
-                        onChanged: (s) {
-                          _onCoverChanged(s);
-                          _checkDirty();
+                          FocusScope.of(context).unfocus();
                         },
                       ),
-                      const SizedBox(height: 12),
-                      if (isOwner) ...[
-                        TextFormField(
-                          controller: _contributorEmailController,
-                          focusNode: _contributorEmailFocusNode,
-                          decoration: InputDecoration(
-                            labelText: l10n.contributorEmailLabel,
-                            hintText: l10n.contributorEmailHint,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.primary,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                          textInputAction: TextInputAction.done,
-                          onFieldSubmitted: (_) {
-                            FocusScope.of(context).unfocus();
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: OutlinedButton.icon(
+                          icon: const Icon(Icons.person_add_alt_1),
+                          label: Text(l10n.addContributor),
+                          onPressed: () async {
+                            final email = _contributorEmailController.text
+                                .trim();
+                            if (email.isEmpty) return;
+                            try {
+                              final repo = ref.read(novelRepositoryProvider);
+                              await repo.addContributorByEmail(
+                                novelId: widget.novelId,
+                                email: email,
+                              );
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(l10n.contributorAdded)),
+                              );
+                              _contributorEmailController.clear();
+                            } catch (e) {
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('${l10n.error}: $e')),
+                              );
+                            }
                           },
                         ),
-                        const SizedBox(height: 8),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: OutlinedButton.icon(
-                            icon: const Icon(Icons.person_add_alt_1),
-                            label: Text(l10n.addContributor),
-                            onPressed: () async {
-                              final email = _contributorEmailController.text
-                                  .trim();
-                              if (email.isEmpty) return;
-                              try {
-                                final repo = ref.read(novelRepositoryProvider);
-                                await repo.addContributorByEmail(
-                                  novelId: widget.novelId,
-                                  email: email,
-                                );
-                                if (!context.mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(l10n.contributorAdded),
-                                  ),
-                                );
-                                _contributorEmailController.clear();
-                              } catch (e) {
-                                if (!context.mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('${l10n.error}: $e')),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 12),
-                      if (_saving) const LinearProgressIndicator(),
-                      if (_error != null) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          _error!,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
-                          ),
-                        ),
-                      ],
+                      ),
                     ],
-                  ),
-                );
-              },
-              loading: () => const LinearProgressIndicator(),
-              error: (e, _) => Text(e.toString()),
-            ),
-          ],
-        ),
+                    const SizedBox(height: 12),
+                    if (_saving) const LinearProgressIndicator(),
+                    if (_error != null) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        _error!,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
+            loading: () => const LinearProgressIndicator(),
+            error: (e, _) => Text(e.toString()),
+          ),
+        ],
       ),
     );
   }

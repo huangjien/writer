@@ -12,6 +12,8 @@ import 'package:writer/features/settings/widgets/app_settings_section.dart';
 import 'package:writer/state/biometric_session_state.dart';
 import 'package:writer/services/biometric_service.dart';
 import 'package:writer/state/providers.dart';
+import 'package:writer/shared/widgets/neumorphic_slider.dart';
+import 'package:writer/shared/widgets/neumorphic_switch.dart';
 
 class MockBiometricService extends BiometricService {
   @override
@@ -57,15 +59,20 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    final tile = find.widgetWithIcon(SwitchListTile, Icons.touch_app);
+    final tile = find.widgetWithIcon(ListTile, Icons.touch_app);
     expect(tile, findsOneWidget);
     expect(container.read(motionSettingsProvider).gesturesEnabled, isTrue);
 
-    await tester.tap(tile);
+    final toggle = find.descendant(
+      of: tile,
+      matching: find.byType(NeumorphicSwitch),
+    );
+    expect(toggle, findsOneWidget);
+    await tester.tap(toggle);
     await tester.pumpAndSettle();
     expect(container.read(motionSettingsProvider).gesturesEnabled, isFalse);
 
-    await tester.tap(tile);
+    await tester.tap(toggle);
     await tester.pumpAndSettle();
     expect(container.read(motionSettingsProvider).gesturesEnabled, isTrue);
   });
@@ -114,11 +121,11 @@ void main() {
 
     final sliderFinder = find.descendant(
       of: sliderTile,
-      matching: find.byType(Slider),
+      matching: find.byType(NeumorphicSlider),
     );
     expect(sliderFinder, findsOneWidget);
 
-    final slider = tester.widget<Slider>(sliderFinder);
+    final slider = tester.widget<NeumorphicSlider>(sliderFinder);
     expect(
       container.read(motionSettingsProvider).swipeMinVelocity,
       equals(200.0),

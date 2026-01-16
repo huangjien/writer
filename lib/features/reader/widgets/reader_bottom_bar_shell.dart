@@ -1,7 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
+import '../../../theme/neumorphic_styles.dart';
 import '../../../models/chapter.dart';
 import '../widgets/reader_edit_actions.dart';
 import 'reader_bottom_bar.dart';
@@ -101,27 +100,13 @@ class ReaderBottomBarShell extends StatelessWidget {
       duration: Duration(milliseconds: reduceMotion ? 0 : 300),
       curve: Curves.easeOutCubic,
       margin: EdgeInsets.all(isCompact ? Spacing.m : Spacing.l),
-      child: ClipRRect(
+      decoration: NeumorphicStyles.decoration(
+        isDark: Theme.of(context).brightness == Brightness.dark,
         borderRadius: BorderRadius.circular(24.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Theme.of(
-              context,
-            ).colorScheme.surface.withValues(alpha: 0.85),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: bottomBar,
-          ),
-        ),
+        depth: 12, // Increased depth for floating bar
       ),
+      padding: EdgeInsets.zero,
+      child: bottomBar,
     );
   }
 }

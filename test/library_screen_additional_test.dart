@@ -15,6 +15,7 @@ import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/shared/widgets/mobile_bottom_nav_bar.dart';
+import 'package:writer/shared/widgets/mobile_fab.dart';
 import 'package:writer/shared/widgets/mobile_novel_card.dart';
 import 'package:writer/widgets/sync_status_indicator.dart';
 
@@ -579,7 +580,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Should show FAB
-      expect(find.byType(FloatingActionButton), findsOneWidget);
+      expect(find.byType(MobileFab), findsOneWidget);
     });
 
     testWidgets('mobile list shows bottom navigation bar', (tester) async {

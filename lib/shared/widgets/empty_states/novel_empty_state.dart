@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
+import '../../../theme/neumorphic_styles.dart';
 import '../empty_state.dart';
-import '../glass_card.dart';
 
 class NovelEmptyState extends StatelessWidget {
   const NovelEmptyState({
@@ -26,9 +26,13 @@ class NovelEmptyState extends StatelessWidget {
       subtitle: subtitle,
       actionLabel: actionLabel,
       onAction: onAction,
-      illustration: GlassCard(
-        borderRadius: BorderRadius.circular(999),
+      illustration: Container(
         padding: const EdgeInsets.all(Spacing.xl),
+        decoration: NeumorphicStyles.decoration(
+          isDark: theme.brightness == Brightness.dark,
+          borderRadius: BorderRadius.circular(999),
+          depth: 4,
+        ),
         child: Icon(
           Icons.menu_book_outlined,
           size: 56,

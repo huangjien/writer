@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/shared/widgets/mobile_fab.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +20,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(FloatingActionButton), findsOneWidget);
+      expect(find.byType(NeumorphicButton), findsOneWidget);
       expect(find.text('Create Novel'), findsOneWidget);
       expect(find.byIcon(Icons.add), findsOneWidget);
     });
@@ -38,11 +39,7 @@ void main() {
         ),
       );
 
-      final fabs = tester.widgetList<FloatingActionButton>(
-        find.byType(FloatingActionButton),
-      );
-      expect(fabs.length, 1);
-
+      expect(find.byType(NeumorphicButton), findsOneWidget);
       expect(find.text('Save'), findsNothing);
       expect(find.byIcon(Icons.save), findsOneWidget);
     });
@@ -62,7 +59,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byType(FloatingActionButton));
+      await tester.tap(find.byType(NeumorphicButton));
       await tester.pump();
 
       expect(pressed, true);
@@ -105,7 +102,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byType(FloatingActionButton));
+      await tester.tap(find.byType(NeumorphicButton));
       await tester.pump();
 
       expect(pressed, false);
@@ -141,15 +138,10 @@ void main() {
         ),
       );
 
-      final fabs = tester.widgetList<FloatingActionButton>(
-        find.byType(FloatingActionButton),
+      final buttons = tester.widgetList<NeumorphicButton>(
+        find.byType(NeumorphicButton),
       );
-      expect(fabs.length, 3);
-
-      for (final fab in fabs) {
-        expect(fab.backgroundColor, isA<Color>());
-        expect(fab.foregroundColor, isA<Color>());
-      }
+      expect(buttons.length, 3);
     });
 
     testWidgets('uses custom heroTag', (tester) async {
@@ -166,10 +158,8 @@ void main() {
         ),
       );
 
-      final fab = tester.widget<FloatingActionButton>(
-        find.byType(FloatingActionButton),
-      );
-      expect(fab.heroTag, 'custom_hero_tag');
+      final hero = tester.widget<Hero>(find.byType(Hero));
+      expect(hero.tag, 'custom_hero_tag');
     });
 
     testWidgets('has correct elevation', (tester) async {
@@ -181,11 +171,10 @@ void main() {
         ),
       );
 
-      final fabs = tester.widgetList<FloatingActionButton>(
-        find.byType(FloatingActionButton),
+      final button = tester.widget<NeumorphicButton>(
+        find.byType(NeumorphicButton),
       );
-      final fab = fabs.first;
-      expect(fab.elevation, 6.0);
+      expect(button.depth, 16.0);
     });
   });
 

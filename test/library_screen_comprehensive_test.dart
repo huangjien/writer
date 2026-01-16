@@ -1196,6 +1196,10 @@ void main() {
               data: MediaQueryData(size: Size(375, 812)),
               child: LibraryScreen(),
             ),
+            routes: {
+              '/novel/create': (context) =>
+                  const Scaffold(body: Text('Create')),
+            },
           ),
         ),
       );
@@ -1211,7 +1215,12 @@ void main() {
       expect(find.text('Prompts'), findsOneWidget);
 
       // Close bottom sheet
-      await tester.tapAt(const Offset(10, 10)); // Tap outside
+      // Drag the sheet down to dismiss it (more reliable than tapping barrier)
+      await tester.drag(
+        find.text('Prompts'),
+        const Offset(0, 500),
+        warnIfMissed: false,
+      );
       await tester.pumpAndSettle();
 
       // Tap More tab

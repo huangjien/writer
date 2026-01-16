@@ -1,60 +1,116 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
+import '../../theme/neumorphic_styles.dart';
 
-class NeumorphicButton extends StatelessWidget {
+class NeumorphicButton extends StatefulWidget {
   const NeumorphicButton({
     super.key,
     required this.child,
     required this.onPressed,
     this.borderRadius,
     this.padding,
+    this.color,
+    this.depth,
   });
 
   final Widget child;
   final VoidCallback? onPressed;
   final BorderRadius? borderRadius;
   final EdgeInsetsGeometry? padding;
+  final Color? color;
+  final double? depth;
+
+  @override
+  State<NeumorphicButton> createState() => _NeumorphicButtonState();
+}
+
+class _NeumorphicButtonState extends State<NeumorphicButton> {
+  bool _isPressed = false;
+  bool _isHovered = false;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final radius = borderRadius ?? BorderRadius.circular(Radii.m);
-    final background = theme.colorScheme.surfaceContainerLowest;
+    final isDisabled = widget.onPressed == null;
+    final radius = widget.borderRadius ?? BorderRadius.circular(Radii.m);
+    final baseDepth = isDisabled
+        ? 0.0
+        : (widget.depth ?? 8.0) + (_isHovered ? 2.0 : 0.0);
 
-    final lightShadow = BoxShadow(
-      color: (isDark ? Colors.white : Colors.white).withValues(
-        alpha: isDark ? 0.05 : 0.70,
-      ),
-      blurRadius: 16,
-      offset: const Offset(-6, -6),
-    );
-    final darkShadow = BoxShadow(
-      color: (isDark ? Colors.black : Colors.black).withValues(
-        alpha: isDark ? 0.45 : 0.12,
-      ),
-      blurRadius: 16,
-      offset: const Offset(6, 6),
-    );
+    Color background =
+        widget.color ??
+        (isDark
+            ? NeumorphicStyles.darkBackground
+            : NeumorphicStyles.lightBackground);
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: radius,
-        child: Ink(
-          padding:
-              padding ??
-              const EdgeInsets.symmetric(
-                horizontal: Spacing.l,
-                vertical: Spacing.m,
-              ),
-          decoration: BoxDecoration(
-            color: background,
-            borderRadius: radius,
-            boxShadow: [lightShadow, darkShadow],
+    if (isDisabled) {
+      background = background.withValues(alpha: 0.6);
+    }
+
+    return Semantics(
+      button: true,
+      enabled: !isDisabled,
+      child: FocusableActionDetector(
+        enabled: !isDisabled,
+        mouseCursor: isDisabled
+            ? SystemMouseCursors.forbidden
+            : SystemMouseCursors.click,
+        onShowHoverHighlight: (value) {
+          if (isDisabled) return;
+          if (_isHovered == value) return;
+          setState(() => _isHovered = value);
+        },
+        shortcuts: const <ShortcutActivator, Intent>{
+          SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+          SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+        },
+        actions: <Type, Action<Intent>>{
+          ActivateIntent: CallbackAction<ActivateIntent>(
+            onInvoke: (intent) {
+              widget.onPressed?.call();
+              return null;
+            },
           ),
-          child: Center(child: child),
+        },
+        child: GestureDetector(
+          onTapDown: isDisabled
+              ? null
+              : (_) => setState(() => _isPressed = true),
+          onTapUp: isDisabled
+              ? null
+              : (_) => setState(() => _isPressed = false),
+          onTapCancel: isDisabled
+              ? null
+              : () => setState(() => _isPressed = false),
+          onTap: widget.onPressed,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+            padding:
+                widget.padding ??
+                const EdgeInsets.symmetric(
+                  horizontal: Spacing.l,
+                  vertical: Spacing.m,
+                ),
+            decoration: NeumorphicStyles.decoration(
+              isDark: isDark,
+              borderRadius: radius,
+              color: background,
+              isPressed: _isPressed,
+              depth: _isPressed ? 0 : baseDepth,
+            ),
+            transform: _isPressed && !isDisabled
+                ? Matrix4.translationValues(2, 2, 0)
+                : (_isHovered && !isDisabled
+                      ? Matrix4.translationValues(0, -1, 0)
+                      : Matrix4.identity()),
+            child: Opacity(
+              opacity: isDisabled ? 0.5 : 1.0,
+              child: Center(child: widget.child),
+            ),
+          ),
         ),
       ),
     );

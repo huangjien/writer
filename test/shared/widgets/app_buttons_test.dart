@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
 import 'package:writer/shared/widgets/micro_interactions.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 
 void main() {
   testWidgets('AppButtons.primary shows loading and disables press', (
@@ -22,8 +23,13 @@ void main() {
     final pressScale = tester.widget<PressScale>(find.byType(PressScale));
     expect(pressScale.enabled, isFalse);
 
-    final filled = tester.widget<FilledButton>(find.byType(FilledButton));
-    expect(filled.onPressed, isNull);
+    // AppButtons.primary uses NeumorphicButton which wraps child in NeumorphicButton
+    // We can check if NeumorphicButton is present and its onPressed is null/valid
+    final button = tester.widget<NeumorphicButton>(
+      find.byType(NeumorphicButton),
+    );
+    expect(button.onPressed, isNull);
+
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     expect(find.text('Save'), findsNothing);
   });
@@ -63,10 +69,18 @@ void main() {
       ),
     );
 
-    final filled = tester.widget<FilledButton>(find.byType(FilledButton));
-    final style = filled.style;
-    final minSize = style?.minimumSize?.resolve(<WidgetState>{});
-    expect(minSize, const Size(double.infinity, 48));
+    // AppButtons.primary with fullWidth=true wraps NeumorphicButton in SizedBox(width: double.infinity)
+    // We can find the SizedBox that wraps the NeumorphicButton
+    final buttonFinder = find.byType(NeumorphicButton);
+    final sizedBoxFinder = find.ancestor(
+      of: buttonFinder,
+      matching: find.byType(SizedBox),
+    );
+
+    // There might be multiple SizedBoxes. The direct parent of NeumorphicButton in AppButtons.primary is the one.
+    // Structure: FocusWrapper -> PressScale -> SizedBox -> NeumorphicButton
+    final sizedBox = tester.widget<SizedBox>(sizedBoxFinder.first);
+    expect(sizedBox.width, double.infinity);
   });
 
   testWidgets('AppButtons.icon wraps tooltip when provided', (tester) async {
