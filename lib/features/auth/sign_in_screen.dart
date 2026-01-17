@@ -21,6 +21,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   final _passwordController = TextEditingController();
   bool _loading = false;
   bool _biometricLoading = false;
+  bool _obscurePassword = true;
   String? _error;
   late final AuthService _authService;
 
@@ -191,8 +192,31 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             const SizedBox(height: 12),
             TextField(
               controller: _passwordController,
-              obscureText: true,
-              decoration: InputDecoration(labelText: l10n.password),
+              obscureText: _obscurePassword,
+              decoration: InputDecoration(
+                labelText: l10n.password,
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.login),
+                      onPressed: _loading ? null : () => _signIn(context),
+                    ),
+                  ],
+                ),
+              ),
               onSubmitted: (_) => _signIn(context),
             ),
             const SizedBox(height: 20),

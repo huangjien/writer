@@ -103,7 +103,7 @@ test:
 	@START=$$(date +%s); \
 	TIMESTAMP=$$(date +"%Y%m%d_%H%M%S"); \
 	LOG_FILE="/tmp/writer_test_$$TIMESTAMP.log"; \
-	echo "Running Flutter tests with filtered output (eliminates 119MB log problem)... (log saved to $$LOG_FILE)"; \
+	echo "Running Flutter tests with filtered output ... (log saved to $$LOG_FILE)"; \
 	./flutter_test_filtered.sh --coverage --timeout=30s 2>&1 | tee $$LOG_FILE; \
 	if [ -f coverage/lcov.info ]; then \
 		awk -F, '/^DA:/ { total++; if ($$2 > 0) hit++ } END { printf("Coverage: %.2f%% (%d/%d lines)\n", (hit/total)*100, hit, total) }' coverage/lcov.info | tee -a $$LOG_FILE; \

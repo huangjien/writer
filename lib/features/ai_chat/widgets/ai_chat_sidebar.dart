@@ -119,68 +119,77 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
                 ),
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _textController,
-                        decoration: InputDecoration(
-                          hintText: l10n.aiChatHint,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.outline.withValues(alpha: 0.3),
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.outline.withValues(alpha: 0.3),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.primary,
-                              width: 2,
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                        ),
-                        maxLines: null,
-                        textInputAction: TextInputAction.send,
-                        onSubmitted: (text) {
-                          final t = text.trim();
-                          if (t.isNotEmpty && !isLoading) {
-                            chatNotifier.sendMessage(t);
-                            _textController.clear();
-                          }
-                        },
+                child: TextField(
+                  controller: _textController,
+                  decoration: InputDecoration(
+                    hintText: l10n.aiChatHint,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.3),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    IconButton(
-                      icon: const Icon(Icons.send),
-                      onPressed: isLoading
-                          ? null
-                          : () {
-                              final t = _textController.text.trim();
-                              if (t.isNotEmpty) {
-                                chatNotifier.sendMessage(t);
-                                _textController.clear();
-                              }
-                            },
-                      color: Theme.of(context).colorScheme.primary,
-                      tooltip: l10n.send,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.3),
+                      ),
                     ),
-                  ],
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: IconButton(
+                        icon: isLoading
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
+                              )
+                            : Icon(
+                                Icons.send,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                final t = _textController.text.trim();
+                                if (t.isNotEmpty) {
+                                  chatNotifier.sendMessage(t);
+                                  _textController.clear();
+                                }
+                              },
+                        tooltip: l10n.send,
+                      ),
+                    ),
+                  ),
+                  maxLines: null,
+                  textInputAction: TextInputAction.send,
+                  onSubmitted: (text) {
+                    final t = text.trim();
+                    if (t.isNotEmpty && !isLoading) {
+                      chatNotifier.sendMessage(t);
+                      _textController.clear();
+                    }
+                  },
                 ),
               ),
             ],
