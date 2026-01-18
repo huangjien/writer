@@ -36,19 +36,41 @@ class StyleThemePatch {
   });
 
   ThemeData applyToTheme(ThemeData base, bool isDark) {
+    final resolvedCardRadius = cardBorderRadius ?? BorderRadius.circular(12);
+    final resolvedButtonRadius =
+        buttonBorderRadius ?? BorderRadius.circular(8);
+    final resolvedElevation = elevation ?? base.cardTheme.elevation;
+    final resolvedSurfaceColor = _resolveSurfaceColor(base, isDark);
+    final resolvedTileColor = _resolveTileColor(base, isDark);
+    final resolvedDividerThickness = _resolveDividerThickness();
+    final resolvedDividerColor = _resolveDividerColor(base, isDark);
+    final preservedExtensions = base.extensions.values
+        .where((e) => e is! UiStyleThemeExtension)
+        .toList(growable: false);
+
     return base.copyWith(
       cardTheme: base.cardTheme.copyWith(
-        elevation: elevation ?? base.cardTheme.elevation,
+        color: resolvedSurfaceColor,
+        elevation: resolvedElevation,
         shape: RoundedRectangleBorder(
-          borderRadius: cardBorderRadius ?? BorderRadius.circular(12),
+          borderRadius: resolvedCardRadius,
         ),
         margin: const EdgeInsets.all(8),
+      ),
+      listTileTheme: base.listTileTheme.copyWith(
+        shape: RoundedRectangleBorder(borderRadius: resolvedCardRadius),
+        tileColor: resolvedTileColor,
+        selectedTileColor: resolvedTileColor,
+      ),
+      dividerTheme: base.dividerTheme.copyWith(
+        thickness: resolvedDividerThickness,
+        color: resolvedDividerColor,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           elevation: elevation ?? 4,
           shape: RoundedRectangleBorder(
-            borderRadius: buttonBorderRadius ?? BorderRadius.circular(8),
+            borderRadius: resolvedButtonRadius,
           ),
         ),
       ),
@@ -75,16 +97,110 @@ class StyleThemePatch {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(
-              (cardBorderRadius ?? BorderRadius.circular(12)).topLeft.x,
+              resolvedCardRadius.topLeft.x,
             ),
           ),
         ),
         elevation: elevation ?? 16,
       ),
-      extensions: <ThemeExtension<dynamic>>[
-        UiStyleThemeExtension(styleFamily: styleFamily),
+      extensions: [
+        ...preservedExtensions,
+        UiStyleThemeExtension(
+          styleFamily: styleFamily,
+          useBackdropBlur: useBackdropBlur ?? false,
+          cardBlur: cardBlur ?? 0,
+          cardColor: cardColor,
+          cardBorder: cardBorder,
+          cardShadows: cardShadows,
+        ),
       ],
     );
+  }
+
+  double? _resolveDividerThickness() {
+    switch (styleFamily) {
+      case UiStyleFamily.brutalism:
+        return 3;
+      case UiStyleFamily.flatDesign:
+        return 1;
+      case UiStyleFamily.minimalism:
+        return 0.5;
+      case UiStyleFamily.bentoGrid:
+      case UiStyleFamily.claymorphism:
+      case UiStyleFamily.glassmorphism:
+      case UiStyleFamily.neumorphism:
+      case UiStyleFamily.responsive:
+      case UiStyleFamily.skeuomorphism:
+        return null;
+    }
+  }
+
+  Color? _resolveDividerColor(ThemeData base, bool isDark) {
+    final cs = base.colorScheme;
+    switch (styleFamily) {
+      case UiStyleFamily.brutalism:
+        return isDark ? cs.onSurface : Colors.black;
+      case UiStyleFamily.flatDesign:
+        return cs.outline;
+      case UiStyleFamily.minimalism:
+        return cs.outlineVariant;
+      case UiStyleFamily.bentoGrid:
+      case UiStyleFamily.claymorphism:
+      case UiStyleFamily.glassmorphism:
+      case UiStyleFamily.neumorphism:
+      case UiStyleFamily.responsive:
+      case UiStyleFamily.skeuomorphism:
+        return null;
+    }
+  }
+
+  Color? _resolveSurfaceColor(ThemeData base, bool isDark) {
+    if (cardColor != null) return cardColor;
+    final cs = base.colorScheme;
+    switch (styleFamily) {
+      case UiStyleFamily.glassmorphism:
+        return cs.surface.withValues(alpha: isDark ? 0.55 : 0.75);
+      case UiStyleFamily.neumorphism:
+        return cs.surface;
+      case UiStyleFamily.claymorphism:
+        return cs.surfaceContainerHighest;
+      case UiStyleFamily.minimalism:
+        return cs.surface;
+      case UiStyleFamily.brutalism:
+        return isDark ? cs.surface : Colors.white;
+      case UiStyleFamily.skeuomorphism:
+        return cs.surfaceContainerHighest;
+      case UiStyleFamily.bentoGrid:
+        return cs.surfaceContainer;
+      case UiStyleFamily.responsive:
+        return cs.surface;
+      case UiStyleFamily.flatDesign:
+        return cs.surface;
+    }
+  }
+
+  Color? _resolveTileColor(ThemeData base, bool isDark) {
+    final cs = base.colorScheme;
+    switch (styleFamily) {
+      case UiStyleFamily.glassmorphism:
+        return cs.surface.withValues(alpha: isDark ? 0.35 : 0.55);
+      case UiStyleFamily.neumorphism:
+        return cs.surface;
+      case UiStyleFamily.claymorphism:
+        return cs.surfaceContainerHighest;
+      case UiStyleFamily.minimalism:
+        return cs.surface;
+      case UiStyleFamily.brutalism:
+        return isDark ? cs.surface : Colors.white;
+      case UiStyleFamily.skeuomorphism:
+        return cs.surfaceContainerHighest;
+      case UiStyleFamily.bentoGrid:
+        return cs.surfaceContainer;
+      case UiStyleFamily.responsive:
+        return cs.surface;
+      case UiStyleFamily.flatDesign:
+        return cs.surface;
+    }
   }
 }
 
@@ -120,6 +236,7 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.all(Radius.circular(12)),
       elevation: 0,
       useBackdropBlur: true,
+      cardBlur: 10,
       styleFamily: UiStyleFamily.glassmorphism,
     );
   }
@@ -130,6 +247,18 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.all(Radius.circular(16)),
       elevation: 2,
       useBackdropBlur: false,
+      cardShadows: [
+        BoxShadow(
+          color: Color(0x1A000000),
+          blurRadius: 15,
+          offset: Offset(-5, -5),
+        ),
+        BoxShadow(
+          color: Color(0x33000000),
+          blurRadius: 15,
+          offset: Offset(5, 5),
+        ),
+      ],
       styleFamily: UiStyleFamily.neumorphism,
     );
   }
@@ -140,6 +269,13 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.all(Radius.circular(20)),
       elevation: 8,
       useBackdropBlur: false,
+      cardShadows: [
+        BoxShadow(
+          color: Color(0x40000000),
+          blurRadius: 20,
+          offset: Offset(0, 8),
+        ),
+      ],
       styleFamily: UiStyleFamily.claymorphism,
     );
   }
@@ -155,11 +291,22 @@ class UiStyleAdapter {
   }
 
   StyleThemePatch _brutalismPatch() {
-    return const StyleThemePatch(
+    return StyleThemePatch(
       cardBorderRadius: BorderRadius.zero,
       buttonBorderRadius: BorderRadius.zero,
       elevation: 0,
       useBackdropBlur: false,
+      cardBorder: Border.all(
+        color: Colors.black,
+        width: 3,
+      ),
+      cardShadows: const [
+        BoxShadow(
+          color: Colors.black,
+          blurRadius: 0,
+          offset: Offset(6, 6),
+        ),
+      ],
       styleFamily: UiStyleFamily.brutalism,
     );
   }
@@ -170,6 +317,13 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.all(Radius.circular(10)),
       elevation: 4,
       useBackdropBlur: false,
+      cardShadows: [
+        BoxShadow(
+          color: Color(0x66000000),
+          blurRadius: 10,
+          offset: Offset(0, 4),
+        ),
+      ],
       styleFamily: UiStyleFamily.skeuomorphism,
     );
   }
@@ -180,6 +334,10 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.all(Radius.circular(16)),
       elevation: 2,
       useBackdropBlur: true,
+      cardBlur: 5,
+      cardBorder: Border.fromBorderSide(
+        BorderSide(color: Color(0x1A000000), width: 1),
+      ),
       styleFamily: UiStyleFamily.bentoGrid,
     );
   }

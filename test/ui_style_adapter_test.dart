@@ -208,6 +208,41 @@ void main() {
         expect(border.borderSide, BorderSide.none);
       });
 
+      test('preserves existing theme extensions', () {
+        const patch = StyleThemePatch(styleFamily: UiStyleFamily.glassmorphism);
+
+        const baseExtension = _TestThemeExtension(value: 1);
+        final baseTheme = ThemeData.light().copyWith(
+          extensions: <ThemeExtension<dynamic>>[baseExtension],
+        );
+
+        final modified = patch.applyToTheme(baseTheme, false);
+
+        expect(modified.extension<_TestThemeExtension>(), isNotNull);
+        expect(modified.extension<_TestThemeExtension>()?.value, 1);
+      });
+
+      test('applies list tile shape from card border radius', () {
+        final patch = const StyleThemePatch(
+          cardBorderRadius: BorderRadius.all(Radius.circular(20)),
+          styleFamily: UiStyleFamily.glassmorphism,
+        );
+        final baseTheme = ThemeData.light();
+        final modified = patch.applyToTheme(baseTheme, false);
+
+        expect(modified.listTileTheme.shape, isA<RoundedRectangleBorder>());
+        final shape = modified.listTileTheme.shape as RoundedRectangleBorder;
+        expect(shape.borderRadius, BorderRadius.circular(20));
+      });
+
+      test('applies brutalism divider thickness', () {
+        final patch = const StyleThemePatch(styleFamily: UiStyleFamily.brutalism);
+        final baseTheme = ThemeData.light();
+        final modified = patch.applyToTheme(baseTheme, false);
+
+        expect(modified.dividerTheme.thickness, 3);
+      });
+
       test('applies to light theme', () {
         final patch = const StyleThemePatch(
           cardBorderRadius: BorderRadius.all(Radius.circular(16)),
@@ -266,4 +301,23 @@ void main() {
       });
     });
   });
+}
+
+class _TestThemeExtension extends ThemeExtension<_TestThemeExtension> {
+  const _TestThemeExtension({required this.value});
+
+  final int value;
+
+  @override
+  _TestThemeExtension copyWith({int? value}) =>
+      _TestThemeExtension(value: value ?? this.value);
+
+  @override
+  _TestThemeExtension lerp(
+    ThemeExtension<_TestThemeExtension>? other,
+    double t,
+  ) {
+    if (other is! _TestThemeExtension) return this;
+    return t < 0.5 ? this : other;
+  }
 }

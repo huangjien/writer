@@ -41,6 +41,11 @@ class ThemeAwareCard extends StatelessWidget {
         padding ?? const EdgeInsets.all(Spacing.cardPadding);
 
     final currentStyle = theme.uiStyleFamily;
+    final useBackdropBlur = theme.useBackdropBlur;
+    final cardBlur = theme.cardBlur;
+    final styleCardColor = theme.styleCardColor;
+    final styleCardBorder = theme.styleCardBorder;
+    final styleCardShadows = theme.styleCardShadows;
 
     Widget cardContent;
 
@@ -52,6 +57,11 @@ class ThemeAwareCard extends StatelessWidget {
           padding: resolvedPadding,
           borderRadius: resolvedRadius,
           isDark: isDark,
+          cardBlur: cardBlur,
+          useBackdropBlur: useBackdropBlur,
+          styleCardColor: styleCardColor,
+          styleCardBorder: styleCardBorder,
+          styleCardShadows: styleCardShadows,
         );
         break;
 
@@ -63,6 +73,7 @@ class ThemeAwareCard extends StatelessWidget {
           borderRadius: resolvedRadius,
           isDark: isDark,
           elevation: resolvedElevation,
+          styleCardShadows: styleCardShadows,
         );
         break;
 
@@ -81,6 +92,8 @@ class ThemeAwareCard extends StatelessWidget {
           child: child,
           padding: resolvedPadding,
           isDark: isDark,
+          styleCardBorder: styleCardBorder,
+          styleCardShadows: styleCardShadows,
         );
         break;
 
@@ -92,6 +105,7 @@ class ThemeAwareCard extends StatelessWidget {
           borderRadius: resolvedRadius,
           isDark: isDark,
           elevation: resolvedElevation,
+          styleCardShadows: styleCardShadows,
         );
         break;
 
@@ -103,6 +117,7 @@ class ThemeAwareCard extends StatelessWidget {
           borderRadius: resolvedRadius,
           elevation: resolvedElevation,
           isDark: isDark,
+          styleCardShadows: styleCardShadows,
         );
         break;
 
@@ -114,6 +129,11 @@ class ThemeAwareCard extends StatelessWidget {
           borderRadius: resolvedRadius,
           isDark: isDark,
           elevation: resolvedElevation,
+          cardBlur: cardBlur,
+          useBackdropBlur: useBackdropBlur,
+          styleCardColor: styleCardColor,
+          styleCardBorder: styleCardBorder,
+          styleCardShadows: styleCardShadows,
         );
         break;
 
@@ -178,31 +198,46 @@ class ThemeAwareCard extends StatelessWidget {
     required EdgeInsetsGeometry padding,
     required BorderRadius borderRadius,
     required bool isDark,
+    required double cardBlur,
+    required bool useBackdropBlur,
+    Color? styleCardColor,
+    Border? styleCardBorder,
+    List<BoxShadow>? styleCardShadows,
   }) {
-    return ClipRRect(
-      borderRadius: borderRadius,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaX: GlassTokens.blur,
-          sigmaY: GlassTokens.blur,
-        ),
-        child: Container(
-          padding: padding,
-          decoration: BoxDecoration(
-            color: isDark
-                ? AppColors.glassSurfaceDark
-                : AppColors.glassSurfaceLight,
-            borderRadius: borderRadius,
-            border: Border.all(
-              color: isDark
-                  ? AppColors.glassBorderDark
-                  : AppColors.glassBorderLight,
-            ),
-          ),
-          child: child,
-        ),
+    final surfaceColor = styleCardColor ??
+        (isDark ? AppColors.glassSurfaceDark : AppColors.glassSurfaceLight);
+    final borderColor = styleCardBorder ??
+        Border.all(
+          color: isDark
+              ? AppColors.glassBorderDark
+              : AppColors.glassBorderLight,
+        );
+
+    final card = Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        color: surfaceColor,
+        borderRadius: borderRadius,
+        border: borderColor,
+        boxShadow: styleCardShadows,
       ),
+      child: child,
     );
+
+    if (useBackdropBlur) {
+      return ClipRRect(
+        borderRadius: borderRadius,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: cardBlur,
+            sigmaY: cardBlur,
+          ),
+          child: card,
+        ),
+      );
+    }
+
+    return ClipRRect(borderRadius: borderRadius, child: card);
   }
 
   Widget _buildNeumorphicCard({
@@ -212,6 +247,7 @@ class ThemeAwareCard extends StatelessWidget {
     required BorderRadius borderRadius,
     required bool isDark,
     required double elevation,
+    List<BoxShadow>? styleCardShadows,
   }) {
     final decoration = NeumorphicStyles.decoration(
       isDark: isDark,
@@ -219,7 +255,15 @@ class ThemeAwareCard extends StatelessWidget {
       depth: elevation * 4,
     );
 
-    return Container(padding: padding, decoration: decoration, child: child);
+    final boxDecoration = styleCardShadows != null
+        ? BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: borderRadius,
+            boxShadow: styleCardShadows,
+          )
+        : decoration;
+
+    return Container(padding: padding, decoration: boxDecoration, child: child);
   }
 
   Widget _buildMinimalCard({
@@ -249,6 +293,8 @@ class ThemeAwareCard extends StatelessWidget {
     required Widget child,
     required EdgeInsetsGeometry padding,
     required bool isDark,
+    Border? styleCardBorder,
+    List<BoxShadow>? styleCardShadows,
   }) {
     final theme = Theme.of(context);
 
@@ -256,10 +302,12 @@ class ThemeAwareCard extends StatelessWidget {
       padding: padding,
       decoration: BoxDecoration(
         color: theme.cardColor,
-        border: Border.all(
-          color: isDark ? Colors.white24 : Colors.black87,
-          width: 2,
-        ),
+        border: styleCardBorder ??
+            Border.all(
+              color: isDark ? Colors.white24 : Colors.black87,
+              width: 2,
+            ),
+        boxShadow: styleCardShadows,
       ),
       child: child,
     );
@@ -272,21 +320,24 @@ class ThemeAwareCard extends StatelessWidget {
     required BorderRadius borderRadius,
     required double elevation,
     required bool isDark,
+    List<BoxShadow>? styleCardShadows,
   }) {
+    final defaultShadows = [
+      BoxShadow(
+        color: isDark
+            ? AppColors.shadowColor.withValues(alpha: 0.3)
+            : AppColors.shadowColor,
+        blurRadius: elevation * 2,
+        offset: Offset(0, elevation),
+      ),
+    ];
+
     return Container(
       padding: padding,
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: borderRadius,
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? AppColors.shadowColor.withValues(alpha: 0.3)
-                : AppColors.shadowColor,
-            blurRadius: elevation * 2,
-            offset: Offset(0, elevation),
-          ),
-        ],
+        boxShadow: styleCardShadows ?? defaultShadows,
       ),
       child: child,
     );
@@ -299,6 +350,7 @@ class ThemeAwareCard extends StatelessWidget {
     required BorderRadius borderRadius,
     required bool isDark,
     required double elevation,
+    List<BoxShadow>? styleCardShadows,
   }) {
     final theme = Theme.of(context);
     final neumorphicDecoration = NeumorphicStyles.decoration(
@@ -321,7 +373,7 @@ class ThemeAwareCard extends StatelessWidget {
           ],
         ),
         borderRadius: borderRadius,
-        boxShadow: neumorphicDecoration.boxShadow,
+        boxShadow: styleCardShadows ?? neumorphicDecoration.boxShadow,
       ),
       child: child,
     );
@@ -334,37 +386,56 @@ class ThemeAwareCard extends StatelessWidget {
     required BorderRadius borderRadius,
     required bool isDark,
     required double elevation,
+    required double cardBlur,
+    required bool useBackdropBlur,
+    Color? styleCardColor,
+    Border? styleCardBorder,
+    List<BoxShadow>? styleCardShadows,
   }) {
-    return ClipRRect(
-      borderRadius: borderRadius,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
-        child: Container(
-          padding: padding,
-          decoration: BoxDecoration(
-            color: isDark
-                ? AppColors.glassSurfaceDark
-                : AppColors.glassSurfaceLight,
-            borderRadius: borderRadius,
-            border: Border.all(
-              color: isDark
-                  ? AppColors.glassBorderDark
-                  : AppColors.glassBorderLight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: isDark
-                    ? Colors.black.withValues(alpha: 0.2)
-                    : Colors.black.withValues(alpha: 0.05),
-                blurRadius: elevation * 3,
-                offset: Offset(0, elevation),
-              ),
-            ],
-          ),
-          child: child,
-        ),
+    final surfaceColor = styleCardColor ??
+        (isDark ? AppColors.glassSurfaceDark : AppColors.glassSurfaceLight);
+    final borderColor = styleCardBorder ??
+        Border.all(
+          color: isDark
+              ? AppColors.glassBorderDark
+              : AppColors.glassBorderLight,
+        );
+
+    final defaultShadows = [
+      BoxShadow(
+        color: isDark
+            ? Colors.black.withValues(alpha: 0.2)
+            : Colors.black.withValues(alpha: 0.05),
+        blurRadius: elevation * 3,
+        offset: Offset(0, elevation),
       ),
+    ];
+
+    final card = Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        color: surfaceColor,
+        borderRadius: borderRadius,
+        border: borderColor,
+        boxShadow: styleCardShadows ?? defaultShadows,
+      ),
+      child: child,
     );
+
+    if (useBackdropBlur) {
+      return ClipRRect(
+        borderRadius: borderRadius,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: cardBlur,
+            sigmaY: cardBlur,
+          ),
+          child: card,
+        ),
+      );
+    }
+
+    return ClipRRect(borderRadius: borderRadius, child: card);
   }
 
   Widget _buildFlatCard({
