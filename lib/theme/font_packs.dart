@@ -80,7 +80,7 @@ List<String> chineseTextFallback() {
       break;
   }
   ordered.addAll(_embeddedChineseFonts);
-  
+
   if (!disableGoogleFontsForTesting) {
     // Add Google Fonts fallback just in case
     try {
