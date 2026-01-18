@@ -118,4 +118,67 @@ void main() {
     expect(find.byTooltip('Play'), findsOneWidget);
     expect(find.byIcon(Icons.play_arrow), findsOneWidget);
   });
+
+  testWidgets('AppButtons.secondary disables onPressed when enabled is false', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: AppButtons.secondary(
+            label: 'Secondary',
+            enabled: false,
+            onPressed: () {},
+          ),
+        ),
+      ),
+    );
+
+    final button = tester.widget<NeumorphicButton>(find.byType(NeumorphicButton));
+    expect(button.onPressed, isNull);
+  });
+
+  testWidgets('AppButtons.text applies color and disables onPressed', (
+    tester,
+  ) async {
+    const color = Colors.green;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: AppButtons.text(
+            label: 'Text',
+            enabled: false,
+            color: color,
+            onPressed: () {},
+          ),
+        ),
+      ),
+    );
+
+    final button = tester.widget<NeumorphicButton>(find.byType(NeumorphicButton));
+    expect(button.onPressed, isNull);
+
+    final text = tester.widget<Text>(find.text('Text'));
+    expect(text.style?.color, color);
+  });
+
+  testWidgets('AppButtons.icon uses filledIcon path when filled is true', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: AppButtons.icon(
+            iconData: Icons.add,
+            filled: true,
+            onPressed: () {},
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byIcon(Icons.add), findsOneWidget);
+    expect(find.byType(Tooltip), findsNothing);
+    expect(find.byType(NeumorphicButton), findsOneWidget);
+  });
 }

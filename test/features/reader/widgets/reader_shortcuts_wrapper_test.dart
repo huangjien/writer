@@ -4,9 +4,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 import 'package:writer/features/reader/widgets/reader_shortcuts_wrapper.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  Widget buildTestApp({required Widget child, List overrides = const []}) {
+    return ProviderScope(
+      overrides: overrides.cast(),
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(body: child),
+      ),
+    );
+  }
 
   testWidgets('Space triggers toggle when enabled and chat closed', (
     tester,
@@ -17,19 +29,15 @@ void main() {
     int settings = 0;
 
     await tester.pumpWidget(
-      ProviderScope(
+      buildTestApp(
         overrides: [aiChatUiProvider.overrideWith((ref) => AiChatUiNotifier())],
-        child: MaterialApp(
-          home: Scaffold(
-            body: ReaderShortcutsWrapper(
-              disabled: false,
-              onToggleSpeak: () => toggle++,
-              onPrev: () => prev++,
-              onNext: () => next++,
-              onOpenSettings: () => settings++,
-              child: const Focus(autofocus: true, child: SizedBox()),
-            ),
-          ),
+        child: ReaderShortcutsWrapper(
+          disabled: false,
+          onToggleSpeak: () => toggle++,
+          onPrev: () => prev++,
+          onNext: () => next++,
+          onOpenSettings: () => settings++,
+          child: const Focus(autofocus: true, child: SizedBox()),
         ),
       ),
     );
@@ -51,23 +59,19 @@ void main() {
     int next = 0;
 
     await tester.pumpWidget(
-      ProviderScope(
+      buildTestApp(
         overrides: [
           aiChatUiProvider.overrideWith(
             (ref) => AiChatUiNotifier()..openSidebar(),
           ),
         ],
-        child: MaterialApp(
-          home: Scaffold(
-            body: ReaderShortcutsWrapper(
-              disabled: false,
-              onToggleSpeak: () => toggle++,
-              onPrev: () => prev++,
-              onNext: () => next++,
-              onOpenSettings: () {},
-              child: const Focus(autofocus: true, child: SizedBox()),
-            ),
-          ),
+        child: ReaderShortcutsWrapper(
+          disabled: false,
+          onToggleSpeak: () => toggle++,
+          onPrev: () => prev++,
+          onNext: () => next++,
+          onOpenSettings: () {},
+          child: const Focus(autofocus: true, child: SizedBox()),
         ),
       ),
     );
@@ -88,19 +92,15 @@ void main() {
     int next = 0;
 
     await tester.pumpWidget(
-      ProviderScope(
+      buildTestApp(
         overrides: [aiChatUiProvider.overrideWith((ref) => AiChatUiNotifier())],
-        child: MaterialApp(
-          home: Scaffold(
-            body: ReaderShortcutsWrapper(
-              disabled: true,
-              onToggleSpeak: () => toggle++,
-              onPrev: () => prev++,
-              onNext: () => next++,
-              onOpenSettings: () {},
-              child: const Focus(autofocus: true, child: SizedBox()),
-            ),
-          ),
+        child: ReaderShortcutsWrapper(
+          disabled: true,
+          onToggleSpeak: () => toggle++,
+          onPrev: () => prev++,
+          onNext: () => next++,
+          onOpenSettings: () {},
+          child: const Focus(autofocus: true, child: SizedBox()),
         ),
       ),
     );
@@ -117,19 +117,15 @@ void main() {
 
   testWidgets('Ctrl+/ opens shortcuts help sheet', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
+      buildTestApp(
         overrides: [aiChatUiProvider.overrideWith((ref) => AiChatUiNotifier())],
-        child: MaterialApp(
-          home: Scaffold(
-            body: ReaderShortcutsWrapper(
-              disabled: false,
-              onToggleSpeak: () {},
-              onPrev: () {},
-              onNext: () {},
-              onOpenSettings: () {},
-              child: const Focus(autofocus: true, child: SizedBox()),
-            ),
-          ),
+        child: ReaderShortcutsWrapper(
+          disabled: false,
+          onToggleSpeak: () {},
+          onPrev: () {},
+          onNext: () {},
+          onOpenSettings: () {},
+          child: const Focus(autofocus: true, child: SizedBox()),
         ),
       ),
     );

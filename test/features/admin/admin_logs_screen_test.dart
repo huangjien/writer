@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/admin/admin_logs_screen.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/storage_service_provider.dart';
@@ -18,6 +19,17 @@ void main() {
   group('AdminLogsScreen', () {
     late MockRemoteRepository mockRemoteRepository;
     late SessionNotifier sessionNotifier;
+
+    Widget buildTestApp({required Widget child, required List overrides}) {
+      return ProviderScope(
+        overrides: overrides.cast(),
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: child,
+        ),
+      );
+    }
 
     setUp(() async {
       mockRemoteRepository = MockRemoteRepository();
@@ -35,12 +47,12 @@ void main() {
       );
 
       await tester.pumpWidget(
-        ProviderScope(
+        buildTestApp(
           overrides: [
             remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
             sessionProvider.overrideWith((ref) => sessionNotifier),
           ],
-          child: const MaterialApp(home: AdminLogsScreen()),
+          child: const AdminLogsScreen(),
         ),
       );
 
@@ -60,12 +72,12 @@ void main() {
       ).thenAnswer((_) async => testLogs);
 
       await tester.pumpWidget(
-        ProviderScope(
+        buildTestApp(
           overrides: [
             remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
             sessionProvider.overrideWith((ref) => sessionNotifier),
           ],
-          child: const MaterialApp(home: AdminLogsScreen()),
+          child: const AdminLogsScreen(),
         ),
       );
 
@@ -83,12 +95,12 @@ void main() {
       ).thenAnswer((_) async => null);
 
       await tester.pumpWidget(
-        ProviderScope(
+        buildTestApp(
           overrides: [
             remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
             sessionProvider.overrideWith((ref) => sessionNotifier),
           ],
-          child: const MaterialApp(home: AdminLogsScreen()),
+          child: const AdminLogsScreen(),
         ),
       );
 
@@ -106,12 +118,12 @@ void main() {
       ).thenThrow(Exception(errorMessage));
 
       await tester.pumpWidget(
-        ProviderScope(
+        buildTestApp(
           overrides: [
             remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
             sessionProvider.overrideWith((ref) => sessionNotifier),
           ],
-          child: const MaterialApp(home: AdminLogsScreen()),
+          child: const AdminLogsScreen(),
         ),
       );
 
@@ -131,12 +143,12 @@ void main() {
       ).thenAnswer((_) async => initialLogs);
 
       await tester.pumpWidget(
-        ProviderScope(
+        buildTestApp(
           overrides: [
             remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
             sessionProvider.overrideWith((ref) => sessionNotifier),
           ],
-          child: const MaterialApp(home: AdminLogsScreen()),
+          child: const AdminLogsScreen(),
         ),
       );
 
@@ -170,12 +182,12 @@ void main() {
       ).thenAnswer((_) async => testLogs);
 
       await tester.pumpWidget(
-        ProviderScope(
+        buildTestApp(
           overrides: [
             remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
             sessionProvider.overrideWith((ref) => sessionNotifier),
           ],
-          child: const MaterialApp(home: AdminLogsScreen()),
+          child: const AdminLogsScreen(),
         ),
       );
 
@@ -213,12 +225,12 @@ void main() {
       ).thenAnswer((_) async => longLogs);
 
       await tester.pumpWidget(
-        ProviderScope(
+        buildTestApp(
           overrides: [
             remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
             sessionProvider.overrideWith((ref) => sessionNotifier),
           ],
-          child: const MaterialApp(home: AdminLogsScreen()),
+          child: const AdminLogsScreen(),
         ),
       );
 
@@ -251,12 +263,12 @@ void main() {
       );
 
       await tester.pumpWidget(
-        ProviderScope(
+        buildTestApp(
           overrides: [
             remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
             sessionProvider.overrideWith((ref) => sessionNotifier),
           ],
-          child: const MaterialApp(home: AdminLogsScreen()),
+          child: const AdminLogsScreen(),
         ),
       );
 
@@ -280,12 +292,12 @@ void main() {
       );
 
       await tester.pumpWidget(
-        ProviderScope(
+        buildTestApp(
           overrides: [
             remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
             sessionProvider.overrideWith((ref) => sessionNotifier),
           ],
-          child: const MaterialApp(home: AdminLogsScreen()),
+          child: const AdminLogsScreen(),
         ),
       );
 
@@ -312,12 +324,12 @@ void main() {
       ).thenAnswer((_) async => testLogs);
 
       await tester.pumpWidget(
-        ProviderScope(
+        buildTestApp(
           overrides: [
             remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
             sessionProvider.overrideWith((ref) => sessionNotifier),
           ],
-          child: const MaterialApp(home: AdminLogsScreen()),
+          child: const AdminLogsScreen(),
         ),
       );
 
@@ -341,12 +353,12 @@ void main() {
       ).thenAnswer((_) async => testLogs);
 
       await tester.pumpWidget(
-        ProviderScope(
+        buildTestApp(
           overrides: [
             remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
             sessionProvider.overrideWith((ref) => sessionNotifier),
           ],
-          child: const MaterialApp(home: AdminLogsScreen()),
+          child: const AdminLogsScreen(),
         ),
       );
 

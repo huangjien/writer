@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/theme/ui_style_adapter.dart';
+import 'package:writer/theme/theme_extensions.dart';
 import 'package:writer/theme/ui_styles.dart';
 
 void main() {
@@ -86,6 +87,65 @@ void main() {
     });
 
     group('StyleThemePatch.applyToTheme', () {
+      test('resolves divider thickness and color for styleFamily branches', () {
+        final baseTheme = ThemeData.light();
+
+        final brutal = const StyleThemePatch(styleFamily: UiStyleFamily.brutalism)
+            .applyToTheme(baseTheme, false);
+        expect(brutal.dividerTheme.thickness, 3);
+        expect(brutal.dividerTheme.color, Colors.black);
+
+        final flat = const StyleThemePatch(styleFamily: UiStyleFamily.flatDesign)
+            .applyToTheme(baseTheme, false);
+        expect(flat.dividerTheme.thickness, 1);
+        expect(flat.dividerTheme.color, baseTheme.colorScheme.outline);
+
+        final minimal =
+            const StyleThemePatch(styleFamily: UiStyleFamily.minimalism)
+                .applyToTheme(baseTheme, false);
+        expect(minimal.dividerTheme.thickness, 0.5);
+        expect(minimal.dividerTheme.color, baseTheme.colorScheme.outlineVariant);
+      });
+
+      test('resolves surface and tile colors for brutalism dark mode', () {
+        final baseTheme = ThemeData.dark();
+        final themed =
+            const StyleThemePatch(styleFamily: UiStyleFamily.brutalism)
+                .applyToTheme(baseTheme, true);
+
+        expect(themed.cardTheme.color, baseTheme.colorScheme.surface);
+        expect(themed.listTileTheme.tileColor, baseTheme.colorScheme.surface);
+      });
+
+      test('cardColor override takes precedence for surface color', () {
+        final baseTheme = ThemeData.light();
+        final themed = const StyleThemePatch(
+          styleFamily: UiStyleFamily.glassmorphism,
+          cardColor: Colors.purple,
+        ).applyToTheme(baseTheme, false);
+
+        expect(themed.cardTheme.color, Colors.purple);
+      });
+
+      test('resolves card shadows when not provided', () {
+        final baseTheme = ThemeData.light();
+
+        final glass =
+            const StyleThemePatch(styleFamily: UiStyleFamily.glassmorphism)
+                .applyToTheme(baseTheme, false);
+        final ext1 = glass.extension<UiStyleThemeExtension>();
+        expect(ext1, isNotNull);
+        expect(ext1!.cardShadows, isNotNull);
+        expect(ext1.cardShadows, isNotEmpty);
+
+        final neu =
+            const StyleThemePatch(styleFamily: UiStyleFamily.neumorphism)
+                .applyToTheme(baseTheme, false);
+        final ext2 = neu.extension<UiStyleThemeExtension>();
+        expect(ext2, isNotNull);
+        expect(ext2!.cardShadows, isNull);
+      });
+
       test('applies custom card border radius', () {
         final patch = const StyleThemePatch(
           cardBorderRadius: BorderRadius.all(Radius.circular(20)),
