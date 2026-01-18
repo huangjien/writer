@@ -19,7 +19,7 @@ class StyleSettingsSection extends ConsumerWidget {
           leading: const Icon(Icons.style_outlined),
           title: Row(
             children: [
-              Expanded(child: Text('Styles', semanticsLabel: 'UI Styles')),
+              Expanded(child: Text(l10n.styles, semanticsLabel: 'UI Styles')),
               DropdownButton<UiStyleFamily>(
                 value: uiStyleState.family,
                 onChanged: (UiStyleFamily? style) {
@@ -32,47 +32,47 @@ class StyleSettingsSection extends ConsumerWidget {
                 items: [
                   _buildDropdownMenuItem(
                     UiStyleFamily.glassmorphism,
-                    'Glassmorphism',
+                    l10n.styleGlassmorphism,
                     l10n,
                   ),
                   _buildDropdownMenuItem(
                     UiStyleFamily.neumorphism,
-                    'Neumorphism',
+                    l10n.styleNeumorphism,
                     l10n,
                   ),
                   _buildDropdownMenuItem(
                     UiStyleFamily.claymorphism,
-                    'Claymorphism',
+                    l10n.styleClaymorphism,
                     l10n,
                   ),
                   _buildDropdownMenuItem(
                     UiStyleFamily.minimalism,
-                    'Minimalism',
+                    l10n.styleMinimalism,
                     l10n,
                   ),
                   _buildDropdownMenuItem(
                     UiStyleFamily.brutalism,
-                    'Brutalism',
+                    l10n.styleBrutalism,
                     l10n,
                   ),
                   _buildDropdownMenuItem(
                     UiStyleFamily.skeuomorphism,
-                    'Skeuomorphism',
+                    l10n.styleSkeuomorphism,
                     l10n,
                   ),
                   _buildDropdownMenuItem(
                     UiStyleFamily.bentoGrid,
-                    'Bento Grid',
+                    l10n.styleBentoGrid,
                     l10n,
                   ),
                   _buildDropdownMenuItem(
                     UiStyleFamily.responsive,
-                    'Responsive',
+                    l10n.styleResponsive,
                     l10n,
                   ),
                   _buildDropdownMenuItem(
                     UiStyleFamily.flatDesign,
-                    'Flat Design',
+                    l10n.styleFlatDesign,
                     l10n,
                   ),
                 ],

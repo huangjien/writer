@@ -54,7 +54,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
 
           return cr.ChapterReaderScreen(
             chapterId: chapter.id,
-            title: chapter.title ?? 'Chapter ${chapter.idx}',
+            title: chapter.title ?? l10n.chapterLabel(chapter.idx),
             content: chapter.content,
             novelId: widget.novelId,
             allChapters: chapters,
@@ -192,7 +192,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                         novelProvider(widget.novelId).future,
                       );
 
-                      if (novel == null) throw Exception('Novel not found');
+                      if (novel == null) {
+                        throw Exception(l10n.errorNovelNotFound);
+                      }
 
                       progress.value = 2;
                       final pdfService = ref.read(pdfServiceProvider);
@@ -281,7 +283,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                           MaterialPageRoute(
                             builder: (_) => ChapterReaderScreen(
                               chapterId: c.id,
-                              title: c.title ?? '${l10n.chapter} ${c.idx}',
+                              title: c.title ?? l10n.chapterLabel(c.idx),
                               content: c.content,
                               novelId: widget.novelId,
                               allChapters: chapters,

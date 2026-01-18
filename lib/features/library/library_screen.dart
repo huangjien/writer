@@ -269,8 +269,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                                     Expanded(
                                       child: NovelEmptyState(
                                         title: l10n.noNovelsFound,
-                                        subtitle:
-                                            'Create your first novel to get started',
+                                        subtitle: l10n.createFirstNovelSubtitle,
                                         actionLabel: l10n.createNovel,
                                         onAction: () =>
                                             context.pushNamed('createNovel'),

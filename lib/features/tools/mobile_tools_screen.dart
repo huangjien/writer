@@ -192,18 +192,20 @@ class _MobileToolsScreenState extends State<MobileToolsScreen> {
   }
 
   void _navigateToCharacterTemplates(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     // Navigate to character templates
     // This would need the novel ID - for now show a placeholder
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Select a novel first')));
+    ).showSnackBar(SnackBar(content: Text(l10n.selectNovelFirst)));
   }
 
   void _navigateToSceneTemplates(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     // Navigate to scene templates
     // This would need the novel ID - for now show a placeholder
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Select a novel first')));
+    ).showSnackBar(SnackBar(content: Text(l10n.selectNovelFirst)));
   }
 }

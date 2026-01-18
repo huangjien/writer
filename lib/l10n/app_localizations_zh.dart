@@ -9,10 +9,10 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get newChapter => 'New Chapter';
+  String get newChapter => '新章节';
 
   @override
-  String get back => 'Back';
+  String get back => '返回';
 
   @override
   String get helloWorld => '你好世界！';
@@ -291,7 +291,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get expandedSummary => '细纲';
 
   @override
-  String get pitch => 'Pitch';
+  String get pitch => '音高';
 
   @override
   String get signInWithBiometrics => '使用生物识别登录';
@@ -486,17 +486,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String removedNovel(String title) {
-    return 'Removed $title';
+    return '已移除 $title';
   }
 
   @override
-  String get discover => 'Discover';
+  String get discover => '发现';
 
   @override
-  String get profile => 'Profile';
+  String get profile => '个人资料';
 
   @override
-  String get libraryTitle => 'Library';
+  String get libraryTitle => '文库';
 
   @override
   String get undo => '撤销';
@@ -1383,4 +1383,139 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get removeFromLibrary => '从文库中移除';
+
+  @override
+  String get createFirstNovelSubtitle => '创建您的第一本小说以开始';
+
+  @override
+  String get navigationError => '导航错误';
+
+  @override
+  String get pdfStepPreparing => '准备章节';
+
+  @override
+  String get pdfStepGenerating => '生成 PDF';
+
+  @override
+  String get pdfStepSharing => '分享';
+
+  @override
+  String get tipIntention => '提示：每个场景写一个明确的意图。';
+
+  @override
+  String get tipVerbs => '提示：强有力的动词让句子更有生命力。';
+
+  @override
+  String get tipStuck => '提示：如果卡住了，重写上一段。';
+
+  @override
+  String get tipDialogue => '提示：对话比描述更能快速揭示角色。';
+
+  @override
+  String get errorNovelNotFound => '未找到小说';
+
+  @override
+  String get noSentenceSummary => '暂无一句话概要。';
+
+  @override
+  String get noParagraphSummary => '暂无一段话概要。';
+
+  @override
+  String get noPageSummary => '暂无一页纸大纲。';
+
+  @override
+  String get noExpandedSummary => '暂无细纲。';
+
+  @override
+  String get aiSentenceSummaryTooltip => 'AI 一句话概要';
+
+  @override
+  String get aiParagraphSummaryTooltip => 'AI 一段话概要';
+
+  @override
+  String get aiPageSummaryTooltip => 'AI 一页纸大纲';
+
+  @override
+  String get keyboardShortcuts => '键盘快捷键';
+
+  @override
+  String get shortcutSpace => '空格：播放/停止';
+
+  @override
+  String get shortcutArrows => '← / →：上一章/下一章';
+
+  @override
+  String get shortcutRate => 'Ctrl/⌘ + R：语速';
+
+  @override
+  String get shortcutVoice => 'Ctrl/⌘ + V：语音';
+
+  @override
+  String get shortcutHelp => 'Ctrl/⌘ + /：显示快捷键';
+
+  @override
+  String get shortcutEsc => 'Esc：关闭';
+
+  @override
+  String get styles => '样式';
+
+  @override
+  String get noVoicesAvailable => '无可用语音';
+
+  @override
+  String get comingSoon => '即将推出';
+
+  @override
+  String get selectNovelFirst => '请先选择小说';
+
+  @override
+  String get adminLogs => '管理员日志';
+
+  @override
+  String get styleGlassmorphism => '玻璃拟态';
+
+  @override
+  String get styleNeumorphism => '新拟态';
+
+  @override
+  String get styleClaymorphism => '泥陶拟态';
+
+  @override
+  String get styleMinimalism => '极简主义';
+
+  @override
+  String get styleBrutalism => '野兽派';
+
+  @override
+  String get styleSkeuomorphism => '拟物化';
+
+  @override
+  String get styleBentoGrid => '便当盒布局';
+
+  @override
+  String get styleResponsive => '响应式';
+
+  @override
+  String get styleFlatDesign => '扁平设计';
+
+  @override
+  String get scrollToBottom => '滚动到底部';
+
+  @override
+  String get scrollToTop => '滚动到顶部';
+
+  @override
+  String get numberOfLines => '行数';
+
+  @override
+  String get lines => '行';
+
+  @override
+  String get load => '加载';
+
+  @override
+  String get noLogsAvailable => '暂无日志。';
+
+  @override
+  String get failedToLoadLogs => '加载日志失败';
 }

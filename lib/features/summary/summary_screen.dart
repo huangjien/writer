@@ -164,9 +164,9 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
         // Preview/Edit tabs
         TabBar(
           controller: _sentenceTabController,
-          tabs: const [
-            Tab(text: 'Preview'),
-            Tab(text: 'Edit'),
+          tabs: [
+            Tab(text: l10n.previewLabel),
+            Tab(text: l10n.edit),
           ],
         ),
         Expanded(
@@ -185,7 +185,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                   ),
                   child: SelectableText(
                     _sentenceController.text.isEmpty
-                        ? 'No sentence summary available.'
+                        ? l10n.noSentenceSummary
                         : _sentenceController.text,
                     style: const TextStyle(fontSize: 16),
                   ),
@@ -228,7 +228,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                                       }
                                     });
                                   },
-                                  tooltip: 'AI sentence summary',
+                                  tooltip: l10n.aiSentenceSummaryTooltip,
                                 ),
                                 if (_sentenceAiSatisfied &&
                                     !_showSentenceCoach) ...[
@@ -276,9 +276,9 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
         // Preview/Edit tabs
         TabBar(
           controller: _paragraphTabController,
-          tabs: const [
-            Tab(text: 'Preview'),
-            Tab(text: 'Edit'),
+          tabs: [
+            Tab(text: l10n.previewLabel),
+            Tab(text: l10n.edit),
           ],
         ),
         Expanded(
@@ -295,7 +295,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                 ),
                 child: SelectableText(
                   _paragraphController.text.isEmpty
-                      ? 'No paragraph summary available.'
+                      ? l10n.noParagraphSummary
                       : _paragraphController.text,
                   style: const TextStyle(fontSize: 16),
                 ),
@@ -335,7 +335,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                                     }
                                   });
                                 },
-                                tooltip: 'AI paragraph summary',
+                                tooltip: l10n.aiParagraphSummaryTooltip,
                               ),
                               if (_paragraphAiSatisfied &&
                                   !_showParagraphCoach) ...[
@@ -401,7 +401,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                 ),
                 child: SelectableText(
                   _pageController.text.isEmpty
-                      ? 'No page summary available.'
+                      ? l10n.noPageSummary
                       : _pageController.text,
                   style: const TextStyle(fontSize: 16),
                 ),
@@ -695,6 +695,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
           }
 
           Widget buildMainContent() {
+            final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
             return Form(
               key: _formKey,
               child: Column(
@@ -706,11 +707,11 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                   // Main Tab Bar
                   TabBar(
                     controller: _tabController,
-                    tabs: const [
-                      Tab(text: 'Sentence Summary'),
-                      Tab(text: 'Paragraph Summary'),
-                      Tab(text: 'Page Summary'),
-                      Tab(text: 'Expanded Summary'),
+                    tabs: [
+                      Tab(text: l10n.sentenceSummary),
+                      Tab(text: l10n.paragraphSummary),
+                      Tab(text: l10n.pageSummary),
+                      Tab(text: l10n.expandedSummary),
                     ],
                   ),
                   const SizedBox(height: 8),

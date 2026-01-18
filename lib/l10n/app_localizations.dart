@@ -2731,6 +2731,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove from Library'**
   String get removeFromLibrary;
+
+  /// No description provided for @createFirstNovelSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first novel to get started'**
+  String get createFirstNovelSubtitle;
+
+  /// No description provided for @navigationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Navigation error'**
+  String get navigationError;
+
+  /// No description provided for @pdfStepPreparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing chapters'**
+  String get pdfStepPreparing;
+
+  /// No description provided for @pdfStepGenerating.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating PDF'**
+  String get pdfStepGenerating;
+
+  /// No description provided for @pdfStepSharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing'**
+  String get pdfStepSharing;
+
+  /// No description provided for @tipIntention.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: Write one clear intention per scene.'**
+  String get tipIntention;
+
+  /// No description provided for @tipVerbs.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: Strong verbs make sentences feel alive.'**
+  String get tipVerbs;
+
+  /// No description provided for @tipStuck.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: If stuck, rewrite the last paragraph.'**
+  String get tipStuck;
+
+  /// No description provided for @tipDialogue.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: Dialogue reveals character faster than description.'**
+  String get tipDialogue;
+
+  /// No description provided for @errorNovelNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Novel not found'**
+  String get errorNovelNotFound;
+
+  /// No description provided for @noSentenceSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'No sentence summary available.'**
+  String get noSentenceSummary;
+
+  /// No description provided for @noParagraphSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'No paragraph summary available.'**
+  String get noParagraphSummary;
+
+  /// No description provided for @noPageSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'No page summary available.'**
+  String get noPageSummary;
+
+  /// No description provided for @noExpandedSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'No expanded summary available.'**
+  String get noExpandedSummary;
+
+  /// No description provided for @aiSentenceSummaryTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'AI sentence summary'**
+  String get aiSentenceSummaryTooltip;
+
+  /// No description provided for @aiParagraphSummaryTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'AI paragraph summary'**
+  String get aiParagraphSummaryTooltip;
+
+  /// No description provided for @aiPageSummaryTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'AI page summary'**
+  String get aiPageSummaryTooltip;
+
+  /// No description provided for @keyboardShortcuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Keyboard shortcuts'**
+  String get keyboardShortcuts;
+
+  /// No description provided for @shortcutSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Space: Play / stop'**
+  String get shortcutSpace;
+
+  /// No description provided for @shortcutArrows.
+  ///
+  /// In en, this message translates to:
+  /// **'← / →: Previous / next'**
+  String get shortcutArrows;
+
+  /// No description provided for @shortcutRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Ctrl/⌘ + R: Speech rate'**
+  String get shortcutRate;
+
+  /// No description provided for @shortcutVoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Ctrl/⌘ + V: Voice'**
+  String get shortcutVoice;
+
+  /// No description provided for @shortcutHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Ctrl/⌘ + /: Show shortcuts'**
+  String get shortcutHelp;
+
+  /// No description provided for @shortcutEsc.
+  ///
+  /// In en, this message translates to:
+  /// **'Esc: Close'**
+  String get shortcutEsc;
+
+  /// No description provided for @styles.
+  ///
+  /// In en, this message translates to:
+  /// **'Styles'**
+  String get styles;
+
+  /// No description provided for @noVoicesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No voices available'**
+  String get noVoicesAvailable;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get comingSoon;
+
+  /// No description provided for @selectNovelFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a novel first'**
+  String get selectNovelFirst;
+
+  /// No description provided for @adminLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Logs'**
+  String get adminLogs;
+
+  /// No description provided for @styleGlassmorphism.
+  ///
+  /// In en, this message translates to:
+  /// **'Glassmorphism'**
+  String get styleGlassmorphism;
+
+  /// No description provided for @styleNeumorphism.
+  ///
+  /// In en, this message translates to:
+  /// **'Neumorphism'**
+  String get styleNeumorphism;
+
+  /// No description provided for @styleClaymorphism.
+  ///
+  /// In en, this message translates to:
+  /// **'Claymorphism'**
+  String get styleClaymorphism;
+
+  /// No description provided for @styleMinimalism.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimalism'**
+  String get styleMinimalism;
+
+  /// No description provided for @styleBrutalism.
+  ///
+  /// In en, this message translates to:
+  /// **'Brutalism'**
+  String get styleBrutalism;
+
+  /// No description provided for @styleSkeuomorphism.
+  ///
+  /// In en, this message translates to:
+  /// **'Skeuomorphism'**
+  String get styleSkeuomorphism;
+
+  /// No description provided for @styleBentoGrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Bento Grid'**
+  String get styleBentoGrid;
+
+  /// No description provided for @styleResponsive.
+  ///
+  /// In en, this message translates to:
+  /// **'Responsive'**
+  String get styleResponsive;
+
+  /// No description provided for @styleFlatDesign.
+  ///
+  /// In en, this message translates to:
+  /// **'Flat Design'**
+  String get styleFlatDesign;
+
+  /// No description provided for @scrollToBottom.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll to bottom'**
+  String get scrollToBottom;
+
+  /// No description provided for @scrollToTop.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll to top'**
+  String get scrollToTop;
+
+  /// No description provided for @numberOfLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of lines'**
+  String get numberOfLines;
+
+  /// No description provided for @lines.
+  ///
+  /// In en, this message translates to:
+  /// **'lines'**
+  String get lines;
+
+  /// No description provided for @load.
+  ///
+  /// In en, this message translates to:
+  /// **'Load'**
+  String get load;
+
+  /// No description provided for @noLogsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No logs available.'**
+  String get noLogsAvailable;
+
+  /// No description provided for @failedToLoadLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load logs'**
+  String get failedToLoadLogs;
 }
 
 class _AppLocalizationsDelegate

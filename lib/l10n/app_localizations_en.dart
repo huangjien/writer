@@ -1414,4 +1414,141 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get removeFromLibrary => 'Remove from Library';
+
+  @override
+  String get createFirstNovelSubtitle =>
+      'Create your first novel to get started';
+
+  @override
+  String get navigationError => 'Navigation error';
+
+  @override
+  String get pdfStepPreparing => 'Preparing chapters';
+
+  @override
+  String get pdfStepGenerating => 'Generating PDF';
+
+  @override
+  String get pdfStepSharing => 'Sharing';
+
+  @override
+  String get tipIntention => 'Tip: Write one clear intention per scene.';
+
+  @override
+  String get tipVerbs => 'Tip: Strong verbs make sentences feel alive.';
+
+  @override
+  String get tipStuck => 'Tip: If stuck, rewrite the last paragraph.';
+
+  @override
+  String get tipDialogue =>
+      'Tip: Dialogue reveals character faster than description.';
+
+  @override
+  String get errorNovelNotFound => 'Novel not found';
+
+  @override
+  String get noSentenceSummary => 'No sentence summary available.';
+
+  @override
+  String get noParagraphSummary => 'No paragraph summary available.';
+
+  @override
+  String get noPageSummary => 'No page summary available.';
+
+  @override
+  String get noExpandedSummary => 'No expanded summary available.';
+
+  @override
+  String get aiSentenceSummaryTooltip => 'AI sentence summary';
+
+  @override
+  String get aiParagraphSummaryTooltip => 'AI paragraph summary';
+
+  @override
+  String get aiPageSummaryTooltip => 'AI page summary';
+
+  @override
+  String get keyboardShortcuts => 'Keyboard shortcuts';
+
+  @override
+  String get shortcutSpace => 'Space: Play / stop';
+
+  @override
+  String get shortcutArrows => '← / →: Previous / next';
+
+  @override
+  String get shortcutRate => 'Ctrl/⌘ + R: Speech rate';
+
+  @override
+  String get shortcutVoice => 'Ctrl/⌘ + V: Voice';
+
+  @override
+  String get shortcutHelp => 'Ctrl/⌘ + /: Show shortcuts';
+
+  @override
+  String get shortcutEsc => 'Esc: Close';
+
+  @override
+  String get styles => 'Styles';
+
+  @override
+  String get noVoicesAvailable => 'No voices available';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get selectNovelFirst => 'Select a novel first';
+
+  @override
+  String get adminLogs => 'Admin Logs';
+
+  @override
+  String get styleGlassmorphism => 'Glassmorphism';
+
+  @override
+  String get styleNeumorphism => 'Neumorphism';
+
+  @override
+  String get styleClaymorphism => 'Claymorphism';
+
+  @override
+  String get styleMinimalism => 'Minimalism';
+
+  @override
+  String get styleBrutalism => 'Brutalism';
+
+  @override
+  String get styleSkeuomorphism => 'Skeuomorphism';
+
+  @override
+  String get styleBentoGrid => 'Bento Grid';
+
+  @override
+  String get styleResponsive => 'Responsive';
+
+  @override
+  String get styleFlatDesign => 'Flat Design';
+
+  @override
+  String get scrollToBottom => 'Scroll to bottom';
+
+  @override
+  String get scrollToTop => 'Scroll to top';
+
+  @override
+  String get numberOfLines => 'Number of lines';
+
+  @override
+  String get lines => 'lines';
+
+  @override
+  String get load => 'Load';
+
+  @override
+  String get noLogsAvailable => 'No logs available.';
+
+  @override
+  String get failedToLoadLogs => 'Failed to load logs';
 }

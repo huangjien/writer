@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../repositories/remote_repository.dart';
 import '../../shared/api_exception.dart';
+import '../../l10n/app_localizations.dart';
 
 class AdminLogsScreen extends ConsumerStatefulWidget {
   const AdminLogsScreen({super.key});
@@ -44,13 +45,13 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
       final logs = await remote.getAdminLogs(lines: _lines);
 
       setState(() {
-        _logs = logs ?? 'No logs available.';
+        _logs = logs ?? '';
         _isLoading = false;
       });
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) return;
       setState(() {
-        _errorMessage = 'Failed to load logs: $e';
+        _errorMessage = '$e';
         _isLoading = false;
       });
     }
@@ -70,23 +71,24 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Logs'),
+        title: Text(l10n.adminLogs),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
+            tooltip: l10n.refresh,
             onPressed: _isLoading ? null : _loadLogs,
           ),
           IconButton(
             icon: const Icon(Icons.arrow_downward),
-            tooltip: 'Scroll to bottom',
+            tooltip: l10n.scrollToBottom,
             onPressed: _scrollToBottom,
           ),
           IconButton(
             icon: const Icon(Icons.arrow_upward),
-            tooltip: 'Scroll to top',
+            tooltip: l10n.scrollToTop,
             onPressed: _scrollToTop,
           ),
         ],
@@ -100,10 +102,10 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
                 Expanded(
                   child: TextField(
                     controller: _linesController,
-                    decoration: const InputDecoration(
-                      labelText: 'Number of lines',
-                      border: OutlineInputBorder(),
-                      suffixText: 'lines',
+                    decoration: InputDecoration(
+                      labelText: l10n.numberOfLines,
+                      border: const OutlineInputBorder(),
+                      suffixText: l10n.lines,
                     ),
                     keyboardType: TextInputType.number,
                     onChanged: (value) {
@@ -117,7 +119,7 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
                 const SizedBox(width: 16),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _loadLogs,
-                  child: const Text('Load'),
+                  child: Text(l10n.load),
                 ),
               ],
             ),
@@ -130,12 +132,14 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
-                        _errorMessage!,
+                        '${l10n.failedToLoadLogs}: $_errorMessage',
                         style: const TextStyle(color: Colors.red),
                         textAlign: TextAlign.center,
                       ),
                     ),
                   )
+                : _logs.isEmpty
+                ? Center(child: Text(l10n.noLogsAvailable))
                 : Container(
                     color: Colors.black87,
                     padding: const EdgeInsets.all(8.0),

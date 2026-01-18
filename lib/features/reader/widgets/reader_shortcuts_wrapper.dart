@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 import 'package:writer/shared/widgets/mobile_bottom_sheet.dart';
 import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import '../logic/reader_shortcuts.dart';
 
 class ReaderShortcutsWrapper extends ConsumerWidget {
@@ -25,9 +26,10 @@ class ReaderShortcutsWrapper extends ConsumerWidget {
   final Widget child;
 
   void _showShortcutsHelp(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     MobileBottomSheet.show<void>(
       context: context,
-      title: 'Keyboard shortcuts',
+      title: l10n.keyboardShortcuts,
       builder: (context) {
         final theme = Theme.of(context);
         final style = theme.textTheme.bodyMedium;
@@ -37,17 +39,17 @@ class ReaderShortcutsWrapper extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Space: Play / stop', style: style),
+              Text(l10n.shortcutSpace, style: style),
               const SizedBox(height: Spacing.s),
-              Text('← / →: Previous / next', style: style),
+              Text(l10n.shortcutArrows, style: style),
               const SizedBox(height: Spacing.s),
-              Text('Ctrl/⌘ + R: Speech rate', style: style),
+              Text(l10n.shortcutRate, style: style),
               const SizedBox(height: Spacing.s),
-              Text('Ctrl/⌘ + V: Voice', style: style),
+              Text(l10n.shortcutVoice, style: style),
               const SizedBox(height: Spacing.s),
-              Text('Ctrl/⌘ + /: Show shortcuts', style: style),
+              Text(l10n.shortcutHelp, style: style),
               const SizedBox(height: Spacing.s),
-              Text('Esc: Close', style: style),
+              Text(l10n.shortcutEsc, style: style),
             ],
           ),
         );
