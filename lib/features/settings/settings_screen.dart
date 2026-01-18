@@ -6,6 +6,7 @@ import 'widgets/performance_section.dart';
 import 'widgets/typography_settings_section.dart';
 import 'widgets/app_settings_section.dart';
 import 'widgets/palette_settings_section.dart';
+import 'widgets/style_settings_section.dart';
 import 'widgets/tts_settings_container.dart';
 import 'widgets/token_usage_section.dart';
 import 'package:writer/theme/reader_bundles.dart';
@@ -30,9 +31,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     debugPrint('[Settings] initState');
     // Ensure latest progress is refreshed when opening Settings
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      try {
-        ref.invalidate(latestUserProgressProvider);
-      } catch (_) {}
+      if (mounted) {
+        try {
+          ref.invalidate(latestUserProgressProvider);
+        } catch (_) {}
+      }
     });
   }
 
@@ -74,6 +77,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         children: [
           const AppSettingsSection(),
           const PaletteSettingsSection(),
+          const StyleSettingsSection(),
           const TypographySettingsSection(),
           const Divider(),
           Text(

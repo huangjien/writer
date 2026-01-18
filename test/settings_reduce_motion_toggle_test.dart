@@ -16,8 +16,13 @@ import 'package:writer/state/session_state.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/services/storage_service.dart';
 import 'package:writer/shared/widgets/neumorphic_switch.dart';
+import 'package:writer/services/sync_service.dart';
+import 'package:writer/models/sync_state.dart';
+import 'package:writer/state/sync_service_provider.dart';
 
 class MockBiometricService extends Mock implements BiometricService {}
+
+class MockSyncService extends Mock implements SyncService {}
 
 class MockStorageService implements StorageService {
   final Map<String, String> _data = {};
@@ -65,6 +70,17 @@ void main() {
     // Mock storage service
     final mockStorageService = MockStorageService();
 
+    // Mock sync service - required by AppLifecycleMonitor in app tree
+    final mockSyncService = MockSyncService();
+    when(() => mockSyncService.currentSyncState).thenReturn(
+      const SyncState(
+        status: SyncStatus.synced,
+        pendingOperations: 0,
+        errorMessage: null,
+        lastSyncTime: null,
+      ),
+    );
+
     final container = ProviderContainer(
       overrides: [
         appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
@@ -79,6 +95,7 @@ void main() {
           (ref) => SessionNotifier(mockStorageService),
         ),
         isSignedInProvider.overrideWithValue(false),
+        syncServiceProvider.overrideWithValue(mockSyncService),
       ],
     );
     addTearDown(container.dispose);

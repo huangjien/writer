@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
+import 'package:writer/state/ui_style_controller.dart';
 import 'package:writer/theme/app_theme_builder.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/theme/themes.dart';
 import 'package:writer/theme/reader_typography.dart';
 import 'package:writer/theme/font_packs.dart';
 import 'package:writer/theme/reader_background.dart';
+import 'package:writer/theme/ui_style_adapter.dart';
+import 'package:writer/theme/ui_styles.dart';
 import 'routing/app_router.dart';
 import 'l10n/app_localizations.dart';
 import 'services/app_lifecycle_monitor.dart';
@@ -51,6 +54,13 @@ class App extends ConsumerWidget {
 
     final motion = ref.watch(motionSettingsProvider);
 
+    UiStyleState uiStyleState;
+    try {
+      uiStyleState = ref.watch(uiStyleControllerProvider);
+    } catch (_) {
+      uiStyleState = const UiStyleState(family: UiStyleFamily.glassmorphism);
+    }
+
     final lightTheme = AppThemeBuilder.buildLight(
       family: themeState.hasSeparateDark
           ? themeState.familyLight
@@ -73,12 +83,18 @@ class App extends ConsumerWidget {
           : themeState.preset,
     );
 
+    final styleAdapter = const UiStyleAdapter();
+    final stylePatch = styleAdapter.resolveStylePatch(uiStyleState.family);
+
+    final lightThemeWithStyle = stylePatch.applyToTheme(lightTheme, false);
+    final darkThemeWithStyle = stylePatch.applyToTheme(darkTheme, true);
+
     final themeLight = AppThemeBuilder.applyMotion(
-      base: lightTheme,
+      base: lightThemeWithStyle,
       reduceMotion: motion.reduceMotion,
     );
     final themeDark = AppThemeBuilder.applyMotion(
-      base: darkTheme,
+      base: darkThemeWithStyle,
       reduceMotion: motion.reduceMotion,
     );
 

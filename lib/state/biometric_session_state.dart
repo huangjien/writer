@@ -21,12 +21,14 @@ class BiometricSessionNotifier extends StateNotifier<BiometricAuthState> {
 
   Future<void> checkBiometricAvailability() async {
     final isAvailable = await _biometricService.isBiometricAvailable();
+    if (!mounted) return;
     if (!isAvailable) {
       state = BiometricAuthState.unavailable;
       return;
     }
 
     final isEnabled = await _biometricService.isBiometricEnabled();
+    if (!mounted) return;
     state = isEnabled
         ? BiometricAuthState.enabled
         : BiometricAuthState.disabled;

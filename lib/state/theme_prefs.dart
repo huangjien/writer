@@ -3,6 +3,7 @@ import '../theme/reader_background.dart';
 import '../theme/themes.dart';
 import '../theme/reader_typography.dart';
 import '../theme/font_packs.dart';
+import '../theme/ui_styles.dart';
 
 const String prefThemeMode = 'theme_mode';
 const String prefLightTheme = 'light_theme';
@@ -16,6 +17,55 @@ const String prefFontPack = 'reader_font_pack';
 const String prefCustomFontFamily = 'reader_custom_font_family';
 const String prefFontScale = 'reader_font_scale';
 const String prefReaderBgDepth = 'reader_background_depth';
+const String prefUiStyleFamily = 'ui_style_family';
+
+UiStyleFamily decodeUiStyleFamily(String? raw) {
+  switch (raw) {
+    case 'glassmorphism':
+      return UiStyleFamily.glassmorphism;
+    case 'neumorphism':
+      return UiStyleFamily.neumorphism;
+    case 'claymorphism':
+      return UiStyleFamily.claymorphism;
+    case 'minimalism':
+      return UiStyleFamily.minimalism;
+    case 'brutalism':
+      return UiStyleFamily.brutalism;
+    case 'skeuomorphism':
+      return UiStyleFamily.skeuomorphism;
+    case 'bentoGrid':
+      return UiStyleFamily.bentoGrid;
+    case 'responsive':
+      return UiStyleFamily.responsive;
+    case 'flatDesign':
+      return UiStyleFamily.flatDesign;
+    default:
+      return UiStyleFamily.glassmorphism;
+  }
+}
+
+String encodeUiStyleFamily(UiStyleFamily family) {
+  switch (family) {
+    case UiStyleFamily.glassmorphism:
+      return 'glassmorphism';
+    case UiStyleFamily.neumorphism:
+      return 'neumorphism';
+    case UiStyleFamily.claymorphism:
+      return 'claymorphism';
+    case UiStyleFamily.minimalism:
+      return 'minimalism';
+    case UiStyleFamily.brutalism:
+      return 'brutalism';
+    case UiStyleFamily.skeuomorphism:
+      return 'skeuomorphism';
+    case UiStyleFamily.bentoGrid:
+      return 'bentoGrid';
+    case UiStyleFamily.responsive:
+      return 'responsive';
+    case UiStyleFamily.flatDesign:
+      return 'flatDesign';
+  }
+}
 
 ThemeMode decodeMode(String? raw) {
   switch (raw) {

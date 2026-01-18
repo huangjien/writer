@@ -67,6 +67,7 @@ import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/tts_settings.dart';
 import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/state/user_state.dart';
+import 'package:writer/state/ui_style_controller.dart';
 import 'package:writer/features/settings/state/token_usage_providers.dart';
 import 'package:flutter/services.dart';
 
@@ -194,6 +195,7 @@ List getOverrides(SharedPreferences prefs) {
     storyLinesServiceProvider.overrideWithValue(FakeStoryLinesService()),
     remoteRepositoryProvider.overrideWithValue(FakeRemoteRepository()),
     chapterRepositoryProvider.overrideWithValue(FakeChapterRepository()),
+    uiStyleControllerProvider.overrideWith((ref) => UiStyleController(prefs)),
   ];
 }
 
