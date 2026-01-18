@@ -55,6 +55,9 @@ const List<String> _genericTextFallback = <String>[
   'sans-serif',
 ];
 
+@visibleForTesting
+bool disableGoogleFontsForTesting = false;
+
 List<String> chineseTextFallback() {
   final ordered = <String>[];
   if (kIsWeb) {
@@ -77,9 +80,16 @@ List<String> chineseTextFallback() {
       break;
   }
   ordered.addAll(_embeddedChineseFonts);
-  // Add Google Fonts fallback just in case
-  final gf = GoogleFonts.notoSansSc().fontFamily;
-  if (gf != null) ordered.add(gf);
+  
+  if (!disableGoogleFontsForTesting) {
+    // Add Google Fonts fallback just in case
+    try {
+      final gf = GoogleFonts.notoSansSc().fontFamily;
+      if (gf != null) ordered.add(gf);
+    } catch (e) {
+      // Ignore errors in test/offline
+    }
+  }
 
   ordered.addAll(_genericTextFallback);
 

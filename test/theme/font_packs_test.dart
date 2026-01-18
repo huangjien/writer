@@ -16,7 +16,12 @@ void main() {
     late ThemeData baseTheme;
 
     setUp(() {
+      disableGoogleFontsForTesting = true;
       baseTheme = ThemeData.light();
+    });
+
+    tearDown(() {
+      disableGoogleFontsForTesting = false;
     });
 
     test('system pack returns unchanged theme', () {
@@ -79,7 +84,12 @@ void main() {
     late ThemeData baseTheme;
 
     setUp(() {
+      disableGoogleFontsForTesting = true;
       baseTheme = ThemeData.light();
+    });
+
+    tearDown(() {
+      disableGoogleFontsForTesting = false;
     });
 
     test('null custom family uses pack', () {

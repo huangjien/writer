@@ -129,7 +129,9 @@ class StylePreviewGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final styles = UiStyleFamily.values;
     final screenWidth = MediaQuery.of(context).size.width;
-    final crossAxisCount = screenWidth < 600 ? 3 : 5;
+    // User requested panels to be 1/4 of current size, so we double the crossAxisCount
+    // (halving width and height = 1/4 area)
+    final crossAxisCount = screenWidth < 600 ? 6 : 10;
 
     return Semantics(
       label: 'Style preview grid',
@@ -282,18 +284,18 @@ class _StylePreviewCard extends StatelessWidget {
         Icon(
           _getStyleIcon(UiStyleFamily.glassmorphism),
           color: iconColor,
-          size: 24,
+          size: 16,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Text(
             uiStyleDisplayName(UiStyleFamily.glassmorphism, context),
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
             textAlign: TextAlign.center,
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -311,39 +313,39 @@ class _StylePreviewCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
                 color: colorScheme.shadow.withValues(alpha: 0.15),
-                offset: const Offset(-2, -2),
-                blurRadius: 4,
+                offset: const Offset(-1, -1),
+                blurRadius: 2,
               ),
               BoxShadow(
                 color: colorScheme.shadow.withValues(alpha: 0.1),
-                offset: const Offset(2, 2),
-                blurRadius: 4,
+                offset: const Offset(1, 1),
+                blurRadius: 2,
               ),
             ],
           ),
           child: Icon(
             _getStyleIcon(UiStyleFamily.neumorphism),
             color: iconColor,
-            size: 24,
+            size: 16,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Text(
             uiStyleDisplayName(UiStyleFamily.neumorphism, context),
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
             textAlign: TextAlign.center,
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -361,34 +363,34 @@ class _StylePreviewCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             color: colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
                 color: colorScheme.primary.withValues(alpha: 0.2),
-                offset: const Offset(0, 3),
-                blurRadius: 6,
+                offset: const Offset(0, 2),
+                blurRadius: 4,
               ),
             ],
           ),
           child: Icon(
             _getStyleIcon(UiStyleFamily.claymorphism),
             color: iconColor,
-            size: 24,
+            size: 16,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Text(
             uiStyleDisplayName(UiStyleFamily.claymorphism, context),
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
             textAlign: TextAlign.center,
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -408,18 +410,18 @@ class _StylePreviewCard extends StatelessWidget {
         Icon(
           _getStyleIcon(UiStyleFamily.minimalism),
           color: iconColor,
-          size: 24,
+          size: 16,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Text(
             uiStyleDisplayName(UiStyleFamily.minimalism, context),
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
             textAlign: TextAlign.center,
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -437,38 +439,38 @@ class _StylePreviewCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             color: colorScheme.surface,
             borderRadius: BorderRadius.zero,
             border: Border.all(
               color: isSelected ? colorScheme.primary : colorScheme.outline,
-              width: 2,
+              width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
                 color: colorScheme.shadow,
                 blurRadius: 0,
-                offset: const Offset(4, 4),
+                offset: const Offset(2, 2),
               ),
             ],
           ),
           child: Icon(
             _getStyleIcon(UiStyleFamily.brutalism),
             color: iconColor,
-            size: 24,
+            size: 16,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Text(
             uiStyleDisplayName(UiStyleFamily.brutalism, context),
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
             textAlign: TextAlign.center,
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -486,34 +488,34 @@ class _StylePreviewCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             color: colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(6),
             boxShadow: [
               BoxShadow(
                 color: colorScheme.shadow.withValues(alpha: 0.25),
-                offset: const Offset(0, 2),
-                blurRadius: 4,
+                offset: const Offset(0, 1),
+                blurRadius: 2,
               ),
             ],
           ),
           child: Icon(
             _getStyleIcon(UiStyleFamily.skeuomorphism),
             color: iconColor,
-            size: 24,
+            size: 16,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Text(
             uiStyleDisplayName(UiStyleFamily.skeuomorphism, context),
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
             textAlign: TextAlign.center,
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -531,10 +533,10 @@ class _StylePreviewCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             color: colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: colorScheme.outline.withValues(alpha: 0.2),
               width: 1,
@@ -542,27 +544,27 @@ class _StylePreviewCard extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: colorScheme.shadow.withValues(alpha: 0.1),
-                offset: const Offset(0, 2),
-                blurRadius: 4,
+                offset: const Offset(0, 1),
+                blurRadius: 2,
               ),
             ],
           ),
           child: Icon(
             _getStyleIcon(UiStyleFamily.bentoGrid),
             color: iconColor,
-            size: 24,
+            size: 16,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Text(
             uiStyleDisplayName(UiStyleFamily.bentoGrid, context),
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
             textAlign: TextAlign.center,
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -580,34 +582,34 @@ class _StylePreviewCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(6),
             boxShadow: [
               BoxShadow(
                 color: colorScheme.shadow.withValues(alpha: 0.08),
                 offset: const Offset(0, 1),
-                blurRadius: 2,
+                blurRadius: 1,
               ),
             ],
           ),
           child: Icon(
             _getStyleIcon(UiStyleFamily.responsive),
             color: iconColor,
-            size: 24,
+            size: 16,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Text(
             uiStyleDisplayName(UiStyleFamily.responsive, context),
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
             textAlign: TextAlign.center,
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -627,18 +629,18 @@ class _StylePreviewCard extends StatelessWidget {
         Icon(
           _getStyleIcon(UiStyleFamily.flatDesign),
           color: iconColor,
-          size: 24,
+          size: 16,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Text(
             uiStyleDisplayName(UiStyleFamily.flatDesign, context),
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
             textAlign: TextAlign.center,
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
