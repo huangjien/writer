@@ -83,11 +83,40 @@ class App extends ConsumerWidget {
           : themeState.preset,
     );
 
+    // Apply typography presets to themes
+    final lightThemeWithTypography = AppThemeBuilder.applyReaderTypography(
+      lightTheme,
+      preset: themeState.hasSeparateTypography
+          ? themeState.presetLight
+          : themeState.preset,
+      separatePreset: themeState.hasSeparateTypography
+          ? themeState.presetLight
+          : null,
+      hasSeparate: themeState.hasSeparateTypography,
+    );
+
+    final darkThemeWithTypography = AppThemeBuilder.applyReaderTypography(
+      darkTheme,
+      preset: themeState.hasSeparateTypography
+          ? themeState.presetDark
+          : themeState.preset,
+      separatePreset: themeState.hasSeparateTypography
+          ? themeState.presetDark
+          : null,
+      hasSeparate: themeState.hasSeparateTypography,
+    );
+
     final styleAdapter = const UiStyleAdapter();
     final stylePatch = styleAdapter.resolveStylePatch(uiStyleState.family);
 
-    final lightThemeWithStyle = stylePatch.applyToTheme(lightTheme, false);
-    final darkThemeWithStyle = stylePatch.applyToTheme(darkTheme, true);
+    final lightThemeWithStyle = stylePatch.applyToTheme(
+      lightThemeWithTypography,
+      false,
+    );
+    final darkThemeWithStyle = stylePatch.applyToTheme(
+      darkThemeWithTypography,
+      true,
+    );
 
     final themeLight = AppThemeBuilder.applyMotion(
       base: lightThemeWithStyle,

@@ -24,7 +24,7 @@ void main() {
         final patch = adapter.resolveStylePatch(UiStyleFamily.neumorphism);
         expect(patch.cardBorderRadius, BorderRadius.circular(20));
         expect(patch.buttonBorderRadius, BorderRadius.circular(16));
-        expect(patch.elevation, 2);
+        expect(patch.elevation, 0);
         expect(patch.useBackdropBlur, false);
       });
 
@@ -32,14 +32,14 @@ void main() {
         final patch = adapter.resolveStylePatch(UiStyleFamily.claymorphism);
         expect(patch.cardBorderRadius, BorderRadius.circular(24));
         expect(patch.buttonBorderRadius, BorderRadius.circular(20));
-        expect(patch.elevation, 8);
+        expect(patch.elevation, 0);
         expect(patch.useBackdropBlur, false);
       });
 
       test('returns minimalism patch for minimalism style', () {
         final patch = adapter.resolveStylePatch(UiStyleFamily.minimalism);
-        expect(patch.cardBorderRadius, BorderRadius.circular(8));
-        expect(patch.buttonBorderRadius, BorderRadius.circular(6));
+        expect(patch.cardBorderRadius, BorderRadius.circular(12));
+        expect(patch.buttonBorderRadius, BorderRadius.circular(8));
         expect(patch.elevation, 0);
         expect(patch.useBackdropBlur, false);
       });
@@ -54,18 +54,18 @@ void main() {
 
       test('returns skeuomorphism patch for skeuomorphism style', () {
         final patch = adapter.resolveStylePatch(UiStyleFamily.skeuomorphism);
-        expect(patch.cardBorderRadius, BorderRadius.circular(12));
-        expect(patch.buttonBorderRadius, BorderRadius.circular(10));
-        expect(patch.elevation, 4);
+        expect(patch.cardBorderRadius, BorderRadius.circular(16));
+        expect(patch.buttonBorderRadius, BorderRadius.circular(12));
+        expect(patch.elevation, 0);
         expect(patch.useBackdropBlur, false);
       });
 
       test('returns bentoGrid patch for bentoGrid style', () {
         final patch = adapter.resolveStylePatch(UiStyleFamily.bentoGrid);
-        expect(patch.cardBorderRadius, BorderRadius.circular(20));
+        expect(patch.cardBorderRadius, BorderRadius.circular(22));
         expect(patch.buttonBorderRadius, BorderRadius.circular(16));
-        expect(patch.elevation, 2);
-        expect(patch.useBackdropBlur, true);
+        expect(patch.elevation, 0);
+        expect(patch.useBackdropBlur, false);
       });
 
       test('returns responsive patch for responsive style', () {
@@ -236,7 +236,9 @@ void main() {
       });
 
       test('applies brutalism divider thickness', () {
-        final patch = const StyleThemePatch(styleFamily: UiStyleFamily.brutalism);
+        final patch = const StyleThemePatch(
+          styleFamily: UiStyleFamily.brutalism,
+        );
         final baseTheme = ThemeData.light();
         final modified = patch.applyToTheme(baseTheme, false);
 

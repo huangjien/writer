@@ -174,6 +174,85 @@ class _StylePreviewCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final decoration = _getStyleDecoration(style, colorScheme, isSelected);
+    final iconColor = isSelected
+        ? colorScheme.primary
+        : colorScheme.onSurface.withValues(alpha: 0.6);
+
+    Widget previewContent;
+    switch (style) {
+      case UiStyleFamily.glassmorphism:
+        previewContent = _buildGlassmorphismPreview(
+          context,
+          colorScheme,
+          isSelected,
+          iconColor,
+        );
+        break;
+      case UiStyleFamily.neumorphism:
+        previewContent = _buildNeumorphismPreview(
+          context,
+          colorScheme,
+          isSelected,
+          iconColor,
+        );
+        break;
+      case UiStyleFamily.claymorphism:
+        previewContent = _buildClaymorphismPreview(
+          context,
+          colorScheme,
+          isSelected,
+          iconColor,
+        );
+        break;
+      case UiStyleFamily.minimalism:
+        previewContent = _buildMinimalismPreview(
+          context,
+          colorScheme,
+          isSelected,
+          iconColor,
+        );
+        break;
+      case UiStyleFamily.brutalism:
+        previewContent = _buildBrutalismPreview(
+          context,
+          colorScheme,
+          isSelected,
+          iconColor,
+        );
+        break;
+      case UiStyleFamily.skeuomorphism:
+        previewContent = _buildSkeuomorphismPreview(
+          context,
+          colorScheme,
+          isSelected,
+          iconColor,
+        );
+        break;
+      case UiStyleFamily.bentoGrid:
+        previewContent = _buildBentoGridPreview(
+          context,
+          colorScheme,
+          isSelected,
+          iconColor,
+        );
+        break;
+      case UiStyleFamily.responsive:
+        previewContent = _buildResponsivePreview(
+          context,
+          colorScheme,
+          isSelected,
+          iconColor,
+        );
+        break;
+      case UiStyleFamily.flatDesign:
+        previewContent = _buildFlatDesignPreview(
+          context,
+          colorScheme,
+          isSelected,
+          iconColor,
+        );
+        break;
+    }
 
     return Semantics(
       button: true,
@@ -185,35 +264,385 @@ class _StylePreviewCard extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: decoration,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                _getStyleIcon(style),
-                color: isSelected
-                    ? colorScheme.primary
-                    : colorScheme.onSurface.withValues(alpha: 0.6),
-                size: 24,
+          child: previewContent,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGlassmorphismPreview(
+    BuildContext context,
+    ColorScheme colorScheme,
+    bool isSelected,
+    Color iconColor,
+  ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          _getStyleIcon(UiStyleFamily.glassmorphism),
+          color: iconColor,
+          size: 24,
+        ),
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            uiStyleDisplayName(UiStyleFamily.glassmorphism, context),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNeumorphismPreview(
+    BuildContext context,
+    ColorScheme colorScheme,
+    bool isSelected,
+    Color iconColor,
+  ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withValues(alpha: 0.15),
+                offset: const Offset(-2, -2),
+                blurRadius: 4,
               ),
-              const SizedBox(height: 4),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Text(
-                  uiStyleDisplayName(style, context),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: isSelected
-                        ? colorScheme.primary
-                        : colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+              BoxShadow(
+                color: colorScheme.shadow.withValues(alpha: 0.1),
+                offset: const Offset(2, 2),
+                blurRadius: 4,
               ),
             ],
           ),
+          child: Icon(
+            _getStyleIcon(UiStyleFamily.neumorphism),
+            color: iconColor,
+            size: 24,
+          ),
         ),
-      ),
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            uiStyleDisplayName(UiStyleFamily.neumorphism, context),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildClaymorphismPreview(
+    BuildContext context,
+    ColorScheme colorScheme,
+    bool isSelected,
+    Color iconColor,
+  ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.primary.withValues(alpha: 0.2),
+                offset: const Offset(0, 3),
+                blurRadius: 6,
+              ),
+            ],
+          ),
+          child: Icon(
+            _getStyleIcon(UiStyleFamily.claymorphism),
+            color: iconColor,
+            size: 24,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            uiStyleDisplayName(UiStyleFamily.claymorphism, context),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMinimalismPreview(
+    BuildContext context,
+    ColorScheme colorScheme,
+    bool isSelected,
+    Color iconColor,
+  ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          _getStyleIcon(UiStyleFamily.minimalism),
+          color: iconColor,
+          size: 24,
+        ),
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            uiStyleDisplayName(UiStyleFamily.minimalism, context),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBrutalismPreview(
+    BuildContext context,
+    ColorScheme colorScheme,
+    bool isSelected,
+    Color iconColor,
+  ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.zero,
+            border: Border.all(
+              color: isSelected ? colorScheme.primary : colorScheme.outline,
+              width: 2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow,
+                blurRadius: 0,
+                offset: const Offset(4, 4),
+              ),
+            ],
+          ),
+          child: Icon(
+            _getStyleIcon(UiStyleFamily.brutalism),
+            color: iconColor,
+            size: 24,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            uiStyleDisplayName(UiStyleFamily.brutalism, context),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSkeuomorphismPreview(
+    BuildContext context,
+    ColorScheme colorScheme,
+    bool isSelected,
+    Color iconColor,
+  ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withValues(alpha: 0.25),
+                offset: const Offset(0, 2),
+                blurRadius: 4,
+              ),
+            ],
+          ),
+          child: Icon(
+            _getStyleIcon(UiStyleFamily.skeuomorphism),
+            color: iconColor,
+            size: 24,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            uiStyleDisplayName(UiStyleFamily.skeuomorphism, context),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBentoGridPreview(
+    BuildContext context,
+    ColorScheme colorScheme,
+    bool isSelected,
+    Color iconColor,
+  ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: colorScheme.outline.withValues(alpha: 0.2),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withValues(alpha: 0.1),
+                offset: const Offset(0, 2),
+                blurRadius: 4,
+              ),
+            ],
+          ),
+          child: Icon(
+            _getStyleIcon(UiStyleFamily.bentoGrid),
+            color: iconColor,
+            size: 24,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            uiStyleDisplayName(UiStyleFamily.bentoGrid, context),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildResponsivePreview(
+    BuildContext context,
+    ColorScheme colorScheme,
+    bool isSelected,
+    Color iconColor,
+  ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withValues(alpha: 0.08),
+                offset: const Offset(0, 1),
+                blurRadius: 2,
+              ),
+            ],
+          ),
+          child: Icon(
+            _getStyleIcon(UiStyleFamily.responsive),
+            color: iconColor,
+            size: 24,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            uiStyleDisplayName(UiStyleFamily.responsive, context),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFlatDesignPreview(
+    BuildContext context,
+    ColorScheme colorScheme,
+    bool isSelected,
+    Color iconColor,
+  ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          _getStyleIcon(UiStyleFamily.flatDesign),
+          color: iconColor,
+          size: 24,
+        ),
+        const SizedBox(height: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            uiStyleDisplayName(UiStyleFamily.flatDesign, context),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: iconColor),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 

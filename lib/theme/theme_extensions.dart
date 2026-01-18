@@ -9,6 +9,7 @@ class UiStyleThemeExtension extends ThemeExtension<UiStyleThemeExtension> {
   final Color? cardColor;
   final Border? cardBorder;
   final List<BoxShadow>? cardShadows;
+  final LinearGradient? cardGradient;
 
   const UiStyleThemeExtension({
     required this.styleFamily,
@@ -17,6 +18,7 @@ class UiStyleThemeExtension extends ThemeExtension<UiStyleThemeExtension> {
     this.cardColor,
     this.cardBorder,
     this.cardShadows,
+    this.cardGradient,
   });
 
   @override
@@ -27,6 +29,7 @@ class UiStyleThemeExtension extends ThemeExtension<UiStyleThemeExtension> {
     Color? cardColor,
     Border? cardBorder,
     List<BoxShadow>? cardShadows,
+    LinearGradient? cardGradient,
   }) {
     return UiStyleThemeExtension(
       styleFamily: styleFamily ?? this.styleFamily,
@@ -35,6 +38,7 @@ class UiStyleThemeExtension extends ThemeExtension<UiStyleThemeExtension> {
       cardColor: cardColor ?? this.cardColor,
       cardBorder: cardBorder ?? this.cardBorder,
       cardShadows: cardShadows ?? this.cardShadows,
+      cardGradient: cardGradient ?? this.cardGradient,
     );
   }
 
@@ -54,6 +58,7 @@ class UiStyleThemeExtension extends ThemeExtension<UiStyleThemeExtension> {
       cardColor: Color.lerp(cardColor, other.cardColor, t),
       cardBorder: t < 0.5 ? cardBorder : other.cardBorder,
       cardShadows: t < 0.5 ? cardShadows : other.cardShadows,
+      cardGradient: t < 0.5 ? cardGradient : other.cardGradient,
     );
   }
 
@@ -78,4 +83,7 @@ extension ThemeDataExtensions on ThemeData {
 
   List<BoxShadow>? get styleCardShadows =>
       extension<UiStyleThemeExtension>()?.cardShadows;
+
+  LinearGradient? get styleCardGradient =>
+      extension<UiStyleThemeExtension>()?.cardGradient;
 }

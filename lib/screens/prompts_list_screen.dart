@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../l10n/app_localizations.dart';
 import '../shared/constants.dart';
 import '../shared/api_exception.dart';
+import '../shared/widgets/theme_aware_card.dart';
 
 const int _previewLen = kPreviewLenShort;
 const int _searchDebounceMs = kSearchDebounceMs;
@@ -490,7 +491,7 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
                           children: grouped.entries.map((e) {
                             final title = e.key;
                             final list = e.value;
-                            return Card(
+                            return ThemeAwareCard(
                               margin: const EdgeInsets.all(8),
                               child: ExpansionTile(
                                 title: Text(title),

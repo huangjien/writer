@@ -7,6 +7,7 @@ import 'package:writer/theme/design_tokens.dart';
 import 'package:intl/intl.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/gradient_background.dart';
+import '../../shared/widgets/theme_aware_card.dart';
 
 /// Screen to display token usage history
 class TokenUsageHistoryScreen extends ConsumerStatefulWidget {
@@ -252,7 +253,7 @@ class _UsageHistoryItem extends StatelessWidget {
     final formatter = NumberFormat('#,###');
     final dateFormatter = DateFormat.yMd().add_jms();
 
-    return Card(
+    return ThemeAwareCard(
       margin: const EdgeInsets.symmetric(
         horizontal: Spacing.m,
         vertical: Spacing.xs,

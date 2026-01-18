@@ -8,6 +8,7 @@ import '../../../theme/design_tokens.dart';
 import '../../../state/motion_settings.dart';
 import '../../../shared/image_utils.dart';
 import '../../../shared/widgets/gestures/pinch_to_zoom.dart';
+import '../../../shared/widgets/theme_aware_card.dart';
 import '../../reader/reader_screen.dart';
 
 class LibraryGridItem extends ConsumerWidget {
@@ -179,36 +180,32 @@ class LibraryGridItem extends ConsumerWidget {
       closedBuilder: (context, action) {
         return Stack(
           children: [
-            Card(
-              elevation: 2,
-              shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.1),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(Radii.m),
-              ),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(Radii.m),
-                onTap: () {
-                  if (GoRouter.maybeOf(context) != null) {
-                    context.push('/novel/${novel.id}');
-                    return;
-                  }
-                  action();
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(Spacing.s),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Cover image
-                      Center(child: _buildCover(context)),
-                      const SizedBox(height: Spacing.s),
+            ThemeAwareCard(
+              borderRadius: BorderRadius.circular(Radii.m),
+              onTap: () {
+                if (GoRouter.maybeOf(context) != null) {
+                  context.push('/novel/${novel.id}');
+                  return;
+                }
+                action();
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(Spacing.s),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Cover image
+                    Center(child: _buildCover(context)),
+                    const SizedBox(height: Spacing.s),
 
-                      // Title and author
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
+                    // Title and author
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Text(
                               novel.title,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
@@ -217,28 +214,28 @@ class LibraryGridItem extends ConsumerWidget {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            if (novel.author != null &&
-                                novel.author!.isNotEmpty) ...[
-                              const SizedBox(height: 2),
-                              Text(
-                                novel.author!,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                          ),
+                          if (novel.author != null &&
+                              novel.author!.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              novel.author!,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
-                            ],
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ],
-                        ),
+                        ],
                       ),
+                    ),
 
-                      const SizedBox(height: Spacing.xs),
+                    const SizedBox(height: Spacing.xs),
 
-                      // Progress indicator
-                      _buildProgressIndicator(context),
-                    ],
-                  ),
+                    // Progress indicator
+                    _buildProgressIndicator(context),
+                  ],
                 ),
               ),
             ),

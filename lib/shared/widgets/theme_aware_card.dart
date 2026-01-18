@@ -46,6 +46,7 @@ class ThemeAwareCard extends StatelessWidget {
     final styleCardColor = theme.styleCardColor;
     final styleCardBorder = theme.styleCardBorder;
     final styleCardShadows = theme.styleCardShadows;
+    final styleCardGradient = theme.styleCardGradient;
 
     Widget cardContent;
 
@@ -62,6 +63,7 @@ class ThemeAwareCard extends StatelessWidget {
           styleCardColor: styleCardColor,
           styleCardBorder: styleCardBorder,
           styleCardShadows: styleCardShadows,
+          styleCardGradient: styleCardGradient,
         );
         break;
 
@@ -106,18 +108,20 @@ class ThemeAwareCard extends StatelessWidget {
           isDark: isDark,
           elevation: resolvedElevation,
           styleCardShadows: styleCardShadows,
+          styleCardGradient: styleCardGradient,
         );
         break;
 
       case UiStyleFamily.skeuomorphism:
-        cardContent = _buildStandardCard(
+        cardContent = _buildSkeuomorphicCard(
           context: context,
           child: child,
           padding: resolvedPadding,
           borderRadius: resolvedRadius,
-          elevation: resolvedElevation,
           isDark: isDark,
+          elevation: resolvedElevation,
           styleCardShadows: styleCardShadows,
+          styleCardGradient: styleCardGradient,
         );
         break;
 
@@ -203,24 +207,30 @@ class ThemeAwareCard extends StatelessWidget {
     Color? styleCardColor,
     Border? styleCardBorder,
     List<BoxShadow>? styleCardShadows,
+    LinearGradient? styleCardGradient,
   }) {
-    final surfaceColor = styleCardColor ??
+    final surfaceColor =
+        styleCardColor ??
         (isDark ? AppColors.glassSurfaceDark : AppColors.glassSurfaceLight);
-    final borderColor = styleCardBorder ??
+    final borderColor =
+        styleCardBorder ??
         Border.all(
           color: isDark
               ? AppColors.glassBorderDark
               : AppColors.glassBorderLight,
         );
 
+    final decoration = BoxDecoration(
+      color: styleCardGradient != null ? null : surfaceColor,
+      gradient: styleCardGradient,
+      borderRadius: borderRadius,
+      border: borderColor,
+      boxShadow: styleCardShadows,
+    );
+
     final card = Container(
       padding: padding,
-      decoration: BoxDecoration(
-        color: surfaceColor,
-        borderRadius: borderRadius,
-        border: borderColor,
-        boxShadow: styleCardShadows,
-      ),
+      decoration: decoration,
       child: child,
     );
 
@@ -228,10 +238,7 @@ class ThemeAwareCard extends StatelessWidget {
       return ClipRRect(
         borderRadius: borderRadius,
         child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: cardBlur,
-            sigmaY: cardBlur,
-          ),
+          filter: ImageFilter.blur(sigmaX: cardBlur, sigmaY: cardBlur),
           child: card,
         ),
       );
@@ -302,7 +309,8 @@ class ThemeAwareCard extends StatelessWidget {
       padding: padding,
       decoration: BoxDecoration(
         color: theme.cardColor,
-        border: styleCardBorder ??
+        border:
+            styleCardBorder ??
             Border.all(
               color: isDark ? Colors.white24 : Colors.black87,
               width: 2,
@@ -351,6 +359,7 @@ class ThemeAwareCard extends StatelessWidget {
     required bool isDark,
     required double elevation,
     List<BoxShadow>? styleCardShadows,
+    LinearGradient? styleCardGradient,
   }) {
     final theme = Theme.of(context);
     final neumorphicDecoration = NeumorphicStyles.decoration(
@@ -359,19 +368,23 @@ class ThemeAwareCard extends StatelessWidget {
       depth: elevation * 5,
     );
 
-    return Container(
-      padding: padding,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    final gradient =
+        styleCardGradient ??
+        LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
           colors: [
             isDark ? theme.cardColor.withValues(alpha: 0.9) : theme.cardColor,
             isDark
                 ? theme.cardColor.withValues(alpha: 0.7)
                 : theme.cardColor.withValues(alpha: 0.95),
           ],
-        ),
+        );
+
+    return Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        gradient: gradient,
         borderRadius: borderRadius,
         boxShadow: styleCardShadows ?? neumorphicDecoration.boxShadow,
       ),
@@ -392,9 +405,11 @@ class ThemeAwareCard extends StatelessWidget {
     Border? styleCardBorder,
     List<BoxShadow>? styleCardShadows,
   }) {
-    final surfaceColor = styleCardColor ??
+    final surfaceColor =
+        styleCardColor ??
         (isDark ? AppColors.glassSurfaceDark : AppColors.glassSurfaceLight);
-    final borderColor = styleCardBorder ??
+    final borderColor =
+        styleCardBorder ??
         Border.all(
           color: isDark
               ? AppColors.glassBorderDark
@@ -426,10 +441,7 @@ class ThemeAwareCard extends StatelessWidget {
       return ClipRRect(
         borderRadius: borderRadius,
         child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: cardBlur,
-            sigmaY: cardBlur,
-          ),
+          filter: ImageFilter.blur(sigmaX: cardBlur, sigmaY: cardBlur),
           child: card,
         ),
       );
@@ -451,6 +463,37 @@ class ThemeAwareCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: borderRadius,
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildSkeuomorphicCard({
+    required BuildContext context,
+    required Widget child,
+    required EdgeInsetsGeometry padding,
+    required BorderRadius borderRadius,
+    required bool isDark,
+    required double elevation,
+    List<BoxShadow>? styleCardShadows,
+    LinearGradient? styleCardGradient,
+  }) {
+    final theme = Theme.of(context);
+
+    final gradient =
+        styleCardGradient ??
+        LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [theme.cardColor, theme.cardColor.withValues(alpha: 0.9)],
+        );
+
+    return Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        gradient: gradient,
+        borderRadius: borderRadius,
+        boxShadow: styleCardShadows,
       ),
       child: child,
     );

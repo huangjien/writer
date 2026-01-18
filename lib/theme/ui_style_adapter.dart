@@ -16,6 +16,7 @@ class StyleThemePatch {
   final Border? cardBorder;
   final double? cardBlur;
   final List<BoxShadow>? cardShadows;
+  final LinearGradient? cardGradient;
   final UiStyleFamily styleFamily;
 
   const StyleThemePatch({
@@ -32,18 +33,19 @@ class StyleThemePatch {
     this.cardBorder,
     this.cardBlur,
     this.cardShadows,
+    this.cardGradient,
     required this.styleFamily,
   });
 
   ThemeData applyToTheme(ThemeData base, bool isDark) {
     final resolvedCardRadius = cardBorderRadius ?? BorderRadius.circular(12);
-    final resolvedButtonRadius =
-        buttonBorderRadius ?? BorderRadius.circular(8);
+    final resolvedButtonRadius = buttonBorderRadius ?? BorderRadius.circular(8);
     final resolvedElevation = elevation ?? base.cardTheme.elevation;
     final resolvedSurfaceColor = _resolveSurfaceColor(base, isDark);
     final resolvedTileColor = _resolveTileColor(base, isDark);
     final resolvedDividerThickness = _resolveDividerThickness();
     final resolvedDividerColor = _resolveDividerColor(base, isDark);
+    final resolvedCardShadows = _resolveCardShadows(isDark);
     final preservedExtensions = base.extensions.values
         .where((e) => e is! UiStyleThemeExtension)
         .toList(growable: false);
@@ -52,9 +54,7 @@ class StyleThemePatch {
       cardTheme: base.cardTheme.copyWith(
         color: resolvedSurfaceColor,
         elevation: resolvedElevation,
-        shape: RoundedRectangleBorder(
-          borderRadius: resolvedCardRadius,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: resolvedCardRadius),
         margin: const EdgeInsets.all(8),
       ),
       listTileTheme: base.listTileTheme.copyWith(
@@ -69,9 +69,7 @@ class StyleThemePatch {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           elevation: elevation ?? 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: resolvedButtonRadius,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: resolvedButtonRadius),
         ),
       ),
       inputDecorationTheme: base.inputDecorationTheme.copyWith(
@@ -96,9 +94,7 @@ class StyleThemePatch {
       bottomSheetTheme: base.bottomSheetTheme.copyWith(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            top: Radius.circular(
-              resolvedCardRadius.topLeft.x,
-            ),
+            top: Radius.circular(resolvedCardRadius.topLeft.x),
           ),
         ),
         elevation: elevation ?? 16,
@@ -111,10 +107,65 @@ class StyleThemePatch {
           cardBlur: cardBlur ?? 0,
           cardColor: cardColor,
           cardBorder: cardBorder,
-          cardShadows: cardShadows,
+          cardShadows: resolvedCardShadows,
+          cardGradient: cardGradient,
         ),
       ],
     );
+  }
+
+  List<BoxShadow>? _resolveCardShadows(bool isDark) {
+    if (cardShadows != null) {
+      return cardShadows;
+    }
+
+    switch (styleFamily) {
+      case UiStyleFamily.glassmorphism:
+        return [
+          BoxShadow(
+            color: isDark ? const Color(0x66000000) : const Color(0x1A1F2387),
+            blurRadius: 32,
+            offset: const Offset(0, 8),
+          ),
+        ];
+      case UiStyleFamily.claymorphism:
+        return [
+          BoxShadow(
+            color: isDark ? const Color(0x8C000000) : const Color(0x40000000),
+            blurRadius: 40,
+            offset: const Offset(0, 18),
+          ),
+        ];
+      case UiStyleFamily.brutalism:
+        return [
+          BoxShadow(
+            color: isDark ? Colors.white : Colors.black,
+            blurRadius: 0,
+            offset: const Offset(6, 6),
+          ),
+        ];
+      case UiStyleFamily.skeuomorphism:
+        return [
+          BoxShadow(
+            color: isDark ? const Color(0xA6000000) : const Color(0x66000000),
+            blurRadius: 40,
+            offset: const Offset(0, 18),
+          ),
+        ];
+      case UiStyleFamily.bentoGrid:
+        return [
+          BoxShadow(
+            color: isDark ? const Color(0x33000000) : const Color(0x14000000),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
+          ),
+        ];
+      case UiStyleFamily.neumorphism:
+      case UiStyleFamily.minimalism:
+      case UiStyleFamily.responsive:
+      case UiStyleFamily.flatDesign:
+        return null;
+    }
   }
 
   double? _resolveDividerThickness() {
@@ -236,7 +287,19 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.all(Radius.circular(12)),
       elevation: 0,
       useBackdropBlur: true,
-      cardBlur: 10,
+      cardBlur: 16,
+      cardShadows: [
+        BoxShadow(
+          color: Color(0x1A1F2387),
+          blurRadius: 32,
+          offset: Offset(0, 8),
+        ),
+      ],
+      cardGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0x19FFFFFF), Color(0x0DFFFFFF)],
+      ),
       styleFamily: UiStyleFamily.glassmorphism,
     );
   }
@@ -245,18 +308,18 @@ class UiStyleAdapter {
     return const StyleThemePatch(
       cardBorderRadius: BorderRadius.all(Radius.circular(20)),
       buttonBorderRadius: BorderRadius.all(Radius.circular(16)),
-      elevation: 2,
+      elevation: 0,
       useBackdropBlur: false,
       cardShadows: [
         BoxShadow(
-          color: Color(0x1A000000),
-          blurRadius: 15,
-          offset: Offset(-5, -5),
+          color: Color(0x1E000000),
+          blurRadius: 28,
+          offset: Offset(14, 14),
         ),
         BoxShadow(
-          color: Color(0x33000000),
-          blurRadius: 15,
-          offset: Offset(5, 5),
+          color: Color(0xBFFFFFFF),
+          blurRadius: 28,
+          offset: Offset(-14, -14),
         ),
       ],
       styleFamily: UiStyleFamily.neumorphism,
@@ -267,23 +330,28 @@ class UiStyleAdapter {
     return const StyleThemePatch(
       cardBorderRadius: BorderRadius.all(Radius.circular(24)),
       buttonBorderRadius: BorderRadius.all(Radius.circular(20)),
-      elevation: 8,
+      elevation: 0,
       useBackdropBlur: false,
       cardShadows: [
         BoxShadow(
-          color: Color(0x40000000),
-          blurRadius: 20,
-          offset: Offset(0, 8),
+          color: Color(0x29000000),
+          blurRadius: 40,
+          offset: Offset(0, 18),
         ),
       ],
+      cardGradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color(0xFFF2F4FF), Color(0xFFEEF2FF)],
+      ),
       styleFamily: UiStyleFamily.claymorphism,
     );
   }
 
   StyleThemePatch _minimalismPatch() {
     return const StyleThemePatch(
-      cardBorderRadius: BorderRadius.all(Radius.circular(8)),
-      buttonBorderRadius: BorderRadius.all(Radius.circular(6)),
+      cardBorderRadius: BorderRadius.all(Radius.circular(12)),
+      buttonBorderRadius: BorderRadius.all(Radius.circular(8)),
       elevation: 0,
       useBackdropBlur: false,
       styleFamily: UiStyleFamily.minimalism,
@@ -296,16 +364,9 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.zero,
       elevation: 0,
       useBackdropBlur: false,
-      cardBorder: Border.all(
-        color: Colors.black,
-        width: 3,
-      ),
+      cardBorder: Border.all(color: Colors.black, width: 2),
       cardShadows: const [
-        BoxShadow(
-          color: Colors.black,
-          blurRadius: 0,
-          offset: Offset(6, 6),
-        ),
+        BoxShadow(color: Colors.black, blurRadius: 0, offset: Offset(6, 6)),
       ],
       styleFamily: UiStyleFamily.brutalism,
     );
@@ -313,31 +374,39 @@ class UiStyleAdapter {
 
   StyleThemePatch _skeuomorphismPatch() {
     return const StyleThemePatch(
-      cardBorderRadius: BorderRadius.all(Radius.circular(12)),
-      buttonBorderRadius: BorderRadius.all(Radius.circular(10)),
-      elevation: 4,
+      cardBorderRadius: BorderRadius.all(Radius.circular(16)),
+      buttonBorderRadius: BorderRadius.all(Radius.circular(12)),
+      elevation: 0,
       useBackdropBlur: false,
       cardShadows: [
         BoxShadow(
           color: Color(0x66000000),
-          blurRadius: 10,
-          offset: Offset(0, 4),
+          blurRadius: 40,
+          offset: Offset(0, 18),
         ),
       ],
+      cardGradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color(0xFFFFFFFF), Color(0xFFE7E2D4)],
+      ),
       styleFamily: UiStyleFamily.skeuomorphism,
     );
   }
 
   StyleThemePatch _bentoGridPatch() {
     return const StyleThemePatch(
-      cardBorderRadius: BorderRadius.all(Radius.circular(20)),
+      cardBorderRadius: BorderRadius.all(Radius.circular(22)),
       buttonBorderRadius: BorderRadius.all(Radius.circular(16)),
-      elevation: 2,
-      useBackdropBlur: true,
-      cardBlur: 5,
-      cardBorder: Border.fromBorderSide(
-        BorderSide(color: Color(0x1A000000), width: 1),
-      ),
+      elevation: 0,
+      useBackdropBlur: false,
+      cardShadows: [
+        BoxShadow(
+          color: Color(0x14000000),
+          blurRadius: 22,
+          offset: Offset(0, 10),
+        ),
+      ],
       styleFamily: UiStyleFamily.bentoGrid,
     );
   }

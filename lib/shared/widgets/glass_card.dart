@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
+import '../../theme/theme_extensions.dart';
 
 class GlassCard extends StatelessWidget {
   const GlassCard({
@@ -26,18 +27,32 @@ class GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final resolvedRadius = borderRadius ?? BorderRadius.circular(Radii.l);
-    final resolvedBlur = blur ?? GlassTokens.blur;
+
+    // Use theme extension values when available, otherwise fall back to defaults
+    final resolvedBlur =
+        blur ?? (theme.cardBlur > 0 ? theme.cardBlur : GlassTokens.blur);
+
     final resolvedColor =
         color ??
-        (theme.brightness == Brightness.dark
-            ? AppColors.glassSurfaceDark
-            : AppColors.glassSurfaceLight);
-    final resolvedBorderColor =
-        borderColor ??
-        (theme.brightness == Brightness.dark
-            ? AppColors.glassBorderDark
-            : AppColors.glassBorderLight);
+        (theme.styleCardColor ??
+            (isDark
+                ? AppColors.glassSurfaceDark
+                : AppColors.glassSurfaceLight));
+
+    Border? resolvedBorder;
+    if (borderColor != null) {
+      resolvedBorder = Border.all(color: borderColor!);
+    } else {
+      resolvedBorder =
+          theme.styleCardBorder ??
+          Border.all(
+            color: isDark
+                ? AppColors.glassBorderDark
+                : AppColors.glassBorderLight,
+          );
+    }
 
     return ClipRRect(
       borderRadius: resolvedRadius,
@@ -48,7 +63,7 @@ class GlassCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: resolvedColor,
             borderRadius: resolvedRadius,
-            border: Border.all(color: resolvedBorderColor),
+            border: resolvedBorder,
             boxShadow: shadow,
           ),
           child: child,
