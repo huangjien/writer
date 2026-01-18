@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/neumorphic_styles.dart';
-import 'neumorphic_card.dart';
+import 'theme_aware_card.dart';
 
 /// Enhanced card component with modern Material 3 design
 /// Features:
@@ -47,12 +47,11 @@ class EnhancedCard extends StatelessWidget {
     final radius = borderRadius ?? BorderRadius.circular(Radii.l);
 
     if (elevation > 0 && border == null) {
-      return NeumorphicCard(
+      return ThemeAwareCard(
         margin: margin,
         borderRadius: radius,
         padding: padding ?? const EdgeInsets.all(Spacing.cardPadding),
-        depth: elevation * 4.0,
-        color: cardColor,
+        semanticType: CardSemanticType.default_,
         onTap: onTap,
         child: child,
       );

@@ -7,7 +7,7 @@ import '../../shared/widgets/mobile_fab.dart';
 import '../../shared/widgets/mobile_novel_card.dart';
 import '../../shared/widgets/mobile_bottom_sheet.dart';
 import '../../shared/widgets/gradient_background.dart';
-import '../../shared/widgets/glass_card.dart';
+import '../../shared/widgets/theme_aware_card.dart';
 import '../../shared/widgets/animated_list_builder.dart';
 import '../../shared/widgets/parallax_header.dart';
 import '../../shared/widgets/scroll_reveal.dart';
@@ -197,9 +197,6 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
     ThemeData theme,
     MotionSettings motion,
   ) {
-    final surfaceColor = theme.brightness == Brightness.dark
-        ? AppColors.glassSurfaceDark
-        : AppColors.glassSurfaceLight;
     final borderColor = theme.brightness == Brightness.dark
         ? AppColors.glassBorderDark
         : AppColors.glassBorderLight;
@@ -217,24 +214,21 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
               fontSize: 22 - (4 * t),
             );
 
-            return GlassCard(
+            return ThemeAwareCard(
               borderRadius: BorderRadius.zero,
-              color: surfaceColor,
-              borderColor: Colors.transparent,
-              blur: GlassTokens.blur,
-              shadow: null,
-              child: Container(
-                padding: EdgeInsets.lerp(
-                  const EdgeInsets.symmetric(
-                    horizontal: Spacing.m,
-                    vertical: Spacing.m,
-                  ),
-                  const EdgeInsets.symmetric(
-                    horizontal: Spacing.m,
-                    vertical: Spacing.s,
-                  ),
-                  t,
+              semanticType: CardSemanticType.default_,
+              padding: EdgeInsets.lerp(
+                const EdgeInsets.symmetric(
+                  horizontal: Spacing.m,
+                  vertical: Spacing.m,
                 ),
+                const EdgeInsets.symmetric(
+                  horizontal: Spacing.m,
+                  vertical: Spacing.s,
+                ),
+                t,
+              ),
+              child: Container(
                 decoration: BoxDecoration(
                   border: Border(bottom: BorderSide(color: borderColor)),
                 ),

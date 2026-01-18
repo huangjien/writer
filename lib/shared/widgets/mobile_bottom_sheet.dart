@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
-import 'glass_card.dart';
+import 'theme_aware_card.dart';
 import 'focus_wrapper.dart';
 
 /// Mobile-optimized bottom sheet
@@ -100,24 +100,10 @@ class _MobileBottomSheetContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final surfaceColor = theme.brightness == Brightness.dark
-        ? AppColors.glassSurfaceDark
-        : AppColors.glassSurfaceLight;
-    final borderColor = theme.brightness == Brightness.dark
-        ? AppColors.glassBorderDark
-        : AppColors.glassBorderLight;
 
-    return GlassCard(
+    return ThemeAwareCard(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(Radii.l)),
-      color: surfaceColor,
-      borderColor: borderColor,
-      shadow: [
-        BoxShadow(
-          color: Colors.black.withValues(alpha: GlassTokens.shadowOpacity),
-          blurRadius: GlassTokens.shadowBlurRadius,
-          offset: const Offset(0, -6),
-        ),
-      ],
+      semanticType: CardSemanticType.default_,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -171,26 +157,12 @@ class _ActionSheetContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = cancelLabel ?? 'Cancel';
-    final surfaceColor = theme.brightness == Brightness.dark
-        ? AppColors.glassSurfaceDark
-        : AppColors.glassSurfaceLight;
-    final borderColor = theme.brightness == Brightness.dark
-        ? AppColors.glassBorderDark
-        : AppColors.glassBorderLight;
 
     return Padding(
       padding: const EdgeInsets.all(Spacing.m),
-      child: GlassCard(
+      child: ThemeAwareCard(
         borderRadius: BorderRadius.circular(Radii.l),
-        color: surfaceColor,
-        borderColor: borderColor,
-        shadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: GlassTokens.shadowOpacity),
-            blurRadius: GlassTokens.shadowBlurRadius,
-            offset: const Offset(0, -6),
-          ),
-        ],
+        semanticType: CardSemanticType.default_,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -302,24 +274,10 @@ class _OptionsSheetContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final surfaceColor = theme.brightness == Brightness.dark
-        ? AppColors.glassSurfaceDark
-        : AppColors.glassSurfaceLight;
-    final borderColor = theme.brightness == Brightness.dark
-        ? AppColors.glassBorderDark
-        : AppColors.glassBorderLight;
 
-    return GlassCard(
+    return ThemeAwareCard(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(Radii.l)),
-      color: surfaceColor,
-      borderColor: borderColor,
-      shadow: [
-        BoxShadow(
-          color: Colors.black.withValues(alpha: GlassTokens.shadowOpacity),
-          blurRadius: GlassTokens.shadowBlurRadius,
-          offset: const Offset(0, -6),
-        ),
-      ],
+      semanticType: CardSemanticType.default_,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -490,12 +448,6 @@ class _DraggableBottomSheetState extends State<DraggableBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final surfaceColor = theme.brightness == Brightness.dark
-        ? AppColors.glassSurfaceDark
-        : AppColors.glassSurfaceLight;
-    final borderColor = theme.brightness == Brightness.dark
-        ? AppColors.glassBorderDark
-        : AppColors.glassBorderLight;
 
     return DraggableScrollableSheet(
       initialChildSize: widget.initialChildSize,
@@ -504,19 +456,11 @@ class _DraggableBottomSheetState extends State<DraggableBottomSheet> {
       snap: widget.snap,
       snapSizes: widget.snapSizes,
       builder: (context, scrollController) {
-        return GlassCard(
+        return ThemeAwareCard(
           borderRadius:
               widget.borderRadius ??
               const BorderRadius.vertical(top: Radius.circular(Radii.l)),
-          color: widget.backgroundColor ?? surfaceColor,
-          borderColor: borderColor,
-          shadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: GlassTokens.shadowOpacity),
-              blurRadius: GlassTokens.shadowBlurRadius,
-              offset: const Offset(0, -6),
-            ),
-          ],
+          semanticType: CardSemanticType.default_,
           child: Column(
             children: [
               // Drag handle

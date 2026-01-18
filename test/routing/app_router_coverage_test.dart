@@ -69,6 +69,9 @@ import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/state/user_state.dart';
 import 'package:writer/state/ui_style_controller.dart';
 import 'package:writer/features/settings/state/token_usage_providers.dart';
+import 'package:writer/services/sync_service.dart';
+import 'package:writer/state/sync_service_provider.dart';
+import 'package:writer/models/sync_state.dart';
 import 'package:flutter/services.dart';
 
 // Fakes
@@ -156,6 +159,16 @@ class FakeStoryLinesService extends StoryLinesService {
   Future<List<StoryLine>> searchStoryLines(String query) async => [];
 }
 
+class FakeSyncService extends Fake implements SyncService {
+  @override
+  SyncState get currentSyncState => const SyncState(
+    status: SyncStatus.synced,
+    pendingOperations: 0,
+    errorMessage: null,
+    lastSyncTime: null,
+  );
+}
+
 List getOverrides(SharedPreferences prefs) {
   return [
     globalNavigatorKeyProvider.overrideWith(
@@ -196,6 +209,7 @@ List getOverrides(SharedPreferences prefs) {
     remoteRepositoryProvider.overrideWithValue(FakeRemoteRepository()),
     chapterRepositoryProvider.overrideWithValue(FakeChapterRepository()),
     uiStyleControllerProvider.overrideWith((ref) => UiStyleController(prefs)),
+    syncServiceProvider.overrideWithValue(FakeSyncService()),
   ];
 }
 

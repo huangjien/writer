@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/novel.dart';
 import '../../../theme/design_tokens.dart';
-import '../../../shared/widgets/enhanced_card.dart';
+import '../../../shared/widgets/theme_aware_card.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/image_utils.dart';
 
@@ -42,8 +42,9 @@ class EnhancedNovelCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    return EnhancedCard(
+    return ThemeAwareCard(
       onTap: onTap,
+      semanticType: CardSemanticType.default_,
       padding: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
-import '../glass_card.dart';
+import '../theme_aware_card.dart';
 
 class SuccessAnimation extends StatefulWidget {
   const SuccessAnimation({
@@ -143,8 +143,9 @@ class SuccessBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return GlassCard(
+    return ThemeAwareCard(
       borderRadius: BorderRadius.circular(Radii.l),
+      semanticType: CardSemanticType.success,
       padding: const EdgeInsets.symmetric(
         horizontal: Spacing.l,
         vertical: Spacing.m,

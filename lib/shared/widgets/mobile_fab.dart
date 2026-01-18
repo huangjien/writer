@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
-import 'glass_card.dart';
+import 'theme_aware_card.dart';
 import 'spring_animated_container.dart';
 import 'focus_wrapper.dart';
 import 'neumorphic_button.dart';
@@ -338,16 +338,10 @@ class _FabMenuItem extends StatelessWidget {
       label: label,
       child: FocusWrapper(
         borderRadius: BorderRadius.circular(Radii.m),
-        child: GlassCard(
+        child: ThemeAwareCard(
           key: ValueKey('fab_menu_item_$label'),
           borderRadius: BorderRadius.circular(Radii.m),
-          shadow: [
-            BoxShadow(
-              color: AppColors.shadowColor,
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          semanticType: CardSemanticType.default_,
           child: Material(
             type: MaterialType.transparency,
             child: InkWell(

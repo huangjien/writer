@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../../theme/design_tokens.dart';
-import '../glass_card.dart';
+import '../theme_aware_card.dart';
 import '../modern_progress_indicator.dart';
 
 class PullToRefresh extends StatefulWidget {
@@ -152,8 +152,9 @@ class _PullToRefreshState extends State<PullToRefresh>
               right: 0,
               child: IgnorePointer(
                 child: Center(
-                  child: GlassCard(
+                  child: ThemeAwareCard(
                     borderRadius: BorderRadius.circular(Radii.l),
+                    semanticType: CardSemanticType.default_,
                     padding: const EdgeInsets.symmetric(
                       horizontal: Spacing.m,
                       vertical: Spacing.s,

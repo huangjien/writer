@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
-import '../../../shared/widgets/enhanced_card.dart';
+import '../../../shared/widgets/theme_aware_card.dart';
 import '../../../shared/widgets/neumorphic_switch.dart';
 import '../../../shared/widgets/neumorphic_text.dart';
 
@@ -65,9 +65,9 @@ class EnhancedSettingsSection extends StatelessWidget {
           const SizedBox(height: Spacing.s),
         ],
         // Section content card
-        EnhancedCard(
+        ThemeAwareCard(
           margin: const EdgeInsets.symmetric(horizontal: Spacing.l),
-          elevation: 2,
+          semanticType: CardSemanticType.default_,
           padding: EdgeInsets.zero,
           child: Column(mainAxisSize: MainAxisSize.min, children: children),
         ),

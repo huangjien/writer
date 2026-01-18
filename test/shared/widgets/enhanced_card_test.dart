@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/shared/widgets/enhanced_card.dart';
-import 'package:writer/shared/widgets/neumorphic_card.dart';
+import 'package:writer/shared/widgets/theme_aware_card.dart';
 
 void main() {
-  testWidgets('EnhancedCard uses NeumorphicCard when elevated and no border', (
+  testWidgets('EnhancedCard uses ThemeAwareCard when elevated and no border', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -15,7 +15,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(NeumorphicCard), findsOneWidget);
+    expect(find.byType(ThemeAwareCard), findsOneWidget);
     expect(find.text('Content'), findsOneWidget);
   });
 
@@ -36,7 +36,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(NeumorphicCard), findsOneWidget);
+    expect(find.byType(ThemeAwareCard), findsOneWidget);
     await tester.tap(find.text('Content'));
     await tester.pumpAndSettle();
     expect(tapped, isTrue);
@@ -57,7 +57,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(NeumorphicCard), findsNothing);
+    expect(find.byType(ThemeAwareCard), findsNothing);
     expect(find.text('Content'), findsOneWidget);
   });
 
@@ -92,7 +92,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(NeumorphicCard), findsNothing);
+    expect(find.byType(ThemeAwareCard), findsNothing);
     expect(find.text('Content'), findsOneWidget);
   });
 }

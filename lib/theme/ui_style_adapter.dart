@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'ui_styles.dart';
+import 'theme_extensions.dart';
 
 class StyleThemePatch {
   final BoxDecoration? cardDecoration;
@@ -11,6 +12,11 @@ class StyleThemePatch {
   final BorderRadius? buttonBorderRadius;
   final double? elevation;
   final bool? useBackdropBlur;
+  final Color? cardColor;
+  final Border? cardBorder;
+  final double? cardBlur;
+  final List<BoxShadow>? cardShadows;
+  final UiStyleFamily styleFamily;
 
   const StyleThemePatch({
     this.cardDecoration,
@@ -22,6 +28,11 @@ class StyleThemePatch {
     this.buttonBorderRadius,
     this.elevation,
     this.useBackdropBlur,
+    this.cardColor,
+    this.cardBorder,
+    this.cardBlur,
+    this.cardShadows,
+    required this.styleFamily,
   });
 
   ThemeData applyToTheme(ThemeData base, bool isDark) {
@@ -70,6 +81,9 @@ class StyleThemePatch {
         ),
         elevation: elevation ?? 16,
       ),
+      extensions: <ThemeExtension<dynamic>>[
+        UiStyleThemeExtension(styleFamily: styleFamily),
+      ],
     );
   }
 }
@@ -106,6 +120,7 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.all(Radius.circular(12)),
       elevation: 0,
       useBackdropBlur: true,
+      styleFamily: UiStyleFamily.glassmorphism,
     );
   }
 
@@ -115,6 +130,7 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.all(Radius.circular(16)),
       elevation: 2,
       useBackdropBlur: false,
+      styleFamily: UiStyleFamily.neumorphism,
     );
   }
 
@@ -124,6 +140,7 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.all(Radius.circular(20)),
       elevation: 8,
       useBackdropBlur: false,
+      styleFamily: UiStyleFamily.claymorphism,
     );
   }
 
@@ -133,6 +150,7 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.all(Radius.circular(6)),
       elevation: 0,
       useBackdropBlur: false,
+      styleFamily: UiStyleFamily.minimalism,
     );
   }
 
@@ -142,6 +160,7 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.zero,
       elevation: 0,
       useBackdropBlur: false,
+      styleFamily: UiStyleFamily.brutalism,
     );
   }
 
@@ -151,6 +170,7 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.all(Radius.circular(10)),
       elevation: 4,
       useBackdropBlur: false,
+      styleFamily: UiStyleFamily.skeuomorphism,
     );
   }
 
@@ -160,6 +180,7 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.all(Radius.circular(16)),
       elevation: 2,
       useBackdropBlur: true,
+      styleFamily: UiStyleFamily.bentoGrid,
     );
   }
 
@@ -169,6 +190,7 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.all(Radius.circular(8)),
       elevation: 1,
       useBackdropBlur: false,
+      styleFamily: UiStyleFamily.responsive,
     );
   }
 
@@ -178,6 +200,7 @@ class UiStyleAdapter {
       buttonBorderRadius: BorderRadius.all(Radius.circular(4)),
       elevation: 0,
       useBackdropBlur: false,
+      styleFamily: UiStyleFamily.flatDesign,
     );
   }
 }

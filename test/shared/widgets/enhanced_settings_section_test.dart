@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/features/settings/widgets/enhanced_settings_section.dart';
-import 'package:writer/shared/widgets/enhanced_card.dart';
+import 'package:writer/shared/widgets/theme_aware_card.dart';
 import 'package:writer/shared/widgets/neumorphic_switch.dart';
 import 'package:writer/shared/widgets/neumorphic_text.dart';
 
@@ -27,7 +27,7 @@ void main() {
 
       expect(find.text('Section title'), findsOneWidget);
       expect(find.text('Section description'), findsOneWidget);
-      expect(find.byType(EnhancedCard), findsOneWidget);
+      expect(find.byType(ThemeAwareCard), findsOneWidget);
       expect(find.text('Child 1'), findsOneWidget);
       expect(find.text('Child 2'), findsOneWidget);
       expect(find.byIcon(Icons.settings), findsOneWidget);

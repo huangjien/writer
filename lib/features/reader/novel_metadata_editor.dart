@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/novel_providers.dart';
-import 'package:writer/shared/widgets/enhanced_card.dart';
+import 'package:writer/shared/widgets/theme_aware_card.dart';
 import 'package:writer/shared/strings.dart';
 import 'package:writer/state/edit_permissions.dart';
 import 'package:writer/repositories/novel_repository.dart';
@@ -154,8 +154,8 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
     final novelAsync = ref.watch(novelProvider(widget.novelId));
     final roleAsync = ref.watch(editRoleProvider(widget.novelId));
     final isOwner = roleAsync.asData?.value == EditRole.owner;
-    return EnhancedCard(
-      elevation: 2,
+    return ThemeAwareCard(
+      semanticType: CardSemanticType.default_,
       padding: const EdgeInsets.all(12),
       child: ExpansionTile(
         tilePadding: EdgeInsets.zero,

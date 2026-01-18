@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
 import '../empty_state.dart';
-import '../glass_card.dart';
+import '../theme_aware_card.dart';
 
 class ChapterEmptyState extends StatelessWidget {
   const ChapterEmptyState({
@@ -26,8 +26,9 @@ class ChapterEmptyState extends StatelessWidget {
       subtitle: subtitle,
       actionLabel: actionLabel,
       onAction: onAction,
-      illustration: GlassCard(
+      illustration: ThemeAwareCard(
         borderRadius: BorderRadius.circular(999),
+        semanticType: CardSemanticType.default_,
         padding: const EdgeInsets.all(Spacing.xl),
         child: Icon(
           Icons.notes_outlined,

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
-import '../glass_card.dart';
+import '../theme_aware_card.dart';
 import 'success_animation.dart';
 
 enum EnhancedToastTone { info, success, warning, error }
@@ -115,8 +115,15 @@ class _EnhancedToastEntryState extends State<_EnhancedToastEntry>
                 key: ValueKey('${widget.message}-${widget.tone}'),
                 direction: DismissDirection.up,
                 onDismissed: (_) => _dismiss(),
-                child: GlassCard(
+                child: ThemeAwareCard(
                   borderRadius: BorderRadius.circular(Radii.l),
+                  semanticType: widget.tone == EnhancedToastTone.success
+                      ? CardSemanticType.success
+                      : widget.tone == EnhancedToastTone.error
+                      ? CardSemanticType.error
+                      : widget.tone == EnhancedToastTone.warning
+                      ? CardSemanticType.warning
+                      : CardSemanticType.info,
                   padding: const EdgeInsets.symmetric(
                     horizontal: Spacing.l,
                     vertical: Spacing.m,
