@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:writer/features/editor/mobile_editor_screen.dart';
@@ -8,20 +10,54 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/repositories/novel_repository.dart';
+import 'package:writer/services/storage_service.dart';
 import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/storage_service_provider.dart';
+import 'package:writer/shared/widgets/rich_text_toolbar.dart';
 
 class MockNovelRepository extends Mock implements NovelRepository {}
 
 class MockChapterRepository extends Mock implements ChapterRepository {}
 
+class InMemoryStorageService implements StorageService {
+  InMemoryStorageService([Map<String, String>? initial])
+    : _data = {...?initial};
+
+  final Map<String, String> _data;
+  final List<MapEntry<String, String?>> setCalls = [];
+
+  @override
+  String? getString(String key) => _data[key];
+
+  @override
+  Future<void> setString(String key, String? value) async {
+    setCalls.add(MapEntry(key, value));
+    if (value == null) {
+      _data.remove(key);
+    } else {
+      _data[key] = value;
+    }
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    _data.remove(key);
+  }
+
+  @override
+  Set<String> getKeys() => _data.keys.toSet();
+}
+
 void main() {
   late MockNovelRepository mockNovelRepository;
   late MockChapterRepository mockChapterRepository;
+  late InMemoryStorageService storage;
   late GoRouter router;
 
   setUp(() {
     mockNovelRepository = MockNovelRepository();
     mockChapterRepository = MockChapterRepository();
+    storage = InMemoryStorageService();
 
     router = GoRouter(
       initialLocation: '/editor/novel-1',
@@ -40,16 +76,33 @@ void main() {
               Scaffold(body: Text('Novel ${state.pathParameters['novelId']}')),
         ),
         GoRoute(
+          path: '/tools',
+          name: 'tools',
+          builder: (context, state) => const Scaffold(body: Text('Tools')),
+        ),
+        GoRoute(
           path: '/editor/:novelId',
           builder: (context, state) {
             final novelId = state.pathParameters['novelId']!;
             final chapterId = state.uri.queryParameters['chapterId'];
-            return MobileEditorScreen(novelId: novelId, chapterId: chapterId);
+            return Focus(
+              autofocus: true,
+              child: MobileEditorScreen(novelId: novelId, chapterId: chapterId),
+            );
           },
         ),
       ],
     );
   });
+
+  String formatDate(DateTime dt) {
+    final y = dt.year.toString().padLeft(4, '0');
+    final m = dt.month.toString().padLeft(2, '0');
+    final d = dt.day.toString().padLeft(2, '0');
+    return '$y-$m-$d';
+  }
+
+  DateTime dateOnly(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
 
   testWidgets('renders editor with initial UI elements', (tester) async {
     await tester.pumpWidget(
@@ -57,6 +110,7 @@ void main() {
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -98,7 +152,10 @@ void main() {
           builder: (context, state) {
             final novelId = state.pathParameters['novelId']!;
             final chapterId = state.uri.queryParameters['chapterId'];
-            return MobileEditorScreen(novelId: novelId, chapterId: chapterId);
+            return Focus(
+              autofocus: true,
+              child: MobileEditorScreen(novelId: novelId, chapterId: chapterId),
+            );
           },
         ),
       ],
@@ -109,6 +166,7 @@ void main() {
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
           chaptersProvider('novel-1').overrideWith((ref) async => [chapter]),
         ],
         child: MaterialApp.router(
@@ -133,6 +191,7 @@ void main() {
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -182,6 +241,7 @@ void main() {
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -247,6 +307,7 @@ void main() {
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -277,6 +338,7 @@ void main() {
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -329,6 +391,7 @@ void main() {
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -443,7 +506,10 @@ void main() {
           builder: (context, state) {
             final novelId = state.pathParameters['novelId']!;
             final chapterId = state.uri.queryParameters['chapterId'];
-            return MobileEditorScreen(novelId: novelId, chapterId: chapterId);
+            return Focus(
+              autofocus: true,
+              child: MobileEditorScreen(novelId: novelId, chapterId: chapterId),
+            );
           },
         ),
       ],
@@ -454,6 +520,7 @@ void main() {
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
           chaptersProvider('novel-1').overrideWith((ref) async => [chapter]),
         ],
         child: MaterialApp.router(
@@ -478,6 +545,7 @@ void main() {
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -504,6 +572,7 @@ void main() {
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -528,6 +597,7 @@ void main() {
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -589,6 +659,7 @@ void main() {
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -625,6 +696,7 @@ void main() {
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -653,5 +725,264 @@ void main() {
     final inserted =
         tester.widget<TextField>(contentFieldFinder).controller?.text ?? '';
     expect(inserted, startsWith('$prompt\n\n'));
+  });
+
+  testWidgets('loads writing streak when last write is today', (tester) async {
+    final today = dateOnly(DateTime.now());
+    storage = InMemoryStorageService({
+      'writer.editor.last_write_date': formatDate(today),
+      'writer.editor.streak_days': '5',
+    });
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Streak'), findsOneWidget);
+    expect(find.text('5d'), findsOneWidget);
+  });
+
+  testWidgets('stale writing streak is not shown', (tester) async {
+    final stale = dateOnly(DateTime.now()).subtract(const Duration(days: 3));
+    storage = InMemoryStorageService({
+      'writer.editor.last_write_date': formatDate(stale),
+      'writer.editor.streak_days': '5',
+    });
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Streak'), findsNothing);
+  });
+
+  testWidgets('save records a writing session for non-empty content', (
+    tester,
+  ) async {
+    when(
+      () => mockChapterRepository.getNextIdx('novel-1'),
+    ).thenAnswer((_) async => 1);
+    when(
+      () => mockChapterRepository.createChapter(
+        novelId: 'novel-1',
+        idx: 1,
+        title: 'Chapter 1',
+        content: 'Hello world',
+      ),
+    ).thenAnswer(
+      (_) async => Chapter(
+        id: 'new-chapter',
+        novelId: 'novel-1',
+        idx: 1,
+        title: 'Chapter 1',
+        content: 'Hello world',
+      ),
+    );
+
+    storage = InMemoryStorageService();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Chapter Title'),
+      'Chapter 1',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Start writing...'),
+      'Hello world',
+    );
+    await tester.pump();
+
+    await tester.tap(find.byIcon(Icons.save));
+    await tester.pumpAndSettle();
+
+    final todayKey = formatDate(dateOnly(DateTime.now()));
+    expect(storage.getString('writer.editor.last_write_date'), todayKey);
+    expect(storage.getString('writer.editor.streak_days'), '1');
+    expect(find.text('Streak'), findsOneWidget);
+    expect(find.text('1d'), findsOneWidget);
+  });
+
+  testWidgets('Ctrl+/ opens keyboard shortcuts sheet', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final contentFieldFinder = find.widgetWithText(
+      TextField,
+      'Start writing...',
+    );
+    await tester.tap(contentFieldFinder);
+    await tester.pump();
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.slash);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Keyboard shortcuts'), findsOneWidget);
+    expect(find.text('Ctrl/⌘ + S'), findsOneWidget);
+    expect(find.text('Ctrl/⌘ + P'), findsOneWidget);
+  });
+
+  testWidgets('Ctrl+S triggers save action', (tester) async {
+    when(
+      () => mockChapterRepository.getNextIdx('novel-1'),
+    ).thenAnswer((_) async => 1);
+    when(
+      () => mockChapterRepository.createChapter(
+        novelId: 'novel-1',
+        idx: 1,
+        title: 'Chapter 1',
+        content: 'Hello world',
+      ),
+    ).thenAnswer(
+      (_) async => Chapter(
+        id: 'new-chapter',
+        novelId: 'novel-1',
+        idx: 1,
+        title: 'Chapter 1',
+        content: 'Hello world',
+      ),
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Chapter Title'),
+      'Chapter 1',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Start writing...'),
+      'Hello world',
+    );
+    await tester.pump();
+
+    final contentFieldFinder = find.widgetWithText(
+      TextField,
+      'Start writing...',
+    );
+    await tester.tap(contentFieldFinder);
+    await tester.pump();
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyS);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+    await tester.pumpAndSettle();
+
+    verify(
+      () => mockChapterRepository.createChapter(
+        novelId: 'novel-1',
+        idx: 1,
+        title: 'Chapter 1',
+        content: 'Hello world',
+      ),
+    ).called(1);
+  });
+
+  testWidgets('Escape exits preview mode', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final toolbar = find.byType(RichTextToolbar);
+    expect(toolbar, findsOneWidget);
+    await tester.tap(
+      find.descendant(of: toolbar, matching: find.byIcon(Icons.visibility)),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(MarkdownBody), findsOneWidget);
+    expect(
+      find.byWidgetPredicate((w) => w is TextField && w.expands),
+      findsNothing,
+    );
+
+    await tester.tap(find.widgetWithText(TextField, 'Chapter Title'));
+    await tester.pump();
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MarkdownBody), findsNothing);
+    expect(
+      find.byWidgetPredicate((w) => w is TextField && w.expands),
+      findsOneWidget,
+    );
   });
 }

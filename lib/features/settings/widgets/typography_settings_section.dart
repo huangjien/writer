@@ -13,6 +13,14 @@ class TypographySettingsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final themeState = ref.watch(themeControllerProvider);
+    String displayFontFamily(String family) {
+      if (family == embeddedChineseSansFamily) return 'Noto Sans SC';
+      return family;
+    }
+
+    final selectedFamily = themeState.customFontFamily?.isNotEmpty == true
+        ? displayFontFamily(themeState.customFontFamily!)
+        : l10n.select;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -96,17 +104,16 @@ class TypographySettingsSection extends ConsumerWidget {
                   final families = supportedChineseFontFamilies();
                   return families
                       .map(
-                        (f) => PopupMenuItem<String>(value: f, child: Text(f)),
+                        (f) => PopupMenuItem<String>(
+                          value: f,
+                          child: Text(displayFontFamily(f)),
+                        ),
                       )
                       .toList();
                 },
                 child: Row(
                   children: [
-                    Text(
-                      themeState.customFontFamily?.isNotEmpty == true
-                          ? themeState.customFontFamily!
-                          : l10n.select,
-                    ),
+                    Text(selectedFamily),
                     const Icon(Icons.arrow_drop_down),
                   ],
                 ),

@@ -42,7 +42,7 @@ const List<String> _systemChineseFontsLinux = <String>[
   'AR PL UKai CN',
 ];
 
-const List<String> _embeddedChineseFonts = <String>['Noto Sans SC'];
+const List<String> _embeddedChineseFonts = <String>['NotoSansSC'];
 
 const List<String> _genericTextFallback = <String>[
   'Noto Sans',
@@ -239,6 +239,11 @@ ThemeData applyFontPackOrCustom(
 }
 
 Future<void> preloadEmbeddedChineseFonts() async {
+  // For web, use Google Fonts CDN instead of local files
+  if (kIsWeb) {
+    // Fonts are loaded via Google Fonts CDN in web/index.html
+    return Future.value();
+  }
   if (_preloadEmbeddedChineseFontsFuture != null) {
     return _preloadEmbeddedChineseFontsFuture!;
   }
