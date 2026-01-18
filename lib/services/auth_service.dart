@@ -46,11 +46,13 @@ class RemoteAuthService implements AuthService {
   Future<SignInResult> signIn(String email, String password) async {
     try {
       final url = _urlJoin(baseUrl, '/auth/login');
-      final response = await _client.post(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'password': password}),
-      ).timeout(_timeout);
+      final response = await _client
+          .post(
+            Uri.parse(url),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'email': email, 'password': password}),
+          )
+          .timeout(_timeout);
 
       if (response.statusCode != 200) {
         String errorMessage = 'Sign in failed';

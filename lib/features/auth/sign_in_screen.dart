@@ -76,9 +76,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         context,
       ).uri.queryParameters['redirect'];
 
-      final redirectRoute = _sanitizeRedirect(
-        savedRedirect ?? queryRedirect,
-      );
+      final redirectRoute = _sanitizeRedirect(savedRedirect ?? queryRedirect);
 
       if (kDebugMode) {
         debugPrint(
