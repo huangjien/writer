@@ -605,7 +605,7 @@ void main() {
       container.read(authRedirectProvider.notifier).saveRouteAndRedirect('');
       expect(
         container.read(authRedirectProvider.notifier).getRedirectRoute(),
-        '',
+        '/',
       );
     });
 
@@ -856,7 +856,7 @@ void main() {
 
     test('saveRouteAndRedirect handles null-like routes gracefully', () {
       notifier.saveRouteAndRedirect('');
-      expect(notifier.state, '');
+      expect(notifier.state, '/');
 
       notifier.saveRouteAndRedirect('/');
       expect(notifier.state, '/');

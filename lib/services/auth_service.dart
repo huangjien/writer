@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -36,6 +37,7 @@ abstract class AuthService {
 class RemoteAuthService implements AuthService {
   final String baseUrl;
   final http.Client _client;
+  static const Duration _timeout = Duration(seconds: 15);
 
   RemoteAuthService({required this.baseUrl, http.Client? client})
     : _client = client ?? http.Client();
@@ -48,7 +50,7 @@ class RemoteAuthService implements AuthService {
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email, 'password': password}),
-      );
+      ).timeout(_timeout);
 
       if (response.statusCode != 200) {
         String errorMessage = 'Sign in failed';

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../state/navigator_key_provider.dart';
@@ -30,6 +31,11 @@ class AuthRedirectService {
         ref
             .read(authRedirectProvider.notifier)
             .saveRouteAndRedirect(currentPath ?? '/');
+        if (kDebugMode) {
+          debugPrint(
+            'Auth redirect to login: navigatorState=null saved=${currentPath ?? '/'}',
+          );
+        }
         return;
       }
 
@@ -54,6 +60,9 @@ class AuthRedirectService {
 
       // Save the route and navigate to login
       ref.read(authRedirectProvider.notifier).saveRouteAndRedirect(path);
+      if (kDebugMode) {
+        debugPrint('Auth redirect to login: saved=$path');
+      }
 
       // Navigate to login page
       final context = currentState.context;
@@ -65,6 +74,9 @@ class AuthRedirectService {
       ref
           .read(authRedirectProvider.notifier)
           .saveRouteAndRedirect(currentPath ?? '/');
+      if (kDebugMode) {
+        debugPrint('Auth redirect to login failed: $e');
+      }
     }
   }
 
@@ -79,6 +91,9 @@ class AuthRedirectService {
     ref.read(authRedirectProvider.notifier).clearRedirect();
 
     if (context.mounted) {
+      if (kDebugMode) {
+        debugPrint('Auth redirect after login: destination=$redirectRoute');
+      }
       context.go(redirectRoute);
     }
   }

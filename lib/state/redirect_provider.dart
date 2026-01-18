@@ -13,11 +13,19 @@ class AuthRedirectNotifier extends StateNotifier<String?> {
   ///
   /// [currentPath] - The current route path that the user was on
   void saveRouteAndRedirect(String currentPath) {
+    if (currentPath.trim().isEmpty) {
+      state = '/';
+      return;
+    }
+
+    final parsed = Uri.tryParse(currentPath);
+    final path = parsed?.path ?? currentPath;
+
     // Don't save auth-related routes
-    if (currentPath == '/auth' ||
-        currentPath == '/signup' ||
-        currentPath == '/forgot-password' ||
-        currentPath == '/reset-password') {
+    if (path == '/auth' ||
+        path == '/signup' ||
+        path == '/forgot-password' ||
+        path == '/reset-password') {
       state = '/';
       return;
     }

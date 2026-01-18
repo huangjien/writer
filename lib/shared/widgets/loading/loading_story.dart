@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
 
@@ -32,7 +33,7 @@ class _LoadingStoryState extends State<LoadingStory> {
   void didUpdateWidget(covariant LoadingStory oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.interval != widget.interval ||
-        oldWidget.stories.length != widget.stories.length) {
+        !listEquals(oldWidget.stories, widget.stories)) {
       _index = 0;
       _restartTimer();
     }
@@ -78,9 +79,12 @@ class _LoadingStoryState extends State<LoadingStory> {
         text,
         key: ValueKey(text),
         textAlign: widget.textAlign,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        semanticsLabel: text,
         style: theme.textTheme.bodyMedium?.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
-          height: 1.3,
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.72),
+          height: 1.45,
         ),
       ),
     );

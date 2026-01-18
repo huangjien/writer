@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../state/session_state.dart';
@@ -51,6 +52,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       }
 
       await ref.read(sessionProvider.notifier).setSessionId(result.sessionId!);
+      _passwordController.clear();
 
       final biometricState = ref.read(biometricSessionProvider);
       if (biometricState != BiometricAuthState.unavailable &&
@@ -69,20 +71,53 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
   void _navigateToSuccess() {
     if (mounted) {
-      // Navigate back to the original route if it was saved
-      final redirectRoute = ref
-          .read(authRedirectProvider.notifier)
-          .getRedirectRoute();
-      if (redirectRoute != '/') {
-        // There was a saved route, navigate back to it
-        ref.read(authRedirectProvider.notifier).clearRedirect();
-        context.go(redirectRoute);
-      } else if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      } else {
-        context.go('/settings');
+      final savedRedirect = ref.read(authRedirectProvider);
+      final queryRedirect = GoRouterState.of(
+        context,
+      ).uri.queryParameters['redirect'];
+
+      final redirectRoute = _sanitizeRedirect(
+        savedRedirect ?? queryRedirect,
+      );
+
+      if (kDebugMode) {
+        debugPrint(
+          'Auth redirect after login: destination=$redirectRoute saved=$savedRedirect query=$queryRedirect',
+        );
       }
+
+      ref.read(authRedirectProvider.notifier).clearRedirect();
+      context.go(redirectRoute);
     }
+  }
+
+  String _sanitizeRedirect(String? candidate) {
+    if (candidate == null || candidate.trim().isEmpty) {
+      return '/';
+    }
+
+    final parsed = Uri.tryParse(candidate);
+    if (parsed == null) {
+      return '/';
+    }
+
+    if (parsed.hasScheme) {
+      return '/';
+    }
+
+    final path = parsed.path;
+    if (!path.startsWith('/')) {
+      return '/';
+    }
+
+    if (path == '/auth' ||
+        path == '/signup' ||
+        path == '/forgot-password' ||
+        path == '/reset-password') {
+      return '/';
+    }
+
+    return parsed.toString();
   }
 
   void _showBiometricSetupDialog(BuildContext context, String sessionId) {

@@ -30,9 +30,16 @@ void main() {
     SessionNotifier? sessionNotifier,
   }) {
     final router = GoRouter(
-      initialLocation: '/',
+      initialLocation: '/auth',
       routes: [
-        GoRoute(path: '/', builder: (context, state) => const SignInScreen()),
+        GoRoute(
+          path: '/',
+          builder: (context, state) => const Scaffold(body: Text('Home')),
+        ),
+        GoRoute(
+          path: '/auth',
+          builder: (context, state) => const SignInScreen(),
+        ),
         GoRoute(
           path: '/settings',
           builder: (context, state) => const Scaffold(body: Text('Settings')),
@@ -430,7 +437,7 @@ void main() {
 
       // Dialog should be gone
       expect(find.text('Enable biometric login'), findsNothing);
-      expect(find.text('Settings'), findsOneWidget);
+      expect(find.text('Home'), findsOneWidget);
     });
   });
 

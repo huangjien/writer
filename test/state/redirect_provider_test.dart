@@ -56,7 +56,7 @@ void main() {
 
       test('handles empty string path', () {
         notifier.saveRouteAndRedirect('');
-        expect(notifier.state, '');
+        expect(notifier.state, '/');
       });
 
       test('handles path with query parameters', () {

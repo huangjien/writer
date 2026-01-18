@@ -78,13 +78,13 @@ void main() {
         initialLocation: '/auth',
         routes: [
           GoRoute(
-            path: '/auth',
-            builder: (context, state) => const SignInScreen(),
+            path: '/',
+            builder: (context, state) =>
+                const Scaffold(body: Text('Home Screen')),
           ),
           GoRoute(
-            path: '/settings',
-            builder: (context, state) =>
-                const Scaffold(body: Text('Settings Screen')),
+            path: '/auth',
+            builder: (context, state) => const SignInScreen(),
           ),
         ],
       );
@@ -121,8 +121,8 @@ void main() {
       await tester.tap(find.text('Sign in with biometrics'));
       await tester.pumpAndSettle();
 
-      // Verify successful navigation to settings (default success route)
-      expect(find.text('Settings Screen'), findsOneWidget);
+      // Verify successful navigation to home (default success route)
+      expect(find.text('Home Screen'), findsOneWidget);
 
       // Verify session token is set
       expect(container.read(sessionProvider), 'offline-session-token');

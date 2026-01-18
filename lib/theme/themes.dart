@@ -65,6 +65,12 @@ ThemeData _buildFromSeed(Color seed, Brightness brightness) {
   // outline and fill were unused
 
   return baseTheme.copyWith(
+    progressIndicatorTheme: ProgressIndicatorThemeData(
+      color: cs.primary,
+      circularTrackColor: cs.surfaceContainerHighest,
+      linearTrackColor: cs.surfaceContainerHighest,
+      refreshBackgroundColor: cs.surface,
+    ),
     textSelectionTheme: TextSelectionThemeData(
       cursorColor: baseTheme.colorScheme.primary,
       selectionColor: baseTheme.colorScheme.primary.withValues(alpha: 0.25),
@@ -259,6 +265,12 @@ ThemeData themeForLight(AppThemeFamily family) {
     );
 
     return baseTheme.copyWith(
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: baseTheme.colorScheme.primary,
+        circularTrackColor: baseTheme.colorScheme.surface,
+        linearTrackColor: baseTheme.colorScheme.surface,
+        refreshBackgroundColor: baseTheme.colorScheme.surface,
+      ),
       focusColor: baseTheme.colorScheme.primary.withValues(alpha: 0.18),
       hoverColor: baseTheme.colorScheme.primary.withValues(alpha: 0.10),
       highlightColor: baseTheme.colorScheme.primary.withValues(alpha: 0.14),
@@ -310,6 +322,12 @@ ThemeData themeForDark(AppThemeFamily family) {
     );
 
     return baseTheme.copyWith(
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: baseTheme.colorScheme.primary,
+        circularTrackColor: baseTheme.colorScheme.surface,
+        linearTrackColor: baseTheme.colorScheme.surface,
+        refreshBackgroundColor: baseTheme.colorScheme.surface,
+      ),
       focusColor: baseTheme.colorScheme.primary.withValues(alpha: 0.18),
       hoverColor: baseTheme.colorScheme.primary.withValues(alpha: 0.10),
       highlightColor: baseTheme.colorScheme.primary.withValues(alpha: 0.14),
