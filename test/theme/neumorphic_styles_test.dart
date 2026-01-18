@@ -5,20 +5,13 @@ import 'package:writer/theme/neumorphic_styles.dart';
 
 void main() {
   group('NeumorphicStyles.decoration', () {
-    test('light convex uses default depth, gradient, and two shadows', () {
+    test('light convex uses default depth and two shadows', () {
       final decoration = NeumorphicStyles.decoration(isDark: false);
 
       expect(decoration.color, NeumorphicStyles.lightBackground);
       expect(decoration.borderRadius, BorderRadius.circular(Radii.m));
 
-      final gradient = decoration.gradient as LinearGradient?;
-      expect(gradient, isNotNull);
-      expect(gradient!.begin, Alignment.topLeft);
-      expect(gradient.end, Alignment.bottomRight);
-      expect(gradient.colors, [
-        Color.lerp(NeumorphicStyles.lightBackground, Colors.white, 0.2)!,
-        Color.lerp(NeumorphicStyles.lightBackground, Colors.black, 0.05)!,
-      ]);
+      expect(decoration.gradient, isNull);
 
       expect(decoration.boxShadow, isNotNull);
       expect(decoration.boxShadow!, hasLength(2));
@@ -26,13 +19,13 @@ void main() {
       final highlight = decoration.boxShadow![0];
       final shadow = decoration.boxShadow![1];
 
-      expect(highlight.offset, const Offset(-8.0, -8.0));
-      expect(highlight.blurRadius, 8.0 * 2.5);
-      expect(highlight.color, Colors.white);
+      expect(highlight.offset, const Offset(-6.0, -6.0));
+      expect(highlight.blurRadius, 6.0 * 2.0);
+      expect(highlight.color, NeumorphicStyles.lightHighlightLight);
 
-      expect(shadow.offset, const Offset(8.0, 8.0));
-      expect(shadow.blurRadius, 8.0 * 2.5);
-      expect(shadow.color, Colors.black.withValues(alpha: 0.5));
+      expect(shadow.offset, const Offset(6.0, 6.0));
+      expect(shadow.blurRadius, 6.0 * 2.0);
+      expect(shadow.color, NeumorphicStyles.darkShadowLight);
     });
 
     test('dark convex respects custom depth, radius, and color', () {
@@ -47,12 +40,7 @@ void main() {
       expect(decoration.color, bg);
       expect(decoration.borderRadius, BorderRadius.circular(12));
 
-      final gradient = decoration.gradient as LinearGradient?;
-      expect(gradient, isNotNull);
-      expect(gradient!.colors, [
-        Color.lerp(bg, Colors.white, 0.05)!,
-        Color.lerp(bg, Colors.black, 0.1)!,
-      ]);
+      expect(decoration.gradient, isNull);
 
       expect(decoration.boxShadow, isNotNull);
       expect(decoration.boxShadow!, hasLength(2));
@@ -61,18 +49,15 @@ void main() {
       final shadow = decoration.boxShadow![1];
 
       expect(highlight.offset, const Offset(-10.0, -10.0));
-      expect(highlight.blurRadius, 10.0 * 2.5);
-      expect(
-        highlight.color,
-        NeumorphicStyles.lightShadowColorDark.withValues(alpha: 0.15),
-      );
+      expect(highlight.blurRadius, 10.0 * 2.0);
+      expect(highlight.color, NeumorphicStyles.lightHighlightDark);
 
       expect(shadow.offset, const Offset(10.0, 10.0));
-      expect(shadow.blurRadius, 10.0 * 2.5);
-      expect(shadow.color, Colors.black.withValues(alpha: 0.8));
+      expect(shadow.blurRadius, 10.0 * 2.0);
+      expect(shadow.color, NeumorphicStyles.darkShadowDark);
     });
 
-    test('pressed state uses inset-like border and tiny shadow', () {
+    test('pressed state uses inset-like inner shadows', () {
       final decoration = NeumorphicStyles.decoration(
         isDark: false,
         isPressed: true,
@@ -84,19 +69,27 @@ void main() {
       final pressedBg = Color.lerp(
         NeumorphicStyles.lightBackground,
         Colors.black,
-        0.05,
+        0.02,
       )!;
       expect(decoration.color, pressedBg);
 
-      expect(decoration.border, isNotNull);
-      final border = decoration.border! as Border;
-      expect(border.top.width, 1);
-      expect(border.top.color, Colors.white.withValues(alpha: 0.7));
+      expect(decoration.border, isNull);
 
       expect(decoration.boxShadow, isNotNull);
-      expect(decoration.boxShadow!, hasLength(1));
-      expect(decoration.boxShadow!.first.offset, const Offset(1, 1));
-      expect(decoration.boxShadow!.first.blurRadius, 1);
+      expect(decoration.boxShadow!, hasLength(3));
+
+      final innerShadow = decoration.boxShadow![0];
+      final innerHighlight = decoration.boxShadow![1];
+      final outerShadow = decoration.boxShadow![2];
+
+      expect(innerShadow.blurStyle, BlurStyle.inner);
+      expect(innerHighlight.blurStyle, BlurStyle.inner);
+      expect(innerShadow.offset.dx, closeTo(2.4, 1e-9));
+      expect(innerShadow.offset.dy, closeTo(2.4, 1e-9));
+      expect(innerHighlight.offset.dx, closeTo(-2.4, 1e-9));
+      expect(innerHighlight.offset.dy, closeTo(-2.4, 1e-9));
+      expect(outerShadow.offset.dx, closeTo(1.8, 1e-9));
+      expect(outerShadow.offset.dy, closeTo(1.8, 1e-9));
     });
   });
 
@@ -107,7 +100,7 @@ void main() {
       expect(theme.filled, true);
       expect(
         theme.fillColor,
-        Color.lerp(NeumorphicStyles.lightBackground, Colors.black, 0.05),
+        Color.lerp(NeumorphicStyles.lightBackground, Colors.black, 0.01),
       );
       expect(
         theme.contentPadding,
@@ -138,7 +131,7 @@ void main() {
       expect(theme.filled, true);
       expect(
         theme.fillColor,
-        Color.lerp(NeumorphicStyles.darkBackground, Colors.black, 0.2),
+        Color.lerp(NeumorphicStyles.darkBackground, Colors.black, 0.03),
       );
 
       final enabled = theme.enabledBorder as OutlineInputBorder?;
@@ -168,7 +161,7 @@ void main() {
       expect(decoration.filled, true);
       expect(
         decoration.fillColor,
-        Color.lerp(NeumorphicStyles.lightBackground, Colors.black, 0.05),
+        Color.lerp(NeumorphicStyles.lightBackground, Colors.black, 0.01),
       );
       expect(decoration.prefixIcon, prefix);
       expect(decoration.suffixIcon, suffix);

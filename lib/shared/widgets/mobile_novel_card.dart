@@ -132,7 +132,7 @@ class MobileNovelCard extends StatelessWidget {
               decoration: NeumorphicStyles.decoration(
                 isDark: theme.brightness == Brightness.dark,
                 borderRadius: BorderRadius.circular(Radii.l),
-                depth: 8,
+                depth: 6,
               ),
               child: Row(
                 children: [

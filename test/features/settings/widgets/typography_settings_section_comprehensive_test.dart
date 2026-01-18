@@ -202,10 +202,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify some font families are shown
-      expect(find.text('Arial'), findsOneWidget);
-      expect(find.text('Helvetica'), findsOneWidget);
-      expect(find.text('Times New Roman'), findsOneWidget);
-      expect(find.text('Roboto'), findsOneWidget);
+      expect(find.text('Noto Sans SC'), findsOneWidget);
     });
   });
 }

@@ -101,7 +101,7 @@ class NeumorphicSlider extends StatelessWidget {
                     decoration: NeumorphicStyles.decoration(
                       isDark: isDark,
                       shape: BoxShape.circle,
-                      depth: 4,
+                      depth: 3,
                       color: thumbColor,
                     ),
                   ),

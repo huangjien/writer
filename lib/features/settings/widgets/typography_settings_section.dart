@@ -93,25 +93,7 @@ class TypographySettingsSection extends ConsumerWidget {
                       .setCustomFontFamily(family);
                 },
                 itemBuilder: (context) {
-                  const families = <String>[
-                    'system-ui',
-                    'Segoe UI',
-                    '.SF NS Display',
-                    'San Francisco',
-                    'Helvetica Neue',
-                    'Helvetica',
-                    'Arial',
-                    'Times New Roman',
-                    'Georgia',
-                    'Cambria',
-                    'Noto Sans',
-                    'Noto Serif',
-                    'Roboto',
-                    'Courier New',
-                    'Menlo',
-                    'Monaco',
-                    'Consolas',
-                  ];
+                  final families = supportedChineseFontFamilies();
                   return families
                       .map(
                         (f) => PopupMenuItem<String>(value: f, child: Text(f)),

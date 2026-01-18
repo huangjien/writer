@@ -3,10 +3,55 @@ import 'package:flutter_test/flutter_test.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/models/chapter.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/theme/themes.dart';
 import 'package:writer/features/reader/reader_screen.dart';
 import 'helpers/test_utils.dart';
+
+MaterialApp _materialAppForGolden({
+  required Widget home,
+  required ThemeController themeController,
+  Locale locale = const Locale('en'),
+}) {
+  final state = themeController.state;
+  final ThemeData lightBase = themeForLight(state.family);
+  final ThemeData darkBase = themeForDark(state.familyDark);
+  final ThemeData light = lightBase
+      .copyWith(platform: TargetPlatform.android)
+      .copyWith(
+        visualDensity: VisualDensity.standard,
+        textTheme: lightBase.textTheme.apply(fontFamily: 'Roboto'),
+        primaryTextTheme: lightBase.primaryTextTheme.apply(
+          fontFamily: 'Roboto',
+        ),
+      );
+  final ThemeData dark = darkBase
+      .copyWith(platform: TargetPlatform.android)
+      .copyWith(
+        visualDensity: VisualDensity.standard,
+        textTheme: darkBase.textTheme.apply(fontFamily: 'Roboto'),
+        primaryTextTheme: darkBase.primaryTextTheme.apply(fontFamily: 'Roboto'),
+      );
+  final ThemeMode mode = state.mode;
+
+  return MaterialApp(
+    locale: locale,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    theme: light,
+    darkTheme: dark,
+    themeMode: mode,
+    builder: (context, child) {
+      final mq = MediaQuery.of(context);
+      return MediaQuery(
+        data: mq.copyWith(textScaler: TextScaler.noScaling),
+        child: child ?? const SizedBox.shrink(),
+      );
+    },
+    home: home,
+  );
+}
 
 void main() {
   late GoldenFileComparator prevComparator;
@@ -45,7 +90,7 @@ void main() {
       final app = await buildAppScope(
         prefs: prefs,
         themeController: themeController,
-        child: materialAppFor(
+        child: _materialAppForGolden(
           themeController: themeController,
           home: ChapterReaderScreen(
             chapterId: 'c2',
@@ -107,7 +152,7 @@ void main() {
       final app = await buildAppScope(
         prefs: prefs,
         themeController: themeController,
-        child: materialAppFor(
+        child: _materialAppForGolden(
           themeController: themeController,
           home: ChapterReaderScreen(
             chapterId: 'c2',
@@ -159,7 +204,7 @@ void main() {
       final app = await buildAppScope(
         prefs: prefs,
         themeController: themeController,
-        child: materialAppFor(
+        child: _materialAppForGolden(
           themeController: themeController,
           home: ChapterReaderScreen(
             chapterId: 'c2',

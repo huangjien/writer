@@ -34,7 +34,7 @@ class NeumorphicCard extends StatelessWidget {
       decoration: NeumorphicStyles.decoration(
         isDark: isDark,
         borderRadius: borderRadius ?? BorderRadius.circular(Radii.l),
-        depth: depth ?? 10.0,
+        depth: depth ?? 6.0,
         color: color,
         shape: shape,
       ),

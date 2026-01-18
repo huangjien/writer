@@ -103,7 +103,7 @@ class ReaderBottomBarShell extends StatelessWidget {
       decoration: NeumorphicStyles.decoration(
         isDark: Theme.of(context).brightness == Brightness.dark,
         borderRadius: BorderRadius.circular(24.0),
-        depth: 12, // Increased depth for floating bar
+        depth: 10, // Subtle depth for floating bar
       ),
       padding: EdgeInsets.zero,
       child: bottomBar,

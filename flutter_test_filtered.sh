@@ -46,9 +46,8 @@ flutter test "${flutter_test_args[@]}" 2>&1 | (
   done
 ) | tee "$temp_file"
 
-# Get the exit code from the flutter test process
-wait
-exit_code=$?
+# Get the exit code from flutter test (first command in the pipeline)
+exit_code=${PIPESTATUS[0]}
 
 # Clean up temp file
 rm -f "$temp_file"

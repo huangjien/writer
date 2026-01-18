@@ -65,8 +65,7 @@ class EnhancedCard extends StatelessWidget {
             borderRadius: radius,
             color: cardColor,
             depth:
-                elevation *
-                4.0, // Increased multiplier for more depth per elevation unit
+                elevation * 3.0, // Subtle multiplier for minimalist aesthetic
           )
         : BoxDecoration(
             color: cardColor,

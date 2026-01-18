@@ -98,7 +98,7 @@ class MobileFab extends StatelessWidget {
             child: NeumorphicButton(
               onPressed: isLoading ? null : onPressed,
               color: fabColor,
-              depth: 16, // Extra floating for FAB
+              depth: 16, // Subtle floating for FAB
               borderRadius: BorderRadius.circular(Radii.xl),
               padding: const EdgeInsets.symmetric(
                 horizontal: Spacing.l,
@@ -125,7 +125,7 @@ class MobileFab extends StatelessWidget {
               child: NeumorphicButton(
                 onPressed: isLoading ? null : onPressed,
                 color: fabColor,
-                depth: 16, // Extra floating for FAB
+                depth: 16, // Subtle floating for FAB
                 borderRadius: BorderRadius.circular(Radii.xl),
                 padding: EdgeInsets.zero,
                 child: buildChild(),

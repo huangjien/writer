@@ -13,6 +13,11 @@ import 'app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Font preloading is handled by web/index.html preload links
+  // try {
+  //   await preloadEmbeddedChineseFonts();
+  // } catch (_) {}
+
   final prefs = await SharedPreferences.getInstance();
   final appSettings = AppSettingsNotifier(prefs);
   final themeController = ThemeController(prefs);

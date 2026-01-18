@@ -79,7 +79,7 @@ void main() {
 
     final prefs = await SharedPreferences.getInstance();
     final appNotifier = AppSettingsNotifier(prefs);
-    appNotifier.setLanguage('zh');
+    await appNotifier.setLanguage('zh');
 
     await tester.pumpWidget(
       ProviderScope(
@@ -147,7 +147,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Change app language to zh and allow ref.listen to react
-      appNotifier.setLanguage('zh');
+      await appNotifier.setLanguage('zh');
       await tester.pump();
       await tester.pumpAndSettle();
 

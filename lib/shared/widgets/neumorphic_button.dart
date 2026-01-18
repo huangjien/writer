@@ -35,9 +35,10 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
     final isDark = theme.brightness == Brightness.dark;
     final isDisabled = widget.onPressed == null;
     final radius = widget.borderRadius ?? BorderRadius.circular(Radii.m);
+    // Subtle hover effect for minimalist aesthetic
     final baseDepth = isDisabled
         ? 0.0
-        : (widget.depth ?? 8.0) + (_isHovered ? 2.0 : 0.0);
+        : (widget.depth ?? 6.0) + (_isHovered ? 1.0 : 0.0);
 
     Color background =
         widget.color ??
@@ -102,9 +103,9 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
               depth: _isPressed ? 0 : baseDepth,
             ),
             transform: _isPressed && !isDisabled
-                ? Matrix4.translationValues(2, 2, 0)
+                ? Matrix4.translationValues(1, 1, 0)
                 : (_isHovered && !isDisabled
-                      ? Matrix4.translationValues(0, -1, 0)
+                      ? Matrix4.translationValues(0, -0.5, 0)
                       : Matrix4.identity()),
             child: Opacity(
               opacity: isDisabled ? 0.5 : 1.0,

@@ -22,7 +22,13 @@ void main() {
     test('system pack returns unchanged theme', () {
       final result = applyFontPack(baseTheme, ReaderFontPack.system);
 
-      expect(result, same(baseTheme));
+      expect(result.primaryColor, baseTheme.primaryColor);
+      expect(result.brightness, baseTheme.brightness);
+      expect(
+        result.textTheme.bodyLarge?.fontFamily,
+        baseTheme.textTheme.bodyLarge?.fontFamily,
+      );
+      expect(result.textTheme.bodyLarge?.fontFamilyFallback, isNotNull);
     });
 
     test('inter pack applies Inter font family', () {

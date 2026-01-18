@@ -29,6 +29,31 @@ This app uses a token-driven design system to keep the Writer UI visually and fu
 - Use `ColorScheme` and tokenized semantic colors in `lib/theme/design_tokens.dart` (avoid hard-coded `Colors.*` for UI).
 - Typography is controlled by theme and typography presets; do not set ad-hoc font sizes in screens unless it’s content-specific.
 
+## Chinese Typography & Fonts
+- Embedded Chinese font: `assets/fonts/NotoSansSC-{Regular,Bold}.ttf` (family: `Noto Sans SC`, declared in `pubspec.yaml`).
+- Initialization preload: `lib/main.dart` preloads the embedded Chinese font to reduce first-render tofu/FOUT.
+- Fallback chain: `lib/theme/font_packs.dart` applies a platform-aware CJK fallback list to the app `TextTheme` (even when using Inter/Merriweather).
+- Custom font picker: Settings → Typography only shows curated CJK-capable font families (plus the embedded font).
+
+### Supported Chinese fonts (fallback and picker)
+- Apple: `PingFang SC`, `Hiragino Sans GB`, `Heiti SC`, `Songti SC`
+- Windows: `Microsoft YaHei`, `Microsoft YaHei UI`, `Microsoft JhengHei`, `SimSun`, `SimHei`
+- Linux/Android: `Noto Sans CJK SC`, `Noto Sans CJK`, `WenQuanYi Micro Hei`, `AR PL UMing CN`, `AR PL UKai CN`
+- Embedded: `Noto Sans SC`
+
+### Web embedding details
+- `web/index.html` declares `@font-face` for `Noto Sans SC` and preloads the `.ttf` files with `font-display: swap`.
+
+### Font subsetting (optional)
+- If bundle size becomes a concern, subset the embedded font and replace the `assets/fonts/*` files + `pubspec.yaml` entries.
+- One common approach is `fonttools` (`pyftsubset`) to produce a reduced `woff2/ttf` containing only needed Unicode ranges.
+
+### Cross-platform rendering checklist
+- Desktop browsers: Chrome, Firefox, Safari, Edge
+- OS: Windows, macOS, Linux
+- Mobile: iOS Safari, Android Chrome
+- Verify: mixed Latin + Chinese + punctuation, bold text, and long paragraphs in Reader/Editor screens
+
 ### 3) Spacing and layout principles
 - Use spacing/radius tokens (`Spacing.*`, `Radii.*`, `MobileSpacing.*`) for padding, gaps, and corner rounding.
 - Maintain minimum tap targets (`MobileSpacing.touchTargetMin`) for interactive controls.

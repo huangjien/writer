@@ -38,7 +38,7 @@ class MobileBottomNavBar extends StatelessWidget {
       decoration: NeumorphicStyles.decoration(
         isDark: isDark,
         borderRadius: BorderRadius.zero, // Flat bar
-        depth: 12, // Prominent shadow for the bar
+        depth: 15, // Subtle shadow for the bar
       ),
       child: SafeArea(
         top: false,

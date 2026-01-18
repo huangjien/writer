@@ -2,25 +2,36 @@ import 'package:flutter/material.dart';
 import 'design_tokens.dart';
 
 class NeumorphicStyles {
-  // Common Colors
-  static const Color lightBackground = Color(
-    0xFFE0E5EC,
-  ); // Classic Neumorphism gray-ish blue
+  // Base Colors - Soft, monochromatic backgrounds (not pure white or black)
+  static const Color lightBackground = Color(0xFFE0E5EC);
   static const Color darkBackground = Color(0xFF2D2F33);
 
-  static const Color lightShadowColorLight = Colors.white;
-  static const Color darkShadowColorLight = Color(0xFFA3B1C6);
+  // Shadow colors derived from base background for material mimicry
+  // Light mode shadows - lighter and darker versions of the base
+  static const Color lightHighlightLight = Color(0xFFFFFFFF);
+  static const Color darkShadowLight = Color(0xFFA3B1C6);
 
-  static const Color lightShadowColorDark = Color(0xFF3E4145);
-  static const Color darkShadowColorDark = Colors.black;
+  // Dark mode shadows - lighter and darker versions of the base
+  static const Color lightHighlightDark = Color(0xFF3E4145);
+  static const Color darkShadowDark = Color(0xFF1A1C1F);
+
+  static Color get lightShadowColorLight => lightHighlightLight;
+  static Color get darkShadowColorLight => darkShadowLight;
+  static Color get lightShadowColorDark => lightHighlightDark;
+  static Color get darkShadowColorDark => darkShadowDark;
+
+  // Inset shadow colors for pressed state
+  static const Color insetHighlightLight = Color(0xFFA3B1C6);
+  static const Color insetShadowLight = Color(0xFFFFFFFF);
+  static const Color insetHighlightDark = Color(0xFF1A1C1F);
+  static const Color insetShadowDark = Color(0xFF3E4145);
 
   // Decorations
   static BoxDecoration decoration({
     required bool isDark,
     BorderRadius? borderRadius,
     double? depth,
-    bool isPressed =
-        false, // This effectively toggles between Convex (false) and Concave (true)
+    bool isPressed = false, // Convex (false) vs Concave (true)
     BoxShape shape = BoxShape.rectangle,
     Color? color,
   }) {
@@ -28,121 +39,88 @@ class NeumorphicStyles {
     final radius = shape == BoxShape.circle
         ? null
         : (borderRadius ?? BorderRadius.circular(Radii.m));
-    // Increased base depth for more "3D" feel
-    final shadowDepth = depth ?? 8.0;
 
-    // Shadows
+    // Subtle depth for minimalist aesthetic
+    final shadowDepth = depth ?? 6.0;
     final offset = Offset(shadowDepth, shadowDepth);
-    // Increased blur multiplier for softer, deeper shadows
-    final blur = shadowDepth * 2.5;
-
-    // Increased opacity/contrast for more pop
-    final topShadowColor = isDark
-        ? lightShadowColorDark.withValues(alpha: 0.15)
-        : lightShadowColorLight;
-
-    final bottomShadowColor = isDark
-        ? darkShadowColorDark.withValues(
-            alpha: 0.8,
-          ) // Darker shadow in dark mode
-        : darkShadowColorDark.withValues(
-            alpha: 0.5,
-          ); // Darker shadow in light mode
+    // Soft blur for subtle shadows
+    final blur = shadowDepth * 2.0;
 
     if (isPressed) {
-      // Pressed state (Concave)
-      // To simulate "pressed", we can use a gradient or inner shadow simulation
-      // Since standard Flutter BoxShadow is outer only, we simulate "pressed"
-      // by using a border that suggests depth (inset look) or changing the background color slightly
-      // to look like it's in shadow.
-
-      // A trick for pressed state without custom painter:
-      // Darker background + no shadow (or very small shadow) + inner-like border
-
+      // Pressed state (Concave) - "Pressed in" look
       final pressedBg = isDark
-          ? Color.lerp(bg, Colors.black, 0.2)!
-          : Color.lerp(bg, Colors.black, 0.05)!;
+          ? Color.lerp(bg, Colors.black, 0.05)!
+          : Color.lerp(bg, Colors.black, 0.02)!;
+
+      final insetHighlightColor = isDark
+          ? insetHighlightDark
+          : insetHighlightLight;
+      final insetShadowColor = isDark ? insetShadowDark : insetShadowLight;
 
       return BoxDecoration(
         color: pressedBg,
         borderRadius: radius,
         shape: shape,
-        // Inset-like border simulation
-        border: Border.all(
-          color: isDark
-              ? Colors.black.withValues(alpha: 0.5)
-              : Colors.white.withValues(alpha: 0.7),
-          width: 1,
-        ),
         boxShadow: [
-          // Tiny shadow to keep it from looking floating
           BoxShadow(
-            color: bottomShadowColor.withValues(alpha: 0.1),
-            offset: const Offset(1, 1),
-            blurRadius: 1,
+            color: insetShadowColor.withValues(alpha: isDark ? 0.55 : 0.75),
+            offset: Offset(shadowDepth * 0.4, shadowDepth * 0.4),
+            blurRadius: shadowDepth,
+            blurStyle: BlurStyle.inner,
+          ),
+          BoxShadow(
+            color: insetHighlightColor.withValues(alpha: isDark ? 0.35 : 0.55),
+            offset: Offset(-shadowDepth * 0.4, -shadowDepth * 0.4),
+            blurRadius: shadowDepth,
+            blurStyle: BlurStyle.inner,
+          ),
+          BoxShadow(
+            color: isDark
+                ? darkShadowDark.withValues(alpha: 0.3)
+                : darkShadowLight.withValues(alpha: 0.15),
+            offset: Offset(shadowDepth * 0.3, shadowDepth * 0.3),
+            blurRadius: shadowDepth,
           ),
         ],
       );
     }
 
     // Convex state (Standard Neumorphism)
-    // Adding a subtle gradient to the surface makes it look more 3D (curved)
-    // Light coming from Top-Left -> Top-Left is lighter, Bottom-Right is darker.
+    // Material mimicry: solid color, no gradient
+    // Light coming from Top-Left
 
-    // However, if 'color' is provided (e.g. primary button), we should be careful with gradients.
-    // Let's only apply strong gradients if it's the default background color.
-    // If it's a custom color, just use it or a subtle version.
-
-    // Calculate gradient colors based on the provided 'bg'
-    final gradientColors = isDark
-        ? [
-            Color.lerp(bg, Colors.white, 0.05)!,
-            Color.lerp(bg, Colors.black, 0.1)!,
-          ]
-        : [
-            Color.lerp(bg, Colors.white, 0.2)!,
-            Color.lerp(bg, Colors.black, 0.05)!,
-          ];
+    final highlightColor = isDark ? lightHighlightDark : lightHighlightLight;
+    final shadowColor = isDark ? darkShadowDark : darkShadowLight;
 
     return BoxDecoration(
       color: bg,
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: gradientColors,
-      ),
       borderRadius: radius,
       shape: shape,
+      // Top-Left: Light highlight (pops out)
+      // Bottom-Right: Dark shadow (depth)
       boxShadow: [
-        // Top Left Shadow (Light/Highlight)
-        BoxShadow(color: topShadowColor, offset: -offset, blurRadius: blur),
-        // Bottom Right Shadow (Dark)
-        BoxShadow(color: bottomShadowColor, offset: offset, blurRadius: blur),
+        BoxShadow(color: highlightColor, offset: -offset, blurRadius: blur),
+        BoxShadow(color: shadowColor, offset: offset, blurRadius: blur),
       ],
     );
   }
 
-  // Text Shadows
-  static List<Shadow> textShadows({required bool isDark, double depth = 2.0}) {
+  // Text Shadows - Subtle for minimalist aesthetic
+  static List<Shadow> textShadows({required bool isDark, double depth = 1.5}) {
     final shadowDepth = depth;
-    final blur = depth * 1.5;
+    final blur = depth * 1.2;
 
-    final topShadowColor = isDark
-        ? lightShadowColorDark.withValues(alpha: 0.3)
-        : lightShadowColorLight.withValues(alpha: 0.8);
-
-    final bottomShadowColor = isDark
-        ? darkShadowColorDark.withValues(alpha: 0.8)
-        : darkShadowColorDark.withValues(alpha: 0.3);
+    final highlightColor = isDark ? lightHighlightDark : lightHighlightLight;
+    final shadowColor = isDark ? darkShadowDark : darkShadowLight;
 
     return [
       Shadow(
-        color: topShadowColor,
+        color: highlightColor.withValues(alpha: isDark ? 0.4 : 0.7),
         offset: Offset(-shadowDepth, -shadowDepth),
         blurRadius: blur,
       ),
       Shadow(
-        color: bottomShadowColor,
+        color: shadowColor.withValues(alpha: isDark ? 0.6 : 0.25),
         offset: Offset(shadowDepth, shadowDepth),
         blurRadius: blur,
       ),
@@ -152,14 +130,11 @@ class NeumorphicStyles {
   // Specific style for input fields (concave look) - Theme version
   static InputDecorationTheme inputDecorationTheme({required bool isDark}) {
     final bg = isDark ? darkBackground : lightBackground;
-    // borderColor was unused
 
-    // Deep concave look for inputs:
-    // Darker background than surface, inner shadow simulated by border or gradient?
-    // Inputs usually look "pressed".
+    // Subtle concave look for inputs - "pressed in"
     final pressedBg = isDark
-        ? Color.lerp(bg, Colors.black, 0.2)!
-        : Color.lerp(bg, Colors.black, 0.05)!;
+        ? Color.lerp(bg, Colors.black, 0.03)!
+        : Color.lerp(bg, Colors.black, 0.01)!;
 
     return InputDecorationTheme(
       filled: true,
@@ -175,9 +150,7 @@ class NeumorphicStyles {
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(Radii.m),
         borderSide: BorderSide(
-          color: isDark
-              ? Colors.black26
-              : Colors.white54, // Inset highlight/shadow
+          color: isDark ? Colors.black26 : Colors.white54,
           width: 1,
         ),
       ),
@@ -200,9 +173,10 @@ class NeumorphicStyles {
   }) {
     final bg = isDark ? darkBackground : lightBackground;
 
+    // Subtle concave look for inputs - "pressed in"
     final pressedBg = isDark
-        ? Color.lerp(bg, Colors.black, 0.2)!
-        : Color.lerp(bg, Colors.black, 0.05)!;
+        ? Color.lerp(bg, Colors.black, 0.03)!
+        : Color.lerp(bg, Colors.black, 0.01)!;
 
     return InputDecoration(
       hintText: hintText,
