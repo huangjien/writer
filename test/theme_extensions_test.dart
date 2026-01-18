@@ -26,11 +26,10 @@ void main() {
     });
 
     test('lerp returns this when other is wrong type', () {
-      const base = UiStyleThemeExtension(styleFamily: UiStyleFamily.neumorphism);
-      final result = base.lerp(
-        const _WrongGenericExtension(),
-        0.5,
+      const base = UiStyleThemeExtension(
+        styleFamily: UiStyleFamily.neumorphism,
       );
+      final result = base.lerp(const _WrongGenericExtension(), 0.5);
       expect(result, same(base));
     });
 

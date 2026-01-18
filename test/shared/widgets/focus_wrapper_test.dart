@@ -69,4 +69,3 @@ void main() {
     expect(container.duration, Duration.zero);
   });
 }
-

@@ -145,10 +145,7 @@ void main() {
                     return SizedBox.shrink();
                   },
                 ),
-                LibraryErrorSection(
-                  error: 'Oops',
-                  onRetry: () => retryCalls++,
-                ),
+                LibraryErrorSection(error: 'Oops', onRetry: () => retryCalls++),
               ],
             ),
           ),

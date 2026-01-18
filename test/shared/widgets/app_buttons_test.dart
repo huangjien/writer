@@ -134,7 +134,9 @@ void main() {
       ),
     );
 
-    final button = tester.widget<NeumorphicButton>(find.byType(NeumorphicButton));
+    final button = tester.widget<NeumorphicButton>(
+      find.byType(NeumorphicButton),
+    );
     expect(button.onPressed, isNull);
   });
 
@@ -155,7 +157,9 @@ void main() {
       ),
     );
 
-    final button = tester.widget<NeumorphicButton>(find.byType(NeumorphicButton));
+    final button = tester.widget<NeumorphicButton>(
+      find.byType(NeumorphicButton),
+    );
     expect(button.onPressed, isNull);
 
     final text = tester.widget<Text>(find.text('Text'));

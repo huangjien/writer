@@ -134,11 +134,7 @@ void main() {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
     );
-    await _pumpCard(
-      tester,
-      theme: theme,
-      child: const Text('Content'),
-    );
+    await _pumpCard(tester, theme: theme, child: const Text('Content'));
 
     final decoration = _containerDecoration(tester);
     expect(decoration.borderRadius, BorderRadius.circular(20));
@@ -156,11 +152,7 @@ void main() {
         ),
       ),
     );
-    await _pumpCard(
-      tester,
-      theme: theme,
-      child: const Text('Content'),
-    );
+    await _pumpCard(tester, theme: theme, child: const Text('Content'));
 
     final decoration = _containerDecoration(tester);
     expect(decoration.borderRadius, BorderRadius.zero);
