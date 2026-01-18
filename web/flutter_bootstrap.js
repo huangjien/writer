@@ -6,6 +6,7 @@ _flutter.loader.load({
     serviceWorkerVersion: {{flutter_service_worker_version}},
   },
   config: {
+    renderer: "canvaskit",
     fontFallbackBaseUrl: "",
   },
 });

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../shared/strings.dart';
 
 /// Optional font packs for reader UI.
@@ -17,7 +18,7 @@ const List<String> _monoFallback = <String>[
   'monospace',
 ];
 
-const String embeddedChineseSansFamily = 'NotoSansSC';
+const String embeddedChineseSansFamily = 'Noto Sans SC';
 
 const List<String> _systemChineseFontsApple = <String>[
   'PingFang SC',
@@ -42,7 +43,10 @@ const List<String> _systemChineseFontsLinux = <String>[
   'AR PL UKai CN',
 ];
 
-const List<String> _embeddedChineseFonts = <String>['NotoSansSC'];
+const List<String> _embeddedChineseFonts = <String>[
+  'Noto Sans SC',
+  'NotoSansSC',
+];
 
 const List<String> _genericTextFallback = <String>[
   'Noto Sans',
@@ -73,6 +77,10 @@ List<String> chineseTextFallback() {
       break;
   }
   ordered.addAll(_embeddedChineseFonts);
+  // Add Google Fonts fallback just in case
+  final gf = GoogleFonts.notoSansSc().fontFamily;
+  if (gf != null) ordered.add(gf);
+
   ordered.addAll(_genericTextFallback);
 
   final deduped = <String>[];
@@ -239,19 +247,29 @@ ThemeData applyFontPackOrCustom(
 }
 
 Future<void> preloadEmbeddedChineseFonts() async {
-  // For web, use Google Fonts CDN instead of local files
-  if (kIsWeb) {
-    // Fonts are loaded via Google Fonts CDN in web/index.html
-    return Future.value();
-  }
+  // We preload fonts on all platforms including web to ensure
+  // consistent display and avoid tofu/squares.
   if (_preloadEmbeddedChineseFontsFuture != null) {
     return _preloadEmbeddedChineseFontsFuture!;
   }
   _preloadEmbeddedChineseFontsFuture = () async {
-    final loader = FontLoader(embeddedChineseSansFamily);
-    loader.addFont(rootBundle.load('assets/fonts/NotoSansSC-Regular.ttf'));
-    loader.addFont(rootBundle.load('assets/fonts/NotoSansSC-Bold.ttf'));
-    await loader.load();
+    try {
+      // 1. Try loading from local assets (fastest, works offline)
+      // Note: We use 'Noto Sans SC' with spaces to match pubspec.yaml and common usage
+      final loader = FontLoader(embeddedChineseSansFamily);
+      loader.addFont(rootBundle.load('assets/fonts/NotoSansSC-Regular.ttf'));
+      loader.addFont(rootBundle.load('assets/fonts/NotoSansSC-Bold.ttf'));
+      await loader.load();
+    } catch (e) {
+      debugPrint('Error loading embedded Chinese fonts from assets: $e');
+    }
+
+    try {
+      // 2. Ensure Google Fonts package also loads it (as backup)
+      await GoogleFonts.pendingFonts([GoogleFonts.notoSansSc()]);
+    } catch (e) {
+      debugPrint('Error loading Google Fonts pending fonts: $e');
+    }
   }();
   return _preloadEmbeddedChineseFontsFuture!;
 }

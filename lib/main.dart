@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'theme/font_packs.dart';
 import 'state/app_settings.dart';
 import 'state/ai_service_settings.dart';
 import 'state/theme_controller.dart';
@@ -14,9 +15,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Font preloading is handled by web/index.html preload links
-  // try {
-  //   await preloadEmbeddedChineseFonts();
-  // } catch (_) {}
+  try {
+    await preloadEmbeddedChineseFonts();
+  } catch (_) {}
 
   final prefs = await SharedPreferences.getInstance();
   final appSettings = AppSettingsNotifier(prefs);

@@ -63,7 +63,34 @@ class AppThemeBuilder {
     ThemeData base,
     ReaderTypographyPreset preset,
   ) {
-    return base.copyWith(textTheme: _getTextThemeForPreset(preset));
+    // Preserve the font family from the base theme if the preset doesn't override it
+    final presetTheme = _getTextThemeForPreset(preset);
+    final baseTheme = base.textTheme;
+
+    // Helper to merge text styles while preserving base font if preset doesn't specify one
+    TextStyle? merge(TextStyle? baseStyle, TextStyle? presetStyle) {
+      if (presetStyle == null) return baseStyle;
+      if (baseStyle == null) return presetStyle;
+
+      // If preset has a font family (e.g. serifLike), use it.
+      // Otherwise, keep the base font family (from font pack or custom font).
+      return baseStyle
+          .merge(presetStyle)
+          .copyWith(
+            fontFamily: presetStyle.fontFamily ?? baseStyle.fontFamily,
+            fontFamilyFallback:
+                presetStyle.fontFamilyFallback ?? baseStyle.fontFamilyFallback,
+          );
+    }
+
+    return base.copyWith(
+      textTheme: baseTheme.copyWith(
+        displayLarge: merge(baseTheme.displayLarge, presetTheme.displayLarge),
+        bodyLarge: merge(baseTheme.bodyLarge, presetTheme.bodyLarge),
+        bodyMedium: merge(baseTheme.bodyMedium, presetTheme.bodyMedium),
+        bodySmall: merge(baseTheme.bodySmall, presetTheme.bodySmall),
+      ),
+    );
   }
 
   /// Get text theme for a preset
