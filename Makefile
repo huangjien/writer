@@ -10,6 +10,7 @@
 ##   make serve-web-build WEB_PORT=8080
 
 FLUTTER := flutter
+SHELL := /usr/bin/env bash
 
 # Optional configuration passed via make variables
 AI_SERVICE_URL ?=
