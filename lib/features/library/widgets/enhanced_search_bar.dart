@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
+import '../../../shared/widgets/neumorphic_button.dart';
 import '../../../shared/widgets/neumorphic_textfield.dart';
 
 /// Enhanced search bar with filter chips
@@ -71,7 +72,20 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar> {
           hintText: widget.hintText ?? 'Search novels...',
           prefixIcon: const Icon(Icons.search),
           suffixIcon: _hasText
-              ? IconButton(icon: const Icon(Icons.clear), onPressed: _clear)
+              ? Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: SizedBox(
+                    width: 36,
+                    height: 36,
+                    child: NeumorphicButton(
+                      onPressed: _clear,
+                      padding: EdgeInsets.zero,
+                      borderRadius: BorderRadius.circular(Radii.m),
+                      depth: 4,
+                      child: const Icon(Icons.clear, size: 18),
+                    ),
+                  ),
+                )
               : null,
         ),
         // Filters
@@ -107,48 +121,34 @@ class LibraryFilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return InkWell(
-      onTap: onTap,
+    final selectedBg = theme.colorScheme.primary.withValues(alpha: 0.12);
+    final selectedFg = theme.colorScheme.primary;
+    final fg = theme.colorScheme.onSurfaceVariant;
+
+    return NeumorphicButton(
+      onPressed: onTap,
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.m,
+        vertical: Spacing.xs,
+      ),
       borderRadius: BorderRadius.circular(Radii.xl),
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: Spacing.m,
-          vertical: Spacing.xs,
-        ),
-        decoration: BoxDecoration(
-          color: selected ? theme.colorScheme.primary : Colors.transparent,
-          border: Border.all(
-            color: selected
-                ? theme.colorScheme.primary
-                : theme.colorScheme.outline,
-            width: 1.5,
-          ),
-          borderRadius: BorderRadius.circular(Radii.xl),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(
-                icon,
-                size: 16,
-                color: selected
-                    ? theme.colorScheme.onPrimary
-                    : theme.colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(width: Spacing.xs),
-            ],
-            Text(
-              label,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: selected
-                    ? theme.colorScheme.onPrimary
-                    : theme.colorScheme.onSurfaceVariant,
-                fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
+      color: selected ? selectedBg : null,
+      depth: selected ? 3 : 6,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 16, color: selected ? selectedFg : fg),
+            const SizedBox(width: Spacing.xs),
           ],
-        ),
+          Text(
+            label,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: selected ? selectedFg : fg,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }

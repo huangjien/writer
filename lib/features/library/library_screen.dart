@@ -540,12 +540,13 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
         title: Text(l10n.confirmDelete),
         content: Text(l10n.confirmDeleteDescription(novel.title)),
         actions: [
-          TextButton(
-            child: Text(l10n.cancel),
+          AppButtons.text(
+            label: l10n.cancel,
             onPressed: () => Navigator.of(context).pop(),
           ),
-          TextButton(
-            child: Text(l10n.delete),
+          AppButtons.text(
+            label: l10n.delete,
+            color: Theme.of(context).colorScheme.error,
             onPressed: () {
               Navigator.of(context).pop();
               onConfirm();

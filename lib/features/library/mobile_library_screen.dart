@@ -13,9 +13,12 @@ import '../../shared/widgets/parallax_header.dart';
 import '../../shared/widgets/scroll_reveal.dart';
 import '../../shared/widgets/gestures/pull_to_refresh.dart';
 import '../../shared/widgets/empty_states/novel_empty_state.dart';
+import '../../shared/widgets/neumorphic_textfield.dart';
+import '../../shared/widgets/app_buttons.dart';
 import '../../models/novel.dart';
 import '../../features/reader/reader_screen.dart';
 import '../../state/motion_settings.dart';
+import 'widgets/enhanced_search_bar.dart';
 
 /// Mobile-optimized library screen wrapper
 /// Features:
@@ -77,12 +80,14 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
 
   @override
   void dispose() {
+    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
   void _onSearchChanged() {
+    setState(() {});
     widget.onSearchChanged?.call(_searchController.text);
   }
 
@@ -250,9 +255,10 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
                         ),
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.more_vert),
+                    AppButtons.icon(
+                      iconData: Icons.more_vert,
                       onPressed: _showMoreMenu,
+                      tooltip: 'More',
                     ),
                   ],
                 ),
@@ -337,31 +343,25 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
   Widget _buildSearchBar(BuildContext context, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.all(Spacing.m),
-      child: TextField(
+      child: NeumorphicTextField(
         controller: _searchController,
-        decoration: InputDecoration(
-          hintText: 'Search novels...',
-          hintStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
-          prefixIcon: Icon(
-            Icons.search,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  icon: Icon(
-                    Icons.clear,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  onPressed: () {
-                    _searchController.clear();
-                  },
-                )
-              : null,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: Spacing.m,
-            vertical: Spacing.s,
-          ),
+        hintText: 'Search novels...',
+        prefixIcon: Icon(
+          Icons.search,
+          color: theme.colorScheme.onSurfaceVariant,
         ),
+        suffixIcon: _searchController.text.isNotEmpty
+            ? Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: AppButtons.icon(
+                  iconData: Icons.clear,
+                  onPressed: () => _searchController.clear(),
+                  tooltip: 'Clear search',
+                  color: theme.colorScheme.onSurfaceVariant,
+                  focusPadding: EdgeInsets.zero,
+                ),
+              )
+            : null,
       ),
     );
   }
@@ -380,24 +380,10 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
             final isSelected = filter == widget.selectedFilter;
             return Padding(
               padding: const EdgeInsets.only(right: Spacing.s),
-              child: FilterChip(
-                label: Text(filter),
+              child: LibraryFilterChip(
+                label: filter,
                 selected: isSelected,
-                onSelected: (selected) {
-                  widget.onFilterChanged?.call(filter);
-                },
-                backgroundColor: theme.colorScheme.surfaceContainerHighest
-                    .withValues(alpha: 0.6),
-                selectedColor: theme.colorScheme.primaryContainer,
-                labelStyle: TextStyle(
-                  color: isSelected
-                      ? theme.colorScheme.onPrimaryContainer
-                      : theme.colorScheme.onSurfaceVariant,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(Radii.m),
-                ),
+                onTap: () => widget.onFilterChanged?.call(filter),
               ),
             );
           },

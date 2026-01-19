@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/widgets/neumorphic_button.dart';
+import '../../../shared/widgets/neumorphic_textfield.dart';
 
 class LibrarySearchBar extends StatefulWidget {
   const LibrarySearchBar({
@@ -49,23 +51,51 @@ class _LibrarySearchBarState extends State<LibrarySearchBar> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return TextField(
+    final theme = Theme.of(context);
+
+    final showMatchCount = widget.matchCount != null;
+    final showClear = _hasText;
+    final suffix = (!showMatchCount && !showClear)
+        ? null
+        : Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (showMatchCount) ...[
+                  Text(
+                    '${widget.matchCount}',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(width: Spacing.s),
+                ],
+                if (showClear)
+                  SizedBox(
+                    width: 36,
+                    height: 36,
+                    child: NeumorphicButton(
+                      onPressed: _clear,
+                      padding: EdgeInsets.zero,
+                      borderRadius: BorderRadius.circular(Radii.m),
+                      depth: 4,
+                      child: Icon(
+                        Icons.clear,
+                        size: 18,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          );
+
+    return NeumorphicTextField(
       controller: widget.controller,
-      decoration: InputDecoration(
-        hintText: l10n.searchByTitle,
-        prefixIcon: const Icon(Icons.search),
-        suffixText: widget.matchCount != null ? '${widget.matchCount}' : null,
-        suffixIcon: _hasText
-            ? IconButton(
-                icon: const Icon(Icons.clear),
-                onPressed: _clear,
-                tooltip: 'Clear search',
-              )
-            : null,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(Radii.s),
-        ),
-      ),
+      hintText: l10n.searchByTitle,
+      prefixIcon: Icon(Icons.search, color: theme.colorScheme.onSurfaceVariant),
+      suffixIcon: suffix,
       onChanged: widget.onChanged,
     );
   }

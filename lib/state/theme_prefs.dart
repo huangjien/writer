@@ -94,6 +94,8 @@ AppThemeFamily decodeFamily(String? raw) {
   switch (raw) {
     case 'sepia':
       return AppThemeFamily.sepia;
+    case 'emeraldGreen':
+      return AppThemeFamily.emeraldGreen;
     case 'highContrast':
       return AppThemeFamily.highContrast;
     case 'solarized':
@@ -118,6 +120,8 @@ String encodeFamily(AppThemeFamily family) {
       return 'light';
     case AppThemeFamily.sepia:
       return 'sepia';
+    case AppThemeFamily.emeraldGreen:
+      return 'emeraldGreen';
     case AppThemeFamily.highContrast:
       return 'highContrast';
     case AppThemeFamily.solarized:

@@ -7,6 +7,7 @@ import 'neumorphic_styles.dart';
 enum AppThemeFamily {
   defaultFamily,
   sepia,
+  emeraldGreen,
   highContrast,
   solarized,
   solarizedTan,
@@ -22,6 +23,8 @@ Color _seedFor(AppThemeFamily family) {
       return Colors.indigo;
     case AppThemeFamily.sepia:
       return AppColors.sepiaSeed;
+    case AppThemeFamily.emeraldGreen:
+      return const Color(0xFF50C878);
     case AppThemeFamily.solarized:
       // Solarized Blue
       return const Color(0xFF268BD2);

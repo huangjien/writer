@@ -19,6 +19,7 @@ class ThemePreviewGrid extends StatelessWidget {
     final families = const [
       AppThemeFamily.defaultFamily,
       AppThemeFamily.sepia,
+      AppThemeFamily.emeraldGreen,
       AppThemeFamily.solarized,
       AppThemeFamily.solarizedTan,
       AppThemeFamily.nord,
@@ -33,6 +34,8 @@ class ThemePreviewGrid extends StatelessWidget {
           return l10n.themeDefault;
         case AppThemeFamily.sepia:
           return l10n.themeSepia;
+        case AppThemeFamily.emeraldGreen:
+          return l10n.themeEmeraldGreen;
         case AppThemeFamily.solarized:
           return l10n.themeSolarized;
         case AppThemeFamily.solarizedTan:

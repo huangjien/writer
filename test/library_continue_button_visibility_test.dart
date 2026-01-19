@@ -12,6 +12,7 @@ import 'package:writer/state/mock_providers.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/progress_providers.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 
 void main() {
   setUp(() async {
@@ -86,7 +87,7 @@ void main() {
     // Continue button should not be visible when no progress.
     final firstTile = find.widgetWithText(ListTile, 'The Whispering Forest');
     expect(firstTile, findsOneWidget);
-    expect(find.widgetWithText(TextButton, 'Continue'), findsNothing);
+    expect(find.widgetWithText(NeumorphicButton, 'Continue'), findsNothing);
     expect(find.text('Not started'), findsOneWidget);
   });
 
@@ -190,7 +191,7 @@ void main() {
 
     // Continue text reflects chapter title and button is visible.
     expect(find.text('Continue at chapter • Hidden Creek'), findsOneWidget);
-    expect(find.widgetWithText(TextButton, 'Continue'), findsOneWidget);
+    expect(find.widgetWithText(NeumorphicButton, 'Continue'), findsOneWidget);
   });
 
   testWidgets('Library Continue button hidden when no progress (zh)', (
@@ -260,7 +261,7 @@ void main() {
     // Continue button should not be visible when no progress.
     final firstTile = find.widgetWithText(ListTile, 'The Whispering Forest');
     expect(firstTile, findsOneWidget);
-    expect(find.widgetWithText(TextButton, '继续'), findsNothing);
+    expect(find.widgetWithText(NeumorphicButton, '继续'), findsNothing);
     expect(find.text('尚未开始'), findsOneWidget);
   });
 
@@ -364,6 +365,6 @@ void main() {
 
     // Continue text reflects chapter title and button is visible.
     expect(find.text('继续阅读章节 • Hidden Creek'), findsOneWidget);
-    expect(find.widgetWithText(TextButton, '继续'), findsOneWidget);
+    expect(find.widgetWithText(NeumorphicButton, '继续'), findsOneWidget);
   });
 }

@@ -908,6 +908,12 @@ abstract class AppLocalizations {
   /// **'Default'**
   String get themeDefault;
 
+  /// No description provided for @themeEmeraldGreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Emerald Green'**
+  String get themeEmeraldGreen;
+
   /// No description provided for @themeSolarized.
   ///
   /// In en, this message translates to:

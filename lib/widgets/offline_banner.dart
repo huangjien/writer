@@ -4,6 +4,7 @@ import '../state/sync_service_provider.dart';
 import '../state/network_monitor_provider.dart';
 import '../theme/design_tokens.dart';
 import '../theme/neumorphic_styles.dart';
+import '../shared/widgets/neumorphic_button.dart';
 
 /// Warning banner displayed when offline with pending operations
 /// Shows at the top of the screen or below the app bar
@@ -112,24 +113,49 @@ class OfflineBanner extends ConsumerWidget {
                               ),
                             ),
                             if (onRetry != null)
-                              TextButton(
-                                onPressed: onRetry,
-                                child: Text(
-                                  'Retry',
-                                  style: TextStyle(
-                                    color:
-                                        theme.colorScheme.onTertiaryContainer,
-                                    fontWeight: FontWeight.w700,
+                              Padding(
+                                padding: const EdgeInsets.only(left: Spacing.s),
+                                child: NeumorphicButton(
+                                  onPressed: onRetry,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: Spacing.m,
+                                    vertical: Spacing.s,
+                                  ),
+                                  borderRadius: BorderRadius.circular(Radii.xl),
+                                  depth: 4,
+                                  color: theme.colorScheme.tertiaryContainer,
+                                  child: Text(
+                                    'Retry',
+                                    style: TextStyle(
+                                      color:
+                                          theme.colorScheme.onTertiaryContainer,
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
                                 ),
                               ),
                             if (onDismiss != null)
-                              IconButton(
-                                icon: const Icon(Icons.close, size: 20),
-                                color: theme.colorScheme.onTertiaryContainer,
-                                onPressed: onDismiss,
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
+                              Padding(
+                                padding: const EdgeInsets.only(left: Spacing.s),
+                                child: SizedBox(
+                                  width: 36,
+                                  height: 36,
+                                  child: NeumorphicButton(
+                                    onPressed: onDismiss,
+                                    padding: EdgeInsets.zero,
+                                    borderRadius: BorderRadius.circular(
+                                      Radii.m,
+                                    ),
+                                    depth: 4,
+                                    color: theme.colorScheme.tertiaryContainer,
+                                    child: Icon(
+                                      Icons.close,
+                                      size: 18,
+                                      color:
+                                          theme.colorScheme.onTertiaryContainer,
+                                    ),
+                                  ),
+                                ),
                               ),
                           ],
                         ),

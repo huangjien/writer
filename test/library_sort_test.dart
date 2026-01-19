@@ -108,9 +108,14 @@ void main() {
     expect(starsPos.dy < whisperPos.dy, isTrue);
 
     // Change sort to Author and validate new first item.
-    final dropdown = find.byType(DropdownButton);
-    expect(dropdown, findsOneWidget);
-    await tester.tap(dropdown);
+    final sortDropdown = find.byKey(const Key('sortDropdown'));
+    expect(sortDropdown, findsOneWidget);
+    final dropdownButton = find.descendant(
+      of: sortDropdown,
+      matching: find.byType(DropdownButton<String>),
+    );
+    expect(dropdownButton, findsOneWidget);
+    await tester.tap(dropdownButton);
     await tester.pumpAndSettle();
 
     // Tap 'Author' menu item.

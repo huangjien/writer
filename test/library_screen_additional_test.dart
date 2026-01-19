@@ -71,6 +71,16 @@ void main() {
 
       // Both novels should be visible
       expect(find.text('Novel One'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Novel Two'),
+        200,
+        scrollable: find
+            .descendant(
+              of: find.byKey(const ValueKey('libraryListView')),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
       expect(find.text('Novel Two'), findsOneWidget);
     });
 
@@ -512,6 +522,9 @@ void main() {
 
   group('LibraryScreen - Mobile List', () {
     testWidgets('mobile list shows novel cards', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(400, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final novels = [
@@ -553,6 +566,9 @@ void main() {
     });
 
     testWidgets('mobile list shows floating action button', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(400, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final novels = const <Novel>[];
@@ -584,6 +600,9 @@ void main() {
     });
 
     testWidgets('mobile list shows bottom navigation bar', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(400, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final novels = const <Novel>[];
@@ -617,6 +636,9 @@ void main() {
 
   group('LibraryScreen - Tab Navigation', () {
     testWidgets('bottom nav bar shows all tabs', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(400, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
 
@@ -684,7 +706,12 @@ void main() {
       await tester.pumpAndSettle();
 
       // Enter search in lowercase
-      final searchField = find.byType(TextField);
+      final searchField = find
+          .descendant(
+            of: find.byType(EnhancedSearchBar),
+            matching: find.byType(TextField),
+          )
+          .first;
       await tester.enterText(searchField, 'great');
       await tester.pumpAndSettle();
 
@@ -727,7 +754,12 @@ void main() {
       await tester.pumpAndSettle();
 
       // Enter partial search
-      final searchField = find.byType(TextField);
+      final searchField = find
+          .descendant(
+            of: find.byType(EnhancedSearchBar),
+            matching: find.byType(TextField),
+          )
+          .first;
       await tester.enterText(searchField, 'adv');
       await tester.pumpAndSettle();
 
@@ -780,6 +812,16 @@ void main() {
 
       // Both novels should be visible with empty search
       expect(find.text('Novel One'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Novel Two'),
+        200,
+        scrollable: find
+            .descendant(
+              of: find.byKey(const ValueKey('libraryListView')),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
       expect(find.text('Novel Two'), findsOneWidget);
     });
 
@@ -827,7 +869,12 @@ void main() {
       await tester.pumpAndSettle();
 
       // Enter search
-      final searchField = find.byType(TextField);
+      final searchField = find
+          .descendant(
+            of: find.byType(EnhancedSearchBar),
+            matching: find.byType(TextField),
+          )
+          .first;
       await tester.enterText(searchField, 'One');
       await tester.pumpAndSettle();
 
@@ -841,6 +888,16 @@ void main() {
 
       // Both novels should be visible again
       expect(find.text('Novel One'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Novel Two'),
+        200,
+        scrollable: find
+            .descendant(
+              of: find.byKey(const ValueKey('libraryListView')),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
       expect(find.text('Novel Two'), findsOneWidget);
     });
   });
@@ -892,24 +949,24 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Find the sort dropdown and select title ascending
-      final sortDropdown = find.byKey(const Key('sortDropdown'));
-      expect(sortDropdown, findsOneWidget);
-      await tester.tap(sortDropdown);
-      await tester.pumpAndSettle();
-
-      // Select title ascending
-      // Select author to change sort
-      await tester.tap(find.text('Author'));
-      await tester.pumpAndSettle();
-
-      // Get all list items
       final listItems = find.byType(LibraryItemRow);
-      expect(listItems, findsNWidgets(2));
+      expect(listItems, findsWidgets);
+      expect(
+        find.descendant(of: listItems.first, matching: find.text('Apple')),
+        findsOneWidget,
+      );
 
-      // First item should be Apple
-      final firstItem = listItems.first;
-      expect(firstItem, findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Zebra'),
+        200,
+        scrollable: find
+            .descendant(
+              of: find.byKey(const ValueKey('libraryListView')),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      expect(find.text('Zebra'), findsOneWidget);
     });
 
     testWidgets('sort by author ascending', (tester) async {
@@ -969,9 +1026,23 @@ void main() {
       await tester.tap(find.text('Author'));
       await tester.pumpAndSettle();
 
-      // Get all list items
       final listItems = find.byType(LibraryItemRow);
-      expect(listItems, findsNWidgets(2));
+      expect(listItems, findsWidgets);
+      expect(
+        find.descendant(of: listItems.first, matching: find.text('Novel Two')),
+        findsOneWidget,
+      );
+      await tester.scrollUntilVisible(
+        find.text('Novel One'),
+        200,
+        scrollable: find
+            .descendant(
+              of: find.byKey(const ValueKey('libraryListView')),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      expect(find.text('Novel One'), findsOneWidget);
     });
   });
 

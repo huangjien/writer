@@ -52,6 +52,10 @@ class PaletteSettingsSection extends ConsumerWidget {
                       child: Text(l10n.themeSepia),
                     ),
                     DropdownMenuItem(
+                      value: AppThemeFamily.emeraldGreen,
+                      child: Text(l10n.themeEmeraldGreen),
+                    ),
+                    DropdownMenuItem(
                       value: AppThemeFamily.solarized,
                       child: Text(l10n.themeSolarized),
                     ),
@@ -113,6 +117,10 @@ class PaletteSettingsSection extends ConsumerWidget {
                       child: Text(l10n.themeSepia),
                     ),
                     DropdownMenuItem(
+                      value: AppThemeFamily.emeraldGreen,
+                      child: Text(l10n.themeEmeraldGreen),
+                    ),
+                    DropdownMenuItem(
                       value: AppThemeFamily.solarized,
                       child: Text(l10n.themeSolarized),
                     ),
@@ -171,6 +179,10 @@ class PaletteSettingsSection extends ConsumerWidget {
                     DropdownMenuItem(
                       value: AppThemeFamily.sepia,
                       child: Text(l10n.themeSepia),
+                    ),
+                    DropdownMenuItem(
+                      value: AppThemeFamily.emeraldGreen,
+                      child: Text(l10n.themeEmeraldGreen),
                     ),
                     DropdownMenuItem(
                       value: AppThemeFamily.solarized,

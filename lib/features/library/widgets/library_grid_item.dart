@@ -4,9 +4,11 @@ import 'package:animations/animations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../models/novel.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../theme/design_tokens.dart';
 import '../../../state/motion_settings.dart';
 import '../../../shared/image_utils.dart';
+import '../../../shared/widgets/neumorphic_button.dart';
 import '../../../shared/widgets/gestures/pinch_to_zoom.dart';
 import '../../../shared/widgets/theme_aware_card.dart';
 import '../../reader/reader_screen.dart';
@@ -243,23 +245,71 @@ class LibraryGridItem extends ConsumerWidget {
               Positioned(
                 top: 0,
                 right: 0,
-                child: PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_vert),
-                  onSelected: (value) {
-                    if (value == 'delete') {
-                      onRemove?.call();
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(value: 'delete', child: Text('Delete')),
-                  ],
-                ),
+                child: _GridItemMenuButton(onDelete: onRemove),
               ),
           ],
         );
       },
       openBuilder: (context, action) {
         return ReaderScreen(novelId: novel.id);
+      },
+    );
+  }
+}
+
+class _GridItemMenuButton extends StatelessWidget {
+  const _GridItemMenuButton({this.onDelete});
+
+  final VoidCallback? onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    if (onDelete == null) return const SizedBox.shrink();
+    final l10n = AppLocalizations.of(context)!;
+
+    return Builder(
+      builder: (buttonContext) {
+        return SizedBox(
+          width: 38,
+          height: 38,
+          child: NeumorphicButton(
+            padding: EdgeInsets.zero,
+            borderRadius: BorderRadius.circular(Radii.m),
+            depth: 6,
+            onPressed: () async {
+              final box = buttonContext.findRenderObject() as RenderBox;
+              final overlay =
+                  Overlay.of(buttonContext).context.findRenderObject()
+                      as RenderBox;
+              final rect = Rect.fromPoints(
+                box.localToGlobal(Offset.zero, ancestor: overlay),
+                box.localToGlobal(
+                  box.size.bottomRight(Offset.zero),
+                  ancestor: overlay,
+                ),
+              );
+
+              final result = await showMenu<String>(
+                context: buttonContext,
+                position: RelativeRect.fromRect(
+                  rect,
+                  Offset.zero & overlay.size,
+                ),
+                items: [
+                  PopupMenuItem<String>(
+                    value: 'delete',
+                    child: Text(l10n.delete),
+                  ),
+                ],
+              );
+
+              if (result == 'delete') {
+                onDelete?.call();
+              }
+            },
+            child: const Icon(Icons.more_vert, size: 18),
+          ),
+        );
       },
     );
   }

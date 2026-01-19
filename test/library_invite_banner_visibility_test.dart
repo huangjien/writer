@@ -43,22 +43,14 @@ void main() {
       ),
     );
 
-    // Banner is shown via post-frame callback
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    // Expect a single MaterialBanner with the sign-in prompt (scoped to banner)
-    final bannerFinder = find.byType(MaterialBanner);
-    expect(bannerFinder, findsOneWidget);
-    final bannerContentFinder = find.descendant(
-      of: bannerFinder,
-      matching: find.text(
-        AppLocalizations.of(tester.element(bannerFinder))!.signInToSync,
-      ),
-    );
-    expect(bannerContentFinder, findsOneWidget);
+    expect(find.byType(MaterialBanner), findsNothing);
 
-    // Pump again; banner should not duplicate
-    await tester.pump();
-    expect(bannerFinder, findsOneWidget);
+    final l10n = AppLocalizations.of(
+      tester.element(find.byType(LibraryScreen)),
+    )!;
+    expect(find.text(l10n.signInToSync), findsOneWidget);
+    expect(find.text(l10n.signIn), findsWidgets);
   });
 }

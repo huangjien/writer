@@ -570,7 +570,10 @@ void main() {
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
+            home: const MediaQuery(
+              data: MediaQueryData(size: Size(1200, 800)),
+              child: LibraryScreen(),
+            ),
           ),
         ),
       );
@@ -578,6 +581,14 @@ void main() {
 
       // Initially all novels should be visible
       expect(find.text('Test Novel 1'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Test Novel 2'),
+        300.0,
+        scrollable: find.descendant(
+          of: find.byKey(const ValueKey('libraryListView')),
+          matching: find.byType(Scrollable),
+        ),
+      );
       expect(find.text('Test Novel 2'), findsOneWidget);
 
       // Clear search should show all novels
@@ -585,6 +596,14 @@ void main() {
       await tester.enterText(searchField, '');
       await tester.pump();
       expect(find.text('Test Novel 1'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Test Novel 2'),
+        300.0,
+        scrollable: find.descendant(
+          of: find.byKey(const ValueKey('libraryListView')),
+          matching: find.byType(Scrollable),
+        ),
+      );
       expect(find.text('Test Novel 2'), findsOneWidget);
     });
 

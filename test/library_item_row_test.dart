@@ -12,6 +12,7 @@ import 'package:writer/models/user_progress.dart';
 import 'package:writer/features/library/widgets/library_item_row.dart';
 import 'package:writer/features/library/library_providers.dart'
     as lib_providers;
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/motion_settings.dart';
@@ -229,8 +230,10 @@ void main() {
 
     final btnFinder = find.byKey(const Key('downloadButton_n3'));
     expect(find.byTooltip('Download chapters'), findsWidgets);
-    final btn = tester.widget<IconButton>(btnFinder);
-    expect(btn.onPressed, isNull);
+    final neumorphicButton = tester.widget<NeumorphicButton>(
+      find.descendant(of: btnFinder, matching: find.byType(NeumorphicButton)),
+    );
+    expect(neumorphicButton.onPressed, isNull);
   });
 
   testWidgets('Download action shows spinner then resets', (tester) async {

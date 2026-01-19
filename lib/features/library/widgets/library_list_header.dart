@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/design_tokens.dart';
+import '../../../shared/widgets/neumorphic_button.dart';
+import '../../../shared/widgets/neumorphic_dropdown.dart';
 
 enum LibraryViewMode { list, grid }
 
@@ -26,73 +28,113 @@ class LibraryListHeader extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    Widget viewModeToggle() {
+      return Container(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(Radii.s),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.library_books, size: 16),
-            const SizedBox(width: 6),
-            Text('$visibleCount / $totalCount ${l10n.novels}'),
-            const Spacer(),
-
-            // View mode toggle
-            Container(
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(Radii.s),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _ViewModeButton(
-                    icon: Icons.view_list,
-                    isSelected: viewMode == LibraryViewMode.list,
-                    onTap: () => onViewModeChanged(LibraryViewMode.list),
-                    tooltip: l10n.listView,
-                  ),
-                  _ViewModeButton(
-                    icon: Icons.grid_view,
-                    isSelected: viewMode == LibraryViewMode.grid,
-                    onTap: () => onViewModeChanged(LibraryViewMode.grid),
-                    tooltip: l10n.gridView,
-                  ),
-                ],
-              ),
+            _ViewModeButton(
+              icon: Icons.view_list,
+              isSelected: viewMode == LibraryViewMode.list,
+              onTap: () => onViewModeChanged(LibraryViewMode.list),
+              tooltip: l10n.listView,
             ),
-
-            const SizedBox(width: 12),
-
-            // Sort dropdown
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.sort, size: 16),
-                const SizedBox(width: 6),
-                DropdownButton<dynamic>(
-                  key: const Key('sortDropdown'),
-                  value: sortValue,
-                  underline: const SizedBox.shrink(),
-                  items: [
-                    DropdownMenuItem<dynamic>(
-                      value: 'titleAsc',
-                      child: Text(l10n.titleLabel),
-                    ),
-                    DropdownMenuItem<dynamic>(
-                      value: 'authorAsc',
-                      child: Text(l10n.authorLabel),
-                    ),
-                  ],
-                  onChanged: (v) {
-                    if (v is String) onSortChanged(v);
-                  },
-                ),
-              ],
+            _ViewModeButton(
+              icon: Icons.grid_view,
+              isSelected: viewMode == LibraryViewMode.grid,
+              onTap: () => onViewModeChanged(LibraryViewMode.grid),
+              tooltip: l10n.gridView,
             ),
           ],
         ),
-        const SizedBox(height: Spacing.s),
-      ],
+      );
+    }
+
+    Widget sortControl() {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.sort, size: 16),
+          const SizedBox(width: 6),
+          NeumorphicDropdown<String>(
+            key: const Key('sortDropdown'),
+            value: sortValue,
+            items: [
+              DropdownMenuItem<String>(
+                value: 'titleAsc',
+                child: Text(l10n.titleLabel),
+              ),
+              DropdownMenuItem<String>(
+                value: 'authorAsc',
+                child: Text(l10n.authorLabel),
+              ),
+            ],
+            onChanged: (v) {
+              if (v != null) onSortChanged(v);
+            },
+          ),
+        ],
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompact = constraints.maxWidth < 420;
+        if (isCompact) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.library_books, size: 16),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      '$visibleCount / $totalCount ${l10n.novels}',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: Spacing.s),
+              Wrap(
+                spacing: Spacing.m,
+                runSpacing: Spacing.s,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [viewModeToggle(), sortControl()],
+              ),
+              const SizedBox(height: Spacing.s),
+            ],
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.library_books, size: 16),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    '$visibleCount / $totalCount ${l10n.novels}',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                viewModeToggle(),
+                const SizedBox(width: 12),
+                sortControl(),
+              ],
+            ),
+            const SizedBox(height: Spacing.s),
+          ],
+        );
+      },
     );
   }
 }
@@ -116,25 +158,22 @@ class _ViewModeButton extends StatelessWidget {
 
     return Tooltip(
       message: tooltip,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(Radii.s),
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Spacing.s,
-            vertical: 6,
-          ),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? theme.colorScheme.primaryContainer
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(Radii.s),
-          ),
+      child: SizedBox(
+        width: 38,
+        height: 38,
+        child: NeumorphicButton(
+          onPressed: onTap,
+          padding: EdgeInsets.zero,
+          borderRadius: BorderRadius.circular(Radii.s),
+          depth: isSelected ? 3 : 6,
+          color: isSelected
+              ? theme.colorScheme.primary.withValues(alpha: 0.10)
+              : null,
           child: Icon(
             icon,
             size: 18,
             color: isSelected
-                ? theme.colorScheme.onPrimaryContainer
+                ? theme.colorScheme.primary
                 : theme.colorScheme.onSurfaceVariant,
           ),
         ),

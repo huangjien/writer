@@ -6,6 +6,7 @@ import '../../shared/strings.dart';
 import '../../state/providers.dart';
 import '../../state/novel_providers.dart';
 import '../../repositories/novel_repository.dart';
+import '../../theme/design_tokens.dart';
 import '../../theme/neumorphic_styles.dart';
 import '../../shared/widgets/neumorphic_dropdown.dart';
 import '../../shared/widgets/app_buttons.dart';
@@ -80,7 +81,6 @@ class _CreateNovelScreenState extends ConsumerState<CreateNovelScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isSignedIn = ref.watch(isSignedInProvider);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     if (!isSignedIn) {
       return Scaffold(
         appBar: AppBar(title: Text(l10n.createNovel)),
@@ -113,12 +113,10 @@ class _CreateNovelScreenState extends ConsumerState<CreateNovelScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
-                    child: TextFormField(
+                    child: _NeumorphicTextFormField(
                       controller: _titleController,
-                      decoration: NeumorphicStyles.inputDecoration(
-                        isDark: isDark,
-                        hintText: l10n.titleLabel,
-                      ).copyWith(labelText: l10n.titleLabel),
+                      hintText: l10n.titleLabel,
+                      labelText: l10n.titleLabel,
                       validator: (v) => isBlank(v) ? l10n.titleLabel : null,
                     ),
                   ),
@@ -137,34 +135,25 @@ class _CreateNovelScreenState extends ConsumerState<CreateNovelScreen> {
                 ],
               ),
               const SizedBox(height: 12),
-              TextFormField(
+              _NeumorphicTextFormField(
                 controller: _authorController,
-                decoration: NeumorphicStyles.inputDecoration(
-                  isDark: isDark,
-                  hintText: l10n.authorLabel,
-                ).copyWith(labelText: l10n.authorLabel),
+                hintText: l10n.authorLabel,
+                labelText: l10n.authorLabel,
               ),
               const SizedBox(height: 12),
-              TextFormField(
+              _NeumorphicTextFormField(
                 controller: _descriptionController,
                 minLines: 3,
                 maxLines: null,
-                decoration:
-                    NeumorphicStyles.inputDecoration(
-                      isDark: isDark,
-                      hintText: l10n.descriptionLabel,
-                    ).copyWith(
-                      labelText: l10n.descriptionLabel,
-                      alignLabelWithHint: true,
-                    ),
+                hintText: l10n.descriptionLabel,
+                labelText: l10n.descriptionLabel,
+                alignLabelWithHint: true,
               ),
               const SizedBox(height: 12),
-              TextFormField(
+              _NeumorphicTextFormField(
                 controller: _coverUrlController,
-                decoration: NeumorphicStyles.inputDecoration(
-                  isDark: isDark,
-                  hintText: l10n.coverUrlLabel,
-                ).copyWith(labelText: l10n.coverUrlLabel),
+                hintText: l10n.coverUrlLabel,
+                labelText: l10n.coverUrlLabel,
                 validator: _validateCoverUrl,
               ),
               const SizedBox(height: 16),
@@ -187,6 +176,69 @@ class _CreateNovelScreenState extends ConsumerState<CreateNovelScreen> {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NeumorphicTextFormField extends StatelessWidget {
+  const _NeumorphicTextFormField({
+    required this.controller,
+    this.hintText,
+    this.labelText,
+    this.validator,
+    this.minLines,
+    this.maxLines = 1,
+    this.alignLabelWithHint = false,
+  });
+
+  final TextEditingController controller;
+  final String? hintText;
+  final String? labelText;
+  final String? Function(String?)? validator;
+  final int? minLines;
+  final int? maxLines;
+  final bool alignLabelWithHint;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Container(
+      decoration:
+          NeumorphicStyles.decoration(
+            isDark: isDark,
+            isPressed: true,
+            borderRadius: BorderRadius.circular(Radii.m),
+            depth: 4,
+          ).copyWith(
+            border: Border.all(
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.5)
+                  : Colors.white.withValues(alpha: 0.7),
+              width: 1,
+            ),
+          ),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      child: TextFormField(
+        controller: controller,
+        validator: validator,
+        minLines: minLines,
+        maxLines: maxLines,
+        style: theme.textTheme.bodyMedium,
+        decoration: InputDecoration(
+          hintText: hintText,
+          labelText: labelText,
+          alignLabelWithHint: alignLabelWithHint,
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: Spacing.m,
+            vertical: Spacing.m,
           ),
         ),
       ),

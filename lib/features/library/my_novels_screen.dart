@@ -8,6 +8,7 @@ import '../../models/novel.dart';
 import '../../state/novel_providers.dart';
 import '../../state/providers.dart';
 import '../../shared/image_utils.dart';
+import '../../shared/widgets/app_buttons.dart';
 import '../../shared/widgets/empty_states/novel_empty_state.dart';
 
 class MyNovelsScreen extends ConsumerWidget {
@@ -22,9 +23,9 @@ class MyNovelsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n?.myNovels ?? 'My Novels'),
         actions: [
-          IconButton(
+          AppButtons.icon(
+            iconData: Icons.home,
             onPressed: () => context.go('/'),
-            icon: const Icon(Icons.home),
             tooltip: l10n?.home ?? 'Home',
           ),
         ],
@@ -36,9 +37,9 @@ class MyNovelsScreen extends ConsumerWidget {
                 children: [
                   Text(l10n?.signInToSync ?? 'Sign in to sync.'),
                   const SizedBox(height: 12),
-                  FilledButton(
+                  AppButtons.primary(
                     onPressed: () => context.push('/auth'),
-                    child: Text(l10n?.signIn ?? 'Sign in'),
+                    label: l10n?.signIn ?? 'Sign in',
                   ),
                 ],
               ),

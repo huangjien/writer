@@ -13,6 +13,7 @@ import '../../../repositories/chapter_repository.dart';
 import '../../../models/chapter.dart';
 import '../../../models/user_progress.dart';
 import '../../library/library_providers.dart';
+import '../../../shared/widgets/app_buttons.dart';
 
 class _DownloadIntent extends Intent {
   const _DownloadIntent();
@@ -187,30 +188,32 @@ class LibraryItemRow extends ConsumerWidget {
               hint: 'Press D',
               child: Tooltip(
                 message: '${l10n.downloadChapters} (D)',
-                child: IconButton(
+                child: KeyedSubtree(
                   key: Key('downloadButton_$novelId'),
-                  icon: const Icon(Icons.download),
-                  tooltip: l10n.downloadChapters,
-                  onPressed: () async {
-                    ref
-                        .read(downloadStateProvider.notifier)
-                        .update((state) => {...state, novelId: true});
-                    try {
-                      final chapterRepository = ref.read(
-                        chapterRepositoryProvider,
-                      );
-                      final chapters = await chapterRepository.getChapters(
-                        novelId,
-                      );
-                      for (final chapter in chapters) {
-                        await chapterRepository.getChapter(chapter);
-                      }
-                    } finally {
+                  child: AppButtons.icon(
+                    iconData: Icons.download,
+                    tooltip: l10n.downloadChapters,
+                    onPressed: () async {
                       ref
                           .read(downloadStateProvider.notifier)
-                          .update((state) => {...state, novelId: false});
-                    }
-                  },
+                          .update((state) => {...state, novelId: true});
+                      try {
+                        final chapterRepository = ref.read(
+                          chapterRepositoryProvider,
+                        );
+                        final chapters = await chapterRepository.getChapters(
+                          novelId,
+                        );
+                        for (final chapter in chapters) {
+                          await chapterRepository.getChapter(chapter);
+                        }
+                      } finally {
+                        ref
+                            .read(downloadStateProvider.notifier)
+                            .update((state) => {...state, novelId: false});
+                      }
+                    },
+                  ),
                 ),
               ),
             );
@@ -222,11 +225,14 @@ class LibraryItemRow extends ConsumerWidget {
       order: const NumericFocusOrder(1.0),
       child: Tooltip(
         message: l10n.downloadChapters,
-        child: IconButton(
+        child: KeyedSubtree(
           key: Key('downloadButton_$novelId'),
-          icon: const Icon(Icons.download),
-          tooltip: l10n.downloadChapters,
-          onPressed: null,
+          child: AppButtons.icon(
+            iconData: Icons.download,
+            tooltip: l10n.downloadChapters,
+            enabled: false,
+            onPressed: () {},
+          ),
         ),
       ),
     );
@@ -249,13 +255,15 @@ class LibraryItemRow extends ConsumerWidget {
               button: true,
               label: l10n.continueLabel,
               hint: 'Press Enter',
-              child: TextButton(
+              child: KeyedSubtree(
                 key: Key('continueButton_$novelId'),
-                onPressed: () {
-                  final dest = '/novel/$novelId/chapters/${p.chapterId}';
-                  context.push(dest);
-                },
-                child: Text(l10n.continueLabel),
+                child: AppButtons.text(
+                  label: l10n.continueLabel,
+                  onPressed: () {
+                    final dest = '/novel/$novelId/chapters/${p.chapterId}';
+                    context.push(dest);
+                  },
+                ),
               ),
             ),
           ),
@@ -283,10 +291,13 @@ class LibraryItemRow extends ConsumerWidget {
           button: true,
           label: l10n.remove,
           hint: 'Press Delete',
-          child: IconButton(
+          child: KeyedSubtree(
             key: Key('removeButton_${n.id}'),
-            icon: const Icon(Icons.delete_outline),
-            onPressed: onRemove,
+            child: AppButtons.icon(
+              iconData: Icons.delete_outline,
+              tooltip: l10n.remove,
+              onPressed: onRemove!,
+            ),
           ),
         ),
       ),

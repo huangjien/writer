@@ -431,6 +431,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get themeDefault => '默认';
 
   @override
+  String get themeEmeraldGreen => '祖母绿';
+
+  @override
   String get themeSolarized => 'Solarized';
 
   @override

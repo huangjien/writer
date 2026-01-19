@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../state/novel_providers.dart';
+import '../../../shared/widgets/app_buttons.dart';
 
 class LibraryErrorSection extends ConsumerWidget {
   const LibraryErrorSection({
@@ -28,9 +29,9 @@ class LibraryErrorSection extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(message ?? l10n.error),
           const SizedBox(height: 8),
-          OutlinedButton.icon(
-            icon: const Icon(Icons.refresh),
-            label: Text(l10n.reload),
+          AppButtons.secondary(
+            label: l10n.reload,
+            icon: Icons.refresh,
             onPressed:
                 onRetry ??
                 () {
