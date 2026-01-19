@@ -32,12 +32,21 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Create Novel'), findsOneWidget);
-    expect(find.text('Title'), findsOneWidget);
-    expect(find.text('Author'), findsOneWidget);
-    expect(find.text('Description'), findsOneWidget);
-    expect(find.text('Cover URL'), findsOneWidget);
+    expect(find.widgetWithText(TextFormField, 'Title').first, findsOneWidget);
+    expect(find.widgetWithText(TextFormField, 'Author').first, findsOneWidget);
+    expect(
+      find.widgetWithText(TextFormField, 'Description').first,
+      findsOneWidget,
+    );
+    expect(
+      find.widgetWithText(TextFormField, 'Cover URL').first,
+      findsOneWidget,
+    );
 
-    await tester.enterText(find.byType(TextFormField).at(3), 'http://bad link');
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Cover URL').first,
+      'http://bad link',
+    );
     await tester.pump();
     expect(
       find.text('Enter a valid http(s) URL without spaces.'),
@@ -45,7 +54,7 @@ void main() {
     );
 
     await tester.enterText(
-      find.byType(TextFormField).at(3),
+      find.widgetWithText(TextFormField, 'Cover URL').first,
       'https://example.com/img.png',
     );
     await tester.pump();

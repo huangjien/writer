@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../state/performance_settings.dart';
 import '../../../state/providers.dart';
+import '../../../shared/widgets/neumorphic_switch.dart';
 
 class PerformanceSection extends ConsumerWidget {
   const PerformanceSection({super.key});
@@ -18,15 +19,17 @@ class PerformanceSection extends ConsumerWidget {
           l10n.performanceSettings,
           style: Theme.of(context).textTheme.titleLarge,
         ),
-        SwitchListTile(
+        ListTile(
           title: Text(l10n.prefetchNextChapter),
           subtitle: Text(l10n.prefetchNextChapterDescription),
-          value: perf.prefetchNextChapter,
-          onChanged: (value) {
-            ref
-                .read(performanceSettingsProvider.notifier)
-                .setPrefetchNextChapter(value);
-          },
+          trailing: NeumorphicSwitch(
+            value: perf.prefetchNextChapter,
+            onChanged: (value) {
+              ref
+                  .read(performanceSettingsProvider.notifier)
+                  .setPrefetchNextChapter(value);
+            },
+          ),
         ),
         ListTile(
           leading: const Icon(Icons.cleaning_services),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/design_tokens.dart';
+import '../../shared/widgets/app_buttons.dart';
 import '../../shared/widgets/mobile_bottom_nav_bar.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -96,8 +97,8 @@ class _MobileToolsScreenState extends State<MobileToolsScreen> {
     return AppBar(
       title: Text(l10n.tools),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.more_vert),
+        AppButtons.icon(
+          iconData: Icons.more_vert,
           onPressed: () => _showMoreMenu(context, l10n),
         ),
       ],

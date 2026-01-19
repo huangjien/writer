@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
+import '../../../shared/widgets/neumorphic_textfield.dart';
 
 /// Enhanced search bar with filter chips
 /// Features:
@@ -65,19 +66,13 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Search input
-        TextField(
+        NeumorphicTextField(
           controller: _controller,
-          decoration: InputDecoration(
-            hintText: widget.hintText ?? 'Search novels...',
-            prefixIcon: const Icon(Icons.search),
-            suffixIcon: _hasText
-                ? IconButton(icon: const Icon(Icons.clear), onPressed: _clear)
-                : null,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: Spacing.m,
-              vertical: Spacing.m,
-            ),
-          ),
+          hintText: widget.hintText ?? 'Search novels...',
+          prefixIcon: const Icon(Icons.search),
+          suffixIcon: _hasText
+              ? IconButton(icon: const Icon(Icons.clear), onPressed: _clear)
+              : null,
         ),
         // Filters
         if (widget.showFilters && widget.filters != null) ...[

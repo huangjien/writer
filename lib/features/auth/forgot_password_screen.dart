@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
 import '../../state/ai_service_settings.dart';
 import '../../l10n/app_localizations.dart';
+import '../../shared/widgets/app_buttons.dart';
+import '../../shared/widgets/neumorphic_textfield.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key, this.client});
@@ -111,9 +113,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 24),
-                    ElevatedButton(
+                    AppButtons.primary(
                       onPressed: () => context.go('/signin'),
-                      child: Text(l10n.backToSignIn),
+                      label: l10n.backToSignIn,
                     ),
                   ],
                 ),
@@ -123,9 +125,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 children: [
                   Text(l10n.enterEmailForResetLink),
                   const SizedBox(height: 16),
-                  TextField(
+                  NeumorphicTextField(
                     controller: _emailController,
-                    decoration: InputDecoration(labelText: l10n.email),
+                    hintText: l10n.email,
                     keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 20),
@@ -133,15 +135,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     Text(_error!, style: const TextStyle(color: Colors.red)),
                     const SizedBox(height: 8),
                   ],
-                  ElevatedButton(
-                    onPressed: _loading ? null : _submit,
-                    child: _loading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(l10n.sendResetLink),
+                  AppButtons.primary(
+                    onPressed: _loading ? () {} : _submit,
+                    label: l10n.sendResetLink,
+                    isLoading: _loading,
                   ),
                 ],
               ),

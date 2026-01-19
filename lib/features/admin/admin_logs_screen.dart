@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../repositories/remote_repository.dart';
 import '../../shared/api_exception.dart';
 import '../../l10n/app_localizations.dart';
+import '../../shared/widgets/app_buttons.dart';
 
 class AdminLogsScreen extends ConsumerStatefulWidget {
   const AdminLogsScreen({super.key});
@@ -117,9 +118,10 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _loadLogs,
-                  child: Text(l10n.load),
+                AppButtons.primary(
+                  onPressed: _isLoading ? () {} : _loadLogs,
+                  label: l10n.load,
+                  isLoading: _isLoading,
                 ),
               ],
             ),

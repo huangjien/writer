@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
 
 class PinchToZoom extends StatelessWidget {
   const PinchToZoom({
@@ -67,9 +68,9 @@ class PinchToZoom extends StatelessWidget {
                     Positioned(
                       top: 8,
                       right: 8,
-                      child: IconButton(
+                      child: AppButtons.icon(
                         onPressed: () => Navigator.of(context).maybePop(),
-                        icon: const Icon(Icons.close),
+                        iconData: Icons.close,
                         color: Colors.white,
                         tooltip: MaterialLocalizations.of(
                           context,

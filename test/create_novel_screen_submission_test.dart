@@ -5,10 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:writer/features/library/create_novel_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/providers.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/models/novel.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 
 void main() {
   group('CreateNovelScreen - Cover URL Length Validation', () {
@@ -28,6 +30,7 @@ void main() {
         ProviderScope(
           overrides: [
             sessionProvider.overrideWith((_) => session),
+            isSignedInProvider.overrideWithValue(true),
             novelRepositoryProvider.overrideWith(
               (ref) => MockNovelRepository(),
             ),
@@ -65,6 +68,7 @@ void main() {
         ProviderScope(
           overrides: [
             sessionProvider.overrideWith((_) => session),
+            isSignedInProvider.overrideWithValue(true),
             novelRepositoryProvider.overrideWith(
               (ref) => MockNovelRepository(),
             ),
@@ -110,6 +114,7 @@ void main() {
         ProviderScope(
           overrides: [
             sessionProvider.overrideWith((_) => session),
+            isSignedInProvider.overrideWithValue(true),
             novelRepositoryProvider.overrideWith((ref) => mockRepo),
           ],
           child: MaterialApp(
@@ -135,8 +140,9 @@ void main() {
       );
       await tester.pump();
 
-      // Tap create button
-      await tester.tap(find.text('Create'));
+      final createButton = find.byType(NeumorphicButton);
+      await tester.ensureVisible(createButton);
+      await tester.tap(createButton);
       await tester.pump();
 
       // Should show loading indicator
@@ -161,6 +167,7 @@ void main() {
         ProviderScope(
           overrides: [
             sessionProvider.overrideWith((_) => session),
+            isSignedInProvider.overrideWithValue(true),
             novelRepositoryProvider.overrideWith((ref) => mockRepo),
           ],
           child: MaterialApp(
@@ -177,8 +184,9 @@ void main() {
       await tester.enterText(find.byType(TextFormField).at(0), 'Test Novel');
       await tester.pump();
 
-      // Tap create button
-      await tester.tap(find.text('Create'));
+      final createButton = find.byType(NeumorphicButton);
+      await tester.ensureVisible(createButton);
+      await tester.tap(createButton);
       await tester.pumpAndSettle();
 
       // Should show error message - check for any error text widget
@@ -205,6 +213,7 @@ void main() {
         ProviderScope(
           overrides: [
             sessionProvider.overrideWith((_) => session),
+            isSignedInProvider.overrideWithValue(true),
             novelRepositoryProvider.overrideWith((ref) => mockRepo),
           ],
           child: MaterialApp(
@@ -221,8 +230,9 @@ void main() {
       await tester.enterText(find.byType(TextFormField).at(0), 'Test Novel');
       await tester.pump();
 
-      // Tap create button - should fail
-      await tester.tap(find.text('Create'));
+      final createButton = find.byType(NeumorphicButton);
+      await tester.ensureVisible(createButton);
+      await tester.tap(createButton);
       await tester.pumpAndSettle();
 
       // Should show error message
@@ -237,8 +247,7 @@ void main() {
       // Update repo to not throw
       mockRepo.shouldThrow = false;
 
-      // Tap create button again
-      await tester.tap(find.text('Create'));
+      await tester.tap(createButton);
       await tester.pump();
 
       // Error message should be cleared
@@ -268,6 +277,7 @@ void main() {
         ProviderScope(
           overrides: [
             sessionProvider.overrideWith((_) => session),
+            isSignedInProvider.overrideWithValue(true),
             novelRepositoryProvider.overrideWith((ref) => mockRepo),
           ],
           child: MaterialApp(
@@ -287,8 +297,9 @@ void main() {
       );
       await tester.pump();
 
-      // Tap create button
-      await tester.tap(find.text('Create'));
+      final createButton = find.byType(NeumorphicButton);
+      await tester.ensureVisible(createButton);
+      await tester.tap(createButton);
       await tester.pumpAndSettle();
 
       // Should have called createNovel with trimmed title
@@ -308,6 +319,7 @@ void main() {
         ProviderScope(
           overrides: [
             sessionProvider.overrideWith((_) => session),
+            isSignedInProvider.overrideWithValue(true),
             novelRepositoryProvider.overrideWith((ref) => mockRepo),
           ],
           child: MaterialApp(
@@ -336,8 +348,9 @@ void main() {
       );
       await tester.pump();
 
-      // Tap create button
-      await tester.tap(find.text('Create'));
+      final createButton = find.byType(NeumorphicButton);
+      await tester.ensureVisible(createButton);
+      await tester.tap(createButton);
       await tester.pumpAndSettle();
 
       // Should have called createNovel with trimmed values
@@ -362,6 +375,7 @@ void main() {
         ProviderScope(
           overrides: [
             sessionProvider.overrideWith((_) => session),
+            isSignedInProvider.overrideWithValue(true),
             novelRepositoryProvider.overrideWith((ref) => mockRepo),
           ],
           child: MaterialApp(
@@ -378,8 +392,9 @@ void main() {
       await tester.enterText(find.byType(TextFormField).at(0), 'Test Novel');
       await tester.pump();
 
-      // Tap create button
-      await tester.tap(find.text('Create'));
+      final createButton = find.byType(NeumorphicButton);
+      await tester.ensureVisible(createButton);
+      await tester.tap(createButton);
       await tester.pumpAndSettle();
 
       // Should have called createNovel with null for optional fields
@@ -401,6 +416,7 @@ void main() {
         ProviderScope(
           overrides: [
             sessionProvider.overrideWith((_) => session),
+            isSignedInProvider.overrideWithValue(true),
             novelRepositoryProvider.overrideWith((ref) => mockRepo),
           ],
           child: MaterialApp(
@@ -423,8 +439,9 @@ void main() {
       await tester.enterText(find.byType(TextFormField).at(0), 'Test Novel');
       await tester.pump();
 
-      // Tap create button
-      await tester.tap(find.text('Create'));
+      final createButton = find.byType(NeumorphicButton);
+      await tester.ensureVisible(createButton);
+      await tester.tap(createButton);
       await tester.pumpAndSettle();
 
       // Should have called createNovel with zh language code
@@ -450,6 +467,7 @@ void main() {
         ProviderScope(
           overrides: [
             sessionProvider.overrideWith((_) => session),
+            isSignedInProvider.overrideWithValue(true),
             novelRepositoryProvider.overrideWith((ref) => mockRepo),
           ],
           child: MaterialApp(
@@ -464,12 +482,13 @@ void main() {
 
       // Fill in form
       await tester.enterText(find.byType(TextFormField).at(0), 'Test Novel');
-      await tester.pump();
+      await tester.pumpAndSettle();
 
-      // Tap create button twice rapidly
-      await tester.tap(find.text('Create'));
+      final createButton = find.byType(NeumorphicButton);
+      await tester.ensureVisible(createButton);
+      await tester.tap(createButton);
       await tester.pump();
-      await tester.tap(find.text('Create'));
+      await tester.tap(createButton);
       await tester.pump();
 
       // Should only call createNovel once (button disabled during submission)
@@ -491,6 +510,7 @@ void main() {
         ProviderScope(
           overrides: [
             sessionProvider.overrideWith((_) => session),
+            isSignedInProvider.overrideWithValue(true),
             novelRepositoryProvider.overrideWith((ref) => mockRepo),
           ],
           child: MaterialApp(
@@ -511,8 +531,9 @@ void main() {
       );
       await tester.pump();
 
-      // Tap create button
-      await tester.tap(find.text('Create'));
+      final createButton = find.byType(NeumorphicButton);
+      await tester.ensureVisible(createButton);
+      await tester.tap(createButton);
       await tester.pump();
 
       // Should not call createNovel

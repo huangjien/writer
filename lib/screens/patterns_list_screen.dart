@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../models/pattern.dart';
 import '../state/pattern_providers.dart';
 import '../state/providers.dart';
+import '../shared/widgets/app_buttons.dart';
 import '../l10n/app_localizations.dart';
 import '../shared/constants.dart';
 import '../shared/api_exception.dart';
@@ -354,19 +355,20 @@ class _PatternsListScreenState extends ConsumerState<PatternsListScreen> {
         ),
         title: Text(l10n.patterns),
         actions: [
-          IconButton(
+          AppButtons.icon(
             onPressed: () => ref.invalidate(patternsProvider),
-            icon: const Icon(Icons.refresh),
+            iconData: Icons.refresh,
             tooltip: l10n.reload,
           ),
-          IconButton(
-            onPressed: isSignedIn ? () => context.push('/pattern_form') : null,
-            icon: const Icon(Icons.add),
+          AppButtons.icon(
+            onPressed: isSignedIn ? () => context.push('/pattern_form') : () {},
+            iconData: Icons.add,
             tooltip: l10n.newPattern,
+            enabled: isSignedIn,
           ),
-          IconButton(
+          AppButtons.icon(
             onPressed: () => context.go('/'),
-            icon: const Icon(Icons.home),
+            iconData: Icons.home,
             tooltip: l10n.home,
           ),
         ],

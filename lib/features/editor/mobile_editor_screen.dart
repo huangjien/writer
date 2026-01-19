@@ -11,6 +11,7 @@ import '../../state/novel_providers.dart';
 import '../../state/storage_service_provider.dart';
 import '../../shared/strings.dart';
 
+import '../../shared/widgets/app_buttons.dart';
 import '../../shared/widgets/mobile_bottom_sheet.dart';
 import '../../shared/widgets/feedback/enhanced_toast.dart';
 import 'focus_timer.dart';
@@ -529,10 +530,11 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                           const SizedBox(width: Spacing.s),
                           SizedBox(
                             height: 48,
-                            child: FilledButton.icon(
-                              onPressed: _isSaving ? null : _saveContent,
-                              icon: const Icon(Icons.save),
-                              label: Text(l10n.save),
+                            child: AppButtons.primary(
+                              onPressed: _isSaving ? () {} : _saveContent,
+                              icon: Icons.save,
+                              label: l10n.save,
+                              enabled: !_isSaving,
                             ),
                           ),
                         ],

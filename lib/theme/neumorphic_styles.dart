@@ -65,13 +65,13 @@ class NeumorphicStyles {
           BoxShadow(
             color: insetShadowColor.withValues(alpha: isDark ? 0.55 : 0.75),
             offset: Offset(shadowDepth * 0.4, shadowDepth * 0.4),
-            blurRadius: shadowDepth,
+            blurRadius: blur,
             blurStyle: BlurStyle.inner,
           ),
           BoxShadow(
             color: insetHighlightColor.withValues(alpha: isDark ? 0.35 : 0.55),
             offset: Offset(-shadowDepth * 0.4, -shadowDepth * 0.4),
-            blurRadius: shadowDepth,
+            blurRadius: blur,
             blurStyle: BlurStyle.inner,
           ),
           BoxShadow(
@@ -79,7 +79,7 @@ class NeumorphicStyles {
                 ? darkShadowDark.withValues(alpha: 0.3)
                 : darkShadowLight.withValues(alpha: 0.15),
             offset: Offset(shadowDepth * 0.3, shadowDepth * 0.3),
-            blurRadius: shadowDepth,
+            blurRadius: blur,
           ),
         ],
       );

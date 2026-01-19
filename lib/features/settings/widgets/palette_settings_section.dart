@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../state/theme_controller.dart';
 import '../../../theme/themes.dart';
+import '../../../shared/widgets/neumorphic_dropdown.dart';
+import '../../../shared/widgets/neumorphic_switch.dart';
 import 'theme_preview.dart';
 
 class PaletteSettingsSection extends ConsumerWidget {
@@ -17,12 +19,14 @@ class PaletteSettingsSection extends ConsumerWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SwitchListTile.adaptive(
-            value: themeState.hasSeparateDark,
-            onChanged: (v) =>
-                ref.read(themeControllerProvider.notifier).setSeparateDark(v),
+          child: ListTile(
             title: Text(l10n.separateDarkPalette),
-            secondary: const Icon(Icons.brightness_6_outlined),
+            leading: const Icon(Icons.brightness_6_outlined),
+            trailing: NeumorphicSwitch(
+              value: themeState.hasSeparateDark,
+              onChanged: (v) =>
+                  ref.read(themeControllerProvider.notifier).setSeparateDark(v),
+            ),
           ),
         ),
         if (!themeState.hasSeparateDark) ...[
@@ -31,7 +35,7 @@ class PaletteSettingsSection extends ConsumerWidget {
             title: Row(
               children: [
                 Expanded(child: Text(l10n.colorTheme)),
-                DropdownButton<AppThemeFamily>(
+                NeumorphicDropdown<AppThemeFamily>(
                   value: themeState.family,
                   onChanged: (AppThemeFamily? f) {
                     if (f != null) {
@@ -90,7 +94,7 @@ class PaletteSettingsSection extends ConsumerWidget {
             title: Row(
               children: [
                 Expanded(child: Text(l10n.lightPalette)),
-                DropdownButton<AppThemeFamily>(
+                NeumorphicDropdown<AppThemeFamily>(
                   value: themeState.familyLight,
                   onChanged: (AppThemeFamily? f) {
                     if (f != null) {
@@ -150,7 +154,7 @@ class PaletteSettingsSection extends ConsumerWidget {
             title: Row(
               children: [
                 Expanded(child: Text(l10n.darkPalette)),
-                DropdownButton<AppThemeFamily>(
+                NeumorphicDropdown<AppThemeFamily>(
                   value: themeState.familyDark,
                   onChanged: (AppThemeFamily? f) {
                     if (f != null) {

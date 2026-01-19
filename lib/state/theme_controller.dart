@@ -64,7 +64,7 @@ class ThemeState {
     ReaderTypographyPreset? presetLight,
     ReaderTypographyPreset? presetDark,
     ReaderFontPack? fontPack,
-    String? customFontFamily,
+    Object? customFontFamily = _sentinel,
     double? fontScale,
     ReaderBackgroundDepth? readerBgDepth,
   }) => ThemeState(
@@ -78,11 +78,15 @@ class ThemeState {
     presetLight: presetLight ?? this.presetLight,
     presetDark: presetDark ?? this.presetDark,
     fontPack: fontPack ?? this.fontPack,
-    customFontFamily: customFontFamily ?? this.customFontFamily,
+    customFontFamily: customFontFamily == _sentinel
+        ? this.customFontFamily
+        : customFontFamily as String?,
     fontScale: fontScale ?? this.fontScale,
     readerBgDepth: readerBgDepth ?? this.readerBgDepth,
   );
 }
+
+const _sentinel = Object();
 
 class ThemeController extends StateNotifier<ThemeState> {
   ThemeController(this._prefs) : super(_initialState(_prefs));
@@ -103,7 +107,7 @@ class ThemeController extends StateNotifier<ThemeState> {
         tryDecodePreset(prefs.getString(_prefTypographyPresetDark)) ?? preset;
     final fontPack = decodeFontPack(prefs.getString(_prefFontPack));
     final rawFamily = prefs.getString(_prefCustomFontFamily);
-    final customFontFamily = trimOrDefault(rawFamily, 'Consolas');
+    final customFontFamily = trimToNull(rawFamily);
     final fontScale = prefs.getDouble(_prefFontScale) ?? 1.0;
     final readerBgDepth = decodeBgDepth(prefs.getString(_prefReaderBgDepth));
     final famLight = unified;

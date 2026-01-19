@@ -83,7 +83,7 @@ void main() {
 
     await tester.enterText(find.byType(TextField).at(0), 'pass1');
     await tester.enterText(find.byType(TextField).at(1), 'pass2');
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Update Password'));
+    await tester.tap(find.text('Update Password'));
     await tester.pumpAndSettle();
 
     expect(find.text('Passwords do not match'), findsOneWidget);
@@ -119,7 +119,7 @@ void main() {
 
     await tester.enterText(find.byType(TextField).at(0), 'password');
     await tester.enterText(find.byType(TextField).at(1), 'password');
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Update Password'));
+    await tester.tap(find.text('Update Password'));
     await tester.pumpAndSettle();
 
     expect(find.text('Password updated successfully!'), findsOneWidget);

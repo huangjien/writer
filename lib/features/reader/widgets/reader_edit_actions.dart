@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../state/chapter_edit_controller.dart';
 import '../../../models/chapter.dart';
+import '../../../shared/widgets/app_buttons.dart';
 
 class ReaderEditActions extends ConsumerWidget {
   const ReaderEditActions({
@@ -56,15 +57,11 @@ class ReaderEditActions extends ConsumerWidget {
         Tooltip(message: l10n.format, child: formatBtn),
         SizedBox(width: spacing),
         // Prominent save button
-        ElevatedButton.icon(
-          onPressed: (disabled || !editState.isDirty)
-              ? null
-              : () => controller.save(),
-          icon: const Icon(Icons.save),
-          label: Text(l10n.save),
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          ),
+        AppButtons.primary(
+          onPressed: () => controller.save(),
+          icon: Icons.save,
+          label: l10n.save,
+          enabled: !(disabled || !editState.isDirty),
         ),
       ],
     );

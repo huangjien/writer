@@ -8,6 +8,9 @@ import 'package:writer/theme/reader_typography.dart';
 import 'package:writer/theme/font_packs.dart';
 import 'package:writer/theme/reader_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:writer/shared/widgets/neumorphic_dropdown.dart';
+import 'package:writer/shared/widgets/neumorphic_slider.dart';
+import 'package:writer/shared/widgets/neumorphic_switch.dart';
 
 void main() {
   group('TypographySettingsSection comprehensive tests', () {
@@ -43,7 +46,7 @@ void main() {
 
       // Find and tap the typography preset dropdown
       final presetDropdown = find
-          .byType(DropdownButton<ReaderTypographyPreset>)
+          .byType(NeumorphicDropdown<ReaderTypographyPreset>)
           .first;
       await tester.tap(presetDropdown);
       await tester.pumpAndSettle();
@@ -61,7 +64,7 @@ void main() {
 
       // Find and tap the font pack dropdown
       final fontPackDropdown = find
-          .byType(DropdownButton<ReaderFontPack>)
+          .byType(NeumorphicDropdown<ReaderFontPack>)
           .first;
       await tester.tap(fontPackDropdown);
       await tester.pumpAndSettle();
@@ -78,7 +81,7 @@ void main() {
       await pumpTypographySection(tester);
 
       // Find the font scale slider
-      final slider = find.byType(Slider);
+      final slider = find.byType(NeumorphicSlider);
       expect(slider, findsOneWidget);
 
       // Drag the slider to a new value
@@ -96,7 +99,7 @@ void main() {
 
       // Find and tap the background depth dropdown
       final bgDepthDropdown = find
-          .byType(DropdownButton<ReaderBackgroundDepth>)
+          .byType(NeumorphicDropdown<ReaderBackgroundDepth>)
           .first;
       await tester.tap(bgDepthDropdown);
       await tester.pumpAndSettle();
@@ -115,7 +118,7 @@ void main() {
       await pumpTypographySection(tester);
 
       // Find the separate typography switch
-      final switchTile = find.byType(SwitchListTile);
+      final switchTile = find.byType(NeumorphicSwitch);
       expect(switchTile, findsOneWidget);
 
       // Verify initial state
@@ -194,7 +197,7 @@ void main() {
       await pumpTypographySection(tester);
 
       // Find the custom font family popup button
-      final popupButton = find.byType(PopupMenuButton<String>);
+      final popupButton = find.byType(NeumorphicDropdown<String>);
       expect(popupButton, findsOneWidget);
 
       // Tap the popup button

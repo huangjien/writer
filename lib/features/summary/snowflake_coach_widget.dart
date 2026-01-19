@@ -8,6 +8,7 @@ import 'package:writer/models/snowflake.dart';
 import 'package:writer/shared/api_exception.dart';
 import 'package:writer/shared/widgets/particles/confetti_effect.dart';
 import 'package:writer/shared/widgets/particles/sparkle_effect.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
 
 class SnowflakeCoachWidget extends ConsumerStatefulWidget {
   final String novelId;
@@ -287,16 +288,11 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                       ),
                     ),
                   ),
-                  ElevatedButton.icon(
-                    onPressed: _loading ? null : () => _analyze(),
-                    icon: const Icon(Icons.analytics, size: 16),
-                    label: Text('Analyze'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                    ),
+                  AppButtons.primary(
+                    onPressed: _loading ? () {} : () => _analyze(),
+                    icon: Icons.analytics,
+                    label: 'Analyze',
+                    enabled: !_loading,
                   ),
                 ],
               ),
@@ -390,16 +386,11 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
                   ),
                 ),
                 if (!widget.autoAnalyze)
-                  ElevatedButton.icon(
-                    onPressed: _loading ? null : () => _analyze(),
-                    icon: const Icon(Icons.analytics, size: 16),
-                    label: Text('Analyze'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                    ),
+                  AppButtons.primary(
+                    onPressed: _loading ? () {} : () => _analyze(),
+                    icon: Icons.analytics,
+                    label: 'Analyze',
+                    isLoading: _loading,
                   ),
               ],
             ),

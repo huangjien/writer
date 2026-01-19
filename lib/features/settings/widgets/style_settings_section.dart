@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../state/ui_style_controller.dart';
 import '../../../theme/ui_styles.dart';
+import '../../../shared/widgets/neumorphic_dropdown.dart';
 
 class StyleSettingsSection extends ConsumerWidget {
   const StyleSettingsSection({super.key});
@@ -20,7 +21,7 @@ class StyleSettingsSection extends ConsumerWidget {
           title: Row(
             children: [
               Expanded(child: Text(l10n.styles, semanticsLabel: 'UI Styles')),
-              DropdownButton<UiStyleFamily>(
+              NeumorphicDropdown<UiStyleFamily>(
                 value: uiStyleState.family,
                 onChanged: (UiStyleFamily? style) {
                   if (style != null) {
@@ -76,17 +77,6 @@ class StyleSettingsSection extends ConsumerWidget {
                     l10n,
                   ),
                 ],
-                underline: const SizedBox.shrink(),
-                icon: const Icon(Icons.arrow_drop_down),
-                isDense: true,
-                borderRadius: BorderRadius.circular(8),
-                focusColor: Theme.of(context).focusColor,
-                autofocus: false,
-                enableFeedback: true,
-                dropdownColor: Theme.of(context).colorScheme.surface,
-                style: Theme.of(context).textTheme.bodyMedium,
-                iconEnabledColor: Theme.of(context).colorScheme.onSurface,
-                iconDisabledColor: Theme.of(context).disabledColor,
               ),
             ],
           ),

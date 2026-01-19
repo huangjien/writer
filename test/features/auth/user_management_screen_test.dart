@@ -16,6 +16,7 @@ import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/shared/widgets/neumorphic_switch.dart';
 
 class MockUserRepository implements UserRepository {
   @override
@@ -182,7 +183,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('user1@example.com'), findsOneWidget);
     expect(find.text('user2@example.com'), findsOneWidget);
-    expect(find.byType(Switch), findsNWidgets(2));
+    expect(find.byType(NeumorphicSwitch), findsNWidgets(2));
   });
 
   testWidgets('UserManagementScreen toggles approval', (tester) async {
@@ -260,7 +261,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Toggle switch
-    await tester.tap(find.byType(Switch).first);
+    await tester.tap(find.byType(NeumorphicSwitch).first);
     await tester.pumpAndSettle();
 
     expect(patchCalled, isTrue);

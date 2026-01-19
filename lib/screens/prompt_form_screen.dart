@@ -6,6 +6,9 @@ import '../models/prompt.dart';
 import '../services/prompts_service.dart';
 import '../l10n/app_localizations.dart';
 import '../shared/api_exception.dart';
+import '../theme/neumorphic_styles.dart';
+import '../shared/widgets/neumorphic_switch.dart';
+import '../shared/widgets/app_buttons.dart';
 
 const _keys = [
   'system.beta.male',
@@ -198,6 +201,7 @@ class _PromptFormScreenState extends State<PromptFormScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Ensure current key is in the list to prevent crash
     final effectiveKeys = {..._keys};
@@ -223,9 +227,17 @@ class _PromptFormScreenState extends State<PromptFormScreen>
                   Expanded(
                     child: DropdownButtonFormField<String>(
                       initialValue: _key,
+                      isExpanded: true,
                       items: effectiveKeys
                           .map(
-                            (e) => DropdownMenuItem(value: e, child: Text(e)),
+                            (e) => DropdownMenuItem(
+                              value: e,
+                              child: Text(
+                                e,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
                           )
                           .toList(),
                       onChanged: _isEdit
@@ -235,17 +247,27 @@ class _PromptFormScreenState extends State<PromptFormScreen>
                               _updateDirty();
                             },
                       validator: _isEdit ? null : _validateKey,
-                      decoration: InputDecoration(labelText: l10n.promptKey),
+                      decoration: NeumorphicStyles.inputDecoration(
+                        isDark: isDark,
+                        hintText: l10n.promptKey,
+                      ).copyWith(labelText: l10n.promptKey),
                     ),
                   ),
                   const SizedBox(width: 12),
-                  SizedBox(
-                    width: 180,
+                  Expanded(
                     child: DropdownButtonFormField<String>(
                       initialValue: _lang,
+                      isExpanded: true,
                       items: effectiveLangs
                           .map(
-                            (e) => DropdownMenuItem(value: e, child: Text(e)),
+                            (e) => DropdownMenuItem(
+                              value: e,
+                              child: Text(
+                                e,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
                           )
                           .toList(),
                       onChanged: _isEdit
@@ -255,7 +277,10 @@ class _PromptFormScreenState extends State<PromptFormScreen>
                               _updateDirty();
                             },
                       validator: _isEdit ? null : _validateLang,
-                      decoration: InputDecoration(labelText: l10n.language),
+                      decoration: NeumorphicStyles.inputDecoration(
+                        isDark: isDark,
+                        hintText: l10n.language,
+                      ).copyWith(labelText: l10n.language),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -263,7 +288,8 @@ class _PromptFormScreenState extends State<PromptFormScreen>
                     Row(
                       children: [
                         Text(l10n.publicLabel),
-                        Switch(
+                        const SizedBox(width: 8),
+                        NeumorphicSwitch(
                           value: _isPublic,
                           onChanged: (v) {
                             setState(() => _isPublic = v);
@@ -308,9 +334,9 @@ class _PromptFormScreenState extends State<PromptFormScreen>
                       readOnly: _isEdit && !widget.isSignedIn,
                       onChanged: (_) => _updateDirty(),
                       validator: _validateContent,
-                      decoration: InputDecoration(
-                        labelText: l10n.content,
-                        border: const OutlineInputBorder(),
+                      decoration: NeumorphicStyles.inputDecoration(
+                        isDark: isDark,
+                        hintText: l10n.content,
                       ),
                     ),
                   ],
@@ -321,19 +347,23 @@ class _PromptFormScreenState extends State<PromptFormScreen>
                 children: [
                   Text(l10n.charsCount(_contentCtrl.text.length)),
                   const Spacer(),
-                  TextButton(
-                    onPressed: _saving ? null : () => Navigator.pop(context),
-                    child: Text(l10n.cancel),
+                  AppButtons.text(
+                    onPressed: _saving ? () {} : () => Navigator.pop(context),
+                    label: l10n.cancel,
                   ),
                   const SizedBox(width: 8),
-                  ElevatedButton(
+                  AppButtons.primary(
                     onPressed:
                         (_saving ||
                             !_isDirty ||
                             (_isEdit && !widget.isSignedIn))
-                        ? null
+                        ? () {}
                         : _save,
-                    child: Text(l10n.save),
+                    label: l10n.save,
+                    enabled:
+                        !(_saving ||
+                            !_isDirty ||
+                            (_isEdit && !widget.isSignedIn)),
                   ),
                 ],
               ),

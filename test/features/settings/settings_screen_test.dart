@@ -29,6 +29,7 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/state/session_state.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 
 class MockUserRepository extends Mock implements UserRepository {}
 
@@ -230,7 +231,12 @@ void main() {
   testWidgets(
     'SettingsScreen handles sign out',
     (tester) async {
-      const timeout = Duration(seconds: 10);
+      tester.view.physicalSize = const Size(1200, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      const timeout = Duration(seconds: 5);
       const shortTimeout = Duration(milliseconds: 500);
 
       try {
@@ -311,7 +317,7 @@ void main() {
             reason: 'ListView should be present',
           );
 
-          final textButtonFinder = find.widgetWithText(TextButton, 'Sign Out');
+          final textButtonFinder = find.text('Sign Out');
           var scrollAttempts = 0;
           const maxScrollAttempts = 20;
           while (!textButtonFinder.evaluate().isNotEmpty &&
@@ -320,6 +326,7 @@ void main() {
             await tester.pumpAndSettle(shortTimeout);
             scrollAttempts++;
           }
+          await tester.ensureVisible(textButtonFinder);
           expect(
             textButtonFinder.evaluate().isNotEmpty,
             true,
@@ -336,7 +343,7 @@ void main() {
           await tester.pumpAndSettle(timeout);
 
           final filledButtonFinder = find.widgetWithText(
-            FilledButton,
+            NeumorphicButton,
             'Sign In',
           );
           scrollAttempts = 0;

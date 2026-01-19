@@ -157,8 +157,11 @@ TextTheme _applyFamilyWithFallback(
   List<String> fallback,
 ) {
   final withMonoFallback = <String>[...fallback, ..._monoFallback];
-  TextStyle? withStyle(TextStyle? s) =>
-      s?.copyWith(fontFamily: family, fontFamilyFallback: withMonoFallback);
+  TextStyle? withStyle(TextStyle? s) {
+    if (s == null) return null;
+    return s.copyWith(fontFamily: family, fontFamilyFallback: withMonoFallback);
+  }
+
   return base.copyWith(
     displayLarge: withStyle(base.displayLarge),
     displayMedium: withStyle(base.displayMedium),
@@ -179,8 +182,11 @@ TextTheme _applyFamilyWithFallback(
 }
 
 TextTheme _applyFamily(TextTheme base, String family, List<String> fallback) {
-  TextStyle? withStyle(TextStyle? s) =>
-      s?.copyWith(fontFamily: family, fontFamilyFallback: fallback);
+  TextStyle? withStyle(TextStyle? s) {
+    if (s == null) return null;
+    return s.copyWith(fontFamily: family, fontFamilyFallback: fallback);
+  }
+
   return base.copyWith(
     displayLarge: withStyle(base.displayLarge),
     displayMedium: withStyle(base.displayMedium),

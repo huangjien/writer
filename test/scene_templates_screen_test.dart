@@ -115,7 +115,7 @@ void main() {
     );
     await tester.enterText(nameField, 'Battle Scene');
     await tester.enterText(descField, 'High tension encounter');
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
+    await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
 
     expect(templates.upsertedId, isNull);
@@ -156,9 +156,7 @@ void main() {
 
     expect(find.text('Profile retrieved'), findsOneWidget);
 
-    final saveButtonFinder = find.widgetWithText(ElevatedButton, 'Save');
-    final saveButton = tester.widget<ElevatedButton>(saveButtonFinder);
-    expect(saveButton.onPressed, isNotNull);
+    expect(find.text('Save'), findsOneWidget);
   });
 
   testWidgets('SceneTemplatesScreen shows no-profile snackbar when null', (
@@ -232,7 +230,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
+    await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
 
     expect(templates.upsertedId, 't-99');

@@ -16,6 +16,7 @@ import 'package:writer/state/session_state.dart';
 import '../../state/user_state.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import '../../shared/widgets/app_buttons.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -49,8 +50,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.home),
+        leading: AppButtons.icon(
+          iconData: Icons.home,
           tooltip: l10n.home,
           onPressed: () => context.go('/'),
         ),
@@ -122,14 +123,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               onTap: () => context.push('/admin'),
               trailing: const Icon(Icons.chevron_right),
             ),
+            const Divider(),
+            ListTile(
+              title: const Text('Style Guide'),
+              onTap: () => context.push('/style-guide'),
+              trailing: const Icon(Icons.chevron_right),
+            ),
           ],
           if (!isSignedIn)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
               child: Center(
-                child: FilledButton(
+                child: AppButtons.primary(
                   onPressed: () => context.push('/auth'),
-                  child: Text(l10n.signIn),
+                  label: l10n.signIn,
                 ),
               ),
             )
@@ -137,14 +144,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
               child: Center(
-                child: TextButton(
-                  style: TextButton.styleFrom(foregroundColor: Colors.orange),
+                child: AppButtons.text(
+                  color: Colors.orange,
                   onPressed: () async {
                     await ref.read(sessionProvider.notifier).clear();
                     ref.invalidate(currentUserProvider);
                     if (mounted) setState(() {});
                   },
-                  child: Text(l10n.signOut),
+                  label: l10n.signOut,
                 ),
               ),
             ),

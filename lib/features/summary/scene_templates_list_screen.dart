@@ -7,6 +7,7 @@ import '../../shared/constants.dart';
 import '../../repositories/template_repository.dart';
 import '../../state/providers.dart';
 import '../../shared/api_exception.dart';
+import '../../shared/widgets/app_buttons.dart';
 
 class SceneTemplatesListScreen extends ConsumerStatefulWidget {
   const SceneTemplatesListScreen({super.key, required this.novelId});
@@ -194,12 +195,16 @@ class _SceneTemplatesListScreenState
                       controller: _searchCtrl,
                       decoration: InputDecoration(
                         labelText: l10n.searchLabel,
+                        suffixIconConstraints: const BoxConstraints(
+                          minWidth: 0,
+                          minHeight: 0,
+                        ),
                         suffixIcon: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             if (_searchCtrl.text.isNotEmpty)
-                              IconButton(
-                                icon: const Icon(Icons.clear),
+                              AppButtons.icon(
+                                iconData: Icons.clear,
                                 onPressed: () {
                                   _searchCtrl.clear();
                                   setState(() {
@@ -207,11 +212,13 @@ class _SceneTemplatesListScreenState
                                   });
                                 },
                                 tooltip: 'Clear search',
+                                focusPadding: EdgeInsets.zero,
                               ),
-                            IconButton(
-                              icon: const Icon(Icons.auto_awesome),
+                            AppButtons.icon(
+                              iconData: Icons.auto_awesome,
                               tooltip: l10n.smartSearch,
                               onPressed: () => _smartSearch(context),
+                              focusPadding: EdgeInsets.zero,
                             ),
                           ],
                         ),

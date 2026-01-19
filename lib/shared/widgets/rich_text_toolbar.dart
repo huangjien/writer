@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
 import '../strings.dart';
-import 'micro_interactions.dart';
-import 'particles/wave_effect.dart';
+import 'app_buttons.dart';
 
 class RichTextToolbar extends StatelessWidget {
   const RichTextToolbar({
@@ -157,39 +155,21 @@ class _ToolButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Tooltip(
-      message: tooltip,
-      child: Semantics(
-        button: true,
-        label: semanticsLabel,
-        child: WaveTap(
-          borderRadius: BorderRadius.circular(Radii.m),
-          onLongPress: () => HapticFeedback.mediumImpact(),
-          onTap: () {
-            HapticFeedback.lightImpact();
-            onPressed();
-          },
-          child: PressScale(
-            child: Container(
-              width: MobileSpacing.touchTargetMin,
-              height: MobileSpacing.touchTargetMin,
-              decoration: BoxDecoration(
-                color: isActive ? theme.colorScheme.primaryContainer : null,
-                borderRadius: BorderRadius.circular(Radii.m),
-              ),
-              child: Center(
-                child: Icon(
-                  icon,
-                  size: 18,
-                  color: isActive
-                      ? theme.colorScheme.onPrimaryContainer
-                      : theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+    if (isActive) {
+      return AppButtons.filledIcon(
+        iconData: icon,
+        onPressed: onPressed,
+        tooltip: tooltip,
+        backgroundColor: theme.colorScheme.primaryContainer,
+        iconColor: theme.colorScheme.onPrimaryContainer,
+      );
+    }
+
+    return AppButtons.icon(
+      iconData: icon,
+      onPressed: onPressed,
+      tooltip: tooltip,
+      color: theme.colorScheme.onSurfaceVariant,
     );
   }
 }

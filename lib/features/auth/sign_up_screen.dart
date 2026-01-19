@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
 import '../../state/ai_service_settings.dart';
 import '../../l10n/app_localizations.dart';
+import '../../shared/widgets/app_buttons.dart';
+import '../../shared/widgets/neumorphic_textfield.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key, this.client});
@@ -119,9 +121,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 24),
-                    ElevatedButton(
+                    AppButtons.primary(
                       onPressed: () => context.go('/auth'),
-                      child: Text(l10n.backToSignIn),
+                      label: l10n.backToSignIn,
                     ),
                   ],
                 ),
@@ -129,15 +131,15 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextField(
+                  NeumorphicTextField(
                     controller: _emailController,
-                    decoration: InputDecoration(labelText: l10n.email),
+                    hintText: l10n.email,
                     keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 12),
-                  TextField(
+                  NeumorphicTextField(
                     controller: _passwordController,
-                    decoration: InputDecoration(labelText: l10n.password),
+                    hintText: l10n.password,
                     obscureText: true,
                   ),
                   const SizedBox(height: 20),
@@ -145,20 +147,17 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     Text(_error!, style: const TextStyle(color: Colors.red)),
                     const SizedBox(height: 8),
                   ],
-                  ElevatedButton(
-                    onPressed: _loading ? null : _signUp,
-                    child: _loading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(l10n.createAccount),
+                  AppButtons.primary(
+                    onPressed: _loading ? () {} : _signUp,
+                    label: l10n.createAccount,
+                    isLoading: _loading,
                   ),
                   const SizedBox(height: 12),
-                  TextButton(
-                    onPressed: () => context.go('/auth'),
-                    child: Text(l10n.alreadyHaveAccountSignIn),
+                  Center(
+                    child: AppButtons.text(
+                      onPressed: () => context.go('/auth'),
+                      label: l10n.alreadyHaveAccountSignIn,
+                    ),
                   ),
                 ],
               ),

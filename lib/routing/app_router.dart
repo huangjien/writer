@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import '../state/navigator_key_provider.dart';
+import '../features/style_guide/style_guide_screen.dart';
 import '../features/admin/admin_logs_screen.dart';
 import '../features/library/library_screen.dart';
 import '../features/settings/token_usage_history_screen.dart';
@@ -129,6 +130,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/reset-password',
         name: 'resetPassword',
         builder: (context, state) => const ResetPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/style-guide',
+        name: 'styleGuide',
+        builder: (context, state) => const StyleGuideScreen(),
       ),
       GoRoute(
         path: '/admin',

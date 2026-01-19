@@ -95,10 +95,7 @@ void main() {
       find.widgetWithText(TextFormField, 'Contributor Email'),
       findsOneWidget,
     );
-    expect(
-      find.widgetWithText(OutlinedButton, 'Add Contributor'),
-      findsOneWidget,
-    );
+    expect(find.text('Add Contributor'), findsOneWidget);
 
     await tester.tap(find.byType(DropdownButton<String>));
     await tester.pumpAndSettle();
@@ -142,10 +139,7 @@ void main() {
       find.widgetWithText(TextFormField, 'Contributor Email'),
       findsNothing,
     );
-    expect(
-      find.widgetWithText(OutlinedButton, 'Add Contributor'),
-      findsNothing,
-    );
+    expect(find.text('Add Contributor'), findsNothing);
   });
 
   testWidgets('Add Contributor calls repo, shows snackbar, clears field', (
@@ -177,7 +171,7 @@ void main() {
     expect(emailField, findsOneWidget);
     await tester.enterText(emailField, 'user@example.com');
     await tester.pump();
-    await tester.tap(find.widgetWithText(OutlinedButton, 'Add Contributor'));
+    await tester.tap(find.text('Add Contributor'));
     await tester.pumpAndSettle();
 
     expect(repo.lastAddedEmail, equals('user@example.com'));
@@ -214,7 +208,7 @@ void main() {
     final emailField = find.widgetWithText(TextFormField, 'Contributor Email');
     await tester.enterText(emailField, 'err@example.com');
     await tester.pump();
-    await tester.tap(find.widgetWithText(OutlinedButton, 'Add Contributor'));
+    await tester.tap(find.text('Add Contributor'));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Error:'), findsOneWidget);

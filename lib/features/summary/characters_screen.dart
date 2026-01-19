@@ -10,6 +10,9 @@ import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:writer/repositories/notes_repository.dart';
 import 'package:writer/shared/api_exception.dart';
 import '../../state/providers.dart';
+import '../../theme/neumorphic_styles.dart';
+import '../../shared/widgets/neumorphic_dropdown.dart';
+import '../../shared/widgets/app_buttons.dart';
 
 class CharactersScreen extends ConsumerStatefulWidget {
   const CharactersScreen({super.key, required this.novelId, this.idx});
@@ -136,6 +139,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.characters), actions: const []),
       body: Padding(
@@ -163,9 +167,10 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _titleController,
-                            decoration: InputDecoration(
-                              labelText: l10n.titleLabel,
-                            ),
+                            decoration: NeumorphicStyles.inputDecoration(
+                              isDark: isDark,
+                              hintText: l10n.titleLabel,
+                            ).copyWith(labelText: l10n.titleLabel),
                             validator: (v) => v == null || v.trim().isEmpty
                                 ? l10n.required
                                 : null,
@@ -185,7 +190,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        DropdownButton<String>(
+                        NeumorphicDropdown<String>(
                           value: _languageCode,
                           onChanged: (code) {
                             if (code == null) {
@@ -250,10 +255,13 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                                     return TextFormField(
                                       controller: textEditingController,
                                       focusNode: focusNode,
-                                      decoration: InputDecoration(
-                                        labelText: l10n.templateLabel,
-                                        border: const OutlineInputBorder(),
-                                      ),
+                                      decoration:
+                                          NeumorphicStyles.inputDecoration(
+                                            isDark: isDark,
+                                            hintText: l10n.templateLabel,
+                                          ).copyWith(
+                                            labelText: l10n.templateLabel,
+                                          ),
                                       onFieldSubmitted: (String value) {
                                         onFieldSubmitted();
                                       },
@@ -269,23 +277,20 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                               child: const Icon(Icons.info_outline),
                             ),
                           const SizedBox(width: 8),
-                          ElevatedButton.icon(
-                            icon: const Icon(Icons.auto_awesome),
-                            label: _isConverting
-                                ? const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : Text(l10n.aiConvert),
+                          AppButtons.primary(
+                            icon: Icons.auto_awesome,
+                            label: l10n.aiConvert,
                             onPressed:
                                 _isConverting ||
                                     _titleController.text.isEmpty ||
                                     _selectedTemplate == null
-                                ? null
+                                ? () {}
                                 : _convertCharacter,
+                            enabled:
+                                !(_isConverting ||
+                                    _titleController.text.isEmpty ||
+                                    _selectedTemplate == null),
+                            isLoading: _isConverting,
                           ),
                         ],
                       ),
@@ -362,9 +367,10 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        ElevatedButton(
+                        AppButtons.primary(
+                          label: l10n.save,
                           onPressed: (_saving || !_isDirty)
-                              ? null
+                              ? () {}
                               : () async {
                                   final ok =
                                       _formKey.currentState?.validate() ??
@@ -439,7 +445,8 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                                     }
                                   }
                                 },
-                          child: Text(l10n.save),
+                          enabled: !(_saving || !_isDirty),
+                          isLoading: _saving,
                         ),
                         const SizedBox(width: 12),
                         if (_error != null)

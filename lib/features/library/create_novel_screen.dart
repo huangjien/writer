@@ -6,6 +6,9 @@ import '../../shared/strings.dart';
 import '../../state/providers.dart';
 import '../../state/novel_providers.dart';
 import '../../repositories/novel_repository.dart';
+import '../../theme/neumorphic_styles.dart';
+import '../../shared/widgets/neumorphic_dropdown.dart';
+import '../../shared/widgets/app_buttons.dart';
 
 class CreateNovelScreen extends ConsumerStatefulWidget {
   const CreateNovelScreen({super.key});
@@ -77,6 +80,7 @@ class _CreateNovelScreenState extends ConsumerState<CreateNovelScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isSignedIn = ref.watch(isSignedInProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     if (!isSignedIn) {
       return Scaffold(
         appBar: AppBar(title: Text(l10n.createNovel)),
@@ -86,9 +90,9 @@ class _CreateNovelScreenState extends ConsumerState<CreateNovelScreen> {
             children: [
               Text(l10n.signInToSync),
               const SizedBox(height: 12),
-              FilledButton(
+              AppButtons.primary(
                 onPressed: () => context.push('/auth'),
-                child: Text(l10n.signIn),
+                label: l10n.signIn,
               ),
             ],
           ),
@@ -111,12 +115,15 @@ class _CreateNovelScreenState extends ConsumerState<CreateNovelScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _titleController,
-                      decoration: InputDecoration(labelText: l10n.titleLabel),
+                      decoration: NeumorphicStyles.inputDecoration(
+                        isDark: isDark,
+                        hintText: l10n.titleLabel,
+                      ).copyWith(labelText: l10n.titleLabel),
                       validator: (v) => isBlank(v) ? l10n.titleLabel : null,
                     ),
                   ),
                   const SizedBox(width: 12),
-                  DropdownButton<String>(
+                  NeumorphicDropdown<String>(
                     value: _languageCode,
                     onChanged: (code) {
                       if (code == null) return;
@@ -132,22 +139,32 @@ class _CreateNovelScreenState extends ConsumerState<CreateNovelScreen> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _authorController,
-                decoration: InputDecoration(labelText: l10n.authorLabel),
+                decoration: NeumorphicStyles.inputDecoration(
+                  isDark: isDark,
+                  hintText: l10n.authorLabel,
+                ).copyWith(labelText: l10n.authorLabel),
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _descriptionController,
                 minLines: 3,
                 maxLines: null,
-                decoration: InputDecoration(
-                  labelText: l10n.descriptionLabel,
-                  alignLabelWithHint: true,
-                ),
+                decoration:
+                    NeumorphicStyles.inputDecoration(
+                      isDark: isDark,
+                      hintText: l10n.descriptionLabel,
+                    ).copyWith(
+                      labelText: l10n.descriptionLabel,
+                      alignLabelWithHint: true,
+                    ),
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _coverUrlController,
-                decoration: InputDecoration(labelText: l10n.coverUrlLabel),
+                decoration: NeumorphicStyles.inputDecoration(
+                  isDark: isDark,
+                  hintText: l10n.coverUrlLabel,
+                ).copyWith(labelText: l10n.coverUrlLabel),
                 validator: _validateCoverUrl,
               ),
               const SizedBox(height: 16),
@@ -162,10 +179,11 @@ class _CreateNovelScreenState extends ConsumerState<CreateNovelScreen> {
               const SizedBox(height: 16),
               Align(
                 alignment: Alignment.centerRight,
-                child: FilledButton.icon(
-                  icon: const Icon(Icons.add),
-                  label: Text(l10n.create),
-                  onPressed: _saving ? null : _submit,
+                child: AppButtons.primary(
+                  icon: Icons.add,
+                  label: l10n.create,
+                  onPressed: _saving ? () {} : _submit,
+                  isLoading: _saving,
                 ),
               ),
             ],

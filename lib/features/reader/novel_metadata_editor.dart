@@ -6,6 +6,10 @@ import 'package:writer/shared/widgets/theme_aware_card.dart';
 import 'package:writer/shared/strings.dart';
 import 'package:writer/state/edit_permissions.dart';
 import 'package:writer/repositories/novel_repository.dart';
+import 'package:writer/theme/neumorphic_styles.dart';
+import 'package:writer/shared/widgets/neumorphic_dropdown.dart';
+import 'package:writer/shared/widgets/neumorphic_switch.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
 
 class NovelMetadataEditor extends ConsumerStatefulWidget {
   final String novelId;
@@ -154,6 +158,7 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
     final novelAsync = ref.watch(novelProvider(widget.novelId));
     final roleAsync = ref.watch(editRoleProvider(widget.novelId));
     final isOwner = roleAsync.asData?.value == EditRole.owner;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ThemeAwareCard(
       semanticType: CardSemanticType.default_,
       padding: const EdgeInsets.all(12),
@@ -198,21 +203,10 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                             child: TextFormField(
                               controller: _titleController,
                               focusNode: _titleFocusNode,
-                              decoration: InputDecoration(
-                                labelText: l10n.titleLabel,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                    width: 2,
-                                  ),
-                                ),
-                              ),
+                              decoration: NeumorphicStyles.inputDecoration(
+                                isDark: isDark,
+                                hintText: l10n.titleLabel,
+                              ).copyWith(labelText: l10n.titleLabel),
                               textInputAction: TextInputAction.next,
                               onFieldSubmitted: (_) {
                                 FocusScope.of(
@@ -227,7 +221,7 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        DropdownButton<String>(
+                        NeumorphicDropdown<String>(
                           value: _languageCode,
                           onChanged: (code) {
                             if (code == null) return;
@@ -249,7 +243,7 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                           const SizedBox(width: 12),
                           Row(
                             children: [
-                              Switch(
+                              NeumorphicSwitch(
                                 value: _isPublic,
                                 onChanged: (v) {
                                   setState(() => _isPublic = v);
@@ -262,17 +256,16 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                           ),
                         ],
                         const Spacer(),
-                        FilledButton.icon(
-                          icon: const Icon(Icons.save),
-                          label: Text(l10n.save),
-                          onLongPress: () {
-                            debugPrint(
-                              'Save button longPress: saving=$_saving coverValid=$_coverValid',
-                            );
-                          },
+                        AppButtons.primary(
+                          icon: Icons.save,
+                          label: l10n.save,
                           onPressed: (_saving || !_coverValid || !_isDirty)
-                              ? null
+                              ? () {} // Disabled handled by button style? AppButtons doesn't expose disabled state directly via onPressed being null if we pass a callback. Wait, AppButtons.primary checks enabled: true.
+                              // But here we use ternary.
                               : _save,
+                          // AppButtons.primary takes `enabled`
+                          enabled: !(_saving || !_coverValid || !_isDirty),
+                          isLoading: _saving,
                         ),
                       ],
                     ),
@@ -282,20 +275,14 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                       focusNode: _descriptionFocusNode,
                       minLines: 3,
                       maxLines: null,
-                      decoration: InputDecoration(
-                        labelText: l10n.descriptionLabel,
-                        alignLabelWithHint: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 2,
+                      decoration:
+                          NeumorphicStyles.inputDecoration(
+                            isDark: isDark,
+                            hintText: l10n.descriptionLabel,
+                          ).copyWith(
+                            labelText: l10n.descriptionLabel,
+                            alignLabelWithHint: true,
                           ),
-                        ),
-                      ),
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (_) {
                         FocusScope.of(context).requestFocus(_coverUrlFocusNode);
@@ -309,19 +296,10 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                     TextFormField(
                       controller: _coverUrlController,
                       focusNode: _coverUrlFocusNode,
-                      decoration: InputDecoration(
-                        labelText: l10n.coverUrlLabel,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 2,
-                          ),
-                        ),
-                      ),
+                      decoration: NeumorphicStyles.inputDecoration(
+                        isDark: isDark,
+                        hintText: l10n.coverUrlLabel,
+                      ).copyWith(labelText: l10n.coverUrlLabel),
                       textInputAction: TextInputAction.next,
                       validator: _validateCoverUrl,
                       onFieldSubmitted: (_) {
@@ -341,20 +319,10 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                       TextFormField(
                         controller: _contributorEmailController,
                         focusNode: _contributorEmailFocusNode,
-                        decoration: InputDecoration(
-                          labelText: l10n.contributorEmailLabel,
+                        decoration: NeumorphicStyles.inputDecoration(
+                          isDark: isDark,
                           hintText: l10n.contributorEmailHint,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.primary,
-                              width: 2,
-                            ),
-                          ),
-                        ),
+                        ).copyWith(labelText: l10n.contributorEmailLabel),
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) {
                           FocusScope.of(context).unfocus();
@@ -363,9 +331,9 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                       const SizedBox(height: 8),
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: OutlinedButton.icon(
-                          icon: const Icon(Icons.person_add_alt_1),
-                          label: Text(l10n.addContributor),
+                        child: AppButtons.secondary(
+                          icon: Icons.person_add_alt_1,
+                          label: l10n.addContributor,
                           onPressed: () async {
                             final email = _contributorEmailController.text
                                 .trim();

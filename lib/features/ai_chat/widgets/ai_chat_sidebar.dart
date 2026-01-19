@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
 
 class AiChatSidebar extends ConsumerStatefulWidget {
   const AiChatSidebar({super.key, this.width});
@@ -152,24 +153,12 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
                     ),
                     suffixIcon: Padding(
                       padding: const EdgeInsets.only(right: 4),
-                      child: IconButton(
-                        icon: isLoading
-                            ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                              )
-                            : Icon(
-                                Icons.send,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
+                      child: AppButtons.icon(
+                        iconData: Icons.send,
+                        color: Theme.of(context).colorScheme.primary,
+                        enabled: !isLoading,
                         onPressed: isLoading
-                            ? null
+                            ? () {}
                             : () {
                                 final t = _textController.text.trim();
                                 if (t.isNotEmpty) {
@@ -177,7 +166,6 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
                                   _textController.clear();
                                 }
                               },
-                        tooltip: l10n.send,
                       ),
                     ),
                   ),

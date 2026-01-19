@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../state/tts_settings.dart';
+import '../../../shared/widgets/neumorphic_dropdown.dart';
+import '../../../shared/widgets/neumorphic_slider.dart';
 
 class TtsSettingsSection extends ConsumerWidget {
   const TtsSettingsSection({
@@ -40,7 +42,7 @@ class TtsSettingsSection extends ConsumerWidget {
               ? Text(l10n.loadingVoices)
               : voiceItems.isEmpty
               ? Text(l10n.noVoicesAvailable)
-              : DropdownButton<String>(
+              : NeumorphicDropdown<String>(
                   isExpanded: true,
                   value: effectiveSelectedKey,
                   hint: Text(l10n.selectVoice),
@@ -71,7 +73,7 @@ class TtsSettingsSection extends ConsumerWidget {
           title: Text(l10n.ttsLanguage),
           subtitle: loadingLocales
               ? Text(l10n.loadingLanguages)
-              : DropdownButton<String>(
+              : NeumorphicDropdown<String>(
                   isExpanded: true,
                   value: effectiveSelectedLocale,
                   hint: Text(l10n.selectLanguage),
@@ -87,28 +89,24 @@ class TtsSettingsSection extends ConsumerWidget {
         ),
         ListTile(
           title: Text(l10n.ttsSpeechRate),
-          subtitle: Slider(
+          subtitle: NeumorphicSlider(
             value: settings.rate,
             onChanged: (value) {
               ref.read(ttsSettingsProvider.notifier).setRate(value);
             },
             min: 0.0,
             max: 1.0,
-            divisions: 10,
-            label: settings.rate.toStringAsFixed(1),
           ),
         ),
         ListTile(
           title: Text(l10n.ttsSpeechVolume),
-          subtitle: Slider(
+          subtitle: NeumorphicSlider(
             value: settings.volume,
             onChanged: (value) {
               ref.read(ttsSettingsProvider.notifier).setVolume(value);
             },
             min: 0.0,
             max: 1.0,
-            divisions: 10,
-            label: settings.volume.toStringAsFixed(1),
           ),
         ),
       ],

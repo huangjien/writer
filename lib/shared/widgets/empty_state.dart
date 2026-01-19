@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
+import 'app_buttons.dart';
 
 /// Empty state component for displaying when no content is available
 /// Features:
@@ -78,9 +79,9 @@ class EmptyState extends StatelessWidget {
                   (actionLabel != null && onAction != null)) ...[
                 const SizedBox(height: Spacing.xl),
                 action ??
-                    FilledButton(
-                      onPressed: onAction,
-                      child: Text(actionLabel!),
+                    AppButtons.primary(
+                      onPressed: onAction!,
+                      label: actionLabel!,
                     ),
               ],
             ],

@@ -7,6 +7,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/summary.dart';
 import 'package:writer/repositories/novel_repository.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/storage_service_provider.dart';
@@ -150,9 +151,11 @@ void main() {
     await tester.pumpAndSettle();
 
     // Check save button is enabled
-    final saveButtonFinder = find.widgetWithText(ElevatedButton, 'Save');
+    final saveButtonFinder = find
+        .widgetWithText(NeumorphicButton, 'Save')
+        .first;
     expect(saveButtonFinder, findsOneWidget);
-    final button = tester.widget<ElevatedButton>(saveButtonFinder);
+    final button = tester.widget<NeumorphicButton>(saveButtonFinder);
     expect(
       button.onPressed,
       isNotNull,
@@ -166,9 +169,14 @@ void main() {
 
     // Should show saved snackbar
     expect(find.text('Saved'), findsOneWidget);
-  });
+  }, semanticsEnabled: false);
 
   testWidgets('SummaryScreen toggles AI Coach', (tester) async {
+    tester.view.physicalSize = const Size(1200, 2000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     final container = ProviderContainer(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
@@ -210,5 +218,5 @@ void main() {
     // Based on implementation, it shows "Snowflake Method Coach" or similar if we look at that widget.
     // But let's just check the icon changed to auto_awesome (filled)
     expect(find.byIcon(Icons.auto_awesome), findsOneWidget);
-  });
+  }, semanticsEnabled: false);
 }

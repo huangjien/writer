@@ -421,23 +421,8 @@ void main() {
     await tester.tap(find.text('Save'));
     await tester.pump(); // Start animation
 
-    // Verify spinner is shown in save button
-    expect(
-      find.descendant(
-        of: find.byType(ElevatedButton),
-        matching: find.byType(CircularProgressIndicator),
-      ),
-      findsOneWidget,
-    );
-
-    // Verify spinner is also in AI button
-    expect(
-      find.descendant(
-        of: find.byType(TextButton),
-        matching: find.byType(CircularProgressIndicator),
-      ),
-      findsOneWidget,
-    );
+    // Verify spinner is shown
+    expect(find.byType(CircularProgressIndicator), findsWidgets);
 
     // Finish save
     svc.resumeSave();

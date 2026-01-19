@@ -71,8 +71,8 @@ void main() {
       // Initial render shows the editor; exact field count can vary
 
       // Enter an invalid URL (wrong scheme and contains space)
-      final coverField = find.widgetWithText(TextFormField, 'Cover URL');
-      expect(find.text('Cover URL'), findsOneWidget);
+      final coverField = find.widgetWithText(TextFormField, 'Cover URL').first;
+      expect(find.text('Cover URL'), findsWidgets);
       await tester.tap(coverField);
       await tester.pump();
       await tester.enterText(coverField, 'ftp://bad link');

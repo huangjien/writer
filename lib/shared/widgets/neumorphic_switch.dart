@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../theme/design_tokens.dart';
 import '../../theme/neumorphic_styles.dart';
 
 class NeumorphicSwitch extends StatelessWidget {
@@ -27,7 +26,7 @@ class NeumorphicSwitch extends StatelessWidget {
     const padding = 4.0;
     const thumbSize = height - (padding * 2);
 
-    final effectiveActiveColor = activeColor ?? AppColors.success;
+    final effectiveActiveColor = activeColor ?? theme.colorScheme.primary;
 
     return GestureDetector(
       onTap: isEnabled ? () => onChanged?.call(!value) : null,

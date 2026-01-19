@@ -3,6 +3,7 @@ import '../../../theme/design_tokens.dart';
 import '../../../shared/widgets/theme_aware_card.dart';
 import '../../../shared/widgets/neumorphic_switch.dart';
 import '../../../shared/widgets/neumorphic_text.dart';
+import '../../../shared/widgets/neumorphic_dropdown.dart';
 
 /// Enhanced settings section component
 /// Features:
@@ -142,7 +143,7 @@ class SettingsSelection<T> extends StatelessWidget {
       leading: icon != null ? Icon(icon) : null,
       title: Text(title),
       subtitle: subtitle != null ? Text(subtitle!) : null,
-      trailing: DropdownButton<T>(
+      trailing: NeumorphicDropdown<T>(
         value: value,
         onChanged: onChanged,
         items: options.map((option) {

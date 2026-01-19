@@ -11,6 +11,7 @@ import '../../../state/theme_controller.dart';
 import '../../../theme/design_tokens.dart';
 import '../../../theme/themes.dart';
 import '../../../shared/widgets/neumorphic_slider.dart';
+import '../../../shared/widgets/neumorphic_dropdown.dart';
 import 'enhanced_settings_section.dart';
 
 class AppSettingsSection extends ConsumerStatefulWidget {
@@ -122,7 +123,7 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
           title: Row(
             children: [
               Expanded(child: Text(l10n.appLanguage)),
-              DropdownButton<String>(
+              NeumorphicDropdown<String>(
                 value: appLocale.languageCode,
                 onChanged: (String? languageCode) {
                   if (languageCode != null) {
@@ -144,7 +145,7 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
           title: Row(
             children: [
               Expanded(child: Text(l10n.themeMode)),
-              DropdownButton<ThemeMode>(
+              NeumorphicDropdown<ThemeMode>(
                 value: ThemeMode.values.firstWhere(
                   (e) => e.name == themeState.mode.name,
                   orElse: () => ThemeMode.system,

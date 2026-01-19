@@ -7,6 +7,7 @@ import 'package:http/testing.dart';
 import 'package:writer/features/auth/forgot_password_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 
 void main() {
   testWidgets('ForgotPasswordScreen shows fields', (tester) async {
@@ -30,7 +31,7 @@ void main() {
     expect(find.text('Forgot Password?'), findsOneWidget);
     expect(find.text('Email'), findsOneWidget);
     expect(
-      find.widgetWithText(ElevatedButton, 'Send Reset Link'),
+      find.widgetWithText(NeumorphicButton, 'Send Reset Link'),
       findsOneWidget,
     );
   });
@@ -62,12 +63,12 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Send Reset Link'));
+    await tester.tap(find.widgetWithText(NeumorphicButton, 'Send Reset Link'));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('reset link has been sent'), findsOneWidget);
     expect(
-      find.widgetWithText(ElevatedButton, 'Back to Sign In'),
+      find.widgetWithText(NeumorphicButton, 'Back to Sign In'),
       findsOneWidget,
     );
   });

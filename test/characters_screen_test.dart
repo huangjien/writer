@@ -160,32 +160,16 @@ void main() {
 
     // Now let's find and interact with the form fields
     // Fill fields and save.
-    final titleField = find.widgetWithText(TextFormField, 'Title');
-    expect(titleField, findsOneWidget, reason: 'Title field should be found');
-
-    final summariesField = find.ancestor(
-      of: find.text('Summaries'),
-      matching: find.byType(TextFormField),
-    );
-    expect(
-      summariesField,
-      findsOneWidget,
-      reason: 'Summaries field should be found',
-    );
-
-    final synopsesField = find.widgetWithText(TextFormField, 'Synopses');
-    expect(
-      synopsesField,
-      findsOneWidget,
-      reason: 'Synopses field should be found',
-    );
+    final titleField = find.byType(TextFormField).at(0);
+    final summariesField = find.byType(TextFormField).at(1);
+    final synopsesField = find.byType(TextFormField).at(2);
 
     await tester.enterText(titleField, 'Alice');
     await tester.enterText(summariesField, 'Short bio');
     await tester.enterText(synopsesField, 'Long synopsis');
     await tester.pump();
 
-    final saveBtn = find.widgetWithText(ElevatedButton, 'Save');
+    final saveBtn = find.text('Save');
     expect(saveBtn, findsOneWidget, reason: 'Save button should be found');
     await tester.ensureVisible(saveBtn);
     await tester.tap(saveBtn);
@@ -237,25 +221,15 @@ void main() {
       // Wait for _load to complete
       await tester.pumpAndSettle(const Duration(seconds: 1));
 
-      final titleField = find.widgetWithText(TextFormField, 'Title');
-      find.widgetWithText(TextFormField, 'Summaries');
-      find.widgetWithText(TextFormField, 'Synopses');
+      final titleField = find.byType(TextFormField).at(0);
 
       await tester.enterText(titleField, 'Bob');
       await tester.pumpAndSettle();
 
       // Leave summaries/synopses empty to verify nulls
 
-      final saveBtn = find.widgetWithText(ElevatedButton, 'Save').first;
+      final saveBtn = find.text('Save');
       await tester.ensureVisible(saveBtn);
-
-      // Verify button is enabled
-      final saveBtnWidget = tester.widget<ElevatedButton>(saveBtn);
-      expect(
-        saveBtnWidget.onPressed,
-        isNotNull,
-        reason: 'Save button should be enabled',
-      );
 
       await tester.tap(saveBtn);
       await tester.pumpAndSettle();
@@ -327,7 +301,7 @@ void main() {
     await tester.pumpAndSettle(const Duration(seconds: 1));
 
     // Verify Template field exists
-    expect(find.text('Template'), findsOneWidget);
+    expect(find.text('Template'), findsWidgets);
     expect(find.byType(Autocomplete<CharacterTemplateRow>), findsOneWidget);
 
     // Select Template

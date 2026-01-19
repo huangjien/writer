@@ -352,8 +352,8 @@ void main() {
         expect(result.textTheme.bodyLarge?.fontSize, 16);
         expect(result.textTheme.bodyMedium?.fontSize, 15);
         expect(result.textTheme.bodySmall?.fontSize, 14);
-        expect(result.textTheme.displayLarge?.fontFamily, 'serif');
-        expect(result.textTheme.bodyLarge?.fontFamily, 'serif');
+        expect(result.textTheme.displayLarge?.fontFamily, 'Roboto');
+        expect(result.textTheme.bodyLarge?.fontFamily, 'Roboto');
       });
     });
 

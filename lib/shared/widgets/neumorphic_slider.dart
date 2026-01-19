@@ -39,6 +39,10 @@ class NeumorphicSlider extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final primaryColor = theme.colorScheme.primary;
+
+    final effectiveThumbColor = thumbColor ?? primaryColor;
+    final effectiveActiveTrackColor = activeTrackColor ?? primaryColor;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -70,6 +74,7 @@ class NeumorphicSlider extends StatelessWidget {
             color: Colors.transparent, // Hit test target
             child: Stack(
               alignment: Alignment.centerLeft,
+              clipBehavior: Clip.none,
               children: [
                 // Track Background (Concave)
                 Container(
@@ -82,16 +87,34 @@ class NeumorphicSlider extends StatelessWidget {
                     depth: 2,
                   ),
                 ),
-                // Active Track (Optional)
-                if (activeTrackColor != null)
-                  Container(
-                    width: thumbLeft + (thumbSize / 2),
-                    height: trackHeight,
-                    decoration: BoxDecoration(
-                      color: activeTrackColor,
-                      borderRadius: BorderRadius.circular(trackHeight / 2),
+                // Active Track
+                Container(
+                  width: thumbLeft + (thumbSize / 2),
+                  height: trackHeight,
+                  decoration: BoxDecoration(
+                    color: effectiveActiveTrackColor,
+                    borderRadius: BorderRadius.circular(trackHeight / 2),
+                  ),
+                ),
+                // Value Label
+                Positioned(
+                  left:
+                      thumbLeft +
+                      (thumbSize / 2) -
+                      16, // Center roughly 32px wide
+                  top: -20,
+                  child: SizedBox(
+                    width: 32,
+                    child: Text(
+                      value.toStringAsFixed(1),
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
+                ),
                 // Thumb
                 Positioned(
                   left: thumbLeft,
@@ -102,7 +125,7 @@ class NeumorphicSlider extends StatelessWidget {
                       isDark: isDark,
                       shape: BoxShape.circle,
                       depth: 3,
-                      color: thumbColor,
+                      color: effectiveThumbColor,
                     ),
                   ),
                 ),

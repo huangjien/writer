@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:writer/features/auth/sign_up_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 
 void main() {
   testWidgets('SignUpScreen shows fields', (tester) async {
@@ -25,7 +26,7 @@ void main() {
     expect(find.text('Email'), findsOneWidget);
     expect(find.text('Password'), findsOneWidget);
     expect(
-      find.widgetWithText(ElevatedButton, 'Create Account'),
+      find.widgetWithText(NeumorphicButton, 'Create Account'),
       findsOneWidget,
     );
   });
@@ -53,7 +54,7 @@ void main() {
 
     await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
     await tester.enterText(find.byType(TextField).at(1), 'password');
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Create Account'));
+    await tester.tap(find.widgetWithText(NeumorphicButton, 'Create Account'));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Email already exists'), findsOneWidget);
@@ -82,12 +83,12 @@ void main() {
 
     await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
     await tester.enterText(find.byType(TextField).at(1), 'password');
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Create Account'));
+    await tester.tap(find.widgetWithText(NeumorphicButton, 'Create Account'));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Account created!'), findsOneWidget);
     expect(
-      find.widgetWithText(ElevatedButton, 'Back to Sign In'),
+      find.widgetWithText(NeumorphicButton, 'Back to Sign In'),
       findsOneWidget,
     );
   });

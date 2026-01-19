@@ -9,6 +9,7 @@ import '../../shared/constants.dart';
 import '../../repositories/template_repository.dart';
 import '../../state/providers.dart';
 import '../../shared/api_exception.dart';
+import '../../shared/widgets/app_buttons.dart';
 
 class _EditIntent extends Intent {
   const _EditIntent();
@@ -207,12 +208,16 @@ class _CharacterTemplatesListScreenState
                       controller: _searchCtrl,
                       decoration: InputDecoration(
                         labelText: l10n.searchLabel,
+                        suffixIconConstraints: const BoxConstraints(
+                          minWidth: 0,
+                          minHeight: 0,
+                        ),
                         suffixIcon: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             if (_searchCtrl.text.isNotEmpty)
-                              IconButton(
-                                icon: const Icon(Icons.clear),
+                              AppButtons.icon(
+                                iconData: Icons.clear,
                                 onPressed: () {
                                   _searchCtrl.clear();
                                   setState(() {
@@ -220,11 +225,13 @@ class _CharacterTemplatesListScreenState
                                   });
                                 },
                                 tooltip: 'Clear search',
+                                focusPadding: EdgeInsets.zero,
                               ),
-                            IconButton(
-                              icon: const Icon(Icons.auto_awesome),
+                            AppButtons.icon(
+                              iconData: Icons.auto_awesome,
                               tooltip: l10n.smartSearch,
                               onPressed: () => _smartSearch(context),
+                              focusPadding: EdgeInsets.zero,
                             ),
                           ],
                         ),
@@ -318,15 +325,15 @@ class _CharacterTemplatesListScreenState
                                               l10n.confirmDeleteGeneric,
                                             ),
                                             actions: [
-                                              TextButton(
+                                              AppButtons.text(
                                                 onPressed: () =>
                                                     Navigator.pop(d, false),
-                                                child: Text(l10n.cancel),
+                                                label: l10n.cancel,
                                               ),
-                                              FilledButton(
+                                              AppButtons.primary(
                                                 onPressed: () =>
                                                     Navigator.pop(d, true),
-                                                child: Text(l10n.delete),
+                                                label: l10n.delete,
                                               ),
                                             ],
                                           ),

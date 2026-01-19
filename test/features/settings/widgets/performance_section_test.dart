@@ -7,6 +7,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/performance_settings.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/shared/widgets/neumorphic_switch.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockLocalStorageRepository extends Mock
@@ -42,7 +43,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify initial state (default is true usually, but let's check the widget)
-    final switchFinder = find.byType(SwitchListTile);
+    final switchFinder = find.byType(NeumorphicSwitch);
     expect(switchFinder, findsOneWidget);
 
     // Toggle

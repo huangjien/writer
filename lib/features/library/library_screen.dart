@@ -23,6 +23,7 @@ import 'package:writer/widgets/offline_banner.dart';
 import 'package:writer/theme/design_tokens.dart';
 import 'package:writer/widgets/recent_chapters.dart';
 import 'package:writer/widgets/sync_status_indicator.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
 import 'package:writer/shared/widgets/mobile_bottom_nav_bar.dart';
 import 'package:writer/shared/widgets/mobile_fab.dart';
 import 'package:writer/shared/widgets/mobile_novel_card.dart';
@@ -439,8 +440,8 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     return AppBar(
       title: Text(l10n.libraryTitle),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.more_vert),
+        AppButtons.icon(
+          iconData: Icons.more_vert,
           onPressed: () => _showMoreMenu(context, l10n),
         ),
       ],
@@ -483,22 +484,22 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
       title: Text(l10n.libraryTitle),
       actions: [
         if (isSignedIn)
-          IconButton(
-            icon: const Icon(Icons.refresh),
+          AppButtons.icon(
+            iconData: Icons.refresh,
             onPressed: () => ref.refresh(libraryNovelsProvider),
           ),
         SyncStatusIndicator(),
         if (isAdmin)
-          IconButton(
-            icon: const Icon(Icons.admin_panel_settings),
+          AppButtons.icon(
+            iconData: Icons.admin_panel_settings,
             onPressed: () => context.pushNamed('userManagement'),
           ),
-        IconButton(
-          icon: const Icon(Icons.settings),
+        AppButtons.icon(
+          iconData: Icons.settings,
           onPressed: () => context.pushNamed('settings'),
         ),
-        IconButton(
-          icon: const Icon(Icons.info_outline),
+        AppButtons.icon(
+          iconData: Icons.info_outline,
           onPressed: () => context.pushNamed('about'),
         ),
       ],

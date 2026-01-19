@@ -20,7 +20,7 @@ void main() {
     final theme = container.read(themeControllerProvider);
     expect(theme.mode, ThemeMode.system);
     expect(theme.family, AppThemeFamily.sepia);
-    expect(theme.customFontFamily, 'Consolas');
+    expect(theme.customFontFamily, null);
     expect(theme.preset, ReaderTypographyPreset.system);
   });
 

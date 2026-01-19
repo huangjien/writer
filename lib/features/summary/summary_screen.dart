@@ -9,6 +9,7 @@ import 'package:writer/models/snowflake.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/shared/api_exception.dart';
 import 'package:writer/features/reader/novel_metadata_editor.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
 import 'summary_controller.dart';
 
 class SummaryScreen extends ConsumerStatefulWidget {
@@ -205,18 +206,14 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                             suffixIcon: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                IconButton(
-                                  key: const Key('sentence_ai_coach_button'),
-                                  icon: Icon(
-                                    _showSentenceCoach
-                                        ? Icons.auto_awesome
-                                        : Icons.auto_awesome_outlined,
-                                    color:
-                                        _showSentenceCoach ||
-                                            _sentenceAiSatisfied
-                                        ? Colors.purple
-                                        : null,
-                                  ),
+                                AppButtons.icon(
+                                  iconData: _showSentenceCoach
+                                      ? Icons.auto_awesome
+                                      : Icons.auto_awesome_outlined,
+                                  color:
+                                      _showSentenceCoach || _sentenceAiSatisfied
+                                      ? Colors.purple
+                                      : null,
                                   onPressed: () {
                                     setState(() {
                                       if (_showSentenceCoach) {
@@ -232,18 +229,15 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                                 ),
                                 if (_sentenceAiSatisfied &&
                                     !_showSentenceCoach) ...[
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.check_circle,
-                                      size: 18,
-                                    ),
-                                    color: Colors.green,
+                                  AppButtons.icon(
+                                    iconData: Icons.check_circle,
                                     onPressed: () {
                                       setState(
                                         () => _sentenceAiSatisfied = false,
                                       );
                                     },
                                     tooltip: l10n.imSatisfied,
+                                    color: Colors.green,
                                   ),
                                 ],
                               ],
@@ -339,18 +333,15 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                               ),
                               if (_paragraphAiSatisfied &&
                                   !_showParagraphCoach) ...[
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.check_circle,
-                                    size: 18,
-                                  ),
-                                  color: Colors.green,
+                                AppButtons.icon(
+                                  iconData: Icons.check_circle,
                                   onPressed: () {
                                     setState(
                                       () => _paragraphAiSatisfied = false,
                                     );
                                   },
                                   tooltip: l10n.imSatisfied,
+                                  color: Colors.green,
                                 ),
                               ],
                             ],
@@ -442,16 +433,13 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                                 tooltip: 'AI page summary',
                               ),
                               if (_pageAiSatisfied && !_showPageCoach) ...[
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.check_circle,
-                                    size: 18,
-                                  ),
-                                  color: Colors.green,
+                                AppButtons.icon(
+                                  iconData: Icons.check_circle,
                                   onPressed: () {
                                     setState(() => _pageAiSatisfied = false);
                                   },
                                   tooltip: l10n.imSatisfied,
+                                  color: Colors.green,
                                 ),
                               ],
                             ],
@@ -735,9 +723,10 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                       padding: const EdgeInsets.all(16),
                       child: Row(
                         children: [
-                          ElevatedButton(
+                          AppButtons.primary(
+                            label: l10n.save,
                             onPressed: (_saving || !_isDirty)
-                                ? null
+                                ? () {}
                                 : () async {
                                     final ok =
                                         _formKey.currentState?.validate() ??
@@ -768,12 +757,11 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                                     } catch (e) {
                                       setState(() => _error = e.toString());
                                     } finally {
-                                      if (mounted) {
-                                        setState(() => _saving = false);
-                                      }
+                                      setState(() => _saving = false);
                                     }
                                   },
-                            child: Text(l10n.save),
+                            enabled: !(_saving || !_isDirty),
+                            isLoading: _saving,
                           ),
                           const SizedBox(width: 12),
                           if (_error != null)

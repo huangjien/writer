@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import '../../state/ai_service_settings.dart';
 import '../../state/session_state.dart';
 import '../../l10n/app_localizations.dart';
+import '../../shared/widgets/app_buttons.dart';
+import '../../shared/widgets/neumorphic_textfield.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
   const ResetPasswordScreen({super.key, this.client});
@@ -128,15 +130,15 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
+            NeumorphicTextField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: l10n.newPassword),
+              hintText: l10n.newPassword,
               obscureText: true,
             ),
             const SizedBox(height: 12),
-            TextField(
+            NeumorphicTextField(
               controller: _confirmController,
-              decoration: InputDecoration(labelText: l10n.confirmPassword),
+              hintText: l10n.confirmPassword,
               obscureText: true,
             ),
             const SizedBox(height: 20),
@@ -144,15 +146,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               Text(_error!, style: const TextStyle(color: Colors.red)),
               const SizedBox(height: 8),
             ],
-            ElevatedButton(
-              onPressed: _loading ? null : _updatePassword,
-              child: _loading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.updatePassword),
+            AppButtons.primary(
+              onPressed: _loading ? () {} : _updatePassword,
+              label: l10n.updatePassword,
+              isLoading: _loading,
             ),
           ],
         ),

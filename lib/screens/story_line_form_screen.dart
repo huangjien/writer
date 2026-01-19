@@ -2,6 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../theme/neumorphic_styles.dart';
+import '../theme/design_tokens.dart';
+import '../shared/widgets/neumorphic_checkbox.dart';
+import '../shared/widgets/app_buttons.dart';
 import '../models/story_line.dart';
 import '../shared/api_exception.dart';
 import '../state/story_line_providers.dart';
@@ -293,6 +297,7 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isSignedIn = ref.watch(isSignedInProvider);
     final isAdmin = ref.watch(isAdminProvider);
     final currentUser = ref.watch(currentUserProvider).asData?.value;
@@ -318,7 +323,10 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
                   final wide = constraints.maxWidth >= 860;
                   final titleField = TextFormField(
                     controller: _titleCtrl,
-                    decoration: InputDecoration(labelText: l10n.titleLabel),
+                    decoration: NeumorphicStyles.inputDecoration(
+                      isDark: isDark,
+                      hintText: l10n.titleLabel,
+                    ).copyWith(labelText: l10n.titleLabel),
                     validator: _required,
                     enabled: !_locked && !_saving,
                   );
@@ -326,10 +334,10 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
                     key: ValueKey(_language),
                     initialValue: _language,
                     isExpanded: true,
-                    decoration: InputDecoration(
-                      labelText: l10n.languageLabel(''),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                    ),
+                    decoration: NeumorphicStyles.inputDecoration(
+                      isDark: isDark,
+                      hintText: l10n.languageLabel(''),
+                    ).copyWith(labelText: l10n.languageLabel('')),
                     items: [
                       DropdownMenuItem(value: 'en', child: Text(l10n.english)),
                       DropdownMenuItem(value: 'zh', child: Text(l10n.chinese)),
@@ -346,7 +354,7 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
                   final publicToggle = Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Checkbox(
+                      NeumorphicCheckbox(
                         value: _isPublic,
                         onChanged: _saving || _locked
                             ? null
@@ -358,6 +366,7 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
                                 _checkDirty();
                               },
                       ),
+                      const SizedBox(width: 8),
                       Text(l10n.publicStoryLineLabel),
                     ],
                   );
@@ -424,7 +433,10 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
               const SizedBox(height: 12),
               TextFormField(
                 controller: _descCtrl,
-                decoration: InputDecoration(labelText: l10n.descriptionLabel),
+                decoration: NeumorphicStyles.inputDecoration(
+                  isDark: isDark,
+                  hintText: l10n.descriptionLabel,
+                ).copyWith(labelText: l10n.descriptionLabel),
                 enabled: !_locked && !_saving,
               ),
               const SizedBox(height: 12),
@@ -460,9 +472,9 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
                       textAlign: TextAlign.start,
                       textAlignVertical: TextAlignVertical.top,
                       validator: _required,
-                      decoration: InputDecoration(
+                      decoration: NeumorphicStyles.inputDecoration(
+                        isDark: isDark,
                         hintText: l10n.content,
-                        border: const OutlineInputBorder(),
                       ),
                       enabled: !_locked && !_saving,
                     ),
@@ -472,9 +484,9 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
                       expands: true,
                       textAlign: TextAlign.start,
                       textAlignVertical: TextAlignVertical.top,
-                      decoration: InputDecoration(
+                      decoration: NeumorphicStyles.inputDecoration(
+                        isDark: isDark,
                         hintText: l10n.usageRulesLabel,
-                        border: const OutlineInputBorder(),
                       ),
                       enabled: !_locked && !_saving,
                     ),
@@ -484,37 +496,33 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
               const SizedBox(height: 8),
               Row(
                 children: [
-                  TextButton(
-                    onPressed: _saving ? null : () => Navigator.pop(context),
-                    child: Text(l10n.cancel),
+                  AppButtons.text(
+                    onPressed: _saving ? () {} : () => Navigator.pop(context),
+                    label: l10n.cancel,
+                    enabled: !_saving,
                   ),
                   const SizedBox(width: 8),
                   if (_isEdit)
-                    TextButton(
-                      onPressed: canDelete ? _delete : null,
-                      child: Text(l10n.delete),
+                    AppButtons.text(
+                      onPressed: canDelete ? _delete : () {},
+                      label: l10n.delete,
+                      color: canDelete ? AppColors.error : null,
+                      enabled: canDelete,
                     ),
                   if (_isEdit) const SizedBox(width: 8),
-                  TextButton(
-                    onPressed: _saving || _locked ? null : _applyAi,
-                    child: _saving
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(l10n.aiButton),
+                  AppButtons.secondary(
+                    onPressed: _saving || _locked ? () {} : _applyAi,
+                    label: l10n.aiButton,
+                    isLoading:
+                        _saving, // Using saving state for AI button too? Or create separate state? Existing code used _saving.
+                    enabled: !(_saving || _locked),
                   ),
                   const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: (_saving || !_isDirty) ? null : _save,
-                    child: _saving
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(l10n.save),
+                  AppButtons.primary(
+                    onPressed: (_saving || !_isDirty) ? () {} : _save,
+                    label: l10n.save,
+                    isLoading: _saving,
+                    enabled: !(_saving || !_isDirty),
                   ),
                 ],
               ),

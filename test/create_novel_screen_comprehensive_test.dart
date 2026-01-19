@@ -216,10 +216,10 @@ void main() {
 
       // Should show form elements
       expect(find.text('Create Novel'), findsOneWidget);
-      expect(find.text('Title'), findsOneWidget);
-      expect(find.text('Author'), findsOneWidget);
-      expect(find.text('Description'), findsOneWidget);
-      expect(find.text('Cover URL'), findsOneWidget);
+      expect(find.text('Title'), findsWidgets);
+      expect(find.text('Author'), findsWidgets);
+      expect(find.text('Description'), findsWidgets);
+      expect(find.text('Cover URL'), findsWidgets);
       expect(find.text('Create'), findsOneWidget);
 
       // Fill in the form
@@ -294,10 +294,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('创建小说'), findsOneWidget);
-      expect(find.text('标题'), findsOneWidget);
-      expect(find.text('作者'), findsOneWidget);
-      expect(find.text('描述'), findsOneWidget);
-      expect(find.text('封面链接'), findsOneWidget);
+      expect(find.text('标题'), findsWidgets);
+      expect(find.text('作者'), findsWidgets);
+      expect(find.text('描述'), findsWidgets);
+      expect(find.text('封面链接'), findsWidgets);
       expect(find.text('英语'), findsOneWidget);
       // Chinese dropdown might not show until opened
       expect(find.text('创建'), findsOneWidget);

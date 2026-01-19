@@ -5,6 +5,8 @@ import '../../state/user_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../../repositories/remote_repository.dart';
 import '../../shared/api_exception.dart';
+import '../../shared/widgets/app_buttons.dart';
+import '../../shared/widgets/neumorphic_switch.dart';
 
 class UserManagementScreen extends ConsumerStatefulWidget {
   const UserManagementScreen({super.key});
@@ -147,7 +149,14 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
       appBar: AppBar(
         title: Text(l10n.userManagement),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadUsers),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: AppButtons.icon(
+              iconData: Icons.refresh,
+              onPressed: _loadUsers,
+              tooltip: 'Refresh',
+            ),
+          ),
         ],
       ),
       body: _loading && _users.isEmpty
@@ -179,18 +188,18 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                       style: const TextStyle(color: Colors.red),
                     ),
                     const SizedBox(height: 16),
-                    ElevatedButton(
+                    AppButtons.primary(
                       onPressed: () async {
                         // Refresh user status and try again
                         await ref.read(userProvider.notifier).fetchUser();
                         await _loadUsers();
                       },
-                      child: Text(l10n.retry),
+                      label: l10n.retry,
                     ),
                     const SizedBox(height: 8),
-                    TextButton(
+                    AppButtons.text(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: Text(l10n.goBack),
+                      label: l10n.goBack,
                     ),
                   ],
                 ),
@@ -208,7 +217,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                 return ListTile(
                   title: Text(email),
                   subtitle: Text(l10n.userIdCreated(id, createdAt)),
-                  trailing: Switch(
+                  trailing: NeumorphicSwitch(
                     value: isApproved,
                     onChanged: (val) => _toggleApproval(id, isApproved),
                   ),

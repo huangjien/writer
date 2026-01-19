@@ -8,6 +8,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/storage_service_provider.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 
 class MockRemoteRepository extends Mock implements RemoteRepository {}
 
@@ -57,7 +58,7 @@ void main() {
       );
 
       // Don't pumpAndSettle here to keep the loading state
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsNWidgets(2));
 
       // Clean up by completing the future
       await tester.pumpAndSettle();
@@ -275,13 +276,14 @@ void main() {
       // Find the load button
       final loadButton = find.text('Load');
 
-      // During initial loading, button should be disabled
-      expect(loadButton, findsOneWidget);
+      // During initial loading, button text should be hidden (replaced by spinner)
+      expect(loadButton, findsNothing);
+      expect(find.byType(NeumorphicButton), findsOneWidget);
 
       // Wait for loading to complete
       await tester.pumpAndSettle();
 
-      // After loading, button should be enabled again
+      // After loading, button text should be visible again
       expect(loadButton, findsOneWidget);
     });
 

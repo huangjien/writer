@@ -18,6 +18,7 @@ import 'package:writer/repositories/template_repository.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/template.dart';
 import 'package:writer/state/providers.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 import 'package:writer/services/storage_service.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -411,11 +412,11 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final templateSaveButtonFinder = find.widgetWithText(
-      ElevatedButton,
-      'Save',
+    final templateSaveButtonFinder = find.ancestor(
+      of: find.text('Save'),
+      matching: find.byType(NeumorphicButton),
     );
-    final templateSaveButton = tester.widget<ElevatedButton>(
+    final templateSaveButton = tester.widget<NeumorphicButton>(
       templateSaveButtonFinder,
     );
     expect(templateSaveButton.onPressed, isNotNull);

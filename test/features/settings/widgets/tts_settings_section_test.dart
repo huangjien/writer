@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/settings/widgets/tts_settings_section.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/tts_settings.dart';
+import 'package:writer/shared/widgets/neumorphic_slider.dart';
 
 void main() {
   testWidgets('TtsSettingsSection renders correctly', (
@@ -77,7 +78,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    final sliders = find.byType(Slider);
+    final sliders = find.byType(NeumorphicSlider);
     expect(sliders, findsWidgets);
     await tester.drag(sliders.first, const Offset(30, 0));
     await tester.pump();

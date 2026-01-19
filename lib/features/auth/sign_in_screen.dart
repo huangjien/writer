@@ -9,6 +9,7 @@ import '../../l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../../state/auth_service_provider.dart';
 import '../../shared/widgets/app_buttons.dart';
+import '../../shared/widgets/neumorphic_textfield.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
@@ -213,42 +214,40 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
+            NeumorphicTextField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(labelText: l10n.email),
+              hintText: l10n.email,
               textInputAction: TextInputAction.next,
               onSubmitted: (_) {
                 FocusScope.of(context).nextFocus();
               },
             ),
             const SizedBox(height: 12),
-            TextField(
+            NeumorphicTextField(
               controller: _passwordController,
               obscureText: _obscurePassword,
-              decoration: InputDecoration(
-                labelText: l10n.password,
-                suffixIcon: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
+              hintText: l10n.password,
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.login),
-                      onPressed: _loading ? null : () => _signIn(context),
-                    ),
-                  ],
-                ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.login),
+                    onPressed: _loading ? null : () => _signIn(context),
+                  ),
+                ],
               ),
               onSubmitted: (_) => _signIn(context),
             ),
@@ -292,13 +291,13 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TextButton(
+                AppButtons.text(
                   onPressed: () => context.push('/signup'),
-                  child: Text(l10n.signUp),
+                  label: l10n.signUp,
                 ),
-                TextButton(
+                AppButtons.text(
                   onPressed: () => context.push('/forgot-password'),
-                  child: Text(l10n.forgotPassword),
+                  label: l10n.forgotPassword,
                 ),
               ],
             ),

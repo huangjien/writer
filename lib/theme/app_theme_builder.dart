@@ -72,14 +72,14 @@ class AppThemeBuilder {
       if (presetStyle == null) return baseStyle;
       if (baseStyle == null) return presetStyle;
 
-      // If preset has a font family (e.g. serifLike), use it.
-      // Otherwise, keep the base font family (from font pack or custom font).
+      // If preset has a font family (e.g. serifLike), use it only if base doesn't have one.
+      // This ensures Custom Font Family or specific Font Packs take precedence over Presets.
       return baseStyle
           .merge(presetStyle)
           .copyWith(
-            fontFamily: presetStyle.fontFamily ?? baseStyle.fontFamily,
+            fontFamily: baseStyle.fontFamily ?? presetStyle.fontFamily,
             fontFamilyFallback:
-                presetStyle.fontFamilyFallback ?? baseStyle.fontFamilyFallback,
+                baseStyle.fontFamilyFallback ?? presetStyle.fontFamilyFallback,
           );
     }
 

@@ -21,6 +21,75 @@ class AppButtons {
     bool fullWidth = false,
   }) {
     // Neumorphic Primary Button
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        final primaryColor = theme.colorScheme.primary;
+
+        return FocusWrapper(
+          borderRadius: BorderRadius.circular(Radii.m),
+          child: PressScale(
+            enabled: enabled && !isLoading,
+            child: SizedBox(
+              width: fullWidth ? double.infinity : null,
+              height: MobileSpacing.touchTargetMin,
+              child: NeumorphicButton(
+                onPressed: (enabled && !isLoading) ? onPressed : null,
+                borderRadius: BorderRadius.circular(Radii.m),
+                // Primary buttons in Neumorphism often use the accent color
+                // but subtle. If we want standard Neumorphism, we keep it background-colored.
+                // But for "Primary" action, let's use a slightly tinted version or just standard.
+                // Let's stick to standard background for true Neumorphism,
+                // maybe with colored text/icon to indicate primary.
+                child: isLoading
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            primaryColor,
+                          ),
+                        ),
+                      )
+                    : Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (icon != null) ...[
+                            Icon(
+                              icon,
+                              size: 18,
+                              color: primaryColor,
+                            ), // Use brand color for content
+                            const SizedBox(width: Spacing.s),
+                          ],
+                          Text(
+                            label,
+                            style: TextStyle(
+                              color: primaryColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Secondary outlined button
+  static Widget secondary({
+    required String label,
+    required VoidCallback onPressed,
+    IconData? icon,
+    bool enabled = true,
+    bool isLoading = false,
+    bool fullWidth = false,
+  }) {
     return FocusWrapper(
       borderRadius: BorderRadius.circular(Radii.m),
       child: PressScale(
@@ -31,11 +100,7 @@ class AppButtons {
           child: NeumorphicButton(
             onPressed: (enabled && !isLoading) ? onPressed : null,
             borderRadius: BorderRadius.circular(Radii.m),
-            // Primary buttons in Neumorphism often use the accent color
-            // but subtle. If we want standard Neumorphism, we keep it background-colored.
-            // But for "Primary" action, let's use a slightly tinted version or just standard.
-            // Let's stick to standard background for true Neumorphism,
-            // maybe with colored text/icon to indicate primary.
+            depth: 6,
             child: isLoading
                 ? const SizedBox(
                     width: 20,
@@ -47,58 +112,12 @@ class AppButtons {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (icon != null) ...[
-                        Icon(
-                          icon,
-                          size: 18,
-                          color: AppColors.sepiaSeed,
-                        ), // Use brand color for content
+                        Icon(icon, size: 18),
                         const SizedBox(width: Spacing.s),
                       ],
-                      Text(
-                        label,
-                        style: TextStyle(
-                          color: AppColors.sepiaSeed,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      Text(label),
                     ],
                   ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Secondary outlined button
-  static Widget secondary({
-    required String label,
-    required VoidCallback onPressed,
-    IconData? icon,
-    bool enabled = true,
-    bool fullWidth = false,
-  }) {
-    return FocusWrapper(
-      borderRadius: BorderRadius.circular(Radii.m),
-      child: PressScale(
-        enabled: enabled,
-        child: SizedBox(
-          width: fullWidth ? double.infinity : null,
-          height: MobileSpacing.touchTargetMin,
-          child: NeumorphicButton(
-            onPressed: enabled ? onPressed : null,
-            borderRadius: BorderRadius.circular(Radii.m),
-            depth: 6,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (icon != null) ...[
-                  Icon(icon, size: 18),
-                  const SizedBox(width: Spacing.s),
-                ],
-                Text(label),
-              ],
-            ),
           ),
         ),
       ),
@@ -137,6 +156,7 @@ class AppButtons {
     Color? color,
     bool enabled = true,
     bool filled = false,
+    EdgeInsets focusPadding = const EdgeInsets.all(2),
   }) {
     // If filled, use Neumorphic style
     if (filled) {
@@ -146,6 +166,7 @@ class AppButtons {
         tooltip: tooltip,
         iconColor: color,
         enabled: enabled,
+        focusPadding: focusPadding,
       );
     }
 
@@ -165,16 +186,25 @@ class AppButtons {
     );
 
     if (tooltip != null) {
-      return Tooltip(
-        message: tooltip,
-        child: FocusWrapper(
-          borderRadius: BorderRadius.circular(Radii.m),
-          child: button,
+      return Semantics(
+        label: tooltip,
+        button: true,
+        enabled: enabled,
+        onTap: enabled ? onPressed : null,
+        child: Tooltip(
+          message: tooltip,
+          excludeFromSemantics: true,
+          child: FocusWrapper(
+            borderRadius: BorderRadius.circular(Radii.m),
+            padding: focusPadding,
+            child: ExcludeSemantics(child: button),
+          ),
         ),
       );
     }
     return FocusWrapper(
       borderRadius: BorderRadius.circular(Radii.m),
+      padding: focusPadding,
       child: button,
     );
   }
@@ -187,8 +217,10 @@ class AppButtons {
     Color? backgroundColor,
     Color? iconColor,
     bool enabled = true,
+    EdgeInsets focusPadding = const EdgeInsets.all(2),
   }) {
     final button = PressScale(
+      enabled: enabled,
       child: SizedBox(
         width: MobileSpacing.touchTargetMin,
         height: MobileSpacing.touchTargetMin,
@@ -202,16 +234,25 @@ class AppButtons {
     );
 
     if (tooltip != null) {
-      return Tooltip(
-        message: tooltip,
-        child: FocusWrapper(
-          borderRadius: BorderRadius.circular(Radii.m),
-          child: button,
+      return Semantics(
+        label: tooltip,
+        button: true,
+        enabled: enabled,
+        onTap: enabled ? onPressed : null,
+        child: Tooltip(
+          message: tooltip,
+          excludeFromSemantics: true,
+          child: FocusWrapper(
+            borderRadius: BorderRadius.circular(Radii.m),
+            padding: focusPadding,
+            child: ExcludeSemantics(child: button),
+          ),
         ),
       );
     }
     return FocusWrapper(
       borderRadius: BorderRadius.circular(Radii.m),
+      padding: focusPadding,
       child: button,
     );
   }

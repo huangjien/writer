@@ -5,6 +5,9 @@ import '../../../theme/reader_typography.dart';
 import '../../../theme/font_packs.dart';
 import '../../../theme/reader_background.dart';
 import '../../../state/theme_controller.dart';
+import '../../../shared/widgets/neumorphic_dropdown.dart';
+import '../../../shared/widgets/neumorphic_slider.dart';
+import '../../../shared/widgets/neumorphic_switch.dart';
 
 class TypographySettingsSection extends ConsumerWidget {
   const TypographySettingsSection({super.key});
@@ -18,9 +21,6 @@ class TypographySettingsSection extends ConsumerWidget {
       return family;
     }
 
-    final selectedFamily = themeState.customFontFamily?.isNotEmpty == true
-        ? displayFontFamily(themeState.customFontFamily!)
-        : l10n.select;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -29,7 +29,7 @@ class TypographySettingsSection extends ConsumerWidget {
           title: Row(
             children: [
               Expanded(child: Text(l10n.typographyPreset)),
-              DropdownButton<ReaderTypographyPreset>(
+              NeumorphicDropdown<ReaderTypographyPreset>(
                 value: themeState.preset,
                 onChanged: (ReaderTypographyPreset? p) {
                   if (p != null) {
@@ -63,7 +63,7 @@ class TypographySettingsSection extends ConsumerWidget {
           title: Row(
             children: [
               Expanded(child: Text(l10n.fontPack)),
-              DropdownButton<ReaderFontPack>(
+              NeumorphicDropdown<ReaderFontPack>(
                 value: themeState.fontPack,
                 onChanged: (ReaderFontPack? fp) {
                   if (fp != null) {
@@ -93,30 +93,29 @@ class TypographySettingsSection extends ConsumerWidget {
           title: Row(
             children: [
               Expanded(child: Text(l10n.customFontFamily)),
-              PopupMenuButton<String>(
-                tooltip: l10n.commonFonts,
-                onSelected: (family) {
-                  ref
-                      .read(themeControllerProvider.notifier)
-                      .setCustomFontFamily(family);
+              NeumorphicDropdown<String>(
+                value:
+                    supportedChineseFontFamilies().contains(
+                      themeState.customFontFamily,
+                    )
+                    ? themeState.customFontFamily
+                    : null,
+                hint: Text(l10n.select),
+                onChanged: (family) {
+                  if (family != null) {
+                    ref
+                        .read(themeControllerProvider.notifier)
+                        .setCustomFontFamily(family);
+                  }
                 },
-                itemBuilder: (context) {
-                  final families = supportedChineseFontFamilies();
-                  return families
-                      .map(
-                        (f) => PopupMenuItem<String>(
-                          value: f,
-                          child: Text(displayFontFamily(f)),
-                        ),
-                      )
-                      .toList();
-                },
-                child: Row(
-                  children: [
-                    Text(selectedFamily),
-                    const Icon(Icons.arrow_drop_down),
-                  ],
-                ),
+                items: supportedChineseFontFamilies()
+                    .map(
+                      (f) => DropdownMenuItem(
+                        value: f,
+                        child: Text(displayFontFamily(f)),
+                      ),
+                    )
+                    .toList(),
               ),
               const SizedBox(width: 8),
               IconButton(
@@ -134,16 +133,13 @@ class TypographySettingsSection extends ConsumerWidget {
         ListTile(
           leading: const Icon(Icons.text_increase),
           title: Text(l10n.textScale),
-          subtitle: Slider(
+          subtitle: NeumorphicSlider(
             value: themeState.fontScale,
             onChanged: (value) {
               ref.read(themeControllerProvider.notifier).setFontScale(value);
             },
             min: 0.8,
             max: 3.2,
-            divisions: 24,
-            label: '${(themeState.fontScale * 100).round()}%',
-            semanticFormatterCallback: (double v) => '${(v * 100).round()}%',
           ),
         ),
         ListTile(
@@ -151,7 +147,7 @@ class TypographySettingsSection extends ConsumerWidget {
           title: Row(
             children: [
               Expanded(child: Text(l10n.readerBackgroundDepth)),
-              DropdownButton<ReaderBackgroundDepth>(
+              NeumorphicDropdown<ReaderBackgroundDepth>(
                 value: themeState.readerBgDepth,
                 onChanged: (ReaderBackgroundDepth? d) {
                   if (d != null) {
@@ -178,13 +174,15 @@ class TypographySettingsSection extends ConsumerWidget {
             ],
           ),
         ),
-        SwitchListTile.adaptive(
-          value: themeState.hasSeparateTypography,
-          onChanged: (v) => ref
-              .read(themeControllerProvider.notifier)
-              .setSeparateTypography(v),
+        ListTile(
           title: Text(l10n.separateTypographyPresets),
-          secondary: const Icon(Icons.text_fields_outlined),
+          leading: const Icon(Icons.text_fields_outlined),
+          trailing: NeumorphicSwitch(
+            value: themeState.hasSeparateTypography,
+            onChanged: (v) => ref
+                .read(themeControllerProvider.notifier)
+                .setSeparateTypography(v),
+          ),
         ),
         if (themeState.hasSeparateTypography) ...[
           ListTile(
@@ -192,7 +190,7 @@ class TypographySettingsSection extends ConsumerWidget {
             title: Row(
               children: [
                 Expanded(child: Text(l10n.typographyLight)),
-                DropdownButton<ReaderTypographyPreset>(
+                NeumorphicDropdown<ReaderTypographyPreset>(
                   value: themeState.presetLight,
                   onChanged: (ReaderTypographyPreset? p) {
                     if (p != null) {
@@ -228,7 +226,7 @@ class TypographySettingsSection extends ConsumerWidget {
             title: Row(
               children: [
                 Expanded(child: Text(l10n.typographyDark)),
-                DropdownButton<ReaderTypographyPreset>(
+                NeumorphicDropdown<ReaderTypographyPreset>(
                   value: themeState.presetDark,
                   onChanged: (ReaderTypographyPreset? p) {
                     if (p != null) {

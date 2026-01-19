@@ -5,6 +5,7 @@ import '../../../theme/design_tokens.dart';
 import '../../../shared/widgets/theme_aware_card.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/image_utils.dart';
+import '../../../shared/widgets/app_buttons.dart';
 
 /// Enhanced novel card for grid view
 /// Features:
@@ -216,21 +217,33 @@ class _ActionButton extends StatelessWidget {
     final theme = Theme.of(context);
     final buttonColor = color ?? theme.colorScheme.primary;
 
-    return Tooltip(
-      message: tooltip,
-      child: IconButton(
-        icon: isLoading
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : icon != null
-            ? Icon(icon, color: buttonColor)
-            : Text(label ?? '', style: TextStyle(color: buttonColor)),
+    if (isLoading) {
+      return SizedBox(
+        width: MobileSpacing.touchTargetMin,
+        height: MobileSpacing.touchTargetMin,
+        child: Center(
+          child: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      );
+    }
+
+    if (icon != null) {
+      return AppButtons.icon(
+        iconData: icon!,
         onPressed: onPressed,
-        style: IconButton.styleFrom(padding: const EdgeInsets.all(Spacing.s)),
-      ),
+        tooltip: tooltip,
+        color: buttonColor,
+      );
+    }
+
+    return AppButtons.text(
+      label: label ?? '',
+      onPressed: onPressed,
+      color: buttonColor,
     );
   }
 }

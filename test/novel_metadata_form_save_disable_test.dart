@@ -6,6 +6,7 @@ import 'package:writer/features/reader/novel_metadata_editor.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 import 'helpers/test_utils.dart';
 
 class CapturingNovelRepository extends NovelRepository {
@@ -69,18 +70,18 @@ void main() {
       await tester.tap(tile);
       await tester.pumpAndSettle();
 
-      final coverField = find.widgetWithText(TextFormField, 'Cover URL');
+      final coverField = find.widgetWithText(TextFormField, 'Cover URL').first;
       final saveTextFinder = find.text('Save');
       final saveButtonFinder = find.ancestor(
         of: saveTextFinder,
-        matching: find.byWidgetPredicate((w) => w is ButtonStyleButton),
+        matching: find.byType(NeumorphicButton),
       );
-      expect(find.text('Cover URL'), findsOneWidget);
+      expect(find.text('Cover URL'), findsWidgets);
 
       expect(saveTextFinder, findsOneWidget);
       expect(saveButtonFinder, findsOneWidget);
       expect(
-        tester.widget<ButtonStyleButton>(saveButtonFinder).onPressed,
+        tester.widget<NeumorphicButton>(saveButtonFinder).onPressed,
         isNull,
         reason: 'Save should be disabled when nothing changed',
       );
@@ -91,7 +92,7 @@ void main() {
       await tester.enterText(coverField, 'http://bad link');
       await tester.pumpAndSettle();
       expect(
-        tester.widget<ButtonStyleButton>(saveButtonFinder).onPressed,
+        tester.widget<NeumorphicButton>(saveButtonFinder).onPressed,
         isNull,
       );
       // Tap Save; invalid input should not call repo
@@ -105,7 +106,7 @@ void main() {
       await tester.enterText(coverField, 'http://valid.example/cover.jpg');
       await tester.pumpAndSettle();
       // Nudge another field to ensure rebuild
-      final titleField = find.widgetWithText(TextFormField, 'Title');
+      final titleField = find.widgetWithText(TextFormField, 'Title').first;
       await tester.tap(titleField);
       await tester.pump();
       await tester.enterText(titleField, 'Another Title');
@@ -118,7 +119,7 @@ void main() {
         equals('http://valid.example/cover.jpg'),
       );
       expect(
-        tester.widget<ButtonStyleButton>(saveButtonFinder).onPressed,
+        tester.widget<NeumorphicButton>(saveButtonFinder).onPressed,
         isNull,
         reason: 'Save should disable again after successful save',
       );
@@ -129,7 +130,7 @@ void main() {
       await tester.enterText(coverField, '');
       await tester.pumpAndSettle();
       expect(
-        tester.widget<ButtonStyleButton>(saveButtonFinder).onPressed,
+        tester.widget<NeumorphicButton>(saveButtonFinder).onPressed,
         isNotNull,
       );
       await tester.tap(saveButtonFinder);

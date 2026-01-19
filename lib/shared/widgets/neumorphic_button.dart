@@ -95,13 +95,21 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
                   horizontal: Spacing.l,
                   vertical: Spacing.m,
                 ),
-            decoration: NeumorphicStyles.decoration(
-              isDark: isDark,
-              borderRadius: radius,
-              color: background,
-              isPressed: _isPressed,
-              depth: _isPressed ? 0 : baseDepth,
-            ),
+            decoration:
+                NeumorphicStyles.decoration(
+                  isDark: isDark,
+                  borderRadius: radius,
+                  color: background,
+                  isPressed: _isPressed,
+                  depth: _isPressed ? 0 : baseDepth,
+                ).copyWith(
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.black.withValues(alpha: 0.5)
+                        : Colors.white.withValues(alpha: 0.7),
+                    width: 1,
+                  ),
+                ),
             transform: _isPressed && !isDisabled
                 ? Matrix4.translationValues(1, 1, 0)
                 : (_isHovered && !isDisabled

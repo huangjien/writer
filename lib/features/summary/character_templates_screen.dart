@@ -7,6 +7,7 @@ import '../../repositories/remote_repository.dart';
 import '../../repositories/template_repository.dart';
 import '../../state/providers.dart';
 import '../../shared/api_exception.dart';
+import '../../shared/widgets/app_buttons.dart';
 
 class CharacterTemplatesScreen extends ConsumerStatefulWidget {
   const CharacterTemplatesScreen({
@@ -228,9 +229,10 @@ class _CharacterTemplatesScreenState
               const SizedBox(height: 16),
               Row(
                 children: [
-                  ElevatedButton(
+                  AppButtons.primary(
+                    label: l10n.save,
                     onPressed: (_saving || !_isDirty)
-                        ? null
+                        ? () {}
                         : () async {
                             final ok =
                                 _formKey.currentState?.validate() ?? false;
@@ -304,7 +306,8 @@ class _CharacterTemplatesScreenState
                               if (mounted) setState(() => _saving = false);
                             }
                           },
-                    child: Text(l10n.save),
+                    enabled: !(_saving || !_isDirty),
+                    isLoading: _saving,
                   ),
                   const SizedBox(width: 12),
                   if (_error != null)

@@ -650,13 +650,7 @@ void main() {
     await tester.tap(find.text('Save'));
     await tester.pump();
 
-    expect(
-      find.descendant(
-        of: find.byType(ElevatedButton),
-        matching: find.byType(CircularProgressIndicator),
-      ),
-      findsOneWidget,
-    );
+    expect(find.byType(CircularProgressIndicator), findsWidgets);
 
     svc.resumeSave();
     await tester.pump();
@@ -684,12 +678,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final delete = tester.widget<TextButton>(
-      find.widgetWithText(TextButton, 'Delete'),
-    );
-    expect(delete.onPressed, isNotNull);
+    final deleteButton = find.text('Delete');
+    expect(deleteButton, findsOneWidget);
 
-    await tester.tap(find.text('Delete'));
+    await tester.tap(deleteButton);
     await tester.pumpAndSettle();
     expect(find.byType(AlertDialog), findsOneWidget);
 

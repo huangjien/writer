@@ -12,6 +12,7 @@ import '../../models/chapter.dart';
 import 'chapter_reader_screen.dart' as cr;
 import '../../repositories/chapter_repository.dart';
 import '../../shared/api_exception.dart';
+import '../../shared/widgets/app_buttons.dart';
 import '../../state/providers.dart';
 import '../../shared/widgets/empty_states/chapter_empty_state.dart';
 import '../../shared/widgets/loading_state.dart';
@@ -78,8 +79,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
         automaticallyImplyLeading: false,
         actions: [
           if (canEdit)
-            IconButton(
-              icon: const Icon(Icons.add),
+            AppButtons.icon(
+              iconData: Icons.add,
               tooltip: l10n.newLabel,
               onPressed: () {
                 try {
@@ -105,8 +106,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
               ),
             )
           else
-            IconButton(
-              icon: const Icon(Icons.refresh),
+            AppButtons.icon(
+              iconData: Icons.refresh,
               tooltip: l10n.refreshTooltip,
               onPressed: () async {
                 setState(() => _refreshing = true);
@@ -115,17 +116,12 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                 if (mounted) setState(() => _refreshing = false);
               },
             ),
-          IconButton(
-            icon: _pdfGenerating
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.picture_as_pdf),
+          AppButtons.icon(
+            iconData: Icons.picture_as_pdf,
             tooltip: l10n.pdf,
+            enabled: !_pdfGenerating,
             onPressed: _pdfGenerating
-                ? null
+                ? () {}
                 : () async {
                     final messenger = ScaffoldMessenger.of(context);
                     final rootNavigator = Navigator.of(
