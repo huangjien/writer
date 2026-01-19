@@ -4,6 +4,8 @@ import '../../../l10n/app_localizations.dart';
 import '../../../repositories/chapter_repository.dart';
 import '../../../models/chapter.dart';
 import '../../../state/chapter_edit_controller.dart';
+import '../../../theme/design_tokens.dart';
+import '../../../theme/neumorphic_styles.dart';
 import '../widgets/preview_panel.dart';
 
 class EditChapterBody extends ConsumerWidget {
@@ -29,10 +31,11 @@ class EditChapterBody extends ConsumerWidget {
     final controller = ref.read(
       chapterEditControllerProvider(current).notifier,
     );
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final originalTitle = current.title ?? '';
     final originalContent = current.content ?? '';
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Spacing.l),
       child: Column(
         children: [
           // Top metadata section (minimal) removed
@@ -53,20 +56,10 @@ class EditChapterBody extends ConsumerWidget {
                       TextFormField(
                         initialValue: editState.title,
                         focusNode: _titleFocusNode,
-                        decoration: InputDecoration(
-                          labelText: l10n.chapterTitle,
+                        decoration: NeumorphicStyles.inputDecoration(
+                          isDark: isDark,
                           hintText: l10n.enterChapterTitle,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.primary,
-                              width: 2,
-                            ),
-                          ),
-                        ),
+                        ).copyWith(labelText: l10n.chapterTitle),
                         textInputAction: TextInputAction.next,
                         onFieldSubmitted: (_) {
                           FocusScope.of(
@@ -75,35 +68,28 @@ class EditChapterBody extends ConsumerWidget {
                         },
                         onChanged: controller.setTitle,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: Spacing.m),
 
                       // Content field (expanded to fill available space)
                       Expanded(
                         child: TextFormField(
                           initialValue: editState.content,
                           focusNode: _contentFocusNode,
-                          decoration: InputDecoration(
-                            labelText: l10n.chapterContent,
-                            hintText: l10n.enterChapterContent,
-                            alignLabelWithHint: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.primary,
-                                width: 2,
+                          decoration:
+                              NeumorphicStyles.inputDecoration(
+                                isDark: isDark,
+                                hintText: l10n.enterChapterContent,
+                              ).copyWith(
+                                labelText: l10n.chapterContent,
+                                alignLabelWithHint: true,
                               ),
-                            ),
-                          ),
                           textInputAction: TextInputAction.newline,
                           onChanged: controller.setContent,
                           maxLines: null,
                           expands: true,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: Spacing.m),
 
                       // Chapter index field
                       Builder(
@@ -159,20 +145,13 @@ class EditChapterBody extends ConsumerWidget {
                           return TextFormField(
                             controller: idxController,
                             focusNode: _indexFocusNode,
-                            decoration: InputDecoration(
-                              labelText: l10n.indexLabel(editState.idx),
-                              hintText: l10n.enterFloatIndexHint,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  width: 2,
+                            decoration:
+                                NeumorphicStyles.inputDecoration(
+                                  isDark: isDark,
+                                  hintText: l10n.enterFloatIndexHint,
+                                ).copyWith(
+                                  labelText: l10n.indexLabel(editState.idx),
                                 ),
-                              ),
-                            ),
                             keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                             ),
@@ -188,11 +167,42 @@ class EditChapterBody extends ConsumerWidget {
 
           // Status indicators at the bottom
           if (editState.isSaving) ...[
-            const LinearProgressIndicator(),
-            const SizedBox(height: 8),
+            Builder(
+              builder: (context) {
+                final theme = Theme.of(context);
+                final isDark = theme.brightness == Brightness.dark;
+                return Container(
+                  height: 14,
+                  padding: const EdgeInsets.all(2),
+                  decoration:
+                      NeumorphicStyles.decoration(
+                        isDark: isDark,
+                        isPressed: true,
+                        borderRadius: BorderRadius.circular(Radii.s),
+                        depth: 2,
+                      ).copyWith(
+                        border: Border.all(
+                          color: isDark
+                              ? Colors.black.withValues(alpha: 0.5)
+                              : Colors.white.withValues(alpha: 0.7),
+                          width: 1,
+                        ),
+                      ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(Radii.s - 2),
+                    child: _NeumorphicIndeterminateBar(
+                      backgroundColor:
+                          theme.colorScheme.surfaceContainerHighest,
+                      foregroundColor: theme.colorScheme.primary,
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: Spacing.s),
           ],
           if (editState.errorMessage != null) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: Spacing.s),
             Text(
               editState.errorMessage!,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
@@ -200,6 +210,72 @@ class EditChapterBody extends ConsumerWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+class _NeumorphicIndeterminateBar extends StatefulWidget {
+  const _NeumorphicIndeterminateBar({
+    required this.backgroundColor,
+    required this.foregroundColor,
+  });
+
+  final Color backgroundColor;
+  final Color foregroundColor;
+
+  @override
+  State<_NeumorphicIndeterminateBar> createState() =>
+      _NeumorphicIndeterminateBarState();
+}
+
+class _NeumorphicIndeterminateBarState
+    extends State<_NeumorphicIndeterminateBar>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final w = constraints.maxWidth;
+        final barW = (w * 0.35).clamp(8.0, w);
+        return AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            final t = Curves.easeInOut.transform(_controller.value);
+            final left = (w + barW) * t - barW;
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                ColoredBox(color: widget.backgroundColor),
+                Positioned(
+                  left: left,
+                  top: 0,
+                  bottom: 0,
+                  child: SizedBox(
+                    width: barW,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: widget.foregroundColor,
+                        borderRadius: BorderRadius.circular(Radii.s - 2),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

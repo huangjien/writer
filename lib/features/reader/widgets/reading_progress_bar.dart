@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
+import '../../../shared/widgets/neumorphic_slider.dart';
 
 /// Enhanced reading progress bar with time display
 /// Features:
@@ -30,16 +31,9 @@ class ReadingProgressBar extends StatelessWidget {
     return Column(
       children: [
         // Progress bar
-        SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            trackHeight: 4,
-            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-            overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
-            activeTrackColor: theme.colorScheme.primary,
-            inactiveTrackColor: theme.colorScheme.surfaceContainerHighest,
-            thumbColor: theme.colorScheme.primary,
-          ),
-          child: Slider(value: progress, onChanged: onSeek),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
+          child: NeumorphicSlider(value: progress, onChanged: onSeek),
         ),
         // Time display
         if (showTime && currentTime != null && totalTime != null)

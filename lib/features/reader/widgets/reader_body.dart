@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/material.dart';
+import '../../../theme/design_tokens.dart';
 import 'reader_paragraphs.dart';
 import 'autoplay_blocked_card.dart';
 
@@ -14,6 +15,7 @@ class ReaderBody extends StatelessWidget {
     required this.onAutoplayContinue,
     required this.gesturesEnabled,
     required this.swipeMinVelocity,
+    required this.boldEnabled,
     required this.editMode,
     required this.discardDialogOpen,
     required this.onToggleFullScreen,
@@ -29,6 +31,7 @@ class ReaderBody extends StatelessWidget {
   final VoidCallback onAutoplayContinue;
   final bool gesturesEnabled;
   final double swipeMinVelocity;
+  final bool boldEnabled;
   final bool editMode;
   final bool discardDialogOpen;
   final VoidCallback onToggleFullScreen;
@@ -40,14 +43,18 @@ class ReaderBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final listView = ListView(
       controller: controller,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(Spacing.l),
       children: [
         if (autoplayBlocked)
           AutoplayBlockedCard(onContinue: onAutoplayContinue),
-        const SizedBox(height: 12),
-        ReaderParagraphs(text: content ?? '', ttsIndex: ttsIndex),
-        const SizedBox(height: 24),
-        const SizedBox(height: 12),
+        const SizedBox(height: Spacing.m),
+        ReaderParagraphs(
+          text: content ?? '',
+          ttsIndex: ttsIndex,
+          forceBold: boldEnabled,
+        ),
+        const SizedBox(height: Spacing.xl),
+        const SizedBox(height: Spacing.m),
       ],
     );
     final platformGestures =

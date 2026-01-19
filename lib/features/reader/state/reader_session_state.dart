@@ -13,6 +13,7 @@ class ReaderSessionState {
   final bool speaking;
   final bool autoplayBlocked;
   final double scrollProgress;
+  final bool boldEnabled;
   final bool editMode;
   final bool discardDialogOpen;
   final bool previewMode;
@@ -31,6 +32,7 @@ class ReaderSessionState {
     this.speaking = false,
     this.autoplayBlocked = false,
     this.scrollProgress = 0.0,
+    this.boldEnabled = false,
     this.editMode = false,
     this.discardDialogOpen = false,
     this.previewMode = false,
@@ -50,6 +52,7 @@ class ReaderSessionState {
     bool? speaking,
     bool? autoplayBlocked,
     double? scrollProgress,
+    bool? boldEnabled,
     bool? editMode,
     bool? discardDialogOpen,
     bool? previewMode,
@@ -69,6 +72,7 @@ class ReaderSessionState {
       speaking: speaking ?? this.speaking,
       autoplayBlocked: autoplayBlocked ?? this.autoplayBlocked,
       scrollProgress: scrollProgress ?? this.scrollProgress,
+      boldEnabled: boldEnabled ?? this.boldEnabled,
       editMode: editMode ?? this.editMode,
       discardDialogOpen: discardDialogOpen ?? this.discardDialogOpen,
       previewMode: previewMode ?? this.previewMode,

@@ -304,7 +304,10 @@ void main() {
     await tester.pumpAndSettle();
 
     // Progress bar should be visible
-    expect(find.byType(LinearProgressIndicator), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('reader_bottom_progress_bar')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('Shows toast when reaching last chapter', (tester) async {

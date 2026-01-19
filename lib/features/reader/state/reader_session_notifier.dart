@@ -238,6 +238,10 @@ class ReaderSessionNotifier extends StateNotifier<ReaderSessionState> {
     state = state.copyWith(previewMode: !state.previewMode);
   }
 
+  void toggleBold() {
+    state = state.copyWith(boldEnabled: !state.boldEnabled);
+  }
+
   void setEditMode(bool value) {
     state = state.copyWith(editMode: value, previewMode: false);
   }

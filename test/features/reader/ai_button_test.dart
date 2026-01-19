@@ -5,6 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/features/reader/widgets/reader_app_bar.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 
 class MockAiChatService extends Mock implements AiChatService {}
 
@@ -43,13 +44,17 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find the AI button
-      final aiButton = find.widgetWithIcon(IconButton, Icons.smart_toy);
-      expect(aiButton, findsOneWidget);
+      final aiIcon = find.byIcon(Icons.smart_toy);
+      expect(aiIcon, findsOneWidget);
 
       // Verify it is disabled
-      final buttonWidget = tester.widget<IconButton>(aiButton);
+      expect(find.byTooltip('AI Service Unavailable'), findsOneWidget);
+      final buttonFinder = find.ancestor(
+        of: aiIcon,
+        matching: find.byType(NeumorphicButton),
+      );
+      final buttonWidget = tester.widget<NeumorphicButton>(buttonFinder);
       expect(buttonWidget.onPressed, isNull);
-      expect(buttonWidget.tooltip, 'AI Service Unavailable');
     });
 
     testWidgets('AI button is enabled when service is available', (
@@ -75,10 +80,16 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      final aiButton = find.widgetWithIcon(IconButton, Icons.smart_toy);
-      final buttonWidget = tester.widget<IconButton>(aiButton);
+      final aiIcon = find.byIcon(Icons.smart_toy);
+      expect(aiIcon, findsOneWidget);
+
+      expect(find.byTooltip('AI Assistant'), findsOneWidget);
+      final buttonFinder = find.ancestor(
+        of: aiIcon,
+        matching: find.byType(NeumorphicButton),
+      );
+      final buttonWidget = tester.widget<NeumorphicButton>(buttonFinder);
       expect(buttonWidget.onPressed, isNotNull);
-      expect(buttonWidget.tooltip, 'AI Assistant');
     });
   });
 }

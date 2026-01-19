@@ -93,13 +93,14 @@ void main(List<String> args) {
     for (final f in missing.toList()..sort()) {
       print('  0.0%      0/0  $f');
     }
-    stderr.writeln('Missing coverage records for ${missing.length} target files');
+    stderr.writeln(
+      'Missing coverage records for ${missing.length} target files',
+    );
     exit(1);
   }
 
   final below = <String>[];
-  final ordered = seen.entries.toList()
-    ..sort((a, b) => a.key.compareTo(b.key));
+  final ordered = seen.entries.toList()..sort((a, b) => a.key.compareTo(b.key));
 
   for (final e in ordered) {
     final r = e.value;
@@ -110,8 +111,9 @@ void main(List<String> args) {
   }
 
   if (below.isNotEmpty) {
-    stderr.writeln('Targeted coverage below ${threshold.toStringAsFixed(1)}%: ${below.length}');
+    stderr.writeln(
+      'Targeted coverage below ${threshold.toStringAsFixed(1)}%: ${below.length}',
+    );
     exit(1);
   }
 }
-

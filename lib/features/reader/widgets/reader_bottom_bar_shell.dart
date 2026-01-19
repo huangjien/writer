@@ -12,9 +12,11 @@ class ReaderBottomBarShell extends StatelessWidget {
     required this.editMode,
     required this.speaking,
     required this.scrollProgress,
+    required this.boldEnabled,
     required this.onEditToggle,
     required this.onPrev,
     required this.onNext,
+    required this.onToggleBold,
     required this.onPlayStop,
     required this.onOpenTtsSettings,
     required this.reduceMotion,
@@ -32,9 +34,11 @@ class ReaderBottomBarShell extends StatelessWidget {
   final bool editMode;
   final bool speaking;
   final double scrollProgress;
+  final bool boldEnabled;
   final VoidCallback onEditToggle;
   final VoidCallback onPrev;
   final VoidCallback onNext;
+  final VoidCallback onToggleBold;
   final VoidCallback onPlayStop;
   final VoidCallback onOpenTtsSettings;
   final bool reduceMotion;
@@ -84,9 +88,11 @@ class ReaderBottomBarShell extends StatelessWidget {
       showPercent: showPercent,
       showTtsControls: !isCompact,
       scrollProgress: scrollProgress,
+      boldEnabled: boldEnabled,
       onEditToggle: onEditToggle,
       onPrev: onPrev,
       onNext: onNext,
+      onToggleBold: onToggleBold,
       onPlayStop: onPlayStop,
       onOpenTtsSettings: onOpenTtsSettings,
       reduceMotion: reduceMotion,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../models/chapter.dart';
 import '../../../theme/design_tokens.dart';
+import '../../../theme/neumorphic_styles.dart';
 
 /// Enhanced chapter list item with progress indicator
 /// Features:
@@ -27,6 +28,7 @@ class EnhancedChapterListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final titleText = chapter.title?.trim();
     final displayTitle = (titleText == null || titleText.isEmpty)
         ? 'Chapter ${chapter.idx}'
@@ -91,11 +93,34 @@ class EnhancedChapterListItem extends StatelessWidget {
                   ),
                   if (progress > 0 && progress < 1.0) ...[
                     const SizedBox(height: Spacing.xs),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(Radii.s),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 2,
+                    Container(
+                      height: 10,
+                      padding: const EdgeInsets.all(2),
+                      decoration:
+                          NeumorphicStyles.decoration(
+                            isDark: isDark,
+                            isPressed: true,
+                            borderRadius: BorderRadius.circular(Radii.s),
+                            depth: 2,
+                          ).copyWith(
+                            border: Border.all(
+                              color: isDark
+                                  ? Colors.black.withValues(alpha: 0.5)
+                                  : Colors.white.withValues(alpha: 0.7),
+                              width: 1,
+                            ),
+                          ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: FractionallySizedBox(
+                          widthFactor: progress.clamp(0.0, 1.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary,
+                              borderRadius: BorderRadius.circular(Radii.s - 2),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],

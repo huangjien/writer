@@ -36,25 +36,26 @@ class ReaderEditActions extends ConsumerWidget {
     );
     final bool disabled = editState.isSaving;
     final bool previewEnabled = editState.isDirty;
-    final Widget previewBtn = IconButton(
-      key: const ValueKey('btn_preview'),
-      icon: Icon(previewMode ? Icons.visibility_off : Icons.visibility),
-      iconSize: iconSize,
-      onPressed: previewEnabled ? onTogglePreview : null,
+    final Widget previewBtn = AppButtons.icon(
+      iconData: previewMode ? Icons.visibility_off : Icons.visibility,
+      tooltip: 'Review',
+      onPressed: onTogglePreview,
+      enabled: previewEnabled,
     );
-    final Widget formatBtn = IconButton(
-      icon: const Icon(Icons.format_align_left),
-      iconSize: iconSize,
-      onPressed: disabled ? null : () => controller.formatContent(),
+    final Widget formatBtn = AppButtons.icon(
+      iconData: Icons.format_align_left,
+      tooltip: l10n.format,
+      onPressed: () => controller.formatContent(),
+      enabled: !disabled,
     );
     // Summary edit mode: only show save button prominently
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         // Preview and format buttons on the left
-        Tooltip(message: 'Review', child: previewBtn),
+        previewBtn,
         SizedBox(width: spacing),
-        Tooltip(message: l10n.format, child: formatBtn),
+        formatBtn,
         SizedBox(width: spacing),
         // Prominent save button
         AppButtons.primary(

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../../theme/design_tokens.dart';
+import '../../../shared/widgets/app_buttons.dart';
+import '../../../shared/widgets/theme_aware_card.dart';
 
 class AutoplayBlockedCard extends StatelessWidget {
   const AutoplayBlockedCard({super.key, required this.onContinue});
@@ -8,26 +11,21 @@ class AutoplayBlockedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            const Icon(Icons.info_outline),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(AppLocalizations.of(context)!.autoplayBlockedInline),
-            ),
-            Tooltip(
-              message: AppLocalizations.of(context)!.continueLabel,
-              child: IconButton(
-                icon: const Icon(Icons.play_arrow),
-                onPressed: onContinue,
-              ),
-            ),
-          ],
-        ),
+    final l10n = AppLocalizations.of(context)!;
+    return ThemeAwareCard(
+      padding: const EdgeInsets.all(Spacing.m),
+      child: Row(
+        children: [
+          const Icon(Icons.info_outline),
+          const SizedBox(width: Spacing.s),
+          Expanded(child: Text(l10n.autoplayBlockedInline)),
+          const SizedBox(width: Spacing.s),
+          AppButtons.icon(
+            iconData: Icons.play_arrow,
+            tooltip: l10n.continueLabel,
+            onPressed: onContinue,
+          ),
+        ],
       ),
     );
   }

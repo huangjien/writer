@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/design_tokens.dart';
+import '../../../theme/neumorphic_styles.dart';
+import '../../../shared/widgets/app_buttons.dart';
 
 class ReaderBottomBar extends StatelessWidget {
   const ReaderBottomBar({
@@ -14,9 +16,11 @@ class ReaderBottomBar extends StatelessWidget {
     required this.showPercent,
     required this.showTtsControls,
     required this.scrollProgress,
+    required this.boldEnabled,
     required this.onEditToggle,
     required this.onPrev,
     required this.onNext,
+    required this.onToggleBold,
     required this.onPlayStop,
     required this.onOpenTtsSettings,
     required this.reduceMotion,
@@ -34,9 +38,11 @@ class ReaderBottomBar extends StatelessWidget {
   final bool showPercent;
   final bool showTtsControls;
   final double scrollProgress;
+  final bool boldEnabled;
   final VoidCallback onEditToggle;
   final VoidCallback onPrev;
   final VoidCallback onNext;
+  final VoidCallback onToggleBold;
   final VoidCallback onPlayStop;
   final VoidCallback onOpenTtsSettings;
   final bool reduceMotion;
@@ -48,74 +54,59 @@ class ReaderBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
       child: Row(
         children: [
           if (canEdit) ...[
-            Semantics(
-              button: true,
-              label: editMode ? l10n.exitEditMode : l10n.enterEditMode,
-              child: Tooltip(
-                message: editMode ? l10n.exitEditMode : l10n.enterEditMode,
-                child: IconButton(
-                  icon: Icon(editMode ? Icons.close : Icons.edit),
-                  iconSize: iconSize,
-                  onPressed: onEditToggle,
-                ),
-              ),
+            AppButtons.icon(
+              iconData: editMode ? Icons.close : Icons.edit,
+              tooltip: editMode ? l10n.exitEditMode : l10n.enterEditMode,
+              onPressed: onEditToggle,
             ),
             SizedBox(width: spacing),
           ],
-          Semantics(
-            button: true,
-            label: l10n.previousChapter,
-            child: Tooltip(
-              message: l10n.previousChapter,
-              child: IconButton(
-                icon: const Icon(Icons.skip_previous),
-                iconSize: iconSize,
-                onPressed: onPrev,
-              ),
-            ),
+          AppButtons.icon(
+            iconData: Icons.skip_previous,
+            tooltip: l10n.previousChapter,
+            onPressed: onPrev,
           ),
           SizedBox(width: spacing),
-          Semantics(
-            button: true,
-            label: l10n.nextChapter,
-            child: Tooltip(
-              message: l10n.nextChapter,
-              child: IconButton(
-                icon: const Icon(Icons.skip_next),
-                iconSize: iconSize,
-                onPressed: onNext,
-              ),
-            ),
+          AppButtons.icon(
+            iconData: Icons.skip_next,
+            tooltip: l10n.nextChapter,
+            onPressed: onNext,
           ),
+          if (!editMode) ...[
+            SizedBox(width: spacing),
+            AppButtons.icon(
+              iconData: Icons.format_bold,
+              tooltip: 'Bold',
+              color: boldEnabled ? theme.colorScheme.primary : null,
+              onPressed: onToggleBold,
+            ),
+          ],
           if (editMode) ...[
             Expanded(child: Container()),
             if (editActions != null) editActions!,
             Expanded(child: Container()),
           ] else ...[
             Expanded(child: Container()),
-            Semantics(
-              button: true,
-              label: speaking ? l10n.stopTTS : l10n.speak,
-              child: Tooltip(
-                message: speaking ? l10n.stopTTS : l10n.speak,
-                child: AnimatedSwitcher(
-                  key: const ValueKey('reader_bar_play_switcher'),
-                  duration: reduceMotion
-                      ? Duration.zero
-                      : const Duration(milliseconds: 200),
-                  switchInCurve: reduceMotion ? Curves.linear : Curves.easeOut,
-                  switchOutCurve: reduceMotion ? Curves.linear : Curves.easeIn,
-                  child: IconButton(
-                    key: ValueKey('btn_${speaking ? 'stop' : 'play'}'),
-                    icon: Icon(speaking ? Icons.stop : Icons.play_arrow),
-                    iconSize: iconSize,
-                    onPressed: onPlayStop,
-                  ),
+            AnimatedSwitcher(
+              key: const ValueKey('reader_bar_play_switcher'),
+              duration: reduceMotion
+                  ? Duration.zero
+                  : const Duration(milliseconds: 200),
+              switchInCurve: reduceMotion ? Curves.linear : Curves.easeOut,
+              switchOutCurve: reduceMotion ? Curves.linear : Curves.easeIn,
+              child: KeyedSubtree(
+                key: ValueKey('btn_${speaking ? 'stop' : 'play'}'),
+                child: AppButtons.icon(
+                  iconData: speaking ? Icons.stop : Icons.play_arrow,
+                  tooltip: speaking ? l10n.stopTTS : l10n.speak,
+                  onPressed: onPlayStop,
                 ),
               ),
             ),
@@ -140,11 +131,13 @@ class ReaderBottomBar extends StatelessWidget {
                       label: l10n.betaEvaluate,
                       child: Tooltip(
                         message: l10n.betaEvaluate,
-                        child: IconButton(
+                        child: KeyedSubtree(
                           key: const ValueKey('beta_button'),
-                          icon: const Icon(Icons.science),
-                          iconSize: iconSize,
-                          onPressed: onBetaEvaluate,
+                          child: AppButtons.icon(
+                            iconData: Icons.science,
+                            onPressed: onBetaEvaluate!,
+                            tooltip: l10n.betaEvaluate,
+                          ),
                         ),
                       ),
                     ),
@@ -158,9 +151,36 @@ class ReaderBottomBar extends StatelessWidget {
                 children: [
                   SizedBox(
                     width: 100,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(Radii.s),
-                      child: LinearProgressIndicator(value: scrollProgress),
+                    child: Container(
+                      key: const ValueKey('reader_bottom_progress_bar'),
+                      height: 14,
+                      padding: const EdgeInsets.all(2),
+                      decoration:
+                          NeumorphicStyles.decoration(
+                            isDark: isDark,
+                            isPressed: true,
+                            borderRadius: BorderRadius.circular(Radii.s),
+                            depth: 2,
+                          ).copyWith(
+                            border: Border.all(
+                              color: isDark
+                                  ? Colors.black.withValues(alpha: 0.5)
+                                  : Colors.white.withValues(alpha: 0.7),
+                              width: 1,
+                            ),
+                          ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: FractionallySizedBox(
+                          widthFactor: scrollProgress.clamp(0.0, 1.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary,
+                              borderRadius: BorderRadius.circular(Radii.s - 2),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   if (showPercent) ...[
@@ -172,30 +192,16 @@ class ReaderBottomBar extends StatelessWidget {
             ),
           SizedBox(width: spacing),
           if (!editMode && showTtsControls) ...[
-            Semantics(
-              button: true,
-              label: l10n.ttsSpeechRate,
-              child: Tooltip(
-                message: l10n.ttsSpeechRate,
-                child: IconButton(
-                  icon: const Icon(Icons.speed),
-                  iconSize: iconSize,
-                  onPressed: onOpenTtsSettings,
-                ),
-              ),
+            AppButtons.icon(
+              iconData: Icons.speed,
+              tooltip: l10n.ttsSpeechRate,
+              onPressed: onOpenTtsSettings,
             ),
             SizedBox(width: spacing),
-            Semantics(
-              button: true,
-              label: l10n.ttsVoice,
-              child: Tooltip(
-                message: l10n.ttsVoice,
-                child: IconButton(
-                  icon: const Icon(Icons.record_voice_over),
-                  iconSize: iconSize,
-                  onPressed: onOpenTtsSettings,
-                ),
-              ),
+            AppButtons.icon(
+              iconData: Icons.record_voice_over,
+              tooltip: l10n.ttsVoice,
+              onPressed: onOpenTtsSettings,
             ),
           ],
         ],

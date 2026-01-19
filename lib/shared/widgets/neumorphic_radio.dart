@@ -28,6 +28,7 @@ class NeumorphicRadio<T> extends StatelessWidget {
     final effectiveActiveColor = activeColor ?? theme.colorScheme.primary;
 
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: isEnabled ? () => onChanged?.call(value) : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),

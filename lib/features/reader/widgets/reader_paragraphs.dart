@@ -1,22 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import '../../../theme/design_tokens.dart';
 
 class ReaderParagraphs extends StatelessWidget {
   const ReaderParagraphs({
     super.key,
     required this.text,
     required this.ttsIndex,
+    this.forceBold = false,
   });
 
   final String text;
   final int ttsIndex;
+  final bool forceBold;
 
   @override
   Widget build(BuildContext context) {
     final paragraphs = text.split(RegExp(r'\n\n+'));
     int currentStart = 0;
+    final baseStyleSheet = MarkdownStyleSheet.fromTheme(Theme.of(context));
+    TextStyle? bold(TextStyle? s) => s?.copyWith(fontWeight: FontWeight.bold);
+    final styleSheet = forceBold
+        ? baseStyleSheet.copyWith(
+            p: bold(baseStyleSheet.p),
+            a: bold(baseStyleSheet.a),
+            blockquote: bold(baseStyleSheet.blockquote),
+            code: bold(baseStyleSheet.code),
+            h1: bold(baseStyleSheet.h1),
+            h2: bold(baseStyleSheet.h2),
+            h3: bold(baseStyleSheet.h3),
+            h4: bold(baseStyleSheet.h4),
+            h5: bold(baseStyleSheet.h5),
+            h6: bold(baseStyleSheet.h6),
+            listBullet: bold(baseStyleSheet.listBullet),
+          )
+        : null;
 
     return Column(
+      key: const ValueKey('reader_paragraphs_column'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: paragraphs.map((p) {
         final len = p.length;
@@ -39,11 +60,11 @@ class ReaderParagraphs extends StatelessWidget {
                   color: Theme.of(
                     context,
                   ).highlightColor.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(Radii.s),
                 )
               : null,
-          margin: const EdgeInsets.only(bottom: 16),
-          child: MarkdownBody(data: p),
+          margin: const EdgeInsets.only(bottom: Spacing.l),
+          child: MarkdownBody(data: p, styleSheet: styleSheet),
         );
       }).toList(),
     );
