@@ -22,11 +22,59 @@ class FocusWrapper extends StatefulWidget {
 }
 
 class _FocusWrapperState extends State<FocusWrapper> {
-  bool _showFocus = false;
+  bool _hasFocusWithin = false;
+  bool _showFocusHighlightFromManager = false;
+  bool? _showFocusHighlightOverride;
 
-  void _setShowFocus(bool value) {
-    if (_showFocus == value) return;
-    setState(() => _showFocus = value);
+  late final FocusNode _focusNode = FocusNode(
+    canRequestFocus: widget.autofocus,
+    skipTraversal: true,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+
+    _showFocusHighlightFromManager =
+        FocusManager.instance.highlightMode != FocusHighlightMode.touch;
+
+    _focusNode.addListener(_handleFocusChange);
+    FocusManager.instance.addHighlightModeListener(_handleHighlightModeChange);
+  }
+
+  @override
+  void didUpdateWidget(covariant FocusWrapper oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.autofocus != widget.autofocus) {
+      _focusNode.canRequestFocus = widget.autofocus;
+    }
+  }
+
+  void _handleFocusChange() {
+    final value = _focusNode.hasFocus;
+    if (_hasFocusWithin == value) return;
+    setState(() => _hasFocusWithin = value);
+  }
+
+  void _handleHighlightModeChange(FocusHighlightMode mode) {
+    final value = mode != FocusHighlightMode.touch;
+    if (_showFocusHighlightFromManager == value) return;
+    setState(() => _showFocusHighlightFromManager = value);
+  }
+
+  void _handleShowFocusHighlight(bool value) {
+    if (_showFocusHighlightOverride == value) return;
+    setState(() => _showFocusHighlightOverride = value);
+  }
+
+  @override
+  void dispose() {
+    FocusManager.instance.removeHighlightModeListener(
+      _handleHighlightModeChange,
+    );
+    _focusNode.removeListener(_handleFocusChange);
+    _focusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -41,19 +89,24 @@ class _FocusWrapperState extends State<FocusWrapper> {
     final radius = widget.borderRadius ?? BorderRadius.circular(Radii.m + 2);
     final ringColor = theme.colorScheme.primary;
 
+    final showFocus =
+        _hasFocusWithin &&
+        (_showFocusHighlightOverride ?? _showFocusHighlightFromManager);
+
     return FocusableActionDetector(
+      focusNode: _focusNode,
       autofocus: widget.autofocus,
-      onShowFocusHighlight: _setShowFocus,
+      onShowFocusHighlight: _handleShowFocusHighlight,
       child: AnimatedContainer(
         duration: duration,
         curve: Curves.easeOut,
         padding: widget.padding,
         decoration: BoxDecoration(
           borderRadius: radius,
-          border: _showFocus
+          border: showFocus
               ? Border.all(color: ringColor, width: FocusTokens.borderWidth)
               : null,
-          boxShadow: _showFocus
+          boxShadow: showFocus
               ? [
                   BoxShadow(
                     color: ringColor.withValues(alpha: FocusTokens.glowOpacity),

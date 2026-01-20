@@ -11,30 +11,50 @@ class LibraryLoadingList extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            const Icon(Icons.library_books, size: 16),
-            const SizedBox(width: 6),
-            Text(l10n.loadingNovels),
-          ],
-        ),
-        const SizedBox(height: Spacing.s),
-        Expanded(
-          child: ShimmerSkeleton(
-            child: SingleChildScrollView(
-              child: Column(
-                children: List.generate(
-                  6,
-                  (index) => const LibraryItemRowSkeleton(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth > 0
+            ? constraints.maxWidth
+            : 360.0;
+
+        return SizedBox(
+          width: maxWidth,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.library_books, size: 16),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      l10n.loadingNovels,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: Spacing.s),
+              Expanded(
+                child: ShimmerSkeleton(
+                  child: SingleChildScrollView(
+                    child: SizedBox(
+                      width: maxWidth,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: List.generate(
+                          6,
+                          (index) => const LibraryItemRowSkeleton(),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 }

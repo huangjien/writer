@@ -87,7 +87,7 @@ class _TapBumpState extends State<TapBump> with SingleTickerProviderStateMixin {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 220),
+      duration: const Duration(milliseconds: 180),
     );
     _opacity = TweenSequence<double>([
       TweenSequenceItem(

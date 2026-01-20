@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/shared/widgets/focus_wrapper.dart';
 
@@ -21,10 +22,17 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      const MaterialApp(
-        home: Scaffold(body: FocusWrapper(child: Text('X'))),
+      MaterialApp(
+        home: Scaffold(
+          body: FocusWrapper(
+            child: TextButton(onPressed: () {}, child: const Text('X')),
+          ),
+        ),
       ),
     );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
 
     final fad = tester.widget<FocusableActionDetector>(
       find.byType(FocusableActionDetector),

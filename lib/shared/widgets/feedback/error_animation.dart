@@ -8,7 +8,7 @@ class ErrorAnimation extends StatefulWidget {
     super.key,
     this.size = 56,
     this.color,
-    this.duration = const Duration(milliseconds: 520),
+    this.duration = const Duration(milliseconds: 180),
   });
 
   final double size;
@@ -79,7 +79,7 @@ class RetryPulse extends StatefulWidget {
   const RetryPulse({
     super.key,
     required this.child,
-    this.duration = const Duration(milliseconds: 950),
+    this.duration = const Duration(milliseconds: 400),
   });
 
   final Widget child;

@@ -34,42 +34,72 @@ class LoadingState extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    if (useSkeleton) {
-      return ShimmerSkeleton(child: skeletonChild ?? const _DefaultSkeleton());
-    }
-
     final hasSteps = steps != null && steps!.isNotEmpty && currentStep != null;
     final showStories =
         (message == null || message!.isEmpty) && (stories?.isNotEmpty ?? false);
 
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (hasSteps)
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 320),
-              child: StepProgress(steps: steps!, currentStep: currentStep!),
-            )
-          else
-            _PulsingProgressIndicator(size: size),
-          if (showStories) ...[
-            const SizedBox(height: Spacing.m),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 320),
-              child: LoadingStory(stories: stories!),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth > 0
+            ? constraints.maxWidth
+            : 320.0;
+
+        if (useSkeleton) {
+          return ShimmerSkeleton(
+            child: SizedBox(
+              width: maxWidth,
+              child: skeletonChild ?? const _DefaultSkeleton(),
             ),
-          ] else if (message != null) ...[
-            const SizedBox(height: Spacing.m),
-            Text(
-              message!,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+          );
+        }
+
+        return SizedBox(
+          width: maxWidth,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (hasSteps)
+                  SizedBox(
+                    width: maxWidth - 32.0,
+                    child: StepProgress(
+                      steps: steps!,
+                      currentStep: currentStep!,
+                    ),
+                  )
+                else
+                  _PulsingProgressIndicator(size: size),
+                if (showStories) ...[
+                  const SizedBox(height: Spacing.m),
+                  SizedBox(
+                    width: maxWidth - 32.0,
+                    child: LoadingStory(stories: stories!),
+                  ),
+                ] else if (message != null) ...[
+                  const SizedBox(height: Spacing.m),
+                  SizedBox(
+                    width: maxWidth - 32.0,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.m,
+                      ),
+                      child: Text(
+                        message!,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
-          ],
-        ],
-      ),
+          ),
+        );
+      },
     );
   }
 }
