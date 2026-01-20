@@ -12,6 +12,7 @@ class NeumorphicButton extends StatefulWidget {
     this.padding,
     this.color,
     this.depth,
+    this.semanticLabel,
   });
 
   final Widget child;
@@ -20,6 +21,7 @@ class NeumorphicButton extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final Color? color;
   final double? depth;
+  final String? semanticLabel;
 
   @override
   State<NeumorphicButton> createState() => _NeumorphicButtonState();
@@ -53,6 +55,7 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
     return Semantics(
       button: true,
       enabled: !isDisabled,
+      label: widget.semanticLabel,
       child: FocusableActionDetector(
         enabled: !isDisabled,
         mouseCursor: isDisabled

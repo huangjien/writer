@@ -15,6 +15,8 @@ class ErrorView extends StatelessWidget {
     this.icon = Icons.error_outline,
   });
 
+  static const IconData defaultIcon = Icons.error_outline;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);

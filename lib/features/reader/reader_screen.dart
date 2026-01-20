@@ -68,7 +68,23 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
           if (e is ApiException && e.statusCode == 401) {
             return const SizedBox.shrink();
           }
-          return Scaffold(body: Center(child: Text('${l10n.error}: $e')));
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('${l10n.error}: $e'),
+                  const SizedBox(height: 16),
+                  AppButtons.secondary(
+                    label: l10n.reload,
+                    icon: Icons.refresh,
+                    onPressed: () =>
+                        ref.invalidate(chaptersProvider(widget.novelId)),
+                  ),
+                ],
+              ),
+            ),
+          );
         },
       );
     }
@@ -299,7 +315,21 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
             if (e is ApiException && e.statusCode == 401) {
               return const SizedBox.shrink();
             }
-            return Center(child: Text('${l10n.error}: $e'));
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('${l10n.error}: $e'),
+                  const SizedBox(height: 16),
+                  AppButtons.secondary(
+                    label: l10n.reload,
+                    icon: Icons.refresh,
+                    onPressed: () =>
+                        ref.invalidate(chaptersProvider(widget.novelId)),
+                  ),
+                ],
+              ),
+            );
           },
         ),
       ),

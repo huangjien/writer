@@ -63,40 +63,57 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar> {
   Widget build(BuildContext context) {
     // theme was unused
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Search input
-        NeumorphicTextField(
-          controller: _controller,
-          hintText: widget.hintText ?? 'Search novels...',
-          prefixIcon: const Icon(Icons.search),
-          suffixIcon: _hasText
-              ? Padding(
-                  padding: const EdgeInsets.only(right: 6),
-                  child: SizedBox(
-                    width: 36,
-                    height: 36,
-                    child: NeumorphicButton(
-                      onPressed: _clear,
-                      padding: EdgeInsets.zero,
-                      borderRadius: BorderRadius.circular(Radii.m),
-                      depth: 4,
-                      child: const Icon(Icons.clear, size: 18),
-                    ),
+    if (!widget.showFilters || widget.filters == null) {
+      return NeumorphicTextField(
+        controller: _controller,
+        hintText: widget.hintText ?? 'Search novels...',
+        prefixIcon: const Icon(Icons.search),
+        suffixIcon: _hasText
+            ? Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: NeumorphicButton(
+                    onPressed: _clear,
+                    padding: EdgeInsets.zero,
+                    borderRadius: BorderRadius.circular(Radii.m),
+                    depth: 4,
+                    child: const Icon(Icons.clear, size: 18),
                   ),
-                )
-              : null,
-        ),
-        // Filters
-        if (widget.showFilters && widget.filters != null) ...[
-          const SizedBox(height: Spacing.m),
-          Wrap(
-            spacing: Spacing.s,
-            runSpacing: Spacing.s,
-            children: widget.filters!,
+                ),
+              )
+            : null,
+      );
+    }
+
+    return Row(
+      children: [
+        Expanded(
+          child: NeumorphicTextField(
+            controller: _controller,
+            hintText: widget.hintText ?? 'Search novels...',
+            prefixIcon: const Icon(Icons.search),
+            suffixIcon: _hasText
+                ? Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: SizedBox(
+                      width: 36,
+                      height: 36,
+                      child: NeumorphicButton(
+                        onPressed: _clear,
+                        padding: EdgeInsets.zero,
+                        borderRadius: BorderRadius.circular(Radii.m),
+                        depth: 4,
+                        child: const Icon(Icons.clear, size: 18),
+                      ),
+                    ),
+                  )
+                : null,
           ),
-        ],
+        ),
+        const SizedBox(width: Spacing.s),
+        ...widget.filters!,
       ],
     );
   }
@@ -125,30 +142,19 @@ class LibraryFilterChip extends StatelessWidget {
     final selectedFg = theme.colorScheme.primary;
     final fg = theme.colorScheme.onSurfaceVariant;
 
-    return NeumorphicButton(
-      onPressed: onTap,
-      padding: const EdgeInsets.symmetric(
-        horizontal: Spacing.m,
-        vertical: Spacing.xs,
-      ),
-      borderRadius: BorderRadius.circular(Radii.xl),
-      color: selected ? selectedBg : null,
-      depth: selected ? 3 : 6,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Icon(icon, size: 16, color: selected ? selectedFg : fg),
-            const SizedBox(width: Spacing.xs),
-          ],
-          Text(
-            label,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: selected ? selectedFg : fg,
-              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            ),
-          ),
-        ],
+    return Tooltip(
+      message: label,
+      child: SizedBox(
+        width: 36,
+        height: 36,
+        child: NeumorphicButton(
+          onPressed: onTap,
+          padding: const EdgeInsets.all(Spacing.xs),
+          borderRadius: BorderRadius.circular(Radii.m),
+          color: selected ? selectedBg : null,
+          depth: selected ? 3 : 6,
+          child: Icon(icon, size: 20, color: selected ? selectedFg : fg),
+        ),
       ),
     );
   }

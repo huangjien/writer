@@ -17,6 +17,8 @@ class NeumorphicTextField extends StatelessWidget {
     this.textInputAction,
     this.onSubmitted,
     this.focusNode,
+    this.semanticLabel,
+    this.obscureLabel,
   });
 
   final TextEditingController? controller;
@@ -31,50 +33,60 @@ class NeumorphicTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onSubmitted;
   final FocusNode? focusNode;
+  final String? semanticLabel;
+  final String? obscureLabel;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      decoration:
-          NeumorphicStyles.decoration(
-            isDark: isDark,
-            isPressed: true, // Concave
-            borderRadius: BorderRadius.circular(Radii.m),
-            depth:
-                4, // Positive depth for inner shadow effect simulation if handled by style, or just rely on isPressed
-          ).copyWith(
-            border: Border.all(
-              color: isDark
-                  ? Colors.black.withValues(alpha: 0.5)
-                  : Colors.white.withValues(alpha: 0.7),
-              width: 1,
+    final label = semanticLabel ?? hintText;
+
+    return Semantics(
+      textField: true,
+      label: label,
+      hint: hintText,
+      obscured: obscureText,
+      child: Container(
+        decoration:
+            NeumorphicStyles.decoration(
+              isDark: isDark,
+              isPressed: true, // Concave
+              borderRadius: BorderRadius.circular(Radii.m),
+              depth:
+                  4, // Positive depth for inner shadow effect simulation if handled by style, or just rely on isPressed
+            ).copyWith(
+              border: Border.all(
+                color: isDark
+                    ? Colors.black.withValues(alpha: 0.5)
+                    : Colors.white.withValues(alpha: 0.7),
+                width: 1,
+              ),
             ),
-          ),
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        onChanged: onChanged,
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        maxLines: maxLines,
-        enabled: enabled,
-        textInputAction: textInputAction,
-        onSubmitted: onSubmitted,
-        style: theme.textTheme.bodyMedium,
-        decoration: InputDecoration(
-          hintText: hintText,
-          prefixIcon: prefixIcon,
-          suffixIcon: suffixIcon,
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: Spacing.m,
-            vertical: Spacing.m,
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        child: TextField(
+          controller: controller,
+          focusNode: focusNode,
+          onChanged: onChanged,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+          maxLines: maxLines,
+          enabled: enabled,
+          textInputAction: textInputAction,
+          onSubmitted: onSubmitted,
+          style: theme.textTheme.bodyMedium,
+          decoration: InputDecoration(
+            hintText: hintText,
+            prefixIcon: prefixIcon,
+            suffixIcon: suffixIcon,
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: Spacing.m,
+              vertical: Spacing.m,
+            ),
           ),
         ),
       ),

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/settings/settings_screen.dart';
+import 'package:writer/features/settings/widgets/enhanced_settings_section.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/admin_settings.dart';
@@ -114,7 +115,11 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    final tileFinder = find.widgetWithIcon(ListTile, Icons.motion_photos_off);
+    final l10n = AppLocalizations.of(
+      tester.element(find.byType(SettingsScreen)),
+    )!;
+
+    final tileFinder = find.widgetWithText(SettingsToggle, l10n.reduceMotion);
     expect(tileFinder, findsOneWidget);
 
     final toggleFinder = find.descendant(

@@ -73,7 +73,10 @@ void main() {
       )!;
       expect(decoration.color, pressedBg);
 
-      expect(decoration.border, isNull);
+      final border = decoration.border;
+      expect(border, isNotNull);
+      expect((border!.top.color.a * 255.0).round().clamp(0, 255), equals(20));
+      expect(border.top.color, Colors.black.withValues(alpha: 0.08));
 
       expect(decoration.boxShadow, isNotNull);
       expect(decoration.boxShadow!, hasLength(3));

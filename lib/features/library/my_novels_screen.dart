@@ -83,7 +83,20 @@ class _MemberNovelsList extends ConsumerWidget {
           return const Center(child: CircularProgressIndicator());
         }
         return Center(
-          child: Text(l10n?.errorLoadingNovels ?? 'Error loading novels'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.warning_amber_rounded, size: 48),
+              const SizedBox(height: 8),
+              Text(l10n?.errorLoadingNovels ?? 'Error loading novels'),
+              const SizedBox(height: 8),
+              AppButtons.secondary(
+                label: l10n?.reload ?? 'Reload',
+                icon: Icons.refresh,
+                onPressed: () => ref.invalidate(memberNovelsProvider),
+              ),
+            ],
+          ),
         );
       },
     );

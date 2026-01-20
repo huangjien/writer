@@ -12,6 +12,7 @@ class NeumorphicCheckbox extends StatelessWidget {
     this.isEnabled = true,
     this.activeColor,
     this.size = 24.0,
+    this.semanticLabel,
   });
 
   final bool value;
@@ -19,6 +20,7 @@ class NeumorphicCheckbox extends StatelessWidget {
   final bool isEnabled;
   final Color? activeColor;
   final double size;
+  final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +32,7 @@ class NeumorphicCheckbox extends StatelessWidget {
     final checkbox = Semantics(
       toggled: value,
       enabled: isEnabled,
+      label: semanticLabel,
       onTap: isEnabled ? () => onChanged?.call(!value) : null,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,

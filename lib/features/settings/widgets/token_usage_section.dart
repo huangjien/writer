@@ -61,7 +61,10 @@ class TokenUsageSection extends ConsumerWidget {
             if (err is ApiException && err.statusCode == 401) {
               return const SizedBox.shrink();
             }
-            return _ErrorUsage(error: err.toString());
+            return _ErrorUsage(
+              error: err.toString(),
+              onRetry: () => ref.invalidate(currentMonthUsageProvider),
+            );
           },
         ),
       ],
@@ -207,6 +210,8 @@ class _UsageRow extends StatelessWidget {
 }
 
 class _EmptyUsage extends StatelessWidget {
+  const _EmptyUsage();
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -243,6 +248,8 @@ class _EmptyUsage extends StatelessWidget {
 }
 
 class _LoadingUsage extends StatelessWidget {
+  const _LoadingUsage();
+
   @override
   Widget build(BuildContext context) {
     return const Padding(
@@ -253,9 +260,10 @@ class _LoadingUsage extends StatelessWidget {
 }
 
 class _ErrorUsage extends StatelessWidget {
-  const _ErrorUsage({required this.error});
+  const _ErrorUsage({required this.error, required this.onRetry});
 
   final String error;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -281,6 +289,13 @@ class _ErrorUsage extends StatelessWidget {
                   color: theme.colorScheme.error,
                 ),
               ),
+            ),
+            const SizedBox(width: Spacing.s),
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: onRetry,
+              tooltip: l10n.reload,
+              iconSize: 20,
             ),
           ],
         ),

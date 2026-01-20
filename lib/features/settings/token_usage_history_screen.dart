@@ -121,7 +121,20 @@ class _TokenUsageHistoryScreenState
           if (err is ApiException && err.statusCode == 401) {
             return const Center(child: CircularProgressIndicator());
           }
-          return _ErrorHistory(error: err.toString(), l10n: l10n);
+          return _ErrorHistory(
+            error: err.toString(),
+            l10n: l10n,
+            onRetry: () {
+              setState(() {
+                _currentOffset = 0;
+              });
+              ref.invalidate(
+                usageHistoryProvider(
+                  UsageHistoryParams(limit: _pageSize, offset: 0),
+                ),
+              );
+            },
+          );
         },
       ),
     );
@@ -432,10 +445,15 @@ class _EmptyHistory extends StatelessWidget {
 }
 
 class _ErrorHistory extends StatelessWidget {
-  const _ErrorHistory({required this.error, required this.l10n});
+  const _ErrorHistory({
+    required this.error,
+    required this.l10n,
+    required this.onRetry,
+  });
 
   final String error;
   final AppLocalizations l10n;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -461,6 +479,12 @@ class _ErrorHistory extends StatelessWidget {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: Spacing.m),
+            ElevatedButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh),
+              label: Text(l10n.reload),
             ),
           ],
         ),

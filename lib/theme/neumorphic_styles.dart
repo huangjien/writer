@@ -57,10 +57,16 @@ class NeumorphicStyles {
           : insetHighlightLight;
       final insetShadowColor = isDark ? insetShadowDark : insetShadowLight;
 
+      // Add subtle border for better contrast in light mode
+      final border = !isDark
+          ? Border.all(color: Colors.black.withValues(alpha: 0.08), width: 1)
+          : null;
+
       return BoxDecoration(
         color: pressedBg,
         borderRadius: radius,
         shape: shape,
+        border: border,
         boxShadow: [
           BoxShadow(
             color: insetShadowColor.withValues(alpha: isDark ? 0.55 : 0.75),
@@ -92,10 +98,16 @@ class NeumorphicStyles {
     final highlightColor = isDark ? lightHighlightDark : lightHighlightLight;
     final shadowColor = isDark ? darkShadowDark : darkShadowLight;
 
+    // Add subtle border for better contrast in light mode (accessibility improvement)
+    final border = !isDark
+        ? Border.all(color: Colors.black.withValues(alpha: 0.08), width: 1)
+        : null;
+
     return BoxDecoration(
       color: bg,
       borderRadius: radius,
       shape: shape,
+      border: border,
       // Top-Left: Light highlight (pops out)
       // Bottom-Right: Dark shadow (depth)
       boxShadow: [

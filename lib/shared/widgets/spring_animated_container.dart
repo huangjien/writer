@@ -117,8 +117,6 @@ class _SpringAnimatedContainerState extends State<SpringAnimatedContainer>
         final t = _controller.value;
         final opacity =
             widget.beginOpacity + (widget.endOpacity - widget.beginOpacity) * t;
-        final scale =
-            widget.beginScale + (widget.endScale - widget.beginScale) * t;
         final dx =
             widget.beginOffset.dx +
             (widget.endOffset.dx - widget.beginOffset.dx) * t;
@@ -127,10 +125,7 @@ class _SpringAnimatedContainerState extends State<SpringAnimatedContainer>
             (widget.endOffset.dy - widget.beginOffset.dy) * t;
         return Opacity(
           opacity: opacity.clamp(0.0, 1.0),
-          child: Transform.translate(
-            offset: Offset(dx, dy),
-            child: Transform.scale(scale: scale, child: child),
-          ),
+          child: Transform.translate(offset: Offset(dx, dy), child: child),
         );
       },
       child: widget.child,

@@ -14,6 +14,7 @@ import '../../models/scene.dart';
 import 'package:writer/repositories/notes_repository.dart';
 import '../../state/providers.dart';
 import 'package:writer/shared/api_exception.dart';
+import '../../shared/widgets/app_buttons.dart';
 
 class ScenesScreen extends ConsumerStatefulWidget {
   const ScenesScreen({super.key, required this.novelId, this.idx});
@@ -220,6 +221,59 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
     }
   }
 
+  Future<void> _saveScene() async {
+    final ok = _formKey.currentState?.validate() ?? false;
+    if (!ok) return;
+    final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+    setState(() {
+      _saving = true;
+      _error = null;
+    });
+    try {
+      final repo = ref.read(localStorageRepositoryProvider);
+      final notesRepo = ref.read(notesRepositoryProvider);
+
+      final useIdx = widget.idx ?? await repo.nextSceneIdx(widget.novelId);
+      final scene = Scene(
+        novelId: widget.novelId,
+        title: _titleController.text.trim(),
+        location: _locationController.text.trim().isEmpty
+            ? null
+            : _locationController.text.trim(),
+        summary: _summaryController.text.trim().isEmpty
+            ? null
+            : _summaryController.text.trim(),
+      );
+
+      await repo.saveSceneForm(widget.novelId, scene, idx: useIdx);
+
+      if (ref.read(isSignedInProvider)) {
+        await notesRepo.upsertSceneNote(
+          novelId: widget.novelId,
+          idx: useIdx,
+          title: scene.title,
+          synopses: scene.location,
+          summaries: scene.summary,
+          languageCode: _languageCode,
+        );
+      }
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.saved)));
+    } catch (e) {
+      if (e is ApiException && e.statusCode == 401) {
+        return;
+      }
+      setState(() => _error = e.toString());
+    } finally {
+      if (mounted) {
+        setState(() => _saving = false);
+      }
+    }
+  }
+
   @override
   void dispose() {
     _templateSearchTimer?.cancel();
@@ -245,7 +299,11 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
                   .when(
                     data: (novel) => _NovelHeader(novel: novel),
                     loading: () => _LoadingTile(label: l10n.loadingNovels),
-                    error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
+                    error: (e, _) => _ErrorTile(
+                      label: '${l10n.error}: $e',
+                      novelId: widget.novelId,
+                      ref: ref,
+                    ),
                   ),
               const SizedBox(height: 16),
               Form(
@@ -395,28 +453,15 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          if (_selectedTemplate != null &&
-                              _selectedTemplate!.sceneSummaries != null)
-                            Tooltip(
-                              message: _selectedTemplate!.sceneSummaries!,
-                              child: const Icon(Icons.info_outline),
-                            ),
+                          _TemplateInfoButton(template: _selectedTemplate),
                           const SizedBox(width: 8),
-                          ElevatedButton.icon(
-                            icon: const Icon(Icons.auto_awesome),
-                            label: _isConverting
-                                ? const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : Text(l10n.aiConvert),
+                          _ConvertButton(
+                            l10n: l10n,
+                            isConverting: _isConverting,
                             onPressed:
-                                _isConverting ||
+                                (_isConverting ||
                                     _titleController.text.isEmpty ||
-                                    _selectedTemplate == null
+                                    _selectedTemplate == null)
                                 ? null
                                 : _convertScene,
                           ),
@@ -493,80 +538,11 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        ElevatedButton(
-                          onPressed: (_saving || !_isDirty)
-                              ? null
-                              : () async {
-                                  final ok =
-                                      _formKey.currentState?.validate() ??
-                                      false;
-                                  if (!ok) return;
-                                  setState(() {
-                                    _saving = true;
-                                    _error = null;
-                                  });
-                                  try {
-                                    final repo = ref.read(
-                                      localStorageRepositoryProvider,
-                                    );
-                                    final notesRepo = ref.read(
-                                      notesRepositoryProvider,
-                                    );
-
-                                    final useIdx =
-                                        widget.idx ??
-                                        await repo.nextSceneIdx(widget.novelId);
-                                    final scene = Scene(
-                                      novelId: widget.novelId,
-                                      title: _titleController.text.trim(),
-                                      location:
-                                          _locationController.text
-                                              .trim()
-                                              .isEmpty
-                                          ? null
-                                          : _locationController.text.trim(),
-                                      summary:
-                                          _summaryController.text.trim().isEmpty
-                                          ? null
-                                          : _summaryController.text.trim(),
-                                    );
-
-                                    // Save local draft
-                                    await repo.saveSceneForm(
-                                      widget.novelId,
-                                      scene,
-                                      idx: useIdx,
-                                    );
-
-                                    // Save to backend if signed in
-                                    if (ref.read(isSignedInProvider)) {
-                                      await notesRepo.upsertSceneNote(
-                                        novelId: widget.novelId,
-                                        idx: useIdx,
-                                        title: scene.title,
-                                        synopses: scene.location,
-                                        summaries: scene.summary,
-                                        languageCode: _languageCode,
-                                      );
-                                    }
-
-                                    if (!context.mounted) return;
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(l10n.saved)),
-                                    );
-                                  } catch (e) {
-                                    if (e is ApiException &&
-                                        e.statusCode == 401) {
-                                      return;
-                                    }
-                                    setState(() => _error = e.toString());
-                                  } finally {
-                                    if (mounted) {
-                                      setState(() => _saving = false);
-                                    }
-                                  }
-                                },
-                          child: Text(l10n.save),
+                        _SaveButton(
+                          l10n: l10n,
+                          saving: _saving,
+                          isDirty: _isDirty,
+                          onSave: _saveScene,
                         ),
                         const SizedBox(width: 12),
                         if (_error != null)
@@ -586,6 +562,71 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _TemplateInfoButton extends StatelessWidget {
+  const _TemplateInfoButton({required this.template});
+
+  final SceneTemplateRow? template;
+
+  @override
+  Widget build(BuildContext context) {
+    return template != null && template!.sceneSummaries != null
+        ? Tooltip(
+            message: template!.sceneSummaries!,
+            child: const Icon(Icons.info_outline),
+          )
+        : const SizedBox.shrink();
+  }
+}
+
+class _ConvertButton extends StatelessWidget {
+  const _ConvertButton({
+    required this.l10n,
+    required this.isConverting,
+    required this.onPressed,
+  });
+
+  final AppLocalizations l10n;
+  final bool isConverting;
+  final Future<void> Function()? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.auto_awesome),
+      label: isConverting
+          ? const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : Text(l10n.aiConvert),
+      onPressed: onPressed == null ? null : () => onPressed!(),
+    );
+  }
+}
+
+class _SaveButton extends StatelessWidget {
+  const _SaveButton({
+    required this.l10n,
+    required this.saving,
+    required this.isDirty,
+    required this.onSave,
+  });
+
+  final AppLocalizations l10n;
+  final bool saving;
+  final bool isDirty;
+  final VoidCallback onSave;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: (saving || !isDirty) ? null : onSave,
+      child: Text(l10n.save),
     );
   }
 }
@@ -629,15 +670,28 @@ class _LoadingTile extends StatelessWidget {
 }
 
 class _ErrorTile extends StatelessWidget {
-  const _ErrorTile({required this.label});
+  const _ErrorTile({
+    required this.label,
+    required this.novelId,
+    required this.ref,
+  });
   final String label;
+  final String novelId;
+  final WidgetRef ref;
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         const Icon(Icons.warning_amber_rounded, size: 16),
         const SizedBox(width: 8),
-        Text(label),
+        Expanded(child: Text(label)),
+        const SizedBox(width: 8),
+        AppButtons.icon(
+          iconData: Icons.refresh,
+          tooltip: l10n.reload,
+          onPressed: () => ref.invalidate(novelProvider(novelId)),
+        ),
       ],
     );
   }

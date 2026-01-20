@@ -10,12 +10,14 @@ class NeumorphicSwitch extends StatelessWidget {
     required this.onChanged,
     this.isEnabled = true,
     this.activeColor,
+    this.semanticLabel,
   });
 
   final bool value;
   final ValueChanged<bool>? onChanged;
   final bool isEnabled;
   final Color? activeColor;
+  final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +34,7 @@ class NeumorphicSwitch extends StatelessWidget {
     final switchWidget = Semantics(
       toggled: value,
       enabled: isEnabled,
+      label: semanticLabel,
       onTap: isEnabled ? () => onChanged?.call(!value) : null,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,

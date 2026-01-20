@@ -65,8 +65,11 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Find and tap the "all" filter chip
-      final allFilterChip = find.widgetWithText(LibraryFilterChip, 'All');
+      // Find and tap the "all" filter chip by its icon
+      final allFilterChip = find.descendant(
+        of: find.byType(LibraryFilterChip),
+        matching: find.byIcon(Icons.apps),
+      );
       expect(allFilterChip, findsOneWidget);
 
       // Both novels should be visible
@@ -118,10 +121,10 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Find and tap the "completed" filter chip
-      final completedFilterChip = find.widgetWithText(
-        LibraryFilterChip,
-        'Completed',
+      // Find and tap the "completed" filter chip by its icon
+      final completedFilterChip = find.descendant(
+        of: find.byType(LibraryFilterChip),
+        matching: find.byIcon(Icons.check_circle),
       );
       expect(completedFilterChip, findsOneWidget);
       await tester.tap(completedFilterChip);
@@ -179,10 +182,10 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Find and tap the "reading" filter chip
-      final readingFilterChip = find.widgetWithText(
-        LibraryFilterChip,
-        'Reading',
+      // Find and tap the "reading" filter chip by its icon
+      final readingFilterChip = find.descendant(
+        of: find.byType(LibraryFilterChip),
+        matching: find.byIcon(Icons.menu_book),
       );
       expect(readingFilterChip, findsOneWidget);
       await tester.tap(readingFilterChip);
@@ -229,10 +232,10 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        // Find and tap the "downloaded" filter chip
-        final downloadedFilterChip = find.widgetWithText(
-          LibraryFilterChip,
-          'Downloaded',
+        // Find and tap the "downloaded" filter chip by its icon
+        final downloadedFilterChip = find.descendant(
+          of: find.byType(LibraryFilterChip),
+          matching: find.byIcon(Icons.download_done),
         );
         expect(downloadedFilterChip, findsOneWidget);
         await tester.tap(downloadedFilterChip);

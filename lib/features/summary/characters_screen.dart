@@ -153,7 +153,11 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                   .when(
                     data: (novel) => _NovelHeader(novel: novel),
                     loading: () => _LoadingTile(label: l10n.loadingNovels),
-                    error: (e, _) => _ErrorTile(label: '${l10n.error}: $e'),
+                    error: (e, _) => _ErrorTile(
+                      label: '${l10n.error}: $e',
+                      novelId: widget.novelId,
+                      ref: ref,
+                    ),
                   ),
               const SizedBox(height: 16),
               Form(
@@ -509,15 +513,28 @@ class _LoadingTile extends StatelessWidget {
 }
 
 class _ErrorTile extends StatelessWidget {
-  const _ErrorTile({required this.label});
+  const _ErrorTile({
+    required this.label,
+    required this.novelId,
+    required this.ref,
+  });
   final String label;
+  final String novelId;
+  final WidgetRef ref;
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         const Icon(Icons.warning_amber_rounded, size: 16),
         const SizedBox(width: 8),
-        Text(label),
+        Expanded(child: Text(label)),
+        const SizedBox(width: 8),
+        AppButtons.icon(
+          iconData: Icons.refresh,
+          tooltip: l10n.reload,
+          onPressed: () => ref.invalidate(novelProvider(novelId)),
+        ),
       ],
     );
   }

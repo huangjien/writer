@@ -13,6 +13,7 @@ class NeumorphicRadio<T> extends StatelessWidget {
     this.isEnabled = true,
     this.activeColor,
     this.size = 24.0,
+    this.semanticLabel,
   });
 
   final T value;
@@ -21,6 +22,7 @@ class NeumorphicRadio<T> extends StatelessWidget {
   final bool isEnabled;
   final Color? activeColor;
   final double size;
+  final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +36,7 @@ class NeumorphicRadio<T> extends StatelessWidget {
       selected: isSelected,
       enabled: isEnabled,
       button: true,
+      label: semanticLabel,
       onTap: isEnabled ? () => onChanged?.call(value) : null,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,

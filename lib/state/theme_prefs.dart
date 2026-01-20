@@ -32,9 +32,13 @@ UiStyleFamily decodeUiStyleFamily(String? raw) {
     case 'claymorphism':
       return UiStyleFamily.neumorphism;
     case 'brutalism':
+      return UiStyleFamily.flatDesign;
     case 'skeuomorphism':
+      return UiStyleFamily.neumorphism;
     case 'bentoGrid':
+      return UiStyleFamily.minimalism;
     case 'responsive':
+      return UiStyleFamily.minimalism;
     default:
       return UiStyleFamily.minimalism;
   }

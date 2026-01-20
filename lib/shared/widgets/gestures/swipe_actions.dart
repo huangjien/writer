@@ -285,8 +285,8 @@ class _SwipeActionsState extends State<SwipeActions>
             onHorizontalDragStart: _onDragStart,
             onHorizontalDragUpdate: _onDragUpdate,
             onHorizontalDragEnd: _onDragEnd,
-            child: Transform.scale(
-              scale: 1 - (0.02 * openProgress),
+            child: Opacity(
+              opacity: 1 - (0.1 * openProgress),
               child: widget.child,
             ),
           ),

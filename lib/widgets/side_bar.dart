@@ -162,12 +162,17 @@ class _DrawerListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final label = title is Text ? (title as Text).data : null;
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        hoverColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-        child: ListTile(leading: leading, title: title),
+      child: Semantics(
+        button: true,
+        label: label,
+        child: InkWell(
+          onTap: onTap,
+          hoverColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+          child: ListTile(leading: leading, title: title),
+        ),
       ),
     );
   }
