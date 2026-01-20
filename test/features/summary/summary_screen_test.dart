@@ -489,7 +489,10 @@ void main() {
     // Find and tap the AI coach button in the expanded summary header
     final toggleBtn = find.byTooltip('Toggle AI Coach');
     await tester.tap(toggleBtn, warnIfMissed: false);
-    await tester.pumpAndSettle();
+    for (var i = 0; i < 20; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+      if (find.text('AI update').evaluate().isNotEmpty) break;
+    }
 
     // In split view, both preview and coach should be visible simultaneously
     expect(find.byType(SnowflakeCoachWidget), findsOneWidget);

@@ -49,12 +49,12 @@ class _SuccessAnimationState extends State<SuccessAnimation>
         builder: (context, _) {
           final t = Curves.easeOut.transform(_controller.value);
           final ringAlpha = 0.08 + 0.22 * (1 - (1 - t) * (1 - t));
-          final scale = 0.92 + 0.08 * t;
+          final opacity = 0.92 + 0.08 * t;
           return Stack(
             alignment: Alignment.center,
             children: [
-              Transform.scale(
-                scale: 1.1 + 0.15 * t,
+              Opacity(
+                opacity: 0.5 + (0.5 * t),
                 child: Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -62,8 +62,8 @@ class _SuccessAnimationState extends State<SuccessAnimation>
                   ),
                 ),
               ),
-              Transform.scale(
-                scale: scale,
+              Opacity(
+                opacity: opacity,
                 child: CustomPaint(
                   size: Size.square(widget.size),
                   painter: _CheckPainter(

@@ -634,20 +634,12 @@ void main() {
     await tester.pumpAndSettle();
 
     // 1. Test Download Shortcut (D)
-    // Find the Focus widget that wraps the ListTile
-    final focusFinder = find.byWidgetPredicate(
-      (widget) => widget is Focus && widget.child is ListTile,
-    );
-    expect(focusFinder, findsOneWidget);
+    // Find the ListTile widget
+    final listTileFinder = find.byType(ListTile);
+    expect(listTileFinder, findsOneWidget);
 
-    // Find the child ListTile to get the context inside the Focus widget
-    final listTileFinder = find.descendant(
-      of: focusFinder,
-      matching: find.byType(ListTile),
-    );
+    // Request focus on the list tile
     final listTileElement = tester.element(listTileFinder);
-
-    // Request focus using the node found from the child's context
     final focusNode = Focus.of(listTileElement);
     focusNode.requestFocus();
     await tester.pump();
@@ -683,13 +675,7 @@ void main() {
     // 3. Test Remove Shortcut (Delete)
     // We need to re-acquire focus because we navigated away and back
     // Re-find widgets as the tree has been rebuilt
-    final focusFinder2 = find.byWidgetPredicate(
-      (widget) => widget is Focus && widget.child is ListTile,
-    );
-    final listTileFinder2 = find.descendant(
-      of: focusFinder2,
-      matching: find.byType(ListTile),
-    );
+    final listTileFinder2 = find.byType(ListTile);
     final listTileElement2 = tester.element(listTileFinder2);
     final focusNode2 = Focus.of(listTileElement2);
 

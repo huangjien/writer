@@ -43,20 +43,29 @@ class MotionSettingsNotifier extends StateNotifier<MotionSettings> {
   }
 
   SharedPreferences? _prefs;
+  bool _dirtyReduceMotion = false;
+  bool _dirtySwipeMinVelocity = false;
+  bool _dirtyGesturesEnabled = false;
 
   Future<void> _init() async {
     _prefs = await SharedPreferences.getInstance();
     final enabled = _prefs!.getBool(_prefReduceMotion) ?? false;
     final swipeMin = _prefs!.getDouble(_prefSwipeMinVelocity) ?? 200.0;
     final gestures = _prefs!.getBool(_prefGesturesEnabled) ?? true;
-    state = state.copyWith(
-      reduceMotion: enabled,
-      swipeMinVelocity: swipeMin,
-      gesturesEnabled: gestures,
+    final current = state;
+    state = current.copyWith(
+      reduceMotion: _dirtyReduceMotion ? current.reduceMotion : enabled,
+      swipeMinVelocity: _dirtySwipeMinVelocity
+          ? current.swipeMinVelocity
+          : swipeMin,
+      gesturesEnabled: _dirtyGesturesEnabled
+          ? current.gesturesEnabled
+          : gestures,
     );
   }
 
   Future<void> setReduceMotion(bool value) async {
+    _dirtyReduceMotion = true;
     state = state.copyWith(reduceMotion: value);
     final prefs = _prefs ?? await SharedPreferences.getInstance();
     _prefs = prefs;
@@ -64,6 +73,7 @@ class MotionSettingsNotifier extends StateNotifier<MotionSettings> {
   }
 
   Future<void> setSwipeMinVelocity(double value) async {
+    _dirtySwipeMinVelocity = true;
     state = state.copyWith(swipeMinVelocity: value);
     final prefs = _prefs ?? await SharedPreferences.getInstance();
     _prefs = prefs;
@@ -71,6 +81,7 @@ class MotionSettingsNotifier extends StateNotifier<MotionSettings> {
   }
 
   Future<void> setGesturesEnabled(bool value) async {
+    _dirtyGesturesEnabled = true;
     state = state.copyWith(gesturesEnabled: value);
     final prefs = _prefs ?? await SharedPreferences.getInstance();
     _prefs = prefs;

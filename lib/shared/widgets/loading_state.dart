@@ -109,7 +109,6 @@ class _PulsingProgressIndicatorState extends State<_PulsingProgressIndicator>
       animation: _controller,
       builder: (context, _) {
         final t = _controller.value;
-        final scale = 0.96 + (0.06 * t);
         final ringAlpha = 0.14 + (0.18 * t);
 
         return SizedBox(
@@ -118,8 +117,8 @@ class _PulsingProgressIndicatorState extends State<_PulsingProgressIndicator>
           child: Stack(
             alignment: Alignment.center,
             children: [
-              Transform.scale(
-                scale: 1.12 + (0.12 * t),
+              Opacity(
+                opacity: 0.5 + (0.5 * t),
                 child: Container(
                   width: widget.size,
                   height: widget.size,
@@ -131,12 +130,9 @@ class _PulsingProgressIndicatorState extends State<_PulsingProgressIndicator>
                   ),
                 ),
               ),
-              Transform.scale(
-                scale: scale,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation(theme.colorScheme.primary),
-                ),
+              CircularProgressIndicator(
+                strokeWidth: 3,
+                valueColor: AlwaysStoppedAnimation(theme.colorScheme.primary),
               ),
             ],
           ),

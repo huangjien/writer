@@ -173,22 +173,6 @@ void main() {
     expect(find.byType(BackdropFilter), findsOneWidget);
   });
 
-  testWidgets('bentoGrid uses BackdropFilter when enabled', (tester) async {
-    await _pumpCard(
-      tester,
-      theme: _theme(
-        brightness: Brightness.light,
-        styleFamily: UiStyleFamily.bentoGrid,
-        useBackdropBlur: true,
-        cardBlur: 8,
-      ),
-      elevation: 2,
-      child: const Text('Bento'),
-    );
-
-    expect(find.byType(BackdropFilter), findsOneWidget);
-  });
-
   testWidgets('neumorphism uses provided shadows override when set', (
     tester,
   ) async {
@@ -224,41 +208,6 @@ void main() {
     expect(decoration.border, isNotNull);
   });
 
-  testWidgets('brutalism uses default border when no override provided', (
-    tester,
-  ) async {
-    await _pumpCard(
-      tester,
-      theme: _theme(
-        brightness: Brightness.light,
-        styleFamily: UiStyleFamily.brutalism,
-      ),
-      child: const Text('Brutal'),
-    );
-
-    final decoration = _containerDecoration(tester);
-    final border = decoration.border! as Border;
-    expect(border.top.width, 2);
-  });
-
-  testWidgets('responsive uses default shadow derived from elevation', (
-    tester,
-  ) async {
-    await _pumpCard(
-      tester,
-      theme: _theme(
-        brightness: Brightness.light,
-        styleFamily: UiStyleFamily.responsive,
-      ),
-      elevation: 2,
-      child: const Text('Standard'),
-    );
-
-    final decoration = _containerDecoration(tester);
-    expect(decoration.boxShadow, isNotEmpty);
-    expect(decoration.boxShadow!.first.blurRadius, 4);
-  });
-
   testWidgets('flatDesign does not apply shadows or borders', (tester) async {
     await _pumpCard(
       tester,
@@ -272,36 +221,6 @@ void main() {
     final decoration = _containerDecoration(tester);
     expect(decoration.boxShadow, isNull);
     expect(decoration.border, isNull);
-  });
-
-  testWidgets('claymorphism renders a gradient by default', (tester) async {
-    await _pumpCard(
-      tester,
-      theme: _theme(
-        brightness: Brightness.light,
-        styleFamily: UiStyleFamily.claymorphism,
-      ),
-      elevation: 2,
-      child: const Text('Clay'),
-    );
-
-    final decoration = _containerDecoration(tester);
-    expect(decoration.gradient, isNotNull);
-  });
-
-  testWidgets('skeuomorphism renders a gradient by default', (tester) async {
-    await _pumpCard(
-      tester,
-      theme: _theme(
-        brightness: Brightness.light,
-        styleFamily: UiStyleFamily.skeuomorphism,
-      ),
-      elevation: 1,
-      child: const Text('Skeuo'),
-    );
-
-    final decoration = _containerDecoration(tester);
-    expect(decoration.gradient, isNotNull);
   });
 
   testWidgets('ThemeAwareCard_flatDesign_golden', (tester) async {
@@ -334,39 +253,6 @@ void main() {
     await expectLater(
       find.byType(ThemeAwareCard),
       matchesGoldenFile('goldens/theme_aware_card_flat_design.png'),
-    );
-  });
-
-  testWidgets('ThemeAwareCard_brutalism_golden', (tester) async {
-    tester.view.devicePixelRatio = 1.0;
-    tester.view.physicalSize = const Size(360, 200);
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: _theme(
-          brightness: Brightness.light,
-          styleFamily: UiStyleFamily.brutalism,
-        ),
-        home: const Scaffold(
-          body: Center(
-            child: SizedBox(
-              width: 320,
-              height: 140,
-              child: ThemeAwareCard(child: Text('ThemeAwareCard')),
-            ),
-          ),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    await expectLater(
-      find.byType(ThemeAwareCard),
-      matchesGoldenFile('goldens/theme_aware_card_brutalism.png'),
     );
   });
 

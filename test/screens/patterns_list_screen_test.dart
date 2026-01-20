@@ -7,6 +7,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/pattern.dart';
 import 'package:writer/screens/patterns_list_screen.dart';
 import 'package:writer/state/pattern_providers.dart';
+import 'package:writer/state/pattern_list_notifier.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/services/patterns_service.dart';
 
@@ -257,13 +258,18 @@ void main() {
 
   testWidgets('Locked filter works (tri-state)', (tester) async {
     final fake = FakePatternsService();
+    final container = ProviderContainer(
+      overrides: [
+        isSignedInProvider.overrideWithValue(true),
+        patternsProvider.overrideWith((ref) async => fake.items),
+        patternsServiceRefProvider.overrideWith((_) => fake),
+      ],
+    );
+    addTearDown(container.dispose);
+
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          isSignedInProvider.overrideWithValue(true),
-          patternsProvider.overrideWith((ref) async => fake.items),
-          patternsServiceRefProvider.overrideWith((_) => fake),
-        ],
+      UncontrolledProviderScope(
+        container: container,
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -272,33 +278,30 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    expect(container.read(patternListProvider).filterLocked, isNull);
 
     // Initial: All shown
     expect(find.text('A'), findsOneWidget); // Locked=true
     expect(find.text('B'), findsOneWidget); // Locked=false
 
     // 1st Tap: Locked Only
-    await tester.tap(find.byIcon(Icons.filter_alt_off));
+    await tester.tap(find.byKey(const ValueKey('patternsLockedFilterButton')));
     await tester.pumpAndSettle();
+    expect(container.read(patternListProvider).filterLocked, isTrue);
     expect(find.text('A'), findsOneWidget);
     expect(find.text('B'), findsNothing);
 
     // 2nd Tap: Unlocked Only
-    await tester.tap(
-      find.descendant(of: find.byType(Wrap), matching: find.byIcon(Icons.lock)),
-    );
+    await tester.tap(find.byKey(const ValueKey('patternsLockedFilterButton')));
     await tester.pumpAndSettle();
+    expect(container.read(patternListProvider).filterLocked, isFalse);
     expect(find.text('A'), findsNothing);
     expect(find.text('B'), findsOneWidget);
 
     // 3rd Tap: Reset (All)
-    await tester.tap(
-      find.descendant(
-        of: find.byType(Wrap),
-        matching: find.byIcon(Icons.lock_open),
-      ),
-    );
+    await tester.tap(find.byKey(const ValueKey('patternsLockedFilterButton')));
     await tester.pumpAndSettle();
+    expect(container.read(patternListProvider).filterLocked, isNull);
     expect(find.text('A'), findsOneWidget);
     expect(find.text('B'), findsOneWidget);
   });

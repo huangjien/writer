@@ -5,7 +5,6 @@ class PressScale extends StatefulWidget {
     super.key,
     required this.child,
     this.enabled = true,
-    this.pressedScale = 0.98,
     this.duration = const Duration(milliseconds: 120),
     this.curve = Curves.easeOut,
     this.onTap,
@@ -14,7 +13,6 @@ class PressScale extends StatefulWidget {
 
   final Widget child;
   final bool enabled;
-  final double pressedScale;
   final Duration duration;
   final Curve curve;
   final VoidCallback? onTap;
@@ -35,8 +33,8 @@ class _PressScaleState extends State<PressScale> {
 
   @override
   Widget build(BuildContext context) {
-    final scaledChild = AnimatedScale(
-      scale: _pressed ? widget.pressedScale : 1,
+    final animatedChild = AnimatedOpacity(
+      opacity: _pressed ? 0.85 : 1.0,
       duration: widget.duration,
       curve: widget.curve,
       child: widget.child,
@@ -51,7 +49,7 @@ class _PressScaleState extends State<PressScale> {
         onTapCancel: widget.enabled ? () => _setPressed(false) : null,
         onTap: widget.enabled ? widget.onTap : null,
         onLongPress: widget.enabled ? widget.onLongPress : null,
-        child: scaledChild,
+        child: animatedChild,
       );
     }
 
@@ -59,7 +57,7 @@ class _PressScaleState extends State<PressScale> {
       onPointerDown: widget.enabled ? (_) => _setPressed(true) : null,
       onPointerUp: widget.enabled ? (_) => _setPressed(false) : null,
       onPointerCancel: widget.enabled ? (_) => _setPressed(false) : null,
-      child: scaledChild,
+      child: animatedChild,
     );
   }
 }
@@ -82,7 +80,7 @@ class TapBump extends StatefulWidget {
 
 class _TapBumpState extends State<TapBump> with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  late final Animation<double> _scale;
+  late final Animation<double> _opacity;
 
   @override
   void initState() {
@@ -91,18 +89,18 @@ class _TapBumpState extends State<TapBump> with SingleTickerProviderStateMixin {
       vsync: this,
       duration: const Duration(milliseconds: 220),
     );
-    _scale = TweenSequence<double>([
+    _opacity = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween<double>(
-          begin: 1,
-          end: 1.08,
+          begin: 1.0,
+          end: 0.85,
         ).chain(CurveTween(curve: Curves.easeOut)),
         weight: 55,
       ),
       TweenSequenceItem(
         tween: Tween<double>(
-          begin: 1.08,
-          end: 1,
+          begin: 0.85,
+          end: 1.0,
         ).chain(CurveTween(curve: Curves.easeInOut)),
         weight: 45,
       ),
@@ -133,7 +131,7 @@ class _TapBumpState extends State<TapBump> with SingleTickerProviderStateMixin {
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
-          return Transform.scale(scale: _scale.value, child: child);
+          return Opacity(opacity: _opacity.value, child: child);
         },
         child: widget.child,
       ),

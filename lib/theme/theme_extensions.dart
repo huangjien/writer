@@ -63,14 +63,14 @@ class UiStyleThemeExtension extends ThemeExtension<UiStyleThemeExtension> {
   }
 
   static const defaultStyle = UiStyleThemeExtension(
-    styleFamily: UiStyleFamily.glassmorphism,
+    styleFamily: UiStyleFamily.minimalism,
   );
 }
 
 extension ThemeDataExtensions on ThemeData {
   UiStyleFamily get uiStyleFamily =>
       extension<UiStyleThemeExtension>()?.styleFamily ??
-      UiStyleFamily.glassmorphism;
+      UiStyleFamily.minimalism;
 
   bool get useBackdropBlur =>
       extension<UiStyleThemeExtension>()?.useBackdropBlur ?? false;

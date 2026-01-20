@@ -29,51 +29,11 @@ void main() {
         expect(patch.useBackdropBlur, false);
       });
 
-      test('returns claymorphism patch for claymorphism style', () {
-        final patch = adapter.resolveStylePatch(UiStyleFamily.claymorphism);
-        expect(patch.cardBorderRadius, BorderRadius.circular(24));
-        expect(patch.buttonBorderRadius, BorderRadius.circular(20));
-        expect(patch.elevation, 0);
-        expect(patch.useBackdropBlur, false);
-      });
-
       test('returns minimalism patch for minimalism style', () {
         final patch = adapter.resolveStylePatch(UiStyleFamily.minimalism);
         expect(patch.cardBorderRadius, BorderRadius.circular(12));
         expect(patch.buttonBorderRadius, BorderRadius.circular(8));
         expect(patch.elevation, 0);
-        expect(patch.useBackdropBlur, false);
-      });
-
-      test('returns brutalism patch for brutalism style', () {
-        final patch = adapter.resolveStylePatch(UiStyleFamily.brutalism);
-        expect(patch.cardBorderRadius, BorderRadius.zero);
-        expect(patch.buttonBorderRadius, BorderRadius.zero);
-        expect(patch.elevation, 0);
-        expect(patch.useBackdropBlur, false);
-      });
-
-      test('returns skeuomorphism patch for skeuomorphism style', () {
-        final patch = adapter.resolveStylePatch(UiStyleFamily.skeuomorphism);
-        expect(patch.cardBorderRadius, BorderRadius.circular(16));
-        expect(patch.buttonBorderRadius, BorderRadius.circular(12));
-        expect(patch.elevation, 0);
-        expect(patch.useBackdropBlur, false);
-      });
-
-      test('returns bentoGrid patch for bentoGrid style', () {
-        final patch = adapter.resolveStylePatch(UiStyleFamily.bentoGrid);
-        expect(patch.cardBorderRadius, BorderRadius.circular(22));
-        expect(patch.buttonBorderRadius, BorderRadius.circular(16));
-        expect(patch.elevation, 0);
-        expect(patch.useBackdropBlur, false);
-      });
-
-      test('returns responsive patch for responsive style', () {
-        final patch = adapter.resolveStylePatch(UiStyleFamily.responsive);
-        expect(patch.cardBorderRadius, BorderRadius.circular(12));
-        expect(patch.buttonBorderRadius, BorderRadius.circular(8));
-        expect(patch.elevation, 1);
         expect(patch.useBackdropBlur, false);
       });
 
@@ -90,12 +50,6 @@ void main() {
       test('resolves divider thickness and color for styleFamily branches', () {
         final baseTheme = ThemeData.light();
 
-        final brutal = const StyleThemePatch(
-          styleFamily: UiStyleFamily.brutalism,
-        ).applyToTheme(baseTheme, false);
-        expect(brutal.dividerTheme.thickness, 3);
-        expect(brutal.dividerTheme.color, Colors.black);
-
         final flat = const StyleThemePatch(
           styleFamily: UiStyleFamily.flatDesign,
         ).applyToTheme(baseTheme, false);
@@ -110,16 +64,6 @@ void main() {
           minimal.dividerTheme.color,
           baseTheme.colorScheme.outlineVariant,
         );
-      });
-
-      test('resolves surface and tile colors for brutalism dark mode', () {
-        final baseTheme = ThemeData.dark();
-        final themed = const StyleThemePatch(
-          styleFamily: UiStyleFamily.brutalism,
-        ).applyToTheme(baseTheme, true);
-
-        expect(themed.cardTheme.color, baseTheme.colorScheme.surface);
-        expect(themed.listTileTheme.tileColor, baseTheme.colorScheme.surface);
       });
 
       test('cardColor override takes precedence for surface color', () {
@@ -300,14 +244,14 @@ void main() {
         expect(shape.borderRadius, BorderRadius.circular(20));
       });
 
-      test('applies brutalism divider thickness', () {
+      test('applies minimalism divider thickness', () {
         final patch = const StyleThemePatch(
-          styleFamily: UiStyleFamily.brutalism,
+          styleFamily: UiStyleFamily.minimalism,
         );
         final baseTheme = ThemeData.light();
         final modified = patch.applyToTheme(baseTheme, false);
 
-        expect(modified.dividerTheme.thickness, 3);
+        expect(modified.dividerTheme.thickness, 0.5);
       });
 
       test('applies to light theme', () {

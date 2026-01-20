@@ -1,35 +1,21 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../models/story_line.dart';
 import '../shared/api_exception.dart';
 import '../state/story_line_providers.dart';
+import '../state/story_line_list_notifier.dart';
+import '../state/pattern_list_notifier.dart';
 import '../state/providers.dart';
 import '../l10n/app_localizations.dart';
 import '../shared/constants.dart';
+import '../shared/widgets/loading/skeleton_list_items.dart';
+import '../shared/widgets/error_state.dart';
 
 const int _previewLen = kPreviewLenLong;
-const int _searchDebounceMs = kSearchDebounceMs;
-const int _searchMinLen = kSearchMinLen;
 
-class StoryLinesListScreen extends ConsumerStatefulWidget {
+class StoryLinesListScreen extends ConsumerWidget {
   const StoryLinesListScreen({super.key});
-  @override
-  ConsumerState<StoryLinesListScreen> createState() =>
-      _StoryLinesListScreenState();
-}
-
-class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
-  DateTime? _lastRowTapAt;
-  String? _lastRowTapId;
-  final _searchCtrl = TextEditingController();
-  Timer? _searchTimer;
-  List<StoryLine> _items = [];
-  bool _searchLoading = false;
-  String? _error;
-  String? _filterLanguage;
-  bool? _filterLocked;
 
   String _preview(String s) {
     final firstLine = s.split('\n').first.trim();
@@ -37,21 +23,12 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
     return '${firstLine.substring(0, _previewLen)}…';
   }
 
-  void _onRowTap(StoryLine p) {
-    final now = DateTime.now();
-    if (_lastRowTapId == p.id &&
-        _lastRowTapAt != null &&
-        now.difference(_lastRowTapAt!) < kDoubleTapThreshold) {
-      context.push('/story_line_form', extra: p);
-      _lastRowTapAt = null;
-      _lastRowTapId = null;
-    } else {
-      _lastRowTapAt = now;
-      _lastRowTapId = p.id;
-    }
-  }
-
-  DataTable _table(List<StoryLine> src) {
+  DataTable _table(
+    BuildContext context,
+    WidgetRef ref,
+    List<StoryLine> src,
+    Function(StoryLine) onRowTap,
+  ) {
     final l10n = AppLocalizations.of(context)!;
     return DataTable(
       columns: [
@@ -64,10 +41,10 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
           .map(
             (p) => DataRow(
               cells: [
-                DataCell(Text(p.title), onTap: () => _onRowTap(p)),
+                DataCell(Text(p.title), onTap: () => onRowTap(p)),
                 DataCell(
                   Text(_preview(p.description ?? p.content)),
-                  onTap: () => _onRowTap(p),
+                  onTap: () => onRowTap(p),
                 ),
                 DataCell(
                   Row(
@@ -92,7 +69,7 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete),
-                        onPressed: () => _deleteStoryLine(p),
+                        onPressed: () => _deleteStoryLine(context, ref, p),
                         tooltip: l10n.delete,
                       ),
                     ],
@@ -105,7 +82,11 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
     );
   }
 
-  Future<void> _deleteStoryLine(StoryLine p) async {
+  Future<void> _deleteStoryLine(
+    BuildContext context,
+    WidgetRef ref,
+    StoryLine p,
+  ) async {
     final l10n = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
       context: context,
@@ -129,29 +110,28 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
         final svc = ref.read(storyLinesServiceRefProvider);
         final success = await svc.deleteStoryLine(p.id);
         if (success) {
+          final listState = ref.read(storyLineListProvider);
           final showingSearch =
-              _items.isNotEmpty || _searchCtrl.text.trim().isNotEmpty;
+              listState.items.isNotEmpty || listState.searchQuery.isNotEmpty;
           if (showingSearch) {
-            setState(() {
-              _items = _items.where((e) => e.id != p.id).toList();
-            });
+            ref.read(storyLineListProvider.notifier).removeItem(p.id);
           } else {
             ref.invalidate(storyLinesProvider);
           }
-          if (mounted) {
+          if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(l10n.deletedWithTitle(p.title))),
             );
           }
         } else {
-          if (mounted) {
+          if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(l10n.deleteFailedWithTitle(p.title))),
             );
           }
         }
       } catch (e) {
-        if (mounted) {
+        if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(l10n.deleteErrorWithMessage(e.toString()))),
           );
@@ -160,84 +140,56 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
     }
   }
 
-  Future<void> _search({bool force = false}) async {
-    final q = _searchCtrl.text.trim();
-    if (q.isEmpty) {
-      setState(() {
-        _items = [];
-        _error = null;
-      });
-      return;
-    }
-    if (!force && q.length < _searchMinLen) {
-      return;
-    }
-    setState(() {
-      _searchLoading = true;
-      _error = null;
-    });
-    try {
-      final svc = ref.read(storyLinesServiceRefProvider);
-      final data = await svc.searchStoryLines(q);
-      setState(() {
-        _items = data;
-      });
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-      });
-    } finally {
-      setState(() {
-        _searchLoading = false;
-      });
-    }
-  }
-
-  Future<void> _smartSearch() async {
-    _searchTimer?.cancel();
-    final q = _searchCtrl.text.trim();
+  Future<void> _smartSearch(
+    BuildContext context,
+    WidgetRef ref,
+    TextEditingController searchCtrl,
+  ) async {
+    final q = searchCtrl.text.trim();
     if (q.isEmpty) return;
 
     final isSignedIn = ref.read(isSignedInProvider);
     if (!isSignedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.notSignedIn)),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.notSignedIn)),
+        );
+      }
       return;
     }
 
-    setState(() {
-      _searchLoading = true;
-    });
+    ref.read(storyLineListProvider.notifier).setSearchLoading(true);
 
     try {
       final svc = ref.read(storyLinesServiceRefProvider);
       final res = await svc.smartSearchStoryLines(q, limit: 5);
-      if (!mounted) return;
-      setState(() {
-        if (res.isEmpty) {
-          _search(force: true);
-        } else {
-          _items = res;
-        }
-      });
+      if (!context.mounted) return;
+      if (res.isEmpty) {
+        await ref
+            .read(storyLineListProvider.notifier)
+            .performSearch(force: true);
+      } else {
+        ref.read(storyLineListProvider.notifier).setSearchItems(res);
+      }
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) return;
-      if (!mounted) return;
-      setState(() {
-        _error = e.toString();
-      });
+      if (!context.mounted) return;
+      ref.read(storyLineListProvider.notifier).setError(e.toString());
     } finally {
-      if (mounted) {
-        setState(() {
-          _searchLoading = false;
-        });
+      if (context.mounted) {
+        ref.read(storyLineListProvider.notifier).setSearchLoading(false);
       }
     }
   }
 
-  Widget _filters(int count) {
+  Widget _filters(
+    BuildContext context,
+    WidgetRef ref,
+    TextEditingController searchCtrl,
+    int count,
+  ) {
     final l10n = AppLocalizations.of(context)!;
+    final listState = ref.watch(storyLineListProvider);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Wrap(
@@ -249,42 +201,40 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
           SizedBox(
             width: 320,
             child: TextField(
-              controller: _searchCtrl,
+              controller: searchCtrl,
               decoration: InputDecoration(
                 labelText: l10n.searchLabel,
                 suffixText: '$count',
                 suffixIcon: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (_searchCtrl.text.isNotEmpty)
+                    if (searchCtrl.text.isNotEmpty)
                       IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
-                          _searchCtrl.clear();
-                          setState(() {
-                            _items = [];
-                            _error = null;
-                          });
+                          searchCtrl.clear();
+                          ref
+                              .read(storyLineListProvider.notifier)
+                              .clearSearch();
                         },
                         tooltip: 'Clear search',
                       ),
                     IconButton(
                       icon: const Icon(Icons.auto_awesome),
-                      onPressed: _smartSearch,
+                      onPressed: () => _smartSearch(context, ref, searchCtrl),
                       tooltip: l10n.smartSearch,
                     ),
                   ],
                 ),
               ),
               onChanged: (_) {
-                setState(() {}); // Rebuild to show/hide clear button
-                _searchTimer?.cancel();
-                _searchTimer = Timer(
-                  const Duration(milliseconds: _searchDebounceMs),
-                  _search,
-                );
+                ref
+                    .read(storyLineListProvider.notifier)
+                    .setSearchQuery(searchCtrl.text);
               },
-              onSubmitted: (_) => _search(force: true),
+              onSubmitted: (_) => ref
+                  .read(storyLineListProvider.notifier)
+                  .performSearch(force: true),
             ),
           ),
           SizedBox(
@@ -296,38 +246,34 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String?>(
-                  value: _filterLanguage,
+                  value: listState.filterLanguage,
                   isDense: true,
                   items: [
                     DropdownMenuItem(value: null, child: Text(l10n.allLabel)),
                     DropdownMenuItem(value: 'en', child: Text(l10n.english)),
                     DropdownMenuItem(value: 'zh', child: Text(l10n.chinese)),
                   ],
-                  onChanged: (v) => setState(() => _filterLanguage = v),
+                  onChanged: (v) => ref
+                      .read(storyLineListProvider.notifier)
+                      .setFilterLanguage(v),
                 ),
               ),
             ),
           ),
           Tooltip(
-            message: _filterLocked == null
+            message: listState.filterLocked == null
                 ? l10n.filterByLocked
-                : (_filterLocked! ? l10n.lockedOnly : l10n.unlockedOnly),
+                : (listState.filterLocked!
+                      ? l10n.lockedOnly
+                      : l10n.unlockedOnly),
             child: IconButton(
               icon: Icon(
-                _filterLocked == null
+                listState.filterLocked == null
                     ? Icons.filter_alt_off
-                    : (_filterLocked! ? Icons.lock : Icons.lock_open),
+                    : (listState.filterLocked! ? Icons.lock : Icons.lock_open),
               ),
               onPressed: () {
-                setState(() {
-                  if (_filterLocked == null) {
-                    _filterLocked = true;
-                  } else if (_filterLocked == true) {
-                    _filterLocked = false;
-                  } else {
-                    _filterLocked = null;
-                  }
-                });
+                ref.read(storyLineListProvider.notifier).toggleFilterLocked();
               },
             ),
           ),
@@ -337,10 +283,26 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final isSignedIn = ref.watch(isSignedInProvider);
     final storyLinesAsync = ref.watch(storyLinesProvider);
+    final listState = ref.watch(storyLineListProvider);
+    final searchCtrl = TextEditingController(text: listState.searchQuery);
+    final lastRowTap = ref.watch(lastRowTapProvider);
+
+    void onRowTap(StoryLine p) {
+      final now = DateTime.now();
+      if (lastRowTap.id == p.id &&
+          lastRowTap.at != null &&
+          now.difference(lastRowTap.at!) < kDoubleTapThreshold) {
+        context.push('/story_line_form', extra: p);
+        ref.read(lastRowTapProvider.notifier).clear();
+      } else {
+        ref.read(lastRowTapProvider.notifier).set(p.id, now);
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
@@ -391,23 +353,35 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
                 ),
               ),
             )
-          : _searchLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-          ? Center(child: Text(_error!))
+          : listState.searchLoading
+          ? Center(
+              child: ListView.builder(
+                itemCount: 5,
+                itemBuilder: (context, index) => const StoryLineItemSkeleton(),
+              ),
+            )
+          : listState.error != null
+          ? ErrorState(
+              message: listState.error!,
+              onRetry: () => ref.invalidate(storyLinesProvider),
+            )
           : storyLinesAsync.when(
               data: (items0) {
-                final isSearching = _searchCtrl.text.trim().isNotEmpty;
-                var items = isSearching ? _items : items0;
+                final isSearching = searchCtrl.text.trim().isNotEmpty;
+                var items = isSearching ? listState.items : items0;
 
-                if (_filterLanguage != null) {
+                if (listState.filterLanguage != null) {
                   items = items
-                      .where((p) => (p.language ?? 'en') == _filterLanguage)
+                      .where(
+                        (p) => (p.language ?? 'en') == listState.filterLanguage,
+                      )
                       .toList();
                 }
-                if (_filterLocked != null) {
+                if (listState.filterLocked != null) {
                   items = items
-                      .where((p) => (p.locked ?? false) == _filterLocked)
+                      .where(
+                        (p) => (p.locked ?? false) == listState.filterLocked,
+                      )
                       .toList();
                 }
 
@@ -416,29 +390,28 @@ class _StoryLinesListScreenState extends ConsumerState<StoryLinesListScreen> {
                 }
                 return Column(
                   children: [
-                    _filters(items.length),
+                    _filters(context, ref, searchCtrl, items.length),
                     Expanded(
                       child: SingleChildScrollView(
                         padding: const EdgeInsets.all(8),
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
-                          child: _table(items),
+                          child: _table(context, ref, items, onRowTap),
                         ),
                       ),
                     ),
                   ],
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => Center(
+                child: ListView.builder(
+                  itemCount: 5,
+                  itemBuilder: (context, index) =>
+                      const StoryLineItemSkeleton(),
+                ),
+              ),
               error: (e, _) => Center(child: Text(e.toString())),
             ),
     );
-  }
-
-  @override
-  void dispose() {
-    _searchCtrl.dispose();
-    _searchTimer?.cancel();
-    super.dispose();
   }
 }

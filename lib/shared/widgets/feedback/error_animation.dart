@@ -124,19 +124,15 @@ class _RetryPulseState extends State<RetryPulse>
       builder: (context, _) {
         final t = _controller.value;
         final alpha = 0.10 + 0.20 * t;
-        final scale = 1.0 + 0.03 * t;
         return Stack(
           alignment: Alignment.center,
           clipBehavior: Clip.none,
           children: [
             Positioned.fill(
-              child: Transform.scale(
-                scale: scale,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.error.withValues(alpha: alpha),
-                    borderRadius: BorderRadius.circular(Radii.xl),
-                  ),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.error.withValues(alpha: alpha),
+                  borderRadius: BorderRadius.circular(Radii.xl),
                 ),
               ),
             ),

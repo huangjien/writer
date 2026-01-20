@@ -8,6 +8,8 @@ import '../../repositories/template_repository.dart';
 import '../../state/providers.dart';
 import '../../shared/api_exception.dart';
 import '../../shared/widgets/app_buttons.dart';
+import '../../shared/widgets/loading/skeleton_list_items.dart';
+import '../../shared/widgets/error_state.dart';
 
 class SceneTemplatesListScreen extends ConsumerStatefulWidget {
   const SceneTemplatesListScreen({super.key, required this.novelId});
@@ -184,9 +186,14 @@ class _SceneTemplatesListScreenState
           ],
         ),
         body: _loading
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(
+                child: ListView.builder(
+                  itemCount: 5,
+                  itemBuilder: (context, index) => const SceneItemSkeleton(),
+                ),
+              )
             : _error != null
-            ? Center(child: Text(_error!))
+            ? ErrorState(message: _error!, onRetry: _load)
             : Column(
                 children: [
                   Padding(
@@ -248,75 +255,84 @@ class _SceneTemplatesListScreenState
                             ?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             );
-                        return ListTile(
-                          title: Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(text: title, style: titleStyle),
-                                if (subtitle.isNotEmpty)
-                                  TextSpan(
-                                    text: '  $subtitle',
-                                    style: subtitleStyle,
+                        return Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => _onRowTap(it),
+                            hoverColor:
+                                theme.colorScheme.surfaceContainerHighest,
+                            child: ListTile(
+                              title: Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(text: title, style: titleStyle),
+                                    if (subtitle.isNotEmpty)
+                                      TextSpan(
+                                        text: '  $subtitle',
+                                        style: subtitleStyle,
+                                      ),
+                                  ],
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit),
+                                    onPressed: () => _openEdit(it),
                                   ),
-                              ],
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          onTap: () => _onRowTap(it),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit),
-                                onPressed: () => _openEdit(it),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () async {
-                                  final ok = await showDialog<bool>(
-                                    context: context,
-                                    builder: (d) => AlertDialog(
-                                      title: Text(l10n.deleteTemplateTitle),
-                                      content: Text(l10n.confirmDeleteGeneric),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(d, false),
-                                          child: Text(l10n.cancel),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    onPressed: () async {
+                                      final ok = await showDialog<bool>(
+                                        context: context,
+                                        builder: (d) => AlertDialog(
+                                          title: Text(l10n.deleteTemplateTitle),
+                                          content: Text(
+                                            l10n.confirmDeleteGeneric,
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(d, false),
+                                              child: Text(l10n.cancel),
+                                            ),
+                                            FilledButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(d, true),
+                                              child: Text(l10n.delete),
+                                            ),
+                                          ],
                                         ),
-                                        FilledButton(
-                                          onPressed: () =>
-                                              Navigator.pop(d, true),
-                                          child: Text(l10n.delete),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                  if (ok == true) {
-                                    try {
-                                      final repo = ref.read(
-                                        templateRepositoryProvider,
                                       );
-                                      await repo.deleteSceneTemplate(it.id);
-                                      await _load();
-                                      if (!context.mounted) return;
-                                    } catch (e) {
-                                      if (!context.mounted) return;
-                                      if (e is ApiException &&
-                                          e.statusCode == 401) {
-                                        return;
+                                      if (ok == true) {
+                                        try {
+                                          final repo = ref.read(
+                                            templateRepositoryProvider,
+                                          );
+                                          await repo.deleteSceneTemplate(it.id);
+                                          await _load();
+                                          if (!context.mounted) return;
+                                        } catch (e) {
+                                          if (!context.mounted) return;
+                                          if (e is ApiException &&
+                                              e.statusCode == 401) {
+                                            return;
+                                          }
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(content: Text('$e')),
+                                          );
+                                        }
                                       }
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(content: Text('$e')),
-                                      );
-                                    }
-                                  }
-                                },
+                                    },
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         );
                       },

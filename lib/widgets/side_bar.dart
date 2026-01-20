@@ -43,7 +43,7 @@ class SideBar extends ConsumerWidget {
                 ),
               ),
             ),
-            ListTile(
+            _DrawerListItem(
               leading: const Icon(Icons.home),
               title: Text(l10n.home),
               onTap: () {
@@ -51,14 +51,14 @@ class SideBar extends ConsumerWidget {
               },
             ),
 
-            ListTile(
+            _DrawerListItem(
               leading: const Icon(Icons.settings),
               title: Text(l10n.settings),
               onTap: () {
                 context.go('/settings');
               },
             ),
-            ListTile(
+            _DrawerListItem(
               leading: const Icon(Icons.list),
               title: Text(l10n.chapterIndex),
               onTap: () {
@@ -66,21 +66,21 @@ class SideBar extends ConsumerWidget {
               },
             ),
             const Divider(),
-            ListTile(
+            _DrawerListItem(
               leading: const Icon(Icons.summarize),
               title: Text(l10n.summary),
               onTap: () {
                 context.go('/novel/$novelId/summary');
               },
             ),
-            ListTile(
+            _DrawerListItem(
               leading: const Icon(Icons.person),
               title: Text(l10n.characters),
               onTap: () {
                 context.go('/novel/$novelId/characters');
               },
             ),
-            ListTile(
+            _DrawerListItem(
               leading: const Icon(Icons.movie_creation_outlined),
               title: Text(l10n.scenes),
               onTap: () {
@@ -89,7 +89,7 @@ class SideBar extends ConsumerWidget {
             ),
             if (isOwner) ...[
               const Divider(),
-              ListTile(
+              _DrawerListItem(
                 leading: const Icon(Icons.edit),
                 title: Text(l10n.updateNovel),
                 onTap: () {
@@ -111,7 +111,7 @@ class SideBar extends ConsumerWidget {
                   }
                 },
               ),
-              ListTile(
+              _DrawerListItem(
                 leading: const Icon(Icons.delete),
                 title: Text(l10n.deleteNovel),
                 onTap: () async {
@@ -144,6 +144,30 @@ class SideBar extends ConsumerWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _DrawerListItem extends StatelessWidget {
+  const _DrawerListItem({
+    required this.leading,
+    required this.title,
+    required this.onTap,
+  });
+
+  final Widget leading;
+  final Widget title;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        hoverColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        child: ListTile(leading: leading, title: title),
       ),
     );
   }

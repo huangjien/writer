@@ -92,12 +92,7 @@ void main() {
 
     expect(find.text('Glassmorphism'), findsOneWidget);
     expect(find.text('Neumorphism'), findsOneWidget);
-    expect(find.text('Claymorphism'), findsOneWidget);
     expect(find.text('Minimalism'), findsOneWidget);
-    expect(find.text('Brutalism'), findsOneWidget);
-    expect(find.text('Skeuomorphism'), findsOneWidget);
-    expect(find.text('Bento Grid'), findsOneWidget);
-    expect(find.text('Responsive'), findsOneWidget);
     expect(find.text('Flat Design'), findsOneWidget);
   });
 

@@ -41,7 +41,7 @@ class AppDrawer extends ConsumerWidget {
               ),
             ),
           ),
-          ListTile(
+          _DrawerListItem(
             leading: const Icon(Icons.settings),
             title: Text(l10n.settings),
             onTap: () {
@@ -49,7 +49,7 @@ class AppDrawer extends ConsumerWidget {
               context.go('/settings');
             },
           ),
-          ListTile(
+          _DrawerListItem(
             leading: const Icon(Icons.assignment_ind_outlined),
             title: Text(l10n.characterTemplates),
             onTap: () {
@@ -62,7 +62,7 @@ class AppDrawer extends ConsumerWidget {
               }
             },
           ),
-          ListTile(
+          _DrawerListItem(
             leading: const Icon(Icons.assignment_outlined),
             title: Text(l10n.sceneTemplates),
             onTap: () {
@@ -75,7 +75,7 @@ class AppDrawer extends ConsumerWidget {
               }
             },
           ),
-          ListTile(
+          _DrawerListItem(
             leading: const Icon(Icons.text_snippet),
             title: Text(l10n.prompts),
             onTap: () {
@@ -83,7 +83,7 @@ class AppDrawer extends ConsumerWidget {
               context.go('/prompts');
             },
           ),
-          ListTile(
+          _DrawerListItem(
             leading: const Icon(Icons.auto_awesome),
             title: Text(l10n.patterns),
             onTap: () {
@@ -91,7 +91,7 @@ class AppDrawer extends ConsumerWidget {
               context.go('/patterns');
             },
           ),
-          ListTile(
+          _DrawerListItem(
             leading: const Icon(Icons.timeline),
             title: Text(l10n.storyLines),
             onTap: () {
@@ -100,7 +100,7 @@ class AppDrawer extends ConsumerWidget {
             },
           ),
           const Divider(),
-          ListTile(
+          _DrawerListItem(
             leading: const Icon(Icons.add),
             title: Text(l10n.createNovel),
             onTap: () {
@@ -108,7 +108,7 @@ class AppDrawer extends ConsumerWidget {
               context.go('/create-novel');
             },
           ),
-          ListTile(
+          _DrawerListItem(
             leading: const Icon(Icons.info_outline),
             title: Text(l10n.about),
             onTap: () {
@@ -117,6 +117,30 @@ class AppDrawer extends ConsumerWidget {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _DrawerListItem extends StatelessWidget {
+  const _DrawerListItem({
+    required this.leading,
+    required this.title,
+    required this.onTap,
+  });
+
+  final Widget leading;
+  final Widget title;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        hoverColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        child: ListTile(leading: leading, title: title),
       ),
     );
   }

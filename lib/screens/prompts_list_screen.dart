@@ -9,6 +9,8 @@ import '../l10n/app_localizations.dart';
 import '../shared/constants.dart';
 import '../shared/api_exception.dart';
 import '../shared/widgets/theme_aware_card.dart';
+import '../shared/widgets/loading/skeleton_list_items.dart';
+import '../shared/widgets/error_state.dart';
 
 const int _previewLen = kPreviewLenShort;
 const int _searchDebounceMs = kSearchDebounceMs;
@@ -475,9 +477,14 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: ListView.builder(
+                itemCount: 5,
+                itemBuilder: (context, index) => const PromptItemSkeleton(),
+              ),
+            )
           : _error != null
-          ? Center(child: Text(_error!))
+          ? ErrorState(message: _error!, onRetry: _load)
           : Column(
               children: [
                 _filters(filtered.length),

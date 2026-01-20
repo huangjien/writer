@@ -5,12 +5,9 @@ import 'package:writer/state/novel_providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/features/summary/snowflake_coach_widget.dart';
-import 'package:writer/models/snowflake.dart';
-import 'package:writer/repositories/novel_repository.dart';
-import 'package:writer/shared/api_exception.dart';
 import 'package:writer/features/reader/novel_metadata_editor.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
-import 'summary_controller.dart';
+import 'summary_notifier.dart';
 
 class SummaryScreen extends ConsumerStatefulWidget {
   const SummaryScreen({super.key, required this.novelId});
@@ -30,13 +27,6 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
   final _pageController = TextEditingController();
   final _expandedController = TextEditingController();
 
-  bool _saving = false;
-  String? _error;
-  bool _refreshing = false;
-  bool _isDirty = false;
-
-  late final SummaryController _controller;
-
   // Tab Controllers
   late final TabController _tabController;
   late final TabController _sentenceTabController;
@@ -44,35 +34,9 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
   late final TabController _pageTabController;
   late final TabController _expandedTabController;
 
-  // Coach State
-  bool _showCoach = false;
-  bool _showSentenceCoach = false;
-  bool _showParagraphCoach = false;
-  bool _showPageCoach = false;
-
-  void _resetCoaches() {
-    _showCoach = false;
-    _showSentenceCoach = false;
-    _showParagraphCoach = false;
-    _showPageCoach = false;
-  }
-
-  // AI satisfaction flags - true means user is satisfied, no auto AI calls
-  bool _sentenceAiSatisfied = false;
-  bool _paragraphAiSatisfied = false;
-  bool _pageAiSatisfied = false;
-  bool _expandedAiSatisfied = false;
-
-  // Store last AI outputs to preserve chat history
-  SnowflakeRefinementOutput? _sentenceLastOutput;
-  SnowflakeRefinementOutput? _paragraphLastOutput;
-  SnowflakeRefinementOutput? _pageLastOutput;
-  SnowflakeRefinementOutput? _expandedLastOutput;
-
   @override
   void initState() {
     super.initState();
-    _controller = SummaryController(ref.read(novelRepositoryProvider));
 
     // Initialize tab controllers
     _tabController = TabController(length: 4, vsync: this);
@@ -81,30 +45,14 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
     _pageTabController = TabController(length: 2, vsync: this);
     _expandedTabController = TabController(length: 2, vsync: this);
 
-    _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _load();
+    });
   }
 
   Future<void> _load() async {
-    setState(() => _refreshing = true);
-    try {
-      await _controller.load(widget.novelId);
-
-      _sentenceController.text = _controller.baseSummary?.sentenceSummary ?? '';
-      _paragraphController.text =
-          _controller.baseSummary?.paragraphSummary ?? '';
-      _pageController.text = _controller.baseSummary?.pageSummary ?? '';
-      _expandedController.text = _controller.baseSummary?.expandedSummary ?? '';
-
-      _isDirty = false;
-    } catch (e) {
-      if (e is ApiException && e.statusCode == 401) {
-        // Suppress 401 as it's handled by repo/redirect
-      } else {
-        _error = e.toString();
-      }
-    } finally {
-      if (mounted) setState(() => _refreshing = false);
-    }
+    await ref.read(summaryProvider.notifier).load(widget.novelId);
   }
 
   @override
@@ -122,35 +70,14 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
   }
 
   void _onFieldChanged() {
-    // Reset AI satisfaction flags when user manually edits content
-    if (_sentenceController.text != _controller.baseSummary?.sentenceSummary) {
-      _sentenceAiSatisfied = false;
-      _sentenceLastOutput = null;
-    }
-    if (_paragraphController.text !=
-        _controller.baseSummary?.paragraphSummary) {
-      _paragraphAiSatisfied = false;
-      _paragraphLastOutput = null;
-    }
-    if (_pageController.text != _controller.baseSummary?.pageSummary) {
-      _pageAiSatisfied = false;
-      _pageLastOutput = null;
-    }
-    if (_expandedController.text != _controller.baseSummary?.expandedSummary) {
-      _expandedAiSatisfied = false;
-      _expandedLastOutput = null;
-    }
-
-    final dirty = _controller.isDirty(
-      sentence: _sentenceController.text,
-      paragraph: _paragraphController.text,
-      page: _pageController.text,
-      expanded: _expandedController.text,
-    );
-
-    if (dirty != _isDirty) {
-      setState(() => _isDirty = dirty);
-    }
+    ref
+        .read(summaryProvider.notifier)
+        .onFieldChanged(
+          sentence: _sentenceController.text,
+          paragraph: _paragraphController.text,
+          page: _pageController.text,
+          expanded: _expandedController.text,
+        );
   }
 
   Widget _buildNovelHeader() {
@@ -159,6 +86,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
 
   Widget _buildSummaryTab() {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+    final summaryState = ref.watch(summaryProvider);
 
     return Column(
       children: [
@@ -207,34 +135,38 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 AppButtons.icon(
-                                  iconData: _showSentenceCoach
+                                  iconData: summaryState.showSentenceCoach
                                       ? Icons.auto_awesome
                                       : Icons.auto_awesome_outlined,
                                   color:
-                                      _showSentenceCoach || _sentenceAiSatisfied
+                                      summaryState.showSentenceCoach ||
+                                          summaryState.sentenceAiSatisfied
                                       ? Colors.purple
                                       : null,
                                   onPressed: () {
-                                    setState(() {
-                                      if (_showSentenceCoach) {
-                                        _showSentenceCoach = false;
-                                        _showCoach = false;
-                                      } else {
-                                        _resetCoaches();
-                                        _showSentenceCoach = true;
-                                      }
-                                    });
+                                    if (summaryState.showSentenceCoach) {
+                                      ref
+                                          .read(summaryProvider.notifier)
+                                          .resetCoaches();
+                                    } else {
+                                      ref
+                                          .read(summaryProvider.notifier)
+                                          .resetCoaches();
+                                      ref
+                                          .read(summaryProvider.notifier)
+                                          .toggleSentenceCoach();
+                                    }
                                   },
                                   tooltip: l10n.aiSentenceSummaryTooltip,
                                 ),
-                                if (_sentenceAiSatisfied &&
-                                    !_showSentenceCoach) ...[
+                                if (summaryState.sentenceAiSatisfied &&
+                                    !summaryState.showSentenceCoach) ...[
                                   AppButtons.icon(
                                     iconData: Icons.check_circle,
                                     onPressed: () {
-                                      setState(
-                                        () => _sentenceAiSatisfied = false,
-                                      );
+                                      ref
+                                          .read(summaryProvider.notifier)
+                                          .setSentenceAiSatisfied(false);
                                     },
                                     tooltip: l10n.imSatisfied,
                                     color: Colors.green,
@@ -264,6 +196,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
 
   Widget _buildParagraphTab() {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+    final summaryState = ref.watch(summaryProvider);
 
     return Column(
       children: [
@@ -310,35 +243,30 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                             children: [
                               IconButton(
                                 icon: Icon(
-                                  _showParagraphCoach
+                                  summaryState.showParagraphCoach
                                       ? Icons.auto_awesome
                                       : Icons.auto_awesome_outlined,
                                   color:
-                                      _showParagraphCoach ||
-                                          _paragraphAiSatisfied
+                                      summaryState.showParagraphCoach ||
+                                          summaryState.paragraphAiSatisfied
                                       ? Colors.purple
                                       : null,
                                 ),
                                 onPressed: () {
-                                  setState(() {
-                                    _showParagraphCoach = !_showParagraphCoach;
-                                    if (_showParagraphCoach) {
-                                      _showCoach = false;
-                                      _showSentenceCoach = false;
-                                      _showPageCoach = false;
-                                    }
-                                  });
+                                  ref
+                                      .read(summaryProvider.notifier)
+                                      .toggleParagraphCoach();
                                 },
                                 tooltip: l10n.aiParagraphSummaryTooltip,
                               ),
-                              if (_paragraphAiSatisfied &&
-                                  !_showParagraphCoach) ...[
+                              if (summaryState.paragraphAiSatisfied &&
+                                  !summaryState.showParagraphCoach) ...[
                                 AppButtons.icon(
                                   iconData: Icons.check_circle,
                                   onPressed: () {
-                                    setState(
-                                      () => _paragraphAiSatisfied = false,
-                                    );
+                                    ref
+                                        .read(summaryProvider.notifier)
+                                        .setParagraphAiSatisfied(false);
                                   },
                                   tooltip: l10n.imSatisfied,
                                   color: Colors.green,
@@ -367,6 +295,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
 
   Widget _buildPageTab() {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+    final summaryState = ref.watch(summaryProvider);
 
     return Column(
       children: [
@@ -413,30 +342,30 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                             children: [
                               IconButton(
                                 icon: Icon(
-                                  _showPageCoach
+                                  summaryState.showPageCoach
                                       ? Icons.auto_awesome
                                       : Icons.auto_awesome_outlined,
-                                  color: _showPageCoach || _pageAiSatisfied
+                                  color:
+                                      summaryState.showPageCoach ||
+                                          summaryState.pageAiSatisfied
                                       ? Colors.purple
                                       : null,
                                 ),
                                 onPressed: () {
-                                  setState(() {
-                                    _showPageCoach = !_showPageCoach;
-                                    if (_showPageCoach) {
-                                      _showCoach = false;
-                                      _showSentenceCoach = false;
-                                      _showParagraphCoach = false;
-                                    }
-                                  });
+                                  ref
+                                      .read(summaryProvider.notifier)
+                                      .togglePageCoach();
                                 },
                                 tooltip: 'AI page summary',
                               ),
-                              if (_pageAiSatisfied && !_showPageCoach) ...[
+                              if (summaryState.pageAiSatisfied &&
+                                  !summaryState.showPageCoach) ...[
                                 AppButtons.icon(
                                   iconData: Icons.check_circle,
                                   onPressed: () {
-                                    setState(() => _pageAiSatisfied = false);
+                                    ref
+                                        .read(summaryProvider.notifier)
+                                        .setPageAiSatisfied(false);
                                   },
                                   tooltip: l10n.imSatisfied,
                                   color: Colors.green,
@@ -465,6 +394,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
 
   Widget _buildExpandedTab() {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+    final summaryState = ref.watch(summaryProvider);
 
     return Column(
       children: [
@@ -511,26 +441,24 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                             children: [
                               IconButton(
                                 icon: Icon(
-                                  _showCoach
+                                  summaryState.showCoach
                                       ? Icons.auto_awesome
                                       : Icons.auto_awesome_outlined,
-                                  color: _showCoach || _expandedAiSatisfied
+                                  color:
+                                      summaryState.showCoach ||
+                                          summaryState.expandedAiSatisfied
                                       ? Colors.purple
                                       : null,
                                 ),
                                 onPressed: () {
-                                  setState(() {
-                                    _showCoach = !_showCoach;
-                                    if (_showCoach) {
-                                      _showSentenceCoach = false;
-                                      _showParagraphCoach = false;
-                                      _showPageCoach = false;
-                                    }
-                                  });
+                                  ref
+                                      .read(summaryProvider.notifier)
+                                      .toggleExpandedCoach();
                                 },
                                 tooltip: l10n.toggleAiCoach,
                               ),
-                              if (_expandedAiSatisfied && !_showCoach) ...[
+                              if (summaryState.expandedAiSatisfied &&
+                                  !summaryState.showCoach) ...[
                                 IconButton(
                                   icon: const Icon(
                                     Icons.check_circle,
@@ -538,9 +466,9 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                                   ),
                                   color: Colors.green,
                                   onPressed: () {
-                                    setState(
-                                      () => _expandedAiSatisfied = false,
-                                    );
+                                    ref
+                                        .read(summaryProvider.notifier)
+                                        .setExpandedAiSatisfied(false);
                                   },
                                   tooltip: l10n.imSatisfied,
                                 ),
@@ -569,12 +497,22 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
+    final summaryState = ref.watch(summaryProvider);
+
+    ref.listen<SummaryState>(summaryProvider, (previous, next) {
+      if (previous?.baseSummary != next.baseSummary) {
+        _sentenceController.text = next.baseSummary?.sentenceSummary ?? '';
+        _paragraphController.text = next.baseSummary?.paragraphSummary ?? '';
+        _pageController.text = next.baseSummary?.pageSummary ?? '';
+        _expandedController.text = next.baseSummary?.expandedSummary ?? '';
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.summary),
         actions: [
-          if (_refreshing)
+          if (summaryState.refreshing)
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12),
               child: SizedBox(
@@ -586,10 +524,8 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
           else
             IconButton(
               onPressed: () async {
-                setState(() => _refreshing = true);
                 ref.invalidate(novelProvider(widget.novelId));
                 await _load();
-                if (mounted) setState(() => _refreshing = false);
               },
               icon: const Icon(Icons.refresh),
               tooltip: l10n.refreshTooltip,
@@ -599,15 +535,15 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
       body: LayoutBuilder(
         builder: (context, constraints) {
           final showCoach =
-              _showCoach ||
-              _showSentenceCoach ||
-              _showParagraphCoach ||
-              _showPageCoach;
+              summaryState.showCoach ||
+              summaryState.showSentenceCoach ||
+              summaryState.showParagraphCoach ||
+              summaryState.showPageCoach;
 
           Widget? activeCoachContent;
 
           if (showCoach) {
-            if (_showSentenceCoach) {
+            if (summaryState.showSentenceCoach) {
               activeCoachContent = SnowflakeCoachWidget(
                 novelId: widget.novelId,
                 summaryType: 'sentence',
@@ -616,16 +552,18 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                   _sentenceController.text = newSummary;
                   _onFieldChanged();
                 },
-                autoAnalyze: !_sentenceAiSatisfied,
-                lastOutput: _sentenceLastOutput,
+                autoAnalyze: !summaryState.sentenceAiSatisfied,
+                lastOutput: summaryState.sentenceLastOutput,
                 onAiCompleted: (output) {
-                  setState(() {
-                    _sentenceAiSatisfied = true;
-                    _sentenceLastOutput = output;
-                  });
+                  ref
+                      .read(summaryProvider.notifier)
+                      .setSentenceLastOutput(output);
+                  ref
+                      .read(summaryProvider.notifier)
+                      .setSentenceAiSatisfied(true);
                 },
               );
-            } else if (_showParagraphCoach) {
+            } else if (summaryState.showParagraphCoach) {
               activeCoachContent = SnowflakeCoachWidget(
                 novelId: widget.novelId,
                 summaryType: 'paragraph',
@@ -634,16 +572,18 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                   _paragraphController.text = newSummary;
                   _onFieldChanged();
                 },
-                autoAnalyze: !_paragraphAiSatisfied,
-                lastOutput: _paragraphLastOutput,
+                autoAnalyze: !summaryState.paragraphAiSatisfied,
+                lastOutput: summaryState.paragraphLastOutput,
                 onAiCompleted: (output) {
-                  setState(() {
-                    _paragraphAiSatisfied = true;
-                    _paragraphLastOutput = output;
-                  });
+                  ref
+                      .read(summaryProvider.notifier)
+                      .setParagraphLastOutput(output);
+                  ref
+                      .read(summaryProvider.notifier)
+                      .setParagraphAiSatisfied(true);
                 },
               );
-            } else if (_showPageCoach) {
+            } else if (summaryState.showPageCoach) {
               activeCoachContent = SnowflakeCoachWidget(
                 novelId: widget.novelId,
                 summaryType: 'page',
@@ -652,13 +592,11 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                   _pageController.text = newSummary;
                   _onFieldChanged();
                 },
-                autoAnalyze: !_pageAiSatisfied,
-                lastOutput: _pageLastOutput,
+                autoAnalyze: !summaryState.pageAiSatisfied,
+                lastOutput: summaryState.pageLastOutput,
                 onAiCompleted: (output) {
-                  setState(() {
-                    _pageAiSatisfied = true;
-                    _pageLastOutput = output;
-                  });
+                  ref.read(summaryProvider.notifier).setPageLastOutput(output);
+                  ref.read(summaryProvider.notifier).setPageAiSatisfied(true);
                 },
               );
             } else {
@@ -670,13 +608,15 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                   _expandedController.text = newSummary;
                   _onFieldChanged();
                 },
-                autoAnalyze: !_expandedAiSatisfied,
-                lastOutput: _expandedLastOutput,
+                autoAnalyze: !summaryState.expandedAiSatisfied,
+                lastOutput: summaryState.expandedLastOutput,
                 onAiCompleted: (output) {
-                  setState(() {
-                    _expandedAiSatisfied = true;
-                    _expandedLastOutput = output;
-                  });
+                  ref
+                      .read(summaryProvider.notifier)
+                      .setExpandedLastOutput(output);
+                  ref
+                      .read(summaryProvider.notifier)
+                      .setExpandedAiSatisfied(true);
                 },
               );
             }
@@ -725,28 +665,24 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                         children: [
                           AppButtons.primary(
                             label: l10n.save,
-                            onPressed: (_saving || !_isDirty)
+                            onPressed:
+                                (summaryState.saving || !summaryState.isDirty)
                                 ? () {}
                                 : () async {
                                     final ok =
                                         _formKey.currentState?.validate() ??
                                         false;
                                     if (!ok) return;
-                                    setState(() {
-                                      _saving = true;
-                                      _error = null;
-                                    });
                                     try {
-                                      await _controller.save(
-                                        sentence: _sentenceController.text,
-                                        paragraph: _paragraphController.text,
-                                        page: _pageController.text,
-                                        expanded: _expandedController.text,
-                                      );
-
-                                      setState(() {
-                                        _isDirty = false;
-                                      });
+                                      await ref
+                                          .read(summaryProvider.notifier)
+                                          .save(
+                                            sentence: _sentenceController.text,
+                                            paragraph:
+                                                _paragraphController.text,
+                                            page: _pageController.text,
+                                            expanded: _expandedController.text,
+                                          );
 
                                       if (!context.mounted) return;
                                       ScaffoldMessenger.of(
@@ -755,19 +691,18 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                                         SnackBar(content: Text(l10n.saved)),
                                       );
                                     } catch (e) {
-                                      setState(() => _error = e.toString());
-                                    } finally {
-                                      setState(() => _saving = false);
+                                      // Error is already set in the notifier
                                     }
                                   },
-                            enabled: !(_saving || !_isDirty),
-                            isLoading: _saving,
+                            enabled:
+                                !(summaryState.saving || !summaryState.isDirty),
+                            isLoading: summaryState.saving,
                           ),
                           const SizedBox(width: 12),
-                          if (_error != null)
+                          if (summaryState.error != null)
                             Expanded(
                               child: Text(
-                                _error!,
+                                summaryState.error!,
                                 maxLines: 3,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(color: Colors.redAccent),

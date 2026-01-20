@@ -36,6 +36,7 @@ void main() {
   Future<void> pumpLoaded(WidgetTester tester) async {
     await tester.pump();
     await tester.pump();
+    await tester.pump();
   }
 
   Future<void> pumpTabChange(WidgetTester tester) async {
@@ -138,8 +139,7 @@ void main() {
       await tester.tap(find.text('Edit').first);
       await pumpTabChange(tester);
 
-      // Find TextFormField
-      final textField = find.widgetWithText(TextFormField, 'Original');
+      final textField = find.byKey(const Key('sentence_summary_field'));
       await tester.enterText(textField, 'Changed');
       await tester.pump();
 

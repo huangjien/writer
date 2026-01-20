@@ -32,6 +32,11 @@ class StyleSettingsSection extends ConsumerWidget {
                 },
                 items: [
                   _buildDropdownMenuItem(
+                    UiStyleFamily.minimalism,
+                    l10n.styleMinimalism,
+                    l10n,
+                  ),
+                  _buildDropdownMenuItem(
                     UiStyleFamily.glassmorphism,
                     l10n.styleGlassmorphism,
                     l10n,
@@ -39,36 +44,6 @@ class StyleSettingsSection extends ConsumerWidget {
                   _buildDropdownMenuItem(
                     UiStyleFamily.neumorphism,
                     l10n.styleNeumorphism,
-                    l10n,
-                  ),
-                  _buildDropdownMenuItem(
-                    UiStyleFamily.claymorphism,
-                    l10n.styleClaymorphism,
-                    l10n,
-                  ),
-                  _buildDropdownMenuItem(
-                    UiStyleFamily.minimalism,
-                    l10n.styleMinimalism,
-                    l10n,
-                  ),
-                  _buildDropdownMenuItem(
-                    UiStyleFamily.brutalism,
-                    l10n.styleBrutalism,
-                    l10n,
-                  ),
-                  _buildDropdownMenuItem(
-                    UiStyleFamily.skeuomorphism,
-                    l10n.styleSkeuomorphism,
-                    l10n,
-                  ),
-                  _buildDropdownMenuItem(
-                    UiStyleFamily.bentoGrid,
-                    l10n.styleBentoGrid,
-                    l10n,
-                  ),
-                  _buildDropdownMenuItem(
-                    UiStyleFamily.responsive,
-                    l10n.styleResponsive,
                     l10n,
                   ),
                   _buildDropdownMenuItem(
@@ -188,48 +163,8 @@ class _StylePreviewCard extends StatelessWidget {
           iconColor,
         );
         break;
-      case UiStyleFamily.claymorphism:
-        previewContent = _buildClaymorphismPreview(
-          context,
-          colorScheme,
-          isSelected,
-          iconColor,
-        );
-        break;
       case UiStyleFamily.minimalism:
         previewContent = _buildMinimalismPreview(
-          context,
-          colorScheme,
-          isSelected,
-          iconColor,
-        );
-        break;
-      case UiStyleFamily.brutalism:
-        previewContent = _buildBrutalismPreview(
-          context,
-          colorScheme,
-          isSelected,
-          iconColor,
-        );
-        break;
-      case UiStyleFamily.skeuomorphism:
-        previewContent = _buildSkeuomorphismPreview(
-          context,
-          colorScheme,
-          isSelected,
-          iconColor,
-        );
-        break;
-      case UiStyleFamily.bentoGrid:
-        previewContent = _buildBentoGridPreview(
-          context,
-          colorScheme,
-          isSelected,
-          iconColor,
-        );
-        break;
-      case UiStyleFamily.responsive:
-        previewContent = _buildResponsivePreview(
           context,
           colorScheme,
           isSelected,
@@ -343,51 +278,6 @@ class _StylePreviewCard extends StatelessWidget {
     );
   }
 
-  Widget _buildClaymorphismPreview(
-    BuildContext context,
-    ColorScheme colorScheme,
-    bool isSelected,
-    Color iconColor,
-  ) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(
-                color: colorScheme.primary.withValues(alpha: 0.2),
-                offset: const Offset(0, 2),
-                blurRadius: 4,
-              ),
-            ],
-          ),
-          child: Icon(
-            _getStyleIcon(UiStyleFamily.claymorphism),
-            color: iconColor,
-            size: 16,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2),
-          child: Text(
-            uiStyleDisplayName(UiStyleFamily.claymorphism, context),
-            style: Theme.of(
-              context,
-            ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildMinimalismPreview(
     BuildContext context,
     ColorScheme colorScheme,
@@ -407,194 +297,6 @@ class _StylePreviewCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Text(
             uiStyleDisplayName(UiStyleFamily.minimalism, context),
-            style: Theme.of(
-              context,
-            ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBrutalismPreview(
-    BuildContext context,
-    ColorScheme colorScheme,
-    bool isSelected,
-    Color iconColor,
-  ) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: BorderRadius.zero,
-            border: Border.all(
-              color: isSelected ? colorScheme.primary : colorScheme.outline,
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: colorScheme.shadow,
-                blurRadius: 0,
-                offset: const Offset(2, 2),
-              ),
-            ],
-          ),
-          child: Icon(
-            _getStyleIcon(UiStyleFamily.brutalism),
-            color: iconColor,
-            size: 16,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2),
-          child: Text(
-            uiStyleDisplayName(UiStyleFamily.brutalism, context),
-            style: Theme.of(
-              context,
-            ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSkeuomorphismPreview(
-    BuildContext context,
-    ColorScheme colorScheme,
-    bool isSelected,
-    Color iconColor,
-  ) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(6),
-            boxShadow: [
-              BoxShadow(
-                color: colorScheme.shadow.withValues(alpha: 0.25),
-                offset: const Offset(0, 1),
-                blurRadius: 2,
-              ),
-            ],
-          ),
-          child: Icon(
-            _getStyleIcon(UiStyleFamily.skeuomorphism),
-            color: iconColor,
-            size: 16,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2),
-          child: Text(
-            uiStyleDisplayName(UiStyleFamily.skeuomorphism, context),
-            style: Theme.of(
-              context,
-            ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBentoGridPreview(
-    BuildContext context,
-    ColorScheme colorScheme,
-    bool isSelected,
-    Color iconColor,
-  ) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: colorScheme.outline.withValues(alpha: 0.2),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: colorScheme.shadow.withValues(alpha: 0.1),
-                offset: const Offset(0, 1),
-                blurRadius: 2,
-              ),
-            ],
-          ),
-          child: Icon(
-            _getStyleIcon(UiStyleFamily.bentoGrid),
-            color: iconColor,
-            size: 16,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2),
-          child: Text(
-            uiStyleDisplayName(UiStyleFamily.bentoGrid, context),
-            style: Theme.of(
-              context,
-            ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildResponsivePreview(
-    BuildContext context,
-    ColorScheme colorScheme,
-    bool isSelected,
-    Color iconColor,
-  ) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(6),
-            boxShadow: [
-              BoxShadow(
-                color: colorScheme.shadow.withValues(alpha: 0.08),
-                offset: const Offset(0, 1),
-                blurRadius: 1,
-              ),
-            ],
-          ),
-          child: Icon(
-            _getStyleIcon(UiStyleFamily.responsive),
-            color: iconColor,
-            size: 16,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2),
-          child: Text(
-            uiStyleDisplayName(UiStyleFamily.responsive, context),
             style: Theme.of(
               context,
             ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
@@ -678,93 +380,10 @@ class _StylePreviewCard extends StatelessWidget {
             width: isSelected ? 2 : 1,
           ),
         );
-      case UiStyleFamily.claymorphism:
-        return BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: colorScheme.primary.withValues(alpha: 0.3),
-              offset: const Offset(0, 4),
-              blurRadius: 8,
-            ),
-          ],
-          border: Border.all(
-            color: isSelected
-                ? colorScheme.primary
-                : colorScheme.outline.withValues(alpha: 0.3),
-            width: isSelected ? 2 : 1,
-          ),
-        );
       case UiStyleFamily.minimalism:
         return BoxDecoration(
           color: colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isSelected
-                ? colorScheme.primary
-                : colorScheme.outline.withValues(alpha: 0.3),
-            width: isSelected ? 2 : 1,
-          ),
-        );
-      case UiStyleFamily.brutalism:
-        return BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.zero,
-          border: Border.all(
-            color: isSelected
-                ? colorScheme.primary
-                : colorScheme.outline.withValues(alpha: 0.3),
-            width: isSelected ? 3 : 2,
-          ),
-        );
-      case UiStyleFamily.skeuomorphism:
-        return BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: colorScheme.shadow.withValues(alpha: 0.3),
-              offset: const Offset(2, 4),
-              blurRadius: 4,
-            ),
-          ],
-          border: Border.all(
-            color: isSelected
-                ? colorScheme.primary
-                : colorScheme.outline.withValues(alpha: 0.3),
-            width: isSelected ? 2 : 1,
-          ),
-        );
-      case UiStyleFamily.bentoGrid:
-        return BoxDecoration(
-          color: colorScheme.surface.withValues(alpha: 0.9),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: colorScheme.shadow.withValues(alpha: 0.15),
-              offset: const Offset(0, 2),
-              blurRadius: 4,
-            ),
-          ],
-          border: Border.all(
-            color: isSelected
-                ? colorScheme.primary
-                : colorScheme.outline.withValues(alpha: 0.3),
-            width: isSelected ? 2 : 1,
-          ),
-        );
-      case UiStyleFamily.responsive:
-        return BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: colorScheme.shadow.withValues(alpha: 0.1),
-              offset: const Offset(0, 1),
-              blurRadius: 2,
-            ),
-          ],
           border: Border.all(
             color: isSelected
                 ? colorScheme.primary
@@ -792,18 +411,8 @@ class _StylePreviewCard extends StatelessWidget {
         return Icons.blur_on;
       case UiStyleFamily.neumorphism:
         return Icons.invert_colors_off;
-      case UiStyleFamily.claymorphism:
-        return Icons.bubble_chart;
       case UiStyleFamily.minimalism:
         return Icons.crop_square;
-      case UiStyleFamily.brutalism:
-        return Icons.widgets;
-      case UiStyleFamily.skeuomorphism:
-        return Icons.texture;
-      case UiStyleFamily.bentoGrid:
-        return Icons.dashboard;
-      case UiStyleFamily.responsive:
-        return Icons.devices;
       case UiStyleFamily.flatDesign:
         return Icons.square;
     }

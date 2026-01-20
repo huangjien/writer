@@ -63,33 +63,6 @@ void main() {
       expect(longPressed, true);
     });
 
-    testWidgets('uses default pressedScale value', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: const PressScale(child: Text('Test Child'))),
-        ),
-      );
-
-      final pressScale = tester.widget<PressScale>(find.byType(PressScale));
-      expect(pressScale.pressedScale, 0.98);
-    });
-
-    testWidgets('uses custom pressedScale value', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: const PressScale(
-              pressedScale: 0.85,
-              child: Text('Test Child'),
-            ),
-          ),
-        ),
-      );
-
-      final pressScale = tester.widget<PressScale>(find.byType(PressScale));
-      expect(pressScale.pressedScale, 0.85);
-    });
-
     testWidgets('uses default duration value', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -463,14 +436,14 @@ void main() {
       expect(longPressed, true);
     });
 
-    testWidgets('AnimatedScale is used for animation', (tester) async {
+    testWidgets('AnimatedOpacity is used for animation', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(body: const PressScale(child: Text('Test Child'))),
         ),
       );
 
-      expect(find.byType(AnimatedScale), findsOneWidget);
+      expect(find.byType(AnimatedOpacity), findsOneWidget);
     });
   });
 

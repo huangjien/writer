@@ -21,47 +21,33 @@ const String prefUiStyleFamily = 'ui_style_family';
 
 UiStyleFamily decodeUiStyleFamily(String? raw) {
   switch (raw) {
+    case 'minimalism':
+      return UiStyleFamily.minimalism;
     case 'glassmorphism':
       return UiStyleFamily.glassmorphism;
     case 'neumorphism':
       return UiStyleFamily.neumorphism;
-    case 'claymorphism':
-      return UiStyleFamily.claymorphism;
-    case 'minimalism':
-      return UiStyleFamily.minimalism;
-    case 'brutalism':
-      return UiStyleFamily.brutalism;
-    case 'skeuomorphism':
-      return UiStyleFamily.skeuomorphism;
-    case 'bentoGrid':
-      return UiStyleFamily.bentoGrid;
-    case 'responsive':
-      return UiStyleFamily.responsive;
     case 'flatDesign':
       return UiStyleFamily.flatDesign;
+    case 'claymorphism':
+      return UiStyleFamily.neumorphism;
+    case 'brutalism':
+    case 'skeuomorphism':
+    case 'bentoGrid':
+    case 'responsive':
     default:
-      return UiStyleFamily.glassmorphism;
+      return UiStyleFamily.minimalism;
   }
 }
 
 String encodeUiStyleFamily(UiStyleFamily family) {
   switch (family) {
+    case UiStyleFamily.minimalism:
+      return 'minimalism';
     case UiStyleFamily.glassmorphism:
       return 'glassmorphism';
     case UiStyleFamily.neumorphism:
       return 'neumorphism';
-    case UiStyleFamily.claymorphism:
-      return 'claymorphism';
-    case UiStyleFamily.minimalism:
-      return 'minimalism';
-    case UiStyleFamily.brutalism:
-      return 'brutalism';
-    case UiStyleFamily.skeuomorphism:
-      return 'skeuomorphism';
-    case UiStyleFamily.bentoGrid:
-      return 'bentoGrid';
-    case UiStyleFamily.responsive:
-      return 'responsive';
     case UiStyleFamily.flatDesign:
       return 'flatDesign';
   }

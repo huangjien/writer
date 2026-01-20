@@ -35,12 +35,15 @@ void main() {
           ),
         );
 
-        final container = tester.widget<AnimatedContainer>(
-          find.descendant(
-            of: find.byType(NeumorphicRadio<int>),
-            matching: find.byType(AnimatedContainer),
-          ),
-        );
+        final container = tester
+            .widgetList<AnimatedContainer>(
+              find.descendant(
+                of: find.byType(NeumorphicRadio<int>),
+                matching: find.byType(AnimatedContainer),
+              ),
+            )
+            .where((c) => c.duration == const Duration(milliseconds: 200))
+            .single;
         expect(container.constraints?.minWidth, customSize);
         expect(container.constraints?.maxWidth, customSize);
         expect(container.constraints?.minHeight, customSize);
@@ -178,15 +181,13 @@ void main() {
           ),
         );
 
-        // Find all Container widgets
-        final containers = find.descendant(
-          of: find.byType(NeumorphicRadio<int>),
-          matching: find.byType(Container),
+        expect(
+          find.descendant(
+            of: find.byType(NeumorphicRadio<int>),
+            matching: find.byType(Center),
+          ),
+          findsNothing,
         );
-
-        // There should be only one (the outer AnimatedContainer)
-        // The inner Container should not be present when not selected
-        expect(containers, findsOneWidget);
       });
 
       testWidgets('applies correct color tint when selected', (tester) async {
@@ -206,12 +207,15 @@ void main() {
           ),
         );
 
-        final decoration = tester.widget<AnimatedContainer>(
-          find.descendant(
-            of: find.byType(NeumorphicRadio<int>),
-            matching: find.byType(AnimatedContainer),
-          ),
-        );
+        final decoration = tester
+            .widgetList<AnimatedContainer>(
+              find.descendant(
+                of: find.byType(NeumorphicRadio<int>),
+                matching: find.byType(AnimatedContainer),
+              ),
+            )
+            .where((c) => c.duration == const Duration(milliseconds: 200))
+            .single;
         expect(decoration.decoration, isA<BoxDecoration>());
         final boxDecoration = decoration.decoration as BoxDecoration;
         expect(boxDecoration.color, isNotNull);
@@ -416,13 +420,17 @@ void main() {
           ),
         );
 
-        final container = tester.widget<AnimatedContainer>(
-          find.descendant(
-            of: find.byType(NeumorphicRadio<int>),
-            matching: find.byType(AnimatedContainer),
-          ),
-        );
-        expect(container.duration, const Duration(milliseconds: 200));
+        final containers = tester
+            .widgetList<AnimatedContainer>(
+              find.descendant(
+                of: find.byType(NeumorphicRadio<int>),
+                matching: find.byType(AnimatedContainer),
+              ),
+            )
+            .where((c) => c.duration == const Duration(milliseconds: 200))
+            .toList();
+
+        expect(containers, hasLength(1));
       });
 
       testWidgets('animates when selection changes', (tester) async {

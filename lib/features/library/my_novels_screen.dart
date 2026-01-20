@@ -96,26 +96,32 @@ class _NovelTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: ImageUtils.getFilteredCoverUrl(novel.coverUrl) != null
-          ? ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                ImageUtils.getFilteredCoverUrl(novel.coverUrl)!,
-                width: 48,
-                height: 48,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.menu_book),
-              ),
-            )
-          : const Icon(Icons.menu_book),
-      title: Text(novel.title),
-      subtitle: novel.author != null && novel.author!.isNotEmpty
-          ? Text(novel.author!)
-          : null,
-      trailing: const Icon(Icons.chevron_right),
-      onTap: () => context.goNamed('novel', pathParameters: {'id': novel.id}),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => context.goNamed('novel', pathParameters: {'id': novel.id}),
+        hoverColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        child: ListTile(
+          leading: ImageUtils.getFilteredCoverUrl(novel.coverUrl) != null
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    ImageUtils.getFilteredCoverUrl(novel.coverUrl)!,
+                    width: 48,
+                    height: 48,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.menu_book),
+                  ),
+                )
+              : const Icon(Icons.menu_book),
+          title: Text(novel.title),
+          subtitle: novel.author != null && novel.author!.isNotEmpty
+              ? Text(novel.author!)
+              : null,
+          trailing: const Icon(Icons.chevron_right),
+        ),
+      ),
     );
   }
 }

@@ -304,6 +304,22 @@ class LibraryItemRow extends ConsumerWidget {
     );
   }
 
+  void _downloadChapters(WidgetRef ref, String novelId) {
+    final notifier = ref.read(downloadStateProvider.notifier);
+    notifier.update((state) => <String, bool>{...state, novelId: true});
+    () async {
+      try {
+        final chapterRepository = ref.read(chapterRepositoryProvider);
+        final chapters = await chapterRepository.getChapters(novelId);
+        for (final chapter in chapters) {
+          await chapterRepository.getChapter(chapter);
+        }
+      } finally {
+        notifier.update((state) => <String, bool>{...state, novelId: false});
+      }
+    }();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final n = novel;
@@ -327,21 +343,7 @@ class LibraryItemRow extends ConsumerWidget {
           _DownloadIntent: CallbackAction<_DownloadIntent>(
             onInvoke: (_) {
               if (!canDownload) return null;
-              final notifier = ref.read(downloadStateProvider.notifier);
-              notifier.update((state) => <String, bool>{...state, n.id: true});
-              () async {
-                try {
-                  final chapterRepository = ref.read(chapterRepositoryProvider);
-                  final chapters = await chapterRepository.getChapters(n.id);
-                  for (final chapter in chapters) {
-                    await chapterRepository.getChapter(chapter);
-                  }
-                } finally {
-                  notifier.update(
-                    (state) => <String, bool>{...state, n.id: false},
-                  );
-                }
-              }();
+              _downloadChapters(ref, n.id);
               return null;
             },
           ),
@@ -369,76 +371,95 @@ class LibraryItemRow extends ConsumerWidget {
         },
         child: Focus(
           canRequestFocus: true,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(n.title),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (n.author != null) Text(n.author!),
-                if (n.description != null)
-                  Text(
-                    n.description!,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                _progressWidget(l10n, motion, lastProgressAsync, chaptersAsync),
-              ],
-            ),
-            leading: ImageUtils.getFilteredCoverUrl(n.coverUrl) != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(Radii.s),
-                    child: Image.network(
-                      ImageUtils.getFilteredCoverUrl(n.coverUrl)!,
-                      width: 48,
-                      height: 48,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        final isLoaded = loadingProgress == null;
-                        return SizedBox(
-                          width: 48,
-                          height: 48,
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              const Icon(Icons.menu_book),
-                              AnimatedOpacity(
-                                opacity: isLoaded ? 1.0 : 0.0,
-                                duration: motion.reduceMotion
-                                    ? Duration.zero
-                                    : const Duration(milliseconds: 200),
-                                curve: motion.reduceMotion
-                                    ? Curves.linear
-                                    : Curves.easeOut,
-                                child: child,
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return SizedBox(
-                          width: 48,
-                          height: 48,
-                          child: const Icon(Icons.menu_book),
-                        );
-                      },
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => context.push('/novel/${n.id}'),
+              hoverColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(Radii.s),
+              child: ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(n.title),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (n.author != null) Text(n.author!),
+                    if (n.description != null)
+                      Text(
+                        n.description!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    _progressWidget(
+                      l10n,
+                      motion,
+                      lastProgressAsync,
+                      chaptersAsync,
                     ),
-                  )
-                : const Icon(Icons.menu_book),
-            trailing: FocusTraversalGroup(
-              policy: OrderedTraversalPolicy(),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _downloadAction(l10n, canDownload, n.id, ref),
-                  _continueAction(l10n, lastProgressAsync, n.id, context),
-                  if (canRemove) const SizedBox(width: Spacing.s),
-                  _removeAction(l10n, canRemove, isSignedIn, n, context, ref),
-                ],
+                  ],
+                ),
+                leading: ImageUtils.getFilteredCoverUrl(n.coverUrl) != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(Radii.s),
+                        child: Image.network(
+                          ImageUtils.getFilteredCoverUrl(n.coverUrl)!,
+                          width: 48,
+                          height: 48,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            final isLoaded = loadingProgress == null;
+                            return SizedBox(
+                              width: 48,
+                              height: 48,
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  const Icon(Icons.menu_book),
+                                  AnimatedOpacity(
+                                    opacity: isLoaded ? 1.0 : 0.0,
+                                    duration: motion.reduceMotion
+                                        ? Duration.zero
+                                        : const Duration(milliseconds: 200),
+                                    curve: motion.reduceMotion
+                                        ? Curves.linear
+                                        : Curves.easeOut,
+                                    child: child,
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return SizedBox(
+                              width: 48,
+                              height: 48,
+                              child: const Icon(Icons.menu_book),
+                            );
+                          },
+                        ),
+                      )
+                    : const Icon(Icons.menu_book),
+                trailing: FocusTraversalGroup(
+                  policy: OrderedTraversalPolicy(),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _downloadAction(l10n, canDownload, n.id, ref),
+                      _continueAction(l10n, lastProgressAsync, n.id, context),
+                      if (canRemove) const SizedBox(width: Spacing.s),
+                      _removeAction(
+                        l10n,
+                        canRemove,
+                        isSignedIn,
+                        n,
+                        context,
+                        ref,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-            onTap: () => context.push('/novel/${n.id}'),
           ),
         ),
       ),

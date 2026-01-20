@@ -289,6 +289,13 @@ class _DrawerItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(leading: Icon(icon), title: Text(label), onTap: onTap);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        hoverColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        child: ListTile(leading: Icon(icon), title: Text(label)),
+      ),
+    );
   }
 }

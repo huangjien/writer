@@ -128,41 +128,8 @@ class StyleThemePatch {
             offset: const Offset(0, 8),
           ),
         ];
-      case UiStyleFamily.claymorphism:
-        return [
-          BoxShadow(
-            color: isDark ? const Color(0x8C000000) : const Color(0x40000000),
-            blurRadius: 40,
-            offset: const Offset(0, 18),
-          ),
-        ];
-      case UiStyleFamily.brutalism:
-        return [
-          BoxShadow(
-            color: isDark ? Colors.white : Colors.black,
-            blurRadius: 0,
-            offset: const Offset(6, 6),
-          ),
-        ];
-      case UiStyleFamily.skeuomorphism:
-        return [
-          BoxShadow(
-            color: isDark ? const Color(0xA6000000) : const Color(0x66000000),
-            blurRadius: 40,
-            offset: const Offset(0, 18),
-          ),
-        ];
-      case UiStyleFamily.bentoGrid:
-        return [
-          BoxShadow(
-            color: isDark ? const Color(0x33000000) : const Color(0x14000000),
-            blurRadius: 22,
-            offset: const Offset(0, 10),
-          ),
-        ];
       case UiStyleFamily.neumorphism:
       case UiStyleFamily.minimalism:
-      case UiStyleFamily.responsive:
       case UiStyleFamily.flatDesign:
         return null;
     }
@@ -170,18 +137,12 @@ class StyleThemePatch {
 
   double? _resolveDividerThickness() {
     switch (styleFamily) {
-      case UiStyleFamily.brutalism:
-        return 3;
       case UiStyleFamily.flatDesign:
         return 1;
       case UiStyleFamily.minimalism:
         return 0.5;
-      case UiStyleFamily.bentoGrid:
-      case UiStyleFamily.claymorphism:
       case UiStyleFamily.glassmorphism:
       case UiStyleFamily.neumorphism:
-      case UiStyleFamily.responsive:
-      case UiStyleFamily.skeuomorphism:
         return null;
     }
   }
@@ -189,18 +150,12 @@ class StyleThemePatch {
   Color? _resolveDividerColor(ThemeData base, bool isDark) {
     final cs = base.colorScheme;
     switch (styleFamily) {
-      case UiStyleFamily.brutalism:
-        return isDark ? cs.onSurface : Colors.black;
       case UiStyleFamily.flatDesign:
         return cs.outline;
       case UiStyleFamily.minimalism:
         return cs.outlineVariant;
-      case UiStyleFamily.bentoGrid:
-      case UiStyleFamily.claymorphism:
       case UiStyleFamily.glassmorphism:
       case UiStyleFamily.neumorphism:
-      case UiStyleFamily.responsive:
-      case UiStyleFamily.skeuomorphism:
         return null;
     }
   }
@@ -213,17 +168,7 @@ class StyleThemePatch {
         return cs.surface.withValues(alpha: isDark ? 0.55 : 0.75);
       case UiStyleFamily.neumorphism:
         return cs.surface;
-      case UiStyleFamily.claymorphism:
-        return cs.surfaceContainerHighest;
       case UiStyleFamily.minimalism:
-        return cs.surface;
-      case UiStyleFamily.brutalism:
-        return isDark ? cs.surface : Colors.white;
-      case UiStyleFamily.skeuomorphism:
-        return cs.surfaceContainerHighest;
-      case UiStyleFamily.bentoGrid:
-        return cs.surfaceContainer;
-      case UiStyleFamily.responsive:
         return cs.surface;
       case UiStyleFamily.flatDesign:
         return cs.surface;
@@ -237,17 +182,7 @@ class StyleThemePatch {
         return cs.surface.withValues(alpha: isDark ? 0.35 : 0.55);
       case UiStyleFamily.neumorphism:
         return cs.surface;
-      case UiStyleFamily.claymorphism:
-        return cs.surfaceContainerHighest;
       case UiStyleFamily.minimalism:
-        return cs.surface;
-      case UiStyleFamily.brutalism:
-        return isDark ? cs.surface : Colors.white;
-      case UiStyleFamily.skeuomorphism:
-        return cs.surfaceContainerHighest;
-      case UiStyleFamily.bentoGrid:
-        return cs.surfaceContainer;
-      case UiStyleFamily.responsive:
         return cs.surface;
       case UiStyleFamily.flatDesign:
         return cs.surface;
@@ -264,18 +199,8 @@ class UiStyleAdapter {
         return _glassmorphismPatch();
       case UiStyleFamily.neumorphism:
         return _neumorphismPatch();
-      case UiStyleFamily.claymorphism:
-        return _claymorphismPatch();
       case UiStyleFamily.minimalism:
         return _minimalismPatch();
-      case UiStyleFamily.brutalism:
-        return _brutalismPatch();
-      case UiStyleFamily.skeuomorphism:
-        return _skeuomorphismPatch();
-      case UiStyleFamily.bentoGrid:
-        return _bentoGridPatch();
-      case UiStyleFamily.responsive:
-        return _responsivePatch();
       case UiStyleFamily.flatDesign:
         return _flatDesignPatch();
     }
@@ -326,28 +251,6 @@ class UiStyleAdapter {
     );
   }
 
-  StyleThemePatch _claymorphismPatch() {
-    return const StyleThemePatch(
-      cardBorderRadius: BorderRadius.all(Radius.circular(24)),
-      buttonBorderRadius: BorderRadius.all(Radius.circular(20)),
-      elevation: 0,
-      useBackdropBlur: false,
-      cardShadows: [
-        BoxShadow(
-          color: Color(0x29000000),
-          blurRadius: 40,
-          offset: Offset(0, 18),
-        ),
-      ],
-      cardGradient: LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [Color(0xFFF2F4FF), Color(0xFFEEF2FF)],
-      ),
-      styleFamily: UiStyleFamily.claymorphism,
-    );
-  }
-
   StyleThemePatch _minimalismPatch() {
     return const StyleThemePatch(
       cardBorderRadius: BorderRadius.all(Radius.circular(12)),
@@ -355,69 +258,6 @@ class UiStyleAdapter {
       elevation: 0,
       useBackdropBlur: false,
       styleFamily: UiStyleFamily.minimalism,
-    );
-  }
-
-  StyleThemePatch _brutalismPatch() {
-    return StyleThemePatch(
-      cardBorderRadius: BorderRadius.zero,
-      buttonBorderRadius: BorderRadius.zero,
-      elevation: 0,
-      useBackdropBlur: false,
-      cardBorder: Border.all(color: Colors.black, width: 2),
-      cardShadows: const [
-        BoxShadow(color: Colors.black, blurRadius: 0, offset: Offset(6, 6)),
-      ],
-      styleFamily: UiStyleFamily.brutalism,
-    );
-  }
-
-  StyleThemePatch _skeuomorphismPatch() {
-    return const StyleThemePatch(
-      cardBorderRadius: BorderRadius.all(Radius.circular(16)),
-      buttonBorderRadius: BorderRadius.all(Radius.circular(12)),
-      elevation: 0,
-      useBackdropBlur: false,
-      cardShadows: [
-        BoxShadow(
-          color: Color(0x66000000),
-          blurRadius: 40,
-          offset: Offset(0, 18),
-        ),
-      ],
-      cardGradient: LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [Color(0xFFFFFFFF), Color(0xFFE7E2D4)],
-      ),
-      styleFamily: UiStyleFamily.skeuomorphism,
-    );
-  }
-
-  StyleThemePatch _bentoGridPatch() {
-    return const StyleThemePatch(
-      cardBorderRadius: BorderRadius.all(Radius.circular(22)),
-      buttonBorderRadius: BorderRadius.all(Radius.circular(16)),
-      elevation: 0,
-      useBackdropBlur: false,
-      cardShadows: [
-        BoxShadow(
-          color: Color(0x14000000),
-          blurRadius: 22,
-          offset: Offset(0, 10),
-        ),
-      ],
-      styleFamily: UiStyleFamily.bentoGrid,
-    );
-  }
-
-  StyleThemePatch _responsivePatch() {
-    return const StyleThemePatch(
-      cardBorderRadius: BorderRadius.all(Radius.circular(12)),
-      buttonBorderRadius: BorderRadius.all(Radius.circular(8)),
-      elevation: 1,
-      useBackdropBlur: false,
-      styleFamily: UiStyleFamily.responsive,
     );
   }
 

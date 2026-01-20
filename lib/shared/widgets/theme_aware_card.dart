@@ -1,10 +1,12 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/neumorphic_styles.dart';
 import '../../theme/ui_styles.dart';
 import '../../theme/theme_extensions.dart';
+import 'focus_wrapper.dart';
 
 class ThemeAwareCard extends StatelessWidget {
   const ThemeAwareCard({
@@ -88,70 +90,6 @@ class ThemeAwareCard extends StatelessWidget {
         );
         break;
 
-      case UiStyleFamily.brutalism:
-        cardContent = _buildBrutalistCard(
-          context: context,
-          child: child,
-          padding: resolvedPadding,
-          isDark: isDark,
-          styleCardBorder: styleCardBorder,
-          styleCardShadows: styleCardShadows,
-        );
-        break;
-
-      case UiStyleFamily.claymorphism:
-        cardContent = _buildClaymorphicCard(
-          context: context,
-          child: child,
-          padding: resolvedPadding,
-          borderRadius: resolvedRadius,
-          isDark: isDark,
-          elevation: resolvedElevation,
-          styleCardShadows: styleCardShadows,
-          styleCardGradient: styleCardGradient,
-        );
-        break;
-
-      case UiStyleFamily.skeuomorphism:
-        cardContent = _buildSkeuomorphicCard(
-          context: context,
-          child: child,
-          padding: resolvedPadding,
-          borderRadius: resolvedRadius,
-          isDark: isDark,
-          elevation: resolvedElevation,
-          styleCardShadows: styleCardShadows,
-          styleCardGradient: styleCardGradient,
-        );
-        break;
-
-      case UiStyleFamily.bentoGrid:
-        cardContent = _buildBentoGridCard(
-          context: context,
-          child: child,
-          padding: resolvedPadding,
-          borderRadius: resolvedRadius,
-          isDark: isDark,
-          elevation: resolvedElevation,
-          cardBlur: cardBlur,
-          useBackdropBlur: useBackdropBlur,
-          styleCardColor: styleCardColor,
-          styleCardBorder: styleCardBorder,
-          styleCardShadows: styleCardShadows,
-        );
-        break;
-
-      case UiStyleFamily.responsive:
-        cardContent = _buildStandardCard(
-          context: context,
-          child: child,
-          padding: resolvedPadding,
-          borderRadius: resolvedRadius,
-          elevation: resolvedElevation,
-          isDark: isDark,
-        );
-        break;
-
       case UiStyleFamily.flatDesign:
         cardContent = _buildFlatCard(
           context: context,
@@ -163,16 +101,47 @@ class ThemeAwareCard extends StatelessWidget {
     }
 
     if (onTap != null) {
-      return Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: resolvedRadius,
-          child: Padding(
-            padding: margin ?? EdgeInsets.zero,
-            child: cardContent,
+      final theme = Theme.of(context);
+      final clickableCard = Semantics(
+        button: true,
+        onTap: onTap,
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: Material(
+            color: Colors.transparent,
+            child: FocusableActionDetector(
+              mouseCursor: SystemMouseCursors.click,
+              shortcuts: const <ShortcutActivator, Intent>{
+                SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+                SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+              },
+              actions: <Type, Action<Intent>>{
+                ActivateIntent: CallbackAction<ActivateIntent>(
+                  onInvoke: (intent) {
+                    onTap?.call();
+                    return null;
+                  },
+                ),
+              },
+              child: InkWell(
+                onTap: onTap,
+                borderRadius: resolvedRadius,
+                splashColor: theme.colorScheme.primary.withValues(alpha: 0.2),
+                hoverColor: theme.colorScheme.primary.withValues(alpha: 0.1),
+                child: Padding(
+                  padding: margin ?? EdgeInsets.zero,
+                  child: cardContent,
+                ),
+              ),
+            ),
           ),
         ),
+      );
+
+      return FocusWrapper(
+        enabled: true,
+        borderRadius: resolvedRadius,
+        child: clickableCard,
       );
     }
 
@@ -295,161 +264,6 @@ class ThemeAwareCard extends StatelessWidget {
     );
   }
 
-  Widget _buildBrutalistCard({
-    required BuildContext context,
-    required Widget child,
-    required EdgeInsetsGeometry padding,
-    required bool isDark,
-    Border? styleCardBorder,
-    List<BoxShadow>? styleCardShadows,
-  }) {
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: padding,
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        border:
-            styleCardBorder ??
-            Border.all(
-              color: isDark ? Colors.white24 : Colors.black87,
-              width: 2,
-            ),
-        boxShadow: styleCardShadows,
-      ),
-      child: child,
-    );
-  }
-
-  Widget _buildStandardCard({
-    required BuildContext context,
-    required Widget child,
-    required EdgeInsetsGeometry padding,
-    required BorderRadius borderRadius,
-    required double elevation,
-    required bool isDark,
-    List<BoxShadow>? styleCardShadows,
-  }) {
-    final defaultShadows = [
-      BoxShadow(
-        color: isDark
-            ? AppColors.shadowColor.withValues(alpha: 0.3)
-            : AppColors.shadowColor,
-        blurRadius: elevation * 2,
-        offset: Offset(0, elevation),
-      ),
-    ];
-
-    return Container(
-      padding: padding,
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: borderRadius,
-        boxShadow: styleCardShadows ?? defaultShadows,
-      ),
-      child: child,
-    );
-  }
-
-  Widget _buildClaymorphicCard({
-    required BuildContext context,
-    required Widget child,
-    required EdgeInsetsGeometry padding,
-    required BorderRadius borderRadius,
-    required bool isDark,
-    required double elevation,
-    List<BoxShadow>? styleCardShadows,
-    LinearGradient? styleCardGradient,
-  }) {
-    final theme = Theme.of(context);
-    final neumorphicDecoration = NeumorphicStyles.decoration(
-      isDark: isDark,
-      borderRadius: borderRadius,
-      depth: elevation * 5,
-    );
-
-    final gradient =
-        styleCardGradient ??
-        LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            isDark ? theme.cardColor.withValues(alpha: 0.9) : theme.cardColor,
-            isDark
-                ? theme.cardColor.withValues(alpha: 0.7)
-                : theme.cardColor.withValues(alpha: 0.95),
-          ],
-        );
-
-    return Container(
-      padding: padding,
-      decoration: BoxDecoration(
-        gradient: gradient,
-        borderRadius: borderRadius,
-        boxShadow: styleCardShadows ?? neumorphicDecoration.boxShadow,
-      ),
-      child: child,
-    );
-  }
-
-  Widget _buildBentoGridCard({
-    required BuildContext context,
-    required Widget child,
-    required EdgeInsetsGeometry padding,
-    required BorderRadius borderRadius,
-    required bool isDark,
-    required double elevation,
-    required double cardBlur,
-    required bool useBackdropBlur,
-    Color? styleCardColor,
-    Border? styleCardBorder,
-    List<BoxShadow>? styleCardShadows,
-  }) {
-    final surfaceColor =
-        styleCardColor ??
-        (isDark ? AppColors.glassSurfaceDark : AppColors.glassSurfaceLight);
-    final borderColor =
-        styleCardBorder ??
-        Border.all(
-          color: isDark
-              ? AppColors.glassBorderDark
-              : AppColors.glassBorderLight,
-        );
-
-    final defaultShadows = [
-      BoxShadow(
-        color: isDark
-            ? Colors.black.withValues(alpha: 0.2)
-            : Colors.black.withValues(alpha: 0.05),
-        blurRadius: elevation * 3,
-        offset: Offset(0, elevation),
-      ),
-    ];
-
-    final card = Container(
-      padding: padding,
-      decoration: BoxDecoration(
-        color: surfaceColor,
-        borderRadius: borderRadius,
-        border: borderColor,
-        boxShadow: styleCardShadows ?? defaultShadows,
-      ),
-      child: child,
-    );
-
-    if (useBackdropBlur) {
-      return ClipRRect(
-        borderRadius: borderRadius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: cardBlur, sigmaY: cardBlur),
-          child: card,
-        ),
-      );
-    }
-
-    return ClipRRect(borderRadius: borderRadius, child: card);
-  }
-
   Widget _buildFlatCard({
     required BuildContext context,
     required Widget child,
@@ -463,37 +277,6 @@ class ThemeAwareCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: borderRadius,
-      ),
-      child: child,
-    );
-  }
-
-  Widget _buildSkeuomorphicCard({
-    required BuildContext context,
-    required Widget child,
-    required EdgeInsetsGeometry padding,
-    required BorderRadius borderRadius,
-    required bool isDark,
-    required double elevation,
-    List<BoxShadow>? styleCardShadows,
-    LinearGradient? styleCardGradient,
-  }) {
-    final theme = Theme.of(context);
-
-    final gradient =
-        styleCardGradient ??
-        LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [theme.cardColor, theme.cardColor.withValues(alpha: 0.9)],
-        );
-
-    return Container(
-      padding: padding,
-      decoration: BoxDecoration(
-        gradient: gradient,
-        borderRadius: borderRadius,
-        boxShadow: styleCardShadows,
       ),
       child: child,
     );

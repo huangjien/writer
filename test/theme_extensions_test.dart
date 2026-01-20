@@ -13,13 +13,13 @@ void main() {
       );
 
       final updated = base.copyWith(
-        styleFamily: UiStyleFamily.brutalism,
+        styleFamily: UiStyleFamily.flatDesign,
         useBackdropBlur: true,
         cardBlur: 10,
         cardColor: Colors.red,
       );
 
-      expect(updated.styleFamily, UiStyleFamily.brutalism);
+      expect(updated.styleFamily, UiStyleFamily.flatDesign);
       expect(updated.useBackdropBlur, isTrue);
       expect(updated.cardBlur, 10);
       expect(updated.cardColor, Colors.red);
@@ -62,7 +62,7 @@ void main() {
   group('ThemeDataExtensions', () {
     test('defaults when extension is missing', () {
       final theme = ThemeData.light();
-      expect(theme.uiStyleFamily, UiStyleFamily.glassmorphism);
+      expect(theme.uiStyleFamily, UiStyleFamily.minimalism);
       expect(theme.useBackdropBlur, isFalse);
       expect(theme.cardBlur, 0);
       expect(theme.styleCardColor, isNull);
@@ -75,7 +75,7 @@ void main() {
       final theme = ThemeData.light().copyWith(
         extensions: const <ThemeExtension<dynamic>>[
           UiStyleThemeExtension(
-            styleFamily: UiStyleFamily.brutalism,
+            styleFamily: UiStyleFamily.flatDesign,
             useBackdropBlur: true,
             cardBlur: 12,
             cardColor: Colors.green,
@@ -83,7 +83,7 @@ void main() {
         ],
       );
 
-      expect(theme.uiStyleFamily, UiStyleFamily.brutalism);
+      expect(theme.uiStyleFamily, UiStyleFamily.flatDesign);
       expect(theme.useBackdropBlur, isTrue);
       expect(theme.cardBlur, 12);
       expect(theme.styleCardColor, Colors.green);

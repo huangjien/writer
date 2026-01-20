@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/neumorphic_styles.dart';
+import 'focus_wrapper.dart';
 
 class NeumorphicCheckbox extends StatelessWidget {
   const NeumorphicCheckbox({
@@ -25,31 +27,67 @@ class NeumorphicCheckbox extends StatelessWidget {
 
     final effectiveActiveColor = activeColor ?? theme.colorScheme.primary;
 
-    return GestureDetector(
+    final checkbox = Semantics(
+      toggled: value,
+      enabled: isEnabled,
       onTap: isEnabled ? () => onChanged?.call(!value) : null,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: size,
-        height: size,
-        decoration:
-            NeumorphicStyles.decoration(
-              isDark: isDark,
-              isPressed: true, // Concave look like the switch track
-              borderRadius: BorderRadius.circular(Radii.s),
-              depth: 2,
-              color: value ? effectiveActiveColor.withValues(alpha: 0.1) : null,
-            ).copyWith(
-              border: Border.all(
-                color: isDark
-                    ? Colors.black.withValues(alpha: 0.5)
-                    : Colors.white.withValues(alpha: 0.7),
-                width: 1,
-              ),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: isEnabled ? () => onChanged?.call(!value) : null,
+        child: FocusableActionDetector(
+          enabled: isEnabled,
+          mouseCursor: isEnabled
+              ? SystemMouseCursors.click
+              : SystemMouseCursors.forbidden,
+          shortcuts: const <ShortcutActivator, Intent>{
+            SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+            SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+          },
+          actions: <Type, Action<Intent>>{
+            ActivateIntent: CallbackAction<ActivateIntent>(
+              onInvoke: (intent) {
+                onChanged?.call(!value);
+                return null;
+              },
             ),
-        child: value
-            ? Icon(Icons.check, size: size * 0.7, color: effectiveActiveColor)
-            : null,
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: size,
+            height: size,
+            decoration:
+                NeumorphicStyles.decoration(
+                  isDark: isDark,
+                  isPressed: true,
+                  borderRadius: BorderRadius.circular(Radii.s),
+                  depth: 2,
+                  color: value
+                      ? effectiveActiveColor.withValues(alpha: 0.1)
+                      : null,
+                ).copyWith(
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.black.withValues(alpha: 0.5)
+                        : Colors.white.withValues(alpha: 0.7),
+                    width: 1,
+                  ),
+                ),
+            child: value
+                ? Icon(
+                    Icons.check,
+                    size: size * 0.7,
+                    color: effectiveActiveColor,
+                  )
+                : null,
+          ),
+        ),
       ),
+    );
+
+    return FocusWrapper(
+      enabled: isEnabled,
+      borderRadius: BorderRadius.circular(Radii.s),
+      child: checkbox,
     );
   }
 }

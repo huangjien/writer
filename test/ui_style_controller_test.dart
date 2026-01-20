@@ -14,7 +14,7 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     final controller = UiStyleController(prefs);
 
-    expect(controller.state.family, UiStyleFamily.glassmorphism);
+    expect(controller.state.family, UiStyleFamily.minimalism);
   });
 
   testWidgets('UiStyleController loads persisted style', (tester) async {
@@ -32,10 +32,10 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     final controller = UiStyleController(prefs);
 
-    await controller.setStyle(UiStyleFamily.claymorphism);
+    await controller.setStyle(UiStyleFamily.flatDesign);
 
-    expect(controller.state.family, UiStyleFamily.claymorphism);
-    expect(prefs.getString('ui_style_family'), 'claymorphism');
+    expect(controller.state.family, UiStyleFamily.flatDesign);
+    expect(prefs.getString('ui_style_family'), 'flatDesign');
   });
 
   testWidgets('UiStyleController setStyle notifies listeners', (tester) async {
@@ -57,14 +57,9 @@ void main() {
     final controller = UiStyleController(prefs);
 
     final styles = [
+      UiStyleFamily.minimalism,
       UiStyleFamily.glassmorphism,
       UiStyleFamily.neumorphism,
-      UiStyleFamily.claymorphism,
-      UiStyleFamily.minimalism,
-      UiStyleFamily.brutalism,
-      UiStyleFamily.skeuomorphism,
-      UiStyleFamily.bentoGrid,
-      UiStyleFamily.responsive,
       UiStyleFamily.flatDesign,
     ];
 
@@ -74,9 +69,7 @@ void main() {
     }
   });
 
-  testWidgets('UiStyleController uses glassmorphism as fallback', (
-    tester,
-  ) async {
+  testWidgets('UiStyleController uses minimalism as fallback', (tester) async {
     SharedPreferences.setMockInitialValues({
       'ui_style_family': 'invalid_style',
     });
@@ -84,6 +77,6 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     final controller = UiStyleController(prefs);
 
-    expect(controller.state.family, UiStyleFamily.glassmorphism);
+    expect(controller.state.family, UiStyleFamily.minimalism);
   });
 }

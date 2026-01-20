@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/features/library/widgets/library_loading_list.dart';
+import 'package:writer/shared/widgets/loading/skeleton_list_items.dart';
 
 void main() {
   testWidgets('LibraryLoadingList shows skeleton items', (tester) async {
@@ -17,7 +18,6 @@ void main() {
     );
     await tester.pump();
     expect(find.text('Loading novels…'), findsOneWidget);
-    expect(find.byType(ListTile), findsNWidgets(6));
-    expect(find.byType(CircularProgressIndicator), findsWidgets);
+    expect(find.byType(LibraryItemRowSkeleton), findsNWidgets(6));
   });
 }

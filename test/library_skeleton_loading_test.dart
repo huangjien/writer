@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/shared/widgets/loading/skeleton_list_items.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/storage_service_provider.dart';
@@ -55,8 +56,8 @@ void main() {
 
     // Skeleton header and placeholder tiles visible
     expect(find.text('Loading novels…'), findsOneWidget);
-    final tiles = find.byType(ListTile);
-    expect(tiles, findsNWidgets(6));
+    final placeholders = find.byType(LibraryItemRowSkeleton);
+    expect(placeholders, findsNWidgets(6));
 
     // After delay, actual content shows
     await tester.pumpAndSettle(const Duration(seconds: 2));

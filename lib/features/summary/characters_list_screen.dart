@@ -7,6 +7,8 @@ import '../../models/character_note.dart';
 import 'package:writer/repositories/notes_repository.dart';
 import 'package:writer/shared/api_exception.dart';
 import '../../state/providers.dart';
+import '../../shared/widgets/loading/skeleton_list_items.dart';
+import '../../shared/widgets/error_state.dart';
 
 class CharactersListScreen extends ConsumerStatefulWidget {
   const CharactersListScreen({super.key, required this.novelId});
@@ -92,9 +94,14 @@ class _CharactersListScreenState extends ConsumerState<CharactersListScreen> {
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: ListView.builder(
+                itemCount: 5,
+                itemBuilder: (context, index) => const CharacterItemSkeleton(),
+              ),
+            )
           : _error != null
-          ? Center(child: Text(_error!))
+          ? ErrorState(message: _error!, onRetry: _load)
           : ListView.separated(
               padding: const EdgeInsets.all(16),
               itemBuilder: (ctx, i) {
@@ -103,63 +110,72 @@ class _CharactersListScreenState extends ConsumerState<CharactersListScreen> {
                 final subtitle =
                     it.characterSummaries ?? it.characterSynopses ?? '';
                 final firstLine = subtitle.split('\n').first.trim();
-                return ListTile(
-                  title: Text(title),
-                  subtitle: firstLine.isEmpty
-                      ? null
-                      : Text(
-                          firstLine,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () {
-                          context.push(
-                            '/novel/${widget.novelId}/characters/${it.idx}',
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () async {
-                          final ok = await showDialog<bool>(
-                            context: context,
-                            builder: (d) => AlertDialog(
-                              title: Text(l10n.deleteCharacterTitle),
-                              content: Text(l10n.confirmDeleteGeneric),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(d, false),
-                                  child: Text(l10n.cancel),
-                                ),
-                                FilledButton(
-                                  onPressed: () => Navigator.pop(d, true),
-                                  child: Text(l10n.delete),
-                                ),
-                              ],
+                return Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      context.push(
+                        '/novel/${widget.novelId}/characters/${it.idx}',
+                      );
+                    },
+                    hoverColor: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
+                    child: ListTile(
+                      title: Text(title),
+                      subtitle: firstLine.isEmpty
+                          ? null
+                          : Text(
+                              firstLine,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          );
-                          if (ok == true) {
-                            final repo = ref.read(notesRepositoryProvider);
-                            // Deleting by ID if possible, but existing used idx.
-                            // NotesRepository has deleteCharacterNoteByIdx.
-                            if (ref.read(isSignedInProvider)) {
-                              await repo.deleteCharacterNoteByIdx(
-                                widget.novelId,
-                                it.idx,
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              context.push(
+                                '/novel/${widget.novelId}/characters/${it.idx}',
                               );
-                            }
-                            // Also delete local? Local is empty now.
-                            // await ref.read(localStorageRepositoryProvider).deleteCharacterNoteByIdx...
-                            await _load();
-                          }
-                        },
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () async {
+                              final ok = await showDialog<bool>(
+                                context: context,
+                                builder: (d) => AlertDialog(
+                                  title: Text(l10n.deleteCharacterTitle),
+                                  content: Text(l10n.confirmDeleteGeneric),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(d, false),
+                                      child: Text(l10n.cancel),
+                                    ),
+                                    FilledButton(
+                                      onPressed: () => Navigator.pop(d, true),
+                                      child: Text(l10n.delete),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (ok == true) {
+                                final repo = ref.read(notesRepositoryProvider);
+                                if (ref.read(isSignedInProvider)) {
+                                  await repo.deleteCharacterNoteByIdx(
+                                    widget.novelId,
+                                    it.idx,
+                                  );
+                                }
+                                await _load();
+                              }
+                            },
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 );
               },

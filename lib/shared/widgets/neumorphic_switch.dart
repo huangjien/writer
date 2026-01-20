@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../theme/neumorphic_styles.dart';
+import 'focus_wrapper.dart';
 
 class NeumorphicSwitch extends StatelessWidget {
   const NeumorphicSwitch({
@@ -20,7 +22,6 @@ class NeumorphicSwitch extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Track dimensions
     const width = 56.0;
     const height = 32.0;
     const padding = 4.0;
@@ -28,50 +29,83 @@ class NeumorphicSwitch extends StatelessWidget {
 
     final effectiveActiveColor = activeColor ?? theme.colorScheme.primary;
 
-    return GestureDetector(
+    final switchWidget = Semantics(
+      toggled: value,
+      enabled: isEnabled,
       onTap: isEnabled ? () => onChanged?.call(!value) : null,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: width,
-        height: height,
-        padding: const EdgeInsets.all(padding),
-        decoration:
-            NeumorphicStyles.decoration(
-              isDark: isDark,
-              isPressed: true, // Concave track
-              borderRadius: BorderRadius.circular(height / 2),
-              depth: 2, // Shallower depth for switch track
-              color: value ? effectiveActiveColor.withValues(alpha: 0.1) : null,
-            ).copyWith(
-              // Ensure we have a border for definition
-              border: Border.all(
-                color: isDark
-                    ? Colors.black.withValues(alpha: 0.5)
-                    : Colors.white.withValues(alpha: 0.7),
-                width: 1,
-              ),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: isEnabled ? () => onChanged?.call(!value) : null,
+        child: FocusableActionDetector(
+          enabled: isEnabled,
+          mouseCursor: isEnabled
+              ? SystemMouseCursors.click
+              : SystemMouseCursors.forbidden,
+          shortcuts: const <ShortcutActivator, Intent>{
+            SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+            SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+          },
+          actions: <Type, Action<Intent>>{
+            ActivateIntent: CallbackAction<ActivateIntent>(
+              onInvoke: (intent) {
+                onChanged?.call(!value);
+                return null;
+              },
             ),
-        child: Stack(
-          children: [
-            AnimatedAlign(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeInOut,
-              alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-              child: Container(
-                width: thumbSize,
-                height: thumbSize,
-                decoration: NeumorphicStyles.decoration(
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: width,
+            height: height,
+            padding: const EdgeInsets.all(padding),
+            decoration:
+                NeumorphicStyles.decoration(
                   isDark: isDark,
-                  isPressed: false, // Convex thumb
-                  shape: BoxShape.circle,
-                  depth: 3,
-                  color: value ? effectiveActiveColor : null,
+                  isPressed: true,
+                  borderRadius: BorderRadius.circular(height / 2),
+                  depth: 2,
+                  color: value
+                      ? effectiveActiveColor.withValues(alpha: 0.1)
+                      : null,
+                ).copyWith(
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.black.withValues(alpha: 0.5)
+                        : Colors.white.withValues(alpha: 0.7),
+                    width: 1,
+                  ),
                 ),
-              ),
+            child: Stack(
+              children: [
+                AnimatedAlign(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  alignment: value
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                  child: Container(
+                    width: thumbSize,
+                    height: thumbSize,
+                    decoration: NeumorphicStyles.decoration(
+                      isDark: isDark,
+                      isPressed: false,
+                      shape: BoxShape.circle,
+                      depth: 3,
+                      color: value ? effectiveActiveColor : null,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
+    );
+
+    return FocusWrapper(
+      enabled: isEnabled,
+      borderRadius: BorderRadius.circular(height / 2),
+      child: switchWidget,
     );
   }
 }
