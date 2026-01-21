@@ -78,11 +78,11 @@ void main() {
             ),
             aiChatUiProvider.overrideWith((_) => AiChatUiNotifier()),
           ],
-          child: MaterialApp(
-            locale: const Locale('en'),
+          child: const MaterialApp(
+            locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const Scaffold(body: AiChatSidebar()),
+            home: Scaffold(body: AiChatSidebar()),
           ),
         ),
       );
@@ -116,11 +116,11 @@ void main() {
             ),
             aiChatUiProvider.overrideWith((_) => AiChatUiNotifier()),
           ],
-          child: MaterialApp(
-            locale: const Locale('en'),
+          child: const MaterialApp(
+            locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const Scaffold(body: AiChatSidebar()),
+            home: Scaffold(body: AiChatSidebar()),
           ),
         ),
       );

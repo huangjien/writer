@@ -30,11 +30,11 @@ void main() {
               (ref) => MockNovelRepository(),
             ),
           ],
-          child: MaterialApp(
-            locale: const Locale('en'),
+          child: const MaterialApp(
+            locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const CreateNovelScreen(),
+            home: CreateNovelScreen(),
           ),
         ),
       );
@@ -62,11 +62,11 @@ void main() {
               (ref) => MockNovelRepository(),
             ),
           ],
-          child: MaterialApp(
-            locale: const Locale('en'),
+          child: const MaterialApp(
+            locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const CreateNovelScreen(),
+            home: CreateNovelScreen(),
           ),
         ),
       );
@@ -113,11 +113,11 @@ void main() {
               (ref) => MockNovelRepository(),
             ),
           ],
-          child: MaterialApp(
-            locale: const Locale('en'),
+          child: const MaterialApp(
+            locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const CreateNovelScreen(),
+            home: CreateNovelScreen(),
           ),
         ),
       );
@@ -156,11 +156,11 @@ void main() {
               (ref) => MockNovelRepository(),
             ),
           ],
-          child: MaterialApp(
-            locale: const Locale('en'),
+          child: const MaterialApp(
+            locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const CreateNovelScreen(),
+            home: CreateNovelScreen(),
           ),
         ),
       );
@@ -204,11 +204,11 @@ void main() {
             sessionProvider.overrideWith((_) => session),
             novelRepositoryProvider.overrideWith((ref) => mockRepo),
           ],
-          child: MaterialApp(
-            locale: const Locale('en'),
+          child: const MaterialApp(
+            locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const CreateNovelScreen(),
+            home: CreateNovelScreen(),
           ),
         ),
       );
@@ -251,11 +251,11 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [sessionProvider.overrideWith((_) => session)],
-          child: MaterialApp(
-            locale: const Locale('en'),
+          child: const MaterialApp(
+            locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const CreateNovelScreen(),
+            home: CreateNovelScreen(),
           ),
         ),
       );
@@ -283,11 +283,11 @@ void main() {
               (ref) => MockNovelRepository(),
             ),
           ],
-          child: MaterialApp(
-            locale: const Locale('zh'),
+          child: const MaterialApp(
+            locale: Locale('zh'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const CreateNovelScreen(),
+            home: CreateNovelScreen(),
           ),
         ),
       );

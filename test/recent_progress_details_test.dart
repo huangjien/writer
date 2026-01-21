@@ -14,7 +14,7 @@ void main() {
       ttsCharIndex: 0,
       updatedAt: DateTime.utc(2024, 1, 1),
     );
-    final n = Novel(
+    final n = const Novel(
       id: 'n',
       title: 'T',
       author: 'A',

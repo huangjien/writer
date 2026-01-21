@@ -34,11 +34,11 @@ void main() {
             (_) => MotionSettingsNotifier(prefs),
           ),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const SettingsScreen(),
+          home: SettingsScreen(),
         ),
       ),
     );
@@ -68,11 +68,11 @@ void main() {
             (_) => MotionSettingsNotifier(prefs),
           ),
         ],
-        child: MaterialApp(
-          locale: const Locale('zh'),
+        child: const MaterialApp(
+          locale: Locale('zh'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const SettingsScreen(),
+          home: SettingsScreen(),
         ),
       ),
     );

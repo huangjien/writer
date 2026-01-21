@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:writer/models/prompt.dart';
+import 'package:writer/common/errors/failures.dart';
 import 'package:writer/services/prompts_service.dart';
 import 'package:writer/screens/prompts_list_screen.dart';
 import 'package:writer/screens/prompt_form_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/shared/api_exception.dart';
+import 'package:writer/shared/widgets/error_state.dart';
 
 class FakePromptsService extends PromptsService {
   FakePromptsService() : super(baseUrl: 'http://test');
@@ -105,6 +107,21 @@ class TrackingPromptsService extends FakePromptsService {
   }
 }
 
+class FlakyPromptsService extends FakePromptsService {
+  int fetchCalls = 0;
+  bool failFirstFetch = true;
+
+  @override
+  Future<List<Prompt>> fetchPrompts({bool? isPublic}) async {
+    fetchCalls++;
+    lastFetchIsPublic = isPublic;
+    if (failFirstFetch && fetchCalls == 1) {
+      throw const NetworkFailure();
+    }
+    return prompts;
+  }
+}
+
 void main() {
   testWidgets('PromptsListScreen renders items and badges', (tester) async {
     final svc = FakePromptsService();
@@ -154,6 +171,43 @@ void main() {
     await tester.pump();
     expect(find.textContaining('ApiException'), findsOneWidget);
   });
+
+  testWidgets(
+    'PromptsListScreen shows error state for network failures and retries',
+    (tester) async {
+      final svc = FlakyPromptsService();
+      svc.prompts = [
+        Prompt(
+          id: '1',
+          userId: 'u1',
+          promptKey: 'system.beta.male',
+          language: 'en',
+          content: 'A',
+          isPublic: false,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: PromptsListScreen(service: svc),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ErrorState), findsOneWidget);
+      expect(find.text('AppFailure: No internet connection'), findsOneWidget);
+      expect(find.text('Retry'), findsOneWidget);
+
+      await tester.tap(find.text('Retry'));
+      await tester.pumpAndSettle();
+
+      expect(svc.fetchCalls, greaterThanOrEqualTo(2));
+      expect(find.byType(ErrorState), findsNothing);
+      expect(find.text('system.beta.male'), findsOneWidget);
+    },
+  );
 
   testWidgets('Admin toggle switches public view', (tester) async {
     final svc = FakePromptsService();

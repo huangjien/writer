@@ -26,9 +26,9 @@ class SessionSection extends StatelessWidget {
         ],
       );
     }
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [SizedBox(height: Spacing.m)],
+      children: [SizedBox(height: Spacing.m)],
     );
   }
 }

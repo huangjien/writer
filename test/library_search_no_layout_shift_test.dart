@@ -56,10 +56,10 @@ void main() {
           memberNovelsProvider.overrideWith((ref) async => const []),
           libraryNovelsProvider.overrideWith((ref) async => novels),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const LibraryScreen(),
+          home: LibraryScreen(),
         ),
       ),
     );

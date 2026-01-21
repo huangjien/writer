@@ -6,8 +6,8 @@ void main() {
   group('PressScale', () {
     testWidgets('renders child widget', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: PressScale(child: const Text('Test Child'))),
+        const MaterialApp(
+          home: Scaffold(body: PressScale(child: Text('Test Child'))),
         ),
       );
 
@@ -65,8 +65,8 @@ void main() {
 
     testWidgets('uses default duration value', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: const PressScale(child: Text('Test Child'))),
+        const MaterialApp(
+          home: Scaffold(body: PressScale(child: Text('Test Child'))),
         ),
       );
 
@@ -76,9 +76,9 @@ void main() {
 
     testWidgets('uses custom duration value', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const PressScale(
+            body: PressScale(
               duration: Duration(milliseconds: 200),
               child: Text('Test Child'),
             ),
@@ -92,8 +92,8 @@ void main() {
 
     testWidgets('uses default curve value', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: const PressScale(child: Text('Test Child'))),
+        const MaterialApp(
+          home: Scaffold(body: PressScale(child: Text('Test Child'))),
         ),
       );
 
@@ -103,9 +103,9 @@ void main() {
 
     testWidgets('uses custom curve value', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const PressScale(
+            body: PressScale(
               curve: Curves.easeInOut,
               child: Text('Test Child'),
             ),
@@ -119,8 +119,8 @@ void main() {
 
     testWidgets('uses default enabled value', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: const PressScale(child: Text('Test Child'))),
+        const MaterialApp(
+          home: Scaffold(body: PressScale(child: Text('Test Child'))),
         ),
       );
 
@@ -130,9 +130,9 @@ void main() {
 
     testWidgets('uses custom enabled value', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const PressScale(enabled: false, child: Text('Test Child')),
+            body: PressScale(enabled: false, child: Text('Test Child')),
           ),
         ),
       );
@@ -164,8 +164,8 @@ void main() {
 
     testWidgets('wraps Icon widget', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: const PressScale(child: Icon(Icons.star))),
+        const MaterialApp(
+          home: Scaffold(body: PressScale(child: Icon(Icons.star))),
         ),
       );
 
@@ -278,9 +278,9 @@ void main() {
 
     testWidgets('does not scale when disabled', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const PressScale(enabled: false, child: Text('Test Child')),
+            body: PressScale(enabled: false, child: Text('Test Child')),
           ),
         ),
       );
@@ -291,8 +291,8 @@ void main() {
 
     testWidgets('uses Listener when no callbacks provided', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: const PressScale(child: Text('Test Child'))),
+        const MaterialApp(
+          home: Scaffold(body: PressScale(child: Text('Test Child'))),
         ),
       );
 
@@ -315,7 +315,7 @@ void main() {
 
     testWidgets('preserves child widget properties', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: PressScale(
               child: Text(
@@ -438,8 +438,8 @@ void main() {
 
     testWidgets('AnimatedOpacity is used for animation', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: const PressScale(child: Text('Test Child'))),
+        const MaterialApp(
+          home: Scaffold(body: PressScale(child: Text('Test Child'))),
         ),
       );
 
@@ -641,7 +641,7 @@ void main() {
           home: Scaffold(
             body: TapBump(
               onTap: () {},
-              child: Text(
+              child: const Text(
                 'Styled Text',
                 style: TextStyle(
                   fontSize: 24,

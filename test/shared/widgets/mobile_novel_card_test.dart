@@ -7,7 +7,7 @@ import 'package:writer/shared/widgets/gestures/swipe_actions.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final mockNovel = Novel(
+  final mockNovel = const Novel(
     id: '1',
     title: 'Test Novel Title',
     author: 'Test Author',
@@ -234,7 +234,7 @@ void main() {
     });
 
     testWidgets('handles novel without author', (tester) async {
-      final novelWithoutAuthor = Novel(
+      final novelWithoutAuthor = const Novel(
         id: '2',
         title: 'Novel Without Author',
         description: 'Description',
@@ -254,7 +254,7 @@ void main() {
     });
 
     testWidgets('handles long title truncation', (tester) async {
-      final longTitleNovel = Novel(
+      final longTitleNovel = const Novel(
         id: '3',
         title:
             'This is a very long title that should be truncated properly in the card display',
@@ -458,7 +458,7 @@ void main() {
     testWidgets('Multiple MobileNovelCards in list', (tester) async {
       final novels = [
         mockNovel,
-        Novel(
+        const Novel(
           id: '2',
           title: 'Second Novel',
           author: 'Second Author',

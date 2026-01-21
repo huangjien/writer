@@ -29,7 +29,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: AppLifecycleMonitor(),
+          child: const AppLifecycleMonitor(),
         ),
       );
 
@@ -40,11 +40,13 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: AppLifecycleMonitor(child: Container(key: Key('test-child'))),
+          child: AppLifecycleMonitor(
+            child: Container(key: const Key('test-child')),
+          ),
         ),
       );
 
-      expect(find.byKey(Key('test-child')), findsOneWidget);
+      expect(find.byKey(const Key('test-child')), findsOneWidget);
     });
 
     testWidgets('should start sync monitoring on initialization', (
@@ -53,7 +55,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: AppLifecycleMonitor(),
+          child: const AppLifecycleMonitor(),
         ),
       );
 
@@ -64,7 +66,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: AppLifecycleMonitor(),
+          child: const AppLifecycleMonitor(),
         ),
       );
 
@@ -83,7 +85,7 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: AppLifecycleMonitor(),
+            child: const AppLifecycleMonitor(),
           ),
         );
 
@@ -102,7 +104,7 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: AppLifecycleMonitor(),
+            child: const AppLifecycleMonitor(),
           ),
         );
 
@@ -125,7 +127,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: containerWithoutSync,
-          child: AppLifecycleMonitor(),
+          child: const AppLifecycleMonitor(),
         ),
       );
 
@@ -141,7 +143,7 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: AppLifecycleMonitor(),
+            child: const AppLifecycleMonitor(),
           ),
         );
 
@@ -153,7 +155,7 @@ void main() {
     });
 
     testWidgets('should build child widget when provided', (tester) async {
-      final childWidget = Container(key: Key('test-child-text'));
+      final childWidget = Container(key: const Key('test-child-text'));
 
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -162,14 +164,14 @@ void main() {
         ),
       );
 
-      expect(find.byKey(Key('test-child-text')), findsOneWidget);
+      expect(find.byKey(const Key('test-child-text')), findsOneWidget);
     });
 
     testWidgets('should build SizedBox when no child provided', (tester) async {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: AppLifecycleMonitor(),
+          child: const AppLifecycleMonitor(),
         ),
       );
 
@@ -199,7 +201,7 @@ void main() {
                 syncServiceProvider.overrideWithValue(mockSyncService),
               ],
             ),
-            child: AppLifecycleMonitor(),
+            child: const AppLifecycleMonitor(),
           ),
         );
 
@@ -222,7 +224,7 @@ void main() {
       );
 
       // Create and dispose quickly
-      final widget = AppLifecycleMonitor();
+      final widget = const AppLifecycleMonitor();
       await tester.pumpWidget(
         UncontrolledProviderScope(container: testContainer, child: widget),
       );
@@ -246,7 +248,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: testContainer,
-          child: AppLifecycleMonitor(),
+          child: const AppLifecycleMonitor(),
         ),
       );
 
@@ -257,7 +259,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: testContainer,
-          child: AppLifecycleMonitor(),
+          child: const AppLifecycleMonitor(),
         ),
       );
       await tester.pumpWidget(Container());
@@ -288,7 +290,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: AppLifecycleMonitor(),
+          child: const AppLifecycleMonitor(),
         ),
       );
 
@@ -298,7 +300,7 @@ void main() {
       // Simulate app resuming
       tester.binding.defaultBinaryMessenger.handlePlatformMessage(
         'flutter/lifecycle',
-        StringCodec().encodeMessage('AppLifecycleState.resumed'),
+        const StringCodec().encodeMessage('AppLifecycleState.resumed'),
         (data) {},
       );
       await tester.pump();
@@ -311,7 +313,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: AppLifecycleMonitor(),
+          child: const AppLifecycleMonitor(),
         ),
       );
 
@@ -321,7 +323,7 @@ void main() {
       // Simulate app pausing
       tester.binding.defaultBinaryMessenger.handlePlatformMessage(
         'flutter/lifecycle',
-        StringCodec().encodeMessage('AppLifecycleState.paused'),
+        const StringCodec().encodeMessage('AppLifecycleState.paused'),
         (data) {},
       );
       await tester.pump();
@@ -336,7 +338,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: AppLifecycleMonitor(),
+          child: const AppLifecycleMonitor(),
         ),
       );
 
@@ -346,7 +348,7 @@ void main() {
       // Simulate app becoming inactive
       tester.binding.defaultBinaryMessenger.handlePlatformMessage(
         'flutter/lifecycle',
-        StringCodec().encodeMessage('AppLifecycleState.inactive'),
+        const StringCodec().encodeMessage('AppLifecycleState.inactive'),
         (data) {},
       );
       await tester.pump();
@@ -359,7 +361,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: AppLifecycleMonitor(),
+          child: const AppLifecycleMonitor(),
         ),
       );
 
@@ -369,7 +371,7 @@ void main() {
       // Simulate app being hidden
       tester.binding.defaultBinaryMessenger.handlePlatformMessage(
         'flutter/lifecycle',
-        StringCodec().encodeMessage('AppLifecycleState.hidden'),
+        const StringCodec().encodeMessage('AppLifecycleState.hidden'),
         (data) {},
       );
       await tester.pump();
@@ -382,7 +384,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: AppLifecycleMonitor(),
+          child: const AppLifecycleMonitor(),
         ),
       );
 
@@ -392,7 +394,7 @@ void main() {
       // Simulate app being detached
       tester.binding.defaultBinaryMessenger.handlePlatformMessage(
         'flutter/lifecycle',
-        StringCodec().encodeMessage('AppLifecycleState.detached'),
+        const StringCodec().encodeMessage('AppLifecycleState.detached'),
         (data) {},
       );
       await tester.pump();
@@ -407,7 +409,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: AppLifecycleMonitor(),
+          child: const AppLifecycleMonitor(),
         ),
       );
 
@@ -417,21 +419,21 @@ void main() {
       // Simulate lifecycle sequence: resume -> pause -> resume
       tester.binding.defaultBinaryMessenger.handlePlatformMessage(
         'flutter/lifecycle',
-        StringCodec().encodeMessage('AppLifecycleState.resumed'),
+        const StringCodec().encodeMessage('AppLifecycleState.resumed'),
         (data) {},
       );
       await tester.pump();
 
       tester.binding.defaultBinaryMessenger.handlePlatformMessage(
         'flutter/lifecycle',
-        StringCodec().encodeMessage('AppLifecycleState.paused'),
+        const StringCodec().encodeMessage('AppLifecycleState.paused'),
         (data) {},
       );
       await tester.pump();
 
       tester.binding.defaultBinaryMessenger.handlePlatformMessage(
         'flutter/lifecycle',
-        StringCodec().encodeMessage('AppLifecycleState.resumed'),
+        const StringCodec().encodeMessage('AppLifecycleState.resumed'),
         (data) {},
       );
       await tester.pump();

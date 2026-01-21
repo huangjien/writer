@@ -36,7 +36,7 @@ class ManualMockAuthRedirectService implements AuthRedirectService {
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(AsyncValue.data(null));
+    registerFallbackValue(const AsyncValue.data(null));
     registerFallbackValue(ProviderContainer());
   });
 

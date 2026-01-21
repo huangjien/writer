@@ -14,10 +14,10 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: ListView(
-              children: const [
-                LibraryItemRowSkeleton(),
-                LibraryItemRowSkeleton(),
-                LibraryItemRowSkeleton(),
+              children: [
+                LibraryItemRowSkeleton(key: UniqueKey()),
+                LibraryItemRowSkeleton(key: UniqueKey()),
+                LibraryItemRowSkeleton(key: UniqueKey()),
               ],
             ),
           ),
@@ -38,11 +38,233 @@ void main() {
       );
     });
 
+    testWidgets('LibraryItemRowSkeleton builds expected placeholders', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: LibraryItemRowSkeleton(key: UniqueKey())),
+        ),
+      );
+
+      final shimmer = tester.widget<ShimmerSkeleton>(
+        find.byType(ShimmerSkeleton),
+      );
+      expect(shimmer.enabled, isTrue);
+
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 80 && w.height == 120,
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 200 && w.height == 24,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('LibraryGridItemSkeleton builds expected placeholders', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: LibraryGridItemSkeleton(key: UniqueKey())),
+        ),
+      );
+
+      expect(find.byType(ShimmerSkeleton), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 120 && w.height == 180,
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 100 && w.height == 20,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('PatternItemSkeleton builds expected placeholders', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: PatternItemSkeleton(key: UniqueKey())),
+        ),
+      );
+
+      expect(find.byType(ShimmerSkeleton), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 150 && w.height == 20,
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 40 && w.height == 20,
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 80 && w.height == 36,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('StoryLineItemSkeleton builds expected placeholders', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: StoryLineItemSkeleton(key: UniqueKey())),
+        ),
+      );
+
+      expect(find.byType(ShimmerSkeleton), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 150 && w.height == 20,
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 80 && w.height == 36,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('PromptItemSkeleton builds expected placeholders', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: PromptItemSkeleton(key: UniqueKey())),
+        ),
+      );
+
+      expect(find.byType(ShimmerSkeleton), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 100 && w.height == 20,
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 40 && w.height == 20,
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 80 && w.height == 36,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('ChapterItemSkeleton builds expected placeholders', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: ChapterItemSkeleton(key: UniqueKey())),
+        ),
+      );
+
+      expect(find.byType(ShimmerSkeleton), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 30 && w.height == 30,
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 150 && w.height == 20,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('CharacterItemSkeleton builds expected placeholders', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: CharacterItemSkeleton(key: UniqueKey())),
+        ),
+      );
+
+      expect(find.byType(ShimmerSkeleton), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 200 && w.height == 24,
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 300 && w.height == 16,
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 250 && w.height == 16,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('SceneItemSkeleton builds expected placeholders', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: SceneItemSkeleton(key: UniqueKey())),
+        ),
+      );
+
+      expect(find.byType(ShimmerSkeleton), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 200 && w.height == 24,
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 300 && w.height == 16,
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SizedBox && w.width == 250 && w.height == 16,
+        ),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('Skeleton loading state shows correct placeholder', (
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: const LoadingState())),
+        MaterialApp(
+          home: Scaffold(body: LoadingState(key: UniqueKey())),
+        ),
       );
 
       expect(
@@ -67,7 +289,7 @@ void main() {
             body: ListView(
               children: List.generate(
                 itemCount,
-                (index) => const LibraryItemRowSkeleton(),
+                (index) => LibraryItemRowSkeleton(key: UniqueKey()),
               ),
             ),
           ),
@@ -88,9 +310,9 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const LoadingStory(
+            body: LoadingStory(
               stories: ['Loading...', 'Please wait...', 'Almost there...'],
             ),
           ),
@@ -117,10 +339,10 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: ListView(
-              children: const [
-                LibraryItemRowSkeleton(),
-                LibraryItemRowSkeleton(),
-                LibraryItemRowSkeleton(),
+              children: [
+                LibraryItemRowSkeleton(key: UniqueKey()),
+                LibraryItemRowSkeleton(key: UniqueKey()),
+                LibraryItemRowSkeleton(key: UniqueKey()),
               ],
             ),
           ),
@@ -157,7 +379,9 @@ void main() {
 
     testWidgets('Skeleton loading uses shimmer animation', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: const LibraryItemRowSkeleton())),
+        MaterialApp(
+          home: Scaffold(body: LibraryItemRowSkeleton(key: UniqueKey())),
+        ),
       );
 
       await tester.pump();
@@ -177,7 +401,7 @@ void main() {
         MaterialApp(
           home: MediaQuery(
             data: const MediaQueryData(disableAnimations: true),
-            child: Scaffold(body: const LibraryItemRowSkeleton()),
+            child: Scaffold(body: LibraryItemRowSkeleton(key: UniqueKey())),
           ),
         ),
       );
@@ -194,7 +418,9 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: const LibraryItemRowSkeleton())),
+        MaterialApp(
+          home: Scaffold(body: LibraryItemRowSkeleton(key: UniqueKey())),
+        ),
       );
 
       await tester.pump();

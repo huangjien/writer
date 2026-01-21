@@ -28,11 +28,11 @@ void main() {
     _ThrowOnceWidget.thrown = false;
 
     await tester.pumpWidget(
-      MaterialApp(
-        locale: const Locale('en'),
+      const MaterialApp(
+        locale: Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const Scaffold(body: ErrorBoundary(child: _ThrowOnceWidget())),
+        home: Scaffold(body: ErrorBoundary(child: _ThrowOnceWidget())),
       ),
     );
 

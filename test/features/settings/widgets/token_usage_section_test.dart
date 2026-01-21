@@ -15,10 +15,10 @@ void main() {
             (ref) => Future.delayed(const Duration(seconds: 1), () => null),
           ),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: TokenUsageSection()),
+          home: Scaffold(body: TokenUsageSection()),
         ),
       ),
     );
@@ -39,10 +39,10 @@ void main() {
         overrides: [
           currentMonthUsageProvider.overrideWith((ref) => Future.value(null)),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: TokenUsageSection()),
+          home: Scaffold(body: TokenUsageSection()),
         ),
       ),
     );
@@ -71,10 +71,10 @@ void main() {
         overrides: [
           currentMonthUsageProvider.overrideWith((ref) => Future.value(usage)),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: TokenUsageSection()),
+          home: Scaffold(body: TokenUsageSection()),
         ),
       ),
     );
@@ -98,10 +98,10 @@ void main() {
             (ref) => Future.error('Network Error'),
           ),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: TokenUsageSection()),
+          home: Scaffold(body: TokenUsageSection()),
         ),
       ),
     );

@@ -211,7 +211,7 @@ class _CharacterTemplatesScreenState
                       controller: _descController,
                       decoration: InputDecoration(
                         hintText: l10n.markdownHint,
-                        border: OutlineInputBorder(),
+                        border: const OutlineInputBorder(),
                       ),
                       maxLines: null,
                       expands: true,

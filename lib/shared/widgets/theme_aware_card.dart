@@ -141,6 +141,7 @@ class ThemeAwareCard extends StatelessWidget {
       return FocusWrapper(
         enabled: true,
         borderRadius: resolvedRadius,
+        onActivate: onTap,
         child: clickableCard,
       );
     }

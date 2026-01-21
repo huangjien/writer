@@ -19,8 +19,20 @@ void main() {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
 
     final chapters = [
-      Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'Ch1', content: 'A'),
-      Chapter(id: 'c2', novelId: 'n1', idx: 2, title: 'Ch2', content: 'B'),
+      const Chapter(
+        id: 'c1',
+        novelId: 'n1',
+        idx: 1,
+        title: 'Ch1',
+        content: 'A',
+      ),
+      const Chapter(
+        id: 'c2',
+        novelId: 'n1',
+        idx: 2,
+        title: 'Ch2',
+        content: 'B',
+      ),
     ];
 
     final motion = MotionSettingsNotifier.lazy();

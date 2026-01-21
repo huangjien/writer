@@ -72,7 +72,7 @@ void main() {
   testWidgets('SnowflakeCoachWidget loads history on init and shows result', (
     tester,
   ) async {
-    fakeService.historyResponse = SnowflakeRefinementOutput(
+    fakeService.historyResponse = const SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Refined summary',
       status: 'question',
@@ -110,7 +110,7 @@ void main() {
   testWidgets('SnowflakeCoachWidget handles input and submission', (
     tester,
   ) async {
-    fakeService.historyResponse = SnowflakeRefinementOutput(
+    fakeService.historyResponse = const SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Refined summary',
       status: 'question',
@@ -166,7 +166,7 @@ void main() {
   testWidgets('SnowflakeCoachWidget handles refined status completion', (
     tester,
   ) async {
-    fakeService.historyResponse = SnowflakeRefinementOutput(
+    fakeService.historyResponse = const SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Final refined summary',
       status: 'refined',
@@ -193,7 +193,7 @@ void main() {
   testWidgets('SnowflakeCoachWidget shows suggestions when available', (
     tester,
   ) async {
-    fakeService.historyResponse = SnowflakeRefinementOutput(
+    fakeService.historyResponse = const SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Refined summary',
       status: 'question',
@@ -219,7 +219,7 @@ void main() {
   testWidgets(
     'SnowflakeCoachWidget populates text field when suggestion tapped',
     (tester) async {
-      fakeService.historyResponse = SnowflakeRefinementOutput(
+      fakeService.historyResponse = const SnowflakeRefinementOutput(
         novelId: '123',
         summaryContent: 'Refined summary',
         status: 'question',
@@ -246,7 +246,7 @@ void main() {
   );
 
   testWidgets('SnowflakeCoachWidget shows message history', (tester) async {
-    fakeService.historyResponse = SnowflakeRefinementOutput(
+    fakeService.historyResponse = const SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Refined summary',
       status: 'question',
@@ -274,7 +274,7 @@ void main() {
     tester,
   ) async {
     // Set up history response for initial widget load
-    fakeService.historyResponse = SnowflakeRefinementOutput(
+    fakeService.historyResponse = const SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Updated summary',
       status: 'refined',
@@ -321,7 +321,7 @@ void main() {
     tester,
   ) async {
     // Set up history with a question to show the text field
-    fakeService.historyResponse = SnowflakeRefinementOutput(
+    fakeService.historyResponse = const SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Refined summary',
       status: 'question',
@@ -331,7 +331,7 @@ void main() {
       suggestions: [],
     );
 
-    fakeService.response = SnowflakeRefinementOutput(
+    fakeService.response = const SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Refined summary with user input',
       status: 'refined',
@@ -363,7 +363,7 @@ void main() {
     tester,
   ) async {
     // Set up response for when analyze is clicked
-    fakeService.response = SnowflakeRefinementOutput(
+    fakeService.response = const SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Refined summary',
       status: 'question',
@@ -460,7 +460,7 @@ void main() {
 
     // Fix the service and retry
     fakeService.shouldFail = false;
-    fakeService.response = SnowflakeRefinementOutput(
+    fakeService.response = const SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Success summary',
       status: 'refined',
@@ -485,7 +485,7 @@ void main() {
     'SnowflakeCoachWidget shows critique when refined and has critique',
     (tester) async {
       // Set up history with refined status and critique
-      fakeService.historyResponse = SnowflakeRefinementOutput(
+      fakeService.historyResponse = const SnowflakeRefinementOutput(
         novelId: '123',
         summaryContent: 'Final summary',
         status: 'refined',
@@ -512,7 +512,7 @@ void main() {
   testWidgets('SnowflakeCoachWidget hides input area when refined', (
     tester,
   ) async {
-    fakeService.response = SnowflakeRefinementOutput(
+    fakeService.response = const SnowflakeRefinementOutput(
       novelId: '123',
       summaryContent: 'Final summary',
       status: 'refined',

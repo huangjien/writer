@@ -29,7 +29,7 @@ void main() {
           overrides: [
             themeControllerProvider.overrideWith((_) => themeController),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(

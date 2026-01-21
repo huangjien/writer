@@ -97,10 +97,10 @@ void main() {
           ),
           isAdminProvider.overrideWith((ref) => false),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const SettingsScreen(),
+          home: SettingsScreen(),
         ),
       ),
     );
@@ -200,10 +200,10 @@ void main() {
           ),
           isAdminProvider.overrideWith((ref) => false),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const SettingsScreen(),
+          home: SettingsScreen(),
         ),
       ),
     );
@@ -300,10 +300,10 @@ void main() {
                 ),
                 isAdminProvider.overrideWith((ref) => false),
               ],
-              child: MaterialApp(
+              child: const MaterialApp(
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
                 supportedLocales: AppLocalizations.supportedLocales,
-                home: const SettingsScreen(),
+                home: SettingsScreen(),
               ),
             ),
           );
@@ -418,10 +418,10 @@ void main() {
           ),
           isAdminProvider.overrideWith((ref) => true),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const SettingsScreen(),
+          home: SettingsScreen(),
         ),
       ),
     );

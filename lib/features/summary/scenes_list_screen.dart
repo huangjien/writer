@@ -110,66 +110,74 @@ class _ScenesListScreenState extends ConsumerState<ScenesListScreen> {
                 final firstLine = subtitle.split('\n').first.trim();
                 return Material(
                   color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {
-                      context.push('/novel/${widget.novelId}/scenes/${it.idx}');
-                    },
-                    hoverColor: Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainerHighest,
-                    child: ListTile(
-                      title: Text(title),
-                      subtitle: firstLine.isEmpty
-                          ? null
-                          : Text(
-                              firstLine,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: InkWell(
+                      onTap: () {
+                        context.push(
+                          '/novel/${widget.novelId}/scenes/${it.idx}',
+                        );
+                      },
+                      hoverColor: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
+                      child: ListTile(
+                        title: Text(title),
+                        subtitle: firstLine.isEmpty
+                            ? null
+                            : Text(
+                                firstLine,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () {
+                                context.push(
+                                  '/novel/${widget.novelId}/scenes/${it.idx}',
+                                );
+                              },
                             ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () {
-                              context.push(
-                                '/novel/${widget.novelId}/scenes/${it.idx}',
-                              );
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () async {
-                              final ok = await showDialog<bool>(
-                                context: context,
-                                builder: (d) => AlertDialog(
-                                  title: Text(l10n.deleteSceneTitle),
-                                  content: Text(l10n.confirmDeleteGeneric),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(d, false),
-                                      child: Text(l10n.cancel),
-                                    ),
-                                    FilledButton(
-                                      onPressed: () => Navigator.pop(d, true),
-                                      child: Text(l10n.delete),
-                                    ),
-                                  ],
-                                ),
-                              );
-                              if (ok == true) {
-                                final repo = ref.read(notesRepositoryProvider);
-                                if (ref.read(isSignedInProvider)) {
-                                  await repo.deleteSceneNoteByIdx(
-                                    widget.novelId,
-                                    it.idx,
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () async {
+                                final ok = await showDialog<bool>(
+                                  context: context,
+                                  builder: (d) => AlertDialog(
+                                    title: Text(l10n.deleteSceneTitle),
+                                    content: Text(l10n.confirmDeleteGeneric),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(d, false),
+                                        child: Text(l10n.cancel),
+                                      ),
+                                      FilledButton(
+                                        onPressed: () => Navigator.pop(d, true),
+                                        child: Text(l10n.delete),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                if (ok == true) {
+                                  final repo = ref.read(
+                                    notesRepositoryProvider,
                                   );
+                                  if (ref.read(isSignedInProvider)) {
+                                    await repo.deleteSceneNoteByIdx(
+                                      widget.novelId,
+                                      it.idx,
+                                    );
+                                  }
+                                  await _load();
                                 }
-                                await _load();
-                              }
-                            },
-                          ),
-                        ],
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

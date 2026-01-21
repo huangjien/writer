@@ -85,7 +85,7 @@ void main() {
 
       testWidgets('renders with null onChanged', (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: NeumorphicRadio<int>(
                 value: 1,
@@ -290,7 +290,7 @@ void main() {
       testWidgets('does not call onChanged when null', (tester) async {
         bool wasCalled = false;
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: NeumorphicRadio<int>(
                 value: 1,

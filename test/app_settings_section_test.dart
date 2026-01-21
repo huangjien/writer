@@ -30,11 +30,11 @@ void main() {
           motionSettingsProvider.overrideWith((_) => motion),
           aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(
+          home: Scaffold(
             body: SingleChildScrollView(child: AppSettingsSection()),
           ),
         ),

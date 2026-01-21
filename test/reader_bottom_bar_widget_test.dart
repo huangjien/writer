@@ -6,10 +6,10 @@ import 'package:writer/l10n/app_localizations.dart';
 void main() {
   testWidgets('ReaderBottomBar shows progress percent', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(
+      const MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const Scaffold(
+        home: Scaffold(
           body: ReaderBottomBar(
             canEdit: false,
             editMode: false,

@@ -14,8 +14,8 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 360,
             height: 640,
             child: Scaffold(body: LoadingState(message: 'Loading...')),
@@ -40,8 +40,8 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 390,
             height: 844,
             child: Scaffold(body: LoadingState(message: 'Loading...')),
@@ -57,8 +57,8 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 414,
             height: 896,
             child: Scaffold(body: LoadingState(message: 'Loading...')),
@@ -74,8 +74,8 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 768,
             height: 1024,
             child: Scaffold(body: LoadingState(message: 'Loading...')),
@@ -91,8 +91,8 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 1200,
             height: 800,
             child: Scaffold(body: LoadingState(message: 'Loading...')),
@@ -106,8 +106,8 @@ void main() {
 
     testWidgets('LoadingState skeleton mode on small mobile', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 360,
             height: 640,
             child: Scaffold(body: LoadingState(useSkeleton: true)),
@@ -120,8 +120,8 @@ void main() {
 
     testWidgets('LoadingState skeleton mode on desktop', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 1200,
             height: 800,
             child: Scaffold(body: LoadingState(useSkeleton: true)),
@@ -134,8 +134,8 @@ void main() {
 
     testWidgets('LoadingState with stories on small mobile', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 360,
             height: 640,
             child: Scaffold(
@@ -154,8 +154,8 @@ void main() {
 
     testWidgets('LoadingState with steps on small mobile', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 360,
             height: 640,
             child: Scaffold(
@@ -170,8 +170,8 @@ void main() {
 
     testWidgets('LoadingState custom size on small mobile', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 360,
             height: 640,
             child: Scaffold(body: LoadingState(size: 32.0)),
@@ -191,8 +191,8 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 360,
             height: 640,
             child: Scaffold(body: LoadingState(message: 'Loading...')),
@@ -216,8 +216,8 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 360,
             height: 640,
             child: Scaffold(body: LoadingState(message: 'Loading...')),
@@ -241,7 +241,7 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: SizedBox(
               width: 360,
@@ -269,8 +269,8 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 360,
             height: 640,
             child: Scaffold(
@@ -293,8 +293,8 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 360,
             height: 640,
             child: Scaffold(body: LoadingState(useSkeleton: true)),
@@ -337,11 +337,11 @@ void main() {
   group('LibraryLoadingList Responsive Tests', () {
     testWidgets('LibraryLoadingList displays on small mobile', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('en'),
+        const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const SizedBox(
+          home: SizedBox(
             width: 360,
             height: 640,
             child: Scaffold(body: LibraryLoadingList()),
@@ -355,11 +355,11 @@ void main() {
 
     testWidgets('LibraryLoadingList displays on desktop', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('en'),
+        const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const SizedBox(
+          home: SizedBox(
             width: 1200,
             height: 800,
             child: Scaffold(body: LibraryLoadingList()),
@@ -375,15 +375,11 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('en'),
+        const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const SizedBox(
-            width: 360,
-            height: 640,
-            child: LibraryLoadingList(),
-          ),
+          home: SizedBox(width: 360, height: 640, child: LibraryLoadingList()),
         ),
       );
 
@@ -400,15 +396,11 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('en'),
+        const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const SizedBox(
-            width: 360,
-            height: 640,
-            child: LibraryLoadingList(),
-          ),
+          home: SizedBox(width: 360, height: 640, child: LibraryLoadingList()),
         ),
       );
 
@@ -426,8 +418,8 @@ void main() {
   group('LoadingState Accessibility Tests', () {
     testWidgets('LoadingState has semantic label', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 360,
             height: 640,
             child: Scaffold(body: LoadingState(message: 'Loading...')),
@@ -440,8 +432,8 @@ void main() {
 
     testWidgets('LoadingState progress indicator is focusable', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 360,
             height: 640,
             child: Scaffold(body: LoadingState(message: 'Loading...')),
@@ -454,8 +446,8 @@ void main() {
 
     testWidgets('LoadingState has high contrast color', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SizedBox(
+        const MaterialApp(
+          home: SizedBox(
             width: 360,
             height: 640,
             child: Scaffold(body: LoadingState(message: 'Loading...')),
@@ -482,7 +474,7 @@ class _LayoutShiftTestWidgetState extends State<_LayoutShiftTestWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        LoadingState(message: 'Loading...'),
+        const LoadingState(message: 'Loading...'),
         ElevatedButton(
           onPressed: () {
             setState(() {});

@@ -50,11 +50,11 @@ void main() {
           }),
           lastProgressProvider.overrideWith((ref, novelId) async => null),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const LibraryScreen(),
+          home: LibraryScreen(),
         ),
       ),
     );
@@ -133,11 +133,11 @@ void main() {
             );
           }),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const LibraryScreen(),
+          home: LibraryScreen(),
         ),
       ),
     );

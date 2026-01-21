@@ -55,10 +55,10 @@ void main() {
           chaptersProvider.overrideWith((ref, novelId) async => const []),
           lastProgressProvider.overrideWith((ref, novelId) async => null),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const LibraryScreen(),
+          home: LibraryScreen(),
         ),
       ),
     );

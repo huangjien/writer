@@ -186,12 +186,15 @@ class _StylePreviewCard extends StatelessWidget {
       selected: isSelected,
       label: uiStyleDisplayName(style, context),
       onTap: onTap,
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          decoration: decoration,
-          child: previewContent,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            decoration: decoration,
+            child: previewContent,
+          ),
         ),
       ),
     );

@@ -16,11 +16,11 @@ void main() {
         overrides: [
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const ChapterReaderScreen(
+          home: ChapterReaderScreen(
             chapterId: 'c1',
             title: 'Snack Test',
             content: 'Hello world.',

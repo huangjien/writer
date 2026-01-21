@@ -21,11 +21,11 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [sessionProvider.overrideWith((_) => session)],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const CreateNovelScreen(),
+          home: CreateNovelScreen(),
         ),
       ),
     );

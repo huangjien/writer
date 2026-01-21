@@ -25,11 +25,11 @@ void main() {
           appSettingsProvider.overrideWith((_) => app),
           ttsSettingsProvider.overrideWith((ref) => tts),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(
+          home: Scaffold(
             body: SingleChildScrollView(child: TtsSettingsContainer()),
           ),
         ),

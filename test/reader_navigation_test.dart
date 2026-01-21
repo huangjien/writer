@@ -45,11 +45,11 @@ void main() {
             currentUserProvider.overrideWith((ref) async => null),
             chaptersProvider.overrideWith((ref, novelId) async => chapters),
           ],
-          child: MaterialApp(
-            locale: const Locale('en'),
+          child: const MaterialApp(
+            locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const ReaderScreen(novelId: 'n1'),
+            home: ReaderScreen(novelId: 'n1'),
           ),
         ),
       );

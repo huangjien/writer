@@ -111,8 +111,8 @@ void main() {
           lastProgressProvider.overrideWith((ref, id) async => null),
           chaptersProvider.overrideWith((ref, id) async => []),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
@@ -172,8 +172,8 @@ void main() {
           lastProgressProvider.overrideWith((ref, id) async => progress),
           chaptersProvider.overrideWith((ref, id) async => chapters),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
@@ -209,9 +209,9 @@ void main() {
     );
 
     await tester.pumpWidget(
-      ProviderScope(
+      const ProviderScope(
         child: MaterialApp(
-          locale: const Locale('en'),
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
@@ -255,8 +255,8 @@ void main() {
           lib_providers.downloadFeatureFlagProvider.overrideWithValue(true),
           chapterRepositoryProvider.overrideWithValue(repo),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
@@ -706,9 +706,9 @@ void main() {
     );
 
     await tester.pumpWidget(
-      ProviderScope(
+      const ProviderScope(
         child: MaterialApp(
-          locale: const Locale('en'),
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
@@ -750,8 +750,8 @@ void main() {
           lastProgressProvider.overrideWith((ref, id) async => null),
           chaptersProvider.overrideWith((ref, id) async => []),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
@@ -789,9 +789,9 @@ void main() {
     );
 
     await tester.pumpWidget(
-      ProviderScope(
+      const ProviderScope(
         child: MaterialApp(
-          locale: const Locale('en'),
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
@@ -839,8 +839,8 @@ void main() {
           lastProgressProvider.overrideWith((ref, id) async => progress),
           chaptersProvider.overrideWith((ref, id) async => []),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(

@@ -11,7 +11,7 @@ import 'package:writer/models/novel.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final novel = Novel(
+  final novel = const Novel(
     id: '123',
     title: 'Test Novel',
     languageCode: 'en',
@@ -46,7 +46,7 @@ void main() {
   testWidgets('LibraryGridItem renders image when coverUrl is present', (
     tester,
   ) async {
-    final novelWithCover = Novel(
+    final novelWithCover = const Novel(
       id: '124',
       title: 'Cover Novel',
       coverUrl: 'https://example.com/cover.jpg',

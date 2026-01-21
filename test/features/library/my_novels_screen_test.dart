@@ -33,11 +33,11 @@ void main() {
               (ref) => SessionNotifier(storageService),
             ),
           ],
-          child: MaterialApp(
-            locale: const Locale('en'),
+          child: const MaterialApp(
+            locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MyNovelsScreen(),
+            home: MyNovelsScreen(),
           ),
         ),
       );
@@ -66,11 +66,11 @@ void main() {
             sessionProvider.overrideWith((ref) => sessionNotifier),
             memberNovelsProvider.overrideWith((ref) async => const []),
           ],
-          child: MaterialApp(
-            locale: const Locale('en'),
+          child: const MaterialApp(
+            locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MyNovelsScreen(),
+            home: MyNovelsScreen(),
           ),
         ),
       );
@@ -116,11 +116,11 @@ void main() {
             sessionProvider.overrideWith((ref) => sessionNotifier),
             memberNovelsProvider.overrideWith((ref) async => novels),
           ],
-          child: MaterialApp(
-            locale: const Locale('en'),
+          child: const MaterialApp(
+            locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MyNovelsScreen(),
+            home: MyNovelsScreen(),
           ),
         ),
       );
@@ -152,11 +152,11 @@ void main() {
               return Future.delayed(const Duration(seconds: 1), () => []);
             }),
           ],
-          child: MaterialApp(
-            locale: const Locale('en'),
+          child: const MaterialApp(
+            locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MyNovelsScreen(),
+            home: MyNovelsScreen(),
           ),
         ),
       );

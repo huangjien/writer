@@ -78,10 +78,10 @@ void main() {
             return ref.watch(mockLastProgressProvider(novelId).future);
           }),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const LibraryScreen(),
+          home: LibraryScreen(),
         ),
       ),
     );

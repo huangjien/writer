@@ -122,27 +122,27 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
     MobileBottomSheet.showActionSheet(
       context: context,
       items: [
-        ActionSheetItem(
+        const ActionSheetItem(
           label: 'Character Templates',
           icon: Icons.person,
           value: 'characters',
         ),
-        ActionSheetItem(
+        const ActionSheetItem(
           label: 'Scene Templates',
           icon: Icons.movie,
           value: 'scenes',
         ),
-        ActionSheetItem(
+        const ActionSheetItem(
           label: 'Prompts',
           icon: Icons.chat_bubble,
           value: 'prompts',
         ),
-        ActionSheetItem(
+        const ActionSheetItem(
           label: 'Patterns',
           icon: Icons.auto_awesome,
           value: 'patterns',
         ),
-        ActionSheetItem(
+        const ActionSheetItem(
           label: 'Story Lines',
           icon: Icons.timeline,
           value: 'storylines',
@@ -155,12 +155,12 @@ class _MobileLibraryScreenState extends ConsumerState<MobileLibraryScreen> {
     MobileBottomSheet.showActionSheet(
       context: context,
       items: [
-        ActionSheetItem(
+        const ActionSheetItem(
           label: 'Settings',
           icon: Icons.settings,
           value: 'settings',
         ),
-        ActionSheetItem(label: 'About', icon: Icons.info, value: 'about'),
+        const ActionSheetItem(label: 'About', icon: Icons.info, value: 'about'),
       ],
     );
   }

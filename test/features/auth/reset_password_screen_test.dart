@@ -44,15 +44,15 @@ class MockSessionNotifier extends SessionNotifier {
 void main() {
   testWidgets('ResetPasswordScreen shows fields', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
+      const ProviderScope(
         child: MaterialApp(
-          localizationsDelegates: const [
+          localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('en')],
+          supportedLocales: [Locale('en')],
           home: ResetPasswordScreen(),
         ),
       ),
@@ -66,15 +66,15 @@ void main() {
 
   testWidgets('ResetPasswordScreen validates match', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
+      const ProviderScope(
         child: MaterialApp(
-          localizationsDelegates: const [
+          localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('en')],
+          supportedLocales: [Locale('en')],
           home: ResetPasswordScreen(),
         ),
       ),

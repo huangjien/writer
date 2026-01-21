@@ -218,7 +218,7 @@ class _ActionButton extends StatelessWidget {
     final buttonColor = color ?? theme.colorScheme.primary;
 
     if (isLoading) {
-      return SizedBox(
+      return const SizedBox(
         width: MobileSpacing.touchTargetMin,
         height: MobileSpacing.touchTargetMin,
         child: Center(

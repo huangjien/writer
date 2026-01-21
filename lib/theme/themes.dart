@@ -186,12 +186,12 @@ ThemeData _buildFromSeed(Color seed, Brightness brightness) {
         ),
       ),
     ),
-    iconButtonTheme: IconButtonThemeData(
+    iconButtonTheme: const IconButtonThemeData(
       style: ButtonStyle(
-        minimumSize: const WidgetStatePropertyAll(
+        minimumSize: WidgetStatePropertyAll(
           Size(MobileSpacing.touchTargetMin, MobileSpacing.touchTargetMin),
         ),
-        padding: const WidgetStatePropertyAll(EdgeInsets.all(Spacing.s)),
+        padding: WidgetStatePropertyAll(EdgeInsets.all(Spacing.s)),
       ),
     ),
     checkboxTheme: CheckboxThemeData(
@@ -237,7 +237,7 @@ ThemeData _buildFromSeed(Color seed, Brightness brightness) {
     bottomSheetTheme: BottomSheetThemeData(
       showDragHandle: true,
       backgroundColor: cs.surface,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(Radii.l)),
       ),
     ),

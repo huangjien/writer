@@ -35,7 +35,7 @@ class App extends ConsumerWidget {
       themeState = ref.watch(themeControllerProvider);
     } catch (_) {
       // Fallback for tests that don't override themeControllerProvider
-      themeState = ThemeState(
+      themeState = const ThemeState(
         mode: ThemeMode.system,
         family: AppThemeFamily.defaultFamily,
         hasSeparateDark: false,

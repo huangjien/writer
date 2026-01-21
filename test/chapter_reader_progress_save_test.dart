@@ -62,11 +62,11 @@ void main() {
           currentUserProvider.overrideWith((ref) async => null),
           ttsSettingsProvider.overrideWith((_) => ttsSettings),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const ChapterReaderScreen(
+          home: ChapterReaderScreen(
             chapterId: 'c1',
             title: 'Progress',
             content: 'Hello world. This is a chapter.',

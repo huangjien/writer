@@ -33,7 +33,7 @@ class MockNovelRepository extends Mock implements NovelRepository {}
 void main() {
   setUpAll(() {
     registerFallbackValue(
-      Chapter(
+      const Chapter(
         id: 'fallback',
         novelId: 'fallback',
         idx: 0,

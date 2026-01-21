@@ -133,10 +133,10 @@ void main() {
             true,
           ), // Mock signed-in state for download test
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const LibraryScreen(),
+          home: LibraryScreen(),
         ),
       ),
     );

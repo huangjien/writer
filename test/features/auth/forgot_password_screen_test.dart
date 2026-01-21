@@ -12,9 +12,9 @@ import 'package:writer/shared/widgets/neumorphic_button.dart';
 void main() {
   testWidgets('ForgotPasswordScreen shows fields', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
+      const ProviderScope(
         child: MaterialApp(
-          locale: const Locale('en'),
+          locale: Locale('en'),
           localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,

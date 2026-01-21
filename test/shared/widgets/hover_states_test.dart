@@ -39,11 +39,11 @@ void main() {
 
     testWidgets('shows forbidden cursor when disabled', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: NeumorphicButton(
               onPressed: null,
-              child: const Text('Disabled Button'),
+              child: Text('Disabled Button'),
             ),
           ),
         ),
@@ -119,7 +119,7 @@ void main() {
 
     testWidgets('shows forbidden cursor when disabled', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: NeumorphicSwitch(
               value: false,
@@ -169,7 +169,7 @@ void main() {
 
     testWidgets('shows forbidden cursor when disabled', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: NeumorphicCheckbox(
               value: false,
@@ -223,7 +223,7 @@ void main() {
 
     testWidgets('shows forbidden cursor when disabled', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: NeumorphicRadio<String>(
               value: 'a',
@@ -277,10 +277,8 @@ void main() {
 
     testWidgets('does not add InkWell when onTap is null', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ThemeAwareCard(child: const Text('Static Card')),
-          ),
+        const MaterialApp(
+          home: Scaffold(body: ThemeAwareCard(child: Text('Static Card'))),
         ),
       );
 

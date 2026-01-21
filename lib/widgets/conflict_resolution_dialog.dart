@@ -167,7 +167,7 @@ class _ConflictResolutionDialogState
             ],
           ),
           const SizedBox(height: 8),
-          Text('Preview:', style: const TextStyle(fontWeight: FontWeight.bold)),
+          const Text('Preview:', style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
           Container(
             padding: const EdgeInsets.all(8),

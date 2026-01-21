@@ -90,7 +90,6 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
 
     return Column(
       children: [
-        // Preview/Edit tabs
         TabBar(
           controller: _sentenceTabController,
           tabs: [
@@ -104,87 +103,57 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
             child: TabBarView(
               controller: _sentenceTabController,
               children: [
-                // Preview
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: SelectableText(
-                    _sentenceController.text.isEmpty
-                        ? l10n.noSentenceSummary
-                        : _sentenceController.text,
-                    style: const TextStyle(fontSize: 16),
-                  ),
+                _SummaryPreviewPanel(
+                  text: _sentenceController.text,
+                  emptyText: l10n.noSentenceSummary,
                 ),
-                // Edit
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          key: const Key('sentence_summary_field'),
-                          controller: _sentenceController,
-                          decoration: InputDecoration(
-                            labelText: l10n.sentenceSummary,
-                            border: const OutlineInputBorder(),
-                            suffixIcon: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                AppButtons.icon(
-                                  iconData: summaryState.showSentenceCoach
-                                      ? Icons.auto_awesome
-                                      : Icons.auto_awesome_outlined,
-                                  color:
-                                      summaryState.showSentenceCoach ||
-                                          summaryState.sentenceAiSatisfied
-                                      ? Colors.purple
-                                      : null,
-                                  onPressed: () {
-                                    if (summaryState.showSentenceCoach) {
-                                      ref
-                                          .read(summaryProvider.notifier)
-                                          .resetCoaches();
-                                    } else {
-                                      ref
-                                          .read(summaryProvider.notifier)
-                                          .resetCoaches();
-                                      ref
-                                          .read(summaryProvider.notifier)
-                                          .toggleSentenceCoach();
-                                    }
-                                  },
-                                  tooltip: l10n.aiSentenceSummaryTooltip,
-                                ),
-                                if (summaryState.sentenceAiSatisfied &&
-                                    !summaryState.showSentenceCoach) ...[
-                                  AppButtons.icon(
-                                    iconData: Icons.check_circle,
-                                    onPressed: () {
-                                      ref
-                                          .read(summaryProvider.notifier)
-                                          .setSentenceAiSatisfied(false);
-                                    },
-                                    tooltip: l10n.imSatisfied,
-                                    color: Colors.green,
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                          expands: true,
-                          minLines: null,
-                          maxLines: null,
-                          keyboardType: TextInputType.multiline,
-                          textAlignVertical: TextAlignVertical.top,
-                          onChanged: (_) => _onFieldChanged(),
+                _SummaryEditField(
+                  fieldKey: const Key('sentence_summary_field'),
+                  controller: _sentenceController,
+                  decoration: InputDecoration(
+                    labelText: l10n.sentenceSummary,
+                    border: const OutlineInputBorder(),
+                    suffixIcon: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AppButtons.icon(
+                          iconData: summaryState.showSentenceCoach
+                              ? Icons.auto_awesome
+                              : Icons.auto_awesome_outlined,
+                          color:
+                              summaryState.showSentenceCoach ||
+                                  summaryState.sentenceAiSatisfied
+                              ? Colors.purple
+                              : null,
+                          onPressed: () {
+                            if (summaryState.showSentenceCoach) {
+                              ref.read(summaryProvider.notifier).resetCoaches();
+                            } else {
+                              ref.read(summaryProvider.notifier).resetCoaches();
+                              ref
+                                  .read(summaryProvider.notifier)
+                                  .toggleSentenceCoach();
+                            }
+                          },
+                          tooltip: l10n.aiSentenceSummaryTooltip,
                         ),
-                      ),
-                    ],
+                        if (summaryState.sentenceAiSatisfied &&
+                            !summaryState.showSentenceCoach) ...[
+                          AppButtons.icon(
+                            iconData: Icons.check_circle,
+                            onPressed: () {
+                              ref
+                                  .read(summaryProvider.notifier)
+                                  .setSentenceAiSatisfied(false);
+                            },
+                            tooltip: l10n.imSatisfied,
+                            color: Colors.green,
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
+                  onChanged: _onFieldChanged,
                 ),
               ],
             ),
@@ -200,7 +169,6 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
 
     return Column(
       children: [
-        // Preview/Edit tabs
         TabBar(
           controller: _paragraphTabController,
           tabs: [
@@ -212,79 +180,53 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
           child: TabBarView(
             controller: _paragraphTabController,
             children: [
-              // Preview
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: SelectableText(
-                  _paragraphController.text.isEmpty
-                      ? l10n.noParagraphSummary
-                      : _paragraphController.text,
-                  style: const TextStyle(fontSize: 16),
-                ),
+              _SummaryPreviewPanel(
+                text: _paragraphController.text,
+                emptyText: l10n.noParagraphSummary,
               ),
-              // Edit
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _paragraphController,
-                        decoration: InputDecoration(
-                          labelText: l10n.paragraphSummary,
-                          border: const OutlineInputBorder(),
-                          suffixIcon: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: Icon(
-                                  summaryState.showParagraphCoach
-                                      ? Icons.auto_awesome
-                                      : Icons.auto_awesome_outlined,
-                                  color:
-                                      summaryState.showParagraphCoach ||
-                                          summaryState.paragraphAiSatisfied
-                                      ? Colors.purple
-                                      : null,
-                                ),
-                                onPressed: () {
-                                  ref
-                                      .read(summaryProvider.notifier)
-                                      .toggleParagraphCoach();
-                                },
-                                tooltip: l10n.aiParagraphSummaryTooltip,
-                              ),
-                              if (summaryState.paragraphAiSatisfied &&
-                                  !summaryState.showParagraphCoach) ...[
-                                AppButtons.icon(
-                                  iconData: Icons.check_circle,
-                                  onPressed: () {
-                                    ref
-                                        .read(summaryProvider.notifier)
-                                        .setParagraphAiSatisfied(false);
-                                  },
-                                  tooltip: l10n.imSatisfied,
-                                  color: Colors.green,
-                                ),
-                              ],
-                            ],
-                          ),
+              _SummaryEditField(
+                controller: _paragraphController,
+                decoration: InputDecoration(
+                  labelText: l10n.paragraphSummary,
+                  border: const OutlineInputBorder(),
+                  suffixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          summaryState.showParagraphCoach
+                              ? Icons.auto_awesome
+                              : Icons.auto_awesome_outlined,
+                          color:
+                              summaryState.showParagraphCoach ||
+                                  summaryState.paragraphAiSatisfied
+                              ? Colors.purple
+                              : null,
                         ),
-                        expands: true,
-                        minLines: null,
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        textAlignVertical: TextAlignVertical.top,
-                        onChanged: (_) => _onFieldChanged(),
+                        onPressed: () {
+                          ref
+                              .read(summaryProvider.notifier)
+                              .toggleParagraphCoach();
+                        },
+                        tooltip: l10n.aiParagraphSummaryTooltip,
                       ),
-                    ),
-                  ],
+                      if (summaryState.paragraphAiSatisfied &&
+                          !summaryState.showParagraphCoach) ...[
+                        AppButtons.icon(
+                          iconData: Icons.check_circle,
+                          onPressed: () {
+                            ref
+                                .read(summaryProvider.notifier)
+                                .setParagraphAiSatisfied(false);
+                          },
+                          tooltip: l10n.imSatisfied,
+                          color: Colors.green,
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
+                onChanged: _onFieldChanged,
               ),
             ],
           ),
@@ -299,7 +241,6 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
 
     return Column(
       children: [
-        // Preview/Edit tabs
         TabBar(
           controller: _pageTabController,
           tabs: const [
@@ -311,79 +252,51 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
           child: TabBarView(
             controller: _pageTabController,
             children: [
-              // Preview
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: SelectableText(
-                  _pageController.text.isEmpty
-                      ? l10n.noPageSummary
-                      : _pageController.text,
-                  style: const TextStyle(fontSize: 16),
-                ),
+              _SummaryPreviewPanel(
+                text: _pageController.text,
+                emptyText: l10n.noPageSummary,
               ),
-              // Edit
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _pageController,
-                        decoration: InputDecoration(
-                          labelText: l10n.pageSummary,
-                          border: const OutlineInputBorder(),
-                          suffixIcon: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: Icon(
-                                  summaryState.showPageCoach
-                                      ? Icons.auto_awesome
-                                      : Icons.auto_awesome_outlined,
-                                  color:
-                                      summaryState.showPageCoach ||
-                                          summaryState.pageAiSatisfied
-                                      ? Colors.purple
-                                      : null,
-                                ),
-                                onPressed: () {
-                                  ref
-                                      .read(summaryProvider.notifier)
-                                      .togglePageCoach();
-                                },
-                                tooltip: 'AI page summary',
-                              ),
-                              if (summaryState.pageAiSatisfied &&
-                                  !summaryState.showPageCoach) ...[
-                                AppButtons.icon(
-                                  iconData: Icons.check_circle,
-                                  onPressed: () {
-                                    ref
-                                        .read(summaryProvider.notifier)
-                                        .setPageAiSatisfied(false);
-                                  },
-                                  tooltip: l10n.imSatisfied,
-                                  color: Colors.green,
-                                ),
-                              ],
-                            ],
-                          ),
+              _SummaryEditField(
+                controller: _pageController,
+                decoration: InputDecoration(
+                  labelText: l10n.pageSummary,
+                  border: const OutlineInputBorder(),
+                  suffixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          summaryState.showPageCoach
+                              ? Icons.auto_awesome
+                              : Icons.auto_awesome_outlined,
+                          color:
+                              summaryState.showPageCoach ||
+                                  summaryState.pageAiSatisfied
+                              ? Colors.purple
+                              : null,
                         ),
-                        expands: true,
-                        minLines: null,
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        textAlignVertical: TextAlignVertical.top,
-                        onChanged: (_) => _onFieldChanged(),
+                        onPressed: () {
+                          ref.read(summaryProvider.notifier).togglePageCoach();
+                        },
+                        tooltip: 'AI page summary',
                       ),
-                    ),
-                  ],
+                      if (summaryState.pageAiSatisfied &&
+                          !summaryState.showPageCoach) ...[
+                        AppButtons.icon(
+                          iconData: Icons.check_circle,
+                          onPressed: () {
+                            ref
+                                .read(summaryProvider.notifier)
+                                .setPageAiSatisfied(false);
+                          },
+                          tooltip: l10n.imSatisfied,
+                          color: Colors.green,
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
+                onChanged: _onFieldChanged,
               ),
             ],
           ),
@@ -398,7 +311,6 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
 
     return Column(
       children: [
-        // Preview/Edit tabs
         TabBar(
           controller: _expandedTabController,
           tabs: const [
@@ -410,82 +322,53 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
           child: TabBarView(
             controller: _expandedTabController,
             children: [
-              // Preview
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: SelectableText(
-                  _expandedController.text.isEmpty
-                      ? 'No expanded summary available.'
-                      : _expandedController.text,
-                  style: const TextStyle(fontSize: 16),
-                ),
+              _SummaryPreviewPanel(
+                text: _expandedController.text,
+                emptyText: 'No expanded summary available.',
               ),
-              // Edit
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _expandedController,
-                        decoration: InputDecoration(
-                          labelText: l10n.expandedSummary,
-                          border: const OutlineInputBorder(),
-                          suffixIcon: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: Icon(
-                                  summaryState.showCoach
-                                      ? Icons.auto_awesome
-                                      : Icons.auto_awesome_outlined,
-                                  color:
-                                      summaryState.showCoach ||
-                                          summaryState.expandedAiSatisfied
-                                      ? Colors.purple
-                                      : null,
-                                ),
-                                onPressed: () {
-                                  ref
-                                      .read(summaryProvider.notifier)
-                                      .toggleExpandedCoach();
-                                },
-                                tooltip: l10n.toggleAiCoach,
-                              ),
-                              if (summaryState.expandedAiSatisfied &&
-                                  !summaryState.showCoach) ...[
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.check_circle,
-                                    size: 18,
-                                  ),
-                                  color: Colors.green,
-                                  onPressed: () {
-                                    ref
-                                        .read(summaryProvider.notifier)
-                                        .setExpandedAiSatisfied(false);
-                                  },
-                                  tooltip: l10n.imSatisfied,
-                                ),
-                              ],
-                            ],
-                          ),
+              _SummaryEditField(
+                controller: _expandedController,
+                decoration: InputDecoration(
+                  labelText: l10n.expandedSummary,
+                  border: const OutlineInputBorder(),
+                  suffixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          summaryState.showCoach
+                              ? Icons.auto_awesome
+                              : Icons.auto_awesome_outlined,
+                          color:
+                              summaryState.showCoach ||
+                                  summaryState.expandedAiSatisfied
+                              ? Colors.purple
+                              : null,
                         ),
-                        expands: true,
-                        minLines: null,
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        textAlignVertical: TextAlignVertical.top,
-                        onChanged: (_) => _onFieldChanged(),
+                        onPressed: () {
+                          ref
+                              .read(summaryProvider.notifier)
+                              .toggleExpandedCoach();
+                        },
+                        tooltip: l10n.toggleAiCoach,
                       ),
-                    ),
-                  ],
+                      if (summaryState.expandedAiSatisfied &&
+                          !summaryState.showCoach) ...[
+                        IconButton(
+                          icon: const Icon(Icons.check_circle, size: 18),
+                          color: Colors.green,
+                          onPressed: () {
+                            ref
+                                .read(summaryProvider.notifier)
+                                .setExpandedAiSatisfied(false);
+                          },
+                          tooltip: l10n.imSatisfied,
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
+                onChanged: _onFieldChanged,
               ),
             ],
           ),
@@ -751,6 +634,61 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
             );
           }
         },
+      ),
+    );
+  }
+}
+
+class _SummaryPreviewPanel extends StatelessWidget {
+  const _SummaryPreviewPanel({required this.text, required this.emptyText});
+
+  final String text;
+  final String emptyText;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: SelectableText(
+        text.isEmpty ? emptyText : text,
+        style: const TextStyle(fontSize: 16),
+      ),
+    );
+  }
+}
+
+class _SummaryEditField extends StatelessWidget {
+  const _SummaryEditField({
+    this.fieldKey,
+    required this.controller,
+    required this.decoration,
+    required this.onChanged,
+  });
+
+  final Key? fieldKey;
+  final TextEditingController controller;
+  final InputDecoration decoration;
+  final VoidCallback onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: TextFormField(
+        key: fieldKey,
+        controller: controller,
+        decoration: decoration,
+        expands: true,
+        minLines: null,
+        maxLines: null,
+        keyboardType: TextInputType.multiline,
+        textAlignVertical: TextAlignVertical.top,
+        onChanged: (_) => onChanged(),
       ),
     );
   }

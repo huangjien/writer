@@ -89,7 +89,7 @@ void main() {
         return {'content': 'remote', 'sha': 'abc'};
       });
 
-      final chap = Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
+      final chap = const Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
       final res = await repo.getChapter(chap);
 
       expect(res.content, 'remote');
@@ -116,7 +116,7 @@ void main() {
       );
       when(() => mockLocal.getChapter('c1')).thenAnswer((_) async => cache);
 
-      final chap = Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
+      final chap = const Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
       final res = await repo.getChapter(chap);
 
       expect(res.content, 'cached');
@@ -131,7 +131,7 @@ void main() {
       ).thenThrow(const SocketException('No Internet'));
       when(() => mockLocal.getChapter('c1')).thenAnswer((_) async => null);
 
-      final chap = Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
+      final chap = const Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
 
       expect(() => repo.getChapter(chap), throwsA(isA<SocketException>()));
     });
@@ -141,7 +141,7 @@ void main() {
       () async {
         when(() => remote.patch(any(), any())).thenAnswer((_) async => {});
 
-        final chap = Chapter(
+        final chap = const Chapter(
           id: 'c1',
           novelId: 'n1',
           idx: 1,
@@ -279,7 +279,7 @@ void main() {
 
     test('getChapter handles invalid response format', () async {
       when(() => remote.get('chapters/c1')).thenAnswer((_) async => 'invalid');
-      final chap = Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
+      final chap = const Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
 
       expect(() => repo.getChapter(chap), throwsException);
     });
@@ -291,7 +291,12 @@ void main() {
           return {'content': null, 'sha': null};
         });
 
-        final chap = Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'T1');
+        final chap = const Chapter(
+          id: 'c1',
+          novelId: 'n1',
+          idx: 1,
+          title: 'T1',
+        );
         final res = await repo.getChapter(chap);
 
         expect(res.content, isNull);
@@ -306,7 +311,7 @@ void main() {
       test('updateChapter generates SHA for content', () async {
         when(() => remote.patch(any(), any())).thenAnswer((_) async => {});
 
-        final chap = Chapter(
+        final chap = const Chapter(
           id: 'c1',
           novelId: 'n1',
           idx: 1,
@@ -352,7 +357,7 @@ void main() {
       test('updateChapter handles null content without SHA', () async {
         when(() => remote.patch(any(), any())).thenAnswer((_) async => {});
 
-        final chap = Chapter(
+        final chap = const Chapter(
           id: 'c1',
           novelId: 'n1',
           idx: 1,
@@ -395,7 +400,7 @@ void main() {
           () => remote.patch(any(), any()),
         ).thenThrow(Exception('Network error'));
 
-        final chap = Chapter(
+        final chap = const Chapter(
           id: 'c1',
           novelId: 'n1',
           idx: 1,
@@ -435,7 +440,7 @@ void main() {
 
       group('updateChapter offline', () {
         test('queues update operation when offline', () async {
-          final chap = Chapter(
+          final chap = const Chapter(
             id: 'c1',
             novelId: 'n1',
             idx: 1,
@@ -465,7 +470,7 @@ void main() {
         });
 
         test('handles update without content when offline', () async {
-          final chap = Chapter(
+          final chap = const Chapter(
             id: 'c1',
             novelId: 'n1',
             idx: 1,
@@ -489,7 +494,7 @@ void main() {
         });
 
         test('generates SHA for content when offline', () async {
-          final chap = Chapter(
+          final chap = const Chapter(
             id: 'c1',
             novelId: 'n1',
             idx: 1,

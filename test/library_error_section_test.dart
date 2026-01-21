@@ -84,7 +84,7 @@ void main() {
                     ref.watch(novelsProvider);
                     ref.watch(memberNovelsProvider);
                     ref.watch(libraryNovelsProvider);
-                    return SizedBox.shrink();
+                    return const SizedBox.shrink();
                   },
                 ),
                 const LibraryErrorSection(error: 'Oops'),
@@ -142,7 +142,7 @@ void main() {
                     ref.watch(novelsProvider);
                     ref.watch(memberNovelsProvider);
                     ref.watch(libraryNovelsProvider);
-                    return SizedBox.shrink();
+                    return const SizedBox.shrink();
                   },
                 ),
                 LibraryErrorSection(error: 'Oops', onRetry: () => retryCalls++),

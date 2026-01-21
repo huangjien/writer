@@ -9,8 +9,8 @@ void main() {
   group('PinchToZoom', () {
     testWidgets('renders child widget when enabled', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: PinchToZoom(child: const Text('Test Child'))),
+        const MaterialApp(
+          home: Scaffold(body: PinchToZoom(child: Text('Test Child'))),
         ),
       );
 
@@ -21,9 +21,9 @@ void main() {
 
     testWidgets('renders child widget directly when disabled', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const PinchToZoom(enabled: false, child: Text('Test Child')),
+            body: PinchToZoom(enabled: false, child: Text('Test Child')),
           ),
         ),
       );
@@ -37,8 +37,8 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: PinchToZoom(child: const Text('Test Child'))),
+        const MaterialApp(
+          home: Scaffold(body: PinchToZoom(child: Text('Test Child'))),
         ),
       );
 
@@ -51,9 +51,9 @@ void main() {
 
     testWidgets('uses custom minScale parameter', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const PinchToZoom(minScale: 0.5, child: Text('Test Child')),
+            body: PinchToZoom(minScale: 0.5, child: Text('Test Child')),
           ),
         ),
       );
@@ -66,9 +66,9 @@ void main() {
 
     testWidgets('uses custom maxScale parameter', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const PinchToZoom(maxScale: 8.0, child: Text('Test Child')),
+            body: PinchToZoom(maxScale: 8.0, child: Text('Test Child')),
           ),
         ),
       );
@@ -83,9 +83,9 @@ void main() {
       const customMargin = EdgeInsets.all(48);
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const PinchToZoom(
+            body: PinchToZoom(
               boundaryMargin: customMargin,
               child: Text('Test Child'),
             ),
@@ -196,7 +196,7 @@ void main() {
 
     testWidgets('preserves child widget properties', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: PinchToZoom(
               child: Text(
@@ -222,9 +222,9 @@ void main() {
       const asymmetricMargin = EdgeInsets.fromLTRB(10, 20, 30, 40);
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const PinchToZoom(
+            body: PinchToZoom(
               boundaryMargin: asymmetricMargin,
               child: Text('Test Child'),
             ),
@@ -240,9 +240,9 @@ void main() {
 
     testWidgets('supports zero boundary margin', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const PinchToZoom(
+            body: PinchToZoom(
               boundaryMargin: EdgeInsets.zero,
               child: Text('Test Child'),
             ),
@@ -258,9 +258,9 @@ void main() {
 
     testWidgets('handles minScale equal to maxScale', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const PinchToZoom(
+            body: PinchToZoom(
               minScale: 2.0,
               maxScale: 2.0,
               child: Text('Test Child'),
@@ -318,10 +318,8 @@ void main() {
   group('PinchToZoom Integration', () {
     testWidgets('works with Navigator', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: PinchToZoom(child: const Text('Navigable Child')),
-          ),
+        const MaterialApp(
+          home: Scaffold(body: PinchToZoom(child: Text('Navigable Child'))),
         ),
       );
 

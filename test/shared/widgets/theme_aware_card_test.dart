@@ -146,8 +146,8 @@ void main() {
     final theme = _theme(
       brightness: Brightness.light,
       styleFamily: UiStyleFamily.flatDesign,
-      cardTheme: CardThemeData(
-        shape: const RoundedRectangleBorder(
+      cardTheme: const CardThemeData(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadiusDirectional.all(Radius.circular(18)),
         ),
       ),

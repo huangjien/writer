@@ -272,101 +272,113 @@ class _CharacterTemplatesListScreenState
 
                         return Material(
                           color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () => _onRowTap(it),
-                            hoverColor:
-                                theme.colorScheme.surfaceContainerHighest,
-                            child: Shortcuts(
-                              shortcuts: const <ShortcutActivator, Intent>{
-                                SingleActivator(LogicalKeyboardKey.enter):
-                                    _EditIntent(),
-                                SingleActivator(LogicalKeyboardKey.numpadEnter):
-                                    _EditIntent(),
-                              },
-                              child: Actions(
-                                actions: <Type, Action<Intent>>{
-                                  _EditIntent: CallbackAction<_EditIntent>(
-                                    onInvoke: (_) {
-                                      _openEdit(it);
-                                      return null;
-                                    },
-                                  ),
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: InkWell(
+                              onTap: () => _onRowTap(it),
+                              hoverColor:
+                                  theme.colorScheme.surfaceContainerHighest,
+                              child: Shortcuts(
+                                shortcuts: const <ShortcutActivator, Intent>{
+                                  SingleActivator(LogicalKeyboardKey.enter):
+                                      _EditIntent(),
+                                  SingleActivator(
+                                    LogicalKeyboardKey.numpadEnter,
+                                  ): _EditIntent(),
                                 },
-                                child: Focus(
-                                  canRequestFocus: true,
-                                  onFocusChange: (hasFocus) {
-                                    if (!hasFocus) return;
-                                    setState(() {
-                                      _selectedId = it.id;
-                                    });
+                                child: Actions(
+                                  actions: <Type, Action<Intent>>{
+                                    _EditIntent: CallbackAction<_EditIntent>(
+                                      onInvoke: (_) {
+                                        _openEdit(it);
+                                        return null;
+                                      },
+                                    ),
                                   },
-                                  child: ListTile(
-                                    selected: _selectedId == it.id,
-                                    selectedTileColor: theme.colorScheme.primary
-                                        .withValues(alpha: 0.08),
-                                    title: Text.rich(
-                                      TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: title,
-                                            style: titleStyle,
-                                          ),
-                                          if (subtitle.isNotEmpty)
+                                  child: Focus(
+                                    canRequestFocus: true,
+                                    onFocusChange: (hasFocus) {
+                                      if (!hasFocus) return;
+                                      setState(() {
+                                        _selectedId = it.id;
+                                      });
+                                    },
+                                    child: ListTile(
+                                      selected: _selectedId == it.id,
+                                      selectedTileColor: theme
+                                          .colorScheme
+                                          .primary
+                                          .withValues(alpha: 0.08),
+                                      title: Text.rich(
+                                        TextSpan(
+                                          children: [
                                             TextSpan(
-                                              text: '  $subtitle',
-                                              style: subtitleStyle,
+                                              text: title,
+                                              style: titleStyle,
                                             ),
+                                            if (subtitle.isNotEmpty)
+                                              TextSpan(
+                                                text: '  $subtitle',
+                                                style: subtitleStyle,
+                                              ),
+                                          ],
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      trailing: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(Icons.edit),
+                                            onPressed: () => _openEdit(it),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.delete),
+                                            onPressed: () async {
+                                              final ok = await showDialog<bool>(
+                                                context: context,
+                                                builder: (d) => AlertDialog(
+                                                  title: Text(
+                                                    l10n.deleteTemplateTitle,
+                                                  ),
+                                                  content: Text(
+                                                    l10n.confirmDeleteGeneric,
+                                                  ),
+                                                  actions: [
+                                                    AppButtons.text(
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                            d,
+                                                            false,
+                                                          ),
+                                                      label: l10n.cancel,
+                                                    ),
+                                                    AppButtons.primary(
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                            d,
+                                                            true,
+                                                          ),
+                                                      label: l10n.delete,
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                              if (ok == true) {
+                                                final repo = ref.read(
+                                                  templateRepositoryProvider,
+                                                );
+                                                await repo
+                                                    .deleteCharacterTemplate(
+                                                      it.id,
+                                                    );
+                                                await _load();
+                                              }
+                                            },
+                                          ),
                                         ],
                                       ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.edit),
-                                          onPressed: () => _openEdit(it),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.delete),
-                                          onPressed: () async {
-                                            final ok = await showDialog<bool>(
-                                              context: context,
-                                              builder: (d) => AlertDialog(
-                                                title: Text(
-                                                  l10n.deleteTemplateTitle,
-                                                ),
-                                                content: Text(
-                                                  l10n.confirmDeleteGeneric,
-                                                ),
-                                                actions: [
-                                                  AppButtons.text(
-                                                    onPressed: () =>
-                                                        Navigator.pop(d, false),
-                                                    label: l10n.cancel,
-                                                  ),
-                                                  AppButtons.primary(
-                                                    onPressed: () =>
-                                                        Navigator.pop(d, true),
-                                                    label: l10n.delete,
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                            if (ok == true) {
-                                              final repo = ref.read(
-                                                templateRepositoryProvider,
-                                              );
-                                              await repo
-                                                  .deleteCharacterTemplate(
-                                                    it.id,
-                                                  );
-                                              await _load();
-                                            }
-                                          },
-                                        ),
-                                      ],
                                     ),
                                   ),
                                 ),

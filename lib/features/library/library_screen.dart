@@ -488,7 +488,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
             iconData: Icons.refresh,
             onPressed: () => ref.refresh(libraryNovelsProvider),
           ),
-        SyncStatusIndicator(),
+        const SyncStatusIndicator(),
         if (isAdmin)
           AppButtons.icon(
             iconData: Icons.admin_panel_settings,

@@ -67,9 +67,9 @@ class _StyleGuideScreenState extends State<StyleGuideScreen> {
                   child: const Text('Primary Button'),
                 ),
                 const SizedBox(width: Spacing.m),
-                NeumorphicButton(
+                const NeumorphicButton(
                   onPressed: null,
-                  child: const Text('Disabled'),
+                  child: Text('Disabled'),
                 ),
               ],
             ),

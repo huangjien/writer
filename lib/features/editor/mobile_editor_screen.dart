@@ -597,7 +597,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(

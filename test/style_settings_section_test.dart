@@ -21,11 +21,11 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [uiStyleControllerProvider.overrideWith((_) => controller)],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(
+          home: Scaffold(
             body: SingleChildScrollView(child: StyleSettingsSection()),
           ),
         ),
@@ -44,11 +44,11 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [uiStyleControllerProvider.overrideWith((_) => controller)],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(
+          home: Scaffold(
             body: SingleChildScrollView(child: StyleSettingsSection()),
           ),
         ),

@@ -52,11 +52,11 @@ class TokenUsageSection extends ConsumerWidget {
         usageAsync.when(
           data: (usage) {
             if (usage == null) {
-              return _EmptyUsage();
+              return const _EmptyUsage();
             }
             return _UsageData(usage: usage);
           },
-          loading: () => _LoadingUsage(),
+          loading: () => const _LoadingUsage(),
           error: (err, stack) {
             if (err is ApiException && err.statusCode == 401) {
               return const SizedBox.shrink();

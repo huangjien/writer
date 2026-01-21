@@ -102,9 +102,17 @@ void main() {
 
     testWidgets('showActionSheet displays list of items', (tester) async {
       final items = [
-        ActionSheetItem(label: 'Option 1', value: 'opt1', icon: Icons.home),
-        ActionSheetItem(label: 'Option 2', value: 'opt2', icon: Icons.settings),
-        ActionSheetItem(
+        const ActionSheetItem(
+          label: 'Option 1',
+          value: 'opt1',
+          icon: Icons.home,
+        ),
+        const ActionSheetItem(
+          label: 'Option 2',
+          value: 'opt2',
+          icon: Icons.settings,
+        ),
+        const ActionSheetItem(
           label: 'Delete',
           value: 'delete',
           icon: Icons.delete,
@@ -187,9 +195,9 @@ void main() {
 
     testWidgets('showOptions displays selectable options', (tester) async {
       final options = [
-        SheetOption(label: 'Option A', value: 'a'),
-        SheetOption(label: 'Option B', value: 'b'),
-        SheetOption(label: 'Option C', value: 'c'),
+        const SheetOption(label: 'Option A', value: 'a'),
+        const SheetOption(label: 'Option B', value: 'b'),
+        const SheetOption(label: 'Option C', value: 'c'),
       ];
 
       String? selectedValue;
@@ -233,9 +241,9 @@ void main() {
 
     testWidgets('DraggableBottomSheet renders correctly', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: DraggableBottomSheet(child: const Text('Draggable Content')),
+            body: DraggableBottomSheet(child: Text('Draggable Content')),
           ),
         ),
       );
@@ -248,14 +256,14 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: DraggableBottomSheet(
               minChildSize: 0.2,
               maxChildSize: 0.8,
               initialChildSize: 0.4,
               snap: false,
-              child: const Text('Custom Draggable Content'),
+              child: Text('Custom Draggable Content'),
             ),
           ),
         ),
@@ -385,7 +393,7 @@ void main() {
 
   group('ActionSheetItem', () {
     test('creates item with required parameters', () {
-      final item = ActionSheetItem(label: 'Test Item', value: 'test');
+      final item = const ActionSheetItem(label: 'Test Item', value: 'test');
 
       expect(item.label, 'Test Item');
       expect(item.value, 'test');
@@ -417,7 +425,7 @@ void main() {
 
   group('SheetOption', () {
     test('creates option with required parameters', () {
-      final option = SheetOption(label: 'Test Option', value: 'test');
+      final option = const SheetOption(label: 'Test Option', value: 'test');
 
       expect(option.label, 'Test Option');
       expect(option.value, 'test');

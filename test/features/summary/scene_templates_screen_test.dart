@@ -63,10 +63,10 @@ void main() {
         localStorageRepositoryProvider.overrideWithValue(mockRepo),
         templateRepositoryProvider.overrideWithValue(mockTemplateRepo),
       ],
-      child: MaterialApp(
+      child: const MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const SceneTemplatesScreen(novelId: 'novel-1'),
+        home: SceneTemplatesScreen(novelId: 'novel-1'),
       ),
     );
   }
@@ -144,13 +144,10 @@ void main() {
           localStorageRepositoryProvider.overrideWithValue(mockRepo),
           storageServiceProvider.overrideWithValue(MockStorageService()),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const SceneTemplatesScreen(
-            novelId: 'novel-1',
-            templateId: 't-1',
-          ),
+          home: SceneTemplatesScreen(novelId: 'novel-1', templateId: 't-1'),
         ),
       ),
     );
@@ -187,10 +184,10 @@ void main() {
             (_) => SessionNotifier(MockStorageService())..state = 's-1',
           ),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const SceneTemplatesScreen(novelId: 'novel-1'),
+          home: SceneTemplatesScreen(novelId: 'novel-1'),
         ),
       ),
     );

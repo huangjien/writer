@@ -18,7 +18,7 @@ void main() {
     });
 
     test('getChapter returns the same chapter', () async {
-      final chapter = Chapter(
+      final chapter = const Chapter(
         id: testChapterId,
         novelId: testNovelId,
         idx: 1,
@@ -30,7 +30,7 @@ void main() {
     });
 
     test('updateChapter completes successfully', () async {
-      final chapter = Chapter(
+      final chapter = const Chapter(
         id: testChapterId,
         novelId: testNovelId,
         idx: 1,

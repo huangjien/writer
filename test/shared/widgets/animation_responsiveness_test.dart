@@ -9,8 +9,8 @@ void main() {
   group('MicroInteractions Animation Responsiveness', () {
     testWidgets('PressScale uses responsive duration', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: const PressScale(child: Text('Test Child'))),
+        const MaterialApp(
+          home: Scaffold(body: PressScale(child: Text('Test Child'))),
         ),
       );
 
@@ -44,7 +44,7 @@ void main() {
   group('ErrorAnimation Responsiveness', () {
     testWidgets('ErrorAnimation uses responsive duration', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(home: Scaffold(body: const ErrorAnimation())),
+        const MaterialApp(home: Scaffold(body: ErrorAnimation())),
       );
 
       final errorAnimation = tester.widget<ErrorAnimation>(
@@ -61,8 +61,8 @@ void main() {
 
     testWidgets('RetryPulse has hardcoded responsive duration', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: RetryPulse(child: const Icon(Icons.refresh))),
+        const MaterialApp(
+          home: Scaffold(body: RetryPulse(child: Icon(Icons.refresh))),
         ),
       );
 
@@ -82,9 +82,9 @@ void main() {
       final stopwatch = Stopwatch()..start();
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: PressScale(duration: testDuration, child: const Text('Test')),
+            body: PressScale(duration: testDuration, child: Text('Test')),
           ),
         ),
       );
@@ -129,7 +129,7 @@ void main() {
       final stopwatch = Stopwatch()..start();
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(body: ErrorAnimation(duration: testDuration)),
         ),
       );

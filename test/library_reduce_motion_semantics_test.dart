@@ -42,11 +42,11 @@ void main() {
           lastProgressProvider.overrideWith((ref, novelId) async => null),
           motionSettingsProvider.overrideWith((ref) => motion),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const LibraryScreen(),
+          home: LibraryScreen(),
         ),
       ),
     );

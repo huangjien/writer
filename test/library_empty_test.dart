@@ -19,11 +19,11 @@ void main() {
           libraryNovelsProvider.overrideWith((ref) async => const []),
           memberNovelsProvider.overrideWith((ref) async => const []),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const LibraryScreen(),
+          home: LibraryScreen(),
         ),
       ),
     );

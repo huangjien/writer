@@ -132,7 +132,7 @@ void main() {
   testWidgets('loads chapter content when chapterId is provided', (
     tester,
   ) async {
-    final chapter = Chapter(
+    final chapter = const Chapter(
       id: 'chapter-1',
       novelId: 'novel-1',
       title: 'Chapter 1',
@@ -227,7 +227,7 @@ void main() {
       ),
     ).thenAnswer((_) async {
       await Future.delayed(const Duration(milliseconds: 100)); // Simulate delay
-      return Chapter(
+      return const Chapter(
         id: 'new-chapter',
         novelId: 'novel-1',
         idx: 1,
@@ -486,7 +486,7 @@ void main() {
   });
 
   testWidgets('handles load error', (tester) async {
-    final chapter = Chapter(
+    final chapter = const Chapter(
       id: 'chapter-1',
       novelId: 'novel-1',
       title: 'Chapter 1',
@@ -794,7 +794,7 @@ void main() {
         content: 'Hello world',
       ),
     ).thenAnswer(
-      (_) async => Chapter(
+      (_) async => const Chapter(
         id: 'new-chapter',
         novelId: 'novel-1',
         idx: 1,
@@ -887,7 +887,7 @@ void main() {
         content: 'Hello world',
       ),
     ).thenAnswer(
-      (_) async => Chapter(
+      (_) async => const Chapter(
         id: 'new-chapter',
         novelId: 'novel-1',
         idx: 1,

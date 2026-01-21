@@ -547,7 +547,7 @@ void main() {
           sharedPreferencesProvider.overrideWithValue(prefs),
           novelRepositoryProvider.overrideWithValue(repo),
           novelProvider('n-1').overrideWithValue(AsyncValue.data(novel)),
-          chaptersProvider('n-1').overrideWithValue(AsyncValue.data([])),
+          chaptersProvider('n-1').overrideWithValue(const AsyncValue.data([])),
           snowflakeServiceProvider.overrideWithValue(
             SnowflakeService(
               RemoteRepository('http://example.com/', client: client),

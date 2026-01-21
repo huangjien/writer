@@ -35,7 +35,7 @@ void main() {
 
   test('save/get CharacterTemplateForm persists locally', () async {
     final repo = LocalStorageRepository(MockStorageService());
-    final item = TemplateItem(
+    final item = const TemplateItem(
       novelId: 'n1',
       name: 'Hero',
       description: 'Brave',
@@ -48,7 +48,7 @@ void main() {
 
   test('save/get SceneTemplateForm persists locally', () async {
     final repo = LocalStorageRepository(MockStorageService());
-    final item = TemplateItem(
+    final item = const TemplateItem(
       novelId: 'n1',
       name: 'Forest',
       description: 'Dark',

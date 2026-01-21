@@ -49,7 +49,7 @@ void main() {
         'Hidden Creek with an Exceedingly Long Title That Surely Ellipsizes When Space Is Limited';
 
     final novels = [
-      Novel(
+      const Novel(
         id: 'n-1',
         title: 'The Whispering Forest',
         author: 'A. Storyteller',
@@ -179,7 +179,7 @@ void main() {
         'Hidden Creek with an Exceedingly Long Title That Surely Ellipsizes When Space Is Limited';
 
     final novels = [
-      Novel(
+      const Novel(
         id: 'n-1',
         title: 'The Whispering Forest',
         author: 'A. Storyteller',

@@ -210,10 +210,10 @@ void main() {
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLineFormScreen(),
+          home: StoryLineFormScreen(),
         ),
       ),
     );
@@ -242,10 +242,10 @@ void main() {
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLineFormScreen(),
+          home: StoryLineFormScreen(),
         ),
       ),
     );
@@ -286,10 +286,10 @@ void main() {
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLineFormScreen(),
+          home: StoryLineFormScreen(),
         ),
       ),
     );
@@ -439,10 +439,10 @@ void main() {
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLineFormScreen(),
+          home: StoryLineFormScreen(),
         ),
       ),
     );
@@ -471,10 +471,10 @@ void main() {
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLineFormScreen(),
+          home: StoryLineFormScreen(),
         ),
       ),
     );
@@ -556,10 +556,10 @@ void main() {
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLineFormScreen(),
+          home: StoryLineFormScreen(),
         ),
       ),
     );
@@ -587,10 +587,10 @@ void main() {
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLineFormScreen(),
+          home: StoryLineFormScreen(),
         ),
       ),
     );

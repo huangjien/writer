@@ -74,14 +74,14 @@ void main() {
           isSignedInProvider.overrideWithValue(true),
           templateRepositoryProvider.overrideWithValue(repo),
         ],
-        child: MaterialApp(
-          localizationsDelegates: const [
+        child: const MaterialApp(
+          localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('en')],
+          supportedLocales: [Locale('en')],
           home: CharacterTemplatesListScreen(novelId: 'n-1'),
         ),
       ),
@@ -283,14 +283,14 @@ void main() {
           isSignedInProvider.overrideWithValue(true),
           templateRepositoryProvider.overrideWithValue(repo),
         ],
-        child: MaterialApp(
-          localizationsDelegates: const [
+        child: const MaterialApp(
+          localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('en')],
+          supportedLocales: [Locale('en')],
           home: CharacterTemplatesListScreen(novelId: 'n-1'),
         ),
       ),

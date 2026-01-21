@@ -68,7 +68,7 @@ void main() {
 
     test('character form save/get via local storage', () async {
       final repo = LocalStorageRepository(MockStorageService());
-      final c = Character(
+      final c = const Character(
         novelId: 'n1',
         name: 'Alice',
         role: 'Detective',
@@ -92,7 +92,7 @@ void main() {
   group('LocalStorageRepository scenes', () {
     test('save/get scene form via local storage', () async {
       final repo = LocalStorageRepository(MockStorageService());
-      final scene = Scene(
+      final scene = const Scene(
         novelId: 'n1',
         title: 'Opening',
         location: 'Village',
@@ -156,7 +156,7 @@ void main() {
     test('save/get library novels', () async {
       final repo = LocalStorageRepository(MockStorageService());
       final novels = [
-        Novel(
+        const Novel(
           id: 'a',
           title: 'Novel A',
           author: 'Author A',
@@ -165,7 +165,7 @@ void main() {
           languageCode: 'en',
           isPublic: true,
         ),
-        Novel(
+        const Novel(
           id: 'b',
           title: 'Novel B',
           author: 'Author B',

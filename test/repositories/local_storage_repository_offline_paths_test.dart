@@ -70,7 +70,7 @@ void main() {
 
     test('saveLibraryNovels uses correct key path', () async {
       await repo.saveLibraryNovels([
-        Novel(
+        const Novel(
           id: 'nov1',
           title: 'N1',
           author: 'A1',
@@ -94,7 +94,7 @@ void main() {
     });
 
     test('saveCharacterForm uses correct key path', () async {
-      final character = Character(
+      final character = const Character(
         novelId: 'nov1',
         name: 'Char1',
         role: 'Role',
@@ -110,7 +110,7 @@ void main() {
     });
 
     test('saveSceneForm uses correct key path', () async {
-      final scene = Scene(
+      final scene = const Scene(
         novelId: 'nov1',
         title: 'Scene1',
         location: 'Loc',

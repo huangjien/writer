@@ -143,15 +143,15 @@ void main() {
           novelProvider.overrideWith((ref, id) async => novel),
           isSignedInProvider.overrideWithValue(false),
         ],
-        child: MaterialApp(
-          localizationsDelegates: const [
+        child: const MaterialApp(
+          localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('en', '')],
-          home: const CharactersScreen(novelId: 'n-1'),
+          supportedLocales: [Locale('en', '')],
+          home: CharactersScreen(novelId: 'n-1'),
         ),
       ),
     );
@@ -206,15 +206,15 @@ void main() {
             novelProvider.overrideWith((ref, id) async => novel),
             isSignedInProvider.overrideWithValue(false),
           ],
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en', '')],
-            home: const CharactersScreen(novelId: 'n-1'),
+            supportedLocales: [Locale('en', '')],
+            home: CharactersScreen(novelId: 'n-1'),
           ),
         ),
       );
@@ -285,15 +285,15 @@ void main() {
           novelProvider.overrideWith((ref, id) async => novel),
           isSignedInProvider.overrideWithValue(true),
         ],
-        child: MaterialApp(
-          localizationsDelegates: const [
+        child: const MaterialApp(
+          localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('en', '')],
-          home: const CharactersScreen(novelId: 'n-1'),
+          supportedLocales: [Locale('en', '')],
+          home: CharactersScreen(novelId: 'n-1'),
         ),
       ),
     );

@@ -35,10 +35,10 @@ void main() {
           // Use mock novels to avoid actual backend queries in test
           novelsProvider.overrideWith((ref) async => novels),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const LibraryScreen(),
+          home: LibraryScreen(),
         ),
       ),
     );

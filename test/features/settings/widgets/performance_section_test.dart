@@ -31,11 +31,11 @@ void main() {
             (ref) => PerformanceSettingsNotifier(prefs),
           ),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          home: const Scaffold(body: PerformanceSection()),
+          locale: Locale('en'),
+          home: Scaffold(body: PerformanceSection()),
         ),
       ),
     );
@@ -66,11 +66,11 @@ void main() {
           ),
           localStorageRepositoryProvider.overrideWithValue(mockRepo),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          home: const Scaffold(body: PerformanceSection()),
+          locale: Locale('en'),
+          home: Scaffold(body: PerformanceSection()),
         ),
       ),
     );

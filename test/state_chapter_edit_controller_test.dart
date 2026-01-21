@@ -91,7 +91,7 @@ class FakeChapterRepo implements ChapterPort {
 }
 
 void main() {
-  final initial = Chapter(
+  final initial = const Chapter(
     id: 'c1',
     novelId: 'n1',
     idx: 1,

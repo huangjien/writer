@@ -19,7 +19,7 @@ void main() {
   });
 
   testWidgets('description text field alignment check', (tester) async {
-    final novel = Novel(
+    final novel = const Novel(
       id: 'novel-1',
       title: 'Test Novel',
       author: 'author-1',
@@ -41,7 +41,7 @@ void main() {
             'novel-1',
           ).overrideWith((ref) async => EditRole.owner),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(body: NovelMetadataEditor(novelId: 'novel-1')),

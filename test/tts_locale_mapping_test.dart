@@ -44,11 +44,11 @@ void main() {
           appSettingsProvider.overrideWith((_) => appNotifier),
           ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const ChapterReaderScreen(
+          home: ChapterReaderScreen(
             chapterId: 'c1',
             title: 'Locale Map',
             content: 'Short content.',
@@ -88,11 +88,11 @@ void main() {
           appSettingsProvider.overrideWith((_) => appNotifier),
           ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
         ],
-        child: MaterialApp(
-          locale: const Locale('zh'),
+        child: const MaterialApp(
+          locale: Locale('zh'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const ChapterReaderScreen(
+          home: ChapterReaderScreen(
             chapterId: 'c1',
             title: 'Locale Map',
             content: '短内容。',
@@ -129,11 +129,11 @@ void main() {
             appSettingsProvider.overrideWith((_) => appNotifier),
             ttsSettingsProvider.overrideWith((_) => TtsSettingsNotifier(prefs)),
           ],
-          child: MaterialApp(
-            locale: const Locale('en'),
+          child: const MaterialApp(
+            locale: Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const ChapterReaderScreen(
+            home: ChapterReaderScreen(
               chapterId: 'c1',
               title: 'Locale Switch',
               content: 'Content.',

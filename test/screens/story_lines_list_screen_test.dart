@@ -93,10 +93,10 @@ void main() {
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLinesListScreen(),
+          home: StoryLinesListScreen(),
         ),
       ),
     );
@@ -115,10 +115,10 @@ void main() {
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLinesListScreen(),
+          home: StoryLinesListScreen(),
         ),
       ),
     );
@@ -141,10 +141,10 @@ void main() {
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLinesListScreen(),
+          home: StoryLinesListScreen(),
         ),
       ),
     );
@@ -166,10 +166,10 @@ void main() {
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLinesListScreen(),
+          home: StoryLinesListScreen(),
         ),
       ),
     );
@@ -225,10 +225,10 @@ void main() {
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLinesListScreen(),
+          home: StoryLinesListScreen(),
         ),
       ),
     );
@@ -273,10 +273,10 @@ void main() {
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLinesListScreen(),
+          home: StoryLinesListScreen(),
         ),
       ),
     );
@@ -307,10 +307,10 @@ void main() {
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLinesListScreen(),
+          home: StoryLinesListScreen(),
         ),
       ),
     );
@@ -334,10 +334,10 @@ void main() {
           storyLinesProvider.overrideWith((ref) async => fake.items),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLinesListScreen(),
+          home: StoryLinesListScreen(),
         ),
       ),
     );
@@ -381,10 +381,10 @@ void main() {
           isSignedInProvider.overrideWithValue(false),
           sharedPreferencesProvider.overrideWithValue(prefs),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLinesListScreen(),
+          home: StoryLinesListScreen(),
         ),
       ),
     );
@@ -406,10 +406,10 @@ void main() {
           storyLinesProvider.overrideWith((ref) async => const []),
           storyLinesServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const StoryLinesListScreen(),
+          home: StoryLinesListScreen(),
         ),
       ),
     );

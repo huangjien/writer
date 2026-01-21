@@ -181,10 +181,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: createCommonOverrides(prefs, svc),
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const PatternFormScreen(),
+          home: PatternFormScreen(),
         ),
       ),
     );
@@ -200,10 +200,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: createCommonOverrides(prefs, svc),
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const PatternFormScreen(),
+          home: PatternFormScreen(),
         ),
       ),
     );
@@ -240,10 +240,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: createCommonOverrides(prefs, svc),
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const PatternFormScreen(),
+          home: PatternFormScreen(),
         ),
       ),
     );
@@ -447,11 +447,11 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: createCommonOverrides(prefs, svc),
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const PatternFormScreen(),
+          home: PatternFormScreen(),
         ),
       ),
     );
@@ -477,11 +477,11 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: createCommonOverrides(prefs, svc),
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const PatternFormScreen(),
+          home: PatternFormScreen(),
         ),
       ),
     );

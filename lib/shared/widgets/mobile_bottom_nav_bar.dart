@@ -32,7 +32,7 @@ class MobileBottomNavBar extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      constraints: BoxConstraints.tightFor(
+      constraints: const BoxConstraints.tightFor(
         height: MobileSpacing.bottomNavHeight,
       ),
       decoration: NeumorphicStyles.decoration(

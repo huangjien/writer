@@ -28,6 +28,7 @@ class AppButtons {
 
         return FocusWrapper(
           borderRadius: BorderRadius.circular(Radii.m),
+          onActivate: (enabled && !isLoading) ? onPressed : null,
           child: PressScale(
             enabled: enabled && !isLoading,
             child: SizedBox(
@@ -92,6 +93,7 @@ class AppButtons {
   }) {
     return FocusWrapper(
       borderRadius: BorderRadius.circular(Radii.m),
+      onActivate: (enabled && !isLoading) ? onPressed : null,
       child: PressScale(
         enabled: enabled && !isLoading,
         child: SizedBox(
@@ -133,6 +135,7 @@ class AppButtons {
   }) {
     return FocusWrapper(
       borderRadius: BorderRadius.circular(Radii.m),
+      onActivate: enabled ? onPressed : null,
       child: PressScale(
         enabled: enabled,
         child: NeumorphicButton(
@@ -197,6 +200,7 @@ class AppButtons {
           child: FocusWrapper(
             borderRadius: BorderRadius.circular(Radii.m),
             padding: focusPadding,
+            onActivate: enabled ? onPressed : null,
             child: ExcludeSemantics(child: button),
           ),
         ),
@@ -205,6 +209,7 @@ class AppButtons {
     return FocusWrapper(
       borderRadius: BorderRadius.circular(Radii.m),
       padding: focusPadding,
+      onActivate: enabled ? onPressed : null,
       child: button,
     );
   }
@@ -245,6 +250,7 @@ class AppButtons {
           child: FocusWrapper(
             borderRadius: BorderRadius.circular(Radii.m),
             padding: focusPadding,
+            onActivate: enabled ? onPressed : null,
             child: ExcludeSemantics(child: button),
           ),
         ),
@@ -253,6 +259,7 @@ class AppButtons {
     return FocusWrapper(
       borderRadius: BorderRadius.circular(Radii.m),
       padding: focusPadding,
+      onActivate: enabled ? onPressed : null,
       child: button,
     );
   }

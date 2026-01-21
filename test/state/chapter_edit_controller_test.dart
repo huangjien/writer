@@ -81,7 +81,7 @@ void main() {
 
       when(
         () => mockRepo.updateChapter(any()),
-      ).thenThrow(OfflineException('No internet'));
+      ).thenThrow(const OfflineException('No internet'));
 
       controller.setTitle('Updated Title');
       final result = await controller.save();

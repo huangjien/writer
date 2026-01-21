@@ -67,11 +67,11 @@ void main() {
             return const BackendUser(id: 'auth-001');
           }),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const ChapterReaderScreen(
+          home: ChapterReaderScreen(
             chapterId: 'c1',
             title: 'Progress Auth',
             content: 'Hello world. This is a chapter.',

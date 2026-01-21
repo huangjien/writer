@@ -76,10 +76,10 @@ void main() {
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const PatternsListScreen(),
+          home: PatternsListScreen(),
         ),
       ),
     );
@@ -98,10 +98,10 @@ void main() {
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const PatternsListScreen(),
+          home: PatternsListScreen(),
         ),
       ),
     );
@@ -160,10 +160,10 @@ void main() {
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const PatternsListScreen(),
+          home: PatternsListScreen(),
         ),
       ),
     );
@@ -201,10 +201,10 @@ void main() {
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const PatternsListScreen(),
+          home: PatternsListScreen(),
         ),
       ),
     );
@@ -235,10 +235,10 @@ void main() {
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const PatternsListScreen(),
+          home: PatternsListScreen(),
         ),
       ),
     );
@@ -270,10 +270,10 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const PatternsListScreen(),
+          home: PatternsListScreen(),
         ),
       ),
     );
@@ -318,10 +318,10 @@ void main() {
           patternsProvider.overrideWith((ref) async => []),
           patternsServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const PatternsListScreen(),
+          home: PatternsListScreen(),
         ),
       ),
     );
@@ -342,10 +342,10 @@ void main() {
           patternsProvider.overrideWith((ref) async => []),
           patternsServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const PatternsListScreen(),
+          home: PatternsListScreen(),
         ),
       ),
     );
@@ -364,10 +364,10 @@ void main() {
           patternsProvider.overrideWith((ref) async => fake.items),
           patternsServiceRefProvider.overrideWith((_) => fake),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const PatternsListScreen(),
+          home: PatternsListScreen(),
         ),
       ),
     );

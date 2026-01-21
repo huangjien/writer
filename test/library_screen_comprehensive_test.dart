@@ -47,10 +47,10 @@ void main() {
             lastProgressProvider.overrideWith((ref, novelId) async => null),
             isSignedInProvider.overrideWith((ref) => true),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
+            home: LibraryScreen(),
           ),
         ),
       );
@@ -95,10 +95,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
+            home: LibraryScreen(),
           ),
         ),
       );
@@ -143,10 +143,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
+            home: LibraryScreen(),
           ),
         ),
       );
@@ -197,10 +197,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MediaQuery(
+            home: MediaQuery(
               data: MediaQueryData(size: Size(1200, 800)),
               child: LibraryScreen(),
             ),
@@ -238,10 +238,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MediaQuery(
+            home: MediaQuery(
               data: MediaQueryData(size: Size(1200, 800)),
               child: LibraryScreen(),
             ),
@@ -271,10 +271,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
+            home: LibraryScreen(),
           ),
         ),
       );
@@ -300,10 +300,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
+            home: LibraryScreen(),
           ),
         ),
       );
@@ -330,10 +330,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
+            home: LibraryScreen(),
           ),
         ),
       );
@@ -359,10 +359,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MediaQuery(
+            home: MediaQuery(
               data: MediaQueryData(size: Size(400, 800)),
               child: LibraryScreen(),
             ),
@@ -389,10 +389,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MediaQuery(
+            home: MediaQuery(
               data: MediaQueryData(size: Size(1200, 800)),
               child: LibraryScreen(),
             ),
@@ -421,10 +421,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MediaQuery(
+            home: MediaQuery(
               data: MediaQueryData(size: Size(400, 800)),
               child: LibraryScreen(),
             ),
@@ -466,10 +466,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
+            home: LibraryScreen(),
           ),
         ),
       );
@@ -513,10 +513,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
+            home: LibraryScreen(),
           ),
         ),
       );
@@ -567,10 +567,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MediaQuery(
+            home: MediaQuery(
               data: MediaQueryData(size: Size(1200, 800)),
               child: LibraryScreen(),
             ),
@@ -631,10 +631,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
+            home: LibraryScreen(),
           ),
         ),
       );
@@ -677,10 +677,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
+            home: LibraryScreen(),
           ),
         ),
       );
@@ -725,10 +725,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
+            home: LibraryScreen(),
           ),
         ),
       );
@@ -799,10 +799,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
+            home: LibraryScreen(),
           ),
         ),
       );
@@ -854,10 +854,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
+            home: LibraryScreen(),
           ),
         ),
       );
@@ -915,10 +915,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const LibraryScreen(),
+            home: LibraryScreen(),
           ),
         ),
       );
@@ -969,10 +969,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MediaQuery(
+            home: MediaQuery(
               data: MediaQueryData(size: Size(1200, 800)),
               child: LibraryScreen(),
             ),
@@ -1033,10 +1033,10 @@ void main() {
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MediaQuery(
+            home: MediaQuery(
               data: MediaQueryData(size: Size(1200, 800)),
               child: LibraryScreen(),
             ),
@@ -1095,10 +1095,10 @@ void main() {
             lastProgressProvider.overrideWith((ref, novelId) async => null),
             isSignedInProvider.overrideWith((ref) => true),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MediaQuery(
+            home: MediaQuery(
               data: MediaQueryData(size: Size(1200, 800)),
               child: LibraryScreen(),
             ),
@@ -1155,10 +1155,10 @@ void main() {
             removedNovelIdsProvider.overrideWith((ref) => {}),
             isSignedInProvider.overrideWith((ref) => true),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MediaQuery(
+            home: MediaQuery(
               data: MediaQueryData(size: Size(1200, 800)),
               child: LibraryScreen(),
             ),
@@ -1268,10 +1268,10 @@ void main() {
             lastProgressProvider.overrideWith((ref, novelId) async => null),
             isAdminProvider.overrideWith((ref) => true),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MediaQuery(
+            home: MediaQuery(
               data: MediaQueryData(size: Size(1200, 800)),
               child: LibraryScreen(),
             ),
@@ -1300,10 +1300,10 @@ void main() {
             lastProgressProvider.overrideWith((ref, novelId) async => null),
             isAdminProvider.overrideWith((ref) => false),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MediaQuery(
+            home: MediaQuery(
               data: MediaQueryData(size: Size(1200, 800)),
               child: LibraryScreen(),
             ),
@@ -1336,10 +1336,10 @@ void main() {
             // Mock recentProgressDetailsProvider if needed, assuming default is empty list or similar
             recentProgressDetailsProvider.overrideWith((ref) => []),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const MediaQuery(
+            home: MediaQuery(
               data: MediaQueryData(size: Size(1200, 800)),
               child: LibraryScreen(),
             ),

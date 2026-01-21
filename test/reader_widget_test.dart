@@ -21,11 +21,11 @@ void main() {
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           sharedPreferencesProvider.overrideWithValue(prefs),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: SizedBox.shrink()),
+          home: Scaffold(body: SizedBox.shrink()),
         ),
       ),
     );
@@ -37,8 +37,8 @@ void main() {
           appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
           sharedPreferencesProvider.overrideWithValue(prefs),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: ChapterReaderScreen(
@@ -48,7 +48,7 @@ void main() {
             novelId: 'n-1',
             initialOffset: 0.0,
             initialTtsIndex: 0,
-            allChapters: const [],
+            allChapters: [],
             currentIdx: 0,
             autoStartTts: false,
           ),

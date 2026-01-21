@@ -417,7 +417,7 @@ void main() {
 
     testWidgets('disposes animation controller properly', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: MobileFabWithMenu(
               items: [],
@@ -428,7 +428,7 @@ void main() {
         ),
       );
 
-      await tester.pumpWidget(MaterialApp(home: Scaffold()));
+      await tester.pumpWidget(const MaterialApp(home: Scaffold()));
 
       // Should not throw any errors during disposal
     });

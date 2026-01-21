@@ -22,11 +22,11 @@ void main() {
           appSettingsProvider.overrideWith((_) => appSettings),
           sharedPreferencesProvider.overrideWithValue(prefs),
         ],
-        child: MaterialApp(
-          locale: const Locale('zh'),
+        child: const MaterialApp(
+          locale: Locale('zh'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const ChapterReaderScreen(
+          home: ChapterReaderScreen(
             chapterId: 'c1',
             title: '测试章节',
             content: '你好世界。',

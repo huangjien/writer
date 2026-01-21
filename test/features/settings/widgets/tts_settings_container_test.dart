@@ -50,11 +50,11 @@ void main() {
           appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
           ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          home: const Scaffold(body: TtsSettingsContainer()),
+          locale: Locale('en'),
+          home: Scaffold(body: TtsSettingsContainer()),
         ),
       ),
     );

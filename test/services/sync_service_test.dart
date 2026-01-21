@@ -76,7 +76,7 @@ void main() {
           // Mock connectivityStream
           when(
             mockNetworkMonitor.connectivityStream,
-          ).thenAnswer((_) => Stream.empty());
+          ).thenAnswer((_) => const Stream.empty());
 
           syncService.startMonitoring();
           verify(mockNetworkMonitor.startMonitoring()).called(1);
@@ -87,7 +87,7 @@ void main() {
         // Mock connectivityStream
         when(
           mockNetworkMonitor.connectivityStream,
-        ).thenAnswer((_) => Stream.empty());
+        ).thenAnswer((_) => const Stream.empty());
 
         syncService.stopMonitoring();
         verify(mockNetworkMonitor.stopMonitoring()).called(1);

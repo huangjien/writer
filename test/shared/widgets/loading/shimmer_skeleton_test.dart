@@ -6,10 +6,8 @@ void main() {
   group('ShimmerSkeleton', () {
     testWidgets('renders child widget', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ShimmerSkeleton(child: const Text('Test Child')),
-          ),
+        const MaterialApp(
+          home: Scaffold(body: ShimmerSkeleton(child: Text('Test Child'))),
         ),
       );
 
@@ -19,10 +17,8 @@ void main() {
 
     testWidgets('uses default enabled value', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ShimmerSkeleton(child: const Text('Test Child')),
-          ),
+        const MaterialApp(
+          home: Scaffold(body: ShimmerSkeleton(child: Text('Test Child'))),
         ),
       );
 
@@ -34,12 +30,9 @@ void main() {
 
     testWidgets('uses custom enabled value', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const ShimmerSkeleton(
-              enabled: false,
-              child: Text('Test Child'),
-            ),
+            body: ShimmerSkeleton(enabled: false, child: Text('Test Child')),
           ),
         ),
       );
@@ -52,10 +45,8 @@ void main() {
 
     testWidgets('uses default duration value', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ShimmerSkeleton(child: const Text('Test Child')),
-          ),
+        const MaterialApp(
+          home: Scaffold(body: ShimmerSkeleton(child: Text('Test Child'))),
         ),
       );
 
@@ -67,9 +58,9 @@ void main() {
 
     testWidgets('uses custom duration value', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const ShimmerSkeleton(
+            body: ShimmerSkeleton(
               duration: Duration(milliseconds: 2000),
               child: Text('Test Child'),
             ),
@@ -106,8 +97,8 @@ void main() {
 
     testWidgets('wraps Icon widget', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: ShimmerSkeleton(child: const Icon(Icons.star))),
+        const MaterialApp(
+          home: Scaffold(body: ShimmerSkeleton(child: Icon(Icons.star))),
         ),
       );
 
@@ -173,7 +164,7 @@ void main() {
 
     testWidgets('preserves child widget properties', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ShimmerSkeleton(
               child: Text(
@@ -240,9 +231,9 @@ void main() {
       const key = Key('custom_shimmer_skeleton');
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: ShimmerSkeleton(key: key, child: const Text('Test Child')),
+            body: ShimmerSkeleton(key: key, child: Text('Test Child')),
           ),
         ),
       );
@@ -252,10 +243,10 @@ void main() {
 
     testWidgets('wraps CircleAvatar widget', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ShimmerSkeleton(
-              child: const CircleAvatar(radius: 30, child: Text('AB')),
+              child: CircleAvatar(radius: 30, child: Text('AB')),
             ),
           ),
         ),
@@ -267,15 +258,11 @@ void main() {
 
     testWidgets('wraps Column widget', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ShimmerSkeleton(
               child: Column(
-                children: const [
-                  Text('Line 1'),
-                  Text('Line 2'),
-                  Text('Line 3'),
-                ],
+                children: [Text('Line 1'), Text('Line 2'), Text('Line 3')],
               ),
             ),
           ),
@@ -295,8 +282,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: ThemeData.light(),
-          home: Scaffold(
-            body: ShimmerSkeleton(child: const Text('Test Child')),
+          home: const Scaffold(
+            body: ShimmerSkeleton(child: Text('Test Child')),
           ),
         ),
       );
@@ -308,8 +295,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: ThemeData.dark(),
-          home: Scaffold(
-            body: ShimmerSkeleton(child: const Text('Test Child')),
+          home: const Scaffold(
+            body: ShimmerSkeleton(child: Text('Test Child')),
           ),
         ),
       );
@@ -327,8 +314,8 @@ void main() {
               brightness: Brightness.light,
             ),
           ),
-          home: Scaffold(
-            body: ShimmerSkeleton(child: const Text('Test Child')),
+          home: const Scaffold(
+            body: ShimmerSkeleton(child: Text('Test Child')),
           ),
         ),
       );
@@ -340,10 +327,8 @@ void main() {
   group('ShimmerSkeleton Integration', () {
     testWidgets('works with Navigator', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ShimmerSkeleton(child: const Text('Navigable Child')),
-          ),
+        const MaterialApp(
+          home: Scaffold(body: ShimmerSkeleton(child: Text('Navigable Child'))),
         ),
       );
 
@@ -352,9 +337,9 @@ void main() {
 
     testWidgets('works inside Card', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: Card(child: ShimmerSkeleton(child: const Text('Card Child'))),
+            body: Card(child: ShimmerSkeleton(child: Text('Card Child'))),
           ),
         ),
       );
@@ -366,11 +351,11 @@ void main() {
 
     testWidgets('works inside ListTile', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ListTile(
-              title: ShimmerSkeleton(child: const Text('ListTile Title')),
-              subtitle: ShimmerSkeleton(child: const Text('ListTile Subtitle')),
+              title: ShimmerSkeleton(child: Text('ListTile Title')),
+              subtitle: ShimmerSkeleton(child: Text('ListTile Subtitle')),
             ),
           ),
         ),
@@ -382,12 +367,12 @@ void main() {
 
     testWidgets('works inside Row', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: Row(
               children: [
-                ShimmerSkeleton(child: const Text('Item 1')),
-                ShimmerSkeleton(child: const Text('Item 2')),
+                ShimmerSkeleton(child: Text('Item 1')),
+                ShimmerSkeleton(child: Text('Item 2')),
               ],
             ),
           ),

@@ -59,14 +59,14 @@ void main() {
           isSignedInProvider.overrideWithValue(true),
           templateRepositoryProvider.overrideWith((ref) => repo),
         ],
-        child: MaterialApp(
-          localizationsDelegates: const [
+        child: const MaterialApp(
+          localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('en')],
+          supportedLocales: [Locale('en')],
           home: SceneTemplatesListScreen(novelId: 'n-1'),
         ),
       ),
@@ -118,14 +118,14 @@ void main() {
           isSignedInProvider.overrideWithValue(true),
           templateRepositoryProvider.overrideWith((ref) => repo),
         ],
-        child: MaterialApp(
-          localizationsDelegates: const [
+        child: const MaterialApp(
+          localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('en')],
+          supportedLocales: [Locale('en')],
           home: SceneTemplatesListScreen(novelId: 'n-1'),
         ),
       ),
@@ -165,14 +165,14 @@ void main() {
           isSignedInProvider.overrideWithValue(true),
           templateRepositoryProvider.overrideWith((ref) => repo),
         ],
-        child: MaterialApp(
-          localizationsDelegates: const [
+        child: const MaterialApp(
+          localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('en')],
+          supportedLocales: [Locale('en')],
           home: SceneTemplatesListScreen(novelId: 'n-1'),
         ),
       ),

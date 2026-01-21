@@ -26,8 +26,8 @@ void main() {
   group('HapticTap', () {
     testWidgets('wraps child widget', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: HapticTap(child: const Text('Test Child'))),
+        const MaterialApp(
+          home: Scaffold(body: HapticTap(child: Text('Test Child'))),
         ),
       );
 
@@ -37,8 +37,8 @@ void main() {
 
     testWidgets('uses GestureDetector to handle taps', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: HapticTap(child: const Text('Tap Me'))),
+        const MaterialApp(
+          home: Scaffold(body: HapticTap(child: Text('Tap Me'))),
         ),
       );
 
@@ -69,8 +69,8 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: HapticTap(child: const Text('No Long Press'))),
+        const MaterialApp(
+          home: Scaffold(body: HapticTap(child: Text('No Long Press'))),
         ),
       );
 
@@ -263,9 +263,9 @@ void main() {
 
     test('handles different icon types', () {
       final items = [
-        MenuItem(label: 'No Icon'),
-        MenuItem(label: 'Star Icon', icon: Icons.star),
-        MenuItem(label: 'Heart Icon', icon: Icons.favorite),
+        const MenuItem(label: 'No Icon'),
+        const MenuItem(label: 'Star Icon', icon: Icons.star),
+        const MenuItem(label: 'Heart Icon', icon: Icons.favorite),
       ];
 
       expect(items.length, 3);
@@ -643,12 +643,9 @@ void main() {
   group('HapticTap - Enhanced Tests', () {
     testWidgets('provides haptic feedback on tap', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: HapticTap(
-              impact: HapticImpact.light,
-              child: const Text('Tap Me'),
-            ),
+            body: HapticTap(impact: HapticImpact.light, child: Text('Tap Me')),
           ),
         ),
       );
@@ -661,8 +658,8 @@ void main() {
 
     testWidgets('uses light impact by default', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: HapticTap(child: const Text('Default Impact'))),
+        const MaterialApp(
+          home: Scaffold(body: HapticTap(child: Text('Default Impact'))),
         ),
       );
 
@@ -674,11 +671,11 @@ void main() {
 
     testWidgets('uses medium impact when specified', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: HapticTap(
               impact: HapticImpact.medium,
-              child: const Text('Medium Impact'),
+              child: Text('Medium Impact'),
             ),
           ),
         ),
@@ -692,11 +689,11 @@ void main() {
 
     testWidgets('uses heavy impact when specified', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: HapticTap(
               impact: HapticImpact.heavy,
-              child: const Text('Heavy Impact'),
+              child: Text('Heavy Impact'),
             ),
           ),
         ),
@@ -738,8 +735,8 @@ void main() {
                 HapticTap(
                   child: Container(width: 100, height: 100, color: Colors.red),
                 ),
-                HapticTap(child: const Icon(Icons.star)),
-                HapticTap(child: const Card(child: Text('Card'))),
+                const HapticTap(child: Icon(Icons.star)),
+                const HapticTap(child: Card(child: Text('Card'))),
               ],
             ),
           ),
@@ -753,7 +750,7 @@ void main() {
 
     testWidgets('preserves child widget properties', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: HapticTap(
               child: Text(

@@ -38,7 +38,7 @@ class FakeChapter extends Fake implements Chapter {}
 void main() {
   setUpAll(() {
     registerFallbackValue(
-      Chapter(
+      const Chapter(
         id: 'fallback',
         novelId: 'fallback',
         idx: 0,
@@ -232,7 +232,7 @@ void main() {
   }
 
   testWidgets('ChapterReaderScreen renders title and content', (tester) async {
-    final chapter = Chapter(
+    final chapter = const Chapter(
       id: chapterId,
       novelId: novelId,
       idx: 0,
@@ -397,7 +397,7 @@ void main() {
     ).thenThrow(const UnknownFailure('Initial Error'));
 
     // We pass empty content so loadInitial runs
-    final chapter = Chapter(
+    final chapter = const Chapter(
       id: 'c1',
       novelId: novelId,
       idx: 0,
@@ -524,7 +524,7 @@ void main() {
   });
 
   testWidgets('Beta evaluation fails for empty content', (tester) async {
-    final emptyChapter = Chapter(
+    final emptyChapter = const Chapter(
       id: 'c1',
       novelId: novelId,
       idx: 0,

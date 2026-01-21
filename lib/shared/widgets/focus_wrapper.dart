@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
 
 class FocusWrapper extends StatefulWidget {
@@ -9,6 +10,7 @@ class FocusWrapper extends StatefulWidget {
     this.enabled = true,
     this.autofocus = false,
     this.padding = const EdgeInsets.all(2),
+    this.onActivate,
   });
 
   final Widget child;
@@ -16,6 +18,7 @@ class FocusWrapper extends StatefulWidget {
   final bool enabled;
   final bool autofocus;
   final EdgeInsets padding;
+  final VoidCallback? onActivate;
 
   @override
   State<FocusWrapper> createState() => _FocusWrapperState();
@@ -28,7 +31,7 @@ class _FocusWrapperState extends State<FocusWrapper> {
 
   late final FocusNode _focusNode = FocusNode(
     canRequestFocus: widget.autofocus,
-    skipTraversal: true,
+    skipTraversal: false,
   );
 
   @override
@@ -97,6 +100,22 @@ class _FocusWrapperState extends State<FocusWrapper> {
       focusNode: _focusNode,
       autofocus: widget.autofocus,
       onShowFocusHighlight: _handleShowFocusHighlight,
+      shortcuts: widget.onActivate != null
+          ? const <ShortcutActivator, Intent>{
+              SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+              SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+            }
+          : null,
+      actions: widget.onActivate != null
+          ? <Type, Action<Intent>>{
+              ActivateIntent: CallbackAction<ActivateIntent>(
+                onInvoke: (intent) {
+                  widget.onActivate?.call();
+                  return null;
+                },
+              ),
+            }
+          : null,
       child: AnimatedContainer(
         duration: duration,
         curve: Curves.easeOut,
