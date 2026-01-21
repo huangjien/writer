@@ -97,6 +97,31 @@ class AiChatService {
       return null;
     }
   }
+
+  Future<Map<String, dynamic>?> ragSearch({
+    required String query,
+    String? category,
+    int initialTopK = 10,
+    int finalTopK = 5,
+    bool refinementEnabled = true,
+  }) async {
+    try {
+      final body = {
+        'query': query,
+        if (category != null) 'category': category,
+        'initial_top_k': initialTopK,
+        'final_top_k': finalTopK,
+        'refinement_enabled': refinementEnabled,
+      };
+      final res = await remote.post('rag/search', body);
+      if (res is Map) {
+        return res.cast<String, dynamic>();
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
 }
 
 final aiChatServiceProvider = Provider<AiChatService>((ref) {

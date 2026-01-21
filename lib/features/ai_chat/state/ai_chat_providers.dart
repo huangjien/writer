@@ -38,6 +38,12 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
   Future<void> sendMessage(String message) async {
     if (message.trim().isEmpty) return;
 
+    // Check for RAG command
+    if (message.startsWith('/search ')) {
+      await _handleRagSearch(message);
+      return;
+    }
+
     // Add user message and set loading
     state = state.copyWith(
       messages: [
@@ -64,6 +70,70 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
         messages: [
           ...state.messages,
           ChatMessage(content: 'Error: ${e.toString()}', isUser: false),
+        ],
+        isLoading: false,
+      );
+    }
+  }
+
+  Future<void> _handleRagSearch(String message) async {
+    final query = message.replaceFirst('/search ', '').trim();
+    if (query.isEmpty) return;
+
+    state = state.copyWith(
+      messages: [
+        ...state.messages,
+        ChatMessage(content: message, isUser: true),
+      ],
+      isLoading: true,
+    );
+
+    try {
+      final result = await _aiChatService.ragSearch(query: query);
+
+      if (result == null) {
+        throw Exception('Search failed');
+      }
+
+      final refinedQuery = result['refined_query'];
+      final results = (result['results'] as List).cast<Map>();
+
+      final sb = StringBuffer();
+      sb.writeln('### RAG Search Results');
+      if (refinedQuery != null) {
+        sb.writeln('> Refined Query: "$refinedQuery"\n');
+      }
+
+      if (results.isEmpty) {
+        sb.writeln('No results found.');
+      } else {
+        for (final item in results) {
+          final title = item['title'] ?? 'Untitled';
+          final type = item['type'] ?? 'unknown';
+          final score = ((item['score'] as num) * 100).toStringAsFixed(1);
+          final content = item['content'] as String? ?? '';
+          final preview = content.length > 150
+              ? '${content.substring(0, 150)}...'
+              : content;
+
+          sb.writeln('**$title** ($type) - $score%');
+          sb.writeln(preview);
+          sb.writeln('');
+        }
+      }
+
+      state = state.copyWith(
+        messages: [
+          ...state.messages,
+          ChatMessage(content: sb.toString(), isUser: false),
+        ],
+        isLoading: false,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        messages: [
+          ...state.messages,
+          ChatMessage(content: 'Search Error: ${e.toString()}', isUser: false),
         ],
         isLoading: false,
       );
