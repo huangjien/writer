@@ -21,6 +21,7 @@ class ReaderSessionState {
   final int? progressDenomLockedIndex;
   final List<Chapter> allChapters;
   final AppFailure? failure;
+  final bool playbackCompleted;
 
   const ReaderSessionState({
     required this.chapterId,
@@ -40,6 +41,7 @@ class ReaderSessionState {
     this.progressDenomLockedIndex,
     this.allChapters = const [],
     this.failure,
+    this.playbackCompleted = false,
   });
 
   ReaderSessionState copyWith({
@@ -60,7 +62,8 @@ class ReaderSessionState {
     int? progressDenomLockedIndex,
     List<Chapter>? allChapters,
     AppFailure? failure,
-    bool clearFailure = false, // Helper to clear failure
+    bool clearFailure = false,
+    bool? playbackCompleted,
   }) {
     return ReaderSessionState(
       chapterId: chapterId ?? this.chapterId,
@@ -81,6 +84,7 @@ class ReaderSessionState {
           progressDenomLockedIndex ?? this.progressDenomLockedIndex,
       allChapters: allChapters ?? this.allChapters,
       failure: clearFailure ? null : (failure ?? this.failure),
+      playbackCompleted: playbackCompleted ?? this.playbackCompleted,
     );
   }
 }

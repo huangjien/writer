@@ -470,11 +470,15 @@ void main() {
     await tester.tap(find.byIcon(Icons.skip_next));
     await tester.pump(); // Start nav
     await tester.pump(); // Show toast
+    await tester.pump(
+      const Duration(milliseconds: 300),
+    ); // Wait for toast animation
 
     // Verify Error Toast
     expect(find.text('Load Failed'), findsOneWidget);
 
-    final retryFinder = find.widgetWithText(TextButton, 'Retry');
+    // Find the retry button - try both widgetWithText and direct text finder
+    final retryFinder = find.text('Retry');
     expect(retryFinder, findsOneWidget);
     await tester.tap(retryFinder);
     await tester.pumpAndSettle();

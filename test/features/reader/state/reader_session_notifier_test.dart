@@ -1453,10 +1453,14 @@ void main() {
 
       final notifier = container.read(notifierProvider.notifier);
 
+      final result = await notifier.loadNextChapter();
+
+      expect(result, isFalse);
+      expect(container.read(notifierProvider).failure, isA<NetworkFailure>());
       expect(
-        () async => await notifier.loadNextChapter(),
-        throwsA(isA<Exception>()),
-      ); // Exception bubbles up from repository call
+        container.read(notifierProvider).failure?.message,
+        contains('Failed to load next chapter'),
+      );
     });
   });
 

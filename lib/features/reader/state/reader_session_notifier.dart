@@ -68,7 +68,11 @@ class ReaderSessionNotifier extends StateNotifier<ReaderSessionState> {
   }
 
   Future<void> loadInitial() async {
-    if (state.content != null && state.content!.isNotEmpty) return;
+    if (state.content != null &&
+        state.content!.isNotEmpty &&
+        state.failure == null) {
+      return;
+    }
 
     // Return early if there are no chapters available
     if (state.allChapters.isEmpty) return;
@@ -97,38 +101,52 @@ class ReaderSessionNotifier extends StateNotifier<ReaderSessionState> {
   }
 
   Future<bool> loadNextChapter() async {
-    // If we are already failing or loading, we might want to block?
-    // But allowing retry is good.
-
     final res = computeNext(state.allChapters, state.currentIdx, novelId);
     if (res == null) {
       return false;
     }
 
-    String? content = res.content;
-    if (content == null || content.isEmpty) {
-      final repo = ref.read(chapterRepositoryProvider);
-      final nextChapter = state.allChapters[res.currentIdx];
-      final fetched = await repo.getChapter(nextChapter);
-      content = fetched.content;
+    try {
+      String? content = res.content;
+      if (content == null || content.isEmpty) {
+        final repo = ref.read(chapterRepositoryProvider);
+        final nextChapter = state.allChapters[res.currentIdx];
+        final fetched = await repo.getChapter(nextChapter);
+        content = fetched.content;
+      }
+
+      if (content == null || content.isEmpty) {
+        state = state.copyWith(
+          failure: const UnknownFailure('Chapter content is empty'),
+        );
+        return false;
+      }
+
+      state = state.copyWith(
+        chapterId: res.chapterId,
+        title: res.title,
+        content: content,
+        currentIdx: res.currentIdx,
+        ttsIndex: 0,
+        ttsIndexVisual: 0,
+        speaking: false,
+        autoplayBlocked: false,
+        progressDenomLockedIndex: null,
+        clearFailure: true,
+        playbackCompleted: false,
+      );
+
+      await startTts(optimistic: true);
+      _prefetchNext(res.currentIdx);
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        failure: e is AppFailure
+            ? e
+            : NetworkFailure('Failed to load next chapter', e),
+      );
+      return false;
     }
-
-    state = state.copyWith(
-      chapterId: res.chapterId,
-      title: res.title,
-      content: content,
-      currentIdx: res.currentIdx,
-      ttsIndex: 0,
-      ttsIndexVisual: 0,
-      speaking: false,
-      autoplayBlocked: false,
-      progressDenomLockedIndex: null,
-      clearFailure: true,
-    );
-
-    await startTts(optimistic: true);
-    _prefetchNext(res.currentIdx);
-    return true;
   }
 
   Future<bool> loadPrevChapter() async {
@@ -172,7 +190,7 @@ class ReaderSessionNotifier extends StateNotifier<ReaderSessionState> {
 
   Future<void> startTts({bool optimistic = true}) async {
     if (optimistic) {
-      state = state.copyWith(speaking: true);
+      state = state.copyWith(speaking: true, playbackCompleted: false);
     }
     state = state.copyWith(progressDenomLockedIndex: null);
 
@@ -186,21 +204,23 @@ class ReaderSessionNotifier extends StateNotifier<ReaderSessionState> {
         state = state.copyWith(ttsIndexVisual: i, speaking: true);
       },
       onStart: () {
-        state = state.copyWith(speaking: true);
+        state = state.copyWith(speaking: true, playbackCompleted: false);
       },
       onCancel: () {
         state = state.copyWith(speaking: false);
       },
       onError: (msg) {
         state = state.copyWith(speaking: false);
-        // Error handling might need a stream or callback
       },
       onComplete: () async {
         state = state.copyWith(
           speaking: false,
           progressDenomLockedIndex: _ttsDriver.index,
         );
-        await loadNextChapter();
+        final success = await loadNextChapter();
+        if (!success) {
+          state = state.copyWith(playbackCompleted: true);
+        }
       },
     );
   }
@@ -275,7 +295,7 @@ class ReaderSessionNotifier extends StateNotifier<ReaderSessionState> {
         state = state.copyWith(ttsIndexVisual: i, speaking: true);
       },
       onStart: () {
-        state = state.copyWith(speaking: true);
+        state = state.copyWith(speaking: true, playbackCompleted: false);
       },
       onCancel: () {
         state = state.copyWith(speaking: false);
@@ -288,7 +308,10 @@ class ReaderSessionNotifier extends StateNotifier<ReaderSessionState> {
           speaking: false,
           progressDenomLockedIndex: _ttsDriver.index,
         );
-        await loadNextChapter();
+        final success = await loadNextChapter();
+        if (!success) {
+          state = state.copyWith(playbackCompleted: true);
+        }
       },
     );
 

@@ -2,6 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import '../../../theme/design_tokens.dart';
 
+class _ParagraphMatch {
+  _ParagraphMatch(this.text, this.start, this.end);
+
+  final String text;
+  final int start;
+  final int end;
+
+  String group(int? group) => text;
+}
+
 class ReaderParagraphs extends StatelessWidget {
   const ReaderParagraphs({
     super.key,
@@ -16,8 +26,16 @@ class ReaderParagraphs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (text.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     final paragraphs = text.split(RegExp(r'\n\n+'));
-    int currentStart = 0;
+
+    final paragraphMatches = paragraphs.map((p) {
+      final start = text.indexOf(p);
+      return _ParagraphMatch(p, start, start + p.length);
+    }).toList();
     final baseStyleSheet = MarkdownStyleSheet.fromTheme(Theme.of(context));
     TextStyle? bold(TextStyle? s) => s?.copyWith(fontWeight: FontWeight.bold);
     final styleSheet = forceBold
@@ -36,22 +54,21 @@ class ReaderParagraphs extends StatelessWidget {
           )
         : null;
 
+    final textLength = text.length;
+    final clampedIndex = ttsIndex.clamp(0, textLength);
+
     return Column(
       key: const ValueKey('reader_paragraphs_column'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: paragraphs.map((p) {
-        final len = p.length;
-        // Determine if ttsIndex falls within this paragraph
-        // We assume 2 chars for the split pattern for simple calculation,
-        // or we could track actual indices if we didn't split.
-        // For now, let's assume sequential.
-        final end = currentStart + len;
-        final isCurrent = ttsIndex >= currentStart && ttsIndex <= end;
+      children: paragraphMatches.map((match) {
+        final paragraphStart = match.start;
+        final paragraphEnd = match.end;
 
-        // Advance start for next paragraph (add 2 for newlines)
-        // Note: RegExp split might consume more, but for simple cases +2 is close enough.
-        // Ideally we should preserve delimiters to be exact.
-        currentStart += len + 2;
+        final isCurrent =
+            ttsIndex >= 0 &&
+            ttsIndex <= textLength &&
+            ((clampedIndex >= paragraphStart && clampedIndex < paragraphEnd) ||
+                (clampedIndex == textLength && paragraphEnd == textLength));
 
         return Container(
           key: isCurrent ? const ValueKey('current_paragraph') : null,
@@ -64,7 +81,12 @@ class ReaderParagraphs extends StatelessWidget {
                 )
               : null,
           margin: const EdgeInsets.only(bottom: Spacing.l),
-          child: MarkdownBody(data: p, styleSheet: styleSheet),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+            opacity: isCurrent ? 1.0 : 1.0,
+            child: MarkdownBody(data: match.group(0), styleSheet: styleSheet),
+          ),
         );
       }).toList(),
     );

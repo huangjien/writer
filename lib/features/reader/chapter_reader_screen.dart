@@ -376,7 +376,32 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
 
     ref.listen(readerSessionProvider, (prev, next) {
       if (prev?.chapterId != next.chapterId) {
-        if (_controller.hasClients) _controller.jumpTo(0);
+        if (_controller.hasClients) {
+          _controller.animateTo(
+            0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        }
+
+        if (prev?.chapterId != null && mounted) {
+          final l10n = AppLocalizations.of(context)!;
+          showEnhancedToast(
+            context,
+            message: l10n.chapterLabel(next.currentIdx + 1),
+            tone: EnhancedToastTone.success,
+            duration: const Duration(milliseconds: 1500),
+          );
+        }
+      }
+      if (next.playbackCompleted && prev?.playbackCompleted != true) {
+        if (!mounted) return;
+        showEnhancedToast(
+          context,
+          message: AppLocalizations.of(context)!.reachedLastChapter,
+          tone: EnhancedToastTone.info,
+          duration: const Duration(seconds: 3),
+        );
       }
     });
 
