@@ -547,6 +547,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                       child: Row(
                         children: [
                           AppButtons.primary(
+                            icon: Icons.save,
                             label: l10n.save,
                             onPressed:
                                 (summaryState.saving || !summaryState.isDirty)

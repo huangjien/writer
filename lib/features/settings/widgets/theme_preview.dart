@@ -19,13 +19,11 @@ class ThemePreviewGrid extends StatelessWidget {
     final families = const [
       AppThemeFamily.defaultFamily,
       AppThemeFamily.sepia,
-      AppThemeFamily.emeraldGreen,
-      AppThemeFamily.solarized,
+      AppThemeFamily.emerald,
       AppThemeFamily.solarizedTan,
       AppThemeFamily.nord,
       AppThemeFamily.nordFrost,
-      AppThemeFamily.nordSnowstorm,
-      AppThemeFamily.highContrast,
+      AppThemeFamily.contrast,
     ];
 
     String labelFor(AppThemeFamily f) {
@@ -34,19 +32,15 @@ class ThemePreviewGrid extends StatelessWidget {
           return l10n.themeDefault;
         case AppThemeFamily.sepia:
           return l10n.themeSepia;
-        case AppThemeFamily.emeraldGreen:
+        case AppThemeFamily.emerald:
           return l10n.themeEmeraldGreen;
-        case AppThemeFamily.solarized:
-          return l10n.themeSolarized;
         case AppThemeFamily.solarizedTan:
           return l10n.themeSolarizedTan;
         case AppThemeFamily.nord:
           return l10n.themeNord;
         case AppThemeFamily.nordFrost:
           return l10n.themeNordFrost;
-        case AppThemeFamily.nordSnowstorm:
-          return l10n.themeNordSnowstorm;
-        case AppThemeFamily.highContrast:
+        case AppThemeFamily.contrast:
           return l10n.themeHighContrast;
       }
     }

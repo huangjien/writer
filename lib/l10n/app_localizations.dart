@@ -899,7 +899,7 @@ abstract class AppLocalizations {
   /// No description provided for @themeHighContrast.
   ///
   /// In en, this message translates to:
-  /// **'High Contrast'**
+  /// **'Contrast'**
   String get themeHighContrast;
 
   /// No description provided for @themeDefault.
@@ -911,14 +911,8 @@ abstract class AppLocalizations {
   /// No description provided for @themeEmeraldGreen.
   ///
   /// In en, this message translates to:
-  /// **'Emerald Green'**
+  /// **'Emerald'**
   String get themeEmeraldGreen;
-
-  /// No description provided for @themeSolarized.
-  ///
-  /// In en, this message translates to:
-  /// **'Solarized'**
-  String get themeSolarized;
 
   /// No description provided for @themeSolarizedTan.
   ///
@@ -937,12 +931,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nord Frost'**
   String get themeNordFrost;
-
-  /// No description provided for @themeNordSnowstorm.
-  ///
-  /// In en, this message translates to:
-  /// **'Nord Snowstorm'**
-  String get themeNordSnowstorm;
 
   /// No description provided for @separateDarkPalette.
   ///

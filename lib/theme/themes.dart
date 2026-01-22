@@ -7,13 +7,11 @@ import 'neumorphic_styles.dart';
 enum AppThemeFamily {
   defaultFamily,
   sepia,
-  emeraldGreen,
-  highContrast,
-  solarized,
+  emerald,
+  contrast,
   solarizedTan,
   nord,
   nordFrost,
-  nordSnowstorm,
 }
 
 /// Returns the seed color for the given family.
@@ -23,11 +21,8 @@ Color _seedFor(AppThemeFamily family) {
       return Colors.indigo;
     case AppThemeFamily.sepia:
       return AppColors.sepiaSeed;
-    case AppThemeFamily.emeraldGreen:
+    case AppThemeFamily.emerald:
       return const Color(0xFF50C878);
-    case AppThemeFamily.solarized:
-      // Solarized Blue
-      return const Color(0xFF268BD2);
     case AppThemeFamily.solarizedTan:
       // Solarized Tan (base yellow)
       return const Color(0xFFB58900);
@@ -37,17 +32,14 @@ Color _seedFor(AppThemeFamily family) {
     case AppThemeFamily.nordFrost:
       // Nord Frost palette accent
       return const Color(0xFF8FBCBB);
-    case AppThemeFamily.nordSnowstorm:
-      // Nord Snowstorm (light neutrals as seed may not be ideal)
-      return const Color(0xFFE5E9F0);
-    case AppThemeFamily.highContrast:
-      // Seed not used for highContrast families
+    case AppThemeFamily.contrast:
+      // Seed not used for contrast families
       return Colors.black;
   }
 }
 
 bool _isHighContrast(AppThemeFamily family) =>
-    family == AppThemeFamily.highContrast;
+    family == AppThemeFamily.contrast;
 
 ThemeData _buildFromSeed(Color seed, Brightness brightness) {
   final isLight = brightness == Brightness.light;

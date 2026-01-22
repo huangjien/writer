@@ -21,20 +21,20 @@ void main() {
   test('encode/decode AppThemeFamily', () {
     expect(encodeFamily(AppThemeFamily.defaultFamily), 'light');
     expect(encodeFamily(AppThemeFamily.sepia), 'sepia');
-    expect(encodeFamily(AppThemeFamily.highContrast), 'highContrast');
-    expect(encodeFamily(AppThemeFamily.solarized), 'solarized');
+    expect(encodeFamily(AppThemeFamily.emerald), 'emerald');
+    expect(encodeFamily(AppThemeFamily.contrast), 'contrast');
     expect(encodeFamily(AppThemeFamily.solarizedTan), 'solarizedTan');
     expect(encodeFamily(AppThemeFamily.nord), 'nord');
     expect(encodeFamily(AppThemeFamily.nordFrost), 'nordFrost');
-    expect(encodeFamily(AppThemeFamily.nordSnowstorm), 'nordSnowstorm');
     expect(decodeFamily('light'), AppThemeFamily.defaultFamily);
     expect(decodeFamily('sepia'), AppThemeFamily.sepia);
-    expect(decodeFamily('highContrast'), AppThemeFamily.highContrast);
-    expect(decodeFamily('solarized'), AppThemeFamily.solarized);
+    expect(decodeFamily('emerald'), AppThemeFamily.emerald);
+    expect(decodeFamily('emeraldGreen'), AppThemeFamily.emerald);
+    expect(decodeFamily('contrast'), AppThemeFamily.contrast);
+    expect(decodeFamily('highContrast'), AppThemeFamily.contrast);
     expect(decodeFamily('solarizedTan'), AppThemeFamily.solarizedTan);
     expect(decodeFamily('nord'), AppThemeFamily.nord);
     expect(decodeFamily('nordFrost'), AppThemeFamily.nordFrost);
-    expect(decodeFamily('nordSnowstorm'), AppThemeFamily.nordSnowstorm);
     expect(decodeFamily(null), AppThemeFamily.defaultFamily);
     expect(decodeFamily('unknown'), AppThemeFamily.defaultFamily);
   });

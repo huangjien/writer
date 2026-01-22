@@ -52,12 +52,8 @@ class PaletteSettingsSection extends ConsumerWidget {
                       child: Text(l10n.themeSepia),
                     ),
                     DropdownMenuItem(
-                      value: AppThemeFamily.emeraldGreen,
+                      value: AppThemeFamily.emerald,
                       child: Text(l10n.themeEmeraldGreen),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.solarized,
-                      child: Text(l10n.themeSolarized),
                     ),
                     DropdownMenuItem(
                       value: AppThemeFamily.solarizedTan,
@@ -72,11 +68,7 @@ class PaletteSettingsSection extends ConsumerWidget {
                       child: Text(l10n.themeNordFrost),
                     ),
                     DropdownMenuItem(
-                      value: AppThemeFamily.nordSnowstorm,
-                      child: Text(l10n.themeNordSnowstorm),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.highContrast,
+                      value: AppThemeFamily.contrast,
                       child: Text(l10n.themeHighContrast),
                     ),
                   ],
@@ -117,12 +109,8 @@ class PaletteSettingsSection extends ConsumerWidget {
                       child: Text(l10n.themeSepia),
                     ),
                     DropdownMenuItem(
-                      value: AppThemeFamily.emeraldGreen,
+                      value: AppThemeFamily.emerald,
                       child: Text(l10n.themeEmeraldGreen),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.solarized,
-                      child: Text(l10n.themeSolarized),
                     ),
                     DropdownMenuItem(
                       value: AppThemeFamily.solarizedTan,
@@ -137,11 +125,7 @@ class PaletteSettingsSection extends ConsumerWidget {
                       child: Text(l10n.themeNordFrost),
                     ),
                     DropdownMenuItem(
-                      value: AppThemeFamily.nordSnowstorm,
-                      child: Text(l10n.themeNordSnowstorm),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.highContrast,
+                      value: AppThemeFamily.contrast,
                       child: Text(l10n.themeHighContrast),
                     ),
                   ],
@@ -181,12 +165,8 @@ class PaletteSettingsSection extends ConsumerWidget {
                       child: Text(l10n.themeSepia),
                     ),
                     DropdownMenuItem(
-                      value: AppThemeFamily.emeraldGreen,
+                      value: AppThemeFamily.emerald,
                       child: Text(l10n.themeEmeraldGreen),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.solarized,
-                      child: Text(l10n.themeSolarized),
                     ),
                     DropdownMenuItem(
                       value: AppThemeFamily.solarizedTan,
@@ -201,11 +181,7 @@ class PaletteSettingsSection extends ConsumerWidget {
                       child: Text(l10n.themeNordFrost),
                     ),
                     DropdownMenuItem(
-                      value: AppThemeFamily.nordSnowstorm,
-                      child: Text(l10n.themeNordSnowstorm),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.highContrast,
+                      value: AppThemeFamily.contrast,
                       child: Text(l10n.themeHighContrast),
                     ),
                   ],

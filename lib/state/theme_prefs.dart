@@ -84,20 +84,18 @@ AppThemeFamily decodeFamily(String? raw) {
   switch (raw) {
     case 'sepia':
       return AppThemeFamily.sepia;
+    case 'emerald':
     case 'emeraldGreen':
-      return AppThemeFamily.emeraldGreen;
+      return AppThemeFamily.emerald;
+    case 'contrast':
     case 'highContrast':
-      return AppThemeFamily.highContrast;
-    case 'solarized':
-      return AppThemeFamily.solarized;
+      return AppThemeFamily.contrast;
     case 'solarizedTan':
       return AppThemeFamily.solarizedTan;
     case 'nord':
       return AppThemeFamily.nord;
     case 'nordFrost':
       return AppThemeFamily.nordFrost;
-    case 'nordSnowstorm':
-      return AppThemeFamily.nordSnowstorm;
     case 'light':
     default:
       return AppThemeFamily.defaultFamily;
@@ -110,20 +108,16 @@ String encodeFamily(AppThemeFamily family) {
       return 'light';
     case AppThemeFamily.sepia:
       return 'sepia';
-    case AppThemeFamily.emeraldGreen:
-      return 'emeraldGreen';
-    case AppThemeFamily.highContrast:
-      return 'highContrast';
-    case AppThemeFamily.solarized:
-      return 'solarized';
+    case AppThemeFamily.emerald:
+      return 'emerald';
+    case AppThemeFamily.contrast:
+      return 'contrast';
     case AppThemeFamily.solarizedTan:
       return 'solarizedTan';
     case AppThemeFamily.nord:
       return 'nord';
     case AppThemeFamily.nordFrost:
       return 'nordFrost';
-    case AppThemeFamily.nordSnowstorm:
-      return 'nordSnowstorm';
   }
 }
 

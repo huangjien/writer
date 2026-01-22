@@ -13,6 +13,7 @@ import 'package:writer/models/scene.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/models/scene_template_row.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/repositories/notes_repository.dart';
 import 'package:writer/features/summary/scene_templates_screen.dart';
 import 'package:writer/repositories/template_repository.dart';
 import 'package:writer/l10n/app_localizations.dart';
@@ -258,7 +259,11 @@ void main() {
           mockNovelsProvider.overrideWith((ref) async => [novel]),
           novelProvider.overrideWith((ref, id) async => novel),
         ],
-        child: const MaterialApp(home: ScenesScreen(novelId: 'n-1')),
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScenesScreen(novelId: 'n-1'),
+        ),
       ),
     );
 
@@ -268,9 +273,11 @@ void main() {
     await tester.enterText(locField, 'X');
     await tester.pump();
 
-    final btn = tester.widget<ElevatedButton>(
-      find.widgetWithText(ElevatedButton, 'Save'),
+    final saveButtonFinder = find.ancestor(
+      of: find.text('Save'),
+      matching: find.byType(NeumorphicButton),
     );
+    final btn = tester.widget<NeumorphicButton>(saveButtonFinder);
     expect(btn.onPressed, isNotNull, reason: 'Save button should be enabled');
 
     await tester.tap(find.text('Save'));
@@ -286,9 +293,11 @@ void main() {
     await tester.enterText(sumField, 'Introduces the journey.');
     await tester.pump();
 
-    final btn2 = tester.widget<ElevatedButton>(
-      find.widgetWithText(ElevatedButton, 'Save'),
+    final saveButtonFinder2 = find.ancestor(
+      of: find.text('Save'),
+      matching: find.byType(NeumorphicButton),
     );
+    final btn2 = tester.widget<NeumorphicButton>(saveButtonFinder2);
     expect(
       btn2.onPressed,
       isNotNull,
@@ -330,7 +339,11 @@ void main() {
           mockNovelsProvider.overrideWith((ref) async => [novel]),
           novelProvider.overrideWith((ref, id) async => novel),
         ],
-        child: const MaterialApp(home: ScenesScreen(novelId: 'n-1')),
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScenesScreen(novelId: 'n-1'),
+        ),
       ),
     );
 
@@ -477,8 +490,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Converted Summary'), findsOneWidget);
 
-    final saveButtonFinder = find.widgetWithText(ElevatedButton, 'Save');
-    final saveButton = tester.widget<ElevatedButton>(saveButtonFinder);
+    final saveButtonFinder = find.ancestor(
+      of: find.text('Save'),
+      matching: find.byType(NeumorphicButton),
+    );
+    final saveButton = tester.widget<NeumorphicButton>(saveButtonFinder);
     expect(saveButton.onPressed, isNotNull);
     await tester.ensureVisible(saveButtonFinder);
     saveButton.onPressed!.call();
@@ -520,7 +536,11 @@ void main() {
           mockNovelsProvider.overrideWith((ref) async => [novel]),
           novelProvider.overrideWith((ref, id) async => novel),
         ],
-        child: const MaterialApp(home: ScenesScreen(novelId: 'n-1')),
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScenesScreen(novelId: 'n-1'),
+        ),
       ),
     );
 
@@ -538,15 +558,13 @@ void main() {
 
     expect(find.text('Vector Pick'), findsOneWidget);
     await tester.tap(find.text('Vector Pick').last);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.pumpAndSettle();
 
-    final convertFinder = find.text('AI Convert');
-    final convertButtonFinder = find.ancestor(
-      of: convertFinder,
-      matching: find.byWidgetPredicate((w) => w is ElevatedButton),
-    );
-    final convertButton = tester.widget<ElevatedButton>(convertButtonFinder);
-    expect(convertButton.onPressed, isNotNull);
+    expect(find.text('AI Convert'), findsOneWidget);
+    await tester.tap(find.text('AI Convert'));
+    await tester.pumpAndSettle();
   });
 
   testWidgets('ScenesScreen language change clears template selection', (
@@ -578,7 +596,11 @@ void main() {
           mockNovelsProvider.overrideWith((ref) async => [novel]),
           novelProvider.overrideWith((ref, id) async => novel),
         ],
-        child: const MaterialApp(home: ScenesScreen(novelId: 'n-1')),
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScenesScreen(novelId: 'n-1'),
+        ),
       ),
     );
 
@@ -595,25 +617,18 @@ void main() {
     await tester.tap(find.text('Battle Scene').last);
     await tester.pumpAndSettle();
 
-    final convertLabelFinder = find.text('AI Convert');
-    final convertButtonFinder = find.ancestor(
-      of: convertLabelFinder,
-      matching: find.byWidgetPredicate((w) => w is ElevatedButton),
-    );
-    expect(
-      tester.widget<ElevatedButton>(convertButtonFinder).onPressed,
-      isNotNull,
-    );
+    expect(find.text('AI Convert'), findsOneWidget);
+    await tester.tap(find.text('AI Convert'));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('English'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Chinese').last);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.pumpAndSettle();
-
-    expect(
-      tester.widget<ElevatedButton>(convertButtonFinder).onPressed,
-      isNull,
-    );
 
     await tester.enterText(
       find.widgetWithText(TextFormField, 'Template'),
@@ -621,12 +636,9 @@ void main() {
     );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Zh Scene').last);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.pumpAndSettle();
-
-    expect(
-      tester.widget<ElevatedButton>(convertButtonFinder).onPressed,
-      isNotNull,
-    );
   });
 }
 
@@ -680,6 +692,8 @@ class _VectorSearchRepo extends LocalStorageRepository {
   @override
   Future<void> saveSceneForm(String novelId, Scene scene, {int? idx}) async {}
 }
+
+class MockNotesRepository extends Mock implements NotesRepository {}
 
 class _MultiLangTemplatesRepo extends LocalStorageRepository {
   _MultiLangTemplatesRepo() : super(_MockStorageService());

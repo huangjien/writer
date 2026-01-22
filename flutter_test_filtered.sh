@@ -1,11 +1,10 @@
 #!/bin/bash
 
-# Flutter test wrapper that eliminates the 119MB log problem
 # 
 # USAGE: Instead of running `flutter test ...`, run `./flutter_test_filtered.sh ...`
 # This script filters out all the noisy Flutter framework exceptions that cause massive logs
 
-echo "🔧 Using filtered Flutter test runner (eliminates 119MB log problem)"
+echo "🔧 Using filtered Flutter test runner "
 echo "📝 Running: flutter test ${flutter_test_args[*]}"
 echo ""
 

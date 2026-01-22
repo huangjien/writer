@@ -62,6 +62,7 @@ class ReaderEditActions extends ConsumerWidget {
           onPressed: () => controller.save(),
           icon: Icons.save,
           label: l10n.save,
+          isLoading: editState.isSaving,
           enabled: !(disabled || !editState.isDirty),
         ),
       ],

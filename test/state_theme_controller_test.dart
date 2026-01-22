@@ -69,7 +69,7 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(themeControllerProvider.notifier);
-    await notifier.setFamily(AppThemeFamily.solarized);
+    await notifier.setFamily(AppThemeFamily.solarizedTan);
     await notifier.setSeparateDark(true);
     var theme = container.read(themeControllerProvider);
     expect(theme.hasSeparateDark, true);

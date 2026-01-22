@@ -26,12 +26,11 @@ void main() {
 
       expect(find.text('Default'), findsOneWidget);
       expect(find.text('Sepia'), findsOneWidget);
-      expect(find.text('Solarized'), findsOneWidget);
       expect(find.text('Solarized Tan'), findsOneWidget);
       expect(find.text('Nord'), findsOneWidget);
       expect(find.text('Nord Frost'), findsOneWidget);
-      expect(find.text('Nord Snowstorm'), findsOneWidget);
-      expect(find.text('High Contrast'), findsOneWidget);
+      expect(find.text('Emerald'), findsOneWidget);
+      expect(find.text('Contrast'), findsOneWidget);
 
       await tester.tap(find.text('Sepia'));
       await tester.pump();

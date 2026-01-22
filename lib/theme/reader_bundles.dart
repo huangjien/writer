@@ -33,7 +33,7 @@ const Map<ReaderThemeBundleId, ReaderThemeBundleDef> readerThemeBundles = {
   ),
   ReaderThemeBundleId.highContrastReadability: ReaderThemeBundleDef(
     labelKey: 'bundleHighContrastReadability',
-    family: AppThemeFamily.highContrast,
+    family: AppThemeFamily.contrast,
     preset: ReaderTypographyPreset.comfortable,
     fontPack: ReaderFontPack.system,
   ),

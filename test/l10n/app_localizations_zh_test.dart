@@ -195,11 +195,10 @@ void main() {
         expect(zh.themeSepia.isNotEmpty, true);
         expect(zh.themeHighContrast.isNotEmpty, true);
         expect(zh.themeDefault.isNotEmpty, true);
-        expect(zh.themeSolarized.isNotEmpty, true);
+        expect(zh.themeEmeraldGreen.isNotEmpty, true);
         expect(zh.themeSolarizedTan.isNotEmpty, true);
         expect(zh.themeNord.isNotEmpty, true);
         expect(zh.themeNordFrost.isNotEmpty, true);
-        expect(zh.themeNordSnowstorm.isNotEmpty, true);
         expect(zh.separateDarkPalette.isNotEmpty, true);
         expect(zh.lightPalette.isNotEmpty, true);
         expect(zh.darkPalette.isNotEmpty, true);

@@ -81,7 +81,7 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
 
       final themeController = ThemeController(prefs);
-      themeController.setFamily(AppThemeFamily.highContrast);
+      themeController.setFamily(AppThemeFamily.contrast);
 
       final app = await buildAppScope(
         prefs: prefs,

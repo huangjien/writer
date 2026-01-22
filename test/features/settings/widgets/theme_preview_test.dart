@@ -29,7 +29,6 @@ void main() {
 
     expect(find.text('Default'), findsOneWidget);
     expect(find.text('Sepia'), findsOneWidget);
-    expect(find.text('Solarized'), findsOneWidget);
 
     await tester.tap(find.text('Sepia'));
     expect(selectedFamily, AppThemeFamily.sepia);

@@ -257,13 +257,11 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: SettingsToggle(
-            value: themeState.family == AppThemeFamily.highContrast,
+            value: themeState.family == AppThemeFamily.contrast,
             onChanged: (v) {
               final controller = ref.read(themeControllerProvider.notifier);
               controller.setFamily(
-                (v ?? false)
-                    ? AppThemeFamily.highContrast
-                    : AppThemeFamily.sepia,
+                (v ?? false) ? AppThemeFamily.contrast : AppThemeFamily.sepia,
               );
             },
             title: l10n.themeHighContrast,

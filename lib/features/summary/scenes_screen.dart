@@ -624,9 +624,12 @@ class _SaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: (saving || !isDirty) ? null : onSave,
-      child: Text(l10n.save),
+    return AppButtons.primary(
+      icon: Icons.save,
+      label: l10n.save,
+      onPressed: (saving || !isDirty) ? () {} : onSave,
+      isLoading: saving,
+      enabled: !(saving || !isDirty),
     );
   }
 }

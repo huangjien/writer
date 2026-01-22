@@ -434,9 +434,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get themeEmeraldGreen => '祖母绿';
 
   @override
-  String get themeSolarized => 'Solarized';
-
-  @override
   String get themeSolarizedTan => 'Solarized Tan';
 
   @override
@@ -444,9 +441,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get themeNordFrost => 'Nord Frost';
-
-  @override
-  String get themeNordSnowstorm => 'Nord Snowstorm';
 
   @override
   String get separateDarkPalette => '使用独立深色配色';

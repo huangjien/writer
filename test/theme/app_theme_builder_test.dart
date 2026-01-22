@@ -38,7 +38,7 @@ void main() {
         tester,
       ) async {
         final theme = AppThemeBuilder.buildLight(
-          family: AppThemeFamily.highContrast,
+          family: AppThemeFamily.contrast,
           fontPack: ReaderFontPack.system,
           customFontFamily: null,
           preset: ReaderTypographyPreset.system,
@@ -104,7 +104,7 @@ void main() {
         tester,
       ) async {
         final theme = AppThemeBuilder.buildDark(
-          family: AppThemeFamily.highContrast,
+          family: AppThemeFamily.contrast,
           fontPack: ReaderFontPack.system,
           customFontFamily: null,
           preset: ReaderTypographyPreset.system,
@@ -491,7 +491,7 @@ void main() {
         tester,
       ) async {
         final theme = AppThemeBuilder.buildDark(
-          family: AppThemeFamily.solarized,
+          family: AppThemeFamily.solarizedTan,
           fontPack: ReaderFontPack.inter,
           customFontFamily: null,
           preset: ReaderTypographyPreset.compact,

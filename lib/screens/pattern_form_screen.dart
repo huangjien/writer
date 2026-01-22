@@ -521,6 +521,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                   const SizedBox(width: 8),
                   AppButtons.primary(
                     onPressed: (_saving || !_isDirty) ? () {} : _save,
+                    icon: Icons.save,
                     label: l10n.save,
                     isLoading: _saving,
                     enabled: !(_saving || !_isDirty),

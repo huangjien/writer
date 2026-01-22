@@ -528,14 +528,12 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                             ),
                           ),
                           const SizedBox(width: Spacing.s),
-                          SizedBox(
-                            height: 48,
-                            child: AppButtons.primary(
-                              onPressed: _isSaving ? () {} : _saveContent,
-                              icon: Icons.save,
-                              label: l10n.save,
-                              enabled: !_isSaving,
-                            ),
+                          AppButtons.primary(
+                            onPressed: _isSaving ? () {} : _saveContent,
+                            icon: Icons.save,
+                            label: l10n.save,
+                            isLoading: _isSaving,
+                            enabled: !_isSaving,
                           ),
                         ],
                       ),

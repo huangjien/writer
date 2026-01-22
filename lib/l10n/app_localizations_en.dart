@@ -438,16 +438,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themeSepia => 'Sepia';
 
   @override
-  String get themeHighContrast => 'High Contrast';
+  String get themeHighContrast => 'Contrast';
 
   @override
   String get themeDefault => 'Default';
 
   @override
-  String get themeEmeraldGreen => 'Emerald Green';
-
-  @override
-  String get themeSolarized => 'Solarized';
+  String get themeEmeraldGreen => 'Emerald';
 
   @override
   String get themeSolarizedTan => 'Solarized Tan';
@@ -457,9 +454,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get themeNordFrost => 'Nord Frost';
-
-  @override
-  String get themeNordSnowstorm => 'Nord Snowstorm';
 
   @override
   String get separateDarkPalette => 'Use separate dark palette';
