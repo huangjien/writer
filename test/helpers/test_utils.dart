@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -135,4 +135,23 @@ class TolerantGoldenComparator extends LocalFileComparator {
     final candidateRoot = '$cwd/${golden.path}';
     return candidateRoot;
   }
+}
+
+bool _testFontsLoaded = false;
+
+Future<void> ensureTestFontsLoaded() async {
+  if (_testFontsLoaded) return;
+  final loaders = <FontLoader>[
+    FontLoader('Roboto')
+      ..addFont(rootBundle.load('assets/fonts/Roboto-Regular.ttf'))
+      ..addFont(rootBundle.load('assets/fonts/Roboto-Bold.ttf')),
+    FontLoader('Noto Sans')
+      ..addFont(rootBundle.load('assets/fonts/NotoSans-Regular.ttf'))
+      ..addFont(rootBundle.load('assets/fonts/NotoSans-Bold.ttf')),
+    FontLoader('Noto Sans SC')
+      ..addFont(rootBundle.load('assets/fonts/NotoSansSC-Regular.ttf'))
+      ..addFont(rootBundle.load('assets/fonts/NotoSansSC-Bold.ttf')),
+  ];
+  await Future.wait(loaders.map((l) => l.load()));
+  _testFontsLoaded = true;
 }

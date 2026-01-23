@@ -25,6 +25,10 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  setUpAll(() async {
+    await ensureTestFontsLoaded();
+  });
+
   testWidgets('Golden: Determinate ellipsis row (en)', (tester) async {
     final prevComparator = goldenFileComparator;
     goldenFileComparator = TolerantGoldenComparator(
@@ -115,6 +119,7 @@ void main() {
           theme: ThemeData(
             useMaterial3: true,
             fontFamily: 'Roboto',
+            fontFamilyFallback: const ['Noto Sans SC', 'Noto Sans'],
             platform: TargetPlatform.android,
             visualDensity: VisualDensity.standard,
             listTileTheme: const ListTileThemeData(
@@ -242,6 +247,7 @@ void main() {
           theme: ThemeData(
             useMaterial3: true,
             fontFamily: 'Roboto',
+            fontFamilyFallback: const ['Noto Sans SC', 'Noto Sans'],
             platform: TargetPlatform.android,
             visualDensity: VisualDensity.standard,
             listTileTheme: const ListTileThemeData(
