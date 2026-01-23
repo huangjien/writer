@@ -146,12 +146,20 @@ class _EnhancedToastEntryState extends State<_EnhancedToastEntry>
                         ),
                       ),
                       if (widget.actionLabel != null && widget.onAction != null)
-                        TextButton(
-                          onPressed: () {
-                            widget.onAction!.call();
-                            _dismiss();
-                          },
-                          child: Text(widget.actionLabel!),
+                        Flexible(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                widget.onAction!.call();
+                                _dismiss();
+                              },
+                              child: Text(
+                                widget.actionLabel!,
+                                textAlign: TextAlign.end,
+                              ),
+                            ),
+                          ),
                         ),
                       IconButton(
                         icon: const Icon(Icons.close),

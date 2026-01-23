@@ -164,7 +164,15 @@ class SuccessBanner extends StatelessWidget {
           ),
           if (actionLabel != null && onAction != null) ...[
             const SizedBox(width: Spacing.m),
-            TextButton(onPressed: onAction, child: Text(actionLabel!)),
+            Flexible(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: onAction,
+                  child: Text(actionLabel!, textAlign: TextAlign.end),
+                ),
+              ),
+            ),
           ],
         ],
       ),

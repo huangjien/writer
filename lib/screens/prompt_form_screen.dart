@@ -8,6 +8,7 @@ import '../l10n/app_localizations.dart';
 import '../shared/api_exception.dart';
 import '../shared/widgets/neumorphic_switch.dart';
 import '../shared/widgets/app_buttons.dart';
+import '../shared/widgets/responsive_button_row.dart';
 
 const _keys = [
   'system.beta.male',
@@ -340,25 +341,37 @@ class _PromptFormScreenState extends State<PromptFormScreen>
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Text(l10n.charsCount(_contentCtrl.text.length)),
-                  const Spacer(),
-                  AppButtons.text(
-                    onPressed: _saving ? () {} : () => Navigator.pop(context),
-                    label: l10n.cancel,
+                  Expanded(
+                    child: Text(l10n.charsCount(_contentCtrl.text.length)),
                   ),
                   const SizedBox(width: 8),
-                  AppButtons.primary(
-                    onPressed:
-                        (_saving ||
-                            !_isDirty ||
-                            (_isEdit && !widget.isSignedIn))
-                        ? () {}
-                        : _save,
-                    label: l10n.save,
-                    enabled:
-                        !(_saving ||
-                            !_isDirty ||
-                            (_isEdit && !widget.isSignedIn)),
+                  Flexible(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: ResponsiveButtonRow(
+                        children: [
+                          AppButtons.text(
+                            onPressed: _saving
+                                ? () {}
+                                : () => Navigator.pop(context),
+                            label: l10n.cancel,
+                          ),
+                          AppButtons.primary(
+                            onPressed:
+                                (_saving ||
+                                    !_isDirty ||
+                                    (_isEdit && !widget.isSignedIn))
+                                ? () {}
+                                : _save,
+                            label: l10n.save,
+                            enabled:
+                                !(_saving ||
+                                    !_isDirty ||
+                                    (_isEdit && !widget.isSignedIn)),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

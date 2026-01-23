@@ -494,13 +494,21 @@ class _ScenesScreenState extends ConsumerState<ScenesScreen> {
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                         ),
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _showPreview = !_showPreview;
-                            });
-                          },
-                          child: Text(_showPreview ? l10n.edit : l10n.preview),
+                        Flexible(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _showPreview = !_showPreview;
+                                });
+                              },
+                              child: Text(
+                                _showPreview ? l10n.edit : l10n.preview,
+                                textAlign: TextAlign.end,
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),

@@ -546,41 +546,46 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
                       padding: const EdgeInsets.all(16),
                       child: Row(
                         children: [
-                          AppButtons.primary(
-                            icon: Icons.save,
-                            label: l10n.save,
-                            onPressed:
-                                (summaryState.saving || !summaryState.isDirty)
-                                ? () {}
-                                : () async {
-                                    final ok =
-                                        _formKey.currentState?.validate() ??
-                                        false;
-                                    if (!ok) return;
-                                    try {
-                                      await ref
-                                          .read(summaryProvider.notifier)
-                                          .save(
-                                            sentence: _sentenceController.text,
-                                            paragraph:
-                                                _paragraphController.text,
-                                            page: _pageController.text,
-                                            expanded: _expandedController.text,
-                                          );
+                          Flexible(
+                            child: AppButtons.primary(
+                              icon: Icons.save,
+                              label: l10n.save,
+                              onPressed:
+                                  (summaryState.saving || !summaryState.isDirty)
+                                  ? () {}
+                                  : () async {
+                                      final ok =
+                                          _formKey.currentState?.validate() ??
+                                          false;
+                                      if (!ok) return;
+                                      try {
+                                        await ref
+                                            .read(summaryProvider.notifier)
+                                            .save(
+                                              sentence:
+                                                  _sentenceController.text,
+                                              paragraph:
+                                                  _paragraphController.text,
+                                              page: _pageController.text,
+                                              expanded:
+                                                  _expandedController.text,
+                                            );
 
-                                      if (!context.mounted) return;
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(content: Text(l10n.saved)),
-                                      );
-                                    } catch (e) {
-                                      // Error is already set in the notifier
-                                    }
-                                  },
-                            enabled:
-                                !(summaryState.saving || !summaryState.isDirty),
-                            isLoading: summaryState.saving,
+                                        if (!context.mounted) return;
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(content: Text(l10n.saved)),
+                                        );
+                                      } catch (_) {
+                                        return;
+                                      }
+                                    },
+                              enabled:
+                                  !(summaryState.saving ||
+                                      !summaryState.isDirty),
+                              isLoading: summaryState.saving,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           if (summaryState.error != null)

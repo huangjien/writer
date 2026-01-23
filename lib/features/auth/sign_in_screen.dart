@@ -10,6 +10,7 @@ import '../../services/auth_service.dart';
 import '../../state/auth_service_provider.dart';
 import '../../shared/widgets/app_buttons.dart';
 import '../../shared/widgets/neumorphic_textfield.dart';
+import '../../theme/design_tokens.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
@@ -288,8 +289,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               },
             ),
             const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              runSpacing: Spacing.s,
+              spacing: Spacing.m,
               children: [
                 AppButtons.text(
                   onPressed: () => context.push('/signup'),

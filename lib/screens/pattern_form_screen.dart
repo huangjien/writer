@@ -9,6 +9,7 @@ import '../l10n/app_localizations.dart';
 import '../shared/api_exception.dart';
 import '../shared/widgets/neumorphic_checkbox.dart';
 import '../shared/widgets/app_buttons.dart';
+import '../shared/widgets/responsive_button_row.dart';
 import '../theme/design_tokens.dart';
 
 class PatternFormScreen extends ConsumerStatefulWidget {
@@ -490,25 +491,23 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                 ),
               ),
               const SizedBox(height: 8),
-              Row(
+              ResponsiveButtonRow(
+                alignment: WrapAlignment.start,
                 children: [
                   AppButtons.text(
                     onPressed: _saving ? () {} : () => Navigator.pop(context),
                     label: l10n.cancel,
                   ),
-                  const SizedBox(width: 8),
                   if (_isEdit)
                     AppButtons.text(
                       onPressed: canDelete ? _delete : () {},
                       label: l10n.delete,
                       color: canDelete ? AppColors.error : null,
                     ),
-                  if (_isEdit) const SizedBox(width: 8),
                   AppButtons.text(
                     onPressed: _saving || _locked ? () {} : _applyAi,
                     label: _saving ? '...' : l10n.aiButton,
                   ),
-                  const SizedBox(width: 8),
                   AppButtons.primary(
                     onPressed: (_saving || !_isDirty) ? () {} : _save,
                     icon: Icons.save,

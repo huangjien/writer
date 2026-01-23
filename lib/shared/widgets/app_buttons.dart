@@ -31,49 +31,47 @@ class AppButtons {
           onActivate: (enabled && !isLoading) ? onPressed : null,
           child: PressScale(
             enabled: enabled && !isLoading,
-            child: SizedBox(
-              width: fullWidth ? double.infinity : null,
-              height: MobileSpacing.touchTargetMin,
-              child: NeumorphicButton(
-                onPressed: (enabled && !isLoading) ? onPressed : null,
-                borderRadius: BorderRadius.circular(Radii.m),
-                // Primary buttons in Neumorphism often use the accent color
-                // but subtle. If we want standard Neumorphism, we keep it background-colored.
-                // But for "Primary" action, let's use a slightly tinted version or just standard.
-                // Let's stick to standard background for true Neumorphism,
-                // maybe with colored text/icon to indicate primary.
-                child: isLoading
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            primaryColor,
-                          ),
-                        ),
-                      )
-                    : Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (icon != null) ...[
-                            Icon(
-                              icon,
-                              size: 18,
-                              color: primaryColor,
-                            ), // Use brand color for content
-                            const SizedBox(width: Spacing.s),
-                          ],
-                          Text(
-                            label,
-                            style: TextStyle(
-                              color: primaryColor,
-                              fontWeight: FontWeight.w600,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minHeight: MobileSpacing.touchTargetMin,
+              ),
+              child: SizedBox(
+                width: fullWidth ? double.infinity : null,
+                child: NeumorphicButton(
+                  onPressed: (enabled && !isLoading) ? onPressed : null,
+                  borderRadius: BorderRadius.circular(Radii.m),
+                  child: isLoading
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              primaryColor,
                             ),
                           ),
-                        ],
-                      ),
+                        )
+                      : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (icon != null) ...[
+                              Icon(icon, size: 18, color: primaryColor),
+                              const SizedBox(width: Spacing.s),
+                            ],
+                            Flexible(
+                              child: Text(
+                                label,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
               ),
             ),
           ),
@@ -96,30 +94,36 @@ class AppButtons {
       onActivate: (enabled && !isLoading) ? onPressed : null,
       child: PressScale(
         enabled: enabled && !isLoading,
-        child: SizedBox(
-          width: fullWidth ? double.infinity : null,
-          height: MobileSpacing.touchTargetMin,
-          child: NeumorphicButton(
-            onPressed: (enabled && !isLoading) ? onPressed : null,
-            borderRadius: BorderRadius.circular(Radii.m),
-            depth: 6,
-            child: isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (icon != null) ...[
-                        Icon(icon, size: 18),
-                        const SizedBox(width: Spacing.s),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minHeight: MobileSpacing.touchTargetMin,
+          ),
+          child: SizedBox(
+            width: fullWidth ? double.infinity : null,
+            child: NeumorphicButton(
+              onPressed: (enabled && !isLoading) ? onPressed : null,
+              borderRadius: BorderRadius.circular(Radii.m),
+              depth: 6,
+              child: isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (icon != null) ...[
+                          Icon(icon, size: 18),
+                          const SizedBox(width: Spacing.s),
+                        ],
+                        Flexible(
+                          child: Text(label, textAlign: TextAlign.center),
+                        ),
                       ],
-                      Text(label),
-                    ],
-                  ),
+                    ),
+            ),
           ),
         ),
       ),

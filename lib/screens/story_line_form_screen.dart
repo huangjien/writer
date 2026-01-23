@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/design_tokens.dart';
 import '../shared/widgets/neumorphic_checkbox.dart';
 import '../shared/widgets/app_buttons.dart';
+import '../shared/widgets/responsive_button_row.dart';
 import '../models/story_line.dart';
 import '../shared/api_exception.dart';
 import '../state/story_line_providers.dart';
@@ -489,14 +490,14 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
                 ),
               ),
               const SizedBox(height: 8),
-              Row(
+              ResponsiveButtonRow(
+                alignment: WrapAlignment.start,
                 children: [
                   AppButtons.text(
                     onPressed: _saving ? () {} : () => Navigator.pop(context),
                     label: l10n.cancel,
                     enabled: !_saving,
                   ),
-                  const SizedBox(width: 8),
                   if (_isEdit)
                     AppButtons.text(
                       onPressed: canDelete ? _delete : () {},
@@ -504,15 +505,12 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
                       color: canDelete ? AppColors.error : null,
                       enabled: canDelete,
                     ),
-                  if (_isEdit) const SizedBox(width: 8),
                   AppButtons.secondary(
                     onPressed: _saving || _locked ? () {} : _applyAi,
                     label: l10n.aiButton,
-                    isLoading:
-                        _saving, // Using saving state for AI button too? Or create separate state? Existing code used _saving.
+                    isLoading: _saving,
                     enabled: !(_saving || _locked),
                   ),
-                  const SizedBox(width: 8),
                   AppButtons.primary(
                     onPressed: (_saving || !_isDirty) ? () {} : _save,
                     icon: Icons.save,
