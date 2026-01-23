@@ -2906,6 +2906,12 @@ abstract class AppLocalizations {
   /// **'Glassmorphism'**
   String get styleGlassmorphism;
 
+  /// No description provided for @styleLiquidGlass.
+  ///
+  /// In en, this message translates to:
+  /// **'Liquid Glass'**
+  String get styleLiquidGlass;
+
   /// No description provided for @styleNeumorphism.
   ///
   /// In en, this message translates to:

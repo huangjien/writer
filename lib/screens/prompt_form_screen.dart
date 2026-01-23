@@ -6,7 +6,6 @@ import '../models/prompt.dart';
 import '../services/prompts_service.dart';
 import '../l10n/app_localizations.dart';
 import '../shared/api_exception.dart';
-import '../theme/neumorphic_styles.dart';
 import '../shared/widgets/neumorphic_switch.dart';
 import '../shared/widgets/app_buttons.dart';
 
@@ -201,7 +200,6 @@ class _PromptFormScreenState extends State<PromptFormScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Ensure current key is in the list to prevent crash
     final effectiveKeys = {..._keys};
@@ -247,10 +245,10 @@ class _PromptFormScreenState extends State<PromptFormScreen>
                               _updateDirty();
                             },
                       validator: _isEdit ? null : _validateKey,
-                      decoration: NeumorphicStyles.inputDecoration(
-                        isDark: isDark,
+                      decoration: InputDecoration(
                         hintText: l10n.promptKey,
-                      ).copyWith(labelText: l10n.promptKey),
+                        labelText: l10n.promptKey,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -277,10 +275,10 @@ class _PromptFormScreenState extends State<PromptFormScreen>
                               _updateDirty();
                             },
                       validator: _isEdit ? null : _validateLang,
-                      decoration: NeumorphicStyles.inputDecoration(
-                        isDark: isDark,
+                      decoration: InputDecoration(
                         hintText: l10n.language,
-                      ).copyWith(labelText: l10n.language),
+                        labelText: l10n.language,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -334,10 +332,7 @@ class _PromptFormScreenState extends State<PromptFormScreen>
                       readOnly: _isEdit && !widget.isSignedIn,
                       onChanged: (_) => _updateDirty(),
                       validator: _validateContent,
-                      decoration: NeumorphicStyles.inputDecoration(
-                        isDark: isDark,
-                        hintText: l10n.content,
-                      ),
+                      decoration: InputDecoration(hintText: l10n.content),
                     ),
                   ],
                 ),

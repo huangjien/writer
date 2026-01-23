@@ -6,7 +6,6 @@ import 'package:writer/shared/widgets/theme_aware_card.dart';
 import 'package:writer/shared/strings.dart';
 import 'package:writer/state/edit_permissions.dart';
 import 'package:writer/repositories/novel_repository.dart';
-import 'package:writer/theme/neumorphic_styles.dart';
 import 'package:writer/shared/widgets/neumorphic_dropdown.dart';
 import 'package:writer/shared/widgets/neumorphic_switch.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
@@ -155,10 +154,13 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final baseDecoration = const InputDecoration().applyDefaults(
+      theme.inputDecorationTheme,
+    );
     final novelAsync = ref.watch(novelProvider(widget.novelId));
     final roleAsync = ref.watch(editRoleProvider(widget.novelId));
     final isOwner = roleAsync.asData?.value == EditRole.owner;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ThemeAwareCard(
       semanticType: CardSemanticType.default_,
       padding: const EdgeInsets.all(12),
@@ -203,10 +205,10 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                             child: TextFormField(
                               controller: _titleController,
                               focusNode: _titleFocusNode,
-                              decoration: NeumorphicStyles.inputDecoration(
-                                isDark: isDark,
+                              decoration: baseDecoration.copyWith(
                                 hintText: l10n.titleLabel,
-                              ).copyWith(labelText: l10n.titleLabel),
+                                labelText: l10n.titleLabel,
+                              ),
                               textInputAction: TextInputAction.next,
                               onFieldSubmitted: (_) {
                                 FocusScope.of(
@@ -275,14 +277,11 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                       focusNode: _descriptionFocusNode,
                       minLines: 3,
                       maxLines: null,
-                      decoration:
-                          NeumorphicStyles.inputDecoration(
-                            isDark: isDark,
-                            hintText: l10n.descriptionLabel,
-                          ).copyWith(
-                            labelText: l10n.descriptionLabel,
-                            alignLabelWithHint: true,
-                          ),
+                      decoration: baseDecoration.copyWith(
+                        hintText: l10n.descriptionLabel,
+                        labelText: l10n.descriptionLabel,
+                        alignLabelWithHint: true,
+                      ),
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (_) {
                         FocusScope.of(context).requestFocus(_coverUrlFocusNode);
@@ -296,10 +295,10 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                     TextFormField(
                       controller: _coverUrlController,
                       focusNode: _coverUrlFocusNode,
-                      decoration: NeumorphicStyles.inputDecoration(
-                        isDark: isDark,
+                      decoration: baseDecoration.copyWith(
                         hintText: l10n.coverUrlLabel,
-                      ).copyWith(labelText: l10n.coverUrlLabel),
+                        labelText: l10n.coverUrlLabel,
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: _validateCoverUrl,
                       onFieldSubmitted: (_) {
@@ -319,10 +318,10 @@ class _NovelMetadataEditorState extends ConsumerState<NovelMetadataEditor> {
                       TextFormField(
                         controller: _contributorEmailController,
                         focusNode: _contributorEmailFocusNode,
-                        decoration: NeumorphicStyles.inputDecoration(
-                          isDark: isDark,
+                        decoration: baseDecoration.copyWith(
                           hintText: l10n.contributorEmailHint,
-                        ).copyWith(labelText: l10n.contributorEmailLabel),
+                          labelText: l10n.contributorEmailLabel,
+                        ),
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) {
                           FocusScope.of(context).unfocus();

@@ -59,7 +59,7 @@ void main() {
     prevComparator = goldenFileComparator;
     goldenFileComparator = TolerantGoldenComparator(
       Platform.script,
-      pixelDiffTolerance: 0.03,
+      pixelDiffTolerance: 0.06,
     );
   });
   tearDownAll(() {

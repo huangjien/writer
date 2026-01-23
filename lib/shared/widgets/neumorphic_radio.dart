@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
-import '../../theme/neumorphic_styles.dart';
+import '../../theme/theme_extensions.dart';
 import 'focus_wrapper.dart';
 
 class NeumorphicRadio<T> extends StatelessWidget {
@@ -27,10 +27,16 @@ class NeumorphicRadio<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final isSelected = value == groupValue;
 
     final effectiveActiveColor = activeColor ?? theme.colorScheme.primary;
+
+    final resolvedBackgroundColor =
+        theme.cardBackgroundColor ?? theme.colorScheme.surface;
+    final resolvedBorder =
+        theme.switchBorder ??
+        theme.inputBorder ??
+        Border.all(color: theme.colorScheme.outlineVariant, width: 1);
 
     final radio = Semantics(
       selected: isSelected,
@@ -62,23 +68,14 @@ class NeumorphicRadio<T> extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             width: size,
             height: size,
-            decoration:
-                NeumorphicStyles.decoration(
-                  isDark: isDark,
-                  isPressed: true,
-                  shape: BoxShape.circle,
-                  depth: 2,
-                  color: isSelected
-                      ? effectiveActiveColor.withValues(alpha: 0.1)
-                      : null,
-                ).copyWith(
-                  border: Border.all(
-                    color: isDark
-                        ? Colors.black.withValues(alpha: 0.5)
-                        : Colors.white.withValues(alpha: 0.7),
-                    width: 1,
-                  ),
-                ),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? effectiveActiveColor.withValues(alpha: 0.1)
+                  : resolvedBackgroundColor,
+              shape: BoxShape.circle,
+              border: resolvedBorder,
+              boxShadow: theme.styleCardShadows,
+            ),
             child: isSelected
                 ? Center(
                     child: Container(
@@ -87,13 +84,7 @@ class NeumorphicRadio<T> extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: effectiveActiveColor,
                         shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: effectiveActiveColor.withValues(alpha: 0.4),
-                            blurRadius: 4,
-                            spreadRadius: 1,
-                          ),
-                        ],
+                        boxShadow: theme.buttonShadows,
                       ),
                     ),
                   )

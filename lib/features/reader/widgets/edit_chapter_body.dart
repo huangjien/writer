@@ -5,7 +5,6 @@ import '../../../repositories/chapter_repository.dart';
 import '../../../models/chapter.dart';
 import '../../../state/chapter_edit_controller.dart';
 import '../../../theme/design_tokens.dart';
-import '../../../theme/neumorphic_styles.dart';
 import '../widgets/preview_panel.dart';
 
 class EditChapterBody extends ConsumerWidget {
@@ -31,7 +30,7 @@ class EditChapterBody extends ConsumerWidget {
     final controller = ref.read(
       chapterEditControllerProvider(current).notifier,
     );
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
     final originalTitle = current.title ?? '';
     final originalContent = current.content ?? '';
     return Padding(
@@ -56,10 +55,10 @@ class EditChapterBody extends ConsumerWidget {
                       TextFormField(
                         initialValue: editState.title,
                         focusNode: _titleFocusNode,
-                        decoration: NeumorphicStyles.inputDecoration(
-                          isDark: isDark,
+                        decoration: InputDecoration(
                           hintText: l10n.enterChapterTitle,
-                        ).copyWith(labelText: l10n.chapterTitle),
+                          labelText: l10n.chapterTitle,
+                        ),
                         textInputAction: TextInputAction.next,
                         onFieldSubmitted: (_) {
                           FocusScope.of(
@@ -75,14 +74,11 @@ class EditChapterBody extends ConsumerWidget {
                         child: TextFormField(
                           initialValue: editState.content,
                           focusNode: _contentFocusNode,
-                          decoration:
-                              NeumorphicStyles.inputDecoration(
-                                isDark: isDark,
-                                hintText: l10n.enterChapterContent,
-                              ).copyWith(
-                                labelText: l10n.chapterContent,
-                                alignLabelWithHint: true,
-                              ),
+                          decoration: InputDecoration(
+                            hintText: l10n.enterChapterContent,
+                            labelText: l10n.chapterContent,
+                            alignLabelWithHint: true,
+                          ),
                           textInputAction: TextInputAction.newline,
                           onChanged: controller.setContent,
                           maxLines: null,
@@ -145,13 +141,10 @@ class EditChapterBody extends ConsumerWidget {
                           return TextFormField(
                             controller: idxController,
                             focusNode: _indexFocusNode,
-                            decoration:
-                                NeumorphicStyles.inputDecoration(
-                                  isDark: isDark,
-                                  hintText: l10n.enterFloatIndexHint,
-                                ).copyWith(
-                                  labelText: l10n.indexLabel(editState.idx),
-                                ),
+                            decoration: InputDecoration(
+                              hintText: l10n.enterFloatIndexHint,
+                              labelText: l10n.indexLabel(editState.idx),
+                            ),
                             keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                             ),
@@ -167,37 +160,24 @@ class EditChapterBody extends ConsumerWidget {
 
           // Status indicators at the bottom
           if (editState.isSaving) ...[
-            Builder(
-              builder: (context) {
-                final theme = Theme.of(context);
-                final isDark = theme.brightness == Brightness.dark;
-                return Container(
-                  height: 14,
-                  padding: const EdgeInsets.all(2),
-                  decoration:
-                      NeumorphicStyles.decoration(
-                        isDark: isDark,
-                        isPressed: true,
-                        borderRadius: BorderRadius.circular(Radii.s),
-                        depth: 2,
-                      ).copyWith(
-                        border: Border.all(
-                          color: isDark
-                              ? Colors.black.withValues(alpha: 0.5)
-                              : Colors.white.withValues(alpha: 0.7),
-                          width: 1,
-                        ),
-                      ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(Radii.s - 2),
-                    child: _NeumorphicIndeterminateBar(
-                      backgroundColor:
-                          theme.colorScheme.surfaceContainerHighest,
-                      foregroundColor: theme.colorScheme.primary,
-                    ),
-                  ),
-                );
-              },
+            Container(
+              height: 14,
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(Radii.s),
+                border: Border.all(
+                  color: theme.colorScheme.outlineVariant,
+                  width: 1,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(Radii.s - 2),
+                child: _NeumorphicIndeterminateBar(
+                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                  foregroundColor: theme.colorScheme.primary,
+                ),
+              ),
             ),
             const SizedBox(height: Spacing.s),
           ],

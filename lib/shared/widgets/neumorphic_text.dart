@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../theme/neumorphic_styles.dart';
+import '../../theme/theme_extensions.dart';
 
 class NeumorphicText extends StatelessWidget {
   const NeumorphicText(
@@ -27,17 +27,29 @@ class NeumorphicText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     final effectiveColor = useNeumorphicColor
-        ? (isDark
-              ? NeumorphicStyles.darkBackground
-              : NeumorphicStyles.lightBackground)
+        ? (theme.cardBackgroundColor ??
+              theme.buttonBackgroundColor ??
+              theme.colorScheme.surface)
         : null; // Use default from style
+
+    final effectiveDepth = depth <= 0 ? 0 : depth;
+    final textShadows =
+        theme.styleCardShadows
+            ?.map(
+              (s) => Shadow(
+                color: s.color,
+                blurRadius: s.blurRadius * effectiveDepth,
+                offset: s.offset,
+              ),
+            )
+            .toList(growable: false) ??
+        const <Shadow>[];
 
     final effectiveStyle = (style ?? theme.textTheme.bodyMedium!).copyWith(
       color: effectiveColor,
-      shadows: NeumorphicStyles.textShadows(isDark: isDark, depth: depth),
+      shadows: textShadows,
     );
 
     return Text(

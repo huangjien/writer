@@ -82,7 +82,9 @@ void main() {
       test(
         'returns BackendUser when session exists and remote returns valid data',
         () async {
-          when(() => mockRemote.get('auth/session')).thenAnswer(
+          when(
+            () => mockRemote.get('auth/session', retryUnauthorized: false),
+          ).thenAnswer(
             (_) async => {'id': 'user-123', 'email': 'test@example.com'},
           );
 
@@ -104,7 +106,7 @@ void main() {
 
       test('returns null when remote returns invalid data', () async {
         when(
-          () => mockRemote.get('auth/session'),
+          () => mockRemote.get('auth/session', retryUnauthorized: false),
         ).thenAnswer((_) async => {'invalid': 'data'});
 
         final container = ProviderContainer(
@@ -122,7 +124,7 @@ void main() {
 
       test('returns null when remote returns non-map', () async {
         when(
-          () => mockRemote.get('auth/session'),
+          () => mockRemote.get('auth/session', retryUnauthorized: false),
         ).thenAnswer((_) async => 'string-response');
 
         final container = ProviderContainer(

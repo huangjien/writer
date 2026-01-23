@@ -1472,6 +1472,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get styleGlassmorphism => '玻璃拟态';
 
   @override
+  String get styleLiquidGlass => '液态玻璃';
+
+  @override
   String get styleNeumorphism => '新拟态';
 
   @override

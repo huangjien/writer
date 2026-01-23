@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/shared/widgets/mobile_bottom_nav_bar.dart';
+import 'package:writer/theme/ui_style_adapter.dart';
+import 'package:writer/theme/ui_styles.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +18,14 @@ void main() {
       MobileNavTab currentTab = MobileNavTab.home,
       Set<MobileNavTab>? showBadgeOnTab,
     }) {
+      final baseTheme = ThemeData(
+        useMaterial3: true,
+        platform: TargetPlatform.android,
+        visualDensity: VisualDensity.standard,
+      );
+      final patchedTheme = const UiStyleAdapter()
+          .resolveStylePatch(UiStyleFamily.neumorphism)
+          .applyToTheme(baseTheme, false);
       return MaterialApp(
         home: Scaffold(
           bottomNavigationBar: MobileBottomNavBar(
@@ -24,6 +34,7 @@ void main() {
             showBadgeOnTab: showBadgeOnTab,
           ),
         ),
+        theme: patchedTheme,
       );
     }
 
@@ -141,10 +152,9 @@ void main() {
 
       // Check that it has a box shadow
       // Neumorphic decoration uses multiple shadows.
-      // With depth 12, blur is 30.0.
       final decoration = bottomNavBar.decoration as BoxDecoration;
       expect(decoration.boxShadow, isNotEmpty);
-      expect(decoration.boxShadow?.first.blurRadius, equals(30.0));
+      expect(decoration.boxShadow?.first.blurRadius, equals(28.0));
     });
 
     testWidgets('handles rapid tab changes', (tester) async {

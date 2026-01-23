@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
-import '../../theme/neumorphic_styles.dart';
+import '../../theme/theme_extensions.dart';
 
-class NeumorphicTextField extends StatelessWidget {
+class NeumorphicTextField extends StatefulWidget {
   const NeumorphicTextField({
     super.key,
     this.controller,
@@ -37,49 +37,92 @@ class NeumorphicTextField extends StatelessWidget {
   final String? obscureLabel;
 
   @override
+  State<NeumorphicTextField> createState() => _NeumorphicTextFieldState();
+}
+
+class _NeumorphicTextFieldState extends State<NeumorphicTextField> {
+  FocusNode? _internalFocusNode;
+  FocusNode? _listeningFocusNode;
+
+  FocusNode get _focusNode =>
+      widget.focusNode ?? (_internalFocusNode ??= FocusNode());
+
+  @override
+  void initState() {
+    super.initState();
+    _listeningFocusNode = _focusNode..addListener(_handleFocusChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant NeumorphicTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      _listeningFocusNode?.removeListener(_handleFocusChanged);
+      _listeningFocusNode = _focusNode..addListener(_handleFocusChanged);
+    }
+  }
+
+  void _handleFocusChanged() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _listeningFocusNode?.removeListener(_handleFocusChanged);
+    _internalFocusNode?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
-    final label = semanticLabel ?? hintText;
+    final label = widget.semanticLabel ?? widget.hintText;
+    final focusNode = _focusNode;
+    final isFocused = focusNode.hasFocus;
+
+    final resolvedBorderRadius =
+        theme.inputBorderRadius ?? BorderRadius.circular(Radii.m);
+    final resolvedBackgroundColor =
+        theme.inputBackgroundColor ?? theme.colorScheme.surface;
+    final resolvedBorder =
+        theme.inputBorder ??
+        Border.all(
+          color: isFocused
+              ? (theme.inputFocusedBorderColor ?? theme.colorScheme.primary)
+              : theme.colorScheme.outlineVariant,
+          width: 1,
+        );
 
     return Semantics(
       textField: true,
       label: label,
-      hint: hintText,
-      obscured: obscureText,
+      hint: widget.hintText,
+      obscured: widget.obscureText,
       child: Container(
-        decoration:
-            NeumorphicStyles.decoration(
-              isDark: isDark,
-              isPressed: true, // Concave
-              borderRadius: BorderRadius.circular(Radii.m),
-              depth:
-                  4, // Positive depth for inner shadow effect simulation if handled by style, or just rely on isPressed
-            ).copyWith(
-              border: Border.all(
-                color: isDark
-                    ? Colors.black.withValues(alpha: 0.5)
-                    : Colors.white.withValues(alpha: 0.7),
-                width: 1,
-              ),
-            ),
+        decoration: BoxDecoration(
+          color: resolvedBackgroundColor,
+          borderRadius: resolvedBorderRadius,
+          border: resolvedBorder,
+          boxShadow: theme.styleCardShadows,
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
         child: TextField(
-          controller: controller,
+          controller: widget.controller,
           focusNode: focusNode,
-          onChanged: onChanged,
-          keyboardType: keyboardType,
-          obscureText: obscureText,
-          maxLines: maxLines,
-          enabled: enabled,
-          textInputAction: textInputAction,
-          onSubmitted: onSubmitted,
+          onChanged: widget.onChanged,
+          keyboardType: widget.keyboardType,
+          obscureText: widget.obscureText,
+          maxLines: widget.maxLines,
+          enabled: widget.enabled,
+          textInputAction: widget.textInputAction,
+          onSubmitted: widget.onSubmitted,
           style: theme.textTheme.bodyMedium,
           decoration: InputDecoration(
-            hintText: hintText,
-            prefixIcon: prefixIcon,
-            suffixIcon: suffixIcon,
+            hintText: widget.hintText,
+            prefixIcon: widget.prefixIcon,
+            suffixIcon: widget.suffixIcon,
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,

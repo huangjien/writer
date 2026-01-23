@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
-import '../../../theme/neumorphic_styles.dart';
+import '../../../theme/theme_extensions.dart';
 import '../../../models/chapter.dart';
 import '../widgets/reader_edit_actions.dart';
 import 'reader_bottom_bar.dart';
@@ -102,14 +102,16 @@ class ReaderBottomBarShell extends StatelessWidget {
       betaLoading: betaLoading,
     );
 
+    final theme = Theme.of(context);
     return AnimatedContainer(
       duration: Duration(milliseconds: reduceMotion ? 0 : 300),
       curve: Curves.easeOutCubic,
       margin: EdgeInsets.all(isCompact ? Spacing.m : Spacing.l),
-      decoration: NeumorphicStyles.decoration(
-        isDark: Theme.of(context).brightness == Brightness.dark,
+      decoration: BoxDecoration(
+        color: theme.cardBackgroundColor ?? theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(24.0),
-        depth: 10, // Subtle depth for floating bar
+        border: theme.styleCardBorder,
+        boxShadow: theme.styleCardShadows,
       ),
       padding: EdgeInsets.zero,
       child: bottomBar,

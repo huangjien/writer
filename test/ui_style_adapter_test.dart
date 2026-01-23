@@ -21,6 +21,13 @@ void main() {
         expect(patch.useBackdropBlur, true);
       });
 
+      test('returns liquidGlass patch for liquidGlass style', () {
+        final patch = adapter.resolveStylePatch(UiStyleFamily.liquidGlass);
+        expect(patch.styleFamily, UiStyleFamily.liquidGlass);
+        expect(patch.useBackdropBlur, true);
+        expect(patch.cardBlur, 24);
+      });
+
       test('returns neumorphism patch for neumorphism style', () {
         final patch = adapter.resolveStylePatch(UiStyleFamily.neumorphism);
         expect(patch.cardBorderRadius, BorderRadius.circular(20));
@@ -86,6 +93,14 @@ void main() {
         expect(ext1, isNotNull);
         expect(ext1!.cardShadows, isNotNull);
         expect(ext1.cardShadows, isNotEmpty);
+
+        final liquid = const StyleThemePatch(
+          styleFamily: UiStyleFamily.liquidGlass,
+        ).applyToTheme(baseTheme, false);
+        final extLiquid = liquid.extension<UiStyleThemeExtension>();
+        expect(extLiquid, isNotNull);
+        expect(extLiquid!.cardShadows, isNotNull);
+        expect(extLiquid.cardShadows, isNotEmpty);
 
         final neu = const StyleThemePatch(
           styleFamily: UiStyleFamily.neumorphism,

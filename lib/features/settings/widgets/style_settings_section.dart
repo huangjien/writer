@@ -42,6 +42,11 @@ class StyleSettingsSection extends ConsumerWidget {
                     l10n,
                   ),
                   _buildDropdownMenuItem(
+                    UiStyleFamily.liquidGlass,
+                    l10n.styleLiquidGlass,
+                    l10n,
+                  ),
+                  _buildDropdownMenuItem(
                     UiStyleFamily.neumorphism,
                     l10n.styleNeumorphism,
                     l10n,
@@ -149,6 +154,14 @@ class _StylePreviewCard extends StatelessWidget {
     switch (style) {
       case UiStyleFamily.glassmorphism:
         previewContent = _buildGlassmorphismPreview(
+          context,
+          colorScheme,
+          isSelected,
+          iconColor,
+        );
+        break;
+      case UiStyleFamily.liquidGlass:
+        previewContent = _buildLiquidGlassPreview(
           context,
           colorScheme,
           isSelected,
@@ -281,6 +294,37 @@ class _StylePreviewCard extends StatelessWidget {
     );
   }
 
+  Widget _buildLiquidGlassPreview(
+    BuildContext context,
+    ColorScheme colorScheme,
+    bool isSelected,
+    Color iconColor,
+  ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          _getStyleIcon(UiStyleFamily.liquidGlass),
+          color: iconColor,
+          size: 16,
+        ),
+        const SizedBox(height: 2),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2),
+          child: Text(
+            'Liquid',
+            style: Theme.of(
+              context,
+            ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildMinimalismPreview(
     BuildContext context,
     ColorScheme colorScheme,
@@ -360,6 +404,31 @@ class _StylePreviewCard extends StatelessWidget {
             width: isSelected ? 2 : 1,
           ),
         );
+      case UiStyleFamily.liquidGlass:
+        return BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              colorScheme.surface.withValues(alpha: 0.55),
+              colorScheme.surface.withValues(alpha: 0.25),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected
+                ? colorScheme.primary
+                : colorScheme.outline.withValues(alpha: 0.25),
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.shadow.withValues(alpha: 0.12),
+              offset: const Offset(0, 6),
+              blurRadius: 14,
+            ),
+          ],
+        );
       case UiStyleFamily.neumorphism:
         return BoxDecoration(
           color: colorScheme.surface,
@@ -412,6 +481,8 @@ class _StylePreviewCard extends StatelessWidget {
     switch (style) {
       case UiStyleFamily.glassmorphism:
         return Icons.blur_on;
+      case UiStyleFamily.liquidGlass:
+        return Icons.water_drop_outlined;
       case UiStyleFamily.neumorphism:
         return Icons.invert_colors_off;
       case UiStyleFamily.minimalism:

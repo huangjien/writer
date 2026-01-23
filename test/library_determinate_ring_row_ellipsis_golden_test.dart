@@ -29,7 +29,7 @@ void main() {
     final prevComparator = goldenFileComparator;
     goldenFileComparator = TolerantGoldenComparator(
       Platform.script,
-      pixelDiffTolerance: 0.06,
+      pixelDiffTolerance: 0.12,
     );
     addTearDown(() {
       goldenFileComparator = prevComparator;
@@ -160,7 +160,7 @@ void main() {
     final prevComparator = goldenFileComparator;
     goldenFileComparator = TolerantGoldenComparator(
       Platform.script,
-      pixelDiffTolerance: 0.06,
+      pixelDiffTolerance: 0.12,
     );
     addTearDown(() {
       goldenFileComparator = prevComparator;

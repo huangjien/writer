@@ -7,7 +7,6 @@ import '../../state/providers.dart';
 import '../../state/novel_providers.dart';
 import '../../repositories/novel_repository.dart';
 import '../../theme/design_tokens.dart';
-import '../../theme/neumorphic_styles.dart';
 import '../../shared/widgets/neumorphic_dropdown.dart';
 import '../../shared/widgets/app_buttons.dart';
 
@@ -205,41 +204,20 @@ class _NeumorphicTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      decoration:
-          NeumorphicStyles.decoration(
-            isDark: isDark,
-            isPressed: true,
-            borderRadius: BorderRadius.circular(Radii.m),
-            depth: 4,
-          ).copyWith(
-            border: Border.all(
-              color: isDark
-                  ? Colors.black.withValues(alpha: 0.5)
-                  : Colors.white.withValues(alpha: 0.7),
-              width: 1,
-            ),
-          ),
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      child: TextFormField(
-        controller: controller,
-        validator: validator,
-        minLines: minLines,
-        maxLines: maxLines,
-        style: theme.textTheme.bodyMedium,
-        decoration: InputDecoration(
-          hintText: hintText,
-          labelText: labelText,
-          alignLabelWithHint: alignLabelWithHint,
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: Spacing.m,
-            vertical: Spacing.m,
-          ),
+    return TextFormField(
+      controller: controller,
+      validator: validator,
+      minLines: minLines,
+      maxLines: maxLines,
+      style: theme.textTheme.bodyMedium,
+      decoration: InputDecoration(
+        hintText: hintText,
+        labelText: labelText,
+        alignLabelWithHint: alignLabelWithHint,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: Spacing.m,
+          vertical: Spacing.m,
         ),
       ),
     );

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../models/chapter.dart';
 import '../../../theme/design_tokens.dart';
-import '../../../theme/neumorphic_styles.dart';
 
 /// Enhanced chapter list item with progress indicator
 /// Features:
@@ -28,7 +27,6 @@ class EnhancedChapterListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final titleText = chapter.title?.trim();
     final displayTitle = (titleText == null || titleText.isEmpty)
         ? 'Chapter ${chapter.idx}'
@@ -99,20 +97,14 @@ class EnhancedChapterListItem extends StatelessWidget {
                       Container(
                         height: 10,
                         padding: const EdgeInsets.all(2),
-                        decoration:
-                            NeumorphicStyles.decoration(
-                              isDark: isDark,
-                              isPressed: true,
-                              borderRadius: BorderRadius.circular(Radii.s),
-                              depth: 2,
-                            ).copyWith(
-                              border: Border.all(
-                                color: isDark
-                                    ? Colors.black.withValues(alpha: 0.5)
-                                    : Colors.white.withValues(alpha: 0.7),
-                                width: 1,
-                              ),
-                            ),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(Radii.s),
+                          border: Border.all(
+                            color: theme.colorScheme.outlineVariant,
+                            width: 1,
+                          ),
+                        ),
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: FractionallySizedBox(

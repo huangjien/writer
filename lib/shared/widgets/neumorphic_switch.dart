@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../theme/neumorphic_styles.dart';
+import '../../theme/theme_extensions.dart';
 import 'focus_wrapper.dart';
 
 class NeumorphicSwitch extends StatelessWidget {
@@ -22,14 +22,17 @@ class NeumorphicSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     const width = 56.0;
     const height = 32.0;
     const padding = 4.0;
     const thumbSize = height - (padding * 2);
 
-    final effectiveActiveColor = activeColor ?? theme.colorScheme.primary;
+    final effectiveActiveColor =
+        activeColor ?? theme.switchActiveColor ?? theme.colorScheme.primary;
+    final backgroundColor =
+        theme.switchBackgroundColor ?? theme.colorScheme.surface;
+    final thumbColor = theme.switchThumbColor ?? theme.colorScheme.surface;
 
     final switchWidget = Semantics(
       toggled: value,
@@ -61,23 +64,14 @@ class NeumorphicSwitch extends StatelessWidget {
             width: width,
             height: height,
             padding: const EdgeInsets.all(padding),
-            decoration:
-                NeumorphicStyles.decoration(
-                  isDark: isDark,
-                  isPressed: true,
-                  borderRadius: BorderRadius.circular(height / 2),
-                  depth: 2,
-                  color: value
-                      ? effectiveActiveColor.withValues(alpha: 0.1)
-                      : null,
-                ).copyWith(
-                  border: Border.all(
-                    color: isDark
-                        ? Colors.black.withValues(alpha: 0.5)
-                        : Colors.white.withValues(alpha: 0.7),
-                    width: 1,
-                  ),
-                ),
+            decoration: BoxDecoration(
+              color: value
+                  ? effectiveActiveColor.withValues(alpha: 0.1)
+                  : backgroundColor,
+              borderRadius: BorderRadius.circular(height / 2),
+              border: theme.switchBorder,
+              boxShadow: theme.styleCardShadows,
+            ),
             child: Stack(
               children: [
                 AnimatedAlign(
@@ -89,12 +83,10 @@ class NeumorphicSwitch extends StatelessWidget {
                   child: Container(
                     width: thumbSize,
                     height: thumbSize,
-                    decoration: NeumorphicStyles.decoration(
-                      isDark: isDark,
-                      isPressed: false,
+                    decoration: BoxDecoration(
+                      color: value ? effectiveActiveColor : thumbColor,
                       shape: BoxShape.circle,
-                      depth: 3,
-                      color: value ? effectiveActiveColor : null,
+                      boxShadow: theme.styleCardShadows,
                     ),
                   ),
                 ),

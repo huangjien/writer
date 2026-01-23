@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
-import '../../theme/neumorphic_styles.dart';
+import '../../theme/theme_extensions.dart';
+import '../../theme/ui_styles.dart';
 import 'focus_wrapper.dart';
 
 /// Mobile-optimized bottom navigation bar
@@ -29,17 +30,36 @@ class MobileBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
+    final currentStyle = theme.uiStyleFamily;
+
+    final decoration = switch (currentStyle) {
+      UiStyleFamily.glassmorphism || UiStyleFamily.liquidGlass => BoxDecoration(
+        color: theme.styleCardGradient != null
+            ? null
+            : (theme.styleCardColor ??
+                  colorScheme.surface.withValues(
+                    alpha: theme.brightness == Brightness.dark ? 0.55 : 0.75,
+                  )),
+        gradient: theme.styleCardGradient,
+        borderRadius: BorderRadius.zero,
+        border: theme.styleCardBorder,
+        boxShadow: theme.styleCardShadows,
+      ),
+      UiStyleFamily.neumorphism ||
+      UiStyleFamily.minimalism ||
+      UiStyleFamily.flatDesign => BoxDecoration(
+        color: theme.cardBackgroundColor ?? colorScheme.surface,
+        borderRadius: BorderRadius.zero,
+        border: theme.styleCardBorder,
+        boxShadow: theme.styleCardShadows,
+      ),
+    };
 
     return Container(
       constraints: const BoxConstraints.tightFor(
         height: MobileSpacing.bottomNavHeight,
       ),
-      decoration: NeumorphicStyles.decoration(
-        isDark: isDark,
-        borderRadius: BorderRadius.zero, // Flat bar
-        depth: 15, // Subtle shadow for the bar
-      ),
+      decoration: decoration,
       child: SafeArea(
         top: false,
         child: Row(

@@ -10,7 +10,6 @@ import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:writer/repositories/notes_repository.dart';
 import 'package:writer/shared/api_exception.dart';
 import '../../state/providers.dart';
-import '../../theme/neumorphic_styles.dart';
 import '../../shared/widgets/neumorphic_dropdown.dart';
 import '../../shared/widgets/app_buttons.dart';
 
@@ -139,7 +138,9 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseDecoration = const InputDecoration().applyDefaults(
+      Theme.of(context).inputDecorationTheme,
+    );
     return Scaffold(
       appBar: AppBar(title: Text(l10n.characters), actions: const []),
       body: Padding(
@@ -171,10 +172,10 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _titleController,
-                            decoration: NeumorphicStyles.inputDecoration(
-                              isDark: isDark,
+                            decoration: baseDecoration.copyWith(
                               hintText: l10n.titleLabel,
-                            ).copyWith(labelText: l10n.titleLabel),
+                              labelText: l10n.titleLabel,
+                            ),
                             validator: (v) => v == null || v.trim().isEmpty
                                 ? l10n.required
                                 : null,
@@ -256,16 +257,19 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> {
                                     focusNode,
                                     onFieldSubmitted,
                                   ) {
+                                    final baseDecoration =
+                                        const InputDecoration().applyDefaults(
+                                          Theme.of(
+                                            context,
+                                          ).inputDecorationTheme,
+                                        );
                                     return TextFormField(
                                       controller: textEditingController,
                                       focusNode: focusNode,
-                                      decoration:
-                                          NeumorphicStyles.inputDecoration(
-                                            isDark: isDark,
-                                            hintText: l10n.templateLabel,
-                                          ).copyWith(
-                                            labelText: l10n.templateLabel,
-                                          ),
+                                      decoration: baseDecoration.copyWith(
+                                        hintText: l10n.templateLabel,
+                                        labelText: l10n.templateLabel,
+                                      ),
                                       onFieldSubmitted: (String value) {
                                         onFieldSubmitted();
                                       },

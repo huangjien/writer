@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/design_tokens.dart';
-import '../../../theme/neumorphic_styles.dart';
 import '../../../shared/widgets/app_buttons.dart';
 
 class ReaderBottomBar extends StatelessWidget {
@@ -55,7 +54,6 @@ class ReaderBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.l),
       child: Row(
@@ -155,20 +153,14 @@ class ReaderBottomBar extends StatelessWidget {
                       key: const ValueKey('reader_bottom_progress_bar'),
                       height: 14,
                       padding: const EdgeInsets.all(2),
-                      decoration:
-                          NeumorphicStyles.decoration(
-                            isDark: isDark,
-                            isPressed: true,
-                            borderRadius: BorderRadius.circular(Radii.s),
-                            depth: 2,
-                          ).copyWith(
-                            border: Border.all(
-                              color: isDark
-                                  ? Colors.black.withValues(alpha: 0.5)
-                                  : Colors.white.withValues(alpha: 0.7),
-                              width: 1,
-                            ),
-                          ),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(Radii.s),
+                        border: Border.all(
+                          color: theme.colorScheme.outlineVariant,
+                          width: 1,
+                        ),
+                      ),
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: FractionallySizedBox(

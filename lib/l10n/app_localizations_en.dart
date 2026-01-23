@@ -1505,6 +1505,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get styleGlassmorphism => 'Glassmorphism';
 
   @override
+  String get styleLiquidGlass => 'Liquid Glass';
+
+  @override
   String get styleNeumorphism => 'Neumorphism';
 
   @override

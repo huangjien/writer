@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'advanced_typography.dart';
 import 'design_tokens.dart';
-import 'neumorphic_styles.dart';
 
 /// Reader-friendly theme families. Each family has light and dark variants.
 enum AppThemeFamily {
@@ -41,19 +40,54 @@ Color _seedFor(AppThemeFamily family) {
 bool _isHighContrast(AppThemeFamily family) =>
     family == AppThemeFamily.contrast;
 
+InputDecorationTheme _neumorphicInputDecorationTheme({required bool isDark}) {
+  final bg = isDark
+      ? AppColors.neumorphicBackgroundDark
+      : AppColors.neumorphicBackgroundLight;
+  final pressedBg = isDark
+      ? Color.lerp(bg, Colors.black, 0.03)!
+      : Color.lerp(bg, Colors.black, 0.01)!;
+
+  return InputDecorationTheme(
+    filled: true,
+    fillColor: pressedBg,
+    contentPadding: const EdgeInsets.symmetric(
+      horizontal: Spacing.l,
+      vertical: Spacing.m,
+    ),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(Radii.m),
+      borderSide: BorderSide.none,
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(Radii.m),
+      borderSide: BorderSide(
+        color: isDark ? Colors.black26 : Colors.white54,
+        width: 1,
+      ),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(Radii.m),
+      borderSide: BorderSide(
+        color: isDark ? Colors.white30 : Colors.black26,
+        width: 1.5,
+      ),
+    ),
+  );
+}
+
 ThemeData _buildFromSeed(Color seed, Brightness brightness) {
   final isLight = brightness == Brightness.light;
+  final surface = isLight
+      ? AppColors.neumorphicBackgroundLight
+      : AppColors.neumorphicBackgroundDark;
   final baseTheme = ThemeData(
     colorScheme: ColorScheme.fromSeed(
       seedColor: seed,
       brightness: brightness,
-      surface: isLight
-          ? NeumorphicStyles.lightBackground
-          : NeumorphicStyles.darkBackground,
+      surface: surface,
     ),
-    scaffoldBackgroundColor: isLight
-        ? NeumorphicStyles.lightBackground
-        : NeumorphicStyles.darkBackground,
+    scaffoldBackgroundColor: surface,
     useMaterial3: true,
   );
   final cs = baseTheme.colorScheme;
@@ -91,18 +125,16 @@ ThemeData _buildFromSeed(Color seed, Brightness brightness) {
     ),
 
     // Modern outline input decorations
-    inputDecorationTheme:
-        NeumorphicStyles.inputDecorationTheme(isDark: !isLight).copyWith(
-          // Keep some specific overrides if needed, but NeumorphicStyles handles most
+    inputDecorationTheme: _neumorphicInputDecorationTheme(isDark: !isLight)
+        .copyWith(
+          // Keep some specific overrides if needed.
           floatingLabelBehavior: FloatingLabelBehavior.auto,
         ),
 
     // Softer card elevation with colored shadows
     cardTheme: CardThemeData(
       elevation: 0, // Neumorphism uses custom shadows, not elevation
-      color: isLight
-          ? NeumorphicStyles.lightBackground
-          : NeumorphicStyles.darkBackground,
+      color: cs.surface,
       shadowColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Radii.l),
@@ -241,9 +273,7 @@ ThemeData _buildFromSeed(Color seed, Brightness brightness) {
       labelTextStyle: WidgetStatePropertyAll(baseTheme.textTheme.labelMedium),
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: isLight
-          ? NeumorphicStyles.lightBackground
-          : NeumorphicStyles.darkBackground,
+      backgroundColor: cs.surface,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: true,

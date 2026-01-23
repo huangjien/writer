@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
-import '../../theme/neumorphic_styles.dart';
+import '../../theme/theme_extensions.dart';
 
 class NeumorphicButton extends StatefulWidget {
   const NeumorphicButton({
@@ -34,22 +34,38 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final isDisabled = widget.onPressed == null;
-    final radius = widget.borderRadius ?? BorderRadius.circular(Radii.m);
-    // Subtle hover effect for minimalist aesthetic
-    final baseDepth = isDisabled
+    final radius =
+        widget.borderRadius ??
+        theme.buttonBorderRadius ??
+        BorderRadius.circular(Radii.m);
+    final depthFactor = isDisabled
         ? 0.0
-        : (widget.depth ?? 6.0) + (_isHovered ? 1.0 : 0.0);
+        : ((widget.depth ?? 6.0) + (_isHovered ? 1.0 : 0.0)) / 6.0;
 
     Color background =
         widget.color ??
-        (isDark
-            ? NeumorphicStyles.darkBackground
-            : NeumorphicStyles.lightBackground);
+        theme.buttonBackgroundColor ??
+        theme.colorScheme.surface;
 
     if (isDisabled) {
       background = background.withValues(alpha: 0.6);
+    }
+
+    List<BoxShadow>? scaleShadows(List<BoxShadow>? shadows) {
+      if (shadows == null) return null;
+      return shadows
+          .map(
+            (s) => s.copyWith(
+              blurRadius: s.blurRadius * depthFactor,
+              spreadRadius: s.spreadRadius * depthFactor,
+              offset: Offset(
+                s.offset.dx * depthFactor,
+                s.offset.dy * depthFactor,
+              ),
+            ),
+          )
+          .toList(growable: false);
     }
 
     return Semantics(
@@ -98,21 +114,16 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
                   horizontal: Spacing.l,
                   vertical: Spacing.m,
                 ),
-            decoration:
-                NeumorphicStyles.decoration(
-                  isDark: isDark,
-                  borderRadius: radius,
-                  color: background,
-                  isPressed: _isPressed,
-                  depth: _isPressed ? 0 : baseDepth,
-                ).copyWith(
-                  border: Border.all(
-                    color: isDark
-                        ? Colors.black.withValues(alpha: 0.5)
-                        : Colors.white.withValues(alpha: 0.7),
-                    width: 1,
-                  ),
-                ),
+            decoration: BoxDecoration(
+              color: _isPressed
+                  ? (theme.buttonPressedColor ?? background)
+                  : background,
+              borderRadius: radius,
+              boxShadow: _isPressed
+                  ? scaleShadows(theme.buttonPressedShadows)
+                  : scaleShadows(theme.buttonShadows),
+              border: theme.buttonBorder,
+            ),
             transform: _isPressed && !isDisabled
                 ? Matrix4.translationValues(1, 1, 0)
                 : (_isHovered && !isDisabled

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
-import '../../../theme/neumorphic_styles.dart';
+import '../../../theme/theme_extensions.dart';
 import '../empty_state.dart';
 
 class NovelEmptyState extends StatelessWidget {
@@ -28,10 +28,11 @@ class NovelEmptyState extends StatelessWidget {
       onAction: onAction,
       illustration: Container(
         padding: const EdgeInsets.all(Spacing.xl),
-        decoration: NeumorphicStyles.decoration(
-          isDark: theme.brightness == Brightness.dark,
+        decoration: BoxDecoration(
+          color: theme.cardBackgroundColor ?? theme.cardColor,
           borderRadius: BorderRadius.circular(999),
-          depth: 4,
+          boxShadow: theme.styleCardShadows,
+          border: theme.styleCardBorder,
         ),
         child: Icon(
           Icons.menu_book_outlined,

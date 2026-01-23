@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
-import '../../theme/neumorphic_styles.dart';
+import '../../theme/theme_extensions.dart';
 import 'focus_wrapper.dart';
 
 class NeumorphicSlider extends StatelessWidget {
@@ -47,13 +47,17 @@ class NeumorphicSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final primaryColor = theme.colorScheme.primary;
 
     final effectiveThumbColor = thumbColor ?? primaryColor;
     final effectiveActiveTrackColor = activeTrackColor ?? primaryColor;
 
     final isEnabled = onChanged != null;
+    final resolvedBorder =
+        theme.inputBorder ??
+        Border.all(color: theme.colorScheme.outlineVariant, width: 1);
+    final resolvedTrackColor =
+        theme.inputBackgroundColor ?? theme.colorScheme.surface;
 
     return FocusWrapper(
       enabled: isEnabled,
@@ -119,11 +123,11 @@ class NeumorphicSlider extends StatelessWidget {
                       Container(
                         width: width,
                         height: trackHeight,
-                        decoration: NeumorphicStyles.decoration(
-                          isDark: isDark,
-                          isPressed: true,
+                        decoration: BoxDecoration(
+                          color: resolvedTrackColor,
                           borderRadius: BorderRadius.circular(trackHeight / 2),
-                          depth: 2,
+                          border: resolvedBorder,
+                          boxShadow: theme.styleCardShadows,
                         ),
                       ),
                       Container(
@@ -154,11 +158,10 @@ class NeumorphicSlider extends StatelessWidget {
                         child: Container(
                           width: thumbSize,
                           height: thumbSize,
-                          decoration: NeumorphicStyles.decoration(
-                            isDark: isDark,
-                            shape: BoxShape.circle,
-                            depth: 3,
+                          decoration: BoxDecoration(
                             color: effectiveThumbColor,
+                            shape: BoxShape.circle,
+                            boxShadow: theme.buttonShadows,
                           ),
                         ),
                       ),

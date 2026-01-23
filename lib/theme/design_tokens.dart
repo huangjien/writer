@@ -51,6 +51,9 @@ class AppColors {
   static const Color glassSurfaceDark = Color(0xB31F1F1F);
   static const Color glassBorderLight = Color(0x33FFFFFF);
   static const Color glassBorderDark = Color(0x26FFFFFF);
+
+  static const Color neumorphicBackgroundLight = Color(0xFFE0E5EC);
+  static const Color neumorphicBackgroundDark = Color(0xFF2D2F33);
 }
 
 class GlassTokens {

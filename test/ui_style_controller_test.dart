@@ -59,6 +59,7 @@ void main() {
     final styles = [
       UiStyleFamily.minimalism,
       UiStyleFamily.glassmorphism,
+      UiStyleFamily.liquidGlass,
       UiStyleFamily.neumorphism,
       UiStyleFamily.flatDesign,
     ];

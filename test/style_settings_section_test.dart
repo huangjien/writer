@@ -91,6 +91,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Glassmorphism'), findsOneWidget);
+    expect(find.text('Liquid'), findsOneWidget);
     expect(find.text('Neumorphism'), findsOneWidget);
     expect(find.text('Minimalism'), findsOneWidget);
     expect(find.text('Flat Design'), findsOneWidget);

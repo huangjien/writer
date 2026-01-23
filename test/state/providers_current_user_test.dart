@@ -149,8 +149,9 @@ void main() {
     );
     addTearDown(container.dispose);
 
+    final future = container.read(currentUserProvider.future);
     await didCallRemote.future.timeout(const Duration(seconds: 2));
-    final user = await container.read(currentUserProvider.future);
+    final user = await future;
     expect(user, isNull);
   });
 }

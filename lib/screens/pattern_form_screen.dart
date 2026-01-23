@@ -7,7 +7,6 @@ import '../state/pattern_providers.dart';
 import '../state/providers.dart';
 import '../l10n/app_localizations.dart';
 import '../shared/api_exception.dart';
-import '../theme/neumorphic_styles.dart';
 import '../shared/widgets/neumorphic_checkbox.dart';
 import '../shared/widgets/app_buttons.dart';
 import '../theme/design_tokens.dart';
@@ -297,7 +296,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
     final isSignedIn = ref.watch(isSignedInProvider);
     final isAdmin = ref.watch(isAdminProvider);
     final currentUser = ref.watch(currentUserProvider).asData?.value;
@@ -324,10 +323,10 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                   final titleField = TextFormField(
                     key: const ValueKey('patternForm_title'),
                     controller: _titleCtrl,
-                    decoration: NeumorphicStyles.inputDecoration(
-                      isDark: isDark,
+                    decoration: InputDecoration(
                       hintText: l10n.titleLabel,
-                    ).copyWith(labelText: l10n.titleLabel),
+                      labelText: l10n.titleLabel,
+                    ),
                     validator: _required,
                     enabled: !_locked && !_saving,
                   );
@@ -335,16 +334,11 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                     key: ValueKey(_language),
                     initialValue: _language,
                     isExpanded: true,
-                    decoration:
-                        NeumorphicStyles.inputDecoration(
-                          isDark: isDark,
-                          hintText: l10n.languageLabel(''),
-                        ).copyWith(
-                          labelText: l10n.languageLabel(''),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                          ),
-                        ),
+                    decoration: InputDecoration(
+                      hintText: l10n.languageLabel(''),
+                      labelText: l10n.languageLabel(''),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
                     items: [
                       DropdownMenuItem(value: 'en', child: Text(l10n.english)),
                       DropdownMenuItem(value: 'zh', child: Text(l10n.chinese)),
@@ -441,16 +435,16 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
               TextFormField(
                 key: const ValueKey('patternForm_description'),
                 controller: _descCtrl,
-                decoration: NeumorphicStyles.inputDecoration(
-                  isDark: isDark,
+                decoration: InputDecoration(
                   hintText: l10n.descriptionLabel,
-                ).copyWith(labelText: l10n.descriptionLabel),
+                  labelText: l10n.descriptionLabel,
+                ),
                 enabled: !_locked && !_saving,
               ),
               const SizedBox(height: 12),
               TabBar(
                 controller: _tabController,
-                labelColor: Theme.of(context).primaryColor,
+                labelColor: theme.primaryColor,
                 unselectedLabelColor: Colors.grey,
                 tabs: [
                   Tab(text: l10n.previewLabel),
@@ -479,10 +473,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                       maxLines: null,
                       expands: true,
                       validator: _required,
-                      decoration: NeumorphicStyles.inputDecoration(
-                        isDark: isDark,
-                        hintText: l10n.content,
-                      ),
+                      decoration: InputDecoration(hintText: l10n.content),
                       enabled: !_locked && !_saving,
                     ),
                     TextFormField(
@@ -490,8 +481,7 @@ class _PatternFormScreenState extends ConsumerState<PatternFormScreen>
                       controller: _usageCtrl,
                       maxLines: null,
                       expands: true,
-                      decoration: NeumorphicStyles.inputDecoration(
-                        isDark: isDark,
+                      decoration: InputDecoration(
                         hintText: l10n.usageRulesLabel,
                       ),
                       enabled: !_locked && !_saving,

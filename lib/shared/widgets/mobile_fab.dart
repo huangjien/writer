@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
+import '../../theme/theme_extensions.dart';
 import 'theme_aware_card.dart';
 import 'spring_animated_container.dart';
 import 'focus_wrapper.dart';
 import 'neumorphic_button.dart';
-import '../../theme/neumorphic_styles.dart';
 
 /// Mobile-optimized Floating Action Button
 /// Features:
@@ -41,11 +41,10 @@ class MobileFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    final fabColor = isDark
-        ? NeumorphicStyles.darkBackground
-        : NeumorphicStyles.lightBackground;
+    final fabColor =
+        theme.buttonBackgroundColor ??
+        theme.cardBackgroundColor ??
+        theme.colorScheme.surface;
     final contentColor =
         getForegroundColor(); // Keep original text/icon colors or use primary
 

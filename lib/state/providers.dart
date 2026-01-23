@@ -36,18 +36,7 @@ class BackendUser {
 final currentUserProvider = FutureProvider<BackendUser?>((ref) async {
   final sessionId = ref.watch(sessionProvider);
   if (sessionId == null || sessionId.trim().isEmpty) return null;
-  String baseUrl;
-  try {
-    baseUrl = ref.watch(aiServiceProvider);
-  } catch (_) {
-    baseUrl = 'http://localhost:5600/';
-  }
-
-  final remote = RemoteRepository(
-    baseUrl,
-    client: ref.read(httpClientProvider),
-    authToken: () async => sessionId,
-  );
+  final remote = ref.watch(remoteRepositoryProvider);
 
   try {
     final res = await remote.get('auth/session', retryUnauthorized: false);

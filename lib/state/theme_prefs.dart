@@ -25,6 +25,8 @@ UiStyleFamily decodeUiStyleFamily(String? raw) {
       return UiStyleFamily.minimalism;
     case 'glassmorphism':
       return UiStyleFamily.glassmorphism;
+    case 'liquidGlass':
+      return UiStyleFamily.liquidGlass;
     case 'neumorphism':
       return UiStyleFamily.neumorphism;
     case 'flatDesign':
@@ -50,6 +52,8 @@ String encodeUiStyleFamily(UiStyleFamily family) {
       return 'minimalism';
     case UiStyleFamily.glassmorphism:
       return 'glassmorphism';
+    case UiStyleFamily.liquidGlass:
+      return 'liquidGlass';
     case UiStyleFamily.neumorphism:
       return 'neumorphism';
     case UiStyleFamily.flatDesign:

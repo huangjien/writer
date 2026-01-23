@@ -316,27 +316,22 @@ void main() {
             findsOneWidget,
             reason: 'ListView should be present',
           );
+          final scrollableFinder = find
+              .descendant(of: listFinder, matching: find.byType(Scrollable))
+              .first;
 
           final textButtonFinder = find.text('Sign Out');
-          var scrollAttempts = 0;
-          const maxScrollAttempts = 20;
-          while (!textButtonFinder.evaluate().isNotEmpty &&
-              scrollAttempts < maxScrollAttempts) {
-            await tester.drag(listFinder, const Offset(0, -500));
-            await tester.pumpAndSettle(shortTimeout);
-            scrollAttempts++;
-          }
-          await tester.ensureVisible(textButtonFinder);
-          expect(
-            textButtonFinder.evaluate().isNotEmpty,
-            true,
-            reason:
-                'Sign Out button should be visible after scrolling (attempts: $scrollAttempts)',
+          await tester.scrollUntilVisible(
+            textButtonFinder,
+            200,
+            scrollable: scrollableFinder,
           );
+          await tester.ensureVisible(textButtonFinder);
+          await tester.pumpAndSettle(shortTimeout);
           expect(
             textButtonFinder,
             findsOneWidget,
-            reason: 'Sign Out button should exist exactly once',
+            reason: 'Sign Out button should be visible after scrolling',
           );
 
           await tester.tap(textButtonFinder);
@@ -346,23 +341,16 @@ void main() {
             NeumorphicButton,
             'Sign In',
           );
-          scrollAttempts = 0;
-          while (!filledButtonFinder.evaluate().isNotEmpty &&
-              scrollAttempts < maxScrollAttempts) {
-            await tester.drag(listFinder, const Offset(0, -500));
-            await tester.pumpAndSettle(shortTimeout);
-            scrollAttempts++;
-          }
-          expect(
-            filledButtonFinder.evaluate().isNotEmpty,
-            true,
-            reason:
-                'Sign In button should be visible after sign out (attempts: $scrollAttempts)',
+          await tester.scrollUntilVisible(
+            filledButtonFinder,
+            200,
+            scrollable: scrollableFinder,
           );
+          await tester.pumpAndSettle(shortTimeout);
           expect(
             filledButtonFinder,
             findsOneWidget,
-            reason: 'Sign In button should exist exactly once after sign out',
+            reason: 'Sign In button should be visible after sign out',
           );
         });
       } finally {

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../state/sync_service_provider.dart';
 import '../state/network_monitor_provider.dart';
 import '../theme/design_tokens.dart';
-import '../theme/neumorphic_styles.dart';
+import '../theme/theme_extensions.dart';
 import '../shared/widgets/neumorphic_button.dart';
 
 /// Warning banner displayed when offline with pending operations
@@ -55,11 +55,11 @@ class OfflineBanner extends ConsumerWidget {
                   label: 'You\'re offline. $message',
                   child: ExcludeSemantics(
                     child: Container(
-                      decoration: NeumorphicStyles.decoration(
-                        isDark: theme.brightness == Brightness.dark,
-                        borderRadius: BorderRadius.circular(Radii.m),
+                      decoration: BoxDecoration(
                         color: theme.colorScheme.tertiaryContainer,
-                        depth: 4,
+                        borderRadius: BorderRadius.circular(Radii.m),
+                        border: theme.styleCardBorder,
+                        boxShadow: theme.styleCardShadows,
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(

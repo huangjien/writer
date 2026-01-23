@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/features/library/widgets/library_error_section.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';
+import 'package:writer/models/sync_state.dart';
+import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/state/network_monitor_provider.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/progress_providers.dart';
+import 'package:writer/state/sync_service_provider.dart';
 
 import 'package:writer/state/providers.dart';
 import 'package:writer/shared/widgets/mobile_bottom_nav_bar.dart';
@@ -1323,18 +1329,26 @@ void main() {
     testWidgets('shows recent chapters when signed in', (tester) async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
+      final client = MockClient((_) async => http.Response('[]', 200));
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
+            httpClientProvider.overrideWithValue(client),
+            isOnlineProvider.overrideWith((ref) => true),
+            hasPendingOperationsProvider.overrideWith((ref) => false),
+            pendingOperationsCountProvider.overrideWith((ref) async => 0),
+            syncStateValueProvider.overrideWith(
+              (ref) => const SyncState(status: SyncStatus.synced),
+            ),
             libraryNovelsProvider.overrideWith((ref) async => const []),
             memberNovelsProvider.overrideWith((ref) async => const []),
             chaptersProvider.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
             isSignedInProvider.overrideWith((ref) => true),
-            // Mock recentProgressDetailsProvider if needed, assuming default is empty list or similar
-            recentProgressDetailsProvider.overrideWith((ref) => []),
+            recentUserProgressProvider.overrideWith((ref) async => const []),
+            recentProgressDetailsProvider.overrideWith((ref) async => const []),
           ],
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,

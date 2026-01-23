@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import '../../theme/design_tokens.dart';
-import '../../theme/neumorphic_styles.dart';
+import '../../theme/theme_extensions.dart';
 import '../../models/novel.dart';
 import 'mobile_bottom_sheet.dart';
 import 'mobile_gestures.dart';
@@ -129,10 +129,11 @@ class MobileNovelCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(Radii.l),
             child: Container(
               padding: const EdgeInsets.all(MobileSpacing.cardPaddingMobile),
-              decoration: NeumorphicStyles.decoration(
-                isDark: theme.brightness == Brightness.dark,
+              decoration: BoxDecoration(
+                color: theme.cardBackgroundColor ?? theme.cardColor,
                 borderRadius: BorderRadius.circular(Radii.l),
-                depth: 6,
+                boxShadow: theme.styleCardShadows,
+                border: theme.styleCardBorder,
               ),
               child: Row(
                 children: [

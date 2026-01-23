@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
-import '../../theme/neumorphic_styles.dart';
 import '../../theme/ui_styles.dart';
 import '../../theme/theme_extensions.dart';
 import 'focus_wrapper.dart';
@@ -54,6 +53,7 @@ class ThemeAwareCard extends StatelessWidget {
 
     switch (currentStyle) {
       case UiStyleFamily.glassmorphism:
+      case UiStyleFamily.liquidGlass:
         cardContent = _buildGlassCard(
           context: context,
           child: child,
@@ -226,21 +226,18 @@ class ThemeAwareCard extends StatelessWidget {
     required double elevation,
     List<BoxShadow>? styleCardShadows,
   }) {
-    final decoration = NeumorphicStyles.decoration(
-      isDark: isDark,
+    final theme = Theme.of(context);
+    final shadows =
+        styleCardShadows ??
+        _fallbackNeumorphicShadows(isDark: isDark, depth: elevation * 4);
+    final decoration = BoxDecoration(
+      color: theme.cardBackgroundColor ?? theme.cardColor,
       borderRadius: borderRadius,
-      depth: elevation * 4,
+      boxShadow: shadows,
+      border: theme.styleCardBorder,
     );
 
-    final boxDecoration = styleCardShadows != null
-        ? BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: borderRadius,
-            boxShadow: styleCardShadows,
-          )
-        : decoration;
-
-    return Container(padding: padding, decoration: boxDecoration, child: child);
+    return Container(padding: padding, decoration: decoration, child: child);
   }
 
   Widget _buildMinimalCard({
@@ -281,6 +278,27 @@ class ThemeAwareCard extends StatelessWidget {
       ),
       child: child,
     );
+  }
+
+  List<BoxShadow> _fallbackNeumorphicShadows({
+    required bool isDark,
+    required double depth,
+  }) {
+    final shadowDepth = depth <= 0 ? 6.0 : depth;
+    final offset = Offset(shadowDepth, shadowDepth);
+    final blur = shadowDepth * 2.0;
+
+    final highlightColor = isDark
+        ? const Color(0xFF3E4145)
+        : const Color(0xFFFFFFFF);
+    final shadowColor = isDark
+        ? const Color(0xFF1A1C1F)
+        : const Color(0xFFA3B1C6);
+
+    return [
+      BoxShadow(color: highlightColor, offset: -offset, blurRadius: blur),
+      BoxShadow(color: shadowColor, offset: offset, blurRadius: blur),
+    ];
   }
 }
 
