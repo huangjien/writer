@@ -37,10 +37,10 @@ class App extends ConsumerWidget {
       // Fallback for tests that don't override themeControllerProvider
       themeState = const ThemeState(
         mode: ThemeMode.system,
-        family: AppThemeFamily.defaultFamily,
+        family: AppThemeFamily.modernMinimalist,
         hasSeparateDark: false,
-        familyLight: AppThemeFamily.defaultFamily,
-        familyDark: AppThemeFamily.defaultFamily,
+        familyLight: AppThemeFamily.modernMinimalist,
+        familyDark: AppThemeFamily.modernMinimalist,
         preset: ReaderTypographyPreset.system,
         hasSeparateTypography: false,
         presetLight: ReaderTypographyPreset.system,

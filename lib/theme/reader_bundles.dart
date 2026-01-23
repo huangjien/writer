@@ -21,19 +21,19 @@ class ReaderThemeBundleDef {
 const Map<ReaderThemeBundleId, ReaderThemeBundleDef> readerThemeBundles = {
   ReaderThemeBundleId.nordCalm: ReaderThemeBundleDef(
     labelKey: 'bundleNordCalm',
-    family: AppThemeFamily.nord,
+    family: AppThemeFamily.arcticFrost,
     preset: ReaderTypographyPreset.comfortable,
     fontPack: ReaderFontPack.inter,
   ),
   ReaderThemeBundleId.solarizedFocus: ReaderThemeBundleDef(
     labelKey: 'bundleSolarizedFocus',
-    family: AppThemeFamily.solarizedTan,
+    family: AppThemeFamily.goldenHour,
     preset: ReaderTypographyPreset.compact,
     fontPack: ReaderFontPack.inter,
   ),
   ReaderThemeBundleId.highContrastReadability: ReaderThemeBundleDef(
     labelKey: 'bundleHighContrastReadability',
-    family: AppThemeFamily.contrast,
+    family: AppThemeFamily.techInnovation,
     preset: ReaderTypographyPreset.comfortable,
     fontPack: ReaderFontPack.system,
   ),

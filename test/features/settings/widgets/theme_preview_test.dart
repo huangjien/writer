@@ -16,7 +16,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: ThemePreviewGrid(
-            selected: AppThemeFamily.defaultFamily,
+            selected: AppThemeFamily.modernMinimalist,
             onSelected: (family) {
               selectedFamily = family;
             },
@@ -27,10 +27,10 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Default'), findsOneWidget);
-    expect(find.text('Sepia'), findsOneWidget);
+    expect(find.text('Modern Minimalist'), findsOneWidget);
+    expect(find.text('Ocean Depths'), findsOneWidget);
 
-    await tester.tap(find.text('Sepia'));
-    expect(selectedFamily, AppThemeFamily.sepia);
+    await tester.tap(find.text('Ocean Depths'));
+    expect(selectedFamily, AppThemeFamily.oceanDepths);
   });
 }

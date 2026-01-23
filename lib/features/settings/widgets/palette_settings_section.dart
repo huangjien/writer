@@ -14,6 +14,11 @@ class PaletteSettingsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final themeState = ref.watch(themeControllerProvider);
+    final themes = themeFactoryThemes;
+    final hasThemes = themes.isNotEmpty;
+    final dropdownItems = themes
+        .map((t) => DropdownMenuItem(value: t.id, child: Text(t.label)))
+        .toList(growable: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -29,7 +34,16 @@ class PaletteSettingsSection extends ConsumerWidget {
             ),
           ),
         ),
-        if (!themeState.hasSeparateDark) ...[
+        if (!hasThemes) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: ListTile(
+              leading: const Icon(Icons.palette_outlined),
+              title: Text(l10n.colorTheme),
+              subtitle: const Text('主题工厂未定义任何主题，已使用默认主题。'),
+            ),
+          ),
+        ] else if (!themeState.hasSeparateDark) ...[
           ListTile(
             leading: const Icon(Icons.palette_outlined),
             title: Row(
@@ -42,36 +56,7 @@ class PaletteSettingsSection extends ConsumerWidget {
                       ref.read(themeControllerProvider.notifier).setFamily(f);
                     }
                   },
-                  items: [
-                    DropdownMenuItem(
-                      value: AppThemeFamily.defaultFamily,
-                      child: Text(l10n.themeDefault),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.sepia,
-                      child: Text(l10n.themeSepia),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.emerald,
-                      child: Text(l10n.themeEmeraldGreen),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.solarizedTan,
-                      child: Text(l10n.themeSolarizedTan),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.nord,
-                      child: Text(l10n.themeNord),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.nordFrost,
-                      child: Text(l10n.themeNordFrost),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.contrast,
-                      child: Text(l10n.themeHighContrast),
-                    ),
-                  ],
+                  items: dropdownItems,
                 ),
               ],
             ),
@@ -99,36 +84,7 @@ class PaletteSettingsSection extends ConsumerWidget {
                           .setFamilyLight(f);
                     }
                   },
-                  items: [
-                    DropdownMenuItem(
-                      value: AppThemeFamily.defaultFamily,
-                      child: Text(l10n.themeDefault),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.sepia,
-                      child: Text(l10n.themeSepia),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.emerald,
-                      child: Text(l10n.themeEmeraldGreen),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.solarizedTan,
-                      child: Text(l10n.themeSolarizedTan),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.nord,
-                      child: Text(l10n.themeNord),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.nordFrost,
-                      child: Text(l10n.themeNordFrost),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.contrast,
-                      child: Text(l10n.themeHighContrast),
-                    ),
-                  ],
+                  items: dropdownItems,
                 ),
               ],
             ),
@@ -155,36 +111,7 @@ class PaletteSettingsSection extends ConsumerWidget {
                           .setFamilyDark(f);
                     }
                   },
-                  items: [
-                    DropdownMenuItem(
-                      value: AppThemeFamily.defaultFamily,
-                      child: Text(l10n.themeDefault),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.sepia,
-                      child: Text(l10n.themeSepia),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.emerald,
-                      child: Text(l10n.themeEmeraldGreen),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.solarizedTan,
-                      child: Text(l10n.themeSolarizedTan),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.nord,
-                      child: Text(l10n.themeNord),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.nordFrost,
-                      child: Text(l10n.themeNordFrost),
-                    ),
-                    DropdownMenuItem(
-                      value: AppThemeFamily.contrast,
-                      child: Text(l10n.themeHighContrast),
-                    ),
-                  ],
+                  items: dropdownItems,
                 ),
               ],
             ),

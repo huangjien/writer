@@ -19,24 +19,26 @@ void main() {
   });
 
   test('encode/decode AppThemeFamily', () {
-    expect(encodeFamily(AppThemeFamily.defaultFamily), 'light');
-    expect(encodeFamily(AppThemeFamily.sepia), 'sepia');
-    expect(encodeFamily(AppThemeFamily.emerald), 'emerald');
-    expect(encodeFamily(AppThemeFamily.contrast), 'contrast');
-    expect(encodeFamily(AppThemeFamily.solarizedTan), 'solarizedTan');
-    expect(encodeFamily(AppThemeFamily.nord), 'nord');
-    expect(encodeFamily(AppThemeFamily.nordFrost), 'nordFrost');
-    expect(decodeFamily('light'), AppThemeFamily.defaultFamily);
-    expect(decodeFamily('sepia'), AppThemeFamily.sepia);
-    expect(decodeFamily('emerald'), AppThemeFamily.emerald);
-    expect(decodeFamily('emeraldGreen'), AppThemeFamily.emerald);
-    expect(decodeFamily('contrast'), AppThemeFamily.contrast);
-    expect(decodeFamily('highContrast'), AppThemeFamily.contrast);
-    expect(decodeFamily('solarizedTan'), AppThemeFamily.solarizedTan);
-    expect(decodeFamily('nord'), AppThemeFamily.nord);
-    expect(decodeFamily('nordFrost'), AppThemeFamily.nordFrost);
-    expect(decodeFamily(null), AppThemeFamily.defaultFamily);
-    expect(decodeFamily('unknown'), AppThemeFamily.defaultFamily);
+    expect(encodeFamily(AppThemeFamily.oceanDepths), 'oceanDepths');
+    expect(encodeFamily(AppThemeFamily.modernMinimalist), 'modernMinimalist');
+    expect(encodeFamily(AppThemeFamily.techInnovation), 'techInnovation');
+
+    expect(decodeFamily('oceanDepths'), AppThemeFamily.oceanDepths);
+    expect(decodeFamily('modernMinimalist'), AppThemeFamily.modernMinimalist);
+    expect(decodeFamily('techInnovation'), AppThemeFamily.techInnovation);
+
+    expect(decodeFamily('light'), AppThemeFamily.modernMinimalist);
+    expect(decodeFamily('sepia'), AppThemeFamily.goldenHour);
+    expect(decodeFamily('emerald'), AppThemeFamily.forestCanopy);
+    expect(decodeFamily('emeraldGreen'), AppThemeFamily.forestCanopy);
+    expect(decodeFamily('contrast'), AppThemeFamily.techInnovation);
+    expect(decodeFamily('highContrast'), AppThemeFamily.techInnovation);
+    expect(decodeFamily('solarizedTan'), AppThemeFamily.sunsetBoulevard);
+    expect(decodeFamily('nord'), AppThemeFamily.arcticFrost);
+    expect(decodeFamily('nordFrost'), AppThemeFamily.arcticFrost);
+
+    expect(decodeFamily(null), AppThemeFamily.modernMinimalist);
+    expect(decodeFamily('unknown'), AppThemeFamily.modernMinimalist);
   });
 
   test('encode/decode ReaderTypographyPreset', () {

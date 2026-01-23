@@ -29,6 +29,21 @@ This app uses a token-driven design system to keep the Writer UI visually and fu
 - Use `ColorScheme` and tokenized semantic colors in `lib/theme/design_tokens.dart` (avoid hard-coded `Colors.*` for UI).
 - Typography is controlled by theme and typography presets; do not set ad-hoc font sizes in screens unless it’s content-specific.
 
+#### Color Themes (managed by Theme Factory)
+- Settings → Color Theme options are generated from the Theme Factory definitions in `lib/theme/themes.dart` (`themeFactoryThemes`).
+- To add/modify a theme: update `themeFactoryThemes` with its name + palette colors, then run `make test` to verify switching and previews.
+- Current themes:
+  - Ocean Depths
+  - Sunset Boulevard
+  - Forest Canopy
+  - Modern Minimalist
+  - Golden Hour
+  - Arctic Frost
+  - Desert Rose
+  - Tech Innovation
+  - Botanical Garden
+  - Midnight Galaxy
+
 ## Chinese Typography & Fonts
 - Embedded Chinese font: `assets/fonts/NotoSansSC-{Regular,Bold}.ttf` (family: `Noto Sans SC`, declared in `pubspec.yaml`).
 - Initialization preload: `lib/main.dart` preloads the embedded Chinese font to reduce first-render tofu/FOUT.

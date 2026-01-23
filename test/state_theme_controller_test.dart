@@ -19,7 +19,7 @@ void main() {
 
     final theme = container.read(themeControllerProvider);
     expect(theme.mode, ThemeMode.system);
-    expect(theme.family, AppThemeFamily.sepia);
+    expect(theme.family, AppThemeFamily.modernMinimalist);
     expect(theme.customFontFamily, null);
     expect(theme.preset, ReaderTypographyPreset.system);
   });
@@ -36,9 +36,9 @@ void main() {
 
     final notifier = container.read(themeControllerProvider.notifier);
     await notifier.setMode(ThemeMode.dark);
-    await notifier.setFamily(AppThemeFamily.nord);
+    await notifier.setFamily(AppThemeFamily.oceanDepths);
     expect(prefs.getString('theme_mode'), 'dark');
-    expect(prefs.getString('light_theme'), 'nord');
+    expect(prefs.getString('light_theme'), 'oceanDepths');
   });
 
   test('setFontScale clamps and persists', () async {
@@ -69,11 +69,11 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(themeControllerProvider.notifier);
-    await notifier.setFamily(AppThemeFamily.solarizedTan);
+    await notifier.setFamily(AppThemeFamily.goldenHour);
     await notifier.setSeparateDark(true);
     var theme = container.read(themeControllerProvider);
     expect(theme.hasSeparateDark, true);
-    await notifier.setFamilyDark(AppThemeFamily.nord);
+    await notifier.setFamilyDark(AppThemeFamily.midnightGalaxy);
     await notifier.setSeparateDark(false);
     theme = container.read(themeControllerProvider);
     expect(theme.familyDark, theme.family);

@@ -29,7 +29,7 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
 
       final themeController = ThemeController(prefs);
-      themeController.setFamily(AppThemeFamily.defaultFamily);
+      themeController.setFamily(AppThemeFamily.modernMinimalist);
 
       final chapters = <Chapter>[
         const Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'One'),

@@ -12,7 +12,7 @@ void main() {
     group('buildLight', () {
       testWidgets('builds light theme with default family', (tester) async {
         final theme = AppThemeBuilder.buildLight(
-          family: AppThemeFamily.defaultFamily,
+          family: AppThemeFamily.modernMinimalist,
           fontPack: ReaderFontPack.system,
           customFontFamily: null,
           preset: ReaderTypographyPreset.system,
@@ -24,7 +24,7 @@ void main() {
 
       testWidgets('builds light theme with sepia family', (tester) async {
         final theme = AppThemeBuilder.buildLight(
-          family: AppThemeFamily.sepia,
+          family: AppThemeFamily.goldenHour,
           fontPack: ReaderFontPack.system,
           customFontFamily: null,
           preset: ReaderTypographyPreset.system,
@@ -38,7 +38,7 @@ void main() {
         tester,
       ) async {
         final theme = AppThemeBuilder.buildLight(
-          family: AppThemeFamily.contrast,
+          family: AppThemeFamily.techInnovation,
           fontPack: ReaderFontPack.system,
           customFontFamily: null,
           preset: ReaderTypographyPreset.system,
@@ -51,7 +51,7 @@ void main() {
       testWidgets('builds light theme with all font packs', (tester) async {
         for (final fontPack in ReaderFontPack.values) {
           final theme = AppThemeBuilder.buildLight(
-            family: AppThemeFamily.defaultFamily,
+            family: AppThemeFamily.modernMinimalist,
             fontPack: fontPack,
             customFontFamily: null,
             preset: ReaderTypographyPreset.system,
@@ -64,7 +64,7 @@ void main() {
 
       testWidgets('builds light theme with custom font family', (tester) async {
         final theme = AppThemeBuilder.buildLight(
-          family: AppThemeFamily.defaultFamily,
+          family: AppThemeFamily.modernMinimalist,
           fontPack: ReaderFontPack.system,
           customFontFamily: 'Custom Font',
           preset: ReaderTypographyPreset.system,
@@ -78,7 +78,7 @@ void main() {
     group('buildDark', () {
       testWidgets('builds dark theme with default family', (tester) async {
         final theme = AppThemeBuilder.buildDark(
-          family: AppThemeFamily.defaultFamily,
+          family: AppThemeFamily.modernMinimalist,
           fontPack: ReaderFontPack.system,
           customFontFamily: null,
           preset: ReaderTypographyPreset.system,
@@ -90,7 +90,7 @@ void main() {
 
       testWidgets('builds dark theme with sepia family', (tester) async {
         final theme = AppThemeBuilder.buildDark(
-          family: AppThemeFamily.sepia,
+          family: AppThemeFamily.goldenHour,
           fontPack: ReaderFontPack.system,
           customFontFamily: null,
           preset: ReaderTypographyPreset.system,
@@ -104,7 +104,7 @@ void main() {
         tester,
       ) async {
         final theme = AppThemeBuilder.buildDark(
-          family: AppThemeFamily.contrast,
+          family: AppThemeFamily.techInnovation,
           fontPack: ReaderFontPack.system,
           customFontFamily: null,
           preset: ReaderTypographyPreset.system,
@@ -117,7 +117,7 @@ void main() {
       testWidgets('builds dark theme with all font packs', (tester) async {
         for (final fontPack in ReaderFontPack.values) {
           final theme = AppThemeBuilder.buildDark(
-            family: AppThemeFamily.defaultFamily,
+            family: AppThemeFamily.modernMinimalist,
             fontPack: fontPack,
             customFontFamily: null,
             preset: ReaderTypographyPreset.system,
@@ -130,7 +130,7 @@ void main() {
 
       testWidgets('builds dark theme with custom font family', (tester) async {
         final theme = AppThemeBuilder.buildDark(
-          family: AppThemeFamily.defaultFamily,
+          family: AppThemeFamily.modernMinimalist,
           fontPack: ReaderFontPack.system,
           customFontFamily: 'Custom Font',
           preset: ReaderTypographyPreset.system,
@@ -463,7 +463,7 @@ void main() {
         tester,
       ) async {
         final theme = AppThemeBuilder.buildLight(
-          family: AppThemeFamily.nord,
+          family: AppThemeFamily.arcticFrost,
           fontPack: ReaderFontPack.merriweather,
           customFontFamily: 'Custom Font',
           preset: ReaderTypographyPreset.comfortable,
@@ -491,7 +491,7 @@ void main() {
         tester,
       ) async {
         final theme = AppThemeBuilder.buildDark(
-          family: AppThemeFamily.solarizedTan,
+          family: AppThemeFamily.goldenHour,
           fontPack: ReaderFontPack.inter,
           customFontFamily: null,
           preset: ReaderTypographyPreset.compact,
@@ -542,7 +542,7 @@ void main() {
       testWidgets('handles all typography presets', (tester) async {
         for (final preset in ReaderTypographyPreset.values) {
           final theme = AppThemeBuilder.buildLight(
-            family: AppThemeFamily.defaultFamily,
+            family: AppThemeFamily.modernMinimalist,
             fontPack: ReaderFontPack.system,
             customFontFamily: null,
             preset: preset,
@@ -563,7 +563,7 @@ void main() {
       testWidgets('handles all font packs', (tester) async {
         for (final fontPack in ReaderFontPack.values) {
           final theme = AppThemeBuilder.buildLight(
-            family: AppThemeFamily.defaultFamily,
+            family: AppThemeFamily.modernMinimalist,
             fontPack: fontPack,
             customFontFamily: null,
             preset: ReaderTypographyPreset.system,

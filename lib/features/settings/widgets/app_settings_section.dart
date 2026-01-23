@@ -9,7 +9,6 @@ import '../../../state/motion_settings.dart';
 import '../../../state/session_state.dart';
 import '../../../state/theme_controller.dart';
 import '../../../theme/design_tokens.dart';
-import '../../../theme/themes.dart';
 import '../../../shared/widgets/neumorphic_slider.dart';
 import '../../../shared/widgets/neumorphic_dropdown.dart';
 import 'enhanced_settings_section.dart';
@@ -252,20 +251,6 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
                 ),
               ],
             ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SettingsToggle(
-            value: themeState.family == AppThemeFamily.contrast,
-            onChanged: (v) {
-              final controller = ref.read(themeControllerProvider.notifier);
-              controller.setFamily(
-                (v ?? false) ? AppThemeFamily.contrast : AppThemeFamily.sepia,
-              );
-            },
-            title: l10n.themeHighContrast,
-            icon: Icons.invert_colors,
           ),
         ),
         if (isBiometricAvailable && sessionId != null)

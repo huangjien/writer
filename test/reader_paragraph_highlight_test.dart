@@ -15,7 +15,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final themeController = ThemeController(prefs);
-      await themeController.setFamily(AppThemeFamily.defaultFamily);
+      await themeController.setFamily(AppThemeFamily.modernMinimalist);
 
       final chapters = <Chapter>[
         const Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'One'),

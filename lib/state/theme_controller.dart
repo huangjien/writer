@@ -93,10 +93,9 @@ class ThemeController extends StateNotifier<ThemeState> {
 
   static ThemeState _initialState(SharedPreferences prefs) {
     final mode = decodeMode(prefs.getString(_prefThemeMode));
-    // Default to Sepia when no prior preference exists
     final unified = prefs.containsKey(_prefLightTheme)
         ? decodeFamily(prefs.getString(_prefLightTheme))
-        : AppThemeFamily.sepia;
+        : AppThemeFamily.modernMinimalist;
     final preset = decodePreset(prefs.getString(_prefTypographyPreset));
     final separate = prefs.getBool(_prefSeparateDark) ?? false;
     final separateTypo = prefs.getBool(_prefSeparateTypography) ?? false;

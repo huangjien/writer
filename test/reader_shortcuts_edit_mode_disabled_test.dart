@@ -74,7 +74,7 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
 
       final themeController = ThemeController(prefs);
-      themeController.setFamily(AppThemeFamily.defaultFamily);
+      themeController.setFamily(AppThemeFamily.modernMinimalist);
 
       final chapters = <Chapter>[
         const Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'One'),
@@ -120,7 +120,7 @@ void main() {
                 ),
               ],
             ),
-            theme: themeForLight(AppThemeFamily.defaultFamily),
+            theme: themeForLight(AppThemeFamily.modernMinimalist),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
           ),
@@ -170,7 +170,7 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
 
       final themeController = ThemeController(prefs);
-      themeController.setFamily(AppThemeFamily.defaultFamily);
+      themeController.setFamily(AppThemeFamily.modernMinimalist);
 
       final app = await buildAppScope(
         prefs: prefs,
@@ -205,7 +205,7 @@ void main() {
                 ),
               ],
             ),
-            theme: themeForLight(AppThemeFamily.defaultFamily),
+            theme: themeForLight(AppThemeFamily.modernMinimalist),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
           ),
@@ -241,7 +241,7 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
 
       final themeController = ThemeController(prefs);
-      themeController.setFamily(AppThemeFamily.defaultFamily);
+      themeController.setFamily(AppThemeFamily.modernMinimalist);
 
       // Record navigation attempts
       final recordingObserver = _RecordingNavigatorObserver();

@@ -86,42 +86,68 @@ String encodeMode(ThemeMode mode) {
 
 AppThemeFamily decodeFamily(String? raw) {
   switch (raw) {
+    case 'oceanDepths':
+      return AppThemeFamily.oceanDepths;
+    case 'sunsetBoulevard':
+      return AppThemeFamily.sunsetBoulevard;
+    case 'forestCanopy':
+      return AppThemeFamily.forestCanopy;
+    case 'modernMinimalist':
+      return AppThemeFamily.modernMinimalist;
+    case 'goldenHour':
+      return AppThemeFamily.goldenHour;
+    case 'arcticFrost':
+      return AppThemeFamily.arcticFrost;
+    case 'desertRose':
+      return AppThemeFamily.desertRose;
+    case 'techInnovation':
+      return AppThemeFamily.techInnovation;
+    case 'botanicalGarden':
+      return AppThemeFamily.botanicalGarden;
+    case 'midnightGalaxy':
+      return AppThemeFamily.midnightGalaxy;
+    case 'light':
+      return AppThemeFamily.modernMinimalist;
     case 'sepia':
-      return AppThemeFamily.sepia;
+      return AppThemeFamily.goldenHour;
     case 'emerald':
     case 'emeraldGreen':
-      return AppThemeFamily.emerald;
+      return AppThemeFamily.forestCanopy;
     case 'contrast':
     case 'highContrast':
-      return AppThemeFamily.contrast;
+      return AppThemeFamily.techInnovation;
     case 'solarizedTan':
-      return AppThemeFamily.solarizedTan;
+      return AppThemeFamily.sunsetBoulevard;
     case 'nord':
-      return AppThemeFamily.nord;
     case 'nordFrost':
-      return AppThemeFamily.nordFrost;
-    case 'light':
+      return AppThemeFamily.arcticFrost;
     default:
-      return AppThemeFamily.defaultFamily;
+      return AppThemeFamily.modernMinimalist;
   }
 }
 
 String encodeFamily(AppThemeFamily family) {
   switch (family) {
-    case AppThemeFamily.defaultFamily:
-      return 'light';
-    case AppThemeFamily.sepia:
-      return 'sepia';
-    case AppThemeFamily.emerald:
-      return 'emerald';
-    case AppThemeFamily.contrast:
-      return 'contrast';
-    case AppThemeFamily.solarizedTan:
-      return 'solarizedTan';
-    case AppThemeFamily.nord:
-      return 'nord';
-    case AppThemeFamily.nordFrost:
-      return 'nordFrost';
+    case AppThemeFamily.oceanDepths:
+      return 'oceanDepths';
+    case AppThemeFamily.sunsetBoulevard:
+      return 'sunsetBoulevard';
+    case AppThemeFamily.forestCanopy:
+      return 'forestCanopy';
+    case AppThemeFamily.modernMinimalist:
+      return 'modernMinimalist';
+    case AppThemeFamily.goldenHour:
+      return 'goldenHour';
+    case AppThemeFamily.arcticFrost:
+      return 'arcticFrost';
+    case AppThemeFamily.desertRose:
+      return 'desertRose';
+    case AppThemeFamily.techInnovation:
+      return 'techInnovation';
+    case AppThemeFamily.botanicalGarden:
+      return 'botanicalGarden';
+    case AppThemeFamily.midnightGalaxy:
+      return 'midnightGalaxy';
   }
 }
 
