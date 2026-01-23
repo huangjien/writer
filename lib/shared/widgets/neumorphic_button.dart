@@ -131,7 +131,11 @@ class _NeumorphicButtonState extends State<NeumorphicButton> {
                       : Matrix4.identity()),
             child: Opacity(
               opacity: isDisabled ? 0.5 : 1.0,
-              child: Center(child: widget.child),
+              child: Center(
+                widthFactor: 1.0,
+                heightFactor: 1.0,
+                child: widget.child,
+              ),
             ),
           ),
         ),

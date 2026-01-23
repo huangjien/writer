@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 import 'package:writer/shared/widgets/responsive_button_row.dart';
 
 void main() {
@@ -90,4 +91,28 @@ void main() {
     );
     expect(overflowErrors, isEmpty);
   });
+
+  testWidgets('NeumorphicButton shrink-wraps content by default', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: SizedBox(
+              width: 360,
+              child: AppButtons.primary(label: 'Save', onPressed: _noop),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final button = find.widgetWithText(NeumorphicButton, 'Save');
+    expect(button, findsOneWidget);
+    expect(tester.getSize(button).width, lessThan(360));
+  });
 }
+
+void _noop() {}
