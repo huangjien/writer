@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/repositories/remote_repository.dart';
@@ -9,25 +11,15 @@ import 'package:writer/state/providers.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/storage_service_provider.dart';
 
-class MockRemoteRepository extends Mock implements RemoteRepository {}
+class MockHttpClient extends Mock implements http.Client {}
 
-class _ErrorRemoteRepository extends RemoteRepository {
-  _ErrorRemoteRepository(this.onGet) : super('http://unit.test/');
-
-  final void Function() onGet;
-
-  @override
-  Future<dynamic> get(
-    String path, {
-    Map<String, dynamic>? queryParameters,
-    bool retryUnauthorized = true,
-  }) async {
-    onGet();
-    throw Exception('boom');
-  }
-}
+class _MockUri extends Fake implements Uri {}
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(_MockUri());
+  });
+
   test('isSignedInProvider is true when session id is set', () async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
@@ -73,16 +65,24 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final storageService = LocalStorageService(prefs);
-    final remote = MockRemoteRepository();
-    when(() => remote.get('auth/session')).thenAnswer((_) async {
-      return {'id': 'u1', 'email': 'a@b.com'};
-    });
+    final client = MockHttpClient();
     final session = SessionNotifier(storageService);
     await session.setSessionId('sid');
+
+    when(() => client.get(any(), headers: any(named: 'headers'))).thenAnswer((
+      invocation,
+    ) async {
+      final uri = invocation.positionalArguments[0] as Uri;
+      if (uri.toString() != 'http://localhost:5600/auth/session') {
+        return http.Response(jsonEncode({'detail': 'not found'}), 404);
+      }
+      return http.Response(jsonEncode({'id': 'u1', 'email': 'a@b.com'}), 200);
+    });
+
     final container = ProviderContainer(
       overrides: [
         sessionProvider.overrideWith((ref) => session),
-        remoteRepositoryProvider.overrideWithValue(remote),
+        httpClientProvider.overrideWithValue(client),
       ],
     );
     addTearDown(container.dispose);
@@ -91,23 +91,30 @@ void main() {
     expect(user, isNotNull);
     expect(user!.id, 'u1');
     expect(user.email, 'a@b.com');
-    verify(() => remote.get('auth/session')).called(1);
+    verify(
+      () => client.get(
+        Uri.parse('http://localhost:5600/auth/session'),
+        headers: any(named: 'headers'),
+      ),
+    ).called(1);
   });
 
   test('currentUserProvider returns null for invalid response', () async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final storageService = LocalStorageService(prefs);
-    final remote = MockRemoteRepository();
-    when(() => remote.get('auth/session')).thenAnswer((_) async {
-      return {'email': 'a@b.com'};
+    final client = MockHttpClient();
+    when(() => client.get(any(), headers: any(named: 'headers'))).thenAnswer((
+      _,
+    ) async {
+      return http.Response(jsonEncode({'email': 'a@b.com'}), 200);
     });
     final session = SessionNotifier(storageService);
     await session.setSessionId('sid');
     final container = ProviderContainer(
       overrides: [
         sessionProvider.overrideWith((ref) => session),
-        remoteRepositoryProvider.overrideWithValue(remote),
+        httpClientProvider.overrideWithValue(client),
       ],
     );
     addTearDown(container.dispose);
@@ -116,42 +123,34 @@ void main() {
     expect(user, isNull);
   });
 
-  test('currentUserProvider propagates remote errors', () async {
+  test('currentUserProvider returns null for remote errors', () async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final storageService = LocalStorageService(prefs);
     final didCallRemote = Completer<void>();
-    final didReceiveError = Completer<Object>();
-    final remote = _ErrorRemoteRepository(() {
+    final client = MockHttpClient();
+
+    when(() => client.get(any(), headers: any(named: 'headers'))).thenAnswer((
+      _,
+    ) async {
       if (!didCallRemote.isCompleted) {
         didCallRemote.complete();
       }
+      throw Exception('boom');
     });
+
     final session = SessionNotifier(storageService);
     await session.setSessionId('sid');
     final container = ProviderContainer(
       overrides: [
         sessionProvider.overrideWith((ref) => session),
-        remoteRepositoryProvider.overrideWithValue(remote),
+        httpClientProvider.overrideWithValue(client),
       ],
     );
     addTearDown(container.dispose);
 
-    final sub = container.listen<AsyncValue<BackendUser?>>(
-      currentUserProvider,
-      (previous, next) {
-        if (next.hasError && !didReceiveError.isCompleted) {
-          didReceiveError.complete(next.error!);
-        }
-      },
-      fireImmediately: true,
-    );
-    addTearDown(sub.close);
-
     await didCallRemote.future.timeout(const Duration(seconds: 2));
-    final err = await didReceiveError.future.timeout(
-      const Duration(seconds: 2),
-    );
-    expect(err, isA<Exception>());
+    final user = await container.read(currentUserProvider.future);
+    expect(user, isNull);
   });
 }

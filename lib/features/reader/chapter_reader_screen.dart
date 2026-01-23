@@ -469,6 +469,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
                     gesturesEnabled: motion.gesturesEnabled,
                     swipeMinVelocity: motion.swipeMinVelocity,
                     boldEnabled: state.boldEnabled,
+                    reduceMotion: motion.reduceMotion,
                     editMode: state.editMode,
                     discardDialogOpen: state.discardDialogOpen,
                     onToggleFullScreen: notifier.toggleFullScreen,

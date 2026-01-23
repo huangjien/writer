@@ -36,16 +36,32 @@ class BackendUser {
 final currentUserProvider = FutureProvider<BackendUser?>((ref) async {
   final sessionId = ref.watch(sessionProvider);
   if (sessionId == null || sessionId.trim().isEmpty) return null;
-  final remote = ref.watch(remoteRepositoryProvider);
-  final res = await remote.get('auth/session');
-  if (res is Map) {
-    final id = res['id'];
-    final email = res['email'];
-    if (id is String && id.isNotEmpty) {
-      return BackendUser(id: id, email: email is String ? email : null);
-    }
+  String baseUrl;
+  try {
+    baseUrl = ref.watch(aiServiceProvider);
+  } catch (_) {
+    baseUrl = 'http://localhost:5600/';
   }
-  return null;
+
+  final remote = RemoteRepository(
+    baseUrl,
+    client: ref.read(httpClientProvider),
+    authToken: () async => sessionId,
+  );
+
+  try {
+    final res = await remote.get('auth/session', retryUnauthorized: false);
+    if (res is Map) {
+      final id = res['id'];
+      final email = res['email'];
+      if (id is String && id.isNotEmpty) {
+        return BackendUser(id: id, email: email is String ? email : null);
+      }
+    }
+    return null;
+  } catch (_) {
+    return null;
+  }
 });
 
 final promptsServiceProvider = Provider<PromptsService>((ref) {

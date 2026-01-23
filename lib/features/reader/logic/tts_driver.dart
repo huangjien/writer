@@ -3,6 +3,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:async';
 import '../tts_chunker.dart';
 import '../../../shared/constants.dart';
+import 'dart:math' as math;
 
 typedef TtsProgress = void Function(int index);
 typedef TtsFlag = void Function();
@@ -13,13 +14,14 @@ class TtsDriver {
   bool _configured = false;
   bool _speaking = false;
   int _index = 0;
-  List<String> _chunks = const [];
+  List<TtsChunk> _chunks = const [];
   bool _completedHandled = false;
   int _baseStart = 0;
-  int _consumedLength = 0;
   Completer<void>? _chunkCompleter;
   int _baseTimeoutMs = kTtsBaseTimeoutMs;
   int _charTimeoutMs = kTtsCharTimeoutMs;
+  int _currentChunkStart = 0;
+  int _currentChunkLen = 0;
 
   TtsDriver({FlutterTts? tts}) : _tts = tts;
 
@@ -58,7 +60,10 @@ class TtsDriver {
           String? word,
         ) {
           if (start != null) {
-            _index = _baseStart + _consumedLength + start;
+            final safeLocal = _currentChunkLen <= 0
+                ? 0
+                : math.min(start, _currentChunkLen - 1);
+            _index = _currentChunkStart + safeLocal;
             _speaking = true;
             _onProgress?.call(_index);
           }
@@ -130,11 +135,14 @@ class TtsDriver {
     _speaking = true;
     _completedHandled = false;
     _baseStart = startIndex.clamp(0, content.length);
-    _consumedLength = 0;
     _baseTimeoutMs = baseTimeoutMs;
     _charTimeoutMs = charTimeoutMs;
     final remaining = content.substring(_baseStart);
-    _chunks = chunkText(remaining, maxLen: chunkMaxLen);
+    _chunks = chunkTextWithOffsets(
+      remaining,
+      baseOffset: _baseStart,
+      maxLen: chunkMaxLen,
+    );
     if (_chunks.isEmpty) {
       _speaking = false;
       _onAllComplete?.call();
@@ -148,7 +156,12 @@ class TtsDriver {
   Future<void> _processChunks() async {
     for (var i = 0; i < _chunks.length; i++) {
       if (!_speaking) break;
-      final part = _chunks[i];
+      final chunk = _chunks[i];
+      final part = chunk.text;
+      _currentChunkStart = chunk.start;
+      _currentChunkLen = part.length;
+      _index = _currentChunkStart;
+      _onProgress?.call(_index);
 
       try {
         _chunkCompleter = Completer();
@@ -179,10 +192,15 @@ class TtsDriver {
 
       if (!_speaking) break;
 
-      // Update progress at end of chunk
-      _consumedLength += part.length;
-      _index = _baseStart + _consumedLength;
-      _onProgress?.call(_index);
+      // Ensure we end on a position inside the current chunk to avoid a
+      // temporary "no paragraph highlighted" state between chunks.
+      if (part.isNotEmpty) {
+        final endInChunk = _currentChunkStart + part.length - 1;
+        if (_index < endInChunk) {
+          _index = endInChunk;
+          _onProgress?.call(_index);
+        }
+      }
     }
 
     if (_speaking) {
@@ -206,6 +224,8 @@ class TtsDriver {
     }
     _chunkCompleter = null;
     _chunks = const [];
+    _currentChunkStart = 0;
+    _currentChunkLen = 0;
   }
 
   Future<void> pause() async {
@@ -218,6 +238,8 @@ class TtsDriver {
       c.complete();
     }
     _chunkCompleter = null;
+    _currentChunkStart = 0;
+    _currentChunkLen = 0;
   }
 
   Future<void> setLocale(String locale, {String? voiceName}) async {

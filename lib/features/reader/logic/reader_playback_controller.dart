@@ -28,8 +28,8 @@ class ReaderPlaybackController {
   int computeTotalLen(String content, int startIndex) {
     final base = startIndex.clamp(0, content.length);
     final remaining = content.substring(base);
-    final chunks = chunkText(remaining);
-    final spokenLen = chunks.fold<int>(0, (sum, s) => sum + s.length);
+    final chunks = chunkTextWithOffsets(remaining);
+    final spokenLen = chunks.fold<int>(0, (sum, c) => sum + c.text.length);
     return base + spokenLen;
   }
 

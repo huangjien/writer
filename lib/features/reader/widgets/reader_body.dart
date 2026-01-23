@@ -16,6 +16,7 @@ class ReaderBody extends StatelessWidget {
     required this.gesturesEnabled,
     required this.swipeMinVelocity,
     required this.boldEnabled,
+    required this.reduceMotion,
     required this.editMode,
     required this.discardDialogOpen,
     required this.onToggleFullScreen,
@@ -32,6 +33,7 @@ class ReaderBody extends StatelessWidget {
   final bool gesturesEnabled;
   final double swipeMinVelocity;
   final bool boldEnabled;
+  final bool reduceMotion;
   final bool editMode;
   final bool discardDialogOpen;
   final VoidCallback onToggleFullScreen;
@@ -52,6 +54,7 @@ class ReaderBody extends StatelessWidget {
           text: content ?? '',
           ttsIndex: ttsIndex,
           forceBold: boldEnabled,
+          reduceMotion: reduceMotion,
         ),
         const SizedBox(height: Spacing.xl),
         const SizedBox(height: Spacing.m),

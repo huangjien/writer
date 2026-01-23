@@ -100,8 +100,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Should have two paragraphs
-        final containers = find.byType(Container);
-        expect(containers, findsWidgets);
+        expect(find.byType(AnimatedContainer), findsNWidgets(2));
       });
 
       testWidgets('splits text by multiple consecutive newlines', (
@@ -113,8 +112,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Should still have two paragraphs (regex \n\n+ matches multiple newlines)
-        final containers = find.byType(Container);
-        expect(containers, findsWidgets);
+        expect(find.byType(AnimatedContainer), findsNWidgets(2));
       });
 
       testWidgets('handles single newline as part of paragraph', (
@@ -126,8 +124,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Should have one paragraph (single newline doesn't split)
-        final containers = find.byType(Container);
-        expect(containers, findsOneWidget);
+        expect(find.byType(AnimatedContainer), findsOneWidget);
       });
 
       testWidgets('handles multiple single newlines', (tester) async {
@@ -137,8 +134,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Should have one paragraph
-        final containers = find.byType(Container);
-        expect(containers, findsOneWidget);
+        expect(find.byType(AnimatedContainer), findsOneWidget);
       });
 
       testWidgets('splits three paragraphs correctly', (tester) async {
@@ -148,8 +144,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Should have three paragraphs
-        final containers = find.byType(Container);
-        expect(containers, findsNWidgets(3));
+        expect(find.byType(AnimatedContainer), findsNWidgets(3));
       });
 
       testWidgets('handles empty paragraphs', (tester) async {
@@ -320,7 +315,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        final highlightedContainer = tester.widget<Container>(
+        final highlightedContainer = tester.widget<AnimatedContainer>(
           find.byKey(const ValueKey('current_paragraph')),
         );
 
@@ -337,7 +332,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        final highlightedContainer = tester.widget<Container>(
+        final highlightedContainer = tester.widget<AnimatedContainer>(
           find.byKey(const ValueKey('current_paragraph')),
         );
 
@@ -351,7 +346,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        final highlightedContainer = tester.widget<Container>(
+        final highlightedContainer = tester.widget<AnimatedContainer>(
           find.byKey(const ValueKey('current_paragraph')),
         );
 
@@ -365,7 +360,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        final highlightedContainer = tester.widget<Container>(
+        final highlightedContainer = tester.widget<AnimatedContainer>(
           find.byKey(const ValueKey('current_paragraph')),
         );
 
@@ -384,11 +379,12 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        // Find all containers
-        final containers = find.byType(Container);
+        final paragraphs = find.byType(AnimatedContainer);
+        expect(paragraphs, findsNWidgets(2));
 
-        // One should have decoration (highlighted), others should not
-        expect(containers, findsWidgets);
+        final second = tester.widget<AnimatedContainer>(paragraphs.at(1));
+        final decoration = second.decoration as BoxDecoration;
+        expect(decoration.color, Colors.transparent);
       });
     });
 
@@ -402,8 +398,8 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        final firstContainer = tester.widget<Container>(
-          find.byType(Container).first,
+        final firstContainer = tester.widget<AnimatedContainer>(
+          find.byType(AnimatedContainer).first,
         );
 
         expect(firstContainer.margin, const EdgeInsets.only(bottom: Spacing.l));
@@ -415,9 +411,9 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        final containers = find.byType(Container);
+        final containers = find.byType(AnimatedContainer);
         for (int i = 0; i < 3; i++) {
-          final container = tester.widget<Container>(containers.at(i));
+          final container = tester.widget<AnimatedContainer>(containers.at(i));
           expect(container.margin, const EdgeInsets.only(bottom: Spacing.l));
         }
       });
@@ -566,8 +562,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        final containers = find.byType(Container);
-        expect(containers, findsNWidgets(3));
+        expect(find.byType(AnimatedContainer), findsNWidgets(3));
       });
     });
 

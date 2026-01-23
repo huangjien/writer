@@ -18,11 +18,13 @@ class ReaderParagraphs extends StatelessWidget {
     required this.text,
     required this.ttsIndex,
     this.forceBold = false,
+    this.reduceMotion = false,
   });
 
   final String text;
   final int ttsIndex;
   final bool forceBold;
+  final bool reduceMotion;
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +32,24 @@ class ReaderParagraphs extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final paragraphs = text.split(RegExp(r'\n\n+'));
-
-    final paragraphMatches = paragraphs.map((p) {
-      final start = text.indexOf(p);
-      return _ParagraphMatch(p, start, start + p.length);
-    }).toList();
+    final paragraphMatches = <_ParagraphMatch>[];
+    final sep = RegExp(r'\n\n+');
+    var cursor = 0;
+    for (final m in sep.allMatches(text)) {
+      final start = cursor;
+      final end = m.start;
+      if (end > start) {
+        paragraphMatches.add(
+          _ParagraphMatch(text.substring(start, end), start, end),
+        );
+      }
+      cursor = m.end;
+    }
+    if (cursor < text.length) {
+      paragraphMatches.add(
+        _ParagraphMatch(text.substring(cursor), cursor, text.length),
+      );
+    }
     final baseStyleSheet = MarkdownStyleSheet.fromTheme(Theme.of(context));
     TextStyle? bold(TextStyle? s) => s?.copyWith(fontWeight: FontWeight.bold);
     final styleSheet = forceBold
@@ -70,23 +84,24 @@ class ReaderParagraphs extends StatelessWidget {
             ((clampedIndex >= paragraphStart && clampedIndex < paragraphEnd) ||
                 (clampedIndex == textLength && paragraphEnd == textLength));
 
-        return Container(
+        final theme = Theme.of(context);
+        final highlight = theme.highlightColor.withValues(alpha: 0.2);
+        return AnimatedContainer(
           key: isCurrent ? const ValueKey('current_paragraph') : null,
-          decoration: isCurrent
-              ? BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).highlightColor.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(Radii.s),
-                )
-              : null,
-          margin: const EdgeInsets.only(bottom: Spacing.l),
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-            opacity: isCurrent ? 1.0 : 1.0,
-            child: MarkdownBody(data: match.group(0), styleSheet: styleSheet),
+          duration: reduceMotion
+              ? Duration.zero
+              : const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          decoration: BoxDecoration(
+            color: isCurrent ? highlight : Colors.transparent,
+            borderRadius: BorderRadius.circular(Radii.s),
           ),
+          margin: const EdgeInsets.only(bottom: Spacing.l),
+          padding: const EdgeInsets.symmetric(
+            horizontal: Spacing.s,
+            vertical: Spacing.xs,
+          ),
+          child: MarkdownBody(data: match.group(0), styleSheet: styleSheet),
         );
       }).toList(),
     );
