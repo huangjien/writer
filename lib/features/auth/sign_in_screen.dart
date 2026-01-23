@@ -9,6 +9,7 @@ import '../../l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../../state/auth_service_provider.dart';
 import '../../shared/widgets/app_buttons.dart';
+import '../../shared/widgets/app_dialog.dart';
 import '../../shared/widgets/neumorphic_textfield.dart';
 import '../../theme/design_tokens.dart';
 
@@ -124,23 +125,23 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.enableBiometricLogin),
+      builder: (context) => AppDialog(
+        title: l10n.enableBiometricLogin,
         content: Text(l10n.enableBiometricLoginDescription),
         actions: [
-          TextButton(
+          AppButtons.text(
             onPressed: () {
               Navigator.of(context).pop();
               _navigateToSuccess();
             },
-            child: Text(l10n.cancel),
+            label: l10n.cancel,
           ),
-          TextButton(
+          AppButtons.primary(
             onPressed: () async {
               Navigator.of(context).pop();
               await _enableBiometricAuth(context, sessionId);
             },
-            child: Text(l10n.save),
+            label: l10n.save,
           ),
         ],
       ),

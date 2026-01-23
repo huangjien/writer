@@ -9,6 +9,9 @@ import 'package:writer/screens/prompt_form_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/shared/api_exception.dart';
 import 'package:writer/shared/widgets/error_state.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
+import 'package:writer/shared/widgets/neumorphic_switch.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 
 class FakePromptsService extends PromptsService {
   FakePromptsService() : super(baseUrl: 'http://test');
@@ -251,7 +254,7 @@ void main() {
     await tester.ensureVisible(publicIcon);
     await tester.tap(publicIcon);
     await tester.pump();
-    await tester.tap(find.text('Confirm'));
+    await tester.tap(find.widgetWithText(NeumorphicButton, 'Confirm'));
     await tester.pump();
     expect(svc.lastCreatedIsPublic, isTrue);
   });
@@ -271,19 +274,19 @@ void main() {
     await tester.tap(addIcon);
     await tester.pump();
     final fields = find.descendant(
-      of: find.byType(AlertDialog),
+      of: find.byType(AppDialog),
       matching: find.byType(TextField),
     );
     await tester.enterText(fields.at(0), 'system.beta.male');
     await tester.enterText(fields.at(1), 'en');
     await tester.enterText(fields.at(2), 'X');
     final dlgSwitch = find.descendant(
-      of: find.byType(AlertDialog),
-      matching: find.byType(Switch),
+      of: find.byType(AppDialog),
+      matching: find.byType(NeumorphicSwitch),
     );
     await tester.tap(dlgSwitch);
     await tester.pump();
-    await tester.tap(find.text('Save'));
+    await tester.tap(find.widgetWithText(NeumorphicButton, 'Save'));
     await tester.pump();
     expect(svc.createCalled, isTrue);
     expect(svc.lastCreatedIsPublic, isTrue);

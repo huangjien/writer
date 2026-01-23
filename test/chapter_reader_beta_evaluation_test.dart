@@ -15,6 +15,7 @@ import 'package:writer/state/providers.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/state/tts_settings.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
 
 class FakeAiChatServiceOk extends AiChatService {
   FakeAiChatServiceOk() : super(RemoteRepository('http://localhost:5600/'));
@@ -96,11 +97,11 @@ void main() {
     for (var i = 0; i < 10; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
-    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(find.byType(AppDialog), findsOneWidget);
     expect(find.text('Beta'), findsOneWidget);
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
-    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.byType(AppDialog), findsNothing);
   });
 
   testWidgets('Beta evaluation fails on empty content', (tester) async {
@@ -151,7 +152,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
     }
     expect(find.byKey(const ValueKey('beta_spinner')), findsNothing);
-    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.byType(AppDialog), findsNothing);
   });
 
   testWidgets('Beta evaluation null result shows failure', (tester) async {
@@ -202,6 +203,6 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
     }
     expect(find.byKey(const ValueKey('beta_spinner')), findsNothing);
-    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.byType(AppDialog), findsNothing);
   });
 }

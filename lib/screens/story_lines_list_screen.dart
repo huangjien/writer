@@ -9,6 +9,8 @@ import '../state/pattern_list_notifier.dart';
 import '../state/providers.dart';
 import '../l10n/app_localizations.dart';
 import '../shared/constants.dart';
+import '../shared/widgets/app_buttons.dart';
+import '../shared/widgets/app_dialog.dart';
 import '../shared/widgets/loading/skeleton_list_items.dart';
 import '../shared/widgets/error_state.dart';
 
@@ -90,17 +92,18 @@ class StoryLinesListScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.confirmDelete),
+      builder: (ctx) => AppDialog(
+        title: l10n.confirmDelete,
         content: Text(l10n.confirmDeleteDescription(p.title)),
         actions: [
-          TextButton(
+          AppButtons.text(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel),
+            label: l10n.cancel,
           ),
-          TextButton(
+          AppButtons.text(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l10n.delete),
+            label: l10n.delete,
+            color: Theme.of(ctx).colorScheme.error,
           ),
         ],
       ),

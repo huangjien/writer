@@ -18,6 +18,7 @@ import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/state/tts_settings.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/shared/api_exception.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
 
 class FakeStoryLinesService extends StoryLinesService {
   FakeStoryLinesService() : super(baseUrl: 'http://example.com');
@@ -683,15 +684,15 @@ void main() {
 
     await tester.tap(deleteButton);
     await tester.pumpAndSettle();
-    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(find.byType(AppDialog), findsOneWidget);
 
     await tester.tap(
       find.descendant(
-        of: find.byType(AlertDialog),
+        of: find.byType(AppDialog),
         matching: find.text('Cancel'),
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.byType(AppDialog), findsNothing);
   });
 }

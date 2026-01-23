@@ -2,6 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/merge_result.dart';
+import '../shared/widgets/app_buttons.dart';
+import '../shared/widgets/app_dialog.dart';
+import '../theme/design_tokens.dart';
 
 /// Dialog for resolving merge conflicts when sync detects conflicting changes
 /// Allows user to choose between local, remote, or merged versions
@@ -43,59 +46,61 @@ class _ConflictResolutionDialogState
   Widget build(BuildContext context) {
     final hasConflicts = widget.conflict.hasConflicts;
     final canAutoMerge = widget.conflict.success && !hasConflicts;
+    final theme = Theme.of(context);
+    final statusColor = hasConflicts
+        ? theme.colorScheme.error
+        : theme.colorScheme.primary;
 
-    return AlertDialog(
-      title: Row(
+    return AppDialog(
+      title: 'Sync Conflict',
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            hasConflicts ? Icons.warning_amber_rounded : Icons.info_outline,
-            color: hasConflicts ? Colors.orange.shade700 : Colors.blue.shade700,
+          Row(
+            children: [
+              Icon(
+                hasConflicts ? Icons.warning_amber_rounded : Icons.info_outline,
+                color: statusColor,
+              ),
+              const SizedBox(width: Spacing.m),
+              Expanded(
+                child: Text(
+                  hasConflicts
+                      ? 'Changes in "${widget.chapterTitle}" conflict with server version.'
+                      : 'Changes in "${widget.chapterTitle}" can be automatically merged.',
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: Text('Sync Conflict', style: TextStyle(fontSize: 20)),
-          ),
+          const SizedBox(height: Spacing.m),
+          if (hasConflicts && widget.conflict.conflicts.isNotEmpty)
+            _buildConflictList(context),
+          if (canAutoMerge) _buildAutoMergePreview(context),
+          const SizedBox(height: Spacing.m),
+          _buildResolutionOptions(context, canAutoMerge),
         ],
       ),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              hasConflicts
-                  ? 'Changes in "${widget.chapterTitle}" conflict with server version.'
-                  : 'Changes in "${widget.chapterTitle}" can be automatically merged.',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 16),
-            if (hasConflicts && widget.conflict.conflicts.isNotEmpty)
-              _buildConflictList(context),
-            if (canAutoMerge) _buildAutoMergePreview(context),
-            const SizedBox(height: 16),
-            _buildResolutionOptions(context, canAutoMerge),
-          ],
-        ),
-      ),
       actions: [
-        TextButton(
+        AppButtons.text(
           onPressed: () => Navigator.pop(context, null),
-          child: const Text('Cancel'),
+          label: 'Cancel',
         ),
-        ElevatedButton(
+        AppButtons.primary(
           onPressed: () => Navigator.pop(context, _selectedResolution),
-          child: const Text('Apply'),
+          label: 'Apply',
         ),
       ],
     );
   }
 
   Widget _buildConflictList(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+        borderRadius: BorderRadius.circular(Radii.s),
       ),
       child: ListView.builder(
         shrinkWrap: true,
@@ -119,13 +124,13 @@ class _ConflictResolutionDialogState
                   children: [
                     _buildVersionHeader(
                       'Your version (Local)',
-                      Colors.blue,
+                      theme.colorScheme.primary,
                       conflict.localContent,
                     ),
                     const SizedBox(height: 8),
                     _buildVersionHeader(
                       'Server version (Remote)',
-                      Colors.orange,
+                      theme.colorScheme.tertiary,
                       conflict.remoteContent,
                     ),
                   ],
@@ -139,28 +144,26 @@ class _ConflictResolutionDialogState
   }
 
   Widget _buildAutoMergePreview(BuildContext context) {
+    final theme = Theme.of(context);
+    final okColor = theme.colorScheme.primary;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.green.shade50,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.green.shade200),
+        color: okColor.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(Radii.s),
+        border: Border.all(color: okColor.withValues(alpha: 0.25)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                Icons.check_circle_outline,
-                color: Colors.green.shade700,
-                size: 20,
-              ),
+              Icon(Icons.check_circle_outline, color: okColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 'Auto-merge successful',
                 style: TextStyle(
-                  color: Colors.green.shade900,
+                  color: theme.colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -172,8 +175,8 @@ class _ConflictResolutionDialogState
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(4),
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(Radii.s),
             ),
             child: Text(
               widget.conflict.mergedContent,

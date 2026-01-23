@@ -7,6 +7,8 @@ import '../../models/scene_note.dart';
 import 'package:writer/repositories/notes_repository.dart';
 import '../../state/providers.dart';
 import '../../shared/api_exception.dart';
+import '../../shared/widgets/app_buttons.dart';
+import '../../shared/widgets/app_dialog.dart';
 import '../../shared/widgets/loading/skeleton_list_items.dart';
 import '../../shared/widgets/error_state.dart';
 
@@ -146,18 +148,19 @@ class _ScenesListScreenState extends ConsumerState<ScenesListScreen> {
                               onPressed: () async {
                                 final ok = await showDialog<bool>(
                                   context: context,
-                                  builder: (d) => AlertDialog(
-                                    title: Text(l10n.deleteSceneTitle),
+                                  builder: (d) => AppDialog(
+                                    title: l10n.deleteSceneTitle,
                                     content: Text(l10n.confirmDeleteGeneric),
                                     actions: [
-                                      TextButton(
+                                      AppButtons.text(
                                         onPressed: () =>
                                             Navigator.pop(d, false),
-                                        child: Text(l10n.cancel),
+                                        label: l10n.cancel,
                                       ),
-                                      FilledButton(
+                                      AppButtons.text(
                                         onPressed: () => Navigator.pop(d, true),
-                                        child: Text(l10n.delete),
+                                        label: l10n.delete,
+                                        color: Theme.of(d).colorScheme.error,
                                       ),
                                     ],
                                   ),

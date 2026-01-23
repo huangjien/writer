@@ -9,6 +9,7 @@ import 'package:writer/models/pattern.dart';
 import 'package:writer/screens/pattern_form_screen.dart';
 import 'package:writer/state/pattern_providers.dart';
 import 'package:writer/state/providers.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
 
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/app_settings.dart';
@@ -534,7 +535,7 @@ void main() {
     )!;
     await tester.tap(find.text(l10n.delete));
     await tester.pumpAndSettle();
-    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(find.byType(AppDialog), findsOneWidget);
 
     await tester.tap(find.text(l10n.delete).last);
     await tester.pumpAndSettle();
@@ -581,7 +582,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(
       find.descendant(
-        of: find.byType(AlertDialog),
+        of: find.byType(AppDialog),
         matching: find.text(l10n.cancel),
       ),
     );

@@ -24,6 +24,7 @@ import 'package:writer/theme/design_tokens.dart';
 import 'package:writer/widgets/recent_chapters.dart';
 import 'package:writer/widgets/sync_status_indicator.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
 import 'package:writer/shared/widgets/mobile_bottom_nav_bar.dart';
 import 'package:writer/shared/widgets/mobile_fab.dart';
 import 'package:writer/shared/widgets/mobile_novel_card.dart';
@@ -536,8 +537,8 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   ) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.confirmDelete),
+      builder: (context) => AppDialog(
+        title: l10n.confirmDelete,
         content: Text(l10n.confirmDeleteDescription(novel.title)),
         actions: [
           AppButtons.text(

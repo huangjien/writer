@@ -8,6 +8,8 @@ import 'package:writer/features/reader/logic/edit_discard_dialog.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/repositories/chapter_port.dart';
 
+import 'package:writer/shared/widgets/app_dialog.dart';
+
 class DummyChapterPort implements ChapterPort {
   @override
   Future<List<Chapter>> getChapters(String novelId) async => const [];
@@ -111,11 +113,8 @@ void main() {
     await tester.pumpWidget(app);
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
-    final actionButtons = find.descendant(
-      of: find.byType(AlertDialog),
-      matching: find.byType(TextButton),
-    );
-    await tester.tap(actionButtons.at(0));
+    expect(find.byType(AppDialog), findsOneWidget);
+    await tester.tap(find.text('Keep editing'));
     await tester.pumpAndSettle();
     expect(decision, DiscardDecision.keepEditing);
   });

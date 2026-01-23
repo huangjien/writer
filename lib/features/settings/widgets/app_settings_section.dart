@@ -9,8 +9,11 @@ import '../../../state/motion_settings.dart';
 import '../../../state/session_state.dart';
 import '../../../state/theme_controller.dart';
 import '../../../theme/design_tokens.dart';
+import '../../../shared/widgets/app_buttons.dart';
+import '../../../shared/widgets/app_dialog.dart';
 import '../../../shared/widgets/neumorphic_slider.dart';
 import '../../../shared/widgets/neumorphic_dropdown.dart';
+import '../../../shared/widgets/neumorphic_textfield.dart';
 import 'enhanced_settings_section.dart';
 
 class AppSettingsSection extends ConsumerStatefulWidget {
@@ -31,60 +34,101 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
   }
 
   void _showAiServiceUrlDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final currentUrl = ref.read(aiServiceProvider);
     final controller = TextEditingController(text: currentUrl);
     String? validationError;
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: Text(AppLocalizations.of(context)!.aiServiceUrl),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: AppLocalizations.of(context)!.aiServiceUrlHint,
-              labelText: AppLocalizations.of(context)!.urlLabel,
-              errorText: validationError,
-            ),
-            keyboardType: TextInputType.url,
-            onChanged: (value) {
-              setState(() {
-                validationError = _validateAiServiceUrl(value, context);
-              });
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                ref.read(aiServiceProvider.notifier).resetToDefault();
-                controller.text = ref.read(aiServiceProvider);
-                setState(() {
-                  validationError = null;
-                });
-              },
-              child: Text(AppLocalizations.of(context)!.resetToDefault),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(AppLocalizations.of(context)!.cancel),
-            ),
-            TextButton(
-              onPressed: validationError == null
-                  ? () {
-                      final newUrl = controller.text.trim();
-                      if (newUrl.isNotEmpty) {
-                        ref
-                            .read(aiServiceProvider.notifier)
-                            .setAiServiceUrl(newUrl);
-                      }
+        builder: (context, setState) {
+          final theme = Theme.of(context);
+          return AppDialog(
+            title: l10n.aiServiceUrl,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.aiServiceUrlHint,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: Spacing.m),
+                Text(l10n.urlLabel, style: theme.textTheme.labelLarge),
+                const SizedBox(height: Spacing.xs),
+                NeumorphicTextField(
+                  controller: controller,
+                  hintText: l10n.aiServiceUrlHint,
+                  keyboardType: TextInputType.url,
+                  textInputAction: TextInputAction.done,
+                  onChanged: (value) {
+                    setState(() {
+                      validationError = _validateAiServiceUrl(value, context);
+                    });
+                  },
+                  onSubmitted: (_) async {
+                    if (validationError != null) return;
+                    final newUrl = controller.text.trim();
+                    if (newUrl.isNotEmpty) {
+                      await ref
+                          .read(aiServiceProvider.notifier)
+                          .setAiServiceUrl(newUrl);
+                    }
+                    if (context.mounted) {
                       Navigator.of(context).pop();
                     }
-                  : null,
-              child: Text(AppLocalizations.of(context)!.save),
+                  },
+                ),
+                if (validationError != null) ...[
+                  const SizedBox(height: Spacing.s),
+                  Text(
+                    validationError!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.error,
+                    ),
+                  ),
+                ],
+              ],
             ),
-          ],
-        ),
+            actions: [
+              AppButtons.text(
+                onPressed: () {
+                  ref.read(aiServiceProvider.notifier).resetToDefault();
+                  controller.text = ref.read(aiServiceProvider);
+                  setState(() {
+                    validationError = null;
+                  });
+                },
+                label: l10n.resetToDefault,
+              ),
+              AppButtons.text(
+                onPressed: () => Navigator.of(context).pop(),
+                label: l10n.cancel,
+              ),
+              AppButtons.primary(
+                onPressed: validationError == null
+                    ? () async {
+                        final newUrl = controller.text.trim();
+                        if (newUrl.isNotEmpty) {
+                          await ref
+                              .read(aiServiceProvider.notifier)
+                              .setAiServiceUrl(newUrl);
+                        }
+                        if (context.mounted) {
+                          Navigator.of(context).pop();
+                        }
+                      }
+                    : () {},
+                label: l10n.save,
+                enabled: validationError == null,
+              ),
+            ],
+          );
+        },
       ),
     );
   }

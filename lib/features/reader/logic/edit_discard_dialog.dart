@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/chapter.dart';
 import '../../../state/chapter_edit_controller.dart';
+import '../../../shared/widgets/app_buttons.dart';
+import '../../../shared/widgets/app_dialog.dart';
 
 enum DiscardDecision { keepEditing, discard, saveAndExit }
 
@@ -20,8 +22,8 @@ Future<DiscardDecision?> showDiscardDialog({
       bool saving = false;
       return StatefulBuilder(
         builder: (context, setStateSB) {
-          return AlertDialog(
-            title: Text(l10n.discardChangesTitle),
+          return AppDialog(
+            title: l10n.discardChangesTitle,
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,21 +36,24 @@ Future<DiscardDecision?> showDiscardDialog({
               ],
             ),
             actions: [
-              TextButton(
+              AppButtons.text(
                 onPressed: saving
-                    ? null
+                    ? () {}
                     : () => Navigator.of(ctx).pop(DiscardDecision.keepEditing),
-                child: Text(l10n.keepEditing),
+                label: l10n.keepEditing,
+                enabled: !saving,
               ),
-              TextButton(
+              AppButtons.text(
                 onPressed: saving
-                    ? null
+                    ? () {}
                     : () => Navigator.of(ctx).pop(DiscardDecision.discard),
-                child: Text(l10n.discardChanges),
+                label: l10n.discardChanges,
+                enabled: !saving,
+                color: Theme.of(ctx).colorScheme.error,
               ),
-              TextButton(
+              AppButtons.primary(
                 onPressed: saving
-                    ? null
+                    ? () {}
                     : () async {
                         setStateSB(() => saving = true);
                         final ok = await controller.save();
@@ -71,7 +76,8 @@ Future<DiscardDecision?> showDiscardDialog({
                           } catch (_) {}
                         }
                       },
-                child: Text(l10n.saveAndExit),
+                label: l10n.saveAndExit,
+                enabled: !saving,
               ),
             ],
           );

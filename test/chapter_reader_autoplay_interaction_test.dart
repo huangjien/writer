@@ -5,9 +5,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/reader/chapter_reader_screen.dart';
 import 'package:writer/features/reader/logic/tts_driver.dart';
 import 'package:writer/models/chapter.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
 import 'helpers/test_utils.dart';
 
 class FakeTtsDriver extends TtsDriver {
+  TtsProgress? _onProgress;
+  TtsFlag? _onStart;
+  var _firstStartAttempt = true;
+
   @override
   Future<void> configure({
     required String? voiceName,
@@ -18,7 +23,10 @@ class FakeTtsDriver extends TtsDriver {
     TtsFlag? onCancel,
     TtsError? onError,
     TtsFlag? onAllComplete,
-  }) async {}
+  }) async {
+    _onProgress = onProgress;
+    _onStart = onStart;
+  }
 
   @override
   Future<void> setRate(double rate) async {}
@@ -33,7 +41,14 @@ class FakeTtsDriver extends TtsDriver {
     int chunkMaxLen = 1200,
     int baseTimeoutMs = 5000,
     int charTimeoutMs = 200,
-  }) async {}
+  }) async {
+    if (_firstStartAttempt) {
+      _firstStartAttempt = false;
+      return;
+    }
+    _onStart?.call();
+    _onProgress?.call(startIndex);
+  }
 }
 
 void main() {
@@ -44,6 +59,15 @@ void main() {
   testWidgets('Autoplay inline Continue starts TTS and hides card', (
     tester,
   ) async {
+    final oldPhysicalSize = tester.view.physicalSize;
+    final oldDevicePixelRatio = tester.view.devicePixelRatio;
+    addTearDown(() {
+      tester.view.physicalSize = oldPhysicalSize;
+      tester.view.devicePixelRatio = oldDevicePixelRatio;
+    });
+    tester.view.physicalSize = const Size(1200, 800);
+    tester.view.devicePixelRatio = 1.0;
+
     final chapters = const [
       Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'Ch1', content: 'Hello'),
     ];
@@ -77,7 +101,14 @@ void main() {
       findsOneWidget,
     );
 
-    await tester.tap(find.byTooltip('Continue'));
+    final continueButton = find.descendant(
+      of: find.byTooltip('Continue'),
+      matching: find.byType(NeumorphicButton),
+    );
+    expect(continueButton, findsOneWidget);
+    final onPressed = tester.widget<NeumorphicButton>(continueButton).onPressed;
+    expect(onPressed, isNotNull);
+    onPressed!.call();
     for (var i = 0; i < 10; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }

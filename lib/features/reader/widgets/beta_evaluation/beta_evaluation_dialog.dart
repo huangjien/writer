@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/app_buttons.dart';
+import '../../../../shared/widgets/app_dialog.dart';
 
 class BetaEvaluationDialog extends StatelessWidget {
   const BetaEvaluationDialog({super.key, required this.evaluation});
@@ -12,16 +14,14 @@ class BetaEvaluationDialog extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final markdown = evaluation['markdown'] as String? ?? '';
 
-    return AlertDialog(
-      title: Text(l10n.betaEvaluate),
-      content: SizedBox(
-        width: 700,
-        child: SingleChildScrollView(child: MarkdownBody(data: markdown)),
-      ),
+    return AppDialog(
+      title: l10n.betaEvaluate,
+      maxWidth: 700,
+      content: MarkdownBody(data: markdown),
       actions: [
-        TextButton(
+        AppButtons.text(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.cancel),
+          label: l10n.cancel,
         ),
       ],
     );

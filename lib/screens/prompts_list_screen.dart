@@ -11,6 +11,11 @@ import '../shared/api_exception.dart';
 import '../shared/widgets/theme_aware_card.dart';
 import '../shared/widgets/loading/skeleton_list_items.dart';
 import '../shared/widgets/error_state.dart';
+import '../shared/widgets/app_buttons.dart';
+import '../shared/widgets/app_dialog.dart';
+import '../shared/widgets/neumorphic_switch.dart';
+import '../shared/widgets/neumorphic_textfield.dart';
+import '../theme/design_tokens.dart';
 
 const int _previewLen = kPreviewLenShort;
 const int _searchDebounceMs = kSearchDebounceMs;
@@ -125,23 +130,23 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
 
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.error),
+      builder: (ctx) => AppDialog(
+        title: l10n.error,
         content: SelectableText(cleanMsg),
         actions: [
-          TextButton.icon(
-            icon: const Icon(Icons.copy),
-            label: Text(l10n.copy),
+          AppButtons.secondary(
             onPressed: () {
               Clipboard.setData(ClipboardData(text: cleanMsg));
               ScaffoldMessenger.of(
                 context,
               ).showSnackBar(SnackBar(content: Text(l10n.copiedToClipboard)));
             },
+            label: l10n.copy,
+            icon: Icons.copy,
           ),
-          TextButton(
+          AppButtons.text(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.close),
+            label: l10n.close,
           ),
         ],
       ),
@@ -156,52 +161,60 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
     final l10n = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          title: Text(l10n.newPrompt),
-          content: SizedBox(
-            width: 400,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: keyCtrl,
-                  decoration: InputDecoration(labelText: l10n.promptKey),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setStateSB) => AppDialog(
+          title: l10n.newPrompt,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.promptKey, style: Theme.of(ctx).textTheme.labelLarge),
+              const SizedBox(height: Spacing.xs),
+              NeumorphicTextField(
+                controller: keyCtrl,
+                hintText: l10n.promptKey,
+              ),
+              const SizedBox(height: Spacing.m),
+              Text(l10n.language, style: Theme.of(ctx).textTheme.labelLarge),
+              const SizedBox(height: Spacing.xs),
+              NeumorphicTextField(
+                controller: langCtrl,
+                hintText: l10n.language,
+              ),
+              const SizedBox(height: Spacing.m),
+              Text(l10n.content, style: Theme.of(ctx).textTheme.labelLarge),
+              const SizedBox(height: Spacing.xs),
+              NeumorphicTextField(
+                controller: contentCtrl,
+                hintText: l10n.content,
+                maxLines: 6,
+              ),
+              if (widget.isAdmin) ...[
+                const SizedBox(height: Spacing.m),
+                Row(
+                  children: [
+                    Expanded(child: Text(l10n.publicLabel)),
+                    NeumorphicSwitch(
+                      value: makePublic,
+                      onChanged: (v) => setStateSB(() => makePublic = v),
+                    ),
+                  ],
                 ),
-                TextField(
-                  controller: langCtrl,
-                  decoration: InputDecoration(labelText: l10n.language),
-                ),
-                TextField(
-                  controller: contentCtrl,
-                  decoration: InputDecoration(labelText: l10n.content),
-                  maxLines: 6,
-                ),
-                if (widget.isAdmin)
-                  Row(
-                    children: [
-                      Text(l10n.publicLabel),
-                      Switch(
-                        value: makePublic,
-                        onChanged: (v) => setState(() => makePublic = v),
-                      ),
-                    ],
-                  ),
               ],
-            ),
+            ],
           ),
           actions: [
-            TextButton(
+            AppButtons.text(
               onPressed: () => Navigator.pop(ctx, false),
-              child: Text(l10n.cancel),
+              label: l10n.cancel,
             ),
-            TextButton(
+            AppButtons.primary(
               onPressed: () => Navigator.pop(ctx, true),
-              child: Text(l10n.save),
+              label: l10n.save,
             ),
           ],
-        );
-      },
+        ),
+      ),
     );
     if (ok == true) {
       final key = keyCtrl.text.trim();
@@ -231,17 +244,17 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
     final l10n = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.makePublic),
+      builder: (ctx) => AppDialog(
+        title: l10n.makePublic,
         content: Text(l10n.makePublicPromptConfirm(p.promptKey, p.language)),
         actions: [
-          TextButton(
+          AppButtons.text(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel),
+            label: l10n.cancel,
           ),
-          TextButton(
+          AppButtons.primary(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l10n.confirm),
+            label: l10n.confirm,
           ),
         ],
       ),
@@ -265,17 +278,18 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
     final l10n = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.delete),
+      builder: (ctx) => AppDialog(
+        title: l10n.delete,
         content: Text(l10n.deletePromptConfirm(p.promptKey, p.language)),
         actions: [
-          TextButton(
+          AppButtons.text(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel),
+            label: l10n.cancel,
           ),
-          TextButton(
+          AppButtons.text(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l10n.delete),
+            label: l10n.delete,
+            color: Theme.of(ctx).colorScheme.error,
           ),
         ],
       ),

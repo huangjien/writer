@@ -12,6 +12,7 @@ import '../../state/storage_service_provider.dart';
 import '../../shared/strings.dart';
 
 import '../../shared/widgets/app_buttons.dart';
+import '../../shared/widgets/app_dialog.dart';
 import '../../shared/widgets/mobile_bottom_sheet.dart';
 import '../../shared/widgets/feedback/enhanced_toast.dart';
 import 'focus_timer.dart';
@@ -797,17 +798,17 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
     if (_hasUnsavedChanges) {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Discard Changes?'),
+        builder: (context) => AppDialog(
+          title: 'Discard Changes?',
           content: const Text(
             'You have unsaved changes. Are you sure you want to discard them?',
           ),
           actions: [
-            TextButton(
+            AppButtons.text(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              label: 'Cancel',
             ),
-            TextButton(
+            AppButtons.text(
               onPressed: () {
                 Navigator.of(context).pop();
 
@@ -826,10 +827,8 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                 });
                 HapticFeedback.heavyImpact();
               },
-              style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.error,
-              ),
-              child: const Text('Discard'),
+              label: 'Discard',
+              color: Theme.of(context).colorScheme.error,
             ),
           ],
         ),

@@ -9,6 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/api_error_response.dart';
 import 'package:writer/services/auth_redirect_service.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
 
 /// Service for localizing error messages from API responses
 class ErrorLocalizationService {
@@ -142,13 +144,13 @@ class ErrorLocalizationService {
 
     return showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.error),
+      builder: (context) => AppDialog(
+        title: AppLocalizations.of(context)!.error,
         content: Text(getLocalizedMessage(context, error, fallback: fallback)),
         actions: [
-          TextButton(
+          AppButtons.text(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text(AppLocalizations.of(context)!.close),
+            label: AppLocalizations.of(context)!.close,
           ),
         ],
       ),

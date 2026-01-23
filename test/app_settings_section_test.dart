@@ -48,6 +48,6 @@ void main() {
     expect(find.text('Reduce motion'), findsOneWidget);
     expect(find.text('Enable touch gestures'), findsOneWidget);
     expect(find.text('Reader swipe sensitivity'), findsOneWidget);
-    expect(find.text('Contrast'), findsOneWidget);
+    expect(find.text('AI Service URL'), findsOneWidget);
   });
 }

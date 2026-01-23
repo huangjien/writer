@@ -7,6 +7,7 @@ import 'package:writer/features/reader/logic/edit_discard_dialog.dart';
 import 'package:writer/state/chapter_edit_controller.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/repositories/chapter_port.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
 
 class OkChapterRepo implements ChapterPort {
   @override
@@ -121,7 +122,7 @@ void main() {
     await tester.pumpWidget(host);
     await tester.tap(find.text('Open'));
     await tester.pump(const Duration(milliseconds: 100));
-    await tester.tap(find.widgetWithText(TextButton, 'Keep editing'));
+    await tester.tap(find.text('Keep editing'));
     await tester.pump(const Duration(milliseconds: 200));
     expect(result, DiscardDecision.keepEditing);
   });
@@ -141,7 +142,7 @@ void main() {
     await tester.pumpWidget(host);
     await tester.tap(find.text('Open'));
     await tester.pump(const Duration(milliseconds: 100));
-    await tester.tap(find.widgetWithText(TextButton, 'Discard changes'));
+    await tester.tap(find.text('Discard changes'));
     await tester.pump(const Duration(milliseconds: 200));
     expect(result, DiscardDecision.discard);
   });
@@ -163,7 +164,7 @@ void main() {
     await tester.pumpWidget(host);
     await tester.tap(find.text('Open'));
     await tester.pump(const Duration(milliseconds: 100));
-    await tester.tap(find.widgetWithText(TextButton, 'Save & Exit'));
+    await tester.tap(find.text('Save & Exit'));
     await tester.pump(const Duration(milliseconds: 200));
     expect(result, DiscardDecision.saveAndExit);
   });
@@ -185,9 +186,9 @@ void main() {
     await tester.pumpWidget(host);
     await tester.tap(find.text('Open'));
     await tester.pump(const Duration(milliseconds: 200));
-    await tester.tap(find.widgetWithText(TextButton, 'Save & Exit'));
+    await tester.tap(find.text('Save & Exit'));
     await tester.pump(const Duration(milliseconds: 200));
     expect(result, isNull);
-    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(find.byType(AppDialog), findsOneWidget);
   });
 }

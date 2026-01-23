@@ -6,6 +6,8 @@ import '../state/edit_permissions.dart';
 import '../features/reader/novel_metadata_editor.dart';
 import '../l10n/app_localizations.dart';
 import '../repositories/novel_repository.dart';
+import '../shared/widgets/app_buttons.dart';
+import '../shared/widgets/app_dialog.dart';
 
 class SideBar extends ConsumerWidget {
   final String novelId;
@@ -117,17 +119,18 @@ class SideBar extends ConsumerWidget {
                 onTap: () async {
                   final confirmed = await showDialog<bool>(
                     context: context,
-                    builder: (ctx) => AlertDialog(
-                      title: Text(l10n.deleteNovel),
+                    builder: (ctx) => AppDialog(
+                      title: l10n.deleteNovel,
                       content: Text(l10n.deleteNovelConfirmation),
                       actions: [
-                        TextButton(
+                        AppButtons.text(
                           onPressed: () => Navigator.of(ctx).pop(false),
-                          child: Text(l10n.cancel),
+                          label: l10n.cancel,
                         ),
-                        FilledButton(
+                        AppButtons.text(
                           onPressed: () => Navigator.of(ctx).pop(true),
-                          child: Text(l10n.delete),
+                          label: l10n.delete,
+                          color: Theme.of(ctx).colorScheme.error,
                         ),
                       ],
                     ),

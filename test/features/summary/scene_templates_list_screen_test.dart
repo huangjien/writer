@@ -8,6 +8,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/scene_template_row.dart';
 import 'package:writer/repositories/template_repository.dart';
 import 'package:writer/state/providers.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
 
 class MockTemplateRepository extends Mock implements TemplateRepository {}
 
@@ -224,7 +225,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.delete).first);
     await tester.pumpAndSettle();
 
-    final ctx = tester.element(find.byType(AlertDialog));
+    final ctx = tester.element(find.byType(AppDialog));
     final l10n = AppLocalizations.of(ctx)!;
     expect(find.text(l10n.deleteTemplateTitle), findsOneWidget);
 

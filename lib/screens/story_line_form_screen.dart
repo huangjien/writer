@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/design_tokens.dart';
 import '../shared/widgets/neumorphic_checkbox.dart';
 import '../shared/widgets/app_buttons.dart';
+import '../shared/widgets/app_dialog.dart';
 import '../shared/widgets/responsive_button_row.dart';
 import '../models/story_line.dart';
 import '../shared/api_exception.dart';
@@ -198,17 +199,18 @@ class _StoryLineFormScreenState extends ConsumerState<StoryLineFormScreen>
     final l10n = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.confirmDelete),
+      builder: (ctx) => AppDialog(
+        title: l10n.confirmDelete,
         content: Text(l10n.confirmDeleteDescription(widget.initial!.title)),
         actions: [
-          TextButton(
+          AppButtons.text(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel),
+            label: l10n.cancel,
           ),
-          TextButton(
+          AppButtons.text(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l10n.delete),
+            label: l10n.delete,
+            color: Theme.of(ctx).colorScheme.error,
           ),
         ],
       ),

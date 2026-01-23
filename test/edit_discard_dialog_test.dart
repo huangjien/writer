@@ -6,6 +6,7 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/features/reader/logic/edit_discard_dialog.dart';
 import 'package:writer/repositories/chapter_port.dart';
 import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
 
 class CapturingChapterPort implements ChapterPort {
   bool saved = false;
@@ -93,13 +94,13 @@ void main() {
 
     expect(find.textContaining('discard'), findsWidgets);
 
-    final actionButtons = find.descendant(
-      of: find.byType(AlertDialog),
-      matching: find.byType(TextButton),
-    );
-    expect(actionButtons, findsNWidgets(3));
-    await tester.tap(actionButtons.at(0));
+    expect(find.byType(AppDialog), findsOneWidget);
+    expect(find.text('Keep editing'), findsOneWidget);
+    expect(find.text('Discard changes'), findsOneWidget);
+    expect(find.text('Save & Exit'), findsOneWidget);
+
+    await tester.tap(find.text('Keep editing'));
     await tester.pumpAndSettle();
-    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.byType(AppDialog), findsNothing);
   });
 }

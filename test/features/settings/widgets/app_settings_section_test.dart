@@ -12,6 +12,7 @@ import 'package:writer/state/session_state.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/state/storage_service_provider.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
 
 void main() {
   testWidgets('AppSettingsSection renders correctly', (
@@ -56,7 +57,7 @@ void main() {
     expect(find.text('Reduce motion'), findsOneWidget);
     expect(find.text('Enable touch gestures'), findsOneWidget);
     expect(find.text('Reader swipe sensitivity'), findsOneWidget);
-    expect(find.text('Contrast'), findsOneWidget);
+    expect(find.text('AI Service URL'), findsOneWidget);
   });
 
   testWidgets('AppSettingsSection changes language', (tester) async {
@@ -206,7 +207,7 @@ void main() {
     await tester.tap(editButton);
     await tester.pumpAndSettle();
 
-    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(find.byType(AppDialog), findsOneWidget);
     // The dialog content might be localized or different.
     // Check for input field instead.
     expect(find.byType(TextField), findsOneWidget);
@@ -227,7 +228,7 @@ void main() {
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.byType(AppDialog), findsNothing);
     expect(prefs.getString('ai_service_url'), 'http://valid.com');
   });
 }

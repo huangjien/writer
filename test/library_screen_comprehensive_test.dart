@@ -25,6 +25,7 @@ import 'package:writer/features/library/widgets/library_grid_item.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/features/library/library_providers.dart';
 import 'package:writer/widgets/recent_chapters.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
 
 void main() {
   group('LibraryScreen - Search Functionality', () {
@@ -1119,17 +1120,17 @@ void main() {
       await tester.tap(deleteBtn);
       await tester.pumpAndSettle();
 
-      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(find.byType(AppDialog), findsOneWidget);
 
       // Cancel
       final cancelButton = find.descendant(
-        of: find.byType(AlertDialog),
+        of: find.byType(AppDialog),
         matching: find.text('Cancel'),
       );
       await tester.tap(cancelButton);
       await tester.pumpAndSettle();
 
-      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.byType(AppDialog), findsNothing);
     });
   });
 
