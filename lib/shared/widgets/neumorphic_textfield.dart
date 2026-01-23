@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/theme_extensions.dart';
+import '../../theme/neumorphic_styles.dart';
+import '../utils/contrast_utils.dart';
 
 class NeumorphicTextField extends StatefulWidget {
   const NeumorphicTextField({
@@ -95,6 +97,16 @@ class _NeumorphicTextFieldState extends State<NeumorphicTextField> {
           width: 1,
         );
 
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final resolvedTextColor = ContrastUtils.getAccessibleTextColor(
+      textColor:
+          theme.textTheme.bodyMedium?.color ?? theme.colorScheme.onSurface,
+      backgroundColor: isDarkMode
+          ? NeumorphicStyles.darkBackground
+          : NeumorphicStyles.lightBackground,
+      isDarkMode: isDarkMode,
+    );
+
     return Semantics(
       textField: true,
       label: label,
@@ -118,7 +130,7 @@ class _NeumorphicTextFieldState extends State<NeumorphicTextField> {
           enabled: widget.enabled,
           textInputAction: widget.textInputAction,
           onSubmitted: widget.onSubmitted,
-          style: theme.textTheme.bodyMedium,
+          style: theme.textTheme.bodyMedium?.copyWith(color: resolvedTextColor),
           decoration: InputDecoration(
             hintText: widget.hintText,
             prefixIcon: widget.prefixIcon,

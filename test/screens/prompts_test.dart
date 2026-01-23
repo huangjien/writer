@@ -11,7 +11,6 @@ import 'package:writer/shared/api_exception.dart';
 import 'package:writer/shared/widgets/error_state.dart';
 import 'package:writer/shared/widgets/app_dialog.dart';
 import 'package:writer/shared/widgets/neumorphic_switch.dart';
-import 'package:writer/shared/widgets/neumorphic_button.dart';
 
 class FakePromptsService extends PromptsService {
   FakePromptsService() : super(baseUrl: 'http://test');
@@ -254,7 +253,7 @@ void main() {
     await tester.ensureVisible(publicIcon);
     await tester.tap(publicIcon);
     await tester.pump();
-    await tester.tap(find.widgetWithText(NeumorphicButton, 'Confirm'));
+    await tester.tap(find.text('Confirm'));
     await tester.pump();
     expect(svc.lastCreatedIsPublic, isTrue);
   });
@@ -286,7 +285,7 @@ void main() {
     );
     await tester.tap(dlgSwitch);
     await tester.pump();
-    await tester.tap(find.widgetWithText(NeumorphicButton, 'Save'));
+    await tester.tap(find.text('Save'));
     await tester.pump();
     expect(svc.createCalled, isTrue);
     expect(svc.lastCreatedIsPublic, isTrue);

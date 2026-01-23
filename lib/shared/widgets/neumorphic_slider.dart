@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/theme_extensions.dart';
+import '../../theme/neumorphic_styles.dart';
+import '../utils/contrast_utils.dart';
 import 'focus_wrapper.dart';
 
 class NeumorphicSlider extends StatelessWidget {
@@ -49,8 +51,30 @@ class NeumorphicSlider extends StatelessWidget {
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
 
-    final effectiveThumbColor = thumbColor ?? primaryColor;
-    final effectiveActiveTrackColor = activeTrackColor ?? primaryColor;
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final baseThumbColor = thumbColor ?? primaryColor;
+    final baseActiveTrackColor = activeTrackColor ?? primaryColor;
+    final effectiveThumbColor = ContrastUtils.getAccessibleIconColor(
+      iconColor: baseThumbColor,
+      backgroundColor: isDarkMode
+          ? NeumorphicStyles.darkBackground
+          : NeumorphicStyles.lightBackground,
+      isDarkMode: isDarkMode,
+    );
+    final effectiveActiveTrackColor = ContrastUtils.getAccessibleIconColor(
+      iconColor: baseActiveTrackColor,
+      backgroundColor: isDarkMode
+          ? NeumorphicStyles.darkBackground
+          : NeumorphicStyles.lightBackground,
+      isDarkMode: isDarkMode,
+    );
+    final resolvedTextColor = ContrastUtils.getAccessibleTextColor(
+      textColor: theme.colorScheme.onSurface,
+      backgroundColor: isDarkMode
+          ? NeumorphicStyles.darkBackground
+          : NeumorphicStyles.lightBackground,
+      isDarkMode: isDarkMode,
+    );
 
     final isEnabled = onChanged != null;
     final resolvedBorder =
@@ -147,7 +171,7 @@ class NeumorphicSlider extends StatelessWidget {
                             value.toStringAsFixed(1),
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface,
+                              color: resolvedTextColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

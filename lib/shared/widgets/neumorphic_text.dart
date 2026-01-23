@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/theme_extensions.dart';
+import '../../theme/neumorphic_styles.dart';
+import '../utils/contrast_utils.dart';
 
 class NeumorphicText extends StatelessWidget {
   const NeumorphicText(
@@ -28,11 +30,23 @@ class NeumorphicText extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final baseStyle = style ?? theme.textTheme.bodyMedium!;
+    final baseColor = baseStyle.color ?? theme.colorScheme.onSurface;
+    final backgroundColor = isDarkMode
+        ? NeumorphicStyles.darkBackground
+        : NeumorphicStyles.lightBackground;
+
     final effectiveColor = useNeumorphicColor
         ? (theme.cardBackgroundColor ??
               theme.buttonBackgroundColor ??
               theme.colorScheme.surface)
-        : null; // Use default from style
+        : (style?.color ??
+              ContrastUtils.getAccessibleTextColor(
+                textColor: baseColor,
+                backgroundColor: backgroundColor,
+                isDarkMode: isDarkMode,
+              ));
 
     final effectiveDepth = depth <= 0 ? 0 : depth;
     final textShadows =
@@ -47,7 +61,7 @@ class NeumorphicText extends StatelessWidget {
             .toList(growable: false) ??
         const <Shadow>[];
 
-    final effectiveStyle = (style ?? theme.textTheme.bodyMedium!).copyWith(
+    final effectiveStyle = baseStyle.copyWith(
       color: effectiveColor,
       shadows: textShadows,
     );

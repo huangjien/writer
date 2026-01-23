@@ -11,6 +11,38 @@ import 'neumorphic_button.dart';
 /// - Icon support
 /// - Consistent styling
 class AppButtons {
+  /// Returns a high-contrast text color for neumorphic buttons in dark mode
+  /// that meets WCAG AA standards (4.5:1 ratio) while maintaining the primary hue
+  static Color _getAccessiblePrimaryTextColor(
+    BuildContext context,
+    Color primaryColor,
+  ) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final surface = theme.colorScheme.surface;
+
+    if (!isDark) {
+      return primaryColor;
+    }
+
+    final primaryLuminance = primaryColor.computeLuminance();
+    final surfaceLuminance = surface.computeLuminance();
+
+    final contrastRatio = (primaryLuminance + 0.05) / (surfaceLuminance + 0.05);
+
+    if (contrastRatio >= 4.5) {
+      return primaryColor;
+    }
+
+    final hsl = HSLColor.fromColor(primaryColor);
+    final highContrastColor = hsl
+        .withLightness(isDark ? 0.85 : 0.15)
+        .withSaturation(hsl.saturation * 0.8)
+        .toColor();
+
+    return highContrastColor;
+  }
+
   /// Primary filled button with elevation
   static Widget primary({
     required String label,
@@ -20,11 +52,14 @@ class AppButtons {
     bool enabled = true,
     bool fullWidth = false,
   }) {
-    // Neumorphic Primary Button
     return Builder(
       builder: (context) {
         final theme = Theme.of(context);
         final primaryColor = theme.colorScheme.primary;
+        final accessibleTextColor = _getAccessiblePrimaryTextColor(
+          context,
+          primaryColor,
+        );
 
         return FocusWrapper(
           borderRadius: BorderRadius.circular(Radii.m),
@@ -47,7 +82,7 @@ class AppButtons {
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              primaryColor,
+                              accessibleTextColor,
                             ),
                           ),
                         )
@@ -56,7 +91,7 @@ class AppButtons {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             if (icon != null) ...[
-                              Icon(icon, size: 18, color: primaryColor),
+                              Icon(icon, size: 18, color: accessibleTextColor),
                               const SizedBox(width: Spacing.s),
                             ],
                             Flexible(
@@ -64,7 +99,7 @@ class AppButtons {
                                 label,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: primaryColor,
+                                  color: accessibleTextColor,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -89,44 +124,63 @@ class AppButtons {
     bool isLoading = false,
     bool fullWidth = false,
   }) {
-    return FocusWrapper(
-      borderRadius: BorderRadius.circular(Radii.m),
-      onActivate: (enabled && !isLoading) ? onPressed : null,
-      child: PressScale(
-        enabled: enabled && !isLoading,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: MobileSpacing.touchTargetMin,
-          ),
-          child: SizedBox(
-            width: fullWidth ? double.infinity : null,
-            child: NeumorphicButton(
-              onPressed: (enabled && !isLoading) ? onPressed : null,
-              borderRadius: BorderRadius.circular(Radii.m),
-              depth: 6,
-              child: isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (icon != null) ...[
-                          Icon(icon, size: 18),
-                          const SizedBox(width: Spacing.s),
-                        ],
-                        Flexible(
-                          child: Text(label, textAlign: TextAlign.center),
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        final accessibleTextColor = _getAccessiblePrimaryTextColor(
+          context,
+          theme.colorScheme.primary,
+        );
+
+        return FocusWrapper(
+          borderRadius: BorderRadius.circular(Radii.m),
+          onActivate: (enabled && !isLoading) ? onPressed : null,
+          child: PressScale(
+            enabled: enabled && !isLoading,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minHeight: MobileSpacing.touchTargetMin,
+              ),
+              child: SizedBox(
+                width: fullWidth ? double.infinity : null,
+                child: NeumorphicButton(
+                  onPressed: (enabled && !isLoading) ? onPressed : null,
+                  borderRadius: BorderRadius.circular(Radii.m),
+                  depth: 6,
+                  child: isLoading
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              accessibleTextColor,
+                            ),
+                          ),
+                        )
+                      : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (icon != null) ...[
+                              Icon(icon, size: 18, color: accessibleTextColor),
+                              const SizedBox(width: Spacing.s),
+                            ],
+                            Flexible(
+                              child: Text(
+                                label,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: accessibleTextColor),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -137,21 +191,34 @@ class AppButtons {
     bool enabled = true,
     Color? color,
   }) {
-    return FocusWrapper(
-      borderRadius: BorderRadius.circular(Radii.m),
-      onActivate: enabled ? onPressed : null,
-      child: PressScale(
-        enabled: enabled,
-        child: NeumorphicButton(
-          onPressed: enabled ? onPressed : null,
-          depth: 3,
-          padding: const EdgeInsets.symmetric(
-            horizontal: Spacing.m,
-            vertical: Spacing.s,
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        final defaultTextColor = _getAccessiblePrimaryTextColor(
+          context,
+          theme.colorScheme.primary,
+        );
+
+        return FocusWrapper(
+          borderRadius: BorderRadius.circular(Radii.m),
+          onActivate: enabled ? onPressed : null,
+          child: PressScale(
+            enabled: enabled,
+            child: NeumorphicButton(
+              onPressed: enabled ? onPressed : null,
+              depth: 3,
+              padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.m,
+                vertical: Spacing.s,
+              ),
+              child: Text(
+                label,
+                style: TextStyle(color: color ?? defaultTextColor),
+              ),
+            ),
           ),
-          child: Text(label, style: TextStyle(color: color)),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -165,56 +232,67 @@ class AppButtons {
     bool filled = false,
     EdgeInsets focusPadding = const EdgeInsets.all(2),
   }) {
-    // If filled, use Neumorphic style
-    if (filled) {
-      return filledIcon(
-        iconData: iconData,
-        onPressed: onPressed,
-        tooltip: tooltip,
-        iconColor: color,
-        enabled: enabled,
-        focusPadding: focusPadding,
-      );
-    }
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        final defaultIconColor = _getAccessiblePrimaryTextColor(
+          context,
+          theme.colorScheme.primary,
+        );
+        final effectiveColor = color ?? defaultIconColor;
 
-    final button = PressScale(
-      enabled: enabled,
-      child: SizedBox(
-        width: MobileSpacing.touchTargetMin,
-        height: MobileSpacing.touchTargetMin,
-        child: NeumorphicButton(
-          onPressed: enabled ? onPressed : null,
-          borderRadius: BorderRadius.circular(Radii.m),
-          depth: 4,
-          padding: EdgeInsets.zero,
-          child: Icon(iconData, color: color),
-        ),
-      ),
-    );
+        // If filled, use Neumorphic style
+        if (filled) {
+          return filledIcon(
+            iconData: iconData,
+            onPressed: onPressed,
+            tooltip: tooltip,
+            iconColor: effectiveColor,
+            enabled: enabled,
+            focusPadding: focusPadding,
+          );
+        }
 
-    if (tooltip != null) {
-      return Semantics(
-        label: tooltip,
-        button: true,
-        enabled: enabled,
-        onTap: enabled ? onPressed : null,
-        child: Tooltip(
-          message: tooltip,
-          excludeFromSemantics: true,
-          child: FocusWrapper(
-            borderRadius: BorderRadius.circular(Radii.m),
-            padding: focusPadding,
-            onActivate: enabled ? onPressed : null,
-            child: ExcludeSemantics(child: button),
+        final button = PressScale(
+          enabled: enabled,
+          child: SizedBox(
+            width: MobileSpacing.touchTargetMin,
+            height: MobileSpacing.touchTargetMin,
+            child: NeumorphicButton(
+              onPressed: enabled ? onPressed : null,
+              borderRadius: BorderRadius.circular(Radii.m),
+              depth: 4,
+              padding: EdgeInsets.zero,
+              child: Icon(iconData, color: effectiveColor),
+            ),
           ),
-        ),
-      );
-    }
-    return FocusWrapper(
-      borderRadius: BorderRadius.circular(Radii.m),
-      padding: focusPadding,
-      onActivate: enabled ? onPressed : null,
-      child: button,
+        );
+
+        if (tooltip != null) {
+          return Semantics(
+            label: tooltip,
+            button: true,
+            enabled: enabled,
+            onTap: enabled ? onPressed : null,
+            child: Tooltip(
+              message: tooltip,
+              excludeFromSemantics: true,
+              child: FocusWrapper(
+                borderRadius: BorderRadius.circular(Radii.m),
+                padding: focusPadding,
+                onActivate: enabled ? onPressed : null,
+                child: ExcludeSemantics(child: button),
+              ),
+            ),
+          );
+        }
+        return FocusWrapper(
+          borderRadius: BorderRadius.circular(Radii.m),
+          padding: focusPadding,
+          onActivate: enabled ? onPressed : null,
+          child: button,
+        );
+      },
     );
   }
 
@@ -228,43 +306,54 @@ class AppButtons {
     bool enabled = true,
     EdgeInsets focusPadding = const EdgeInsets.all(2),
   }) {
-    final button = PressScale(
-      enabled: enabled,
-      child: SizedBox(
-        width: MobileSpacing.touchTargetMin,
-        height: MobileSpacing.touchTargetMin,
-        child: NeumorphicButton(
-          onPressed: enabled ? onPressed : null,
-          padding: EdgeInsets.zero,
-          color: backgroundColor, // Use provided color or default
-          child: Icon(iconData, color: iconColor),
-        ),
-      ),
-    );
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        final defaultIconColor = _getAccessiblePrimaryTextColor(
+          context,
+          theme.colorScheme.primary,
+        );
+        final effectiveIconColor = iconColor ?? defaultIconColor;
 
-    if (tooltip != null) {
-      return Semantics(
-        label: tooltip,
-        button: true,
-        enabled: enabled,
-        onTap: enabled ? onPressed : null,
-        child: Tooltip(
-          message: tooltip,
-          excludeFromSemantics: true,
-          child: FocusWrapper(
-            borderRadius: BorderRadius.circular(Radii.m),
-            padding: focusPadding,
-            onActivate: enabled ? onPressed : null,
-            child: ExcludeSemantics(child: button),
+        final button = PressScale(
+          enabled: enabled,
+          child: SizedBox(
+            width: MobileSpacing.touchTargetMin,
+            height: MobileSpacing.touchTargetMin,
+            child: NeumorphicButton(
+              onPressed: enabled ? onPressed : null,
+              padding: EdgeInsets.zero,
+              color: backgroundColor,
+              child: Icon(iconData, color: effectiveIconColor),
+            ),
           ),
-        ),
-      );
-    }
-    return FocusWrapper(
-      borderRadius: BorderRadius.circular(Radii.m),
-      padding: focusPadding,
-      onActivate: enabled ? onPressed : null,
-      child: button,
+        );
+
+        if (tooltip != null) {
+          return Semantics(
+            label: tooltip,
+            button: true,
+            enabled: enabled,
+            onTap: enabled ? onPressed : null,
+            child: Tooltip(
+              message: tooltip,
+              excludeFromSemantics: true,
+              child: FocusWrapper(
+                borderRadius: BorderRadius.circular(Radii.m),
+                padding: focusPadding,
+                onActivate: enabled ? onPressed : null,
+                child: ExcludeSemantics(child: button),
+              ),
+            ),
+          );
+        }
+        return FocusWrapper(
+          borderRadius: BorderRadius.circular(Radii.m),
+          padding: focusPadding,
+          onActivate: enabled ? onPressed : null,
+          child: button,
+        );
+      },
     );
   }
 }

@@ -484,12 +484,12 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     return AppBar(
       title: Text(l10n.libraryTitle),
       actions: [
+        const SyncStatusIndicator(),
         if (isSignedIn)
           AppButtons.icon(
             iconData: Icons.refresh,
             onPressed: () => ref.refresh(libraryNovelsProvider),
           ),
-        const SyncStatusIndicator(),
         if (isAdmin)
           AppButtons.icon(
             iconData: Icons.admin_panel_settings,

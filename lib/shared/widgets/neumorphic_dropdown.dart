@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/theme_extensions.dart';
+import '../../theme/neumorphic_styles.dart';
+import '../utils/contrast_utils.dart';
 
 class NeumorphicDropdown<T> extends StatelessWidget {
   const NeumorphicDropdown({
@@ -22,6 +24,23 @@ class NeumorphicDropdown<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final resolvedTextColor = ContrastUtils.getAccessibleTextColor(
+      textColor:
+          theme.textTheme.bodyMedium?.color ?? theme.colorScheme.onSurface,
+      backgroundColor: isDarkMode
+          ? NeumorphicStyles.darkBackground
+          : NeumorphicStyles.lightBackground,
+      isDarkMode: isDarkMode,
+    );
+    final resolvedIconColor = ContrastUtils.getAccessibleIconColor(
+      iconColor: theme.colorScheme.onSurface,
+      backgroundColor: isDarkMode
+          ? NeumorphicStyles.darkBackground
+          : NeumorphicStyles.lightBackground,
+      isDarkMode: isDarkMode,
+    );
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.m),
       decoration: BoxDecoration(
@@ -38,8 +57,8 @@ class NeumorphicDropdown<T> extends StatelessWidget {
           onChanged: onChanged,
           hint: hint,
           isExpanded: isExpanded,
-          icon: Icon(Icons.arrow_drop_down, color: theme.colorScheme.onSurface),
-          style: theme.textTheme.bodyMedium,
+          icon: Icon(Icons.arrow_drop_down, color: resolvedIconColor),
+          style: theme.textTheme.bodyMedium?.copyWith(color: resolvedTextColor),
           dropdownColor: theme.cardBackgroundColor ?? theme.colorScheme.surface,
           borderRadius:
               theme.dropdownBorderRadius ?? BorderRadius.circular(Radii.m),

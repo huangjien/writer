@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/theme_extensions.dart';
+import '../../theme/neumorphic_styles.dart';
+import '../utils/contrast_utils.dart';
 import 'focus_wrapper.dart';
 
 class NeumorphicSwitch extends StatelessWidget {
@@ -28,8 +30,16 @@ class NeumorphicSwitch extends StatelessWidget {
     const padding = 4.0;
     const thumbSize = height - (padding * 2);
 
-    final effectiveActiveColor =
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final baseActiveColor =
         activeColor ?? theme.switchActiveColor ?? theme.colorScheme.primary;
+    final effectiveActiveColor = ContrastUtils.getAccessibleTextColor(
+      textColor: baseActiveColor,
+      backgroundColor: isDarkMode
+          ? NeumorphicStyles.darkBackground
+          : NeumorphicStyles.lightBackground,
+      isDarkMode: isDarkMode,
+    );
     final backgroundColor =
         theme.switchBackgroundColor ?? theme.colorScheme.surface;
     final thumbColor = theme.switchThumbColor ?? theme.colorScheme.surface;
