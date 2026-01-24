@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -19,13 +20,26 @@ class BiometricService {
   static const _biometricEnabledKey = 'biometric_enabled_v2';
   static const _sessionTokenKey = 'biometric_session_token_v2';
   static const _biometricSetupKey = 'biometric_setup_completed_v2';
+  static const _refreshTokenKey = 'biometric_refresh_token_v2';
 
   Future<bool> isBiometricAvailable() async {
     try {
       final canCheckBiometrics = await _localAuth.canCheckBiometrics;
       final isDeviceSupported = await _localAuth.isDeviceSupported();
+      if (kDebugMode) {
+        try {
+          debugPrint(
+            'BiometricService: canCheckBiometrics=$canCheckBiometrics, isDeviceSupported=$isDeviceSupported',
+          );
+        } catch (_) {}
+      }
       return canCheckBiometrics && isDeviceSupported;
     } catch (e) {
+      if (kDebugMode) {
+        try {
+          debugPrint('BiometricService: isBiometricAvailable error - $e');
+        } catch (_) {}
+      }
       return false;
     }
   }
@@ -42,23 +56,72 @@ class BiometricService {
     String localizedReason = 'Authenticate to sign in',
   }) async {
     try {
+      if (kDebugMode) {
+        try {
+          debugPrint(
+            'BiometricService: Starting authentication - $localizedReason',
+          );
+        } catch (_) {}
+      }
       final authenticated = await _localAuth.authenticate(
         localizedReason: localizedReason,
       );
+      if (kDebugMode) {
+        try {
+          debugPrint('BiometricService: Authentication result=$authenticated');
+        } catch (_) {}
+      }
       return authenticated;
-    } on PlatformException catch (_) {
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        try {
+          debugPrint(
+            'BiometricService: PlatformException during authentication - code: ${e.code}, message: ${e.message}',
+          );
+        } catch (_) {}
+      }
       return false;
-    } catch (_) {
+    } catch (e) {
+      if (kDebugMode) {
+        try {
+          debugPrint(
+            'BiometricService: Unexpected error during authentication - $e',
+          );
+        } catch (_) {}
+      }
       return false;
     }
   }
 
-  Future<void> enableBiometricAuth(String sessionToken) async {
+  Future<void> enableBiometricAuth(
+    String sessionToken, {
+    String? refreshToken,
+  }) async {
     try {
+      if (kDebugMode) {
+        try {
+          debugPrint(
+            'BiometricService: Enabling biometric auth with token (length: ${sessionToken.length})',
+          );
+        } catch (_) {}
+      }
       await _storage.write(key: _sessionTokenKey, value: sessionToken);
+      if (refreshToken != null) {
+        await _storage.write(key: _refreshTokenKey, value: refreshToken);
+      }
       await _storage.write(key: _biometricEnabledKey, value: 'true');
       await _storage.write(key: _biometricSetupKey, value: 'true');
+      if (kDebugMode) {
+        try {
+          debugPrint('BiometricService: Biometric auth enabled successfully');
+        } catch (_) {}
+      }
     } catch (e) {
+      if (kDebugMode) {
+        try {
+          debugPrint('BiometricService: Error enabling biometric auth - $e');
+        } catch (_) {}
+      }
       throw Exception('Storage Error: $e');
     }
   }
@@ -67,16 +130,60 @@ class BiometricService {
     try {
       final isEnabled = await _storage.read(key: _biometricEnabledKey);
       final isSetup = await _storage.read(key: _biometricSetupKey);
+      if (kDebugMode) {
+        debugPrint(
+          'BiometricService: isBiometricEnabled - enabled=$isEnabled, setup=$isSetup',
+        );
+      }
       return isEnabled == 'true' && isSetup == 'true';
     } catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+          'BiometricService: Error checking biometric enabled status - $e',
+        );
+      }
       return false;
     }
   }
 
   Future<String?> getSessionToken() async {
     try {
-      return await _storage.read(key: _sessionTokenKey);
+      final token = await _storage.read(key: _sessionTokenKey);
+      if (kDebugMode) {
+        try {
+          debugPrint(
+            'BiometricService: getSessionToken - ${token != null ? "found (length: ${token.length})" : "not found"}',
+          );
+        } catch (_) {}
+      }
+      return token;
     } catch (e) {
+      if (kDebugMode) {
+        try {
+          debugPrint('BiometricService: Error getting session token - $e');
+        } catch (_) {}
+      }
+      return null;
+    }
+  }
+
+  Future<String?> getRefreshToken() async {
+    try {
+      final token = await _storage.read(key: _refreshTokenKey);
+      if (kDebugMode) {
+        try {
+          debugPrint(
+            'BiometricService: getRefreshToken - ${token != null ? "found (length: ${token.length})" : "not found"}',
+          );
+        } catch (_) {}
+      }
+      return token;
+    } catch (e) {
+      if (kDebugMode) {
+        try {
+          debugPrint('BiometricService: Error getting refresh token - $e');
+        } catch (_) {}
+      }
       return null;
     }
   }

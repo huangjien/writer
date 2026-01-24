@@ -3,6 +3,7 @@ import '../services/storage_service.dart';
 import 'storage_service_provider.dart';
 
 const String _sessionIdKey = 'backend_session_id';
+const String _refreshTokenKey = 'backend_refresh_token';
 
 class SessionNotifier extends StateNotifier<String?> {
   final StorageService _storage;
@@ -19,9 +20,22 @@ class SessionNotifier extends StateNotifier<String?> {
     await _storage.setString(_sessionIdKey, sessionId);
   }
 
+  Future<void> setRefreshToken(String? refreshToken) async {
+    if (refreshToken == null || refreshToken.trim().isEmpty) {
+      await _storage.remove(_refreshTokenKey);
+      return;
+    }
+    await _storage.setString(_refreshTokenKey, refreshToken);
+  }
+
+  String? getRefreshToken() {
+    return _storage.getString(_refreshTokenKey);
+  }
+
   Future<void> clear() async {
     state = null;
     await _storage.remove(_sessionIdKey);
+    await _storage.remove(_refreshTokenKey);
   }
 }
 

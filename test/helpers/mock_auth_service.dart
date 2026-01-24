@@ -20,4 +20,16 @@ class MockAuthService implements AuthService {
     }
     return SignInResult.success('mock-session-id');
   }
+
+  @override
+  Future<SignInResult> refresh(String refreshToken) async {
+    // Return forced result if set, otherwise return success
+    if (_forceError != null) {
+      return SignInResult.failure(_forceError);
+    }
+    if (_forceResult != null) {
+      return SignInResult.success(_forceResult);
+    }
+    return SignInResult.success('mock-refreshed-session-id');
+  }
 }

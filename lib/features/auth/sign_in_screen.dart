@@ -55,13 +55,22 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       }
 
       await ref.read(sessionProvider.notifier).setSessionId(result.sessionId!);
+      if (result.refreshToken != null) {
+        await ref
+            .read(sessionProvider.notifier)
+            .setRefreshToken(result.refreshToken);
+      }
       _passwordController.clear();
 
       final biometricState = ref.read(biometricSessionProvider);
       if (biometricState != BiometricAuthState.unavailable &&
           biometricState != BiometricAuthState.enabled) {
         if (!mounted) return;
-        _showBiometricSetupDialog(this.context, result.sessionId!);
+        _showBiometricSetupDialog(
+          this.context,
+          result.sessionId!,
+          result.refreshToken,
+        );
       } else {
         _navigateToSuccess();
       }
@@ -121,7 +130,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     return parsed.toString();
   }
 
-  void _showBiometricSetupDialog(BuildContext context, String sessionId) {
+  void _showBiometricSetupDialog(
+    BuildContext context,
+    String sessionId,
+    String? refreshToken,
+  ) {
     final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
@@ -139,7 +152,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           AppButtons.primary(
             onPressed: () async {
               Navigator.of(context).pop();
-              await _enableBiometricAuth(context, sessionId);
+              await _enableBiometricAuth(context, sessionId, refreshToken);
             },
             label: l10n.save,
           ),
@@ -151,6 +164,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   Future<void> _enableBiometricAuth(
     BuildContext context,
     String sessionId,
+    String? refreshToken,
   ) async {
     final l10n = AppLocalizations.of(context)!;
     setState(() {
@@ -161,7 +175,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     try {
       final success = await ref
           .read(biometricSessionProvider.notifier)
-          .enableBiometricAuth(sessionId);
+          .enableBiometricAuth(sessionId, refreshToken: refreshToken);
 
       if (success) {
         _navigateToSuccess();

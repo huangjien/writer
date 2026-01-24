@@ -4,22 +4,28 @@ import 'package:mocktail/mocktail.dart';
 import 'package:writer/state/biometric_session_state.dart';
 import 'package:writer/services/biometric_service.dart';
 import 'package:writer/state/session_state.dart';
+import 'package:writer/services/auth_service.dart';
 
 class MockBiometricService extends Mock implements BiometricService {}
 
 class MockSessionNotifier extends Mock implements SessionNotifier {}
 
+class MockAuthService extends Mock implements AuthService {}
+
 void main() {
   late BiometricSessionNotifier notifier;
   late MockBiometricService mockBiometricService;
   late MockSessionNotifier mockSessionNotifier;
+  late MockAuthService mockAuthService;
 
   setUp(() {
     mockBiometricService = MockBiometricService();
     mockSessionNotifier = MockSessionNotifier();
+    mockAuthService = MockAuthService();
     notifier = BiometricSessionNotifier(
       mockBiometricService,
       mockSessionNotifier,
+      mockAuthService,
     );
   });
 
@@ -111,6 +117,9 @@ void main() {
         ),
       ).thenAnswer((_) async => true);
       when(
+        () => mockBiometricService.getRefreshToken(),
+      ).thenAnswer((_) async => null);
+      when(
         () => mockBiometricService.getSessionToken(),
       ).thenAnswer((_) async => 'token');
       when(
@@ -130,6 +139,9 @@ void main() {
           localizedReason: any(named: 'localizedReason'),
         ),
       ).thenAnswer((_) async => true);
+      when(
+        () => mockBiometricService.getRefreshToken(),
+      ).thenAnswer((_) async => null);
       when(
         () => mockBiometricService.getSessionToken(),
       ).thenAnswer((_) async => null);

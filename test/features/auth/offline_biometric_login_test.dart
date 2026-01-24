@@ -27,6 +27,9 @@ class MockBiometricService extends Mock implements BiometricService {
 
   @override
   Future<String?> getSessionToken() async => 'offline-session-token';
+
+  @override
+  Future<String?> getRefreshToken() async => null;
 }
 
 class MockStorageService extends Mock implements StorageService {
