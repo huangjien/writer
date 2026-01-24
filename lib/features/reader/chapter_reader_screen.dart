@@ -21,6 +21,9 @@ import 'widgets/reader_bottom_bar_shell.dart';
 import 'widgets/reader_app_bar.dart';
 import 'widgets/reader_shortcuts_wrapper.dart';
 import 'widgets/reader_body.dart';
+import 'widgets/contrast_validator.dart';
+import 'widgets/contrast_monitor.dart';
+import 'widgets/contrast_alert_dialog.dart';
 import '../../widgets/side_bar.dart';
 import 'logic/edit_discard_dialog.dart';
 import 'logic/edit_mode.dart';
@@ -152,6 +155,30 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
           break;
       }
     });
+  }
+
+  void _checkContrastAndAlert(BuildContext context) {
+    ref.read(readerColorsProvider.notifier).updateFromTheme(context);
+    final readerColors = ref.read(readerColorsProvider);
+    ref.read(contrastMonitorProvider.notifier).setColors(readerColors);
+
+    final alerts = ref.read(contrastMonitorProvider);
+    if (alerts.isNotEmpty && mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showContrastAlertDialog(
+          context,
+          onApplyPreset: () {
+            final monitor = ref.read(contrastMonitorProvider);
+            if (monitor.isNotEmpty) {
+              final bestSuggestion = monitor.first.suggestions.first;
+              ref
+                  .read(contrastMonitorProvider.notifier)
+                  .applySuggestion(bestSuggestion, monitor.first.elementName);
+            }
+          },
+        );
+      });
+    }
   }
 
   void _showAutoplayPrompt() {
@@ -402,6 +429,10 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
           tone: EnhancedToastTone.info,
           duration: const Duration(seconds: 3),
         );
+      }
+      if (next.editMode && prev?.editMode != true) {
+        if (!mounted) return;
+        _checkContrastAndAlert(context);
       }
     });
 

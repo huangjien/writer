@@ -174,8 +174,10 @@ class TtsDriver {
         await _chunkCompleter!.future.timeout(
           Duration(milliseconds: timeoutMs),
           onTimeout: () {
-            // If timeout, we assume finished or stuck.
-            // We could try to proceed.
+            // If timeout, we assume finished or stuck and proceed to next chunk
+            if (!_chunkCompleter!.isCompleted) {
+              _chunkCompleter!.complete();
+            }
           },
         );
       } catch (e) {
