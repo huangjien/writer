@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mockito/mockito.dart';
 import 'package:writer/features/auth/sign_in_screen.dart';
-import 'package:writer/services/biometric_service.dart';
 import 'package:writer/state/biometric_session_state.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/l10n/app_localizations.dart';
@@ -30,6 +29,10 @@ class MockBiometricService extends Mock implements BiometricService {
 
   @override
   Future<String?> getRefreshToken() async => null;
+
+  @override
+  Future<BiometricTokenStatus> validateStoredTokens() async =>
+      BiometricTokenStatus.valid;
 }
 
 class MockStorageService extends Mock implements StorageService {

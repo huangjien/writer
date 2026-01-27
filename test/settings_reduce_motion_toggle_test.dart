@@ -11,7 +11,6 @@ import 'package:writer/state/admin_settings.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/state/theme_controller.dart';
-import 'package:writer/services/biometric_service.dart';
 import 'package:writer/state/biometric_session_state.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/providers.dart';

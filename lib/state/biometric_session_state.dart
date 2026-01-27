@@ -6,6 +6,9 @@ import '../services/auth_service.dart';
 import 'session_state.dart';
 import 'auth_service_provider.dart';
 
+// Re-export BiometricTokenStatus for UI usage
+export '../services/biometric_service.dart';
+
 enum BiometricAuthState {
   unavailable,
   disabled,
@@ -15,10 +18,31 @@ enum BiometricAuthState {
   failed,
 }
 
+enum BiometricErrorType {
+  /// Biometric authentication failed (user cancelled, fingerprint not recognized, etc.)
+  authenticationFailed,
+
+  /// Stored tokens are expired, user needs to sign in normally
+  tokensExpired,
+
+  /// No tokens are stored, biometric was never properly set up
+  noTokens,
+
+  /// Error occurred during token validation or refresh
+  tokenError,
+
+  /// Network or other technical error
+  technicalError,
+
+  /// Stored credentials failed to authenticate (password changed, account issues, etc.)
+  credentialsInvalid,
+}
+
 class BiometricSessionNotifier extends StateNotifier<BiometricAuthState> {
   final BiometricService _biometricService;
   final SessionNotifier _sessionNotifier;
   final AuthService _authService;
+  BiometricErrorType? _lastErrorType;
 
   BiometricSessionNotifier(
     this._biometricService,
@@ -107,107 +131,121 @@ class BiometricSessionNotifier extends StateNotifier<BiometricAuthState> {
 
   Future<bool> signInWithBiometrics() async {
     try {
-      try {
-        debugPrint('BiometricSessionNotifier: Signing in with biometrics');
-      } catch (_) {}
+      debugPrint('BiometricSessionNotifier: Starting biometric sign in');
       state = BiometricAuthState.authenticating;
 
+      // Step 1: Perform biometric authentication
       final isAuthenticated = await _biometricService.authenticate(
         localizedReason: 'Sign in with your biometrics',
       );
 
-      if (isAuthenticated) {
-        try {
-          debugPrint(
-            'BiometricSessionNotifier: Biometric authentication successful, checking for refresh token',
-          );
-        } catch (_) {}
-        final refreshToken = await _biometricService.getRefreshToken();
-
-        if (refreshToken != null) {
-          try {
-            debugPrint(
-              'BiometricSessionNotifier: Refresh token found, refreshing session',
-            );
-          } catch (_) {}
-          try {
-            final result = await _authService.refresh(refreshToken);
-            if (result.success && result.sessionId != null) {
-              try {
-                debugPrint(
-                  'BiometricSessionNotifier: Session refreshed successfully',
-                );
-              } catch (_) {}
-              await _sessionNotifier.setSessionId(result.sessionId!);
-              if (result.refreshToken != null) {
-                await _sessionNotifier.setRefreshToken(result.refreshToken);
-              }
-              state = BiometricAuthState.authenticated;
-              try {
-                debugPrint(
-                  'BiometricSessionNotifier: Biometric sign in successful with refreshed session',
-                );
-              } catch (_) {}
-              return true;
-            } else {
-              try {
-                debugPrint(
-                  'BiometricSessionNotifier: Refresh failed - ${result.errorMessage}',
-                );
-              } catch (_) {}
-            }
-          } catch (e) {
-            try {
-              debugPrint('BiometricSessionNotifier: Error during refresh - $e');
-            } catch (_) {}
-          }
-        }
-
-        try {
-          debugPrint(
-            'BiometricSessionNotifier: Falling back to stored session token',
-          );
-        } catch (_) {}
-        final sessionToken = await _biometricService.getSessionToken();
-        if (sessionToken != null) {
-          try {
-            debugPrint(
-              'BiometricSessionNotifier: Token retrieved, setting session',
-            );
-          } catch (_) {}
-          await _sessionNotifier.setSessionId(sessionToken);
-          state = BiometricAuthState.authenticated;
-          try {
-            debugPrint(
-              'BiometricSessionNotifier: Biometric sign in successful',
-            );
-          } catch (_) {}
-          return true;
-        } else {
-          try {
-            debugPrint(
-              'BiometricSessionNotifier: Token is null, sign in failed',
-            );
-          } catch (_) {}
-        }
-      } else {
-        try {
-          debugPrint(
-            'BiometricSessionNotifier: Biometric authentication failed',
-          );
-        } catch (_) {}
+      if (!isAuthenticated) {
+        debugPrint('BiometricSessionNotifier: Biometric authentication failed');
+        _setError(BiometricErrorType.authenticationFailed);
+        return false;
       }
 
-      state = BiometricAuthState.failed;
+      debugPrint(
+        'BiometricSessionNotifier: Biometric authentication successful',
+      );
+
+      // Step 2: Validate stored tokens before attempting to use them
+      final tokenStatus = await _biometricService.validateStoredTokens();
+      debugPrint(
+        'BiometricSessionNotifier: Token validation result: $tokenStatus',
+      );
+
+      switch (tokenStatus) {
+        case BiometricTokenStatus.noTokens:
+          debugPrint('BiometricSessionNotifier: No tokens stored');
+          _setError(BiometricErrorType.noTokens);
+          return false;
+
+        case BiometricTokenStatus.noTokensWithCredentials:
+          debugPrint(
+            'BiometricSessionNotifier: No tokens but credentials available, attempting re-authentication',
+          );
+          return await _attemptCredentialBasedSignin();
+
+        case BiometricTokenStatus.expired:
+          debugPrint('BiometricSessionNotifier: Tokens are expired');
+          _setError(BiometricErrorType.tokensExpired);
+          // Optionally auto-disable biometric when tokens are expired
+          await disableBiometricAuthDueToExpiration();
+          return false;
+
+        case BiometricTokenStatus.error:
+          debugPrint('BiometricSessionNotifier: Error validating tokens');
+          _setError(BiometricErrorType.tokenError);
+          return false;
+
+        case BiometricTokenStatus.valid:
+          debugPrint(
+            'BiometricSessionNotifier: Tokens appear valid, proceeding',
+          );
+          break;
+      }
+
+      // Step 3: Try refresh token first if available
+      final refreshToken = await _biometricService.getRefreshToken();
+      if (refreshToken != null) {
+        debugPrint(
+          'BiometricSessionNotifier: Refresh token found, attempting refresh',
+        );
+        try {
+          final result = await _authService.refresh(refreshToken);
+          if (result.success && result.sessionId != null) {
+            debugPrint(
+              'BiometricSessionNotifier: Session refreshed successfully',
+            );
+            await _sessionNotifier.setSessionId(result.sessionId!);
+            if (result.refreshToken != null) {
+              await _sessionNotifier.setRefreshToken(result.refreshToken);
+            }
+            state = BiometricAuthState.authenticated;
+            return true;
+          } else {
+            debugPrint(
+              'BiometricSessionNotifier: Refresh failed - ${result.errorMessage}',
+            );
+            // Don't fall back to session token if refresh failed - tokens are likely expired
+            _setError(BiometricErrorType.tokensExpired);
+            return false;
+          }
+        } catch (e) {
+          debugPrint('BiometricSessionNotifier: Error during refresh - $e');
+          _setError(BiometricErrorType.tokenError);
+          return false;
+        }
+      }
+
+      // Step 4: Fall back to session token only (if no refresh token)
+      final sessionToken = await _biometricService.getSessionToken();
+      if (sessionToken != null) {
+        debugPrint('BiometricSessionNotifier: Using stored session token');
+        try {
+          await _sessionNotifier.setSessionId(sessionToken);
+          state = BiometricAuthState.authenticated;
+          debugPrint('BiometricSessionNotifier: Biometric sign in successful');
+          return true;
+        } catch (e) {
+          debugPrint(
+            'BiometricSessionNotifier: Error setting session token - $e',
+          );
+          _setError(BiometricErrorType.technicalError);
+          return false;
+        }
+      }
+
+      debugPrint('BiometricSessionNotifier: No valid tokens found');
+      _setError(BiometricErrorType.noTokens);
       return false;
     } catch (e) {
-      try {
-        debugPrint(
-          'BiometricSessionNotifier: Error in signInWithBiometrics - $e',
-        );
-      } catch (_) {}
-      state = BiometricAuthState.failed;
-      rethrow;
+      debugPrint(
+        'BiometricSessionNotifier: Unexpected error in signInWithBiometrics - $e',
+      );
+      _setError(BiometricErrorType.technicalError);
+      return false;
     }
   }
 
@@ -215,7 +253,26 @@ class BiometricSessionNotifier extends StateNotifier<BiometricAuthState> {
     try {
       await _biometricService.disableBiometricAuth();
       state = BiometricAuthState.disabled;
+      _lastErrorType = null;
     } catch (e) {
+      state = BiometricAuthState.failed;
+    }
+  }
+
+  /// Disable biometric authentication when tokens are expired
+  /// This should be called when tokens are no longer valid
+  Future<void> disableBiometricAuthDueToExpiration() async {
+    try {
+      debugPrint(
+        'BiometricSessionNotifier: Disabling biometric auth due to token expiration',
+      );
+      await _biometricService.clearBiometricData();
+      state = BiometricAuthState.disabled;
+      _lastErrorType = null;
+    } catch (e) {
+      debugPrint(
+        'BiometricSessionNotifier: Error disabling biometric auth - $e',
+      );
       state = BiometricAuthState.failed;
     }
   }
@@ -234,10 +291,72 @@ class BiometricSessionNotifier extends StateNotifier<BiometricAuthState> {
   bool get isAuthenticating => state == BiometricAuthState.authenticating;
   bool get isAuthenticated => state == BiometricAuthState.authenticated;
   bool get hasFailed => state == BiometricAuthState.failed;
+  BiometricErrorType? get lastErrorType => _lastErrorType;
 
   void resetState() {
     if (state != BiometricAuthState.unavailable) {
       state = BiometricAuthState.disabled;
+      _lastErrorType = null;
+    }
+  }
+
+  void _setError(BiometricErrorType errorType) {
+    state = BiometricAuthState.failed;
+    _lastErrorType = errorType;
+  }
+
+  /// Attempt to sign in using stored credentials after biometric authentication
+  Future<bool> _attemptCredentialBasedSignin() async {
+    try {
+      debugPrint(
+        'BiometricSessionNotifier: Attempting credential-based sign-in',
+      );
+
+      // Get stored credentials
+      final email = await _biometricService.getStoredEmail();
+      final password = await _biometricService.getStoredPassword();
+
+      if (email == null || password == null) {
+        debugPrint('BiometricSessionNotifier: No stored credentials available');
+        _setError(BiometricErrorType.noTokens);
+        return false;
+      }
+
+      // Attempt sign-in with stored credentials
+      final result = await _authService.signIn(email, password);
+
+      if (result.success && result.sessionId != null) {
+        debugPrint(
+          'BiometricSessionNotifier: Credential-based sign-in successful',
+        );
+
+        // Store the new session tokens
+        await _biometricService.enableBiometricAuth(
+          result.sessionId!,
+          refreshToken: result.refreshToken,
+        );
+
+        // Set the session
+        await _sessionNotifier.setSessionId(result.sessionId!);
+        if (result.refreshToken != null) {
+          await _sessionNotifier.setRefreshToken(result.refreshToken);
+        }
+
+        state = BiometricAuthState.authenticated;
+        return true;
+      } else {
+        debugPrint(
+          'BiometricSessionNotifier: Credential-based sign-in failed - ${result.errorMessage}',
+        );
+        _setError(BiometricErrorType.technicalError);
+        return false;
+      }
+    } catch (e) {
+      debugPrint(
+        'BiometricSessionNotifier: Error during credential-based sign-in - $e',
+      );
+      _setError(BiometricErrorType.technicalError);
+      return false;
     }
   }
 }

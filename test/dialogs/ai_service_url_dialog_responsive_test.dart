@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/settings/widgets/app_settings_section.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
-import 'package:writer/services/biometric_service.dart';
 import 'package:writer/shared/widgets/app_dialog.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/app_settings.dart';

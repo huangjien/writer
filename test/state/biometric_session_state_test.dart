@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:writer/state/biometric_session_state.dart';
-import 'package:writer/services/biometric_service.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/services/auth_service.dart';
 
@@ -117,6 +116,9 @@ void main() {
         ),
       ).thenAnswer((_) async => true);
       when(
+        () => mockBiometricService.validateStoredTokens(),
+      ).thenAnswer((_) async => BiometricTokenStatus.valid);
+      when(
         () => mockBiometricService.getRefreshToken(),
       ).thenAnswer((_) async => null);
       when(
@@ -140,16 +142,14 @@ void main() {
         ),
       ).thenAnswer((_) async => true);
       when(
-        () => mockBiometricService.getRefreshToken(),
-      ).thenAnswer((_) async => null);
-      when(
-        () => mockBiometricService.getSessionToken(),
-      ).thenAnswer((_) async => null);
+        () => mockBiometricService.validateStoredTokens(),
+      ).thenAnswer((_) async => BiometricTokenStatus.noTokens);
 
       final result = await notifier.signInWithBiometrics();
 
       expect(result, false);
       expect(notifier.state, BiometricAuthState.failed);
+      expect(notifier.lastErrorType, BiometricErrorType.noTokens);
       verifyNever(() => mockSessionNotifier.setSessionId(any()));
     });
 
@@ -166,6 +166,7 @@ void main() {
 
         expect(result, false);
         expect(notifier.state, BiometricAuthState.failed);
+        expect(notifier.lastErrorType, BiometricErrorType.authenticationFailed);
         verifyNever(() => mockBiometricService.getSessionToken());
         verifyNever(() => mockSessionNotifier.setSessionId(any()));
       },

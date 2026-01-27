@@ -70,6 +70,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           this.context,
           result.sessionId!,
           result.refreshToken,
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
         );
       } else {
         _navigateToSuccess();
@@ -133,30 +135,59 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   void _showBiometricSetupDialog(
     BuildContext context,
     String sessionId,
-    String? refreshToken,
-  ) {
+    String? refreshToken, {
+    String? email,
+    String? password,
+  }) {
     final l10n = AppLocalizations.of(context)!;
+    bool storeCredentials = false;
+
     showDialog(
       context: context,
-      builder: (context) => AppDialog(
-        title: l10n.enableBiometricLogin,
-        content: Text(l10n.enableBiometricLoginDescription),
-        actions: [
-          AppButtons.text(
-            onPressed: () {
-              Navigator.of(context).pop();
-              _navigateToSuccess();
-            },
-            label: l10n.cancel,
-          ),
-          AppButtons.primary(
-            onPressed: () async {
-              Navigator.of(context).pop();
-              await _enableBiometricAuth(context, sessionId, refreshToken);
-            },
-            label: l10n.save,
-          ),
-        ],
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AppDialog(
+            title: l10n.enableBiometricLogin,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.enableBiometricLoginDescription),
+                const SizedBox(height: 16),
+                CheckboxListTile(
+                  title: Text(l10n.saveCredentialsForBiometric),
+                  subtitle: Text(l10n.saveCredentialsForBiometricDescription),
+                  value: storeCredentials,
+                  onChanged: (value) =>
+                      setState(() => storeCredentials = value ?? false),
+                ),
+              ],
+            ),
+            actions: [
+              AppButtons.text(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _navigateToSuccess();
+                },
+                label: l10n.cancel,
+              ),
+              AppButtons.primary(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await _enableBiometricAuth(
+                    this.context,
+                    sessionId,
+                    refreshToken,
+                    email: email,
+                    password: password,
+                    storeCredentials: storeCredentials,
+                  );
+                },
+                label: l10n.save,
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -164,8 +195,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   Future<void> _enableBiometricAuth(
     BuildContext context,
     String sessionId,
-    String? refreshToken,
-  ) async {
+    String? refreshToken, {
+    String? email,
+    String? password,
+    bool? storeCredentials,
+  }) async {
     final l10n = AppLocalizations.of(context)!;
     setState(() {
       _biometricLoading = true;
@@ -173,9 +207,20 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     });
 
     try {
+      // First enable biometric auth with tokens
       final success = await ref
           .read(biometricSessionProvider.notifier)
           .enableBiometricAuth(sessionId, refreshToken: refreshToken);
+
+      // If user chose to store credentials, store them securely
+      if (success &&
+          storeCredentials == true &&
+          email != null &&
+          password != null) {
+        await ref
+            .read(biometricServiceProvider)
+            .storeCredentials(email, password);
+      }
 
       if (success) {
         _navigateToSuccess();
@@ -204,7 +249,34 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       if (success) {
         _navigateToSuccess();
       } else {
-        setState(() => _error = l10n.biometricAuthFailed);
+        // Get specific error type from biometric session notifier
+        final biometricNotifier = ref.read(biometricSessionProvider.notifier);
+        final errorType = biometricNotifier.lastErrorType;
+
+        String errorMessage;
+        switch (errorType) {
+          case BiometricErrorType.tokensExpired:
+            errorMessage = l10n.biometricTokensExpired;
+            break;
+          case BiometricErrorType.noTokens:
+            errorMessage = l10n.biometricNoTokens;
+            break;
+          case BiometricErrorType.tokenError:
+            errorMessage = l10n.biometricTokenError;
+            break;
+          case BiometricErrorType.technicalError:
+            errorMessage = l10n.biometricTechnicalError;
+            break;
+          case BiometricErrorType.credentialsInvalid:
+            errorMessage = l10n.biometricTokenError;
+            break;
+          case BiometricErrorType.authenticationFailed:
+          default:
+            errorMessage = l10n.biometricAuthFailed;
+            break;
+        }
+
+        setState(() => _error = errorMessage);
       }
     } catch (e) {
       setState(() => _error = e.toString());

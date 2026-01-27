@@ -10,7 +10,6 @@ import 'package:writer/state/motion_settings.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/features/settings/widgets/app_settings_section.dart';
 import 'package:writer/state/biometric_session_state.dart';
-import 'package:writer/services/biometric_service.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/shared/widgets/neumorphic_slider.dart';
 import 'package:writer/shared/widgets/neumorphic_switch.dart';
