@@ -674,47 +674,41 @@ abstract class AppLocalizations {
   /// **'Biometric authentication failed'**
   String get biometricAuthFailed;
 
-  /// No description provided for @biometricTokensExpired.
-  ///
-  /// In en, this message translates to:
-  /// **'Your login session has expired. Please sign in with your email and password to enable biometric login again.'**
-  String get biometricTokensExpired;
-
-  /// No description provided for @biometricNoTokens.
-  ///
-  /// In en, this message translates to:
-  /// **'Biometric login is not set up properly. Please sign in with your email and password first.'**
-  String get biometricNoTokens;
-
-  /// No description provided for @biometricTokenError.
-  ///
-  /// In en, this message translates to:
-  /// **'There was a problem with your saved login information. Please sign in again to re-enable biometric login.'**
-  String get biometricTokenError;
-
-  /// No description provided for @biometricTechnicalError.
-  ///
-  /// In en, this message translates to:
-  /// **'A technical error occurred during biometric login. Please try again or sign in with your password.'**
-  String get biometricTechnicalError;
-
-  /// No description provided for @biometricCredentialsInvalid.
-  ///
-  /// In en, this message translates to:
-  /// **'Your saved login information is no longer valid. Please sign in with your email and password to update biometric login.'**
-  String get biometricCredentialsInvalid;
-
   /// No description provided for @saveCredentialsForBiometric.
   ///
   /// In en, this message translates to:
-  /// **'Save login credentials for biometric sign-in'**
+  /// **'Save credentials for biometric login'**
   String get saveCredentialsForBiometric;
 
   /// No description provided for @saveCredentialsForBiometricDescription.
   ///
   /// In en, this message translates to:
-  /// **'Store your email and password securely to allow automatic sign-in when tokens expire.'**
+  /// **'Securely store your credentials for faster biometric authentication'**
   String get saveCredentialsForBiometricDescription;
+
+  /// No description provided for @biometricTokensExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric tokens have expired'**
+  String get biometricTokensExpired;
+
+  /// No description provided for @biometricNoTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'No biometric tokens found'**
+  String get biometricNoTokens;
+
+  /// No description provided for @biometricTokenError.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric token error'**
+  String get biometricTokenError;
+
+  /// No description provided for @biometricTechnicalError.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric technical error'**
+  String get biometricTechnicalError;
 
   /// No description provided for @ttsVoice.
   ///

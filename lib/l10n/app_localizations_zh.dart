@@ -306,26 +306,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get biometricAuthFailed => '生物识别验证失败';
 
   @override
-  String get biometricTokensExpired => '您的登录会话已过期。请使用邮箱和密码重新登录以启用生物识别登录。';
+  String get saveCredentialsForBiometric => '保存凭据用于生物识别登录';
 
   @override
-  String get biometricNoTokens => '生物识别登录设置不正确。请先使用邮箱和密码登录。';
+  String get saveCredentialsForBiometricDescription => '安全存储您的凭据以便更快进行生物识别验证';
 
   @override
-  String get biometricTokenError => '保存的登录信息出现问题。请重新登录以重新启用生物识别登录。';
+  String get biometricTokensExpired => '生物识别令牌已过期';
 
   @override
-  String get biometricTechnicalError => '生物识别登录期间发生技术错误。请重试或使用密码登录。';
+  String get biometricNoTokens => '未找到生物识别令牌';
 
   @override
-  String get biometricCredentialsInvalid => '您保存的登录信息不再有效。请使用邮箱和密码登录以更新生物识别登录。';
+  String get biometricTokenError => '生物识别令牌错误';
 
   @override
-  String get saveCredentialsForBiometric => '保存登录凭据用于生物识别登录';
-
-  @override
-  String get saveCredentialsForBiometricDescription =>
-      '安全存储您的邮箱和密码，以便在令牌过期时自动登录。';
+  String get biometricTechnicalError => '生物识别技术错误';
 
   @override
   String get ttsVoice => 'TTS 语音';

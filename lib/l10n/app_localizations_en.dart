@@ -317,32 +317,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get biometricAuthFailed => 'Biometric authentication failed';
 
   @override
-  String get biometricTokensExpired =>
-      'Your login session has expired. Please sign in with your email and password to enable biometric login again.';
-
-  @override
-  String get biometricNoTokens =>
-      'Biometric login is not set up properly. Please sign in with your email and password first.';
-
-  @override
-  String get biometricTokenError =>
-      'There was a problem with your saved login information. Please sign in again to re-enable biometric login.';
-
-  @override
-  String get biometricTechnicalError =>
-      'A technical error occurred during biometric login. Please try again or sign in with your password.';
-
-  @override
-  String get biometricCredentialsInvalid =>
-      'Your saved login information is no longer valid. Please sign in with your email and password to update biometric login.';
-
-  @override
   String get saveCredentialsForBiometric =>
-      'Save login credentials for biometric sign-in';
+      'Save credentials for biometric login';
 
   @override
   String get saveCredentialsForBiometricDescription =>
-      'Store your email and password securely to allow automatic sign-in when tokens expire.';
+      'Securely store your credentials for faster biometric authentication';
+
+  @override
+  String get biometricTokensExpired => 'Biometric tokens have expired';
+
+  @override
+  String get biometricNoTokens => 'No biometric tokens found';
+
+  @override
+  String get biometricTokenError => 'Biometric token error';
+
+  @override
+  String get biometricTechnicalError => 'Biometric technical error';
 
   @override
   String get ttsVoice => 'TTS Voice';
