@@ -128,7 +128,31 @@ test:
 	printf "make test duration: %dm %ds\n" $$((ELAPSED/60)) $$((ELAPSED%60)) | tee -a $$LOG_FILE; \
 	echo "Test log saved to: $$LOG_FILE"; \
 	cp $$LOG_FILE ../test.log; \
-	echo "Test log copied to project root: ../test.log"
+	echo "Test log copied to project root: ../test.log"; \
+	echo "" | tee -a ../test.log; \
+	echo "========================================" | tee -a ../test.log; \
+	echo "FAILED TESTS SUMMARY" | tee -a ../test.log; \
+	echo "========================================" | tee -a ../test.log; \
+	perl -pe 's/\r/\n/g' $$LOG_FILE > /tmp/test_log_clean.txt; \
+	grep -nE '~[0-9]+ -[0-9]+: .*\.dart: .* \[E\]' /tmp/test_log_clean.txt > /tmp/failed_tests.txt; \
+	if [ -s /tmp/failed_tests.txt ]; then \
+		cat /tmp/failed_tests.txt | tee -a ../test.log; \
+		echo "" | tee -a ../test.log; \
+		while IFS= read -r FAILED_LINE; do \
+			LINE_NUM=$$(echo "$$FAILED_LINE" | cut -d: -f1); \
+			TEST_NAME=$$(echo "$$FAILED_LINE" | sed 's/.*\.dart: //; s/ \[E\].*//'); \
+			echo "--- FAILED: $$TEST_NAME ---" | tee -a ../test.log; \
+			sed -n "$$((LINE_NUM+1)),$$((LINE_NUM+20))p" /tmp/test_log_clean.txt | head -20 >> ../test.log; \
+			echo "" >> ../test.log; \
+		done < /tmp/failed_tests.txt; \
+		rm /tmp/failed_tests.txt /tmp/test_log_clean.txt; \
+	else \
+		echo "No failed tests found!" | tee -a ../test.log; \
+		rm /tmp/test_log_clean.txt; \
+	fi; \
+	echo "========================================" | tee -a ../test.log; \
+	echo "END OF FAILED TESTS SUMMARY" | tee -a ../test.log; \
+	echo "========================================" | tee -a ../test.log
 
 test-expanded:
 	@TIMESTAMP=$$(date +"%Y%m%d_%H%M%S"); \

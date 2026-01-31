@@ -40,7 +40,7 @@ const List<ThemeFactoryDef> themeFactoryThemes = [
   ThemeFactoryDef(
     id: AppThemeFamily.oceanDepths,
     label: 'Ocean Depths',
-    primary: Color(0xFF2D8B8B),
+    primary: Color(0xFF267A7A), // Darkened for contrast (was 2D8B8B)
     secondary: Color(0xFFA8DADC),
     tertiary: Color(0xFF1A2332),
     lightSurface: Color(0xFFF1FAEE),
@@ -49,7 +49,7 @@ const List<ThemeFactoryDef> themeFactoryThemes = [
   ThemeFactoryDef(
     id: AppThemeFamily.sunsetBoulevard,
     label: 'Sunset Boulevard',
-    primary: Color(0xFFE76F51),
+    primary: Color(0xFFC05030), // Darkened for contrast (was E76F51)
     secondary: Color(0xFFF4A261),
     tertiary: Color(0xFFE9C46A),
     lightSurface: Color(0xFFE9C46A),
@@ -76,7 +76,7 @@ const List<ThemeFactoryDef> themeFactoryThemes = [
   ThemeFactoryDef(
     id: AppThemeFamily.goldenHour,
     label: 'Golden Hour',
-    primary: Color(0xFFF4A900),
+    primary: Color(0xFFB07800), // Darkened for contrast (was F4A900)
     secondary: Color(0xFFC1666B),
     tertiary: Color(0xFFD4B896),
     lightSurface: Color(0xFFD4B896),
@@ -94,7 +94,7 @@ const List<ThemeFactoryDef> themeFactoryThemes = [
   ThemeFactoryDef(
     id: AppThemeFamily.desertRose,
     label: 'Desert Rose',
-    primary: Color(0xFFD4A5A5),
+    primary: Color(0xFFA86060), // Darkened for contrast (was D4A5A5)
     secondary: Color(0xFFB87D6D),
     tertiary: Color(0xFFE8D5C4),
     lightSurface: Color(0xFFE8D5C4),

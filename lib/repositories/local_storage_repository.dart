@@ -454,5 +454,20 @@ class LocalStorageRepository {
   Future<void> clearCacheByNovel(String novelId) async {
     await _storage.remove('chapters_list_$novelId');
     await _storage.remove('cache_meta_chapters_list_$novelId');
+
+    final keys = _storage.getKeys();
+    for (final key in keys) {
+      if (key.startsWith('chapter_')) {
+        final json = _storage.getString(key);
+        if (json != null) {
+          try {
+            final chapterData = jsonDecode(json) as Map<String, dynamic>;
+            if (chapterData['novelId'] == novelId) {
+              await _storage.remove(key);
+            }
+          } catch (_) {}
+        }
+      }
+    }
   }
 }

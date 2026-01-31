@@ -7,10 +7,15 @@ class AppColors {
   /// Brand seed color: Sepia.
   /// If you prefer a different shade, provide an alternative hex.
   static const Color sepiaSeed = Color(0xFF704214);
+  static const Color primary = Color(0xFF704214);
+  static const Color primaryLight = Color(0xFF9C6F3A);
 
   /// Subtle surface tints for premium feel
   static const Color surfaceTint = Color(0xFFF8F5F2);
   static const Color surfaceTintDark = Color(0xFF1A1A1A);
+  static const Color surface = Color(0xFFF8F5F2);
+  static const Color surfaceContainerLow = Color(0xFFF0ECE8);
+  static const Color surfaceContainerHighest = Color(0xFFE8E4E0);
 
   /// Soft elevation colors (colored shadows/glows)
   static const Color shadowColor = Color(0x1A000000);
@@ -36,6 +41,12 @@ class AppColors {
   /// Card colors for light and dark themes
   static const Color cardLight = Color(0xFFFFFFFF);
   static const Color cardDark = Color(0xFF2C2C2C);
+  static const Color cardBackground = Color(0xFFFFFFFF);
+  static const Color cardBackgroundDark = Color(0xFF2C2C2C);
+
+  /// Input colors for light and dark themes
+  static const Color inputBackground = Color(0xFFF5F5F5);
+  static const Color inputBackgroundDark = Color(0xFF3A3A3A);
 
   /// Elevation colors for depth
   static const Color elevation1 = Color(0x0D000000);
@@ -54,6 +65,14 @@ class AppColors {
 
   static const Color neumorphicBackgroundLight = Color(0xFFE0E5EC);
   static const Color neumorphicBackgroundDark = Color(0xFF2D2F33);
+
+  /// Text colors
+  static const Color textPrimary = Color(0xFF212121);
+  static const Color textSecondary = Color(0xFF757575);
+  static const Color textDisabled = Color(0xFFBDBDBD);
+
+  /// Overlay colors
+  static const Color progressOverlay = Color(0x80000000);
 }
 
 class GlassTokens {

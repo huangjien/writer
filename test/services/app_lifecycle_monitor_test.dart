@@ -5,19 +5,40 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:writer/services/app_lifecycle_monitor.dart';
 import 'package:writer/services/sync_service.dart';
+import 'package:writer/services/background_sync_service.dart';
 import 'package:writer/state/sync_service_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:writer/state/storage_service_provider.dart';
 
 class MockSyncService extends Mock implements SyncService {}
 
+class MockBackgroundSyncService extends Mock implements BackgroundSyncService {}
+
+class MockSharedPreferences extends Mock implements SharedPreferences {}
+
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   group('AppLifecycleMonitor', () {
     late ProviderContainer container;
     late MockSyncService mockSyncService;
+    late MockBackgroundSyncService mockBackgroundSyncService;
 
     setUp(() {
       mockSyncService = MockSyncService();
+      mockBackgroundSyncService = MockBackgroundSyncService();
+      final mockPrefs = MockSharedPreferences();
+
       container = ProviderContainer(
-        overrides: [syncServiceProvider.overrideWithValue(mockSyncService)],
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(mockPrefs),
+          syncServiceProvider.overrideWithValue(mockSyncService),
+          backgroundSyncServiceProvider.overrideWithValue(
+            mockBackgroundSyncService,
+          ),
+        ],
       );
     });
 
@@ -118,6 +139,7 @@ void main() {
     testWidgets('should handle provider not being available', (tester) async {
       final containerWithoutSync = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(MockSharedPreferences()),
           syncServiceProvider.overrideWith(
             (ref) => throw Exception('Sync service unavailable'),
           ),
@@ -198,6 +220,9 @@ void main() {
           UncontrolledProviderScope(
             container: ProviderContainer(
               overrides: [
+                sharedPreferencesProvider.overrideWithValue(
+                  MockSharedPreferences(),
+                ),
                 syncServiceProvider.overrideWithValue(mockSyncService),
               ],
             ),
@@ -220,7 +245,10 @@ void main() {
   group('AppLifecycleMonitor edge cases', () {
     testWidgets('should handle disposal before initialization', (tester) async {
       final testContainer = ProviderContainer(
-        overrides: [syncServiceProvider.overrideWithValue(MockSyncService())],
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(MockSharedPreferences()),
+          syncServiceProvider.overrideWithValue(MockSyncService()),
+        ],
       );
 
       // Create and dispose quickly
@@ -241,6 +269,7 @@ void main() {
       final localMockSyncService = MockSyncService();
       final testContainer = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(MockSharedPreferences()),
           syncServiceProvider.overrideWithValue(localMockSyncService),
         ],
       );
@@ -274,11 +303,21 @@ void main() {
   group('AppLifecycleMonitor lifecycle state changes', () {
     late ProviderContainer container;
     late MockSyncService mockSyncService;
+    late MockBackgroundSyncService mockBackgroundSyncService;
 
     setUp(() {
       mockSyncService = MockSyncService();
+      mockBackgroundSyncService = MockBackgroundSyncService();
+      when(() => mockBackgroundSyncService.startMonitoring()).thenReturn(null);
+      when(() => mockBackgroundSyncService.stopMonitoring()).thenReturn(null);
       container = ProviderContainer(
-        overrides: [syncServiceProvider.overrideWithValue(mockSyncService)],
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(MockSharedPreferences()),
+          syncServiceProvider.overrideWithValue(mockSyncService),
+          backgroundSyncServiceProvider.overrideWithValue(
+            mockBackgroundSyncService,
+          ),
+        ],
       );
     });
 
