@@ -7,7 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/mobile_bottom_nav_bar.dart';
 import '../../repositories/chapter_repository.dart';
 import '../../models/chapter.dart';
-import '../../state/novel_providers.dart';
+import '../../state/novel_providers_v2.dart';
 import '../../state/storage_service_provider.dart';
 import '../../shared/strings.dart';
 
@@ -131,7 +131,9 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
 
   Future<void> _loadChapter() async {
     try {
-      final chapters = await ref.read(chaptersProvider(widget.novelId).future);
+      final chapters = await ref.read(
+        chaptersProviderV2(widget.novelId).future,
+      );
       final chapter = chapters.firstWhere(
         (c) => c.id == widget.chapterId,
         orElse: () => throw Exception('Chapter not found'),
@@ -222,7 +224,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
           tone: EnhancedToastTone.success,
         );
         // Refresh chapters list
-        ref.invalidate(chaptersProvider(widget.novelId));
+        ref.invalidate(chaptersProviderV2(widget.novelId));
       }
     } catch (e) {
       if (mounted) {

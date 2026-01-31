@@ -7,7 +7,7 @@ import '../../../models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import '../../../theme/design_tokens.dart';
 import '../../../state/motion_settings.dart';
-import '../../../state/novel_providers.dart';
+import '../../../state/novel_providers_v2.dart';
 import '../../../state/progress_providers.dart';
 import '../../../shared/image_utils.dart';
 import '../../../repositories/chapter_repository.dart';
@@ -325,7 +325,7 @@ class LibraryItemRow extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final motion = ref.watch(motionSettingsProvider);
     final lastProgressAsync = ref.watch(lastProgressProvider(n.id));
-    final chaptersAsync = ref.watch(chaptersProvider(n.id));
+    final chaptersAsync = ref.watch(chaptersProviderV2(n.id));
 
     return Shortcuts(
       shortcuts: <ShortcutActivator, Intent>{

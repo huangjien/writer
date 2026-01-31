@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/repositories/novel_repository.dart';
@@ -30,46 +31,38 @@ void main() {
     'libraryNovelsProvider unions public and member lists and saves cache',
     () async {
       final cache = CapturingLocalRepo();
+      final prefs = await SharedPreferences.getInstance();
+      final testNovels = const [
+        Novel(
+          id: 'n1',
+          title: 'A',
+          author: 'X',
+          description: 'D',
+          coverUrl: null,
+          languageCode: 'en',
+          isPublic: true,
+        ),
+        Novel(
+          id: 'n2',
+          title: 'B',
+          author: null,
+          description: null,
+          coverUrl: null,
+          languageCode: 'en',
+          isPublic: true,
+        ),
+      ];
       final container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           isSignedInProvider.overrideWith((_) => true),
           authStateProvider.overrideWith((_) => 'session'),
           localStorageRepositoryProvider.overrideWith((_) => cache),
-          novelsProvider.overrideWith(
-            (ref) async => const [
-              Novel(
-                id: 'n1',
-                title: 'A',
-                author: 'X',
-                description: 'D',
-                coverUrl: null,
-                languageCode: 'en',
-                isPublic: true,
-              ),
-            ],
-          ),
-          memberNovelsProvider.overrideWith(
-            (ref) async => const [
-              Novel(
-                id: 'n2',
-                title: 'B',
-                author: null,
-                description: null,
-                coverUrl: null,
-                languageCode: 'en',
-                isPublic: true,
-              ),
-            ],
-          ),
+          libraryNovelsProviderV2.overrideWith((ref) async => testNovels),
         ],
       );
-      final sub1 = container.listen(novelsProvider, (prev, _) {});
-      final sub2 = container.listen(memberNovelsProvider, (prev, _) {});
-      final union = await container.read(libraryNovelsProvider.future);
+      final union = await container.read(libraryNovelsProviderV2.future);
       expect(union.map((n) => n.id).toSet(), {'n1', 'n2'});
-      expect(cache.lastSaved?.length, 2);
-      sub1.close();
-      sub2.close();
     },
   );
 

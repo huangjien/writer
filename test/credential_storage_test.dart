@@ -74,6 +74,48 @@ class MockAuthService implements AuthService {
   }
 }
 
+class MockBiometricServiceWithInvalidCreds extends Mock
+    implements BiometricService {
+  @override
+  Future<bool> isBiometricAvailable() async => true;
+
+  @override
+  Future<bool> isBiometricEnabled() async => true;
+
+  @override
+  Future<bool> authenticate({
+    String localizedReason = 'Authenticate to sign in',
+  }) async => true;
+
+  @override
+  Future<String?> getSessionToken() async => null;
+
+  @override
+  Future<String?> getRefreshToken() async => null;
+
+  @override
+  Future<BiometricTokenStatus> validateStoredTokens() async =>
+      BiometricTokenStatus.noTokensWithCredentials;
+
+  @override
+  Future<String?> getStoredEmail() async => 'invalid@example.com';
+
+  @override
+  Future<String?> getStoredPassword() async => 'wrongpassword';
+
+  @override
+  Future<bool> hasStoredCredentials() async => true;
+
+  @override
+  Future<void> storeCredentials(String email, String password) async {}
+
+  @override
+  Future<void> enableBiometricAuth(
+    String sessionToken, {
+    String? refreshToken,
+  }) async {}
+}
+
 void main() {
   group('Credential Storage Tests', () {
     late BiometricService mockBiometricService;
@@ -115,11 +157,9 @@ void main() {
     });
 
     test('should fail when credentials are invalid', () async {
-      // Set up mock to return invalid credentials scenario
-      final mockBiometricServiceWithInvalidCreds = MockBiometricService();
-
+      // Use mock that returns invalid credentials
       final notifier = BiometricSessionNotifier(
-        mockBiometricServiceWithInvalidCreds,
+        MockBiometricServiceWithInvalidCreds(),
         mockSessionNotifier,
         mockAuthService,
       );
@@ -151,8 +191,8 @@ void main() {
       final storedPassword = await mockBiometricService.getStoredPassword();
       final hasCredentials = await mockBiometricService.hasStoredCredentials();
 
-      expect(storedEmail, isNull); // Not stored in the mock
-      expect(storedPassword, isNull); // Not stored in the mock
+      expect(storedEmail, 'test@example.com'); // Returns mock value
+      expect(storedPassword, 'testpassword123'); // Returns mock value
       expect(hasCredentials, true); // Should be true from enableBiometricAuth
     });
   });

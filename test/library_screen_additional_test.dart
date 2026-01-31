@@ -11,7 +11,7 @@ import 'package:writer/features/library/widgets/library_item_row.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/user_progress.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/shared/widgets/mobile_bottom_nav_bar.dart';
@@ -49,9 +49,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => novels),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
             downloadedNovelIdsProvider.overrideWith((ref) async => {'n1'}),
           ],
@@ -106,9 +106,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => novels),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -155,9 +155,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => novels),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
             recentUserProgressProvider.overrideWith(
               (ref) async => [
@@ -216,9 +216,9 @@ void main() {
           ProviderScope(
             overrides: [
               sharedPreferencesProvider.overrideWithValue(prefs),
-              libraryNovelsProvider.overrideWith((ref) async => novels),
-              memberNovelsProvider.overrideWith((ref) async => const []),
-              chaptersProvider.overrideWith((ref, novelId) async => const []),
+              libraryNovelsProviderV2.overrideWith((ref) async => novels),
+              memberNovelsProviderV2.overrideWith((ref) async => const []),
+              chaptersProviderV2.overrideWith((ref, novelId) async => const []),
               lastProgressProvider.overrideWith((ref, novelId) async => null),
               downloadedNovelIdsProvider.overrideWith((ref) async => {'n1'}),
             ],
@@ -256,9 +256,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => const []),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => const []),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
             isSignedInProvider.overrideWithValue(true),
           ],
@@ -287,9 +287,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => const []),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => const []),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -317,9 +317,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => const []),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => const []),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
             isAdminProvider.overrideWith((ref) => true),
           ],
@@ -348,9 +348,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => const []),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => const []),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -391,9 +391,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => novels),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -432,9 +432,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => novels),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -470,9 +470,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => const []),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => const []),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -500,9 +500,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => const []),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => const []),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -546,9 +546,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => novels),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -580,9 +580,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => novels),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -614,9 +614,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => novels),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -649,9 +649,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => const []),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => const []),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -693,9 +693,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => novels),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -741,9 +741,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => novels),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -798,9 +798,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => novels),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -856,9 +856,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => novels),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -934,9 +934,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => novels),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -1000,9 +1000,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => novels),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
           ],
           child: const MaterialApp(
@@ -1078,9 +1078,9 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
-            libraryNovelsProvider.overrideWith((ref) async => novels),
-            memberNovelsProvider.overrideWith((ref) async => const []),
-            chaptersProvider.overrideWith((ref, novelId) async => const []),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
             lastProgressProvider.overrideWith((ref, novelId) async => null),
             removedNovelIdsProvider.overrideWith((ref) => {'n1'}),
           ],

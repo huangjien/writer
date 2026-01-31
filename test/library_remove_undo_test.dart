@@ -15,7 +15,7 @@ import 'package:writer/services/network_monitor.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'package:writer/state/motion_settings.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/shared/widgets/neumorphic_button.dart';
@@ -79,9 +79,9 @@ void main() {
           isSignedInProvider.overrideWith((ref) => false),
           isAdminProvider.overrideWith((ref) => false),
           adminModeProvider.overrideWith((ref) => AdminModeNotifier(prefs)),
-          libraryNovelsProvider.overrideWith((ref) async => novels),
-          memberNovelsProvider.overrideWith((ref) async => const []),
-          chaptersProvider.overrideWith((ref, novelId) async => const []),
+          libraryNovelsProviderV2.overrideWith((ref) async => novels),
+          memberNovelsProviderV2.overrideWith((ref) async => const []),
+          chaptersProviderV2.overrideWith((ref, novelId) async => const []),
           lastProgressProvider.overrideWith((ref, novelId) async => null),
           removedNovelIdsProvider.overrideWith((ref) => <String>{}),
           motionSettingsProvider.overrideWith(

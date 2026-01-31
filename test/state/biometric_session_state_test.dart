@@ -179,10 +179,12 @@ void main() {
         ),
       ).thenThrow(Exception('boom'));
 
-      expect(
-        () => notifier.enableBiometricAuth('token'),
-        throwsA(isA<Exception>()),
-      );
+      try {
+        await notifier.enableBiometricAuth('token');
+        fail('Expected exception to be thrown');
+      } on Exception {
+        // Exception should be rethrown
+      }
       expect(notifier.state, BiometricAuthState.failed);
       verifyNever(() => mockBiometricService.enableBiometricAuth(any()));
     });
@@ -196,10 +198,12 @@ void main() {
           ),
         ).thenThrow(Exception('boom'));
 
-        expect(
-          () => notifier.signInWithBiometrics(),
-          throwsA(isA<Exception>()),
-        );
+        try {
+          await notifier.signInWithBiometrics();
+          fail('Expected exception to be thrown');
+        } on Exception {
+          // Exception should be rethrown
+        }
         expect(notifier.state, BiometricAuthState.failed);
         verifyNever(() => mockBiometricService.getSessionToken());
         verifyNever(() => mockSessionNotifier.setSessionId(any()));

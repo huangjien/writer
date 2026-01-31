@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/session_state.dart';
@@ -83,9 +83,9 @@ void main() {
           aiChatServiceProvider.overrideWith(
             (ref) => AiChatService(ref.read(remoteRepositoryProvider)),
           ),
-          libraryNovelsProvider.overrideWith((ref) async => novels),
-          memberNovelsProvider.overrideWith((ref) async => const []),
-          chaptersProvider.overrideWith((ref, novelId) async => const []),
+          libraryNovelsProviderV2.overrideWith((ref) async => novels),
+          memberNovelsProviderV2.overrideWith((ref) async => const []),
+          chaptersProviderV2.overrideWith((ref, novelId) async => const []),
           lastProgressProvider.overrideWith((ref, novelId) async => null),
         ],
         child: const MaterialApp(

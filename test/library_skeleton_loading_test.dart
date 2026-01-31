@@ -6,7 +6,7 @@ import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/shared/widgets/loading/skeleton_list_items.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/storage_service_provider.dart';
 
@@ -33,10 +33,10 @@ void main() {
       ProviderScope(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
-          memberNovelsProvider.overrideWith((ref) async => const []),
-          chaptersProvider.overrideWith((ref, novelId) async => const []),
+          memberNovelsProviderV2.overrideWith((ref) async => const []),
+          chaptersProviderV2.overrideWith((ref, novelId) async => const []),
           lastProgressProvider.overrideWith((ref, novelId) async => null),
-          libraryNovelsProvider.overrideWith((ref) async {
+          libraryNovelsProviderV2.overrideWith((ref) async {
             // artificial delay to show loading UI
             await Future<void>.delayed(const Duration(seconds: 1));
             return novels;

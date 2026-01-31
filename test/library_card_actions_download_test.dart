@@ -10,7 +10,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/models/novel.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/app_settings.dart';
@@ -107,7 +107,7 @@ void main() {
           aiChatServiceProvider.overrideWith(
             (ref) => AiChatService(ref.read(remoteRepositoryProvider)),
           ),
-          libraryNovelsProvider.overrideWith(
+          libraryNovelsProviderV2.overrideWith(
             (ref) async => const [
               Novel(
                 id: 'novel-001',
@@ -120,7 +120,7 @@ void main() {
               ),
             ],
           ),
-          chaptersProvider.overrideWith(
+          chaptersProviderV2.overrideWith(
             (ref, novelId) async => const [
               Chapter(id: 'c1', novelId: 'novel-001', idx: 1, title: 'One'),
               Chapter(id: 'c2', novelId: 'novel-001', idx: 2, title: 'Two'),

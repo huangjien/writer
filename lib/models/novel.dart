@@ -29,6 +29,18 @@ class Novel {
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'author': author,
+      'description': description,
+      'cover_url': coverUrl,
+      'language_code': languageCode,
+      'is_public': isPublic,
+    };
+  }
+
   Novel copyWith({
     String? id,
     String? title,

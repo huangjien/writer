@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/repositories/novel_repository.dart';
@@ -53,13 +54,14 @@ void main() {
           (_) => LocalStorageRepository(storageService),
         ),
         novelRepositoryProvider.overrideWith((_) => fake),
+        chaptersProviderV2('n1').overrideWith((ref) => fake.chapters),
         isSignedInProvider.overrideWithValue(true),
       ],
     );
     addTearDown(container.dispose);
     final novels = await container.read(novelsProvider.future);
     expect(novels.length, 1);
-    final ch = await container.read(chaptersProvider('n1').future);
+    final ch = await container.read(chaptersProviderV2('n1').future);
     expect(ch.length, 1);
   });
 }

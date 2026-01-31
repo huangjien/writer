@@ -13,6 +13,7 @@ import 'package:writer/features/library/widgets/enhanced_search_bar.dart';
 import 'package:writer/features/library/library_providers.dart';
 import 'package:writer/shared/api_exception.dart';
 import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/progress_providers.dart';
@@ -101,7 +102,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
       // Fallback for tests or environments that don't override isAdminProvider
       isAdmin = false;
     }
-    final novelsAsync = ref.watch(libraryNovelsProvider);
+    final novelsAsync = ref.watch(libraryNovelsProviderV2);
 
     // Watch providers for filtering
     final downloadedIdsAsync = ref.watch(downloadedNovelIdsProvider);
@@ -110,7 +111,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     final downloadedIds = downloadedIdsAsync.asData?.value ?? {};
     final recentProgress = recentProgressAsync.asData?.value ?? [];
 
-    ref.listen(memberNovelsProvider, (prev, next) {
+    ref.listen(memberNovelsProviderV2, (prev, next) {
       if (next.hasError) {
         final msg = l10n.errorLoadingNovels;
         if (context.mounted) {

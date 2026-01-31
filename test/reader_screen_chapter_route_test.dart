@@ -7,7 +7,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/mock_providers.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/providers.dart';
@@ -39,7 +39,7 @@ void main() {
             (ref) =>
                 Future.delayed(const Duration(seconds: 1), () => mockChapters),
           ),
-          chaptersProvider(novelId).overrideWith(
+          chaptersProviderV2(novelId).overrideWith(
             (ref) =>
                 Future.delayed(const Duration(seconds: 1), () => mockChapters),
           ),
@@ -72,7 +72,7 @@ void main() {
           mockChaptersProvider(
             novelId,
           ).overrideWith((ref) => Future.error('Load failed')),
-          chaptersProvider(
+          chaptersProviderV2(
             novelId,
           ).overrideWith((ref) => Future.error('Load failed')),
         ],

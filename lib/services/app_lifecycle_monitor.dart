@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../state/sync_service_provider.dart';
 import '../services/sync_service.dart';
+import '../services/background_sync_service.dart';
 
 /// Monitors app lifecycle events to start/stop sync monitoring
 /// Starts sync when app comes to foreground, stops when in background
@@ -19,6 +20,7 @@ class AppLifecycleMonitor extends ConsumerStatefulWidget {
 class _AppLifecycleMonitorState extends ConsumerState<AppLifecycleMonitor>
     with WidgetsBindingObserver {
   SyncService? _syncService;
+  BackgroundSyncService? _backgroundSync;
 
   @override
   void initState() {
@@ -63,6 +65,16 @@ class _AppLifecycleMonitorState extends ConsumerState<AppLifecycleMonitor>
         debugPrint('Failed to start sync monitoring: $e');
       }
     }
+
+    try {
+      _backgroundSync = ref.read(backgroundSyncServiceProvider);
+      _backgroundSync?.startMonitoring();
+    } catch (e) {
+      // Provider might not be initialized yet, ignore
+      if (kDebugMode) {
+        debugPrint('Failed to start background sync: $e');
+      }
+    }
   }
 
   void _stopSyncMonitoring() {
@@ -72,6 +84,15 @@ class _AppLifecycleMonitorState extends ConsumerState<AppLifecycleMonitor>
       // Provider might not be initialized, ignore
       if (kDebugMode) {
         debugPrint('Failed to stop sync monitoring: $e');
+      }
+    }
+
+    try {
+      _backgroundSync?.stopMonitoring();
+    } catch (e) {
+      // Provider might not be initialized, ignore
+      if (kDebugMode) {
+        debugPrint('Failed to stop background sync: $e');
       }
     }
   }

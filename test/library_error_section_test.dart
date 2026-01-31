@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/features/library/widgets/library_error_section.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 
 void main() {
   testWidgets('LibraryErrorSection shows error UI and reload button', (
@@ -59,15 +59,15 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          novelsProvider.overrideWith((ref) async {
+          novelsProviderV2.overrideWith((ref) async {
             novelsBuilds++;
             return const [];
           }),
-          memberNovelsProvider.overrideWith((ref) async {
+          memberNovelsProviderV2.overrideWith((ref) async {
             memberBuilds++;
             return const [];
           }),
-          libraryNovelsProvider.overrideWith((ref) async {
+          libraryNovelsProviderV2.overrideWith((ref) async {
             libraryBuilds++;
             return const [];
           }),
@@ -81,9 +81,9 @@ void main() {
               children: [
                 Consumer(
                   builder: (context, ref, _) {
-                    ref.watch(novelsProvider);
-                    ref.watch(memberNovelsProvider);
-                    ref.watch(libraryNovelsProvider);
+                    ref.watch(novelsProviderV2);
+                    ref.watch(memberNovelsProviderV2);
+                    ref.watch(libraryNovelsProviderV2);
                     return const SizedBox.shrink();
                   },
                 ),
@@ -95,7 +95,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-
+    // Initial widget load triggers provider builds
     expect(novelsBuilds, 1);
     expect(memberBuilds, 1);
     expect(libraryBuilds, 1);
@@ -103,9 +103,9 @@ void main() {
     await tester.tap(find.text('Reload'));
     await tester.pumpAndSettle();
 
-    expect(novelsBuilds, greaterThanOrEqualTo(2));
-    expect(memberBuilds, greaterThanOrEqualTo(2));
-    expect(libraryBuilds, greaterThanOrEqualTo(2));
+    expect(novelsBuilds, 2);
+    expect(memberBuilds, 2);
+    expect(libraryBuilds, 2);
   });
 
   testWidgets('Reload uses onRetry callback when provided', (tester) async {
@@ -117,15 +117,15 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          novelsProvider.overrideWith((ref) async {
+          novelsProviderV2.overrideWith((ref) async {
             novelsBuilds++;
             return const [];
           }),
-          memberNovelsProvider.overrideWith((ref) async {
+          memberNovelsProviderV2.overrideWith((ref) async {
             memberBuilds++;
             return const [];
           }),
-          libraryNovelsProvider.overrideWith((ref) async {
+          libraryNovelsProviderV2.overrideWith((ref) async {
             libraryBuilds++;
             return const [];
           }),
@@ -139,9 +139,9 @@ void main() {
               children: [
                 Consumer(
                   builder: (context, ref, _) {
-                    ref.watch(novelsProvider);
-                    ref.watch(memberNovelsProvider);
-                    ref.watch(libraryNovelsProvider);
+                    ref.watch(novelsProviderV2);
+                    ref.watch(memberNovelsProviderV2);
+                    ref.watch(libraryNovelsProviderV2);
                     return const SizedBox.shrink();
                   },
                 ),
@@ -153,7 +153,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-
+    // Initial widget load triggers provider builds
     expect(novelsBuilds, 1);
     expect(memberBuilds, 1);
     expect(libraryBuilds, 1);

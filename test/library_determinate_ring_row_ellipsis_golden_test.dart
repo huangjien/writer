@@ -12,7 +12,7 @@ import 'package:writer/models/user_progress.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/l10n/app_localizations.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/providers.dart';
@@ -92,8 +92,8 @@ void main() {
         overrides: [
           appSettingsProvider.overrideWith((_) => appNotifier),
           themeControllerProvider.overrideWith((_) => themeController),
-          libraryNovelsProvider.overrideWith((ref) async => novels),
-          chaptersProvider.overrideWith((ref, novelId) async => chapters),
+          libraryNovelsProviderV2.overrideWith((ref) async => novels),
+          chaptersProviderV2.overrideWith((ref, novelId) async => chapters),
           lastProgressProvider.overrideWith((ref, novelId) async {
             return UserProgress(
               userId: 'u-1',
@@ -220,8 +220,8 @@ void main() {
         overrides: [
           appSettingsProvider.overrideWith((_) => appNotifier),
           themeControllerProvider.overrideWith((_) => themeController),
-          libraryNovelsProvider.overrideWith((ref) async => novels),
-          chaptersProvider.overrideWith((ref, novelId) async => chapters),
+          libraryNovelsProviderV2.overrideWith((ref) async => novels),
+          chaptersProviderV2.overrideWith((ref, novelId) async => chapters),
           lastProgressProvider.overrideWith((ref, novelId) async {
             return UserProgress(
               userId: 'u-1',

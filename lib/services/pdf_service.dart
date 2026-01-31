@@ -4,7 +4,28 @@ import 'package:printing/printing.dart';
 import '../models/chapter.dart';
 import '../models/novel.dart';
 
+abstract class PdfPrinter {
+  Future<void> sharePdf({required Uint8List bytes, required String filename});
+}
+
+class DefaultPdfPrinter implements PdfPrinter {
+  @override
+  Future<void> sharePdf({
+    required Uint8List bytes,
+    required String filename,
+  }) async {
+    await Printing.sharePdf(bytes: bytes, filename: filename);
+  }
+}
+
 class PdfService {
+  final AssetBundle assetBundle;
+  final PdfPrinter printer;
+
+  PdfService({AssetBundle? assetBundle, PdfPrinter? printer})
+    : assetBundle = assetBundle ?? rootBundle,
+      printer = printer ?? DefaultPdfPrinter();
+
   Future<void> generateAndSharePdf({
     required Novel novel,
     required List<Chapter> chapters,
@@ -16,10 +37,10 @@ class PdfService {
     required String Function(int, int) l10nPageOfTotal,
   }) async {
     final notoRegular = pw.Font.ttf(
-      await rootBundle.load('assets/fonts/NotoSansSC-Regular.ttf'),
+      await assetBundle.load('assets/fonts/NotoSansSC-Regular.ttf'),
     );
     final notoBold = pw.Font.ttf(
-      await rootBundle.load('assets/fonts/NotoSansSC-Bold.ttf'),
+      await assetBundle.load('assets/fonts/NotoSansSC-Bold.ttf'),
     );
     final pdfTheme = pw.ThemeData.withFont(base: notoRegular, bold: notoBold);
 
@@ -131,7 +152,7 @@ class PdfService {
     );
 
     final bytes = await doc.save();
-    await Printing.sharePdf(
+    await printer.sharePdf(
       bytes: bytes,
       filename: '${novel.title.replaceAll(' ', '_')}-${novel.id}.pdf',
     );

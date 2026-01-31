@@ -8,6 +8,7 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/models/user_progress.dart';
@@ -116,7 +117,7 @@ void main() {
           localStorageRepositoryProvider.overrideWithValue(mockLocalRepo),
           // Override fetching providers to return static data immediately
           novelsProvider.overrideWith((ref) async => public),
-          memberNovelsProvider.overrideWith((ref) async => member),
+          memberNovelsProviderV2.overrideWith((ref) async => member),
         ],
       );
 
@@ -163,7 +164,7 @@ void main() {
           localStorageRepositoryProvider.overrideWithValue(mockLocalRepo),
           novelsProvider.overrideWith((ref) async => public),
           // Mock memberNovelsProvider to complete with error
-          memberNovelsProvider.overrideWith(
+          memberNovelsProviderV2.overrideWith(
             (ref) => Future<List<Novel>>.error(Exception('Network error')),
           ),
         ],

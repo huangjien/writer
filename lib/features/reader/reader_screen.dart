@@ -5,6 +5,7 @@ import '../../theme/design_tokens.dart';
 import '../../widgets/side_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../state/novel_providers.dart';
+import '../../state/novel_providers_v2.dart';
 import '../../state/edit_permissions.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/app_localizations_en.dart';
@@ -34,7 +35,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
-    final chaptersAsync = ref.watch(chaptersProvider(widget.novelId));
+    final chaptersAsync = ref.watch(chaptersProviderV2(widget.novelId));
     final editPermsAsync = ref.watch(editPermissionsProvider(widget.novelId));
     final canEdit = editPermsAsync.asData?.value ?? false;
 
@@ -79,7 +80,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                     label: l10n.reload,
                     icon: Icons.refresh,
                     onPressed: () =>
-                        ref.invalidate(chaptersProvider(widget.novelId)),
+                        ref.invalidate(chaptersProviderV2(widget.novelId)),
                   ),
                 ],
               ),
@@ -127,8 +128,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
               tooltip: l10n.refreshTooltip,
               onPressed: () async {
                 setState(() => _refreshing = true);
-                ref.invalidate(chaptersProvider(widget.novelId));
-                await ref.read(chaptersProvider(widget.novelId).future);
+                ref.invalidate(chaptersProviderV2(widget.novelId));
+                await ref.read(chaptersProviderV2(widget.novelId).future);
                 if (mounted) setState(() => _refreshing = false);
               },
             ),
@@ -187,7 +188,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                     );
                     try {
                       final chapters = await ref.read(
-                        chaptersProvider(widget.novelId).future,
+                        chaptersProviderV2(widget.novelId).future,
                       );
                       progress.value = 1;
                       final repo = ref.read(chapterRepositoryProvider);
@@ -316,18 +317,20 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
               return const SizedBox.shrink();
             }
             return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${l10n.error}: $e'),
-                  const SizedBox(height: 16),
-                  AppButtons.secondary(
-                    label: l10n.reload,
-                    icon: Icons.refresh,
-                    onPressed: () =>
-                        ref.invalidate(chaptersProvider(widget.novelId)),
-                  ),
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('${l10n.error}: $e'),
+                    const SizedBox(height: 16),
+                    AppButtons.secondary(
+                      label: l10n.reload,
+                      icon: Icons.refresh,
+                      onPressed: () =>
+                          ref.invalidate(chaptersProviderV2(widget.novelId)),
+                    ),
+                  ],
+                ),
               ),
             );
           },

@@ -19,7 +19,7 @@ import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/tts_settings.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/repositories/novel_repository.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/state/providers.dart';
@@ -216,7 +216,7 @@ void main() {
           authStateProvider.overrideWith((ref) => 'test-session'),
           currentUserProvider.overrideWith((ref) async => null),
           // Ensure we have chapters
-          chaptersProvider(novelId).overrideWith((ref) async => chapters),
+          chaptersProviderV2(novelId).overrideWith((ref) async => chapters),
           if (editControllerBuilder != null)
             chapterEditControllerProvider.overrideWith(editControllerBuilder),
           ...overrides,

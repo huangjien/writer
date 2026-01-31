@@ -9,6 +9,7 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 
 class FakeChapterRepository implements ChapterRepository {
   @override
@@ -61,7 +62,7 @@ void main() {
       ProviderScope(
         overrides: [
           chapterRepositoryProvider.overrideWithValue(FakeChapterRepository()),
-          chaptersProvider.overrideWith(
+          chaptersProviderV2.overrideWith(
             (ref, novelId) async => Future.delayed(
               const Duration(milliseconds: 50),
               () => [
@@ -117,7 +118,7 @@ void main() {
       ProviderScope(
         overrides: [
           chapterRepositoryProvider.overrideWithValue(FakeChapterRepository()),
-          chaptersProvider.overrideWith(
+          chaptersProviderV2.overrideWith(
             (ref, novelId) async => Future.delayed(
               const Duration(milliseconds: 50),
               () => [

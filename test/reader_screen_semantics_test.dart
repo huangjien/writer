@@ -7,6 +7,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 
 void main() {
   setUp(() {
@@ -19,7 +20,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          chaptersProvider.overrideWith(
+          chaptersProviderV2.overrideWith(
             (ref, novelId) async => const [
               Chapter(
                 id: 'chap-001-01',

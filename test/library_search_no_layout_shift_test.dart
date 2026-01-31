@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -53,8 +53,8 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           isSignedInProvider.overrideWithValue(false),
-          memberNovelsProvider.overrideWith((ref) async => const []),
-          libraryNovelsProvider.overrideWith((ref) async => novels),
+          memberNovelsProviderV2.overrideWith((ref) async => const []),
+          libraryNovelsProviderV2.overrideWith((ref) async => novels),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

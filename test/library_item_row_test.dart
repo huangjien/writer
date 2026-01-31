@@ -13,7 +13,7 @@ import 'package:writer/features/library/widgets/library_item_row.dart';
 import 'package:writer/features/library/library_providers.dart'
     as lib_providers;
 import 'package:writer/shared/widgets/neumorphic_button.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/repositories/chapter_repository.dart';
@@ -109,7 +109,7 @@ void main() {
       ProviderScope(
         overrides: [
           lastProgressProvider.overrideWith((ref, id) async => null),
-          chaptersProvider.overrideWith((ref, id) async => []),
+          chaptersProviderV2.overrideWith((ref, id) async => []),
         ],
         child: const MaterialApp(
           locale: Locale('en'),
@@ -170,7 +170,7 @@ void main() {
       ProviderScope(
         overrides: [
           lastProgressProvider.overrideWith((ref, id) async => progress),
-          chaptersProvider.overrideWith((ref, id) async => chapters),
+          chaptersProviderV2.overrideWith((ref, id) async => chapters),
         ],
         child: const MaterialApp(
           locale: Locale('en'),
@@ -620,7 +620,7 @@ void main() {
           chapterRepositoryProvider.overrideWithValue(repo),
           lib_providers.downloadFeatureFlagProvider.overrideWithValue(true),
           lastProgressProvider.overrideWith((ref, id) async => progress),
-          chaptersProvider.overrideWith((ref, id) async => []),
+          chaptersProviderV2.overrideWith((ref, id) async => []),
         ],
         child: MaterialApp.router(
           routerConfig: router,
@@ -748,7 +748,7 @@ void main() {
             (_) => MotionSettingsNotifier(prefs),
           ),
           lastProgressProvider.overrideWith((ref, id) async => null),
-          chaptersProvider.overrideWith((ref, id) async => []),
+          chaptersProviderV2.overrideWith((ref, id) async => []),
         ],
         child: const MaterialApp(
           locale: Locale('en'),
@@ -837,7 +837,7 @@ void main() {
       ProviderScope(
         overrides: [
           lastProgressProvider.overrideWith((ref, id) async => progress),
-          chaptersProvider.overrideWith((ref, id) async => []),
+          chaptersProviderV2.overrideWith((ref, id) async => []),
         ],
         child: const MaterialApp(
           locale: Locale('en'),

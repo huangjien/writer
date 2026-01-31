@@ -8,7 +8,7 @@ import 'package:writer/models/user_progress.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/l10n/app_localizations.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/admin_settings.dart';
 import 'package:writer/state/providers.dart';
@@ -53,7 +53,7 @@ void main() {
         isAdminProvider.overrideWith((ref) => false),
         adminModeProvider.overrideWith((ref) => AdminModeNotifier(prefs)),
 
-        libraryNovelsProvider.overrideWith(
+        libraryNovelsProviderV2.overrideWith(
           (ref) async => [
             const Novel(
               id: 'novel-001',
@@ -66,7 +66,7 @@ void main() {
             ),
           ],
         ),
-        chaptersProvider.overrideWith(
+        chaptersProviderV2.overrideWith(
           (ref, novelId) async => [
             const Chapter(
               id: 'chap-001-01',
@@ -175,7 +175,7 @@ void main() {
         isAdminProvider.overrideWith((ref) => false),
         adminModeProvider.overrideWith((ref) => AdminModeNotifier(prefs)),
 
-        libraryNovelsProvider.overrideWith(
+        libraryNovelsProviderV2.overrideWith(
           (ref) async => [
             const Novel(
               id: 'novel-001',
@@ -188,7 +188,7 @@ void main() {
             ),
           ],
         ),
-        chaptersProvider.overrideWith(
+        chaptersProviderV2.overrideWith(
           (ref, novelId) async => [
             const Chapter(
               id: 'chap-001-01',

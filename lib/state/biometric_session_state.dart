@@ -348,7 +348,7 @@ class BiometricSessionNotifier extends StateNotifier<BiometricAuthState> {
         debugPrint(
           'BiometricSessionNotifier: Credential-based sign-in failed - ${result.errorMessage}',
         );
-        _setError(BiometricErrorType.technicalError);
+        _setError(BiometricErrorType.credentialsInvalid);
         return false;
       }
     } catch (e) {

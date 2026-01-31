@@ -7,7 +7,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/mock_providers.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/tts_settings.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/state/storage_service_provider.dart';
@@ -81,13 +81,13 @@ void main() {
               novelId,
             ).overrideWith((ref) => Future.any([])), // Never completes
           if (isLoading)
-            chaptersProvider(novelId).overrideWith((ref) => Future.any([])),
+            chaptersProviderV2(novelId).overrideWith((ref) => Future.any([])),
           if (error != null)
             mockChaptersProvider(
               novelId,
             ).overrideWith((ref) => Future.error(error)),
           if (error != null)
-            chaptersProvider(
+            chaptersProviderV2(
               novelId,
             ).overrideWith((ref) => Future.error(error)),
           if (!isLoading && error == null)
@@ -95,7 +95,7 @@ void main() {
               novelId,
             ).overrideWith((ref) => Future.value(chapters)),
           if (!isLoading && error == null)
-            chaptersProvider(
+            chaptersProviderV2(
               novelId,
             ).overrideWith((ref) => Future.value(chapters)),
         ],
@@ -123,7 +123,7 @@ void main() {
             await Future.delayed(const Duration(milliseconds: 100));
             return mockChapters;
           }),
-          chaptersProvider(novelId).overrideWith((ref) async {
+          chaptersProviderV2(novelId).overrideWith((ref) async {
             await Future.delayed(const Duration(milliseconds: 100));
             return mockChapters;
           }),
@@ -212,7 +212,7 @@ void main() {
             mockChaptersProvider(
               novelId,
             ).overrideWith((ref) => Future.value(mockChapters)),
-            chaptersProvider(
+            chaptersProviderV2(
               novelId,
             ).overrideWith((ref) => Future.value(mockChapters)),
           ],

@@ -157,8 +157,8 @@ void main() {
     // Wait for async operations
     await Future.delayed(const Duration(milliseconds: 50));
 
-    // Session should be cleared
-    verify(() => mockStorageService.remove(any())).called(1);
+    // Session should be cleared (removes both session and refresh token keys)
+    verify(() => mockStorageService.remove(any())).called(2);
 
     // User state should eventually be null (reset by session listener)
     final state = container.read(userProvider);

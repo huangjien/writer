@@ -5,7 +5,7 @@ import 'package:writer/shared/api_exception.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../models/novel.dart';
-import '../../state/novel_providers.dart';
+import '../../state/novel_providers_v2.dart';
 import '../../state/providers.dart';
 import '../../shared/image_utils.dart';
 import '../../shared/widgets/app_buttons.dart';
@@ -55,7 +55,7 @@ class _MemberNovelsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final novelsAsync = ref.watch(memberNovelsProvider);
+    final novelsAsync = ref.watch(memberNovelsProviderV2);
 
     return novelsAsync.when(
       data: (novels) {
@@ -93,7 +93,7 @@ class _MemberNovelsList extends ConsumerWidget {
               AppButtons.secondary(
                 label: l10n?.reload ?? 'Reload',
                 icon: Icons.refresh,
-                onPressed: () => ref.invalidate(memberNovelsProvider),
+                onPressed: () => ref.invalidate(memberNovelsProviderV2),
               ),
             ],
           ),

@@ -7,7 +7,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/user_progress.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/storage_service_provider.dart';
 
@@ -35,9 +35,9 @@ void main() {
       ProviderScope(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
-          libraryNovelsProvider.overrideWith((ref) async => novels),
-          memberNovelsProvider.overrideWith((ref) async => const []),
-          chaptersProvider.overrideWith((ref, novelId) async {
+          libraryNovelsProviderV2.overrideWith((ref) async => novels),
+          memberNovelsProviderV2.overrideWith((ref) async => const []),
+          chaptersProviderV2.overrideWith((ref, novelId) async {
             return [
               const Chapter(
                 id: 'c-1',
@@ -101,9 +101,9 @@ void main() {
       ProviderScope(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
-          libraryNovelsProvider.overrideWith((ref) async => novels),
-          memberNovelsProvider.overrideWith((ref) async => const []),
-          chaptersProvider.overrideWith((ref, novelId) async {
+          libraryNovelsProviderV2.overrideWith((ref) async => novels),
+          memberNovelsProviderV2.overrideWith((ref) async => const []),
+          chaptersProviderV2.overrideWith((ref, novelId) async {
             return [
               Chapter(
                 id: 'c-1',

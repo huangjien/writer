@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../state/novel_providers.dart';
+import '../../../state/novel_providers_v2.dart';
 import '../../../shared/widgets/app_buttons.dart';
 
 class LibraryErrorSection extends ConsumerWidget {
@@ -19,28 +19,30 @@ class LibraryErrorSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Tooltip(
-            message: error.toString(),
-            child: const Icon(Icons.warning_amber_rounded, size: 48),
-          ),
-          const SizedBox(height: 8),
-          Text(message ?? l10n.error),
-          const SizedBox(height: 8),
-          AppButtons.secondary(
-            label: l10n.reload,
-            icon: Icons.refresh,
-            onPressed:
-                onRetry ??
-                () {
-                  ref.invalidate(libraryNovelsProvider);
-                  ref.invalidate(memberNovelsProvider);
-                  ref.invalidate(novelsProvider);
-                },
-          ),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Tooltip(
+              message: error.toString(),
+              child: const Icon(Icons.warning_amber_rounded, size: 48),
+            ),
+            const SizedBox(height: 8),
+            Text(message ?? l10n.error),
+            const SizedBox(height: 8),
+            AppButtons.secondary(
+              label: l10n.reload,
+              icon: Icons.refresh,
+              onPressed:
+                  onRetry ??
+                  () {
+                    ref.invalidate(libraryNovelsProviderV2);
+                    ref.invalidate(memberNovelsProviderV2);
+                    ref.invalidate(novelsProviderV2);
+                  },
+            ),
+          ],
+        ),
       ),
     );
   }

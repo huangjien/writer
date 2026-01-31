@@ -18,7 +18,7 @@ import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/repositories/novel_repository.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 
 import 'package:mocktail/mocktail.dart';
 
@@ -172,7 +172,7 @@ void main() {
           isSignedInProvider.overrideWith((ref) => true),
           authStateProvider.overrideWith((ref) => 'test-session'),
           currentUserProvider.overrideWith((ref) async => null),
-          chaptersProvider('n1').overrideWith((ref) async => allChapters),
+          chaptersProviderV2('n1').overrideWith((ref) async => allChapters),
         ],
         child: MaterialApp.router(
           routerConfig: router,

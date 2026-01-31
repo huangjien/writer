@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/my_novels_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
@@ -64,7 +64,7 @@ void main() {
               LocalStorageRepository(storageService),
             ),
             sessionProvider.overrideWith((ref) => sessionNotifier),
-            memberNovelsProvider.overrideWith((ref) async => const []),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
           ],
           child: const MaterialApp(
             locale: Locale('en'),
@@ -114,7 +114,7 @@ void main() {
               LocalStorageRepository(storageService),
             ),
             sessionProvider.overrideWith((ref) => sessionNotifier),
-            memberNovelsProvider.overrideWith((ref) async => novels),
+            memberNovelsProviderV2.overrideWith((ref) async => novels),
           ],
           child: const MaterialApp(
             locale: Locale('en'),
@@ -148,7 +148,7 @@ void main() {
             ),
             sessionProvider.overrideWith((ref) => sessionNotifier),
             // Return a future that doesn't complete immediately to show loading
-            memberNovelsProvider.overrideWith((ref) {
+            memberNovelsProviderV2.overrideWith((ref) {
               return Future.delayed(const Duration(seconds: 1), () => []);
             }),
           ],
@@ -185,7 +185,7 @@ void main() {
               LocalStorageRepository(storageService),
             ),
             sessionProvider.overrideWith((ref) => sessionNotifier),
-            memberNovelsProvider.overrideWith((ref) async {
+            memberNovelsProviderV2.overrideWith((ref) async {
               await Future.delayed(const Duration(milliseconds: 100));
               throw 'Error';
             }),
@@ -341,7 +341,7 @@ void main() {
               LocalStorageRepository(storageService),
             ),
             sessionProvider.overrideWith((ref) => sessionNotifier),
-            memberNovelsProvider.overrideWith((ref) async => [novel]),
+            memberNovelsProviderV2.overrideWith((ref) async => [novel]),
           ],
           child: MaterialApp.router(
             locale: const Locale('en'),

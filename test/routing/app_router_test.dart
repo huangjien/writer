@@ -14,7 +14,7 @@ import 'package:writer/state/navigator_key_provider.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/user_state.dart';
 import 'package:writer/state/progress_providers.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/repositories/user_repository.dart';
@@ -80,7 +80,7 @@ void main() {
             (ref) => SessionNotifier(LocalStorageService(prefs)),
           ),
           // Mock data providers to prevent loading actual data
-          libraryNovelsProvider.overrideWith((ref) async => []),
+          libraryNovelsProviderV2.overrideWith((ref) async => []),
           downloadedNovelIdsProvider.overrideWith((ref) async => {}),
           recentUserProgressProvider.overrideWith((ref) async => []),
           latestUserProgressProvider.overrideWith((ref) async => null),
@@ -215,7 +215,7 @@ void main() {
       tester,
       router: router,
       overrides: [
-        chaptersProvider('123').overrideWith((ref) => []),
+        chaptersProviderV2('123').overrideWith((ref) => []),
         editPermissionsProvider('123').overrideWith((ref) async => false),
       ],
     );
@@ -259,7 +259,7 @@ void main() {
         tester,
         router: router,
         overrides: [
-          chaptersProvider('123').overrideWith((ref) => [chapter]),
+          chaptersProviderV2('123').overrideWith((ref) => [chapter]),
           editPermissionsProvider('123').overrideWith((ref) async => false),
         ],
       );

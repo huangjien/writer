@@ -8,7 +8,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/sync_state.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/sync_service_provider.dart';
 import 'package:writer/state/providers.dart';
@@ -54,9 +54,9 @@ void main() {
           sharedPreferencesProvider.overrideWithValue(prefs),
           isSignedInProvider.overrideWith((ref) => false),
           isAdminProvider.overrideWith((ref) => false),
-          libraryNovelsProvider.overrideWith((ref) async => novels),
-          memberNovelsProvider.overrideWith((ref) async => const []),
-          chaptersProvider.overrideWith((ref, novelId) async => const []),
+          libraryNovelsProviderV2.overrideWith((ref) async => novels),
+          memberNovelsProviderV2.overrideWith((ref) async => const []),
+          chaptersProviderV2.overrideWith((ref, novelId) async => const []),
           lastProgressProvider.overrideWith((ref, novelId) async => null),
           removedNovelIdsProvider.overrideWith((ref) => <String>{}),
           syncStateValueProvider.overrideWith(

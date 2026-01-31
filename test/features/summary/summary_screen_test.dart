@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/summary/summary_screen.dart';
 import 'package:writer/state/mock_providers.dart';
 import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/chapter.dart';
 
@@ -183,7 +184,7 @@ void main() {
             mockNovelsProvider.overrideWith((ref) async => [novel]),
             mockChaptersProvider.overrideWith((ref, id) async => chapters),
             novelProvider.overrideWith((ref, id) async => novel),
-            chaptersProvider.overrideWith((ref, id) async => chapters),
+            chaptersProviderV2.overrideWith((ref, id) async => chapters),
             novelRepositoryProvider.overrideWith(
               (ref) => MockNovelRepository(),
             ),

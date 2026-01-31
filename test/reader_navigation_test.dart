@@ -6,7 +6,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/features/reader/reader_screen.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/theme_controller.dart';
 
@@ -43,7 +43,7 @@ void main() {
             isSignedInProvider.overrideWithValue(false),
             authStateProvider.overrideWithValue(null),
             currentUserProvider.overrideWith((ref) async => null),
-            chaptersProvider.overrideWith((ref, novelId) async => chapters),
+            chaptersProviderV2.overrideWith((ref, novelId) async => chapters),
           ],
           child: const MaterialApp(
             locale: Locale('en'),

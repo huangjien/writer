@@ -11,7 +11,7 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/services/storage_service.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/shared/widgets/rich_text_toolbar.dart';
 
@@ -167,7 +167,7 @@ void main() {
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           storageServiceProvider.overrideWithValue(storage),
-          chaptersProvider('novel-1').overrideWith((ref) async => [chapter]),
+          chaptersProviderV2('novel-1').overrideWith((ref) async => [chapter]),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -521,7 +521,7 @@ void main() {
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           storageServiceProvider.overrideWithValue(storage),
-          chaptersProvider('novel-1').overrideWith((ref) async => [chapter]),
+          chaptersProviderV2('novel-1').overrideWith((ref) async => [chapter]),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

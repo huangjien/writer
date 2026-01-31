@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/my_novels_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
@@ -61,7 +61,7 @@ void main() {
             LocalStorageRepository(storageService),
           ),
           sessionProvider.overrideWith((ref) => sessionNotifier),
-          memberNovelsProvider.overrideWith((ref) async => const []),
+          memberNovelsProviderV2.overrideWith((ref) async => const []),
         ],
         child: const MaterialApp(
           locale: Locale('en'),
@@ -111,7 +111,7 @@ void main() {
             LocalStorageRepository(storageService),
           ),
           sessionProvider.overrideWith((ref) => sessionNotifier),
-          memberNovelsProvider.overrideWith((ref) async => novels),
+          memberNovelsProviderV2.overrideWith((ref) async => novels),
         ],
         child: const MaterialApp(
           locale: Locale('en'),

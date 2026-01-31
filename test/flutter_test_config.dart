@@ -24,10 +24,15 @@ Future<void> testExecutable(FutureOr<void> Function() main) async {
     // Process through logger for additional filtering
     LoggerService().processLogLine(message, (String msg) {
       // Use stdout.write instead of print to avoid lint warning
-      stdout.write(msg);
-      stdout.write('\n');
-      // Force immediate flushing for real-time monitoring with tail
-      stdout.flush();
+      // Catch errors when stdout is already closed/bound
+      try {
+        stdout.write(msg);
+        stdout.write('\n');
+        // Force immediate flushing for real-time monitoring with tail
+        stdout.flush();
+      } catch (e) {
+        // Ignore errors when stdout is already closed (can happen in parallel tests)
+      }
     });
   };
 

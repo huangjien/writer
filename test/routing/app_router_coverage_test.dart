@@ -58,7 +58,7 @@ import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/state/navigator_key_provider.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/performance_settings.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
@@ -181,7 +181,7 @@ List getOverrides(SharedPreferences prefs) {
     sessionProvider.overrideWith(
       (ref) => SessionNotifier(LocalStorageService(prefs)),
     ),
-    libraryNovelsProvider.overrideWith((ref) async => []),
+    libraryNovelsProviderV2.overrideWith((ref) async => []),
     downloadedNovelIdsProvider.overrideWith((ref) async => {}),
     recentUserProgressProvider.overrideWith((ref) async => []),
     latestUserProgressProvider.overrideWith((ref) async => null),

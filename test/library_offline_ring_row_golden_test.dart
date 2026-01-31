@@ -7,7 +7,7 @@ import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/models/novel.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'helpers/test_utils.dart';
 
@@ -42,7 +42,7 @@ void main() {
     final app = await buildAppScope(
       prefs: prefs,
       extraOverrides: [
-        libraryNovelsProvider.overrideWith(
+        libraryNovelsProviderV2.overrideWith(
           (ref) async => const [
             Novel(
               id: 'novel-001',
@@ -55,7 +55,7 @@ void main() {
             ),
           ],
         ),
-        chaptersProvider.overrideWith(
+        chaptersProviderV2.overrideWith(
           (ref, novelId) async => const <Chapter>[],
         ),
         lastProgressProvider.overrideWith((ref, novelId) async => null),
@@ -134,7 +134,7 @@ void main() {
     final app = await buildAppScope(
       prefs: prefs,
       extraOverrides: [
-        libraryNovelsProvider.overrideWith(
+        libraryNovelsProviderV2.overrideWith(
           (ref) async => const [
             Novel(
               id: 'novel-001',
@@ -147,7 +147,7 @@ void main() {
             ),
           ],
         ),
-        chaptersProvider.overrideWith(
+        chaptersProviderV2.overrideWith(
           (ref, novelId) async => const <Chapter>[],
         ),
         lastProgressProvider.overrideWith((ref, novelId) async => null),

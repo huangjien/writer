@@ -9,6 +9,7 @@ import '../models/scene_note.dart';
 import '../models/template.dart';
 import '../models/character_template_row.dart';
 import '../models/scene_template_row.dart';
+import '../models/cache_metadata.dart';
 
 /// Repository for local storage operations
 ///
@@ -359,4 +360,99 @@ class LocalStorageRepository {
   Future<CharacterTemplateRow?> getCharacterTemplateById(String id) async =>
       null;
   Future<SceneTemplateRow?> getSceneTemplateById(String id) async => null;
+
+  Future<void> saveNovel(Novel novel) async {
+    await _storage.setString('novel_${novel.id}', jsonEncode(novel.toMap()));
+  }
+
+  Future<Novel?> getNovel(String novelId) async {
+    final json = _storage.getString('novel_$novelId');
+    if (json == null) return null;
+    try {
+      return Novel.fromMap(jsonDecode(json) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> removeNovel(String novelId) async {
+    await _storage.remove('novel_$novelId');
+  }
+
+  Future<void> saveNovelsList(
+    List<Novel> novels, {
+    String key = 'novels_list',
+  }) async {
+    final list = novels.map((n) => n.toMap()).toList();
+    await _storage.setString(key, jsonEncode(list));
+    await _saveCacheMetadata(key);
+  }
+
+  Future<List<Novel>> getNovelsList({String key = 'novels_list'}) async {
+    final json = _storage.getString(key);
+    if (json == null) return <Novel>[];
+    try {
+      final decoded = jsonDecode(json);
+      if (decoded is List) {
+        return decoded.cast<Map<String, dynamic>>().map(Novel.fromMap).toList();
+      }
+    } catch (_) {}
+    return <Novel>[];
+  }
+
+  Future<void> saveChaptersList(
+    String novelId,
+    List<Map<String, dynamic>> chapters,
+  ) async {
+    await _storage.setString('chapters_list_$novelId', jsonEncode(chapters));
+    await _saveCacheMetadata('chapters_list_$novelId');
+  }
+
+  Future<List<ChapterCache>> getChaptersList(String novelId) async {
+    final json = _storage.getString('chapters_list_$novelId');
+    if (json == null) return <ChapterCache>[];
+    try {
+      final decoded = jsonDecode(json);
+      if (decoded is List) {
+        return decoded
+            .cast<Map<String, dynamic>>()
+            .map(
+              (c) => ChapterCache(
+                chapterId: c['id'],
+                novelId: c['novel_id'],
+                idx: c['idx'],
+                title: c['title'],
+                content: c['content'] ?? '',
+                lastUpdated: DateTime.now(),
+              ),
+            )
+            .toList();
+      }
+    } catch (_) {}
+    return <ChapterCache>[];
+  }
+
+  Future<CacheMetadata?> getCacheMetadata(String key) async {
+    final json = _storage.getString('cache_meta_$key');
+    if (json == null) return null;
+    try {
+      return CacheMetadata.fromJson(jsonDecode(json));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> _saveCacheMetadata(String key) async {
+    final metadata = CacheMetadata(
+      key: key,
+      lastUpdated: DateTime.now(),
+      lastSynced: DateTime.now(),
+    );
+    await _storage.setString('cache_meta_$key', jsonEncode(metadata.toJson()));
+  }
+
+  Future<void> clearCacheByNovel(String novelId) async {
+    await _storage.remove('chapters_list_$novelId');
+    await _storage.remove('cache_meta_chapters_list_$novelId');
+  }
 }

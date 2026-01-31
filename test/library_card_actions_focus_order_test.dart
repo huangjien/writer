@@ -9,7 +9,7 @@ import 'package:writer/features/library/library_providers.dart'
 import 'package:writer/state/mock_providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/user_progress.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/state/storage_service_provider.dart';
@@ -60,10 +60,10 @@ void main() {
           aiChatServiceProvider.overrideWith(
             (ref) => AiChatService(ref.read(remoteRepositoryProvider)),
           ),
-          libraryNovelsProvider.overrideWith(
+          libraryNovelsProviderV2.overrideWith(
             (ref) async => await ref.watch(mockNovelsProvider.future),
           ),
-          chaptersProvider.overrideWith(
+          chaptersProviderV2.overrideWith(
             (ref, novelId) async =>
                 await ref.watch(mockChaptersProvider(novelId).future),
           ),

@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/library_screen.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/models/novel.dart';
@@ -192,16 +192,16 @@ void main() {
         ProviderScope(
           overrides: [
             // Override novels fetch to return our fixture list.
-            novelsProvider.overrideWith((ref) async => novels),
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
             // Ensure library union resolves without network.
-            memberNovelsProvider.overrideWith((ref) async => const <Novel>[]),
+            memberNovelsProviderV2.overrideWith((ref) async => const <Novel>[]),
             // Override repository to capture delete calls.
             novelRepositoryProvider.overrideWith((ref) => fakeRepo),
             sessionProvider.overrideWith((ref) => sessionNotifier),
             localStorageRepositoryProvider.overrideWithValue(fakeLocal),
             // Avoid network-backed providers that can hang during settle.
             lastProgressProvider.overrideWith((ref, novelId) async => null),
-            chaptersProvider.overrideWith(
+            chaptersProviderV2.overrideWith(
               (ref, novelId) async => const <Chapter>[],
             ),
             recentUserProgressProvider.overrideWith(

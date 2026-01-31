@@ -7,7 +7,7 @@ import 'package:writer/features/library/library_providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/admin_settings.dart';
 import 'package:writer/state/motion_settings.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/session_state.dart';
@@ -31,9 +31,9 @@ void main() {
           adminModeProvider.overrideWith((ref) => AdminModeNotifier(prefs)),
 
           // Library providers
-          libraryNovelsProvider.overrideWith((ref) async => const []),
-          memberNovelsProvider.overrideWith((ref) async => const []),
-          chaptersProvider.overrideWith((ref, novelId) async => const []),
+          libraryNovelsProviderV2.overrideWith((ref) async => const []),
+          memberNovelsProviderV2.overrideWith((ref) async => const []),
+          chaptersProviderV2.overrideWith((ref, novelId) async => const []),
           lastProgressProvider.overrideWith((ref, novelId) async => null),
           removedNovelIdsProvider.overrideWith((ref) => <String>{}),
           motionSettingsProvider.overrideWith(

@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/reader/reader_screen.dart';
 import 'package:writer/models/chapter.dart';
-import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/features/reader/chapter_reader_screen.dart' as cr;
 import 'helpers/test_utils.dart';
 
@@ -19,7 +19,7 @@ void main() {
     final scope = await buildAppScope(
       child: materialAppFor(home: const ReaderScreen(novelId: 'novel-001')),
       extraOverrides: [
-        chaptersProvider.overrideWith(
+        chaptersProviderV2.overrideWith(
           (ref, id) async => const [
             Chapter(
               id: 'c1',
@@ -60,7 +60,7 @@ void main() {
         home: const ReaderScreen(novelId: 'novel-001', chapterId: 'c2'),
       ),
       extraOverrides: [
-        chaptersProvider.overrideWith(
+        chaptersProviderV2.overrideWith(
           (ref, id) async => const [
             Chapter(
               id: 'c1',
