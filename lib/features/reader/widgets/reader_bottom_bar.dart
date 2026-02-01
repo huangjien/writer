@@ -81,7 +81,7 @@ class ReaderBottomBar extends StatelessWidget {
             SizedBox(width: spacing),
             AppButtons.icon(
               iconData: Icons.format_bold,
-              tooltip: 'Bold',
+              tooltip: l10n.boldShortcut,
               color: boldEnabled ? theme.colorScheme.primary : null,
               onPressed: onToggleBold,
             ),

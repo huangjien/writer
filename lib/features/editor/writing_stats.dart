@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
 import '../../shared/strings.dart';
+import '../../l10n/app_localizations.dart';
 
 class WritingStats extends StatelessWidget {
   const WritingStats({
@@ -18,6 +19,7 @@ class WritingStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return ValueListenableBuilder<TextEditingValue>(
       valueListenable: controller,
       builder: (context, value, _) {
@@ -29,12 +31,12 @@ class WritingStats extends StatelessWidget {
         final theme = Theme.of(context);
         final chips = <Widget>[
           if (showCounts) ...[
-            _StatChip(label: 'Words', value: '$wordCount'),
-            _StatChip(label: 'Chars', value: '$charCount'),
-            _StatChip(label: 'Read', value: readingTimeLabel),
+            _StatChip(label: l10n.wordsLabel, value: '$wordCount'),
+            _StatChip(label: l10n.charsLabel, value: '$charCount'),
+            _StatChip(label: l10n.readLabel, value: readingTimeLabel),
           ],
           if (showStreak && streakDays != null && streakDays! > 0)
-            _StatChip(label: 'Streak', value: '${streakDays!}d'),
+            _StatChip(label: l10n.streakLabel, value: '${streakDays!}d'),
         ];
 
         if (chips.isEmpty) {

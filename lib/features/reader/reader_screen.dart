@@ -105,8 +105,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                 } catch (_) {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => const Scaffold(
-                        body: Center(child: Text('Navigation error')),
+                      builder: (_) => Scaffold(
+                        body: Center(child: Text(l10n.navigationError)),
                       ),
                     ),
                   );
@@ -243,7 +243,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
           ),
         ],
       ),
-      endDrawer: SideBar(novelId: widget.novelId),
+      drawer: SideBar(novelId: widget.novelId),
       body: Padding(
         padding: const EdgeInsets.all(Spacing.l),
         child: chaptersAsync.when(

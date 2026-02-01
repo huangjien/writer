@@ -89,6 +89,37 @@ class StyleThemePatch {
     final resolvedDividerThickness = _resolveDividerThickness();
     final resolvedDividerColor = _resolveDividerColor(base, isDark);
     final resolvedCardShadows = _resolveCardShadows(isDark);
+    final resolvedDropdownBackgroundColor = _resolveDropdownBackgroundColor(
+      base,
+      isDark,
+    );
+    final resolvedInputBackgroundColor = _resolveInputBackgroundColor(
+      base,
+      isDark,
+    );
+    final resolvedButtonBackgroundColor = _resolveButtonBackgroundColor(
+      base,
+      isDark,
+    );
+    final resolvedCardBackgroundColor = _resolveCardBackgroundColor(
+      base,
+      isDark,
+    );
+    final resolvedSwitchBackgroundColor = _resolveSwitchBackgroundColor(
+      base,
+      isDark,
+    );
+    final resolvedSwitchThumbColor = _resolveSwitchThumbColor(base, isDark);
+    final resolvedDropdownMenuBackgroundColor =
+        _resolveDropdownMenuBackgroundColor(base, isDark);
+    final resolvedDropdownMenuSelectedColor = _resolveDropdownMenuSelectedColor(
+      base,
+      isDark,
+    );
+    final resolvedDropdownMenuHoverColor = _resolveDropdownMenuHoverColor(
+      base,
+      isDark,
+    );
     final preservedExtensions = base.extensions.values
         .where((e) => e is! UiStyleThemeExtension)
         .toList(growable: false);
@@ -152,27 +183,30 @@ class StyleThemePatch {
           cardBorder: cardBorder,
           cardShadows: resolvedCardShadows,
           cardGradient: cardGradient,
-          buttonBackgroundColor: buttonBackgroundColor,
+          buttonBackgroundColor: resolvedButtonBackgroundColor,
           buttonShadows: buttonShadows,
           buttonBorder: buttonBorder,
           buttonBorderRadius: buttonBorderRadius,
           buttonPressedColor: buttonPressedColor,
           buttonPressedShadows: buttonPressedShadows,
-          cardBackgroundColor: cardBackgroundColor,
+          cardBackgroundColor: resolvedCardBackgroundColor,
           cardBorderRadius: cardBorderRadius,
           cardPressedColor: cardPressedColor,
           cardPressedShadows: cardPressedShadows,
-          inputBackgroundColor: inputBackgroundColor,
+          inputBackgroundColor: resolvedInputBackgroundColor,
           inputBorder: inputBorder,
           inputBorderRadius: inputBorderRadius,
           inputFocusedBorderColor: inputFocusedBorderColor,
-          switchBackgroundColor: switchBackgroundColor,
+          switchBackgroundColor: resolvedSwitchBackgroundColor,
           switchActiveColor: switchActiveColor,
-          switchThumbColor: switchThumbColor,
+          switchThumbColor: resolvedSwitchThumbColor,
           switchBorder: switchBorder,
-          dropdownBackgroundColor: dropdownBackgroundColor,
+          dropdownBackgroundColor: resolvedDropdownBackgroundColor,
           dropdownBorder: dropdownBorder,
           dropdownBorderRadius: dropdownBorderRadius,
+          dropdownMenuBackgroundColor: resolvedDropdownMenuBackgroundColor,
+          dropdownMenuSelectedColor: resolvedDropdownMenuSelectedColor,
+          dropdownMenuHoverColor: resolvedDropdownMenuHoverColor,
         ),
       ],
     );
@@ -230,33 +264,264 @@ class StyleThemePatch {
   Color? _resolveSurfaceColor(ThemeData base, bool isDark) {
     if (cardColor != null) return cardColor;
     final cs = base.colorScheme;
+    final surface = cs.surface;
+
     switch (styleFamily) {
       case UiStyleFamily.glassmorphism:
-        return cs.surface.withValues(alpha: isDark ? 0.55 : 0.75);
+        return _deriveLighterColor(
+          surface,
+          factor: 0.04,
+        ).withValues(alpha: isDark ? 0.85 : 0.90);
       case UiStyleFamily.liquidGlass:
-        return cs.surface.withValues(alpha: isDark ? 0.45 : 0.65);
+        return _deriveLighterColor(
+          surface,
+          factor: 0.06,
+        ).withValues(alpha: isDark ? 0.80 : 0.85);
       case UiStyleFamily.neumorphism:
-        return cs.surface;
+        return _deriveLighterColor(surface, factor: 0.02);
       case UiStyleFamily.minimalism:
-        return cs.surface;
+        return _deriveLighterColor(surface, factor: 0.01);
       case UiStyleFamily.flatDesign:
-        return cs.surface;
+        return surface;
     }
   }
 
   Color? _resolveTileColor(ThemeData base, bool isDark) {
     final cs = base.colorScheme;
+    final surface = cs.surface;
+
     switch (styleFamily) {
       case UiStyleFamily.glassmorphism:
-        return cs.surface.withValues(alpha: isDark ? 0.35 : 0.55);
+        return _deriveLighterColor(
+          surface,
+          factor: 0.06,
+        ).withValues(alpha: isDark ? 0.75 : 0.80);
       case UiStyleFamily.liquidGlass:
-        return cs.surface.withValues(alpha: isDark ? 0.3 : 0.5);
+        return _deriveLighterColor(
+          surface,
+          factor: 0.08,
+        ).withValues(alpha: isDark ? 0.70 : 0.75);
       case UiStyleFamily.neumorphism:
-        return cs.surface;
+        return _deriveLighterColor(surface, factor: 0.03);
       case UiStyleFamily.minimalism:
-        return cs.surface;
+        return _deriveLighterColor(surface, factor: 0.02);
       case UiStyleFamily.flatDesign:
-        return cs.surface;
+        return _deriveLighterColor(surface, factor: 0.02);
+    }
+  }
+
+  Color? _resolveDropdownBackgroundColor(ThemeData base, bool isDark) {
+    if (dropdownBackgroundColor != null) {
+      return dropdownBackgroundColor;
+    }
+
+    final cs = base.colorScheme;
+    final surface = cs.surface;
+
+    switch (styleFamily) {
+      case UiStyleFamily.glassmorphism:
+        return _deriveDarkerColor(surface, factor: 0.08);
+      case UiStyleFamily.liquidGlass:
+        return _deriveDarkerColor(surface, factor: 0.06);
+      case UiStyleFamily.neumorphism:
+        return _deriveLighterColor(surface, factor: 0.06);
+      case UiStyleFamily.minimalism:
+        return _deriveLighterColor(surface, factor: 0.04);
+      case UiStyleFamily.flatDesign:
+        return _deriveDarkerColor(surface, factor: 0.05);
+    }
+  }
+
+  Color? _resolveInputBackgroundColor(ThemeData base, bool isDark) {
+    if (inputBackgroundColor != null) {
+      return inputBackgroundColor;
+    }
+
+    final cs = base.colorScheme;
+    final surface = cs.surface;
+
+    switch (styleFamily) {
+      case UiStyleFamily.glassmorphism:
+        return _deriveLighterColor(
+          surface,
+          factor: 0.08,
+        ).withValues(alpha: 0.7);
+      case UiStyleFamily.liquidGlass:
+        return _deriveLighterColor(
+          surface,
+          factor: 0.10,
+        ).withValues(alpha: 0.6);
+      case UiStyleFamily.neumorphism:
+        return _deriveDarkerColor(surface, factor: 0.06);
+      case UiStyleFamily.minimalism:
+        return _deriveLighterColor(surface, factor: 0.04);
+      case UiStyleFamily.flatDesign:
+        return _deriveLighterColor(surface, factor: 0.06);
+    }
+  }
+
+  Color? _resolveButtonBackgroundColor(ThemeData base, bool isDark) {
+    if (buttonBackgroundColor != null) {
+      return buttonBackgroundColor;
+    }
+
+    final cs = base.colorScheme;
+    final surface = cs.surface;
+
+    switch (styleFamily) {
+      case UiStyleFamily.glassmorphism:
+        return cs.primary;
+      case UiStyleFamily.liquidGlass:
+        return cs.primary.withValues(alpha: 0.9);
+      case UiStyleFamily.neumorphism:
+        return _deriveLighterColor(surface, factor: 0.08);
+      case UiStyleFamily.minimalism:
+        return _deriveLighterColor(surface, factor: 0.06);
+      case UiStyleFamily.flatDesign:
+        if (isDark) {
+          return _deriveDarkerColor(cs.primary, factor: 0.1);
+        }
+        return cs.primary;
+    }
+  }
+
+  Color? _resolveCardBackgroundColor(ThemeData base, bool isDark) {
+    if (cardBackgroundColor != null) {
+      return cardBackgroundColor;
+    }
+
+    final cs = base.colorScheme;
+    final surface = cs.surface;
+
+    switch (styleFamily) {
+      case UiStyleFamily.glassmorphism:
+        return _deriveLighterColor(
+          surface,
+          factor: 0.06,
+        ).withValues(alpha: 0.8);
+      case UiStyleFamily.liquidGlass:
+        return _deriveLighterColor(
+          surface,
+          factor: 0.08,
+        ).withValues(alpha: 0.7);
+      case UiStyleFamily.neumorphism:
+        return _deriveDarkerColor(surface, factor: 0.04);
+      case UiStyleFamily.minimalism:
+        return _deriveLighterColor(surface, factor: 0.03);
+      case UiStyleFamily.flatDesign:
+        return surface;
+    }
+  }
+
+  Color? _resolveSwitchBackgroundColor(ThemeData base, bool isDark) {
+    if (switchBackgroundColor != null) {
+      return switchBackgroundColor;
+    }
+
+    final cs = base.colorScheme;
+    final surface = cs.surface;
+
+    switch (styleFamily) {
+      case UiStyleFamily.glassmorphism:
+        return _deriveLighterColor(surface, factor: 0.10);
+      case UiStyleFamily.liquidGlass:
+        return _deriveLighterColor(surface, factor: 0.12);
+      case UiStyleFamily.neumorphism:
+        return _deriveDarkerColor(surface, factor: 0.06);
+      case UiStyleFamily.minimalism:
+        return _deriveLighterColor(surface, factor: 0.08);
+      case UiStyleFamily.flatDesign:
+        return _deriveLighterColor(surface, factor: 0.12);
+    }
+  }
+
+  Color? _resolveSwitchThumbColor(ThemeData base, bool isDark) {
+    if (switchThumbColor != null) {
+      return switchThumbColor;
+    }
+
+    final cs = base.colorScheme;
+    final surface = cs.surface;
+
+    switch (styleFamily) {
+      case UiStyleFamily.glassmorphism:
+        return cs.onPrimary;
+      case UiStyleFamily.liquidGlass:
+        return cs.onPrimary;
+      case UiStyleFamily.neumorphism:
+        return _deriveLighterColor(surface, factor: 0.10);
+      case UiStyleFamily.minimalism:
+        return _deriveLighterColor(surface, factor: 0.08);
+      case UiStyleFamily.flatDesign:
+        return cs.onPrimary;
+    }
+  }
+
+  Color _deriveDarkerColor(Color color, {double factor = 0.05}) {
+    final hsl = HSLColor.fromColor(color);
+    return hsl
+        .withLightness((hsl.lightness - factor).clamp(0.0, 1.0))
+        .toColor();
+  }
+
+  Color _deriveLighterColor(Color color, {double factor = 0.05}) {
+    final hsl = HSLColor.fromColor(color);
+    return hsl
+        .withLightness((hsl.lightness + factor).clamp(0.0, 1.0))
+        .toColor();
+  }
+
+  Color? _resolveDropdownMenuBackgroundColor(ThemeData base, bool isDark) {
+    final cs = base.colorScheme;
+    final surface = cs.surface;
+
+    switch (styleFamily) {
+      case UiStyleFamily.glassmorphism:
+        return _deriveLighterColor(surface, factor: 0.10);
+      case UiStyleFamily.liquidGlass:
+        return _deriveLighterColor(surface, factor: 0.12);
+      case UiStyleFamily.neumorphism:
+        return _deriveLighterColor(surface, factor: 0.08);
+      case UiStyleFamily.minimalism:
+        return _deriveLighterColor(surface, factor: 0.06);
+      case UiStyleFamily.flatDesign:
+        return _deriveLighterColor(surface, factor: 0.08);
+    }
+  }
+
+  Color? _resolveDropdownMenuSelectedColor(ThemeData base, bool isDark) {
+    final cs = base.colorScheme;
+    final surface = cs.surface;
+
+    switch (styleFamily) {
+      case UiStyleFamily.glassmorphism:
+        return cs.primary.withValues(alpha: 0.15);
+      case UiStyleFamily.liquidGlass:
+        return cs.primary.withValues(alpha: 0.12);
+      case UiStyleFamily.neumorphism:
+        return _deriveLighterColor(surface, factor: 0.12);
+      case UiStyleFamily.minimalism:
+        return _deriveLighterColor(surface, factor: 0.10);
+      case UiStyleFamily.flatDesign:
+        return cs.primary.withValues(alpha: 0.12);
+    }
+  }
+
+  Color? _resolveDropdownMenuHoverColor(ThemeData base, bool isDark) {
+    final cs = base.colorScheme;
+    final surface = cs.surface;
+
+    switch (styleFamily) {
+      case UiStyleFamily.glassmorphism:
+        return _deriveLighterColor(surface, factor: 0.08);
+      case UiStyleFamily.liquidGlass:
+        return _deriveLighterColor(surface, factor: 0.10);
+      case UiStyleFamily.neumorphism:
+        return _deriveLighterColor(surface, factor: 0.06);
+      case UiStyleFamily.minimalism:
+        return _deriveLighterColor(surface, factor: 0.04);
+      case UiStyleFamily.flatDesign:
+        return _deriveLighterColor(surface, factor: 0.06);
     }
   }
 }
@@ -389,8 +654,8 @@ class UiStyleAdapter {
       switchBackgroundColor: const Color(0xFFE0E5EC),
       switchBorder: Border.all(color: const Color(0xFFA3B1C6), width: 0.5),
       switchThumbColor: const Color(0xFFE0E5EC),
-      dropdownBackgroundColor: const Color(0xFFE0E5EC),
-      dropdownBorder: Border.all(color: const Color(0xFFA3B1C6), width: 0.5),
+      dropdownBackgroundColor: null,
+      dropdownBorder: null,
       dropdownBorderRadius: const BorderRadius.all(Radius.circular(12)),
     );
   }
@@ -418,7 +683,7 @@ class UiStyleAdapter {
       inputFocusedBorderColor: Color(0xFF6366F1),
       switchBackgroundColor: Color(0xFFE0E0E0),
       switchThumbColor: Color(0xFFFFFFFF),
-      dropdownBackgroundColor: Color(0xFFFAFAFA),
+      dropdownBackgroundColor: null,
       dropdownBorderRadius: BorderRadius.all(Radius.circular(8)),
     );
   }
@@ -430,15 +695,15 @@ class UiStyleAdapter {
       elevation: 0,
       useBackdropBlur: false,
       styleFamily: UiStyleFamily.flatDesign,
-      buttonBackgroundColor: Color(0xFF6366F1),
-      buttonPressedColor: Color(0xFF4F46E5),
-      cardBackgroundColor: Color(0xFFFFFFFF),
-      inputBackgroundColor: Color(0xFFF3F4F6),
+      buttonBackgroundColor: null,
+      buttonPressedColor: null,
+      cardBackgroundColor: null,
+      inputBackgroundColor: null,
       inputBorderRadius: BorderRadius.all(Radius.circular(4)),
-      inputFocusedBorderColor: Color(0xFF6366F1),
-      switchBackgroundColor: Color(0xFFE5E7EB),
-      switchThumbColor: Color(0xFFFFFFFF),
-      dropdownBackgroundColor: Color(0xFFFFFFFF),
+      inputFocusedBorderColor: null,
+      switchBackgroundColor: null,
+      switchThumbColor: null,
+      dropdownBackgroundColor: null,
       dropdownBorderRadius: BorderRadius.all(Radius.circular(4)),
     );
   }

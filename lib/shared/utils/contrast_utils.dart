@@ -82,11 +82,52 @@ class ContrastUtils {
     required Color backgroundColor,
     required bool isDarkMode,
   }) {
-    return getAccessibleTextColor(
-      textColor: iconColor,
-      backgroundColor: backgroundColor,
-      isDarkMode: isDarkMode,
-      minContrastRatio: 3.0,
-    );
+    final currentContrast = calculateContrastRatio(iconColor, backgroundColor);
+
+    if (currentContrast >= 3.0) {
+      return iconColor;
+    }
+
+    if (isDarkMode) {
+      return _getHighContrastDarkModeIconColor(iconColor, backgroundColor);
+    } else {
+      return _getHighContrastLightModeIconColor(iconColor, backgroundColor);
+    }
+  }
+
+  static Color _getHighContrastDarkModeIconColor(
+    Color iconColor,
+    Color backgroundColor,
+  ) {
+    final bgLuminance = backgroundColor.computeLuminance();
+
+    if (bgLuminance > 0.5) {
+      return Colors.black.withValues(alpha: 0.9);
+    }
+
+    final hslColor = HSLColor.fromColor(iconColor);
+    final adjustedLuminance = hslColor.lightness.clamp(0.85, 0.95);
+    final adjustedSaturation = (hslColor.saturation * 0.7).clamp(0.3, 0.9);
+
+    return hslColor
+        .withLightness(adjustedLuminance)
+        .withSaturation(adjustedSaturation)
+        .toColor();
+  }
+
+  static Color _getHighContrastLightModeIconColor(
+    Color iconColor,
+    Color backgroundColor,
+  ) {
+    final bgLuminance = backgroundColor.computeLuminance();
+
+    if (bgLuminance < 0.5) {
+      return Colors.white.withValues(alpha: 0.95);
+    }
+
+    final hslColor = HSLColor.fromColor(iconColor);
+    final adjustedLuminance = hslColor.lightness.clamp(0.10, 0.25);
+
+    return hslColor.withLightness(adjustedLuminance).toColor();
   }
 }

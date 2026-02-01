@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'contrast_monitor.dart';
+import '../../../l10n/app_localizations.dart';
 
 class ContrastAlertDialog extends ConsumerWidget {
   final VoidCallback onDismiss;
@@ -14,6 +15,7 @@ class ContrastAlertDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final alerts = ref.watch(contrastMonitorProvider);
     final criticalAlerts = alerts.where((alert) => alert.isCritical).toList();
 
@@ -32,7 +34,7 @@ class ContrastAlertDialog extends ConsumerWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Contrast Issues Detected',
+              l10n.contrastIssuesDetected,
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
@@ -45,7 +47,7 @@ class ContrastAlertDialog extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Found ${alerts.length} contrast issue(s) that may affect readability.',
+              l10n.foundContrastIssues(alerts.length),
               style: Theme.of(
                 context,
               ).textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
@@ -64,7 +66,7 @@ class ContrastAlertDialog extends ConsumerWidget {
         ),
       ),
       actions: [
-        TextButton(onPressed: onDismiss, child: const Text('Ignore')),
+        TextButton(onPressed: onDismiss, child: Text(l10n.ignore)),
         if (criticalAlerts.isNotEmpty)
           ElevatedButton.icon(
             onPressed: () {
@@ -74,7 +76,7 @@ class ContrastAlertDialog extends ConsumerWidget {
               onDismiss();
             },
             icon: const Icon(Icons.auto_fix_high),
-            label: const Text('Apply Best Fix'),
+            label: Text(l10n.applyBestFix),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,
@@ -85,18 +87,17 @@ class ContrastAlertDialog extends ConsumerWidget {
   }
 
   Widget _buildNoIssuesDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Row(
+      title: Row(
         children: [
-          Icon(Icons.check_circle_rounded, color: Colors.green, size: 28),
-          SizedBox(width: 12),
-          Text('All Good!'),
+          const Icon(Icons.check_circle_rounded, color: Colors.green, size: 28),
+          const SizedBox(width: 12),
+          Text(l10n.allGood),
         ],
       ),
-      content: const Text(
-        'All text elements meet WCAG 2.1 AA contrast standards.',
-      ),
-      actions: [TextButton(onPressed: onDismiss, child: const Text('Close'))],
+      content: Text(l10n.allGoodContrast),
+      actions: [TextButton(onPressed: onDismiss, child: Text(l10n.close))],
     );
   }
 

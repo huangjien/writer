@@ -36,6 +36,9 @@ class UiStyleThemeExtension extends ThemeExtension<UiStyleThemeExtension> {
   final Color? dropdownBackgroundColor;
   final Border? dropdownBorder;
   final BorderRadius? dropdownBorderRadius;
+  final Color? dropdownMenuBackgroundColor;
+  final Color? dropdownMenuSelectedColor;
+  final Color? dropdownMenuHoverColor;
 
   const UiStyleThemeExtension({
     required this.styleFamily,
@@ -66,6 +69,9 @@ class UiStyleThemeExtension extends ThemeExtension<UiStyleThemeExtension> {
     this.dropdownBackgroundColor,
     this.dropdownBorder,
     this.dropdownBorderRadius,
+    this.dropdownMenuBackgroundColor,
+    this.dropdownMenuSelectedColor,
+    this.dropdownMenuHoverColor,
   });
 
   @override
@@ -98,6 +104,9 @@ class UiStyleThemeExtension extends ThemeExtension<UiStyleThemeExtension> {
     Color? dropdownBackgroundColor,
     Border? dropdownBorder,
     BorderRadius? dropdownBorderRadius,
+    Color? dropdownMenuBackgroundColor,
+    Color? dropdownMenuSelectedColor,
+    Color? dropdownMenuHoverColor,
   }) {
     return UiStyleThemeExtension(
       styleFamily: styleFamily ?? this.styleFamily,
@@ -132,6 +141,12 @@ class UiStyleThemeExtension extends ThemeExtension<UiStyleThemeExtension> {
           dropdownBackgroundColor ?? this.dropdownBackgroundColor,
       dropdownBorder: dropdownBorder ?? this.dropdownBorder,
       dropdownBorderRadius: dropdownBorderRadius ?? this.dropdownBorderRadius,
+      dropdownMenuBackgroundColor:
+          dropdownMenuBackgroundColor ?? this.dropdownMenuBackgroundColor,
+      dropdownMenuSelectedColor:
+          dropdownMenuSelectedColor ?? this.dropdownMenuSelectedColor,
+      dropdownMenuHoverColor:
+          dropdownMenuHoverColor ?? this.dropdownMenuHoverColor,
     );
   }
 
@@ -284,4 +299,10 @@ extension ThemeDataExtensions on ThemeData {
       extension<UiStyleThemeExtension>()?.dropdownBorder;
   BorderRadius? get dropdownBorderRadius =>
       extension<UiStyleThemeExtension>()?.dropdownBorderRadius;
+  Color? get dropdownMenuBackgroundColor =>
+      extension<UiStyleThemeExtension>()?.dropdownMenuBackgroundColor;
+  Color? get dropdownMenuSelectedColor =>
+      extension<UiStyleThemeExtension>()?.dropdownMenuSelectedColor;
+  Color? get dropdownMenuHoverColor =>
+      extension<UiStyleThemeExtension>()?.dropdownMenuHoverColor;
 }

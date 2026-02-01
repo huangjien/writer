@@ -1400,7 +1400,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get removeFromLibrary => '从文库中移除';
 
   @override
-  String get createFirstNovelSubtitle => '创建您的第一本小说以开始';
+  String get createFirstNovelSubtitle => '创建您的第一本小说以开始。';
 
   @override
   String get navigationError => '导航错误';
@@ -1536,4 +1536,315 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get failedToLoadLogs => '加载日志失败';
+
+  @override
+  String wordCount(int count) {
+    return '字数：$count';
+  }
+
+  @override
+  String characterCount(int count) {
+    return '字符数：$count';
+  }
+
+  @override
+  String get startWriting => '开始写作...';
+
+  @override
+  String failedToLoadChapter(String error) {
+    return '加载章节失败：$error';
+  }
+
+  @override
+  String get saving => '保存中…';
+
+  @override
+  String get wordCountLabel => '字数统计';
+
+  @override
+  String get characterCountLabel => '字符统计';
+
+  @override
+  String get discard => '放弃';
+
+  @override
+  String get saveShortcut => '保存';
+
+  @override
+  String get previewShortcut => '预览';
+
+  @override
+  String get boldShortcut => '粗体';
+
+  @override
+  String get italicShortcut => '斜体';
+
+  @override
+  String get underlineShortcut => '下划线';
+
+  @override
+  String get headingShortcut => '标题';
+
+  @override
+  String get insertLinkShortcut => '插入链接';
+
+  @override
+  String get shortcutsHelpShortcut => '快捷键帮助';
+
+  @override
+  String get closeShortcut => '关闭';
+
+  @override
+  String get designSystemStyleGuide => '设计系统样式指南';
+
+  @override
+  String get headlineLarge => '大标题';
+
+  @override
+  String get headlineMedium => '中标题';
+
+  @override
+  String get titleLarge => '大号标题';
+
+  @override
+  String get bodyLarge => '大号正文';
+
+  @override
+  String get bodyMedium => '中号正文';
+
+  @override
+  String get primaryButton => '主按钮';
+
+  @override
+  String get disabled => '已禁用';
+
+  @override
+  String checkboxState(bool value) {
+    return '复选框状态：$value';
+  }
+
+  @override
+  String get option1 => '选项 1';
+
+  @override
+  String get option2 => '选项 2';
+
+  @override
+  String switchState(bool value) {
+    return '开关状态：$value';
+  }
+
+  @override
+  String sliderValue(String value) {
+    return '数值：$value';
+  }
+
+  @override
+  String get enterTextHere => '在此输入文本...';
+
+  @override
+  String get selectAnOption => '选择一个选项';
+
+  @override
+  String get optionA => '选项 A';
+
+  @override
+  String get optionB => '选项 B';
+
+  @override
+  String get optionC => '选项 C';
+
+  @override
+  String get contrastIssuesDetected => '检测到对比度问题';
+
+  @override
+  String foundContrastIssues(int count) {
+    return '发现 $count 个可能影响可读性的对比度问题。';
+  }
+
+  @override
+  String get allGood => '一切正常！';
+
+  @override
+  String get allGoodContrast => '所有文本元素均符合 WCAG 2.1 AA 对比度标准。';
+
+  @override
+  String get ignore => '忽略';
+
+  @override
+  String get applyBestFix => '应用最佳修复';
+
+  @override
+  String get moreMenuComingSoon => '更多菜单即将推出';
+
+  @override
+  String get styleGuide => '样式指南';
+
+  @override
+  String get themeFactoryNotDefined => '主题工厂未定义任何主题，已使用默认主题。';
+
+  @override
+  String progressPercentage(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String get review => '审查';
+
+  @override
+  String get wordsLabel => '字数';
+
+  @override
+  String get charsLabel => '字符';
+
+  @override
+  String get readLabel => '阅读';
+
+  @override
+  String get streakLabel => '连续';
+
+  @override
+  String get pause => '暂停';
+
+  @override
+  String get start => '开始';
+
+  @override
+  String get editMode => '编辑模式';
+
+  @override
+  String get previewMode => '预览模式';
+
+  @override
+  String get quote => '引用';
+
+  @override
+  String get inlineCode => '行内代码';
+
+  @override
+  String get bulletedList => '无序列表';
+
+  @override
+  String get numberedList => '有序列表';
+
+  @override
+  String get previewTab => '预览';
+
+  @override
+  String get editTab => '编辑';
+
+  @override
+  String get noExpandedSummaryAvailable => '暂无细纲。';
+
+  @override
+  String get analyze => '分析';
+
+  @override
+  String youreOffline(String message) {
+    return '您已离线。$message';
+  }
+
+  @override
+  String get download => '下载';
+
+  @override
+  String get moreActions => '更多操作';
+
+  @override
+  String get doubleTapToOpen => '双击打开。长按查看操作。';
+
+  @override
+  String get more => '更多';
+
+  @override
+  String get pressD => '按 D 键';
+
+  @override
+  String get pressEnter => '按 Enter 键';
+
+  @override
+  String get pressDelete => '按 Delete 键';
+
+  @override
+  String get exitPreview => '退出预览';
+
+  @override
+  String get saveLabel => '保存';
+
+  @override
+  String get exitZenMode => '退出禅模式';
+
+  @override
+  String get clearSearch => '清除搜索';
+
+  @override
+  String get notSignedInLabel => '未登录';
+
+  @override
+  String get stylePreviewGrid => '样式预览网格';
+
+  @override
+  String get themeOceanDepths => '海洋深渊';
+
+  @override
+  String get themeSunsetBoulevard => '日落大道';
+
+  @override
+  String get themeForestCanopy => '森林树冠';
+
+  @override
+  String get themeModernMinimalist => '现代极简';
+
+  @override
+  String get themeGoldenHour => '金色时刻';
+
+  @override
+  String get themeArcticFrost => '北极霜冻';
+
+  @override
+  String get themeDesertRose => '沙漠玫瑰';
+
+  @override
+  String get themeTechInnovation => '科技创新';
+
+  @override
+  String get themeBotanicalGarden => '植物园';
+
+  @override
+  String get themeMidnightGalaxy => '午夜星河';
+
+  @override
+  String get standardLight => '标准浅色';
+
+  @override
+  String get warmPaper => '暖色纸张';
+
+  @override
+  String get coolGrey => '冷灰';
+
+  @override
+  String get sepiaLabel => '仿古纸';
+
+  @override
+  String get standardDark => '标准深色';
+
+  @override
+  String get midnight => '午夜';
+
+  @override
+  String get darkSepia => '深色仿古';
+
+  @override
+  String get deepOcean => '深海';
+
+  @override
+  String get youreOfflineLabel => '您已离线';
+
+  @override
+  String get changesWillSync => '更改将在您重新上线时同步';
+
+  @override
+  String changesWillSyncCount(int count) {
+    return '$count 项更改将在您重新上线时同步';
+  }
 }

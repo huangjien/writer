@@ -110,6 +110,10 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
   final _controller = ScrollController();
   bool _betaLoading = false;
 
+  bool isRTL(BuildContext context) {
+    return Directionality.of(context) == TextDirection.rtl;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -471,7 +475,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
       appBar: state.fullScreen
           ? null
           : ReaderAppBar(title: state.title, onBack: _onBackPressed),
-      endDrawer: state.fullScreen ? null : SideBar(novelId: widget.novelId),
+      drawer: state.fullScreen ? null : SideBar(novelId: widget.novelId),
       body: Stack(
         children: [
           Positioned.fill(
@@ -523,7 +527,9 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
             ),
           if (isAiChatOpen && !state.fullScreen)
             Align(
-              alignment: Alignment.centerRight,
+              alignment: isRTL(context)
+                  ? Alignment.centerLeft
+                  : Alignment.centerRight,
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final w = constraints.maxWidth * 0.8;

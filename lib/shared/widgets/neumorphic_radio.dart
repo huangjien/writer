@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/theme_extensions.dart';
-import '../../theme/neumorphic_styles.dart';
 import '../utils/contrast_utils.dart';
 import 'focus_wrapper.dart';
 
@@ -32,17 +31,15 @@ class NeumorphicRadio<T> extends StatelessWidget {
     final isSelected = value == groupValue;
 
     final isDarkMode = theme.brightness == Brightness.dark;
+    final resolvedBackgroundColor =
+        theme.cardBackgroundColor ?? theme.colorScheme.surface;
     final baseActiveColor = activeColor ?? theme.colorScheme.primary;
     final effectiveActiveColor = ContrastUtils.getAccessibleIconColor(
       iconColor: baseActiveColor,
-      backgroundColor: isDarkMode
-          ? NeumorphicStyles.darkBackground
-          : NeumorphicStyles.lightBackground,
+      backgroundColor: resolvedBackgroundColor,
       isDarkMode: isDarkMode,
     );
 
-    final resolvedBackgroundColor =
-        theme.cardBackgroundColor ?? theme.colorScheme.surface;
     final resolvedBorder =
         theme.switchBorder ??
         theme.inputBorder ??
@@ -80,7 +77,7 @@ class NeumorphicRadio<T> extends StatelessWidget {
             height: size,
             decoration: BoxDecoration(
               color: isSelected
-                  ? effectiveActiveColor.withValues(alpha: 0.1)
+                  ? effectiveActiveColor.withValues(alpha: 0.15)
                   : resolvedBackgroundColor,
               shape: BoxShape.circle,
               border: resolvedBorder,

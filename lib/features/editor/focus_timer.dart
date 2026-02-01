@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
 import '../../shared/widgets/app_buttons.dart';
+import '../../l10n/app_localizations.dart';
 
 class FocusTimerSheet extends StatefulWidget {
   const FocusTimerSheet({super.key});
@@ -55,6 +56,7 @@ class _FocusTimerSheetState extends State<FocusTimerSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final minutes = _remaining.inMinutes
         .remainder(60)
@@ -88,12 +90,15 @@ class _FocusTimerSheetState extends State<FocusTimerSheet> {
           Row(
             children: [
               Expanded(
-                child: AppButtons.secondary(label: 'Reset', onPressed: _reset),
+                child: AppButtons.secondary(
+                  label: l10n.retry,
+                  onPressed: _reset,
+                ),
               ),
               const SizedBox(width: Spacing.m),
               Expanded(
                 child: AppButtons.primary(
-                  label: _running ? 'Pause' : 'Start',
+                  label: _running ? l10n.pause : l10n.start,
                   onPressed: _running ? _pause : _start,
                 ),
               ),

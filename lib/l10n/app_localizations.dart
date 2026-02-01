@@ -2765,7 +2765,7 @@ abstract class AppLocalizations {
   /// No description provided for @createFirstNovelSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Create your first novel to get started'**
+  /// **'Create your first novel to get started.'**
   String get createFirstNovelSubtitle;
 
   /// No description provided for @navigationError.
@@ -3037,6 +3037,588 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to load logs'**
   String get failedToLoadLogs;
+
+  /// No description provided for @wordCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Word count: {count}'**
+  String wordCount(int count);
+
+  /// No description provided for @characterCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Character count: {count}'**
+  String characterCount(int count);
+
+  /// No description provided for @startWriting.
+  ///
+  /// In en, this message translates to:
+  /// **'Start writing...'**
+  String get startWriting;
+
+  /// No description provided for @failedToLoadChapter.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load chapter: {error}'**
+  String failedToLoadChapter(String error);
+
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get saving;
+
+  /// No description provided for @wordCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Word Count'**
+  String get wordCountLabel;
+
+  /// No description provided for @characterCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Character Count'**
+  String get characterCountLabel;
+
+  /// No description provided for @discard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discard;
+
+  /// No description provided for @saveShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveShortcut;
+
+  /// No description provided for @previewShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get previewShortcut;
+
+  /// No description provided for @boldShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Bold'**
+  String get boldShortcut;
+
+  /// No description provided for @italicShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Italic'**
+  String get italicShortcut;
+
+  /// No description provided for @underlineShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Underline'**
+  String get underlineShortcut;
+
+  /// No description provided for @headingShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Heading'**
+  String get headingShortcut;
+
+  /// No description provided for @insertLinkShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Insert link'**
+  String get insertLinkShortcut;
+
+  /// No description provided for @shortcutsHelpShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Shortcuts help'**
+  String get shortcutsHelpShortcut;
+
+  /// No description provided for @closeShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeShortcut;
+
+  /// No description provided for @designSystemStyleGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Design System Style Guide'**
+  String get designSystemStyleGuide;
+
+  /// No description provided for @headlineLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Headline Large'**
+  String get headlineLarge;
+
+  /// No description provided for @headlineMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Headline Medium'**
+  String get headlineMedium;
+
+  /// No description provided for @titleLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Title Large'**
+  String get titleLarge;
+
+  /// No description provided for @bodyLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Body Large'**
+  String get bodyLarge;
+
+  /// No description provided for @bodyMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Body Medium'**
+  String get bodyMedium;
+
+  /// No description provided for @primaryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary Button'**
+  String get primaryButton;
+
+  /// No description provided for @disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get disabled;
+
+  /// No description provided for @checkboxState.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkbox State: {value}'**
+  String checkboxState(bool value);
+
+  /// No description provided for @option1.
+  ///
+  /// In en, this message translates to:
+  /// **'Option 1'**
+  String get option1;
+
+  /// No description provided for @option2.
+  ///
+  /// In en, this message translates to:
+  /// **'Option 2'**
+  String get option2;
+
+  /// No description provided for @switchState.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch State: {value}'**
+  String switchState(bool value);
+
+  /// No description provided for @sliderValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Value: {value}'**
+  String sliderValue(String value);
+
+  /// No description provided for @enterTextHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter text here...'**
+  String get enterTextHere;
+
+  /// No description provided for @selectAnOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an option'**
+  String get selectAnOption;
+
+  /// No description provided for @optionA.
+  ///
+  /// In en, this message translates to:
+  /// **'Option A'**
+  String get optionA;
+
+  /// No description provided for @optionB.
+  ///
+  /// In en, this message translates to:
+  /// **'Option B'**
+  String get optionB;
+
+  /// No description provided for @optionC.
+  ///
+  /// In en, this message translates to:
+  /// **'Option C'**
+  String get optionC;
+
+  /// No description provided for @contrastIssuesDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Contrast Issues Detected'**
+  String get contrastIssuesDetected;
+
+  /// No description provided for @foundContrastIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Found {count} contrast issue(s) that may affect readability.'**
+  String foundContrastIssues(int count);
+
+  /// No description provided for @allGood.
+  ///
+  /// In en, this message translates to:
+  /// **'All Good!'**
+  String get allGood;
+
+  /// No description provided for @allGoodContrast.
+  ///
+  /// In en, this message translates to:
+  /// **'All text elements meet WCAG 2.1 AA contrast standards.'**
+  String get allGoodContrast;
+
+  /// No description provided for @ignore.
+  ///
+  /// In en, this message translates to:
+  /// **'Ignore'**
+  String get ignore;
+
+  /// No description provided for @applyBestFix.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Best Fix'**
+  String get applyBestFix;
+
+  /// No description provided for @moreMenuComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'More menu coming soon'**
+  String get moreMenuComingSoon;
+
+  /// No description provided for @styleGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Style Guide'**
+  String get styleGuide;
+
+  /// No description provided for @themeFactoryNotDefined.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme factory not defined any themes, using default theme.'**
+  String get themeFactoryNotDefined;
+
+  /// No description provided for @progressPercentage.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}%'**
+  String progressPercentage(int percent);
+
+  /// No description provided for @review.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get review;
+
+  /// No description provided for @wordsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Words'**
+  String get wordsLabel;
+
+  /// No description provided for @charsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Chars'**
+  String get charsLabel;
+
+  /// No description provided for @readLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Read'**
+  String get readLabel;
+
+  /// No description provided for @streakLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak'**
+  String get streakLabel;
+
+  /// No description provided for @pause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get pause;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @editMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit mode'**
+  String get editMode;
+
+  /// No description provided for @previewMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview mode'**
+  String get previewMode;
+
+  /// No description provided for @quote.
+  ///
+  /// In en, this message translates to:
+  /// **'Quote'**
+  String get quote;
+
+  /// No description provided for @inlineCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Inline code'**
+  String get inlineCode;
+
+  /// No description provided for @bulletedList.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulleted list'**
+  String get bulletedList;
+
+  /// No description provided for @numberedList.
+  ///
+  /// In en, this message translates to:
+  /// **'Numbered list'**
+  String get numberedList;
+
+  /// No description provided for @previewTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get previewTab;
+
+  /// No description provided for @editTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editTab;
+
+  /// No description provided for @noExpandedSummaryAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No expanded summary available.'**
+  String get noExpandedSummaryAvailable;
+
+  /// No description provided for @analyze.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze'**
+  String get analyze;
+
+  /// No description provided for @youreOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline. {message}'**
+  String youreOffline(String message);
+
+  /// No description provided for @download.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get download;
+
+  /// No description provided for @moreActions.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get moreActions;
+
+  /// No description provided for @doubleTapToOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Double tap to open. Long press for actions.'**
+  String get doubleTapToOpen;
+
+  /// No description provided for @more.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get more;
+
+  /// No description provided for @pressD.
+  ///
+  /// In en, this message translates to:
+  /// **'Press D'**
+  String get pressD;
+
+  /// No description provided for @pressEnter.
+  ///
+  /// In en, this message translates to:
+  /// **'Press Enter'**
+  String get pressEnter;
+
+  /// No description provided for @pressDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Press Delete'**
+  String get pressDelete;
+
+  /// No description provided for @exitPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit preview'**
+  String get exitPreview;
+
+  /// No description provided for @saveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveLabel;
+
+  /// No description provided for @exitZenMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit Zen mode'**
+  String get exitZenMode;
+
+  /// No description provided for @clearSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get clearSearch;
+
+  /// No description provided for @notSignedInLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Not signed in'**
+  String get notSignedInLabel;
+
+  /// No description provided for @stylePreviewGrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Style preview grid'**
+  String get stylePreviewGrid;
+
+  /// No description provided for @themeOceanDepths.
+  ///
+  /// In en, this message translates to:
+  /// **'Ocean Depths'**
+  String get themeOceanDepths;
+
+  /// No description provided for @themeSunsetBoulevard.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunset Boulevard'**
+  String get themeSunsetBoulevard;
+
+  /// No description provided for @themeForestCanopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Forest Canopy'**
+  String get themeForestCanopy;
+
+  /// No description provided for @themeModernMinimalist.
+  ///
+  /// In en, this message translates to:
+  /// **'Modern Minimalist'**
+  String get themeModernMinimalist;
+
+  /// No description provided for @themeGoldenHour.
+  ///
+  /// In en, this message translates to:
+  /// **'Golden Hour'**
+  String get themeGoldenHour;
+
+  /// No description provided for @themeArcticFrost.
+  ///
+  /// In en, this message translates to:
+  /// **'Arctic Frost'**
+  String get themeArcticFrost;
+
+  /// No description provided for @themeDesertRose.
+  ///
+  /// In en, this message translates to:
+  /// **'Desert Rose'**
+  String get themeDesertRose;
+
+  /// No description provided for @themeTechInnovation.
+  ///
+  /// In en, this message translates to:
+  /// **'Tech Innovation'**
+  String get themeTechInnovation;
+
+  /// No description provided for @themeBotanicalGarden.
+  ///
+  /// In en, this message translates to:
+  /// **'Botanical Garden'**
+  String get themeBotanicalGarden;
+
+  /// No description provided for @themeMidnightGalaxy.
+  ///
+  /// In en, this message translates to:
+  /// **'Midnight Galaxy'**
+  String get themeMidnightGalaxy;
+
+  /// No description provided for @standardLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard Light'**
+  String get standardLight;
+
+  /// No description provided for @warmPaper.
+  ///
+  /// In en, this message translates to:
+  /// **'Warm Paper'**
+  String get warmPaper;
+
+  /// No description provided for @coolGrey.
+  ///
+  /// In en, this message translates to:
+  /// **'Cool Grey'**
+  String get coolGrey;
+
+  /// No description provided for @sepiaLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sepia'**
+  String get sepiaLabel;
+
+  /// No description provided for @standardDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard Dark'**
+  String get standardDark;
+
+  /// No description provided for @midnight.
+  ///
+  /// In en, this message translates to:
+  /// **'Midnight'**
+  String get midnight;
+
+  /// No description provided for @darkSepia.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Sepia'**
+  String get darkSepia;
+
+  /// No description provided for @deepOcean.
+  ///
+  /// In en, this message translates to:
+  /// **'Deep Ocean'**
+  String get deepOcean;
+
+  /// No description provided for @youreOfflineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline'**
+  String get youreOfflineLabel;
+
+  /// No description provided for @changesWillSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes will sync when you\'re back online'**
+  String get changesWillSync;
+
+  /// No description provided for @changesWillSyncCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} change(s) will sync when you\'re back online'**
+  String changesWillSyncCount(int count);
 }
 
 class _AppLocalizationsDelegate

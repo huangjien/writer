@@ -1,6 +1,33 @@
 import 'package:flutter/material.dart';
 
 import '../../../theme/themes.dart';
+import '../../../l10n/app_localizations.dart';
+
+String _getThemeLabel(AppThemeFamily family, BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
+  switch (family) {
+    case AppThemeFamily.oceanDepths:
+      return l10n.themeOceanDepths;
+    case AppThemeFamily.sunsetBoulevard:
+      return l10n.themeSunsetBoulevard;
+    case AppThemeFamily.forestCanopy:
+      return l10n.themeForestCanopy;
+    case AppThemeFamily.modernMinimalist:
+      return l10n.themeModernMinimalist;
+    case AppThemeFamily.goldenHour:
+      return l10n.themeGoldenHour;
+    case AppThemeFamily.arcticFrost:
+      return l10n.themeArcticFrost;
+    case AppThemeFamily.desertRose:
+      return l10n.themeDesertRose;
+    case AppThemeFamily.techInnovation:
+      return l10n.themeTechInnovation;
+    case AppThemeFamily.botanicalGarden:
+      return l10n.themeBotanicalGarden;
+    case AppThemeFamily.midnightGalaxy:
+      return l10n.themeMidnightGalaxy;
+  }
+}
 
 class ThemePreviewGrid extends StatelessWidget {
   const ThemePreviewGrid({
@@ -20,7 +47,7 @@ class ThemePreviewGrid extends StatelessWidget {
       children: [
         for (final def in themeFactoryThemes)
           ThemePreviewTile(
-            label: def.label,
+            label: _getThemeLabel(def.id, context),
             family: def.id,
             selected: def.id == selected,
             onTap: () => onSelected(def.id),

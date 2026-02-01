@@ -7,6 +7,7 @@ import 'package:writer/shared/widgets/neumorphic_slider.dart';
 import 'package:writer/shared/widgets/neumorphic_switch.dart';
 import 'package:writer/shared/widgets/neumorphic_textfield.dart';
 import 'package:writer/theme/design_tokens.dart';
+import '../../l10n/app_localizations.dart';
 
 class StyleGuideScreen extends StatefulWidget {
   const StyleGuideScreen({super.key});
@@ -25,8 +26,9 @@ class _StyleGuideScreenState extends State<StyleGuideScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Design System Style Guide')),
+      appBar: AppBar(title: Text(l10n.designSystemStyleGuide)),
       body: ListView(
         padding: const EdgeInsets.all(Spacing.xl),
         children: [
@@ -36,23 +38,23 @@ class _StyleGuideScreenState extends State<StyleGuideScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Headline Large',
+                  l10n.headlineLarge,
                   style: Theme.of(context).textTheme.headlineLarge,
                 ),
                 Text(
-                  'Headline Medium',
+                  l10n.headlineMedium,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 Text(
-                  'Title Large',
+                  l10n.titleLarge,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 Text(
-                  'Body Large',
+                  l10n.bodyLarge,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 Text(
-                  'Body Medium',
+                  l10n.bodyMedium,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
@@ -64,13 +66,10 @@ class _StyleGuideScreenState extends State<StyleGuideScreen> {
               children: [
                 NeumorphicButton(
                   onPressed: () {},
-                  child: const Text('Primary Button'),
+                  child: Text(l10n.primaryButton),
                 ),
                 const SizedBox(width: Spacing.m),
-                const NeumorphicButton(
-                  onPressed: null,
-                  child: Text('Disabled'),
-                ),
+                NeumorphicButton(onPressed: null, child: Text(l10n.disabled)),
               ],
             ),
           ),
@@ -83,7 +82,7 @@ class _StyleGuideScreenState extends State<StyleGuideScreen> {
                   onChanged: (v) => setState(() => _checkboxValue = v ?? false),
                 ),
                 const SizedBox(width: Spacing.m),
-                Text('Checkbox State: $_checkboxValue'),
+                Text(l10n.checkboxState(_checkboxValue)),
               ],
             ),
           ),
@@ -99,7 +98,7 @@ class _StyleGuideScreenState extends State<StyleGuideScreen> {
                       onChanged: (v) => setState(() => _radioValue = v!),
                     ),
                     const SizedBox(width: Spacing.s),
-                    const Text('Option 1'),
+                    Text(l10n.option1),
                   ],
                 ),
                 const SizedBox(height: Spacing.s),
@@ -111,7 +110,7 @@ class _StyleGuideScreenState extends State<StyleGuideScreen> {
                       onChanged: (v) => setState(() => _radioValue = v!),
                     ),
                     const SizedBox(width: Spacing.s),
-                    const Text('Option 2'),
+                    Text(l10n.option2),
                   ],
                 ),
               ],
@@ -126,7 +125,7 @@ class _StyleGuideScreenState extends State<StyleGuideScreen> {
                   onChanged: (v) => setState(() => _switchValue = v),
                 ),
                 const SizedBox(width: Spacing.m),
-                Text('Switch State: $_switchValue'),
+                Text(l10n.switchState(_switchValue)),
               ],
             ),
           ),
@@ -140,7 +139,7 @@ class _StyleGuideScreenState extends State<StyleGuideScreen> {
                   max: 100,
                   onChanged: (v) => setState(() => _sliderValue = v),
                 ),
-                Text('Value: ${_sliderValue.toStringAsFixed(1)}'),
+                Text(l10n.sliderValue(_sliderValue.toStringAsFixed(1))),
               ],
             ),
           ),
@@ -148,18 +147,18 @@ class _StyleGuideScreenState extends State<StyleGuideScreen> {
             'Input Fields',
             NeumorphicTextField(
               controller: _textController,
-              hintText: 'Enter text here...',
+              hintText: l10n.enterTextHere,
             ),
           ),
           _buildSection(
             'Dropdowns',
             NeumorphicDropdown<String>(
               value: _dropdownValue,
-              hint: const Text('Select an option'),
-              items: const [
-                DropdownMenuItem(value: 'A', child: Text('Option A')),
-                DropdownMenuItem(value: 'B', child: Text('Option B')),
-                DropdownMenuItem(value: 'C', child: Text('Option C')),
+              hint: Text(l10n.selectAnOption),
+              items: [
+                DropdownMenuItem(value: 'A', child: Text(l10n.optionA)),
+                DropdownMenuItem(value: 'B', child: Text(l10n.optionB)),
+                DropdownMenuItem(value: 'C', child: Text(l10n.optionC)),
               ],
               onChanged: (v) => setState(() => _dropdownValue = v),
             ),

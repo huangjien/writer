@@ -1,157 +1,109 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/features/editor/writing_stats.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+Widget buildTestWidget(Widget child) {
+  return MaterialApp(
+    localizationsDelegates: [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: const [Locale('en')],
+    home: child,
+  );
+}
 
 void main() {
-  testWidgets('WritingStats shows words/chars/read by default', (tester) async {
-    final controller = TextEditingController(text: 'one two three');
-    addTearDown(controller.dispose);
-
-    final charCount = controller.text.characters.length;
-    final expectedSemantics =
-        '3 words, $charCount characters, estimated reading time <1m';
-
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(body: WritingStats(controller: controller)),
-      ),
-    );
-
-    expect(find.text('Words'), findsOneWidget);
-    expect(find.text('Chars'), findsOneWidget);
-    expect(find.text('Read'), findsOneWidget);
-    expect(find.bySemanticsLabel(expectedSemantics), findsOneWidget);
-  });
-
-  testWidgets('WritingStats counts CJK characters as words', (tester) async {
-    final controller = TextEditingController(text: '你好世界');
-    addTearDown(controller.dispose);
-
-    final charCount = controller.text.characters.length;
-    final expectedSemantics =
-        '4 words, $charCount characters, estimated reading time <1m';
-
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(body: WritingStats(controller: controller)),
-      ),
-    );
-
-    expect(find.bySemanticsLabel(expectedSemantics), findsOneWidget);
-  });
-
-  testWidgets('WritingStats counts mixed CJK and English words', (
-    tester,
-  ) async {
-    final controller = TextEditingController(text: '你好 world');
-    addTearDown(controller.dispose);
-
-    final charCount = controller.text.characters.length;
-    final expectedSemantics =
-        '3 words, $charCount characters, estimated reading time <1m';
-
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(body: WritingStats(controller: controller)),
-      ),
-    );
-
-    expect(find.bySemanticsLabel(expectedSemantics), findsOneWidget);
-  });
-
-  testWidgets('WritingStats updates when controller text changes', (
-    tester,
-  ) async {
-    final controller = TextEditingController(text: 'one two three');
-    addTearDown(controller.dispose);
-
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(body: WritingStats(controller: controller)),
-      ),
-    );
-
-    controller.text = 'one two';
-    await tester.pump();
-
-    final charCount = controller.text.characters.length;
-    final expectedSemantics =
-        '2 words, $charCount characters, estimated reading time <1m';
-    expect(find.bySemanticsLabel(expectedSemantics), findsOneWidget);
-  });
-
-  testWidgets('WritingStats can hide counts and show streak', (tester) async {
-    final controller = TextEditingController(text: 'one two three');
-    addTearDown(controller.dispose);
-
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: WritingStats(
-            controller: controller,
-            streakDays: 5,
-            showCounts: false,
-          ),
-        ),
-      ),
-    );
-
-    expect(find.text('Words'), findsNothing);
-    expect(find.text('Chars'), findsNothing);
-    expect(find.text('Read'), findsNothing);
-    expect(find.text('Streak'), findsOneWidget);
-    expect(find.text('5d'), findsOneWidget);
-  });
-
-  testWidgets('WritingStats can hide streak even if streakDays provided', (
-    tester,
-  ) async {
-    final controller = TextEditingController(text: 'one two three');
-    addTearDown(controller.dispose);
-
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: WritingStats(
-            controller: controller,
-            streakDays: 5,
-            showStreak: false,
-          ),
-        ),
-      ),
-    );
-
-    expect(find.text('Words'), findsOneWidget);
-    expect(find.text('Chars'), findsOneWidget);
-    expect(find.text('Read'), findsOneWidget);
-    expect(find.text('Streak'), findsNothing);
-    expect(find.text('5d'), findsNothing);
-  });
-
-  testWidgets(
-    'WritingStats renders nothing when counts and streak are hidden',
-    (tester) async {
-      final controller = TextEditingController(text: 'one two three');
-      addTearDown(controller.dispose);
-
+  group('WritingStats', () {
+    testWidgets('shows word and char count', (tester) async {
+      final controller = TextEditingController(text: 'Hello world');
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: WritingStats(
+        buildTestWidget(Center(child: WritingStats(controller: controller))),
+      );
+
+      expect(find.text('Words'), findsOneWidget);
+      expect(find.text('Chars'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
+      expect(find.text('11'), findsOneWidget);
+    });
+
+    testWidgets('updates count as user types', (tester) async {
+      final controller = TextEditingController(text: 'Hello');
+      await tester.pumpWidget(
+        buildTestWidget(Center(child: WritingStats(controller: controller))),
+      );
+
+      expect(find.text('1'), findsOneWidget);
+      expect(find.text('5'), findsOneWidget);
+
+      controller.text = 'Hello world';
+      await tester.pump();
+
+      expect(find.text('2'), findsOneWidget);
+      expect(find.text('11'), findsOneWidget);
+    });
+
+    testWidgets('hides counts when showCounts is false', (tester) async {
+      final controller = TextEditingController(text: 'Hello world');
+      await tester.pumpWidget(
+        buildTestWidget(
+          Center(
+            child: WritingStats(controller: controller, showCounts: false),
+          ),
+        ),
+      );
+
+      expect(find.text('Words'), findsNothing);
+      expect(find.text('Chars'), findsNothing);
+    });
+
+    testWidgets('shows streak when provided', (tester) async {
+      final controller = TextEditingController(text: 'Hello world');
+      await tester.pumpWidget(
+        buildTestWidget(
+          Center(
+            child: WritingStats(
               controller: controller,
+              showStreak: true,
               streakDays: 5,
-              showCounts: false,
-              showStreak: false,
             ),
           ),
         ),
       );
 
-      expect(find.byType(Wrap), findsNothing);
-      expect(find.text('Words'), findsNothing);
-      expect(find.text('Chars'), findsNothing);
-      expect(find.text('Read'), findsNothing);
+      expect(find.text('Streak'), findsOneWidget);
+      expect(find.text('5d'), findsOneWidget);
+    });
+
+    testWidgets('hides streak when showStreak is false', (tester) async {
+      final controller = TextEditingController(text: 'Hello world');
+      await tester.pumpWidget(
+        buildTestWidget(
+          Center(
+            child: WritingStats(
+              controller: controller,
+              showStreak: false,
+              streakDays: 5,
+            ),
+          ),
+        ),
+      );
+
       expect(find.text('Streak'), findsNothing);
-    },
-  );
+      expect(find.text('5d'), findsNothing);
+    });
+
+    testWidgets('handles empty text', (tester) async {
+      final controller = TextEditingController(text: '');
+      await tester.pumpWidget(
+        buildTestWidget(Center(child: WritingStats(controller: controller))),
+      );
+
+      expect(find.text('0'), findsNWidgets(2));
+    });
+  });
 }

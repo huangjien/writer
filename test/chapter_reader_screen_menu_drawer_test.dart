@@ -81,7 +81,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byIcon(Icons.menu_open), findsOneWidget);
     await tester.tap(find.byIcon(Icons.menu_open));
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(find.byType(Drawer), findsOneWidget);
   });
 }

@@ -52,6 +52,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     }
 
     final l10n = AppLocalizations.of(context)!;
+    final isRTL = Directionality.of(context) == TextDirection.rtl;
     return Stack(
       children: [
         Container(
@@ -62,7 +63,13 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
               left: BorderSide(
                 color: Theme.of(
                   context,
-                ).colorScheme.outline.withValues(alpha: 0.2),
+                ).colorScheme.outline.withValues(alpha: isRTL ? 0 : 0.2),
+                width: 1,
+              ),
+              right: BorderSide(
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: isRTL ? 0.2 : 0),
                 width: 1,
               ),
             ),

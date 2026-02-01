@@ -179,6 +179,8 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
   Future<void> _saveContent() async {
     if (!_hasUnsavedChanges) return;
 
+    final l10n = AppLocalizations.of(context)!;
+
     setState(() {
       _isSaving = true;
     });
@@ -220,7 +222,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
         });
         showEnhancedToast(
           context,
-          message: 'Saved',
+          message: l10n.saved,
           tone: EnhancedToastTone.success,
         );
         // Refresh chapters list
@@ -382,7 +384,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
 
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Loading...')),
+        appBar: AppBar(title: Text(l10n.loadingProgress)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -574,8 +576,8 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                       child: RichTextEditor(
                         controller: _contentController,
                         preview: _preview,
-                        hintText: 'Start writing...',
-                        semanticsLabel: 'Chapter content',
+                        hintText: l10n.startWriting,
+                        semanticsLabel: l10n.chapterContent,
                       ),
                     ),
                   ),
@@ -593,7 +595,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                       child: Semantics(
                         container: true,
                         liveRegion: true,
-                        label: 'Saving…',
+                        label: l10n.saving,
                         child: ExcludeSemantics(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -607,7 +609,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
                               ),
                               const SizedBox(width: Spacing.s),
                               Text(
-                                'Saving...',
+                                l10n.saving,
                                 style: theme.textTheme.bodyMedium,
                               ),
                             ],

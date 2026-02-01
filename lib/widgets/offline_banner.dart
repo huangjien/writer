@@ -5,6 +5,7 @@ import '../state/network_monitor_provider.dart';
 import '../theme/design_tokens.dart';
 import '../theme/theme_extensions.dart';
 import '../shared/widgets/neumorphic_button.dart';
+import '../l10n/app_localizations.dart';
 
 /// Warning banner displayed when offline with pending operations
 /// Shows at the top of the screen or below the app bar
@@ -22,6 +23,7 @@ class OfflineBanner extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final isOnline = ref.watch(isOnlineProvider);
     final hasPending = ref.watch(hasPendingOperationsProvider);
     final pendingCountAsync = ref.watch(pendingOperationsCountProvider);
@@ -31,8 +33,8 @@ class OfflineBanner extends ConsumerWidget {
     final showBanner = !isOnline && hasPending;
     final pendingCount = pendingCountAsync.value;
     final message = (showPendingCount && pendingCount != null)
-        ? '$pendingCount change${pendingCount == 1 ? '' : 's'} will sync when you\'re back online'
-        : 'Changes will sync when you\'re back online';
+        ? l10n.changesWillSyncCount(pendingCount)
+        : l10n.changesWillSync;
 
     return AnimatedSwitcher(
       duration: Motion.medium,
@@ -52,7 +54,7 @@ class OfflineBanner extends ConsumerWidget {
                 child: Semantics(
                   container: true,
                   liveRegion: true,
-                  label: 'You\'re offline. $message',
+                  label: l10n.youreOfflineLabel,
                   child: ExcludeSemantics(
                     child: Container(
                       decoration: BoxDecoration(
@@ -80,7 +82,7 @@ class OfflineBanner extends ConsumerWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    'You\'re offline',
+                                    l10n.youreOfflineLabel,
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       color:
                                           theme.colorScheme.onTertiaryContainer,
@@ -125,7 +127,7 @@ class OfflineBanner extends ConsumerWidget {
                                   depth: 4,
                                   color: theme.colorScheme.tertiaryContainer,
                                   child: Text(
-                                    'Retry',
+                                    l10n.retry,
                                     style: TextStyle(
                                       color:
                                           theme.colorScheme.onTertiaryContainer,

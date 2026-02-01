@@ -1434,7 +1434,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createFirstNovelSubtitle =>
-      'Create your first novel to get started';
+      'Create your first novel to get started.';
 
   @override
   String get navigationError => 'Navigation error';
@@ -1571,4 +1571,317 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get failedToLoadLogs => 'Failed to load logs';
+
+  @override
+  String wordCount(int count) {
+    return 'Word count: $count';
+  }
+
+  @override
+  String characterCount(int count) {
+    return 'Character count: $count';
+  }
+
+  @override
+  String get startWriting => 'Start writing...';
+
+  @override
+  String failedToLoadChapter(String error) {
+    return 'Failed to load chapter: $error';
+  }
+
+  @override
+  String get saving => 'Saving…';
+
+  @override
+  String get wordCountLabel => 'Word Count';
+
+  @override
+  String get characterCountLabel => 'Character Count';
+
+  @override
+  String get discard => 'Discard';
+
+  @override
+  String get saveShortcut => 'Save';
+
+  @override
+  String get previewShortcut => 'Preview';
+
+  @override
+  String get boldShortcut => 'Bold';
+
+  @override
+  String get italicShortcut => 'Italic';
+
+  @override
+  String get underlineShortcut => 'Underline';
+
+  @override
+  String get headingShortcut => 'Heading';
+
+  @override
+  String get insertLinkShortcut => 'Insert link';
+
+  @override
+  String get shortcutsHelpShortcut => 'Shortcuts help';
+
+  @override
+  String get closeShortcut => 'Close';
+
+  @override
+  String get designSystemStyleGuide => 'Design System Style Guide';
+
+  @override
+  String get headlineLarge => 'Headline Large';
+
+  @override
+  String get headlineMedium => 'Headline Medium';
+
+  @override
+  String get titleLarge => 'Title Large';
+
+  @override
+  String get bodyLarge => 'Body Large';
+
+  @override
+  String get bodyMedium => 'Body Medium';
+
+  @override
+  String get primaryButton => 'Primary Button';
+
+  @override
+  String get disabled => 'Disabled';
+
+  @override
+  String checkboxState(bool value) {
+    return 'Checkbox State: $value';
+  }
+
+  @override
+  String get option1 => 'Option 1';
+
+  @override
+  String get option2 => 'Option 2';
+
+  @override
+  String switchState(bool value) {
+    return 'Switch State: $value';
+  }
+
+  @override
+  String sliderValue(String value) {
+    return 'Value: $value';
+  }
+
+  @override
+  String get enterTextHere => 'Enter text here...';
+
+  @override
+  String get selectAnOption => 'Select an option';
+
+  @override
+  String get optionA => 'Option A';
+
+  @override
+  String get optionB => 'Option B';
+
+  @override
+  String get optionC => 'Option C';
+
+  @override
+  String get contrastIssuesDetected => 'Contrast Issues Detected';
+
+  @override
+  String foundContrastIssues(int count) {
+    return 'Found $count contrast issue(s) that may affect readability.';
+  }
+
+  @override
+  String get allGood => 'All Good!';
+
+  @override
+  String get allGoodContrast =>
+      'All text elements meet WCAG 2.1 AA contrast standards.';
+
+  @override
+  String get ignore => 'Ignore';
+
+  @override
+  String get applyBestFix => 'Apply Best Fix';
+
+  @override
+  String get moreMenuComingSoon => 'More menu coming soon';
+
+  @override
+  String get styleGuide => 'Style Guide';
+
+  @override
+  String get themeFactoryNotDefined =>
+      'Theme factory not defined any themes, using default theme.';
+
+  @override
+  String progressPercentage(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String get review => 'Review';
+
+  @override
+  String get wordsLabel => 'Words';
+
+  @override
+  String get charsLabel => 'Chars';
+
+  @override
+  String get readLabel => 'Read';
+
+  @override
+  String get streakLabel => 'Streak';
+
+  @override
+  String get pause => 'Pause';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get editMode => 'Edit mode';
+
+  @override
+  String get previewMode => 'Preview mode';
+
+  @override
+  String get quote => 'Quote';
+
+  @override
+  String get inlineCode => 'Inline code';
+
+  @override
+  String get bulletedList => 'Bulleted list';
+
+  @override
+  String get numberedList => 'Numbered list';
+
+  @override
+  String get previewTab => 'Preview';
+
+  @override
+  String get editTab => 'Edit';
+
+  @override
+  String get noExpandedSummaryAvailable => 'No expanded summary available.';
+
+  @override
+  String get analyze => 'Analyze';
+
+  @override
+  String youreOffline(String message) {
+    return 'You\'re offline. $message';
+  }
+
+  @override
+  String get download => 'Download';
+
+  @override
+  String get moreActions => 'More actions';
+
+  @override
+  String get doubleTapToOpen => 'Double tap to open. Long press for actions.';
+
+  @override
+  String get more => 'More';
+
+  @override
+  String get pressD => 'Press D';
+
+  @override
+  String get pressEnter => 'Press Enter';
+
+  @override
+  String get pressDelete => 'Press Delete';
+
+  @override
+  String get exitPreview => 'Exit preview';
+
+  @override
+  String get saveLabel => 'Save';
+
+  @override
+  String get exitZenMode => 'Exit Zen mode';
+
+  @override
+  String get clearSearch => 'Clear search';
+
+  @override
+  String get notSignedInLabel => 'Not signed in';
+
+  @override
+  String get stylePreviewGrid => 'Style preview grid';
+
+  @override
+  String get themeOceanDepths => 'Ocean Depths';
+
+  @override
+  String get themeSunsetBoulevard => 'Sunset Boulevard';
+
+  @override
+  String get themeForestCanopy => 'Forest Canopy';
+
+  @override
+  String get themeModernMinimalist => 'Modern Minimalist';
+
+  @override
+  String get themeGoldenHour => 'Golden Hour';
+
+  @override
+  String get themeArcticFrost => 'Arctic Frost';
+
+  @override
+  String get themeDesertRose => 'Desert Rose';
+
+  @override
+  String get themeTechInnovation => 'Tech Innovation';
+
+  @override
+  String get themeBotanicalGarden => 'Botanical Garden';
+
+  @override
+  String get themeMidnightGalaxy => 'Midnight Galaxy';
+
+  @override
+  String get standardLight => 'Standard Light';
+
+  @override
+  String get warmPaper => 'Warm Paper';
+
+  @override
+  String get coolGrey => 'Cool Grey';
+
+  @override
+  String get sepiaLabel => 'Sepia';
+
+  @override
+  String get standardDark => 'Standard Dark';
+
+  @override
+  String get midnight => 'Midnight';
+
+  @override
+  String get darkSepia => 'Dark Sepia';
+
+  @override
+  String get deepOcean => 'Deep Ocean';
+
+  @override
+  String get youreOfflineLabel => 'You\'re offline';
+
+  @override
+  String get changesWillSync => 'Changes will sync when you\'re back online';
+
+  @override
+  String changesWillSyncCount(int count) {
+    return '$count change(s) will sync when you\'re back online';
+  }
 }

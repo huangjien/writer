@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/theme_extensions.dart';
-import '../../theme/neumorphic_styles.dart';
 import '../utils/contrast_utils.dart';
 import 'focus_wrapper.dart';
 
@@ -29,18 +28,16 @@ class NeumorphicCheckbox extends StatelessWidget {
     final theme = Theme.of(context);
 
     final isDarkMode = theme.brightness == Brightness.dark;
+    final resolvedBackgroundColor =
+        theme.cardBackgroundColor ?? theme.colorScheme.surface;
     final baseActiveColor = activeColor ?? theme.colorScheme.primary;
     final effectiveActiveColor = ContrastUtils.getAccessibleIconColor(
       iconColor: baseActiveColor,
-      backgroundColor: isDarkMode
-          ? NeumorphicStyles.darkBackground
-          : NeumorphicStyles.lightBackground,
+      backgroundColor: resolvedBackgroundColor,
       isDarkMode: isDarkMode,
     );
 
     final resolvedBorderRadius = BorderRadius.circular(Radii.s);
-    final resolvedBackgroundColor =
-        theme.cardBackgroundColor ?? theme.colorScheme.surface;
     final resolvedBorder =
         theme.switchBorder ??
         theme.inputBorder ??
@@ -77,7 +74,7 @@ class NeumorphicCheckbox extends StatelessWidget {
             height: size,
             decoration: BoxDecoration(
               color: value
-                  ? effectiveActiveColor.withValues(alpha: 0.1)
+                  ? effectiveActiveColor.withValues(alpha: 0.15)
                   : resolvedBackgroundColor,
               borderRadius: resolvedBorderRadius,
               border: resolvedBorder,

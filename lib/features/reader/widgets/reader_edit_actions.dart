@@ -38,7 +38,7 @@ class ReaderEditActions extends ConsumerWidget {
     final bool previewEnabled = editState.isDirty;
     final Widget previewBtn = AppButtons.icon(
       iconData: previewMode ? Icons.visibility_off : Icons.visibility,
-      tooltip: 'Review',
+      tooltip: l10n.review,
       onPressed: onTogglePreview,
       enabled: previewEnabled,
     );

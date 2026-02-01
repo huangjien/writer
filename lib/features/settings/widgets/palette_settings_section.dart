@@ -17,7 +17,42 @@ class PaletteSettingsSection extends ConsumerWidget {
     final themes = themeFactoryThemes;
     final hasThemes = themes.isNotEmpty;
     final dropdownItems = themes
-        .map((t) => DropdownMenuItem(value: t.id, child: Text(t.label)))
+        .map((t) {
+          String label;
+          switch (t.id) {
+            case AppThemeFamily.oceanDepths:
+              label = l10n.themeOceanDepths;
+              break;
+            case AppThemeFamily.sunsetBoulevard:
+              label = l10n.themeSunsetBoulevard;
+              break;
+            case AppThemeFamily.forestCanopy:
+              label = l10n.themeForestCanopy;
+              break;
+            case AppThemeFamily.modernMinimalist:
+              label = l10n.themeModernMinimalist;
+              break;
+            case AppThemeFamily.goldenHour:
+              label = l10n.themeGoldenHour;
+              break;
+            case AppThemeFamily.arcticFrost:
+              label = l10n.themeArcticFrost;
+              break;
+            case AppThemeFamily.desertRose:
+              label = l10n.themeDesertRose;
+              break;
+            case AppThemeFamily.techInnovation:
+              label = l10n.themeTechInnovation;
+              break;
+            case AppThemeFamily.botanicalGarden:
+              label = l10n.themeBotanicalGarden;
+              break;
+            case AppThemeFamily.midnightGalaxy:
+              label = l10n.themeMidnightGalaxy;
+              break;
+          }
+          return DropdownMenuItem(value: t.id, child: Text(label));
+        })
         .toList(growable: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +75,7 @@ class PaletteSettingsSection extends ConsumerWidget {
             child: ListTile(
               leading: const Icon(Icons.palette_outlined),
               title: Text(l10n.colorTheme),
-              subtitle: const Text('主题工厂未定义任何主题，已使用默认主题。'),
+              subtitle: Text(l10n.themeFactoryNotDefined),
             ),
           ),
         ] else if (!themeState.hasSeparateDark) ...[

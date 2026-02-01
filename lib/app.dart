@@ -16,6 +16,13 @@ import 'l10n/app_localizations.dart';
 import 'services/app_lifecycle_monitor.dart';
 import 'shared/widgets/error_boundary.dart';
 
+// Sidebar UX Strategy:
+// - Primary navigation: LEFT side (drawer)
+// - Secondary tools (AI, formatting): RIGHT side (aligned)
+// - Mobile: Bottom navigation bar
+// - RTL support: Automatic position flip
+// See: /docs/sidebar_ux_guidelines.md
+
 class App extends ConsumerWidget {
   const App({super.key});
 

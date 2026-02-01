@@ -62,7 +62,9 @@ class _MemberNovelsList extends ConsumerWidget {
         if (novels.isEmpty) {
           return NovelEmptyState(
             title: l10n?.noNovelsFound ?? 'No novels found.',
-            subtitle: 'Create your first novel to get started.',
+            subtitle:
+                l10n?.createFirstNovelSubtitle ??
+                'Create your first novel to get started.',
             actionLabel: l10n?.createNovel ?? 'Create Novel',
             onAction: () => context.push('/create-novel'),
           );

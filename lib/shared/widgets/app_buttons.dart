@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
+import '../../theme/theme_extensions.dart';
+import '../../theme/ui_styles.dart';
+import '../utils/contrast_utils.dart';
 import 'focus_wrapper.dart';
 import 'micro_interactions.dart';
 import 'neumorphic_button.dart';
@@ -41,6 +44,27 @@ class AppButtons {
         .toColor();
 
     return highContrastColor;
+  }
+
+  /// Returns a high-contrast icon color based on the actual button background color
+  static Color _getAccessibleIconColor(
+    BuildContext context,
+    Color iconColor,
+    Color? backgroundColor,
+  ) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final actualButtonBackground =
+        backgroundColor ??
+        theme.buttonBackgroundColor ??
+        theme.colorScheme.surface;
+
+    return ContrastUtils.getAccessibleIconColor(
+      iconColor: iconColor,
+      backgroundColor: actualButtonBackground,
+      isDarkMode: isDark,
+    );
   }
 
   /// Primary filled button with elevation
@@ -235,11 +259,17 @@ class AppButtons {
     return Builder(
       builder: (context) {
         final theme = Theme.of(context);
-        final defaultIconColor = _getAccessiblePrimaryTextColor(
-          context,
-          theme.colorScheme.primary,
-        );
-        final effectiveColor = color ?? defaultIconColor;
+        final primaryColor = theme.colorScheme.primary;
+        final buttonBackground = theme.buttonBackgroundColor;
+        final effectiveColor =
+            color ??
+            _getAccessibleIconColor(context, primaryColor, buttonBackground);
+
+        // For Flat Design style with primary background, use onPrimary for better contrast
+        final finalIconColor =
+            (theme.uiStyleFamily == UiStyleFamily.flatDesign && color == null)
+            ? theme.colorScheme.onPrimary
+            : effectiveColor;
 
         // If filled, use Neumorphic style
         if (filled) {
@@ -247,7 +277,7 @@ class AppButtons {
             iconData: iconData,
             onPressed: onPressed,
             tooltip: tooltip,
-            iconColor: effectiveColor,
+            iconColor: finalIconColor,
             enabled: enabled,
             focusPadding: focusPadding,
           );
@@ -263,7 +293,7 @@ class AppButtons {
               borderRadius: BorderRadius.circular(Radii.m),
               depth: 4,
               padding: EdgeInsets.zero,
-              child: Icon(iconData, color: effectiveColor),
+              child: Icon(iconData, color: finalIconColor),
             ),
           ),
         );
@@ -309,11 +339,11 @@ class AppButtons {
     return Builder(
       builder: (context) {
         final theme = Theme.of(context);
-        final defaultIconColor = _getAccessiblePrimaryTextColor(
-          context,
-          theme.colorScheme.primary,
-        );
-        final effectiveIconColor = iconColor ?? defaultIconColor;
+        final primaryColor = theme.colorScheme.primary;
+        final buttonBackground = backgroundColor ?? theme.buttonBackgroundColor;
+        final effectiveIconColor =
+            iconColor ??
+            _getAccessibleIconColor(context, primaryColor, buttonBackground);
 
         final button = PressScale(
           enabled: enabled,

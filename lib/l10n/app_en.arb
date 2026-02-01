@@ -618,5 +618,155 @@
   "lines": "lines",
   "load": "Load",
   "noLogsAvailable": "No logs available.",
-  "failedToLoadLogs": "Failed to load logs"
+  "failedToLoadLogs": "Failed to load logs",
+  "wordCount": "Word count: {count}",
+  "@wordCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "characterCount": "Character count: {count}",
+  "@characterCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "startWriting": "Start writing...",
+  "failedToLoadChapter": "Failed to load chapter: {error}",
+  "@failedToLoadChapter": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "saving": "Saving…",
+  "wordCountLabel": "Word Count",
+  "characterCountLabel": "Character Count",
+  "discard": "Discard",
+  "saveShortcut": "Save",
+  "previewShortcut": "Preview",
+  "boldShortcut": "Bold",
+  "italicShortcut": "Italic",
+  "underlineShortcut": "Underline",
+  "headingShortcut": "Heading",
+  "insertLinkShortcut": "Insert link",
+  "shortcutsHelpShortcut": "Shortcuts help",
+  "closeShortcut": "Close",
+  "designSystemStyleGuide": "Design System Style Guide",
+  "headlineLarge": "Headline Large",
+  "headlineMedium": "Headline Medium",
+  "titleLarge": "Title Large",
+  "bodyLarge": "Body Large",
+  "bodyMedium": "Body Medium",
+  "primaryButton": "Primary Button",
+  "disabled": "Disabled",
+  "checkboxState": "Checkbox State: {value}",
+  "@checkboxState": {
+    "placeholders": {
+      "value": {"type": "bool"}
+    }
+  },
+  "option1": "Option 1",
+  "option2": "Option 2",
+  "switchState": "Switch State: {value}",
+  "@switchState": {
+    "placeholders": {
+      "value": {"type": "bool"}
+    }
+  },
+  "sliderValue": "Value: {value}",
+  "@sliderValue": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "enterTextHere": "Enter text here...",
+  "selectAnOption": "Select an option",
+  "optionA": "Option A",
+  "optionB": "Option B",
+  "optionC": "Option C",
+  "contrastIssuesDetected": "Contrast Issues Detected",
+  "foundContrastIssues": "Found {count} contrast issue(s) that may affect readability.",
+  "@foundContrastIssues": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "allGood": "All Good!",
+  "allGoodContrast": "All text elements meet WCAG 2.1 AA contrast standards.",
+  "ignore": "Ignore",
+  "applyBestFix": "Apply Best Fix",
+  "moreMenuComingSoon": "More menu coming soon",
+  "styleGuide": "Style Guide",
+  "themeFactoryNotDefined": "Theme factory not defined any themes, using default theme.",
+  "progressPercentage": "{percent}%",
+  "@progressPercentage": {
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+  "review": "Review",
+  "wordsLabel": "Words",
+  "charsLabel": "Chars",
+  "readLabel": "Read",
+  "streakLabel": "Streak",
+  "pause": "Pause",
+  "start": "Start",
+  "editMode": "Edit mode",
+  "previewMode": "Preview mode",
+  "quote": "Quote",
+  "inlineCode": "Inline code",
+  "bulletedList": "Bulleted list",
+  "numberedList": "Numbered list",
+  "previewTab": "Preview",
+  "editTab": "Edit",
+  "noExpandedSummaryAvailable": "No expanded summary available.",
+  "analyze": "Analyze",
+  "youreOffline": "You're offline. {message}",
+  "@youreOffline": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "download": "Download",
+  "moreActions": "More actions",
+  "doubleTapToOpen": "Double tap to open. Long press for actions.",
+  "more": "More",
+  "pressD": "Press D",
+  "pressEnter": "Press Enter",
+  "pressDelete": "Press Delete",
+  "exitPreview": "Exit preview",
+  "saveLabel": "Save",
+  "exitZenMode": "Exit Zen mode",
+  "createFirstNovelSubtitle": "Create your first novel to get started.",
+  "searchLabel": "Search",
+  "clearSearch": "Clear search",
+  "notSignedInLabel": "Not signed in",
+  "stylePreviewGrid": "Style preview grid",
+  "themeOceanDepths": "Ocean Depths",
+  "themeSunsetBoulevard": "Sunset Boulevard",
+  "themeForestCanopy": "Forest Canopy",
+  "themeModernMinimalist": "Modern Minimalist",
+  "themeGoldenHour": "Golden Hour",
+  "themeArcticFrost": "Arctic Frost",
+  "themeDesertRose": "Desert Rose",
+  "themeTechInnovation": "Tech Innovation",
+  "themeBotanicalGarden": "Botanical Garden",
+  "themeMidnightGalaxy": "Midnight Galaxy",
+  "standardLight": "Standard Light",
+  "warmPaper": "Warm Paper",
+  "coolGrey": "Cool Grey",
+  "sepiaLabel": "Sepia",
+  "standardDark": "Standard Dark",
+  "midnight": "Midnight",
+  "darkSepia": "Dark Sepia",
+  "deepOcean": "Deep Ocean",
+  "youreOfflineLabel": "You're offline",
+  "changesWillSync": "Changes will sync when you're back online",
+  "changesWillSyncCount": "{count} change(s) will sync when you're back online",
+  "@changesWillSyncCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "retry": "Retry"
 }

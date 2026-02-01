@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/theme_extensions.dart';
-import '../../theme/neumorphic_styles.dart';
 import '../utils/contrast_utils.dart';
 import 'focus_wrapper.dart';
 
@@ -31,17 +30,15 @@ class NeumorphicSwitch extends StatelessWidget {
     const thumbSize = height - (padding * 2);
 
     final isDarkMode = theme.brightness == Brightness.dark;
+    final backgroundColor =
+        theme.switchBackgroundColor ?? theme.colorScheme.surface;
     final baseActiveColor =
         activeColor ?? theme.switchActiveColor ?? theme.colorScheme.primary;
     final effectiveActiveColor = ContrastUtils.getAccessibleTextColor(
       textColor: baseActiveColor,
-      backgroundColor: isDarkMode
-          ? NeumorphicStyles.darkBackground
-          : NeumorphicStyles.lightBackground,
+      backgroundColor: backgroundColor,
       isDarkMode: isDarkMode,
     );
-    final backgroundColor =
-        theme.switchBackgroundColor ?? theme.colorScheme.surface;
     final thumbColor = theme.switchThumbColor ?? theme.colorScheme.surface;
 
     final switchWidget = Semantics(
@@ -76,7 +73,7 @@ class NeumorphicSwitch extends StatelessWidget {
             padding: const EdgeInsets.all(padding),
             decoration: BoxDecoration(
               color: value
-                  ? effectiveActiveColor.withValues(alpha: 0.1)
+                  ? effectiveActiveColor.withValues(alpha: 0.15)
                   : backgroundColor,
               borderRadius: BorderRadius.circular(height / 2),
               border: theme.switchBorder,
@@ -96,7 +93,15 @@ class NeumorphicSwitch extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: value ? effectiveActiveColor : thumbColor,
                       shape: BoxShape.circle,
-                      boxShadow: theme.styleCardShadows,
+                      boxShadow: value
+                          ? [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.2),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : theme.buttonShadows,
                     ),
                   ),
                 ),

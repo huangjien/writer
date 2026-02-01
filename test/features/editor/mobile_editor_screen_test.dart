@@ -273,7 +273,7 @@ void main() {
       find.byType(CircularProgressIndicator),
       findsAtLeastNWidgets(1),
     ); // Saving indicator inside FAB or at bottom
-    expect(find.text('Saving...'), findsOneWidget);
+    expect(find.text('Saving…'), findsOneWidget);
 
     await tester.pumpAndSettle(); // Finish saving
 
@@ -678,7 +678,7 @@ void main() {
     expect(find.text('Focus timer'), findsOneWidget);
     expect(find.text('25:00'), findsOneWidget);
     expect(find.text('Start'), findsOneWidget);
-    expect(find.text('Reset'), findsOneWidget);
+    expect(find.text('Retry'), findsOneWidget);
   });
 
   testWidgets('writing prompts inserts selected prompt into content', (

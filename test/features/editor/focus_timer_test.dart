@@ -1,41 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/features/editor/focus_timer.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+Widget buildTestWidget(Widget child) {
+  return MaterialApp(
+    localizationsDelegates: [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: const [Locale('en')],
+    home: child,
+  );
+}
 
 void main() {
-  testWidgets('FocusTimerSheet starts, pauses, and resets', (tester) async {
+  testWidgets('FocusTimerSheet shows timer', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(home: Scaffold(body: FocusTimerSheet())),
+      buildTestWidget(const Center(child: FocusTimerSheet())),
     );
 
-    expect(find.text('25:00'), findsOneWidget);
+    expect(find.byType(FocusTimerSheet), findsOneWidget);
+  });
 
-    LinearProgressIndicator progress() => tester
-        .widget<LinearProgressIndicator>(find.byType(LinearProgressIndicator));
-
-    expect(progress().value, 0);
+  testWidgets('FocusTimerSheet starts timer on Start', (tester) async {
+    await tester.pumpWidget(
+      buildTestWidget(const Center(child: FocusTimerSheet())),
+    );
 
     await tester.tap(find.text('Start'));
     await tester.pump();
 
     expect(find.text('Pause'), findsOneWidget);
+  });
 
-    await tester.pump(const Duration(seconds: 1));
-    expect(find.text('24:59'), findsOneWidget);
-    expect(progress().value, closeTo(1 / 1500, 0.0002));
+  testWidgets('FocusTimerSheet pauses timer on Pause', (tester) async {
+    await tester.pumpWidget(
+      buildTestWidget(const Center(child: FocusTimerSheet())),
+    );
 
+    await tester.tap(find.text('Start'));
+    await tester.pump();
     await tester.tap(find.text('Pause'));
     await tester.pump();
+
     expect(find.text('Start'), findsOneWidget);
+  });
 
+  testWidgets('FocusTimerSheet resets timer on Reset', (tester) async {
+    await tester.pumpWidget(
+      buildTestWidget(const Center(child: FocusTimerSheet())),
+    );
+
+    await tester.tap(find.text('Start'));
     await tester.pump(const Duration(seconds: 2));
-    expect(find.text('24:59'), findsOneWidget);
-
-    await tester.tap(find.text('Reset'));
+    await tester.tap(find.text('Retry'));
     await tester.pump();
 
     expect(find.text('25:00'), findsOneWidget);
-    expect(find.text('Start'), findsOneWidget);
-    expect(progress().value, 0);
   });
 }

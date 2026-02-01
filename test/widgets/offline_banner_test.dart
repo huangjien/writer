@@ -4,8 +4,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/widgets/offline_banner.dart';
 import 'package:writer/state/sync_service_provider.dart';
 import 'package:writer/state/network_monitor_provider.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
+  Widget buildTestWidget(Widget child) {
+    return MaterialApp(
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('en')],
+      home: child,
+    );
+  }
+
   testWidgets('OfflineBanner shows nothing when online', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
@@ -14,7 +29,7 @@ void main() {
           hasPendingOperationsProvider.overrideWith((ref) => false),
           pendingOperationsCountProvider.overrideWith((ref) async => 0),
         ],
-        child: const MaterialApp(home: OfflineBanner()),
+        child: buildTestWidget(const OfflineBanner()),
       ),
     );
 
@@ -32,7 +47,7 @@ void main() {
             hasPendingOperationsProvider.overrideWith((ref) => false),
             pendingOperationsCountProvider.overrideWith((ref) async => 0),
           ],
-          child: const MaterialApp(home: OfflineBanner()),
+          child: buildTestWidget(const OfflineBanner()),
         ),
       );
 
@@ -51,15 +66,15 @@ void main() {
             hasPendingOperationsProvider.overrideWith((ref) => true),
             pendingOperationsCountProvider.overrideWith((ref) async => 5),
           ],
-          child: const MaterialApp(home: OfflineBanner()),
+          child: buildTestWidget(const OfflineBanner()),
         ),
       );
 
-      await tester.pump(); // Process stream
+      await tester.pump();
 
       expect(find.text("You're offline"), findsOneWidget);
       expect(
-        find.text("5 changes will sync when you're back online"),
+        find.text("5 change(s) will sync when you're back online"),
         findsOneWidget,
       );
     },
@@ -76,7 +91,7 @@ void main() {
           hasPendingOperationsProvider.overrideWith((ref) => true),
           pendingOperationsCountProvider.overrideWith((ref) async => 1),
         ],
-        child: MaterialApp(home: OfflineBanner(onRetry: () => retried = true)),
+        child: buildTestWidget(OfflineBanner(onRetry: () => retried = true)),
       ),
     );
 
@@ -97,8 +112,8 @@ void main() {
           hasPendingOperationsProvider.overrideWith((ref) => true),
           pendingOperationsCountProvider.overrideWith((ref) async => 1),
         ],
-        child: MaterialApp(
-          home: OfflineBanner(onDismiss: () => dismissed = true),
+        child: buildTestWidget(
+          OfflineBanner(onDismiss: () => dismissed = true),
         ),
       ),
     );
