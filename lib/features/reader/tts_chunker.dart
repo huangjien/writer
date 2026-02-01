@@ -114,9 +114,3 @@ List<TtsChunk> chunkTextWithOffsets(
 
   return chunks;
 }
-
-@Deprecated('Use chunkTextWithOffsets to preserve original offsets.')
-List<String> chunkText(String text, {int maxLen = 1200}) {
-  final chunks = chunkTextWithOffsets(text, maxLen: maxLen);
-  return chunks.map((c) => c.text).toList();
-}
