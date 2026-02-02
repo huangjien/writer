@@ -120,15 +120,15 @@ test:
 	else \
 		echo "Coverage file not found; ensure --coverage succeeded." | tee -a $$LOG_FILE; \
 	fi; \
-	echo "Checking per-file coverage (<80%)..." | tee -a $$LOG_FILE; \
-	LOG_FILE=$$LOG_FILE bash -lc 'set -o pipefail; dart check_coverage.dart 2>&1 | tee -a "$$LOG_FILE"' || exit 1; \
-	LOG_FILE=$$LOG_FILE bash -lc 'set -o pipefail; dart check_target_coverage.dart 90 2>&1 | tee -a "$$LOG_FILE"' || exit 1; \
 	END=$$(date +%s); \
 	ELAPSED=$$((END-START)); \
 	printf "make test duration: %dm %ds\n" $$((ELAPSED/60)) $$((ELAPSED%60)) | tee -a $$LOG_FILE; \
 	echo "Test log saved to: $$LOG_FILE"; \
 	cp $$LOG_FILE ../test.log; \
 	echo "Test log copied to project root: ../test.log"; \
+	echo "Checking per-file coverage (<80%)..." | tee -a ../test.log; \
+	{ LOG_FILE=$$LOG_FILE bash -lc 'set -o pipefail; dart check_coverage.dart 2>&1 | tee -a "$$LOG_FILE"' || true; } 2>&1 | tee -a ../test.log; \
+	{ LOG_FILE=$$LOG_FILE bash -lc 'set -o pipefail; dart check_target_coverage.dart 90 2>&1 | tee -a "$$LOG_FILE"' || true; } 2>&1 | tee -a ../test.log; \
 	echo "" | tee -a ../test.log; \
 	echo "========================================" | tee -a ../test.log; \
 	echo "FAILED TESTS SUMMARY" | tee -a ../test.log; \

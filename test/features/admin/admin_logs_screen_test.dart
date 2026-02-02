@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,7 +10,6 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/storage_service_provider.dart';
-import 'package:writer/shared/widgets/neumorphic_button.dart';
 
 class MockRemoteRepository extends Mock implements RemoteRepository {}
 
@@ -20,6 +21,38 @@ void main() {
   group('AdminLogsScreen', () {
     late MockRemoteRepository mockRemoteRepository;
     late SessionNotifier sessionNotifier;
+    late List<Map<String, dynamic>> sampleLogs;
+
+    setUp(() async {
+      mockRemoteRepository = MockRemoteRepository();
+      final prefs = await SharedPreferences.getInstance();
+      final storageService = LocalStorageService(prefs);
+      sessionNotifier = SessionNotifier(storageService);
+
+      sampleLogs = [
+        {
+          'timestamp': '2026-02-02 12:34:18,329',
+          'level': 'INFO',
+          'message': 'Application started',
+          'logger': 'authorconsole.app',
+          'request_id': 'req-123',
+        },
+        {
+          'timestamp': '2026-02-02 12:34:19,123',
+          'level': 'ERROR',
+          'message': 'Database connection failed',
+          'logger': 'authorconsole.db',
+          'request_id': 'req-124',
+        },
+        {
+          'timestamp': '2026-02-02 12:34:20,456',
+          'level': 'WARNING',
+          'message': 'High memory usage detected',
+          'logger': 'authorconsole.monitor',
+          'request_id': 'req-125',
+        },
+      ];
+    });
 
     Widget buildTestApp({required Widget child, required List overrides}) {
       return ProviderScope(
@@ -32,18 +65,36 @@ void main() {
       );
     }
 
-    setUp(() async {
-      mockRemoteRepository = MockRemoteRepository();
-      final prefs = await SharedPreferences.getInstance();
-      final storageService = LocalStorageService(prefs);
-      sessionNotifier = SessionNotifier(storageService);
-    });
-
     testWidgets('displays loading state initially', (tester) async {
-      when(() => mockRemoteRepository.getAdminLogs(lines: 1000)).thenAnswer(
+      when(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenAnswer(
         (_) async => Future.delayed(
           const Duration(milliseconds: 100),
-          () => 'Test logs',
+          () => {
+            'logs': '',
+            'metadata': {
+              'file': 'app.log',
+              'file_exists': true,
+              'total_lines': 0,
+              'filtered_lines': 0,
+              'size_bytes': 0,
+            },
+            'available_files': [
+              {
+                'index': 0,
+                'name': 'app.log',
+                'size_bytes': 1024,
+                'size_kb': 1.0,
+              },
+            ],
+          },
         ),
       );
 
@@ -57,20 +108,39 @@ void main() {
         ),
       );
 
-      // Don't pumpAndSettle here to keep the loading state
-      expect(find.byType(CircularProgressIndicator), findsNWidgets(2));
+      await tester.pump();
 
-      // Clean up by completing the future
+      expect(find.byType(CircularProgressIndicator), findsWidgets);
+
       await tester.pumpAndSettle();
     });
 
     testWidgets('displays logs when loaded successfully', (tester) async {
-      const testLogs =
-          '2023-01-01 12:00:00 INFO Application started\n2023-01-01 12:01:00 DEBUG User logged in';
+      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
 
       when(
-        () => mockRemoteRepository.getAdminLogs(lines: 1000),
-      ).thenAnswer((_) async => testLogs);
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'logs': logsString,
+          'metadata': {
+            'file': 'app.log',
+            'file_exists': true,
+            'total_lines': 3,
+            'filtered_lines': 3,
+            'size_bytes': 500,
+          },
+          'available_files': [
+            {'index': 0, 'name': 'app.log', 'size_bytes': 1024, 'size_kb': 1.0},
+          ],
+        },
+      );
 
       await tester.pumpWidget(
         buildTestApp(
@@ -85,15 +155,36 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(CircularProgressIndicator), findsNothing);
-      expect(find.byType(SelectableText), findsOneWidget);
-      expect(find.text(testLogs), findsOneWidget);
+      expect(find.text('INFO'), findsWidgets);
+      expect(find.text('ERROR'), findsWidgets);
+      expect(find.text('WARNING'), findsWidgets);
       expect(find.text('Admin Logs'), findsOneWidget);
     });
 
     testWidgets('displays no logs message when logs are null', (tester) async {
       when(
-        () => mockRemoteRepository.getAdminLogs(lines: 1000),
-      ).thenAnswer((_) async => null);
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'logs': '',
+          'metadata': {
+            'file': 'app.log',
+            'file_exists': true,
+            'total_lines': 0,
+            'filtered_lines': 0,
+            'size_bytes': 0,
+          },
+          'available_files': [
+            {'index': 0, 'name': 'app.log', 'size_bytes': 1024, 'size_kb': 1.0},
+          ],
+        },
+      );
 
       await tester.pumpWidget(
         buildTestApp(
@@ -108,14 +199,20 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(CircularProgressIndicator), findsNothing);
-      expect(find.text('No logs available.'), findsOneWidget);
+      expect(find.textContaining('No logs available'), findsOneWidget);
     });
 
     testWidgets('displays error message when loading fails', (tester) async {
       const errorMessage = 'Failed to fetch logs';
 
       when(
-        () => mockRemoteRepository.getAdminLogs(lines: 1000),
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
       ).thenThrow(Exception(errorMessage));
 
       await tester.pumpWidget(
@@ -136,12 +233,42 @@ void main() {
     });
 
     testWidgets('refresh button works correctly', (tester) async {
-      const initialLogs = 'Initial log content';
-      const refreshedLogs = 'Refreshed log content';
+      final initialLogs = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final refreshedLogs = [
+        {
+          'timestamp': '2026-02-02 12:35:00,000',
+          'level': 'INFO',
+          'message': 'Refreshed log',
+          'logger': 'authorconsole.app',
+        },
+      ];
+      final refreshedLogsString = refreshedLogs
+          .map((log) => jsonEncode(log))
+          .join('\n');
 
       when(
-        () => mockRemoteRepository.getAdminLogs(lines: 1000),
-      ).thenAnswer((_) async => initialLogs);
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'logs': initialLogs,
+          'metadata': {
+            'file': 'app.log',
+            'file_exists': true,
+            'total_lines': 3,
+            'filtered_lines': 3,
+            'size_bytes': 500,
+          },
+          'available_files': [
+            {'index': 0, 'name': 'app.log', 'size_bytes': 1024, 'size_kb': 1.0},
+          ],
+        },
+      );
 
       await tester.pumpWidget(
         buildTestApp(
@@ -155,75 +282,84 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Verify initial logs are displayed
-      expect(find.text(initialLogs), findsOneWidget);
+      expect(find.text('Application started'), findsOneWidget);
 
-      // Mock refreshed response
       when(
-        () => mockRemoteRepository.getAdminLogs(lines: 1000),
-      ).thenAnswer((_) async => refreshedLogs);
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'logs': refreshedLogsString,
+          'metadata': {
+            'file': 'app.log',
+            'file_exists': true,
+            'total_lines': 1,
+            'filtered_lines': 1,
+            'size_bytes': 100,
+          },
+          'available_files': [
+            {'index': 0, 'name': 'app.log', 'size_bytes': 1024, 'size_kb': 1.0},
+          ],
+        },
+      );
 
-      // Tap refresh button
       await tester.tap(find.byIcon(Icons.refresh));
       await tester.pumpAndSettle();
 
-      // Verify refreshed logs are displayed
-      expect(find.text(refreshedLogs), findsOneWidget);
-      expect(find.text(initialLogs), findsNothing);
+      expect(find.text('Refreshed log'), findsOneWidget);
+      expect(find.text('Application started'), findsNothing);
 
-      // Verify getAdminLogs was called twice (initial load + refresh)
-      verify(() => mockRemoteRepository.getAdminLogs(lines: 1000)).called(2);
-    });
-
-    testWidgets('number of lines input works correctly', (tester) async {
-      const testLogs = 'Test log content';
-
-      when(
-        () => mockRemoteRepository.getAdminLogs(lines: 1000),
-      ).thenAnswer((_) async => testLogs);
-
-      await tester.pumpWidget(
-        buildTestApp(
-          overrides: [
-            remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
-            sessionProvider.overrideWith((ref) => sessionNotifier),
-          ],
-          child: const AdminLogsScreen(),
+      verify(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
         ),
-      );
-
-      await tester.pumpAndSettle();
-
-      // Find the lines input field and load button
-      final linesField = find.byType(TextField);
-      final loadButton = find.text('Load');
-
-      expect(linesField, findsOneWidget);
-      expect(loadButton, findsOneWidget);
-
-      // Enter a new number of lines
-      await tester.enterText(linesField, '500');
-      await tester.pumpAndSettle();
-
-      // Mock response for new lines count
-      when(
-        () => mockRemoteRepository.getAdminLogs(lines: 500),
-      ).thenAnswer((_) async => 'Limited log content');
-
-      // Tap load button
-      await tester.tap(loadButton);
-      await tester.pumpAndSettle();
-
-      // Verify getAdminLogs was called with the new lines count
-      verify(() => mockRemoteRepository.getAdminLogs(lines: 500)).called(1);
+      ).called(greaterThanOrEqualTo(1));
     });
 
     testWidgets('scroll buttons functionality', (tester) async {
-      final longLogs = 'Line 1\n' * 100; // 100 lines for scrolling
+      final longLogs = List.generate(
+        100,
+        (i) => {
+          'timestamp': '2026-02-02 12:34:${i.toString().padLeft(2, '0')},000',
+          'level': i % 2 == 0 ? 'INFO' : 'DEBUG',
+          'message': 'Log message $i',
+          'logger': 'authorconsole.app',
+        },
+      );
+      final logsString = longLogs.map((log) => jsonEncode(log)).join('\n');
 
       when(
-        () => mockRemoteRepository.getAdminLogs(lines: 1000),
-      ).thenAnswer((_) async => longLogs);
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'logs': logsString,
+          'metadata': {
+            'file': 'app.log',
+            'file_exists': true,
+            'total_lines': 100,
+            'filtered_lines': 100,
+            'size_bytes': 10000,
+          },
+          'available_files': [
+            {'index': 0, 'name': 'app.log', 'size_bytes': 1024, 'size_kb': 1.0},
+          ],
+        },
+      );
 
       await tester.pumpWidget(
         buildTestApp(
@@ -237,30 +373,53 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Find scroll buttons
       final scrollToTopButton = find.byIcon(Icons.arrow_upward);
       final scrollToBottomButton = find.byIcon(Icons.arrow_downward);
 
       expect(scrollToTopButton, findsOneWidget);
       expect(scrollToBottomButton, findsOneWidget);
 
-      // Test scroll to bottom button
       await tester.tap(scrollToBottomButton);
       await tester.pumpAndSettle();
 
-      // Test scroll to top button
       await tester.tap(scrollToTopButton);
       await tester.pumpAndSettle();
 
-      // Both buttons should still be present
       expect(scrollToTopButton, findsOneWidget);
       expect(scrollToBottomButton, findsOneWidget);
     });
 
     testWidgets('load button is disabled during loading', (tester) async {
-      when(() => mockRemoteRepository.getAdminLogs(lines: 1000)).thenAnswer(
-        (_) async =>
-            Future.delayed(const Duration(seconds: 1), () => 'Test logs'),
+      when(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenAnswer(
+        (_) async => Future.delayed(
+          const Duration(seconds: 1),
+          () => {
+            'logs': '',
+            'metadata': {
+              'file': 'app.log',
+              'file_exists': true,
+              'total_lines': 0,
+              'filtered_lines': 0,
+              'size_bytes': 0,
+            },
+            'available_files': [
+              {
+                'index': 0,
+                'name': 'app.log',
+                'size_bytes': 1024,
+                'size_kb': 1.0,
+              },
+            ],
+          },
+        ),
       );
 
       await tester.pumpWidget(
@@ -273,24 +432,48 @@ void main() {
         ),
       );
 
-      // Find the load button
-      final loadButton = find.text('Load');
+      await tester.pump();
 
-      // During initial loading, button text should be hidden (replaced by spinner)
-      expect(loadButton, findsNothing);
-      expect(find.byType(NeumorphicButton), findsOneWidget);
+      final searchButton = find.text('Search');
 
-      // Wait for loading to complete
+      expect(searchButton, findsNothing);
+
       await tester.pumpAndSettle();
 
-      // After loading, button text should be visible again
-      expect(loadButton, findsOneWidget);
+      expect(searchButton, findsOneWidget);
     });
 
     testWidgets('refresh button is disabled during loading', (tester) async {
-      when(() => mockRemoteRepository.getAdminLogs(lines: 1000)).thenAnswer(
-        (_) async =>
-            Future.delayed(const Duration(seconds: 1), () => 'Test logs'),
+      when(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenAnswer(
+        (_) async => Future.delayed(
+          const Duration(seconds: 1),
+          () => {
+            'logs': '',
+            'metadata': {
+              'file': 'app.log',
+              'file_exists': true,
+              'total_lines': 0,
+              'filtered_lines': 0,
+              'size_bytes': 0,
+            },
+            'available_files': [
+              {
+                'index': 0,
+                'name': 'app.log',
+                'size_bytes': 1024,
+                'size_kb': 1.0,
+              },
+            ],
+          },
+        ),
       );
 
       await tester.pumpWidget(
@@ -303,27 +486,41 @@ void main() {
         ),
       );
 
-      // Find the refresh button
       final refreshButton = find.byIcon(Icons.refresh);
 
-      // During initial loading, button should be disabled
       expect(refreshButton, findsOneWidget);
 
-      // Wait for loading to complete
       await tester.pumpAndSettle();
 
-      // After loading, button should be enabled again
       expect(refreshButton, findsOneWidget);
     });
 
-    testWidgets('logs display with monospace font and green color', (
-      tester,
-    ) async {
-      const testLogs = 'Test log content with monospace font';
+    testWidgets('displays log entries with correct styling', (tester) async {
+      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
 
       when(
-        () => mockRemoteRepository.getAdminLogs(lines: 1000),
-      ).thenAnswer((_) async => testLogs);
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'logs': logsString,
+          'metadata': {
+            'file': 'app.log',
+            'file_exists': true,
+            'total_lines': 3,
+            'filtered_lines': 3,
+            'size_bytes': 500,
+          },
+          'available_files': [
+            {'index': 0, 'name': 'app.log', 'size_bytes': 1024, 'size_kb': 1.0},
+          ],
+        },
+      );
 
       await tester.pumpWidget(
         buildTestApp(
@@ -337,51 +534,10 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      final selectableText = tester.widget<SelectableText>(
-        find.byType(SelectableText),
-      );
-      final textStyle = selectableText.style!;
-
-      expect(textStyle.fontFamily, 'monospace');
-      expect(textStyle.fontSize, 12);
-      expect(textStyle.color, Colors.green);
-    });
-
-    testWidgets('logs display with correct styling', (tester) async {
-      const testLogs = 'Test log content';
-
-      when(
-        () => mockRemoteRepository.getAdminLogs(lines: 1000),
-      ).thenAnswer((_) async => testLogs);
-
-      await tester.pumpWidget(
-        buildTestApp(
-          overrides: [
-            remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
-            sessionProvider.overrideWith((ref) => sessionNotifier),
-          ],
-          child: const AdminLogsScreen(),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      // Verify the SelectableText exists and has the correct content
-      expect(find.byType(SelectableText), findsOneWidget);
-      expect(find.text(testLogs), findsOneWidget);
-
-      // Verify the styling properties
-      final selectableText = tester.widget<SelectableText>(
-        find.byType(SelectableText),
-      );
-      final textStyle = selectableText.style!;
-
-      expect(textStyle.fontFamily, 'monospace');
-      expect(textStyle.fontSize, 12);
-      expect(textStyle.color, Colors.green);
-
-      // Verify there's a SingleChildScrollView for scrolling
-      expect(find.byType(SingleChildScrollView), findsOneWidget);
+      expect(find.text('Application started'), findsOneWidget);
+      expect(find.text('Database connection failed'), findsOneWidget);
+      expect(find.text('High memory usage detected'), findsOneWidget);
+      expect(find.byType(ListView), findsOneWidget);
     });
   });
 }

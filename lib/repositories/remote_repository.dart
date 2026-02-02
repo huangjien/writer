@@ -378,4 +378,41 @@ class RemoteRepository {
     }
     return null;
   }
+
+  Future<Map<String, dynamic>?> getAdminLogsEnhanced({
+    int maxSizeKb = 50,
+    int fileIndex = 0,
+    String? level,
+    String? logger,
+    String? searchText,
+    String? startDate,
+    String? endDate,
+  }) async {
+    final queryParams = <String, String>{
+      'max_size_kb': maxSizeKb.toString(),
+      'file_index': fileIndex.toString(),
+    };
+
+    if (level != null && level.isNotEmpty) {
+      queryParams['level'] = level;
+    }
+    if (logger != null && logger.isNotEmpty) {
+      queryParams['logger'] = logger;
+    }
+    if (searchText != null && searchText.isNotEmpty) {
+      queryParams['search_text'] = searchText;
+    }
+    if (startDate != null && startDate.isNotEmpty) {
+      queryParams['start_date'] = startDate;
+    }
+    if (endDate != null && endDate.isNotEmpty) {
+      queryParams['end_date'] = endDate;
+    }
+
+    final data = await get('admin/logs/enhanced', queryParameters: queryParams);
+    if (data is Map<String, dynamic>) {
+      return data;
+    }
+    return null;
+  }
 }

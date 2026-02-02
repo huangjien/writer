@@ -132,6 +132,19 @@ class _NoopRemoteRepository implements RemoteRepository {
   }
 
   @override
+  Future<Map<String, dynamic>?> getAdminLogsEnhanced({
+    int maxSizeKb = 50,
+    int fileIndex = 0,
+    String? level,
+    String? logger,
+    String? searchText,
+    String? startDate,
+    String? endDate,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<TokenUsageHistory?> getUsageHistory({
     String? startDate,
     String? endDate,
