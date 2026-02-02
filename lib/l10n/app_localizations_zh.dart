@@ -1595,9 +1595,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get closeShortcut => '关闭';
 
   @override
-  String get fullscreenShortcut => '全屏';
-
-  @override
   String get designSystemStyleGuide => '设计系统样式指南';
 
   @override

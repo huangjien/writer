@@ -1630,9 +1630,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get closeShortcut => 'Close';
 
   @override
-  String get fullscreenShortcut => 'Fullscreen';
-
-  @override
   String get designSystemStyleGuide => 'Design System Style Guide';
 
   @override

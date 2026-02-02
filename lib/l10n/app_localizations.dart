@@ -3140,12 +3140,6 @@ abstract class AppLocalizations {
   /// **'Close'**
   String get closeShortcut;
 
-  /// No description provided for @fullscreenShortcut.
-  ///
-  /// In en, this message translates to:
-  /// **'Fullscreen'**
-  String get fullscreenShortcut;
-
   /// No description provided for @designSystemStyleGuide.
   ///
   /// In en, this message translates to:

@@ -132,7 +132,7 @@ class _KeyboardShortcutsDialogContent extends StatelessWidget {
                 _ShortcutItem(l10n.pause, 'Space'),
                 _ShortcutItem(l10n.nextChapter, getShortcutLabel('→')),
                 _ShortcutItem(l10n.previousChapter, getShortcutLabel('←')),
-                _ShortcutItem(l10n.fullscreenShortcut, 'F1'),
+                const _ShortcutItem('Fullscreen', 'F1'),
               ]),
               _buildShortcutGroup(context, l10n.settings, textStyle, [
                 _ShortcutItem('App Settings', getShortcutLabel('1')),
