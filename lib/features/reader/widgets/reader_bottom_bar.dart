@@ -182,20 +182,6 @@ class ReaderBottomBar extends StatelessWidget {
                 ],
               ),
             ),
-          SizedBox(width: spacing),
-          if (!editMode && showTtsControls) ...[
-            AppButtons.icon(
-              iconData: Icons.speed,
-              tooltip: l10n.ttsSpeechRate,
-              onPressed: onOpenTtsSettings,
-            ),
-            SizedBox(width: spacing),
-            AppButtons.icon(
-              iconData: Icons.record_voice_over,
-              tooltip: l10n.ttsVoice,
-              onPressed: onOpenTtsSettings,
-            ),
-          ],
         ],
       ),
     );

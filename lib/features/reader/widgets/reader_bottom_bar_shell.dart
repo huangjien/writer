@@ -58,9 +58,9 @@ class ReaderBottomBarShell extends StatelessWidget {
     final bool isCompact = maxWidth < compactWidth;
     final bool isRegular = maxWidth >= cozyWidth;
     final double spacing = isRegular
-        ? Spacing.l
-        : (isCompact ? Spacing.s : Spacing.m);
-    const double iconSize = 24.0;
+        ? Spacing.xs
+        : (isCompact ? Spacing.xxs : Spacing.xs);
+    const double iconSize = 20.0;
     final bool showPercent = !isCompact;
     final bool isWideForEdit = maxWidth >= 900.0;
 

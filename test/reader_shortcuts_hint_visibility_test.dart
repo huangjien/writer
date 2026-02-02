@@ -59,10 +59,6 @@ void main() {
 
       // Restore platform override before assertions to satisfy Flutter invariants.
       debugDefaultTargetPlatformOverride = previousOverride;
-
-      // Assert icon-only controls are present for Rate and Voice
-      expect(find.byIcon(Icons.speed), findsOneWidget);
-      expect(find.byIcon(Icons.record_voice_over), findsOneWidget);
     });
   });
 }

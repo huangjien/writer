@@ -36,7 +36,7 @@ class ReaderAppBar extends ConsumerWidget implements PreferredSizeWidget {
         ),
         Builder(
           builder: (context) => AppButtons.icon(
-            iconData: Icons.menu_open,
+            iconData: Icons.menu,
             onPressed: () => Scaffold.of(context).openDrawer(),
             tooltip: l10n.menu,
           ),

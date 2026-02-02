@@ -18,8 +18,9 @@ class RecentChapters extends ConsumerWidget {
             child: Text(AppLocalizations.of(context)!.noRecentChapters),
           );
         }
-        return ListView.builder(
+        return ListView.separated(
           itemCount: detailsList.length,
+          separatorBuilder: (context, index) => const SizedBox.shrink(),
           itemBuilder: (context, index) {
             final details = detailsList[index];
             return ListTile(

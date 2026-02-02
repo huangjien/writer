@@ -281,8 +281,6 @@ void main() {
     expect(find.byIcon(Icons.play_arrow), findsOneWidget);
     expect(find.byIcon(Icons.skip_previous), findsOneWidget);
     expect(find.byIcon(Icons.skip_next), findsOneWidget);
-    expect(find.byIcon(Icons.speed), findsOneWidget);
-    expect(find.byIcon(Icons.record_voice_over), findsOneWidget);
   });
 
   testWidgets('Edit button visible when permissions allow', (tester) async {

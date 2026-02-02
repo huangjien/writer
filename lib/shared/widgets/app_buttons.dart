@@ -293,7 +293,7 @@ class AppButtons {
               borderRadius: BorderRadius.circular(Radii.m),
               depth: 4,
               padding: EdgeInsets.zero,
-              child: Icon(iconData, color: finalIconColor),
+              child: Icon(iconData, color: finalIconColor, size: 20),
             ),
           ),
         );
@@ -354,7 +354,7 @@ class AppButtons {
               onPressed: enabled ? onPressed : null,
               padding: EdgeInsets.zero,
               color: backgroundColor,
-              child: Icon(iconData, color: effectiveIconColor),
+              child: Icon(iconData, color: effectiveIconColor, size: 20),
             ),
           ),
         );
