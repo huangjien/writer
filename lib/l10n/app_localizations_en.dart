@@ -1630,6 +1630,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get closeShortcut => 'Close';
 
   @override
+  String get fullscreenShortcut => 'Fullscreen';
+
+  @override
   String get designSystemStyleGuide => 'Design System Style Guide';
 
   @override
@@ -1884,4 +1887,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String changesWillSyncCount(int count) {
     return '$count change(s) will sync when you\'re back online';
   }
+
+  @override
+  String get toggleSidebar => 'Toggle Sidebar';
+
+  @override
+  String get quickSearch => 'Quick Search';
 }

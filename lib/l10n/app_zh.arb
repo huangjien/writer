@@ -852,5 +852,7 @@
       "count": {"type": "int"}
     }
   },
-  "retry": "重试"
+  "retry": "重试",
+  "toggleSidebar": "切换侧边栏",
+  "quickSearch": "快速搜索"
 }

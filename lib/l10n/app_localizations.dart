@@ -3140,6 +3140,12 @@ abstract class AppLocalizations {
   /// **'Close'**
   String get closeShortcut;
 
+  /// No description provided for @fullscreenShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'Fullscreen'**
+  String get fullscreenShortcut;
+
   /// No description provided for @designSystemStyleGuide.
   ///
   /// In en, this message translates to:
@@ -3619,6 +3625,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} change(s) will sync when you\'re back online'**
   String changesWillSyncCount(int count);
+
+  /// No description provided for @toggleSidebar.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle Sidebar'**
+  String get toggleSidebar;
+
+  /// No description provided for @quickSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Search'**
+  String get quickSearch;
 }
 
 class _AppLocalizationsDelegate

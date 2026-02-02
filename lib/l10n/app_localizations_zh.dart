@@ -1595,6 +1595,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get closeShortcut => '关闭';
 
   @override
+  String get fullscreenShortcut => '全屏';
+
+  @override
   String get designSystemStyleGuide => '设计系统样式指南';
 
   @override
@@ -1847,4 +1850,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String changesWillSyncCount(int count) {
     return '$count 项更改将在您重新上线时同步';
   }
+
+  @override
+  String get toggleSidebar => '切换侧边栏';
+
+  @override
+  String get quickSearch => '快速搜索';
 }

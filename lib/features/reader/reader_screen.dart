@@ -234,12 +234,12 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                     }
                   },
           ),
-          Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu_open),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-              tooltip: l10n.menu,
-            ),
+          AppButtons.icon(
+            iconData: Icons.menu_open,
+            tooltip: l10n.menu,
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
           ),
         ],
       ),

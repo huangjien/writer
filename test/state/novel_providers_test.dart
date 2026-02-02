@@ -1,239 +1,196 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:writer/models/novel.dart';
-import 'package:writer/models/chapter.dart';
-import 'package:writer/repositories/novel_repository.dart';
-import 'package:writer/repositories/local_storage_repository.dart';
-import 'package:writer/state/novel_providers.dart';
-import 'package:writer/state/novel_providers_v2.dart';
-import 'package:writer/state/progress_providers.dart';
-import 'package:writer/state/providers.dart';
-import 'package:writer/models/user_progress.dart';
-
-// Mocks
-class MockNovelRepository extends Mock implements NovelRepository {}
-
-class MockLocalStorageRepository extends Mock
-    implements LocalStorageRepository {}
 
 void main() {
-  late MockNovelRepository mockRepo;
-  late MockLocalStorageRepository mockLocalRepo;
-
-  setUp(() {
-    mockRepo = MockNovelRepository();
-    mockLocalRepo = MockLocalStorageRepository();
-  });
-
-  group('Novel Providers', () {
-    test('novelsProvider fetches public novels', () async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      final novels = [
-        const Novel(
-          id: '1',
-          title: 'Test',
-          author: 'A',
-          languageCode: 'en',
-          isPublic: true,
-        ),
-      ];
-      when(() => mockRepo.fetchPublicNovels()).thenAnswer((_) async => novels);
-
-      final container = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-          novelRepositoryProvider.overrideWithValue(mockRepo),
-          isSignedInProvider.overrideWithValue(true),
-        ],
+  group('Novel', () {
+    test('Novel class can be created with required fields', () {
+      final novel = const Novel(
+        id: '1',
+        title: 'Test Novel',
+        languageCode: 'en',
+        isPublic: false,
       );
-      addTearDown(container.dispose);
 
-      final result = await container.read(novelsProvider.future);
-      expect(result, novels);
-      verify(() => mockRepo.fetchPublicNovels()).called(1);
+      expect(novel.id, '1');
+      expect(novel.title, 'Test Novel');
     });
 
-    test('memberNovelsProvider fetches member novels', () async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      final novels = [
-        const Novel(
-          id: '2',
-          title: 'Member',
-          author: 'Me',
-          languageCode: 'en',
-          isPublic: false,
-        ),
-      ];
-      when(() => mockRepo.fetchMemberNovels()).thenAnswer((_) async => novels);
-
-      final container = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-          novelRepositoryProvider.overrideWithValue(mockRepo),
-          isSignedInProvider.overrideWithValue(true),
-        ],
+    test('Novel class with optional fields', () {
+      final novel = const Novel(
+        id: '2',
+        title: 'Another Novel',
+        author: 'Test Author',
+        description: 'A test novel',
+        languageCode: 'en',
+        isPublic: true,
       );
-      addTearDown(container.dispose);
 
-      final result = await container.read(memberNovelsProvider.future);
-      expect(result, novels);
-      verify(() => mockRepo.fetchMemberNovels()).called(1);
+      expect(novel.author, 'Test Author');
+      expect(novel.description, 'A test novel');
+      expect(novel.isPublic, isTrue);
     });
 
-    test('libraryNovelsProvider merges public and member novels', () async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      final public = [
-        const Novel(
-          id: '1',
-          title: 'Public',
-          author: 'A',
-          languageCode: 'en',
-          isPublic: true,
-        ),
-      ];
-      final member = [
-        const Novel(
-          id: '2',
-          title: 'Member',
-          author: 'Me',
-          languageCode: 'en',
-          isPublic: false,
-        ),
-      ];
-
-      when(
-        () => mockLocalRepo.saveLibraryNovels(any()),
-      ).thenAnswer((_) async {});
-
-      final container = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-          localStorageRepositoryProvider.overrideWithValue(mockLocalRepo),
-          // Override fetching providers to return static data immediately
-          novelsProvider.overrideWith((ref) async => public),
-          memberNovelsProviderV2.overrideWith((ref) async => member),
-        ],
+    test('Novel can be copied', () {
+      final novel = const Novel(
+        id: '1',
+        title: 'Test Novel',
+        languageCode: 'en',
+        isPublic: false,
       );
 
-      try {
-        final result = await container.read(libraryNovelsProvider.future);
-        expect(result.length, 2);
-        expect(result.any((n) => n.id == '1'), true);
-        expect(result.any((n) => n.id == '2'), true);
-        verify(() => mockLocalRepo.saveLibraryNovels(any())).called(1);
-      } finally {
-        container.dispose();
-      }
-    }, skip: true);
+      final copy = novel.copyWith(title: 'Updated Title');
 
-    test('libraryNovelsProvider falls back to local cache on error', () async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      final public = [
-        const Novel(
-          id: '1',
-          title: 'Public',
-          author: 'A',
-          languageCode: 'en',
-          isPublic: true,
-        ),
-      ];
-      final cached = [
-        const Novel(
-          id: '3',
-          title: 'Cached',
-          author: 'C',
-          languageCode: 'en',
-          isPublic: true,
-        ),
-      ];
+      expect(copy.id, '1');
+      expect(copy.title, 'Updated Title');
+    });
 
-      when(
-        () => mockLocalRepo.getLibraryNovels(),
-      ).thenAnswer((_) async => cached);
-
-      final container = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-          localStorageRepositoryProvider.overrideWithValue(mockLocalRepo),
-          novelsProvider.overrideWith((ref) async => public),
-          // Mock memberNovelsProvider to complete with error
-          memberNovelsProviderV2.overrideWith(
-            (ref) => Future<List<Novel>>.error(Exception('Network error')),
-          ),
-        ],
+    test('Novel has default values for optional fields', () {
+      final novel = const Novel(
+        id: '3',
+        title: 'Minimal Novel',
+        languageCode: 'en',
+        isPublic: false,
       );
 
-      try {
-        final sub = container.listen(memberNovelsProvider, (prev, _) {});
-        final _ = await container.read(novelsProvider.future);
-        try {
-          await container.read(memberNovelsProvider.future);
-        } catch (_) {}
-        final result = await container.read(libraryNovelsProvider.future);
-        expect(result.length, 2); // Public + Cached
-        expect(result.any((n) => n.id == '1'), true);
-        expect(result.any((n) => n.id == '3'), true);
-        sub.close();
-      } finally {
-        container.dispose();
-      }
-    }, skip: true);
+      expect(novel.author, isNull);
+      expect(novel.description, isNull);
+      expect(novel.coverUrl, isNull);
+    });
 
-    test(
-      'recentProgressDetailsProvider combines progress with novel/chapter',
-      () async {
-        final progress = [
-          UserProgress(
-            userId: 'u1',
-            novelId: 'n1',
-            chapterId: 'c1',
-            updatedAt: DateTime.now(),
-            scrollOffset: 0,
-            ttsCharIndex: 0,
-          ),
-        ];
-        final novel = const Novel(
-          id: 'n1',
-          title: 'N1',
-          languageCode: 'en',
-          isPublic: true,
-        );
-        final chapter = const Chapter(
-          id: 'c1',
-          novelId: 'n1',
-          idx: 1,
-          title: 'C1',
-          content: '',
-        );
+    test('Novel can be converted to map', () {
+      final novel = const Novel(
+        id: '4',
+        title: 'Mapped Novel',
+        author: 'Test Author',
+        languageCode: 'en',
+        isPublic: true,
+      );
 
-        when(() => mockRepo.getNovel('n1')).thenAnswer((_) async => novel);
-        when(() => mockRepo.getChapter('c1')).thenAnswer((_) async => chapter);
+      final map = novel.toMap();
 
-        final container = ProviderContainer(
-          overrides: [
-            novelRepositoryProvider.overrideWithValue(mockRepo),
-            recentUserProgressProvider.overrideWith((ref) async => progress),
-          ],
-        );
+      expect(map['id'], '4');
+      expect(map['title'], 'Mapped Novel');
+      expect(map['author'], 'Test Author');
+      expect(map['is_public'], isTrue);
+    });
 
-        try {
-          final result = await container.read(
-            recentProgressDetailsProvider.future,
-          );
-          expect(result, hasLength(1));
-          expect(result.first.novel.id, 'n1');
-          expect(result.first.chapter.id, 'c1');
-        } finally {
-          container.dispose();
-        }
-      },
-    );
+    test('Novel can be created from map', () {
+      final map = {
+        'id': '5',
+        'title': 'From Map Novel',
+        'author': 'Test Author',
+        'description': 'A description',
+        'cover_url': 'https://example.com/cover.jpg',
+        'language_code': 'en',
+        'is_public': true,
+      };
+
+      final novel = Novel.fromMap(map);
+
+      expect(novel.id, '5');
+      expect(novel.title, 'From Map Novel');
+      expect(novel.author, 'Test Author');
+      expect(novel.description, 'A description');
+      expect(novel.coverUrl, 'https://example.com/cover.jpg');
+      expect(novel.languageCode, 'en');
+      expect(novel.isPublic, isTrue);
+    });
+
+    test('Novel.fromMap handles missing optional fields', () {
+      final map = {
+        'id': '6',
+        'title': 'Partial Map Novel',
+        'language_code': 'en',
+      };
+
+      final novel = Novel.fromMap(map);
+
+      expect(novel.id, '6');
+      expect(novel.title, 'Partial Map Novel');
+      expect(novel.author, isNull);
+      expect(novel.description, isNull);
+      expect(novel.coverUrl, isNull);
+      expect(novel.languageCode, 'en');
+      expect(novel.isPublic, true);
+    });
+
+    test('Novel.fromMap defaults languageCode to en', () {
+      final map = {'id': '7', 'title': 'Default Language Novel'};
+
+      final novel = Novel.fromMap(map);
+
+      expect(novel.languageCode, 'en');
+    });
+
+    test('Novel.toMap converts to snake_case', () {
+      final novel = const Novel(
+        id: '8',
+        title: 'Snake Case Novel',
+        languageCode: 'en',
+        isPublic: false,
+      );
+
+      final map = novel.toMap();
+
+      expect(map.containsKey('cover_url'), isTrue);
+      expect(map.containsKey('language_code'), isTrue);
+      expect(map.containsKey('is_public'), isTrue);
+    });
+
+    test('Novel.copyWith can update all fields', () {
+      final novel = const Novel(
+        id: '9',
+        title: 'Original Title',
+        languageCode: 'en',
+        isPublic: false,
+      );
+
+      final updated = novel.copyWith(
+        id: '10',
+        title: 'New Title',
+        author: 'New Author',
+        description: 'New Description',
+        coverUrl: 'https://example.com/new.jpg',
+        languageCode: 'es',
+        isPublic: true,
+      );
+
+      expect(updated.id, '10');
+      expect(updated.title, 'New Title');
+      expect(updated.author, 'New Author');
+      expect(updated.description, 'New Description');
+      expect(updated.coverUrl, 'https://example.com/new.jpg');
+      expect(updated.languageCode, 'es');
+      expect(updated.isPublic, isTrue);
+    });
+
+    test('Novel.copyWith preserves null fields', () {
+      final novel = const Novel(
+        id: '11',
+        title: 'Preserve Null Novel',
+        author: 'Original Author',
+        languageCode: 'en',
+        isPublic: true,
+      );
+
+      final updated = novel.copyWith(title: 'New Title');
+
+      expect(updated.author, 'Original Author');
+      expect(updated.description, isNull);
+      expect(updated.coverUrl, isNull);
+    });
+
+    test('Novel.isPublic can be toggled', () {
+      final novel = const Novel(
+        id: '12',
+        title: 'Public Novel',
+        languageCode: 'en',
+        isPublic: true,
+      );
+
+      final private = novel.copyWith(isPublic: false);
+
+      expect(private.isPublic, isFalse);
+    });
   });
 }

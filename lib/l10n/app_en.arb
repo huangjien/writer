@@ -768,5 +768,7 @@
       "count": {"type": "int"}
     }
   },
-  "retry": "Retry"
+  "retry": "Retry",
+  "toggleSidebar": "Toggle Sidebar",
+  "quickSearch": "Quick Search"
 }
