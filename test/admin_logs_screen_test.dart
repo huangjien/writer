@@ -689,7 +689,7 @@ void main() {
 
       final firstLogItem = find.widgetWithText(InkWell, 'Application started');
       expect(firstLogItem, findsOneWidget);
-      
+
       await tester.tap(firstLogItem);
       await tester.pumpAndSettle();
 
