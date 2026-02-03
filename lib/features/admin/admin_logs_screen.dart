@@ -120,35 +120,51 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
     return parsedLogs;
   }
 
-  Color _getLevelColor(String level) {
+  Color _getLevelColor(BuildContext context, String level) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     switch (level.toUpperCase()) {
       case 'ERROR':
       case 'CRITICAL':
-        return Colors.red.shade300;
+        return isDark ? const Color(0xFFFFB4AB) : theme.colorScheme.error;
       case 'WARNING':
-        return Colors.orange.shade300;
+        return isDark ? const Color(0xFFFFD8A8) : const Color(0xFF9A5200);
       case 'INFO':
-        return Colors.blue.shade200;
+        return isDark ? const Color(0xFF9CB9FF) : theme.colorScheme.primary;
       case 'DEBUG':
-        return Colors.grey.shade400;
+        return isDark
+            ? const Color(0xFFCAC4D0)
+            : theme.colorScheme.onSurfaceVariant;
       default:
-        return Colors.white;
+        return theme.colorScheme.onSurface;
     }
   }
 
-  Color _getLevelBackgroundColor(String level) {
+  Color _getLevelBackgroundColor(BuildContext context, String level) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     switch (level.toUpperCase()) {
       case 'ERROR':
       case 'CRITICAL':
-        return Colors.red.shade900;
+        return isDark
+            ? const Color(0xFF5C1D1D).withValues(alpha: 0.3)
+            : theme.colorScheme.errorContainer;
       case 'WARNING':
-        return Colors.orange.shade900;
+        return isDark
+            ? const Color(0xFF5C3800).withValues(alpha: 0.3)
+            : const Color(0xFFFFE8CC);
       case 'INFO':
-        return Colors.blue.shade900;
+        return isDark
+            ? const Color(0xFF1A2F5C).withValues(alpha: 0.3)
+            : theme.colorScheme.primaryContainer;
       case 'DEBUG':
-        return Colors.grey.shade900;
+        return isDark
+            ? const Color(0xFF3F3F46).withValues(alpha: 0.3)
+            : theme.colorScheme.surfaceContainerHighest;
       default:
-        return Colors.black87;
+        return theme.colorScheme.surface;
     }
   }
 
@@ -395,7 +411,7 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
             return FilterChip(
               label: Text(level),
               selected: isSelected,
-              selectedColor: _getLevelColor(level),
+              selectedColor: _getLevelColor(context, level),
               onSelected: (selected) {
                 setState(() {
                   _selectedLevel = selected ? level : null;
@@ -413,11 +429,10 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
     return ListView.builder(
       controller: _scrollController,
       itemCount: _logs.length,
-      itemBuilder: (context, index) {
+      itemBuilder: (listContext, index) {
         final log = _logs[index];
         final level = (log['level'] as String?)?.toUpperCase() ?? 'INFO';
-        final bgColor = _getLevelBackgroundColor(level);
-        final textColor = _getLevelColor(level);
+        final bgColor = _getLevelBackgroundColor(listContext, level);
         final message =
             log['message'] as String? ?? log['raw'] as String? ?? '';
         final timestamp = log['timestamp'] as String? ?? '';
@@ -426,119 +441,74 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
 
         return Container(
           color: bgColor,
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
           child: InkWell(
             onTap: () {
-              // Show full log entry in a dialog
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text('Log Entry - $level'),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (timestamp.isNotEmpty)
-                          _buildDetailRow('Timestamp', timestamp),
-                        if (logger.isNotEmpty)
-                          _buildDetailRow('Logger', logger),
-                        if (requestId != null)
-                          _buildDetailRow('Request ID', requestId),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Message:',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          message,
-                          style: const TextStyle(fontFamily: 'monospace'),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          jsonEncode(log),
-                          style: TextStyle(
-                            fontFamily: 'monospace',
-                            fontSize: 10,
-                            color: Colors.grey.shade400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Close'),
-                    ),
-                  ],
-                ),
+              _showLogDetailDialog(
+                listContext,
+                log,
+                level,
+                timestamp,
+                logger,
+                requestId,
+                message,
+                theme,
               );
             },
             child: Padding(
-              padding: const EdgeInsets.all(4.0),
+              padding: const EdgeInsets.all(6.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width: 80,
+                    width: 90,
                     child: Text(
-                      timestamp.split(',')[0],
+                      timestamp.isNotEmpty ? timestamp.split(',')[0] : '',
                       style: TextStyle(
                         fontFamily: 'monospace',
-                        fontSize: 10,
-                        color: textColor.withValues(alpha: 0.8),
+                        fontSize: 11,
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: textColor.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                level,
-                                style: TextStyle(
-                                  color: textColor,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
+                            _buildLevelBadge(level, listContext),
+                            const SizedBox(width: 10),
                             if (logger.isNotEmpty)
                               Expanded(
                                 child: Text(
                                   logger,
                                   style: TextStyle(
                                     fontFamily: 'monospace',
-                                    fontSize: 10,
-                                    color: textColor.withValues(alpha: 0.7),
+                                    fontSize: 11,
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.7),
+                                    fontWeight: FontWeight.w500,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                           ],
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          message,
-                          style: TextStyle(
-                            fontFamily: 'monospace',
-                            fontSize: 11,
-                            color: textColor,
+                        const SizedBox(height: 6),
+                        SelectionArea(
+                          child: Text(
+                            message,
+                            style: TextStyle(
+                              fontFamily: 'monospace',
+                              fontSize: 13,
+                              color: theme.colorScheme.onSurface,
+                              height: 1.4,
+                            ),
                           ),
                         ),
                       ],
@@ -553,9 +523,150 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
+  Widget _buildLevelBadge(String level, BuildContext context) {
+    final badgeColor = _getLevelColor(context, level);
+    final badgeBgColor = _getLevelBackgroundColor(context, level);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: badgeBgColor,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: badgeColor.withValues(alpha: 0.3), width: 1),
+      ),
+      child: Text(
+        level,
+        style: TextStyle(
+          color: badgeColor,
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  void _showLogDetailDialog(
+    BuildContext context,
+    Map<String, dynamic> log,
+    String level,
+    String timestamp,
+    String logger,
+    String? requestId,
+    String message,
+    ThemeData theme,
+  ) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Row(
+          children: [
+            _buildLevelBadge(level, dialogContext),
+            const SizedBox(width: 12),
+            const Text('Log Entry'),
+          ],
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: SelectionArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (timestamp.isNotEmpty)
+                    _buildDetailRow('Timestamp', timestamp, theme),
+                  if (logger.isNotEmpty)
+                    _buildDetailRow('Logger', logger, theme),
+                  if (requestId != null)
+                    _buildDetailRow('Request ID', requestId, theme),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Message:',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: SelectableText(
+                      message,
+                      style: TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 13,
+                        color: theme.colorScheme.onSurface,
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Full Data:',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: SelectableText(
+                      const JsonEncoder.withIndent('  ').convert(log),
+                      style:
+                          const TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 11,
+                            height: 1.4,
+                          ).copyWith(
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.7,
+                            ),
+                          ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: jsonEncode(log)));
+              ScaffoldMessenger.of(dialogContext).showSnackBar(
+                const SnackBar(
+                  content: Text('Copied to clipboard'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+            icon: const Icon(Icons.copy, size: 18),
+            label: const Text('Copy'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value, ThemeData theme) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4.0),
+      padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -563,11 +674,20 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
             width: 100,
             child: Text(
               '$label:',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
             ),
           ),
           Expanded(
-            child: Text(value, style: const TextStyle(fontFamily: 'monospace')),
+            child: SelectableText(
+              value,
+              style: TextStyle(
+                fontFamily: 'monospace',
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+              ),
+            ),
           ),
         ],
       ),

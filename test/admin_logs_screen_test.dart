@@ -687,19 +687,23 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Application started'));
+      final firstLogItem = find.widgetWithText(InkWell, 'Application started');
+      expect(firstLogItem, findsOneWidget);
+      
+      await tester.tap(firstLogItem);
       await tester.pumpAndSettle();
 
-      expect(find.text('Log Entry - INFO'), findsOneWidget);
+      expect(find.text('Log Entry'), findsOneWidget);
       expect(find.text('Timestamp:'), findsOneWidget);
       expect(find.text('Logger:'), findsOneWidget);
       expect(find.text('Message:'), findsOneWidget);
+      expect(find.text('Copy'), findsOneWidget);
 
       final closeButton = find.text('Close');
       await tester.tap(closeButton);
       await tester.pumpAndSettle();
 
-      expect(find.text('Log Entry - INFO'), findsNothing);
+      expect(find.text('Log Entry'), findsNothing);
     });
   });
 
