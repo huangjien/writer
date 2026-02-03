@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
+import 'package:writer/models/novel.dart';
 import 'package:writer/shared/widgets/quick_search_modal.dart';
+import 'package:writer/state/novel_providers.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -224,6 +227,88 @@ void main() {
     test('SearchResultType has expected values', () {
       expect(SearchResultType.values, contains(SearchResultType.novel));
       expect(SearchResultType.values, contains(SearchResultType.setting));
+    });
+
+    testWidgets('typing query shows matching novel result', (tester) async {
+      const novels = [
+        Novel(
+          id: 'n1',
+          title: 'My Novel',
+          author: 'Alice',
+          languageCode: 'en',
+          isPublic: false,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [novelsProvider.overrideWith((ref) async => novels)],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () => showQuickSearchModal(context),
+                  child: const Text('Show Search'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Show Search'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'my');
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      expect(find.text('My Novel'), findsOneWidget);
+      expect(find.text('Alice'), findsOneWidget);
+    });
+
+    testWidgets('tapping result closes modal', (tester) async {
+      const novels = [
+        Novel(
+          id: 'n1',
+          title: 'My Novel',
+          author: 'Alice',
+          languageCode: 'en',
+          isPublic: false,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [novelsProvider.overrideWith((ref) async => novels)],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () => showQuickSearchModal(context),
+                  child: const Text('Show Search'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Show Search'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'my');
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('My Novel'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(Dialog), findsNothing);
     });
   });
 }

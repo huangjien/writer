@@ -276,6 +276,42 @@ void main() {
       expect(res, 'ok');
     });
 
+    test('trims whitespace around token', () async {
+      final client = MockClient((request) async {
+        expect(request.headers['X-Session-Id'], 'tok');
+        return http.Response(jsonEncode({'result': 'ok'}), 200);
+      });
+      final repo = RemoteRepository(
+        'http://example.com/',
+        client: client,
+        authToken: () async => '  tok  ',
+      );
+      final res = await repo.convertCharacter(
+        name: 'Alice',
+        templateContent: 'T',
+        language: 'en',
+      );
+      expect(res, 'ok');
+    });
+
+    test('omits header when token is only whitespace', () async {
+      final client = MockClient((request) async {
+        expect(request.headers.containsKey('X-Session-Id'), isFalse);
+        return http.Response(jsonEncode({'result': 'ok'}), 200);
+      });
+      final repo = RemoteRepository(
+        'http://example.com/',
+        client: client,
+        authToken: () async => '   ',
+      );
+      final res = await repo.convertCharacter(
+        name: 'Alice',
+        templateContent: 'T',
+        language: 'en',
+      );
+      expect(res, 'ok');
+    });
+
     test('omits Authorization header when token getter throws', () async {
       final client = MockClient((request) async {
         expect(request.headers.containsKey('X-Session-Id'), false);
@@ -383,8 +419,10 @@ void main() {
       final client = MockClient((request) async {
         if (unauthorizedCallCount == 0) {
           unauthorizedCallCount++;
+          expect(request.headers['X-Session-Id'], 'token');
           return http.Response('Unauthorized', 401);
         }
+        expect(request.headers.containsKey('X-Session-Id'), isFalse);
         return http.Response(jsonEncode({'result': 'retry-success'}), 200);
       });
 
@@ -401,6 +439,32 @@ void main() {
       final result = await repo.get('test');
       expect(onUnauthorizedCalled, isTrue);
       expect(result['result'], 'retry-success');
+    });
+
+    test('does not retry when 401 had no auth header', () async {
+      var calls = 0;
+      var onUnauthorizedCalled = 0;
+      final client = MockClient((request) async {
+        calls++;
+        expect(request.headers.containsKey('X-Session-Id'), isFalse);
+        return http.Response('Unauthorized', 401);
+      });
+
+      final repo = RemoteRepository(
+        'http://example.com/',
+        client: client,
+        authToken: () async => '   ',
+        onUnauthorized: () async {
+          onUnauthorizedCalled++;
+        },
+      );
+
+      await expectLater(
+        repo.get('test', retryUnauthorized: true),
+        throwsA(isA<ApiException>()),
+      );
+      expect(calls, 1);
+      expect(onUnauthorizedCalled, 1);
     });
 
     test('retries POST request after 401 with auth', () async {
@@ -425,6 +489,63 @@ void main() {
       expect(result['result'], 'retry-success');
     });
 
+    test('retries PATCH request after 401 with auth', () async {
+      var callCount = 0;
+      var unauthorizedCalled = 0;
+      final client = MockClient((request) async {
+        callCount++;
+        if (callCount == 1) {
+          expect(request.headers['X-Session-Id'], 'token');
+          return http.Response('Unauthorized', 401);
+        }
+        expect(request.headers.containsKey('X-Session-Id'), isFalse);
+        return http.Response(jsonEncode({'result': 'patched'}), 200);
+      });
+
+      final repo = RemoteRepository(
+        'http://example.com/',
+        client: client,
+        authToken: () async => 'token',
+        onUnauthorized: () async {
+          unauthorizedCalled++;
+        },
+      );
+
+      final result = await repo.patch('test', {
+        'data': 'value',
+      }, retryUnauthorized: true);
+      expect(result['result'], 'patched');
+      expect(callCount, 2);
+      expect(unauthorizedCalled, 1);
+    });
+
+    test('retries DELETE request after 401 with auth', () async {
+      var callCount = 0;
+      var unauthorizedCalled = 0;
+      final client = MockClient((request) async {
+        callCount++;
+        if (callCount == 1) {
+          expect(request.headers['X-Session-Id'], 'token');
+          return http.Response('Unauthorized', 401);
+        }
+        expect(request.headers.containsKey('X-Session-Id'), isFalse);
+        return http.Response('', 204);
+      });
+
+      final repo = RemoteRepository(
+        'http://example.com/',
+        client: client,
+        authToken: () async => 'token',
+        onUnauthorized: () async {
+          unauthorizedCalled++;
+        },
+      );
+
+      await repo.delete('test', retryUnauthorized: true);
+      expect(callCount, 2);
+      expect(unauthorizedCalled, 1);
+    });
+
     test('does not retry when retryUnauthorized is false', () async {
       final client = MockClient((request) async {
         return http.Response('Unauthorized', 401);
@@ -441,6 +562,34 @@ void main() {
         () => repo.post('test', {'data': 'value'}, retryUnauthorized: false),
         throwsA(isA<ApiException>()),
       );
+    });
+  });
+
+  group('RemoteRepository ApiException parsing', () {
+    test('parses ApiErrorResponse and uses x-request-id as fallback', () async {
+      final client = MockClient((request) async {
+        return http.Response(
+          jsonEncode({
+            'code': 'bad_request',
+            'message': 'Nope',
+            'user_message_key': 'bad_request',
+            'details': {'field': 'name'},
+          }),
+          400,
+          headers: {'x-request-id': 'rid-123'},
+        );
+      });
+      final repo = RemoteRepository('http://example.com/', client: client);
+      try {
+        await repo.get('test');
+        fail('expected ApiException');
+      } catch (e) {
+        expect(e, isA<ApiException>());
+        final ex = e as ApiException;
+        expect(ex.statusCode, 400);
+        expect(ex.errorResponse?.code, 'bad_request');
+        expect(ex.errorResponse?.requestId, 'rid-123');
+      }
     });
   });
 
@@ -527,6 +676,50 @@ void main() {
       final repo = RemoteRepository('http://example.com/', client: client);
       expect(() => repo.getAdminLogs(), throwsA(isA<ApiException>()));
     });
+
+    test('getUsageHistory returns null on empty response', () async {
+      final client = MockClient((request) async => http.Response('', 204));
+      final repo = RemoteRepository('http://example.com/', client: client);
+      final history = await repo.getUsageHistory();
+      expect(history, isNull);
+    });
+
+    test('getAdminLogsEnhanced builds query and returns map', () async {
+      final client = MockClient((request) async {
+        expect(request.url.queryParameters['max_size_kb'], '10');
+        expect(request.url.queryParameters['file_index'], '2');
+        expect(request.url.queryParameters['level'], 'INFO');
+        expect(request.url.queryParameters['logger'], 'app');
+        expect(request.url.queryParameters['search_text'], 'needle');
+        expect(request.url.queryParameters['start_date'], '2024-01-01');
+        expect(request.url.queryParameters['end_date'], '2024-01-31');
+        return http.Response(jsonEncode({'logs': 'x', 'files': []}), 200);
+      });
+      final repo = RemoteRepository('http://example.com/', client: client);
+      final res = await repo.getAdminLogsEnhanced(
+        maxSizeKb: 10,
+        fileIndex: 2,
+        level: 'INFO',
+        logger: 'app',
+        searchText: 'needle',
+        startDate: '2024-01-01',
+        endDate: '2024-01-31',
+      );
+      expect(res, isNotNull);
+      expect(res!['logs'], 'x');
+    });
+
+    test(
+      'getAdminLogsEnhanced returns null when response is not a map',
+      () async {
+        final client = MockClient((request) async {
+          return http.Response(jsonEncode(['not', 'a', 'map']), 200);
+        });
+        final repo = RemoteRepository('http://example.com/', client: client);
+        final res = await repo.getAdminLogsEnhanced();
+        expect(res, isNull);
+      },
+    );
   });
 
   group('RemoteRepository URL construction', () {

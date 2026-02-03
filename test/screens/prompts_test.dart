@@ -371,6 +371,224 @@ void main() {
     expect(svc.lastSearchQ, 'ab');
   });
 
+  testWidgets('PromptsListScreen preview truncates long first line', (
+    tester,
+  ) async {
+    final svc = FakePromptsService();
+    svc.prompts = [
+      Prompt(
+        id: '1',
+        userId: 'u1',
+        promptKey: 'system.beta.male',
+        language: 'en',
+        content:
+            'This is a very long first line that should be truncated when rendered in the table preview cell.\nSecond line',
+        isPublic: false,
+      ),
+    ];
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PromptsListScreen(service: svc, isAdmin: true),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.textContaining('This is a very long first line'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('Second line'), findsNothing);
+    expect(find.textContaining('…'), findsWidgets);
+  });
+
+  testWidgets('PromptsListScreen make public flow calls createPrompt', (
+    tester,
+  ) async {
+    final svc = FakePromptsService();
+    svc.prompts = [
+      Prompt(
+        id: '1',
+        userId: 'u1',
+        promptKey: 'system.beta.male',
+        language: 'en',
+        content: 'Hello',
+        isPublic: false,
+      ),
+    ];
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PromptsListScreen(service: svc, isAdmin: true),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final makePublicButton = find.widgetWithIcon(IconButton, Icons.public);
+    await tester.ensureVisible(makePublicButton);
+    await tester.tap(makePublicButton);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Make Public'), findsOneWidget);
+    await tester.tap(find.text('Confirm'));
+    await tester.pumpAndSettle();
+
+    expect(svc.createCalled, isTrue);
+    expect(svc.lastCreatedIsPublic, isTrue);
+  });
+
+  testWidgets('PromptsListScreen delete failure shows copyable error', (
+    tester,
+  ) async {
+    final svc = FakePromptsService();
+    svc.prompts = [
+      Prompt(
+        id: '1',
+        userId: 'u1',
+        promptKey: 'system.beta.male',
+        language: 'en',
+        content: 'Hello',
+        isPublic: false,
+      ),
+    ];
+    svc.throwOnDelete = true;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PromptsListScreen(service: svc, isAdmin: true),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final deleteButton = find.widgetWithIcon(IconButton, Icons.delete);
+    await tester.ensureVisible(deleteButton);
+    await tester.tap(deleteButton);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Delete').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Error'), findsOneWidget);
+    expect(find.byType(SelectableText), findsOneWidget);
+    expect(find.text('Copy'), findsOneWidget);
+  });
+
+  testWidgets('PromptsListScreen create prompt dialog creates prompt', (
+    tester,
+  ) async {
+    final svc = FakePromptsService();
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: PromptsListScreen(service: svc, isAdmin: true),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpAndSettle();
+
+    final keyField = find.descendant(
+      of: find.bySemanticsLabel('Prompt Key'),
+      matching: find.byType(TextField),
+    );
+    final langField = find.descendant(
+      of: find.bySemanticsLabel('Language'),
+      matching: find.byType(TextField),
+    );
+    final contentField = find.descendant(
+      of: find.bySemanticsLabel('Content'),
+      matching: find.byType(TextField),
+    );
+
+    await tester.enterText(keyField, 'system.test');
+    await tester.enterText(langField, 'en');
+    await tester.enterText(contentField, 'Hello');
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect(svc.createCalled, isTrue);
+  });
+
+  testWidgets(
+    'PromptsListScreen create prompt dialog with empty content shows error',
+    (tester) async {
+      final svc = FakePromptsService();
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: PromptsListScreen(service: svc, isAdmin: true),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pumpAndSettle();
+
+      final keyField = find.descendant(
+        of: find.bySemanticsLabel('Prompt Key'),
+        matching: find.byType(TextField),
+      );
+      await tester.enterText(keyField, 'system.test');
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(svc.createCalled, isFalse);
+      expect(find.byType(ErrorState), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'PromptsListScreen edit icon calls onEdit callback when provided',
+    (tester) async {
+      final svc = FakePromptsService();
+      final edits = <Prompt>[];
+      svc.prompts = [
+        Prompt(
+          id: '1',
+          userId: 'u1',
+          promptKey: 'system.beta.male',
+          language: 'en',
+          content: 'A',
+          isPublic: false,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: PromptsListScreen(
+            service: svc,
+            isAdmin: true,
+            onEdit: edits.add,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final editButton = find.widgetWithIcon(IconButton, Icons.edit);
+      await tester.ensureVisible(editButton);
+      await tester.tap(editButton);
+      await tester.pumpAndSettle();
+
+      expect(edits, hasLength(1));
+      expect(edits.single.id, '1');
+    },
+  );
+
   testWidgets('PromptFormScreen save disabled until changes', (tester) async {
     final svc = FakePromptsService();
     final initial = Prompt(
