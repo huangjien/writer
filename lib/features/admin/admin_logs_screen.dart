@@ -71,7 +71,8 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
 
         setState(() {
           if (logsString != null && logsString.isNotEmpty) {
-            _logs = _parseLogs(logsString);
+            final parsedLogs = _parseLogs(logsString);
+            _logs = parsedLogs.reversed.toList();
           } else {
             _logs = [];
           }
