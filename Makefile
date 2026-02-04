@@ -154,6 +154,9 @@ test:
 	echo "END OF FAILED TESTS SUMMARY" | tee -a ../test.log; \
 	echo "========================================" | tee -a ../test.log
 
+test-integration:
+	$(FLUTTER) test -d macos --dart-define=AI_SERVICE_URL=$(AI_SERVICE_URL) integration_test/app_test.dart
+
 test-expanded:
 	@TIMESTAMP=$$(date +"%Y%m%d_%H%M%S"); \
 	LOG_FILE="/tmp/writer_test_expanded_$$TIMESTAMP.log"; \

@@ -303,6 +303,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             NeumorphicTextField(
+              key: const Key('email_field'),
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               hintText: l10n.email,
@@ -313,6 +314,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             ),
             const SizedBox(height: 12),
             NeumorphicTextField(
+              key: const Key('password_field'),
               controller: _passwordController,
               obscureText: _obscurePassword,
               hintText: l10n.password,
@@ -332,6 +334,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     },
                   ),
                   IconButton(
+                    key: const Key('sign_in_button'),
                     icon: const Icon(Icons.login),
                     onPressed: _loading ? null : () => _signIn(context),
                   ),

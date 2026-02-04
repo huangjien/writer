@@ -37,6 +37,7 @@ class RichTextEditor extends StatelessWidget {
       textField: true,
       label: semanticsLabel,
       child: TextField(
+        key: const Key('editor_content'),
         controller: controller,
         maxLines: null,
         expands: true,
