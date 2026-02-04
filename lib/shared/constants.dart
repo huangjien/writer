@@ -1,7 +1,11 @@
-const int kLlmTimeoutSeconds = int.fromEnvironment(
+const int _kRawLlmTimeoutSeconds = int.fromEnvironment(
   'LLM_TIMEOUT_SECONDS',
   defaultValue: 300,
 );
+
+const int kLlmTimeoutSeconds = _kRawLlmTimeoutSeconds < 60
+    ? 60
+    : _kRawLlmTimeoutSeconds;
 
 const Duration kLlmTimeout = Duration(seconds: kLlmTimeoutSeconds);
 

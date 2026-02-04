@@ -8,6 +8,7 @@ import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/services/auth_redirect_service.dart';
 import '../shared/api_exception.dart';
+import '../shared/constants.dart';
 
 final httpClientProvider = Provider<http.Client>((ref) => http.Client());
 
@@ -35,6 +36,8 @@ final remoteRepositoryProvider = Provider<RemoteRepository>((ref) {
 typedef AuthTokenGetter = Future<String?> Function();
 
 class RemoteRepository {
+  static const Duration defaultTimeout = kLlmTimeout;
+
   final String baseUrl;
   final http.Client _client;
   final AuthTokenGetter _authToken;
@@ -46,7 +49,7 @@ class RemoteRepository {
     http.Client? client,
     AuthTokenGetter? authToken,
     Future<void> Function()? onUnauthorized,
-    Duration timeout = const Duration(seconds: 20),
+    Duration timeout = defaultTimeout,
   }) : _client = client ?? http.Client(),
        _authToken = authToken ?? (() async => null),
        _onUnauthorized = onUnauthorized,
