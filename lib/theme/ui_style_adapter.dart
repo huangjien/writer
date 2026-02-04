@@ -370,12 +370,33 @@ class StyleThemePatch {
 
     switch (styleFamily) {
       case UiStyleFamily.glassmorphism:
+        if (isDark) {
+          final bgLuminance = cs.primary.computeLuminance();
+          if (bgLuminance > 0.4) {
+            return _deriveDarkerColor(cs.primary, factor: 0.15);
+          }
+        }
         return cs.primary;
       case UiStyleFamily.liquidGlass:
+        if (isDark) {
+          final bgLuminance = cs.primary.computeLuminance();
+          if (bgLuminance > 0.4) {
+            return _deriveDarkerColor(
+              cs.primary,
+              factor: 0.2,
+            ).withValues(alpha: 0.95);
+          }
+        }
         return cs.primary.withValues(alpha: 0.9);
       case UiStyleFamily.neumorphism:
+        if (isDark) {
+          return _deriveDarkerColor(cs.primary, factor: 0.20);
+        }
         return _deriveLighterColor(surface, factor: 0.08);
       case UiStyleFamily.minimalism:
+        if (isDark) {
+          return _deriveDarkerColor(cs.primary, factor: 0.25);
+        }
         return _deriveLighterColor(surface, factor: 0.06);
       case UiStyleFamily.flatDesign:
         if (isDark) {

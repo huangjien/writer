@@ -165,7 +165,7 @@ class _DrawerListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = title is Text ? (title as Text).data : null;
+    final label = title is Text ? (title as Text).data ?? '' : '';
     return Material(
       color: Colors.transparent,
       child: Semantics(
@@ -174,7 +174,16 @@ class _DrawerListItem extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           hoverColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-          child: ListTile(leading: leading, title: title),
+          borderRadius: BorderRadius.zero,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                SizedBox(width: 48, child: leading),
+                Expanded(child: title),
+              ],
+            ),
+          ),
         ),
       ),
     );

@@ -14,59 +14,6 @@ import 'neumorphic_button.dart';
 /// - Icon support
 /// - Consistent styling
 class AppButtons {
-  /// Returns a high-contrast text color for neumorphic buttons in dark mode
-  /// that meets WCAG AA standards (4.5:1 ratio) while maintaining the primary hue
-  static Color _getAccessiblePrimaryTextColor(
-    BuildContext context,
-    Color primaryColor,
-  ) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final surface = theme.colorScheme.surface;
-
-    if (!isDark) {
-      return primaryColor;
-    }
-
-    final primaryLuminance = primaryColor.computeLuminance();
-    final surfaceLuminance = surface.computeLuminance();
-
-    final contrastRatio = (primaryLuminance + 0.05) / (surfaceLuminance + 0.05);
-
-    if (contrastRatio >= 4.5) {
-      return primaryColor;
-    }
-
-    final hsl = HSLColor.fromColor(primaryColor);
-    final highContrastColor = hsl
-        .withLightness(isDark ? 0.85 : 0.15)
-        .withSaturation(hsl.saturation * 0.8)
-        .toColor();
-
-    return highContrastColor;
-  }
-
-  /// Returns a high-contrast icon color based on the actual button background color
-  static Color _getAccessibleIconColor(
-    BuildContext context,
-    Color iconColor,
-    Color? backgroundColor,
-  ) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    final actualButtonBackground =
-        backgroundColor ??
-        theme.buttonBackgroundColor ??
-        theme.colorScheme.surface;
-
-    return ContrastUtils.getAccessibleIconColor(
-      iconColor: iconColor,
-      backgroundColor: actualButtonBackground,
-      isDarkMode: isDark,
-    );
-  }
-
   /// Primary filled button with elevation
   static Widget primary({
     required String label,
@@ -80,9 +27,12 @@ class AppButtons {
       builder: (context) {
         final theme = Theme.of(context);
         final primaryColor = theme.colorScheme.primary;
-        final accessibleTextColor = _getAccessiblePrimaryTextColor(
-          context,
-          primaryColor,
+        final buttonBackgroundColor =
+            theme.buttonBackgroundColor ?? primaryColor;
+        final isDark = theme.brightness == Brightness.dark;
+        final accessibleTextColor = ContrastUtils.getButtonTextColor(
+          buttonBackgroundColor: buttonBackgroundColor,
+          isDarkMode: isDark,
         );
 
         return FocusWrapper(
@@ -99,6 +49,7 @@ class AppButtons {
                 child: NeumorphicButton(
                   onPressed: (enabled && !isLoading) ? onPressed : null,
                   borderRadius: BorderRadius.circular(Radii.m),
+                  color: buttonBackgroundColor,
                   child: isLoading
                       ? SizedBox(
                           width: 20,
@@ -151,9 +102,12 @@ class AppButtons {
     return Builder(
       builder: (context) {
         final theme = Theme.of(context);
-        final accessibleTextColor = _getAccessiblePrimaryTextColor(
-          context,
-          theme.colorScheme.primary,
+        final buttonBackgroundColor =
+            theme.buttonBackgroundColor ?? theme.colorScheme.surface;
+        final isDark = theme.brightness == Brightness.dark;
+        final accessibleTextColor = ContrastUtils.getButtonTextColor(
+          buttonBackgroundColor: buttonBackgroundColor,
+          isDarkMode: isDark,
         );
 
         return FocusWrapper(
@@ -171,6 +125,7 @@ class AppButtons {
                   onPressed: (enabled && !isLoading) ? onPressed : null,
                   borderRadius: BorderRadius.circular(Radii.m),
                   depth: 6,
+                  color: buttonBackgroundColor,
                   child: isLoading
                       ? SizedBox(
                           width: 20,
@@ -218,9 +173,12 @@ class AppButtons {
     return Builder(
       builder: (context) {
         final theme = Theme.of(context);
-        final defaultTextColor = _getAccessiblePrimaryTextColor(
-          context,
-          theme.colorScheme.primary,
+        final buttonBackground =
+            theme.buttonBackgroundColor ?? theme.colorScheme.surface;
+        final textColor = color ?? theme.colorScheme.primary;
+        final accessibleColor = ContrastUtils.forceContrastColor(
+          foreground: textColor,
+          background: buttonBackground,
         );
 
         return FocusWrapper(
@@ -237,7 +195,7 @@ class AppButtons {
               ),
               child: Text(
                 label,
-                style: TextStyle(color: color ?? defaultTextColor),
+                style: TextStyle(color: color ?? accessibleColor),
               ),
             ),
           ),
@@ -260,15 +218,22 @@ class AppButtons {
       builder: (context) {
         final theme = Theme.of(context);
         final primaryColor = theme.colorScheme.primary;
-        final buttonBackground = theme.buttonBackgroundColor;
+        final buttonBackground =
+            theme.buttonBackgroundColor ?? theme.colorScheme.surface;
         final effectiveColor =
             color ??
-            _getAccessibleIconColor(context, primaryColor, buttonBackground);
+            ContrastUtils.forceContrastColor(
+              foreground: primaryColor,
+              background: buttonBackground,
+            );
 
         // For Flat Design style with primary background, use onPrimary for better contrast
         final finalIconColor =
             (theme.uiStyleFamily == UiStyleFamily.flatDesign && color == null)
-            ? theme.colorScheme.onPrimary
+            ? ContrastUtils.forceContrastColor(
+                foreground: theme.colorScheme.onPrimary,
+                background: buttonBackground,
+              )
             : effectiveColor;
 
         // If filled, use Neumorphic style
@@ -340,10 +305,16 @@ class AppButtons {
       builder: (context) {
         final theme = Theme.of(context);
         final primaryColor = theme.colorScheme.primary;
-        final buttonBackground = backgroundColor ?? theme.buttonBackgroundColor;
+        final buttonBackground =
+            backgroundColor ??
+            theme.buttonBackgroundColor ??
+            theme.colorScheme.surface;
         final effectiveIconColor =
             iconColor ??
-            _getAccessibleIconColor(context, primaryColor, buttonBackground);
+            ContrastUtils.forceContrastColor(
+              foreground: primaryColor,
+              background: buttonBackground,
+            );
 
         final button = PressScale(
           enabled: enabled,
