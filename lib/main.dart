@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'theme/font_packs.dart';
 import 'state/app_settings.dart';
+import 'state/ai_agent_settings.dart';
 import 'state/ai_service_settings.dart';
 import 'state/theme_controller.dart';
 import 'state/ui_style_controller.dart';
@@ -25,6 +26,7 @@ void main() async {
   final uiStyleController = UiStyleController(prefs);
   final ttsSettings = TtsSettingsNotifier(prefs);
   final aiService = AiServiceNotifier(prefs);
+  final aiAgentSettings = AiAgentSettingsNotifier(prefs);
   final adminMode = AdminModeNotifier(prefs);
 
   runApp(
@@ -36,6 +38,7 @@ void main() async {
         uiStyleControllerProvider.overrideWith((_) => uiStyleController),
         ttsSettingsProvider.overrideWith((_) => ttsSettings),
         aiServiceProvider.overrideWith((_) => aiService),
+        aiAgentSettingsProvider.overrideWith((_) => aiAgentSettings),
         adminModeProvider.overrideWith((_) => adminMode),
       ],
       child: const App(),

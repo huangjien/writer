@@ -6,6 +6,7 @@ import 'package:writer/features/settings/widgets/app_settings_section.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/shared/widgets/app_dialog.dart';
+import 'package:writer/state/ai_agent_settings.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/biometric_session_state.dart';
@@ -46,6 +47,9 @@ Future<void> _pumpHost(
           (_) => MotionSettingsNotifier(prefs),
         ),
         aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
+        aiAgentSettingsProvider.overrideWith(
+          (_) => AiAgentSettingsNotifier(prefs),
+        ),
       ],
       child: MaterialApp(
         locale: const Locale('en'),
@@ -96,13 +100,28 @@ void main() {
         textScaler: const TextScaler.linear(1.4),
       );
 
-      final editButton = find.byIcon(Icons.edit);
-      await tester.ensureVisible(editButton);
-      await tester.tap(editButton);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AppSettingsSection)),
+      )!;
+
+      final textFinder = find.text(l10n.aiServiceUrl);
+
+      final parent = find.ancestor(
+        of: textFinder,
+        matching: find.byType(InkWell),
+      );
+
+      await tester.pumpAndSettle();
+
+      await tester.tap(parent.first);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.byType(AppDialog), findsOneWidget);
+
       final urlField = find.descendant(
         of: find.byType(AppDialog),
         matching: find.byType(TextField),

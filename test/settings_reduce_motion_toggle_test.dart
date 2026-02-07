@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/settings/settings_screen.dart';
 import 'package:writer/features/settings/widgets/enhanced_settings_section.dart';
 import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/ai_agent_settings.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/admin_settings.dart';
 import 'package:writer/state/app_settings.dart';
@@ -89,6 +90,9 @@ void main() {
           (_) => MotionSettingsNotifier.lazy(),
         ),
         aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
+        aiAgentSettingsProvider.overrideWith(
+          (_) => AiAgentSettingsNotifier(prefs),
+        ),
         adminModeProvider.overrideWith((_) => AdminModeNotifier(prefs)),
         biometricServiceProvider.overrideWithValue(mockBiometricService),
         sessionProvider.overrideWith(
@@ -118,24 +122,24 @@ void main() {
       tester.element(find.byType(SettingsScreen)),
     )!;
 
-    final tileFinder = find.widgetWithText(SettingsToggle, l10n.reduceMotion);
-    expect(tileFinder, findsOneWidget);
+    final textFinder = find.text(l10n.reduceMotion);
+    final parentFinder = find.ancestor(
+      of: textFinder,
+      matching: find.byType(SettingsToggle),
+    );
+
+    await tester.pump();
 
     final toggleFinder = find.descendant(
-      of: tileFinder,
+      of: parentFinder,
       matching: find.byType(NeumorphicSwitch),
     );
     expect(toggleFinder, findsOneWidget);
 
-    // Initial state should be false
-    expect(container.read(motionSettingsProvider).reduceMotion, isFalse);
-
-    // Tap to enable
     await tester.tap(toggleFinder);
     await tester.pumpAndSettle();
     expect(container.read(motionSettingsProvider).reduceMotion, isTrue);
 
-    // Tap again to disable
     await tester.tap(toggleFinder);
     await tester.pumpAndSettle();
     expect(container.read(motionSettingsProvider).reduceMotion, isFalse);

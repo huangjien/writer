@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/ai_agent_settings.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/state/ai_service_settings.dart';
@@ -38,6 +39,9 @@ void main() {
           (_) => MotionSettingsNotifier(null),
         ),
         aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
+        aiAgentSettingsProvider.overrideWith(
+          (_) => AiAgentSettingsNotifier(prefs),
+        ),
       ],
     );
     addTearDown(container.dispose);
@@ -60,6 +64,10 @@ void main() {
 
     final tile = find.widgetWithIcon(ListTile, Icons.touch_app);
     expect(tile, findsOneWidget);
+
+    await tester.scrollUntilVisible(tile, 500.0);
+    await tester.pumpAndSettle();
+
     expect(container.read(motionSettingsProvider).gesturesEnabled, isTrue);
 
     final toggle = find.descendant(
@@ -90,6 +98,9 @@ void main() {
           (_) => MotionSettingsNotifier(null),
         ),
         aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
+        aiAgentSettingsProvider.overrideWith(
+          (_) => AiAgentSettingsNotifier(prefs),
+        ),
       ],
     );
     addTearDown(container.dispose);
