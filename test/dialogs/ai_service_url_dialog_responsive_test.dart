@@ -100,23 +100,12 @@ void main() {
         textScaler: const TextScaler.linear(1.4),
       );
 
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-
-      final l10n = AppLocalizations.of(
-        tester.element(find.byType(AppSettingsSection)),
-      )!;
-
-      final textFinder = find.text(l10n.aiServiceUrl);
-
-      final parent = find.ancestor(
-        of: textFinder,
-        matching: find.byType(InkWell),
-      );
-
       await tester.pumpAndSettle();
 
-      await tester.tap(parent.first);
+      final aiServiceTile = find.byKey(const Key('ai_service_url_setting'));
+      expect(aiServiceTile, findsOneWidget);
+
+      await tester.tap(aiServiceTile);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 

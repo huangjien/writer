@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/settings/settings_screen.dart';
-import 'package:writer/features/settings/widgets/enhanced_settings_section.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/ai_agent_settings.dart';
 import 'package:writer/state/ai_service_settings.dart';
@@ -118,30 +117,25 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    final l10n = AppLocalizations.of(
-      tester.element(find.byType(SettingsScreen)),
-    )!;
+    final reduceMotionToggle = find.byKey(const Key('reduce_motion_setting'));
+    expect(reduceMotionToggle, findsOneWidget);
 
-    final textFinder = find.text(l10n.reduceMotion);
-    final parentFinder = find.ancestor(
-      of: textFinder,
-      matching: find.byType(SettingsToggle),
-    );
-
-    await tester.pump();
-
-    final toggleFinder = find.descendant(
-      of: parentFinder,
+    final switchFinder = find.descendant(
+      of: reduceMotionToggle,
       matching: find.byType(NeumorphicSwitch),
     );
-    expect(toggleFinder, findsOneWidget);
+    expect(switchFinder, findsOneWidget);
 
-    await tester.tap(toggleFinder);
+    expect(container.read(motionSettingsProvider).reduceMotion, isFalse);
+
+    await tester.tap(switchFinder);
     await tester.pumpAndSettle();
+
     expect(container.read(motionSettingsProvider).reduceMotion, isTrue);
 
-    await tester.tap(toggleFinder);
+    await tester.tap(switchFinder);
     await tester.pumpAndSettle();
+
     expect(container.read(motionSettingsProvider).reduceMotion, isFalse);
   });
 }

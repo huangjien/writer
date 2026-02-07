@@ -220,6 +220,7 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
           ),
         ),
         ListTile(
+          key: const Key('ai_service_url_setting'),
           leading: const Icon(Icons.smart_toy_outlined),
           title: Text(l10n.aiServiceUrl),
           trailing: IconButton(
@@ -351,6 +352,7 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: SettingsToggle(
+            key: const Key('reduce_motion_setting'),
             value: ref.watch(motionSettingsProvider).reduceMotion,
             title: l10n.reduceMotion,
             subtitle: l10n.reduceMotionDescription,
