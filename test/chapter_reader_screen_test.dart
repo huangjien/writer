@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 import 'package:writer/features/ai_chat/widgets/ai_chat_sidebar.dart';
+import 'package:writer/state/ai_agent_settings.dart';
 import 'package:writer/shared/widgets/error_view.dart';
 import 'package:writer/features/reader/chapter_reader_screen.dart';
 import 'package:writer/features/reader/logic/tts_driver.dart';
@@ -552,7 +553,19 @@ void main() {
       tester,
       overrides: [
         aiChatUiProvider.overrideWith((ref) => chatNotifier),
-        aiChatProvider.overrideWith((ref) => AiChatNotifier(mockAiChatService)),
+        aiChatProvider.overrideWith(
+          (ref) => AiChatNotifier(
+            mockAiChatService,
+            () => const AiAgentSettings(
+              preferDeepAgent: true,
+              deepAgentFallbackToQa: true,
+              deepAgentReflectionMode: DeepAgentReflectionMode.off,
+              deepAgentShowDetails: false,
+              deepAgentMaxPlanSteps: 6,
+              deepAgentMaxToolRounds: 8,
+            ),
+          ),
+        ),
       ],
     );
     await tester.pumpAndSettle();

@@ -7,6 +7,7 @@ import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/features/ai_chat/widgets/ai_chat_sidebar.dart';
 import 'package:writer/state/ai_service_settings.dart';
+import 'package:writer/state/ai_agent_settings.dart';
 import 'package:writer/l10n/app_localizations.dart';
 
 class MockAiChatService extends Mock implements AiChatService {}
@@ -17,6 +18,14 @@ void main() {
   group('AI Chat Functionality', () {
     late MockAiChatService mockAiChatService;
     late MockSharedPreferences mockPrefs;
+    const defaultSettings = AiAgentSettings(
+      preferDeepAgent: true,
+      deepAgentFallbackToQa: true,
+      deepAgentReflectionMode: DeepAgentReflectionMode.off,
+      deepAgentShowDetails: false,
+      deepAgentMaxPlanSteps: 6,
+      deepAgentMaxToolRounds: 8,
+    );
 
     setUp(() {
       mockAiChatService = MockAiChatService();
@@ -31,7 +40,10 @@ void main() {
       WidgetTester tester,
     ) async {
       when(
-        () => mockAiChatService.sendMessage(any()),
+        () => mockAiChatService.sendMessage(
+          any(),
+          settings: any(named: 'settings'),
+        ),
       ).thenAnswer((_) async => 'AI response');
 
       await tester.pumpWidget(
@@ -39,7 +51,7 @@ void main() {
           overrides: [
             aiServiceProvider.overrideWith((_) => AiServiceNotifier(mockPrefs)),
             aiChatProvider.overrideWith(
-              (ref) => AiChatNotifier(mockAiChatService),
+              (ref) => AiChatNotifier(mockAiChatService, () => defaultSettings),
             ),
             aiChatUiProvider.overrideWith((_) => AiChatUiNotifier()),
           ],
@@ -74,7 +86,7 @@ void main() {
           overrides: [
             aiServiceProvider.overrideWith((_) => AiServiceNotifier(mockPrefs)),
             aiChatProvider.overrideWith(
-              (ref) => AiChatNotifier(mockAiChatService),
+              (ref) => AiChatNotifier(mockAiChatService, () => defaultSettings),
             ),
             aiChatUiProvider.overrideWith((_) => AiChatUiNotifier()),
           ],
@@ -99,9 +111,12 @@ void main() {
       const userMessage = 'Hello AI';
       const aiResponse = 'Hello! How can I help you?';
 
-      when(() => mockAiChatService.sendMessage(userMessage)).thenAnswer((
-        _,
-      ) async {
+      when(
+        () => mockAiChatService.sendMessage(
+          userMessage,
+          settings: any(named: 'settings'),
+        ),
+      ).thenAnswer((_) async {
         // Add a small delay to simulate network request
         await Future.delayed(const Duration(milliseconds: 500));
         return aiResponse;
@@ -112,7 +127,7 @@ void main() {
           overrides: [
             aiServiceProvider.overrideWith((_) => AiServiceNotifier(mockPrefs)),
             aiChatProvider.overrideWith(
-              (ref) => AiChatNotifier(mockAiChatService),
+              (ref) => AiChatNotifier(mockAiChatService, () => defaultSettings),
             ),
             aiChatUiProvider.overrideWith((_) => AiChatUiNotifier()),
           ],
@@ -151,10 +166,13 @@ void main() {
       const aiResponse = 'Test response';
 
       when(
-        () => mockAiChatService.sendMessage(userMessage),
+        () => mockAiChatService.sendMessage(
+          userMessage,
+          settings: any(named: 'settings'),
+        ),
       ).thenAnswer((_) async => aiResponse);
 
-      final notifier = AiChatNotifier(mockAiChatService);
+      final notifier = AiChatNotifier(mockAiChatService, () => defaultSettings);
 
       // Initial state should be empty
       expect(notifier.state.messages, isEmpty);

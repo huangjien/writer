@@ -1,18 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
+
+import '../l10n/app_localizations.dart';
 import '../models/prompt.dart';
 import '../services/prompts_service.dart';
-import 'package:go_router/go_router.dart';
-import '../l10n/app_localizations.dart';
-import '../shared/constants.dart';
 import '../shared/api_exception.dart';
-import '../shared/widgets/theme_aware_card.dart';
-import '../shared/widgets/loading/skeleton_list_items.dart';
-import '../shared/widgets/error_state.dart';
+import '../shared/constants.dart';
 import '../shared/widgets/app_buttons.dart';
 import '../shared/widgets/app_dialog.dart';
+import '../shared/widgets/error_state.dart';
+import '../shared/widgets/loading/skeleton_list_items.dart';
 import '../shared/widgets/neumorphic_switch.dart';
 import '../shared/widgets/neumorphic_textfield.dart';
 import '../theme/design_tokens.dart';
@@ -104,14 +104,6 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
         _loading = false;
       });
     }
-  }
-
-  List<Prompt> _filtered(List<Prompt> src) {
-    return src;
-  }
-
-  Map<String, List<Prompt>> _group(List<Prompt> src) {
-    return {'All': src};
   }
 
   String _preview(String s) {
@@ -323,29 +315,29 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
 
   Widget _filters(int count) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Wrap(
-        alignment: WrapAlignment.start,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 12,
-        runSpacing: 12,
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: Row(
         children: [
-          SizedBox(
-            width: 320,
+          Expanded(
             child: TextField(
               controller: _searchCtrl,
               decoration: InputDecoration(
-                labelText: 'Search',
-                suffixText: '$count',
+                labelText: l10n.searchLabel,
+                suffixIconConstraints: const BoxConstraints(
+                  minWidth: 0,
+                  minHeight: 0,
+                ),
                 suffixIcon: _searchCtrl.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
+                    ? AppButtons.icon(
+                        iconData: Icons.clear,
                         onPressed: () {
                           _searchCtrl.clear();
                           setState(() {});
                         },
                         tooltip: 'Clear search',
+                        focusPadding: EdgeInsets.zero,
                       )
                     : null,
               ),
@@ -361,103 +353,109 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
             ),
           ),
           if (widget.isAdmin) ...[
-            Text(l10n.viewPublic),
-            Switch(
-              value: _showPublic,
-              onChanged: (v) async {
-                setState(() {
-                  _showPublic = v;
-                });
-                await _load();
-              },
+            const SizedBox(width: 16),
+            Row(
+              children: [
+                Text(l10n.viewPublic, style: theme.textTheme.bodyMedium),
+                const SizedBox(width: 8),
+                Switch(
+                  value: _showPublic,
+                  onChanged: (v) async {
+                    setState(() {
+                      _showPublic = v;
+                    });
+                    await _load();
+                  },
+                ),
+              ],
             ),
           ],
-          const SizedBox.shrink(),
         ],
       ),
     );
   }
 
-  DataTable _table(List<Prompt> src) {
+  Widget _buildPromptItem(BuildContext context, Prompt p) {
     final l10n = AppLocalizations.of(context)!;
-    return DataTable(
-      columns: [
-        DataColumn(label: Text(l10n.promptKey)),
-        DataColumn(label: Text(l10n.language)),
-        DataColumn(label: Text(l10n.preview)),
-        DataColumn(label: Text(l10n.actions)),
-      ],
-      rows: src
-          .map(
-            (p) => DataRow(
-              cells: [
-                DataCell(
-                  Row(
-                    children: [
-                      Text(p.promptKey),
-                      const SizedBox(width: 8),
-                      if (p.isPublic)
-                        Chip(
-                          label: Text(
-                            l10n.publicLabel,
-                            style: Theme.of(context).textTheme.labelSmall,
-                          ),
-                          backgroundColor: Colors.greenAccent.withValues(
-                            alpha: 0.2,
-                          ),
-                        )
-                      else
-                        Chip(
-                          label: Text(
-                            l10n.privateLabel,
-                            style: Theme.of(context).textTheme.labelSmall,
-                          ),
-                        ),
-                    ],
-                  ),
-                  onTap: () => _onRowTap(p),
-                ),
-                DataCell(Text(p.language), onTap: () => _onRowTap(p)),
-                DataCell(Text(_preview(p.content)), onTap: () => _onRowTap(p)),
-                DataCell(
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () {
-                          if (widget.onEdit != null) {
-                            widget.onEdit!(p);
-                          } else {
-                            context.push('/prompt_form', extra: p);
-                          }
-                        },
-                        tooltip: l10n.editPrompt,
-                      ),
-                      if (widget.isAdmin && !p.isPublic)
-                        IconButton(
-                          icon: const Icon(Icons.public),
-                          onPressed: () => _makePublic(p),
-                          tooltip: l10n.makePublic,
-                        ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => _deletePrompt(p),
-                        tooltip: l10n.delete,
-                      ),
-                    ],
+    final theme = Theme.of(context);
+    final titleStyle = theme.textTheme.titleMedium;
+    final subtitleStyle = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _onRowTap(p),
+        hoverColor: theme.colorScheme.surfaceContainerHighest,
+        child: ListTile(
+          title: Row(
+            children: [
+              Text(p.promptKey, style: titleStyle),
+              const SizedBox(width: 8),
+              Chip(
+                label: Text(
+                  p.isPublic ? l10n.publicLabel : l10n.privateLabel,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: p.isPublic
+                        ? theme.colorScheme.onPrimaryContainer
+                        : theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
+                backgroundColor: p.isPublic
+                    ? theme.colorScheme.primaryContainer
+                    : theme.colorScheme.surfaceContainerHighest,
+              ),
+            ],
+          ),
+          subtitle: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: '${l10n.language}: ${p.language}',
+                  style: subtitleStyle,
+                ),
+                const TextSpan(text: '  •  '),
+                TextSpan(text: _preview(p.content), style: subtitleStyle),
               ],
             ),
-          )
-          .toList(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  if (widget.onEdit != null) {
+                    widget.onEdit!(p);
+                  } else {
+                    context.push('/prompt_form', extra: p);
+                  }
+                },
+                tooltip: l10n.editPrompt,
+              ),
+              if (widget.isAdmin && !p.isPublic)
+                IconButton(
+                  icon: const Icon(Icons.public),
+                  onPressed: () => _makePublic(p),
+                  tooltip: l10n.makePublic,
+                ),
+              IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () => _deletePrompt(p),
+                tooltip: l10n.delete,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final filtered = _filtered(_items);
-    final grouped = _group(filtered);
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
@@ -501,31 +499,18 @@ class _PromptsListScreenState extends State<PromptsListScreen> {
           ? ErrorState(message: _error!, onRetry: _load)
           : Column(
               children: [
-                _filters(filtered.length),
+                _filters(_items.length),
                 Expanded(
-                  child:
-                      grouped.isEmpty ||
-                          (grouped.length == 1 &&
-                              (grouped.values.first.isEmpty))
+                  child: _items.isEmpty
                       ? Center(child: Text(l10n.noPrompts))
-                      : ListView(
-                          children: grouped.entries.map((e) {
-                            final title = e.key;
-                            final list = e.value;
-                            return ThemeAwareCard(
-                              margin: const EdgeInsets.all(8),
-                              child: ExpansionTile(
-                                title: Text(title),
-                                initiallyExpanded: true,
-                                children: [
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: _table(list),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
+                      : ListView.separated(
+                          padding: const EdgeInsets.all(16),
+                          itemBuilder: (ctx, i) {
+                            return _buildPromptItem(ctx, _items[i]);
+                          },
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 8),
+                          itemCount: _items.length,
                         ),
                 ),
               ],

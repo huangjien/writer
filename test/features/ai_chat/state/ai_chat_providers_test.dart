@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
+import 'package:writer/state/storage_service_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MockAiChatService extends Mock implements AiChatService {}
 
@@ -10,10 +12,15 @@ void main() {
   late MockAiChatService mockAiChatService;
   late ProviderContainer container;
 
-  setUp(() {
+  setUp(() async {
     mockAiChatService = MockAiChatService();
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     container = ProviderContainer(
-      overrides: [aiChatServiceProvider.overrideWithValue(mockAiChatService)],
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        aiChatServiceProvider.overrideWithValue(mockAiChatService),
+      ],
     );
   });
 
@@ -37,7 +44,10 @@ void main() {
 
     test('sendMessage adds user message and AI response on success', () async {
       when(
-        () => mockAiChatService.sendMessage(any()),
+        () => mockAiChatService.sendMessage(
+          any(),
+          settings: any(named: 'settings'),
+        ),
       ).thenAnswer((_) async => 'AI Response');
 
       final notifier = container.read(aiChatProvider.notifier);
@@ -60,7 +70,10 @@ void main() {
 
     test('sendMessage handles error', () async {
       when(
-        () => mockAiChatService.sendMessage(any()),
+        () => mockAiChatService.sendMessage(
+          any(),
+          settings: any(named: 'settings'),
+        ),
       ).thenThrow(Exception('API Error'));
 
       await container.read(aiChatProvider.notifier).sendMessage('Hello');
@@ -75,7 +88,10 @@ void main() {
 
     test('clearMessages resets state', () async {
       when(
-        () => mockAiChatService.sendMessage(any()),
+        () => mockAiChatService.sendMessage(
+          any(),
+          settings: any(named: 'settings'),
+        ),
       ).thenAnswer((_) async => 'AI Response');
 
       final notifier = container.read(aiChatProvider.notifier);
@@ -169,6 +185,66 @@ void main() {
           state.messages[1].content,
           contains('Search Error: Exception: RAG Error'),
         );
+      });
+    });
+
+    group('Deep Agent', () {
+      test(
+        'calls sendMessageDeepAgent and updates state with response',
+        () async {
+          when(
+            () => mockAiChatService.sendMessageDeepAgent(
+              any(),
+              maxPlanSteps: any(named: 'maxPlanSteps'),
+              maxToolRounds: any(named: 'maxToolRounds'),
+              reflectionMode: any(named: 'reflectionMode'),
+              includeDetails: any(named: 'includeDetails'),
+            ),
+          ).thenAnswer((_) async => 'Deep Response');
+
+          await container
+              .read(aiChatProvider.notifier)
+              .sendMessage('/deep hello world');
+
+          final state = container.read(aiChatProvider);
+          expect(state.messages.length, 2);
+          expect(state.messages[0].content, '/deep hello world');
+          expect(state.messages[1].content, 'Deep Response');
+          expect(state.messages[1].isUser, isFalse);
+          expect(state.isLoading, isFalse);
+          verify(
+            () => mockAiChatService.sendMessageDeepAgent(
+              'hello world',
+              maxPlanSteps: any(named: 'maxPlanSteps'),
+              maxToolRounds: any(named: 'maxToolRounds'),
+              reflectionMode: any(named: 'reflectionMode'),
+              includeDetails: any(named: 'includeDetails'),
+            ),
+          ).called(1);
+        },
+      );
+
+      test('handles deep agent exception', () async {
+        when(
+          () => mockAiChatService.sendMessageDeepAgent(
+            any(),
+            maxPlanSteps: any(named: 'maxPlanSteps'),
+            maxToolRounds: any(named: 'maxToolRounds'),
+            reflectionMode: any(named: 'reflectionMode'),
+            includeDetails: any(named: 'includeDetails'),
+          ),
+        ).thenThrow(Exception('Deep Error'));
+
+        await container
+            .read(aiChatProvider.notifier)
+            .sendMessage('/deep hello');
+
+        final state = container.read(aiChatProvider);
+        expect(
+          state.messages[1].content,
+          contains('Deep Agent Error: Exception: Deep Error'),
+        );
+        expect(state.isLoading, isFalse);
       });
     });
   });

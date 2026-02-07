@@ -7,6 +7,7 @@ import 'package:writer/features/reader/chapter_reader_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
+import 'package:writer/state/ai_agent_settings.dart';
 import 'package:writer/state/app_settings.dart';
 import 'package:writer/state/tts_settings.dart';
 import 'package:writer/state/storage_service_provider.dart';
@@ -20,7 +21,10 @@ class FakeAiChatService extends AiChatService {
   @override
   Future<bool> checkHealth() async => true;
   @override
-  Future<String> sendMessage(String message) async => 'ok';
+  Future<String> sendMessage(
+    String message, {
+    AiAgentSettings? settings,
+  }) async => 'ok';
 }
 
 void main() {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../state/ai_agent_settings.dart';
 import '../../../state/ai_service_settings.dart';
 import '../../../state/app_settings.dart';
 import '../../../state/admin_settings.dart';
@@ -156,6 +157,8 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
     final isBiometricAvailable =
         ref.watch(biometricAvailableProvider).asData?.value ?? false;
     final sessionId = ref.watch(sessionProvider);
+    final aiAgentSettings = ref.watch(aiAgentSettingsProvider);
+    final isZh = appLocale.languageCode == 'zh';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,6 +227,109 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
             onPressed: () => _showAiServiceUrlDialog(context),
           ),
           subtitle: Text(ref.watch(aiServiceProvider)),
+        ),
+        EnhancedSettingsSection(
+          title: isZh ? 'Deep Agent 设置' : 'Deep Agent Settings',
+          icon: Icons.psychology_alt_outlined,
+          description: isZh
+              ? '控制 AI Chat 是否优先使用 Deep Agent，以及反思与调试输出。'
+              : 'Control whether AI Chat prefers Deep Agent, plus reflection and debug output.',
+          children: [
+            SettingsToggle(
+              title: isZh ? '优先使用 Deep Agent' : 'Prefer Deep Agent',
+              subtitle: isZh
+                  ? '开启后，普通聊天会先调用 /agents/deep-agent。'
+                  : 'When enabled, normal chat calls /agents/deep-agent first.',
+              value: aiAgentSettings.preferDeepAgent,
+              icon: Icons.smart_toy_outlined,
+              onChanged: (v) => ref
+                  .read(aiAgentSettingsProvider.notifier)
+                  .setPreferDeepAgent(v ?? true),
+            ),
+            SettingsToggle(
+              title: isZh
+                  ? 'Deep Agent 不可用时回退 QA'
+                  : 'Fallback to QA if unavailable',
+              subtitle: isZh
+                  ? '当 deep-agent 返回 404/501 时自动调用 /agents/qa。'
+                  : 'Automatically calls /agents/qa when deep-agent returns 404/501.',
+              value: aiAgentSettings.deepAgentFallbackToQa,
+              enabled: aiAgentSettings.preferDeepAgent,
+              icon: Icons.alt_route,
+              onChanged: (v) => ref
+                  .read(aiAgentSettingsProvider.notifier)
+                  .setDeepAgentFallbackToQa(v ?? true),
+            ),
+            SettingsSelection<DeepAgentReflectionMode>(
+              title: isZh ? '反思模式' : 'Reflection Mode',
+              subtitle: isZh
+                  ? '控制 deep-agent 是否在回答后进行评估与可选重试。'
+                  : 'Controls post-answer evaluation and optional retry.',
+              icon: Icons.psychology,
+              value: aiAgentSettings.deepAgentReflectionMode,
+              options: [
+                SettingsOption(
+                  label: isZh ? '关闭' : 'Off',
+                  value: DeepAgentReflectionMode.off,
+                ),
+                SettingsOption(
+                  label: isZh ? '仅失败时' : 'On failure',
+                  value: DeepAgentReflectionMode.onFailure,
+                ),
+                SettingsOption(
+                  label: isZh ? '总是' : 'Always',
+                  value: DeepAgentReflectionMode.always,
+                ),
+              ],
+              onChanged: (mode) {
+                if (mode == null) return;
+                ref
+                    .read(aiAgentSettingsProvider.notifier)
+                    .setDeepAgentReflectionMode(mode);
+              },
+            ),
+            SettingsToggle(
+              title: isZh ? '显示执行细节' : 'Show Execution Details',
+              subtitle: isZh
+                  ? '在 /deep 命令结果里附加 plan 与工具调用记录。'
+                  : 'Include plan and tool call logs in /deep output.',
+              value: aiAgentSettings.deepAgentShowDetails,
+              icon: Icons.subject,
+              onChanged: (v) => ref
+                  .read(aiAgentSettingsProvider.notifier)
+                  .setDeepAgentShowDetails(v ?? false),
+            ),
+            ListTile(
+              leading: const Icon(Icons.format_list_numbered),
+              title: Text(isZh ? '规划步数上限' : 'Max Plan Steps'),
+              subtitle: NeumorphicSlider(
+                value: aiAgentSettings.deepAgentMaxPlanSteps.toDouble(),
+                min: 1,
+                max: 12,
+                onChanged: aiAgentSettings.preferDeepAgent
+                    ? (value) => ref
+                          .read(aiAgentSettingsProvider.notifier)
+                          .setDeepAgentMaxPlanSteps(value.round())
+                    : null,
+              ),
+              trailing: Text('${aiAgentSettings.deepAgentMaxPlanSteps}'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.loop),
+              title: Text(isZh ? '工具轮次上限' : 'Max Tool Rounds'),
+              subtitle: NeumorphicSlider(
+                value: aiAgentSettings.deepAgentMaxToolRounds.toDouble(),
+                min: 1,
+                max: 20,
+                onChanged: aiAgentSettings.preferDeepAgent
+                    ? (value) => ref
+                          .read(aiAgentSettingsProvider.notifier)
+                          .setDeepAgentMaxToolRounds(value.round())
+                    : null,
+              ),
+              trailing: Text('${aiAgentSettings.deepAgentMaxToolRounds}'),
+            ),
+          ],
         ),
         Builder(
           builder: (context) {

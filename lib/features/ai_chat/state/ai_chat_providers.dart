@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/shared/constants.dart';
+import 'package:writer/state/ai_agent_settings.dart';
 
 class ChatMessage {
   final String content;
@@ -30,10 +31,11 @@ class AiChatState {
 }
 
 class AiChatNotifier extends StateNotifier<AiChatState> {
-  AiChatNotifier(this._aiChatService)
+  AiChatNotifier(this._aiChatService, this._settingsReader)
     : super(const AiChatState(messages: [], isLoading: false));
 
   final AiChatService _aiChatService;
+  final AiAgentSettings Function() _settingsReader;
 
   Future<void> sendMessage(String message) async {
     if (message.trim().isEmpty) return;
@@ -41,6 +43,11 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
     // Check for RAG command
     if (message.startsWith('/search ')) {
       await _handleRagSearch(message);
+      return;
+    }
+
+    if (message.startsWith('/deep ')) {
+      await _handleDeepAgent(message);
       return;
     }
 
@@ -54,7 +61,10 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
     );
 
     try {
-      final response = await _aiChatService.sendMessage(message);
+      final response = await _aiChatService.sendMessage(
+        message,
+        settings: _settingsReader(),
+      );
 
       // Add AI response and clear loading
       state = state.copyWith(
@@ -70,6 +80,48 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
         messages: [
           ...state.messages,
           ChatMessage(content: 'Error: ${e.toString()}', isUser: false),
+        ],
+        isLoading: false,
+      );
+    }
+  }
+
+  Future<void> _handleDeepAgent(String message) async {
+    final question = message.replaceFirst('/deep ', '').trim();
+    if (question.isEmpty) return;
+
+    final settings = _settingsReader();
+    state = state.copyWith(
+      messages: [
+        ...state.messages,
+        ChatMessage(content: message, isUser: true),
+      ],
+      isLoading: true,
+    );
+
+    try {
+      final response = await _aiChatService.sendMessageDeepAgent(
+        question,
+        maxPlanSteps: settings.deepAgentMaxPlanSteps,
+        maxToolRounds: settings.deepAgentMaxToolRounds,
+        reflectionMode: settings.deepAgentReflectionMode.wireValue,
+        includeDetails: settings.deepAgentShowDetails,
+      );
+      state = state.copyWith(
+        messages: [
+          ...state.messages,
+          ChatMessage(content: response, isUser: false),
+        ],
+        isLoading: false,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        messages: [
+          ...state.messages,
+          ChatMessage(
+            content: 'Deep Agent Error: ${e.toString()}',
+            isUser: false,
+          ),
         ],
         isLoading: false,
       );
@@ -149,7 +201,7 @@ final aiChatProvider = StateNotifierProvider<AiChatNotifier, AiChatState>((
   ref,
 ) {
   final aiChatService = ref.watch(aiChatServiceProvider);
-  return AiChatNotifier(aiChatService);
+  return AiChatNotifier(aiChatService, () => ref.read(aiAgentSettingsProvider));
 });
 
 class AiChatUiNotifier extends StateNotifier<bool> {

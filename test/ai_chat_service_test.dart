@@ -9,7 +9,8 @@ void main() {
   group('AiChatService', () {
     test('sendMessage returns answer field', () async {
       final client = MockClient((request) async {
-        if (request.method == 'POST' && request.url.path == '/agents/qa') {
+        if (request.method == 'POST' &&
+            request.url.path == '/agents/deep-agent') {
           return http.Response(jsonEncode({'answer': 'ok'}), 200);
         }
         return http.Response('not found', 404);
@@ -22,7 +23,8 @@ void main() {
 
     test('sendMessage supports reply and response fields', () async {
       final client = MockClient((request) async {
-        if (request.method == 'POST' && request.url.path == '/agents/qa') {
+        if (request.method == 'POST' &&
+            request.url.path == '/agents/deep-agent') {
           return http.Response(jsonEncode({'reply': 'r1'}), 200);
         }
         return http.Response('not found', 404);
@@ -34,7 +36,8 @@ void main() {
       expect(reply, 'r1');
 
       final client2 = MockClient((request) async {
-        if (request.method == 'POST' && request.url.path == '/agents/qa') {
+        if (request.method == 'POST' &&
+            request.url.path == '/agents/deep-agent') {
           return http.Response(jsonEncode({'response': 'r2'}), 200);
         }
         return http.Response('not found', 404);
@@ -48,7 +51,8 @@ void main() {
 
     test('sendMessage returns fallback when field type is wrong', () async {
       final client = MockClient((request) async {
-        if (request.method == 'POST' && request.url.path == '/agents/qa') {
+        if (request.method == 'POST' &&
+            request.url.path == '/agents/deep-agent') {
           return http.Response(jsonEncode({'answer': 123}), 200);
         }
         return http.Response('not found', 404);
@@ -204,7 +208,8 @@ void main() {
 
     test('sendMessage handles baseUrl without trailing slash', () async {
       final client = MockClient((request) async {
-        if (request.method == 'POST' && request.url.path == '/agents/qa') {
+        if (request.method == 'POST' &&
+            request.url.path == '/agents/deep-agent') {
           return http.Response(jsonEncode({'answer': 'ok'}), 200);
         }
         return http.Response('not found', 404);
@@ -215,6 +220,124 @@ void main() {
       final reply = await svc.sendMessage('hi');
       expect(reply, 'ok');
     });
+
+    test(
+      'sendMessage falls back to /agents/qa when deep-agent is unavailable',
+      () async {
+        final client = MockClient((request) async {
+          if (request.method == 'POST' &&
+              request.url.path == '/agents/deep-agent') {
+            return http.Response('not found', 404);
+          }
+          if (request.method == 'POST' && request.url.path == '/agents/qa') {
+            return http.Response(jsonEncode({'answer': 'fallback'}), 200);
+          }
+          return http.Response('not found', 404);
+        });
+        final svc = AiChatService(
+          RemoteRepository('http://example.com/', client: client),
+        );
+        final reply = await svc.sendMessage('hi');
+        expect(reply, 'fallback');
+      },
+    );
+
+    test('sendMessageDeepAgent returns answer field', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path == '/agents/deep-agent') {
+          return http.Response(jsonEncode({'answer': 'ok'}), 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService(
+        RemoteRepository('http://example.com/', client: client),
+      );
+      final reply = await svc.sendMessageDeepAgent('hi');
+      expect(reply, 'ok');
+    });
+
+    test('sendMessageDeepAgent supports reply and response fields', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path == '/agents/deep-agent') {
+          return http.Response(jsonEncode({'reply': 'r1'}), 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService(
+        RemoteRepository('http://example.com/', client: client),
+      );
+      final reply = await svc.sendMessageDeepAgent('hi');
+      expect(reply, 'r1');
+
+      final client2 = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path == '/agents/deep-agent') {
+          return http.Response(jsonEncode({'response': 'r2'}), 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final svc2 = AiChatService(
+        RemoteRepository('http://example.com/', client: client2),
+      );
+      final reply2 = await svc2.sendMessageDeepAgent('hi');
+      expect(reply2, 'r2');
+    });
+
+    test(
+      'sendMessageDeepAgent returns fallback when field type is wrong',
+      () async {
+        final client = MockClient((request) async {
+          if (request.method == 'POST' &&
+              request.url.path == '/agents/deep-agent') {
+            return http.Response(jsonEncode({'answer': 123}), 200);
+          }
+          return http.Response('not found', 404);
+        });
+        final svc = AiChatService(
+          RemoteRepository('http://example.com/', client: client),
+        );
+        final reply = await svc.sendMessageDeepAgent('hi');
+        expect(reply, 'No response from AI service');
+      },
+    );
+
+    test('sendMessageDeepAgent handles 401 and 403', () async {
+      final client401 = MockClient(
+        (request) async => http.Response('unauth', 401),
+      );
+      final svc401 = AiChatService(
+        RemoteRepository('http://example.com', client: client401),
+      );
+      expect(
+        await svc401.sendMessageDeepAgent('x'),
+        'Sign in required to use AI service',
+      );
+
+      final client403 = MockClient(
+        (request) async => http.Response('forbidden', 403),
+      );
+      final svc403 = AiChatService(
+        RemoteRepository('http://example.com', client: client403),
+      );
+      expect(
+        await svc403.sendMessageDeepAgent('x'),
+        'Feature not available for your plan',
+      );
+    });
+
+    test('sendMessageDeepAgent returns error string on 500', () async {
+      final client = MockClient((request) async => http.Response('error', 500));
+      final svc = AiChatService(
+        RemoteRepository('http://example.com', client: client),
+      );
+      expect(
+        await svc.sendMessageDeepAgent('x'),
+        contains('Failed to connect to AI service:'),
+      );
+    });
+
     test('betaEvaluateChapter returns evaluation map', () async {
       final client = MockClient((request) async {
         if (request.method == 'POST' && request.url.path == '/beta/evaluate') {

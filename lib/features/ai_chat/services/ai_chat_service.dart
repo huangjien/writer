@@ -1,33 +1,150 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/shared/api_exception.dart';
+import 'package:writer/state/ai_agent_settings.dart';
 
 class AiChatService {
   final RemoteRepository remote;
 
   AiChatService(this.remote);
 
-  Future<String> sendMessage(String message) async {
-    try {
-      final res = await remote.post('agents/qa', {'question': message});
+  String? _extractTextAnswer(dynamic res) {
+    if (res is! Map) return null;
+    final answer = res['answer'];
+    if (answer is String) return answer;
+    final reply = res['reply'];
+    if (reply is String) return reply;
+    final response = res['response'];
+    if (response is String) return response;
+    return null;
+  }
 
-      if (res is Map) {
-        final answer = res['answer'];
-        if (answer is String) return answer;
-        final reply = res['reply'];
-        if (reply is String) return reply;
-        final response = res['response'];
-        if (response is String) return response;
+  String _formatError(Object e) {
+    if (e.toString().contains('401')) {
+      return 'Sign in required to use AI service';
+    }
+    if (e.toString().contains('403')) {
+      return 'Feature not available for your plan';
+    }
+    return 'Failed to connect to AI service: $e';
+  }
+
+  String _formatDeepAgentResponse(dynamic res, {required bool includeDetails}) {
+    final answer = _extractTextAnswer(res) ?? 'No response from AI service';
+    if (!includeDetails || res is! Map) return answer;
+
+    final sb = StringBuffer();
+    sb.writeln(answer);
+
+    final plan = res['plan'];
+    final toolEvents = res['tool_events'];
+    final stopReason = res['stop_reason'];
+    final rounds = res['rounds'];
+
+    sb.writeln('');
+    sb.writeln('---');
+    sb.writeln('Deep Agent');
+    if (stopReason != null || rounds != null) {
+      sb.writeln('Stop: ${stopReason ?? '-'} (rounds: ${rounds ?? '-'})');
+    }
+
+    if (plan is Map) {
+      final steps = plan['steps'];
+      if (steps is List) {
+        final stepStrings = steps.whereType<String>().toList();
+        if (stepStrings.isNotEmpty) {
+          sb.writeln('');
+          sb.writeln('Plan:');
+          for (final step in stepStrings) {
+            sb.writeln('- $step');
+          }
+        }
       }
-      return 'No response from AI service';
+    }
+
+    if (toolEvents is List) {
+      final eventMaps = toolEvents.whereType<Map>().toList();
+      if (eventMaps.isNotEmpty) {
+        sb.writeln('');
+        sb.writeln('Tools:');
+        for (final e in eventMaps) {
+          final round = e['round'];
+          final tool = e['tool'];
+          final args = e['args'];
+          sb.writeln('- [${round ?? '-'}] ${tool ?? '-'} ${args ?? {}}');
+        }
+      }
+    }
+
+    return sb.toString().trimRight();
+  }
+
+  Future<String> _sendQa(String message) async {
+    final res = await remote.post('agents/qa', {'question': message});
+    final answer = _extractTextAnswer(res);
+    return answer ?? 'No response from AI service';
+  }
+
+  Future<String> sendMessage(
+    String message, {
+    AiAgentSettings? settings,
+  }) async {
+    try {
+      final preferDeepAgent = settings?.preferDeepAgent ?? true;
+      if (!preferDeepAgent) {
+        return await _sendQa(message);
+      }
+
+      final fallbackToQa = settings?.deepAgentFallbackToQa ?? true;
+      final reflectionMode =
+          (settings?.deepAgentReflectionMode ?? DeepAgentReflectionMode.off)
+              .wireValue;
+      final includeDetails = settings?.deepAgentShowDetails ?? false;
+      final maxPlanSteps = settings?.deepAgentMaxPlanSteps;
+      final maxToolRounds = settings?.deepAgentMaxToolRounds;
+
+      try {
+        final res = await remote.post('agents/deep-agent', {
+          'question': message,
+          if (maxPlanSteps != null) 'max_plan_steps': maxPlanSteps,
+          if (maxToolRounds != null) 'max_tool_rounds': maxToolRounds,
+          'reflection_mode': reflectionMode,
+        });
+        return _formatDeepAgentResponse(res, includeDetails: includeDetails);
+      } catch (e) {
+        if (fallbackToQa &&
+            e is ApiException &&
+            (e.statusCode == 404 || e.statusCode == 501)) {
+          return await _sendQa(message);
+        }
+        rethrow;
+      }
     } catch (e) {
-      if (e.toString().contains('401')) {
-        return 'Sign in required to use AI service';
-      }
-      if (e.toString().contains('403')) {
-        return 'Feature not available for your plan';
-      }
-      return 'Failed to connect to AI service: $e';
+      return _formatError(e);
+    }
+  }
+
+  Future<String> sendMessageDeepAgent(
+    String message, {
+    String? context,
+    int? maxPlanSteps,
+    int? maxToolRounds,
+    String reflectionMode = 'off',
+    bool includeDetails = false,
+  }) async {
+    try {
+      final body = <String, dynamic>{
+        'question': message,
+        if (context != null) 'context': context,
+        if (maxPlanSteps != null) 'max_plan_steps': maxPlanSteps,
+        if (maxToolRounds != null) 'max_tool_rounds': maxToolRounds,
+        'reflection_mode': reflectionMode,
+      };
+
+      final res = await remote.post('agents/deep-agent', body);
+      return _formatDeepAgentResponse(res, includeDetails: includeDetails);
+    } catch (e) {
+      return _formatError(e);
     }
   }
 
