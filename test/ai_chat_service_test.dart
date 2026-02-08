@@ -390,5 +390,235 @@ void main() {
       );
       expect(res, {'score': 10});
     });
+
+    test(
+      'sendMessageDeepAgent includes details when response is a map',
+      () async {
+        final client = MockClient((request) async {
+          if (request.method == 'POST' &&
+              request.url.path == '/agents/deep-agent') {
+            return http.Response(
+              jsonEncode({
+                'answer': 'Main answer',
+                'plan': 'Test plan',
+                'stop_reason': 'completed',
+                'rounds': 3,
+              }),
+              200,
+            );
+          }
+          return http.Response('not found', 404);
+        });
+        final svc = AiChatService(
+          RemoteRepository('http://example.com/', client: client),
+        );
+        final reply = await svc.sendMessageDeepAgent(
+          'hi',
+          includeDetails: true,
+        );
+        expect(reply, contains('Main answer'));
+        expect(reply, contains('Deep Agent'));
+        expect(reply, contains('Stop: completed (rounds: 3)'));
+      },
+    );
+
+    test(
+      'sendMessageDeepAgent does not include details when includeDetails is false',
+      () async {
+        final client = MockClient((request) async {
+          if (request.method == 'POST' &&
+              request.url.path == '/agents/deep-agent') {
+            return http.Response(
+              jsonEncode({
+                'answer': 'Main answer',
+                'plan': 'Test plan',
+                'stop_reason': 'completed',
+                'rounds': 3,
+              }),
+              200,
+            );
+          }
+          return http.Response('not found', 404);
+        });
+        final svc = AiChatService(
+          RemoteRepository('http://example.com/', client: client),
+        );
+        final reply = await svc.sendMessageDeepAgent(
+          'hi',
+          includeDetails: false,
+        );
+        expect(reply, 'Main answer');
+        expect(reply, isNot(contains('Deep Agent')));
+        expect(reply, isNot(contains('Stop:')));
+      },
+    );
+
+    test('sendMessageDeepAgent handles tool_events in details', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path == '/agents/deep-agent') {
+          return http.Response(
+            jsonEncode({
+              'answer': 'Answer with tools',
+              'tool_events': [
+                {
+                  'round': 1,
+                  'tool': 'search',
+                  'args': {'query': 'test'},
+                },
+                {
+                  'round': 2,
+                  'tool': 'read',
+                  'args': {'file': 'doc.txt'},
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService(
+        RemoteRepository('http://example.com/', client: client),
+      );
+      final reply = await svc.sendMessageDeepAgent('hi', includeDetails: true);
+      expect(reply, contains('Answer with tools'));
+      expect(reply, contains('Tools:'));
+      expect(reply, contains('[1] search'));
+      expect(reply, contains('[2] read'));
+    });
+
+    test(
+      'sendMessageDeepAgent includes plan in details when available',
+      () async {
+        final client = MockClient((request) async {
+          if (request.method == 'POST' &&
+              request.url.path == '/agents/deep-agent') {
+            return http.Response(
+              jsonEncode({
+                'answer': 'Planned answer',
+                'plan': {
+                  'steps': ['Step 1', 'Step 2', 'Step 3'],
+                },
+              }),
+              200,
+            );
+          }
+          return http.Response('not found', 404);
+        });
+        final svc = AiChatService(
+          RemoteRepository('http://example.com/', client: client),
+        );
+        final reply = await svc.sendMessageDeepAgent(
+          'hi',
+          includeDetails: true,
+        );
+        expect(reply, contains('Planned answer'));
+        expect(reply, contains('Plan:'));
+        expect(reply, contains('- Step 1'));
+        expect(reply, contains('- Step 2'));
+        expect(reply, contains('- Step 3'));
+      },
+    );
+
+    test(
+      'sendMessageDeepAgent handles non-map response with includeDetails',
+      () async {
+        final client = MockClient((request) async {
+          if (request.method == 'POST' &&
+              request.url.path == '/agents/deep-agent') {
+            return http.Response(jsonEncode('plain string response'), 200);
+          }
+          return http.Response('not found', 404);
+        });
+        final svc = AiChatService(
+          RemoteRepository('http://example.com/', client: client),
+        );
+        final reply = await svc.sendMessageDeepAgent(
+          'hi',
+          includeDetails: true,
+        );
+        expect(reply, 'No response from AI service');
+      },
+    );
+
+    test(
+      'sendMessageDeepAgent includes details when stop_reason is present but rounds is null',
+      () async {
+        final client = MockClient((request) async {
+          if (request.method == 'POST' &&
+              request.url.path == '/agents/deep-agent') {
+            return http.Response(
+              jsonEncode({
+                'answer': 'Answer with stop reason',
+                'stop_reason': 'max_tokens',
+              }),
+              200,
+            );
+          }
+          return http.Response('not found', 404);
+        });
+        final svc = AiChatService(
+          RemoteRepository('http://example.com/', client: client),
+        );
+        final reply = await svc.sendMessageDeepAgent(
+          'hi',
+          includeDetails: true,
+        );
+        expect(reply, contains('Answer with stop reason'));
+        expect(reply, contains('Stop: max_tokens (rounds: -)'));
+      },
+    );
+
+    test(
+      'sendMessageDeepAgent includes details when rounds is present but stop_reason is null',
+      () async {
+        final client = MockClient((request) async {
+          if (request.method == 'POST' &&
+              request.url.path == '/agents/deep-agent') {
+            return http.Response(
+              jsonEncode({'answer': 'Answer with rounds', 'rounds': 5}),
+              200,
+            );
+          }
+          return http.Response('not found', 404);
+        });
+        final svc = AiChatService(
+          RemoteRepository('http://example.com/', client: client),
+        );
+        final reply = await svc.sendMessageDeepAgent(
+          'hi',
+          includeDetails: true,
+        );
+        expect(reply, contains('Answer with rounds'));
+        expect(reply, contains('Stop: - (rounds: 5)'));
+      },
+    );
+
+    test('_formatError handles 404 error', () async {
+      final client = MockClient(
+        (request) async => http.Response('not found', 404),
+      );
+      final svc = AiChatService(
+        RemoteRepository('http://example.com', client: client),
+      );
+      expect(
+        await svc.sendMessageDeepAgent('x'),
+        contains('Failed to connect to AI service'),
+      );
+    });
+
+    test('_formatError handles network errors', () async {
+      final client = MockClient((request) async {
+        throw Exception('Network unreachable');
+      });
+      final svc = AiChatService(
+        RemoteRepository('http://example.com', client: client),
+      );
+      expect(
+        await svc.sendMessageDeepAgent('x'),
+        contains('Failed to connect to AI service'),
+      );
+    });
   });
 }
