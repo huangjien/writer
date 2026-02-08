@@ -8,6 +8,7 @@ import '../../repositories/template_repository.dart';
 import '../../state/providers.dart';
 import '../../shared/api_exception.dart';
 import '../../shared/widgets/app_buttons.dart';
+import '../../features/ai_chat/state/ai_chat_providers.dart';
 
 class CharacterTemplatesScreen extends ConsumerStatefulWidget {
   const CharacterTemplatesScreen({
@@ -44,6 +45,16 @@ class _CharacterTemplatesScreenState
     // Default to Preview (index 0)
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
     _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(aiContextProvider.notifier)
+          .setContextDelegate(
+            type: 'character_template',
+            loader: () async {
+              return "Character Template: ${_nameController.text}\n\nDescription:\n${_descController.text}";
+            },
+          );
+    });
   }
 
   Future<void> _load() async {
@@ -78,6 +89,9 @@ class _CharacterTemplatesScreenState
 
   @override
   void dispose() {
+    try {
+      ref.read(aiContextProvider.notifier).clearContextDelegate();
+    } catch (_) {}
     _nameController.dispose();
     _descController.dispose();
     _tabController.dispose();

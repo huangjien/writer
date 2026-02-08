@@ -215,6 +215,24 @@ class AiChatService {
     }
   }
 
+  Future<String> compressContext(String context) async {
+    try {
+      final body = <String, dynamic>{
+        'question':
+            'Please summarize and compress the following context into a concise version that preserves the most important information. Use bullet points where appropriate.',
+        'context': context,
+        'max_plan_steps': 3,
+        'max_tool_rounds': 3,
+        'reflection_mode': 'off',
+      };
+
+      final res = await remote.post('agents/deep-agent', body);
+      return _formatDeepAgentResponse(res, includeDetails: false);
+    } catch (e) {
+      return _formatError(e);
+    }
+  }
+
   Future<Map<String, dynamic>?> ragSearch({
     required String query,
     String? category,

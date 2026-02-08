@@ -7,6 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
+import 'package:writer/features/ai_chat/services/chat_storage_service.dart';
 import 'package:writer/features/ai_chat/widgets/ai_chat_sidebar.dart';
 import 'package:writer/state/ai_agent_settings.dart';
 import 'package:writer/shared/widgets/error_view.dart';
@@ -30,6 +31,10 @@ class MockTtsDriver extends Mock implements TtsDriver {}
 
 class MockAiChatService extends Mock implements AiChatService {}
 
+class MockChatStorageService extends Mock implements ChatStorageService {}
+
+class MockAiContextNotifier extends Mock implements AiContextNotifier {}
+
 class MockChapterRepository extends Mock implements ChapterRepository {}
 
 class MockNovelRepository extends Mock implements NovelRepository {}
@@ -51,6 +56,8 @@ void main() {
 
   late MockTtsDriver mockTtsDriver;
   late MockAiChatService mockAiChatService;
+  late MockChatStorageService mockStorageService;
+  late MockAiContextNotifier mockContextNotifier;
   late MockChapterRepository mockChapterRepository;
   late MockNovelRepository mockNovelRepository;
   late SharedPreferences prefs;
@@ -74,6 +81,8 @@ void main() {
   setUp(() async {
     mockTtsDriver = MockTtsDriver();
     mockAiChatService = MockAiChatService();
+    mockStorageService = MockChatStorageService();
+    mockContextNotifier = MockAiContextNotifier();
     mockChapterRepository = MockChapterRepository();
     mockNovelRepository = MockNovelRepository();
     SharedPreferences.setMockInitialValues({});
@@ -114,6 +123,13 @@ void main() {
       () => mockAiChatService.sendMessage(any()),
     ).thenAnswer((_) async => 'AI Response');
     when(() => mockAiChatService.embed(any())).thenAnswer((_) async => []);
+
+    // Mock StorageService and ContextNotifier
+    when(() => mockStorageService.loadSessions()).thenReturn([]);
+    when(() => mockStorageService.saveSessions(any())).thenAnswer((_) async {});
+    when(
+      () => mockContextNotifier.getActiveContext(),
+    ).thenAnswer((_) async => null);
 
     // Mock ChapterRepository
     when(
@@ -549,24 +565,81 @@ void main() {
     final chatNotifier = AiChatUiNotifier();
     chatNotifier.openSidebar();
 
-    await pumpScreen(
-      tester,
-      overrides: [
-        aiChatUiProvider.overrideWith((ref) => chatNotifier),
-        aiChatProvider.overrideWith(
-          (ref) => AiChatNotifier(
-            mockAiChatService,
-            () => const AiAgentSettings(
-              preferDeepAgent: true,
-              deepAgentFallbackToQa: true,
-              deepAgentReflectionMode: DeepAgentReflectionMode.off,
-              deepAgentShowDetails: false,
-              deepAgentMaxPlanSteps: 6,
-              deepAgentMaxToolRounds: 8,
+    // Use real instance instead of mock to avoid addListener issues
+    final contextNotifier = AiContextNotifier();
+    when(() => mockStorageService.loadSessions()).thenReturn([]);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          ttsDriverProvider.overrideWith((ref) => mockTtsDriver),
+          appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
+          themeControllerProvider.overrideWith((ref) => ThemeController(prefs)),
+          ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
+          aiChatServiceProvider.overrideWith((ref) => mockAiChatService),
+          chatStorageServiceProvider.overrideWithValue(mockStorageService),
+          aiContextProvider.overrideWith((ref) => contextNotifier),
+          aiChatUiProvider.overrideWith((ref) => chatNotifier),
+          aiChatProvider.overrideWith(
+            (ref) => AiChatNotifier(
+              mockAiChatService,
+              () => const AiAgentSettings(
+                preferDeepAgent: true,
+                deepAgentFallbackToQa: true,
+                deepAgentReflectionMode: DeepAgentReflectionMode.off,
+                deepAgentShowDetails: false,
+                deepAgentMaxPlanSteps: 6,
+                deepAgentMaxToolRounds: 8,
+              ),
+              mockStorageService,
+              contextNotifier,
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: Consumer(
+              builder: (context, ref, _) {
+                final isOpen = ref.watch(aiChatUiProvider);
+                return Stack(
+                  children: [
+                    // Main content placeholder
+                    Container(),
+                    // Sidebar with scrim (simulating GlobalAiAssistantOverlay)
+                    if (isOpen)
+                      Positioned.fill(
+                        child: Stack(
+                          children: [
+                            // Scrim
+                            GestureDetector(
+                              onTap: () => ref
+                                  .read(aiChatUiProvider.notifier)
+                                  .closeSidebar(),
+                              child: Container(color: Colors.black54),
+                            ),
+                            // Sidebar
+                            const Align(
+                              alignment: Alignment.centerRight,
+                              child: SizedBox(
+                                width: 350,
+                                child: AiChatSidebar(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                );
+              },
             ),
           ),
         ),
-      ],
+      ),
     );
     await tester.pumpAndSettle();
 

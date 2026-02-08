@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
-import 'package:writer/features/ai_chat/widgets/ai_chat_sidebar.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/state/providers.dart';
@@ -122,10 +121,28 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_controller.hasClients) _controller.jumpTo(widget.initialOffset);
         ref.read(readerSessionProvider.notifier).loadInitial();
+        ref
+            .read(aiContextProvider.notifier)
+            .setContextDelegate(
+              type: 'chapter',
+              loader: () async {
+                final state = ref.read(readerSessionProvider);
+                return "Chapter Title: ${state.title}\n\nContent:\n${state.content ?? ''}";
+              },
+            );
       });
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(readerSessionProvider.notifier).loadInitial();
+        ref
+            .read(aiContextProvider.notifier)
+            .setContextDelegate(
+              type: 'chapter',
+              loader: () async {
+                final state = ref.read(readerSessionProvider);
+                return "Chapter Title: ${state.title}\n\nContent:\n${state.content ?? ''}";
+              },
+            );
       });
     }
 
@@ -467,7 +484,6 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
             content: state.content?.isNotEmpty == true ? state.content : null,
           );
 
-    final isAiChatOpen = ref.watch(aiChatUiProvider);
     final isSignedIn = ref.watch(isSignedInProvider);
 
     final readerScaffold = Scaffold(
@@ -513,33 +529,6 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
                     onNext: _onNextPressed,
                   ),
           ),
-          if (isAiChatOpen && !state.fullScreen)
-            Positioned.fill(
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: () {
-                  try {
-                    ref.read(aiChatUiProvider.notifier).closeSidebar();
-                  } catch (_) {}
-                },
-                child: Container(color: const Color(0x00000000)),
-              ),
-            ),
-          if (isAiChatOpen && !state.fullScreen)
-            Align(
-              alignment: isRTL(context)
-                  ? Alignment.centerLeft
-                  : Alignment.centerRight,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final w = constraints.maxWidth * 0.8;
-                  return SizedBox(
-                    width: w,
-                    child: AiChatSidebar(width: w),
-                  );
-                },
-              ),
-            ),
         ],
       ),
       bottomNavigationBar: state.fullScreen
@@ -634,6 +623,9 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
 
   @override
   void dispose() {
+    try {
+      ref.read(aiContextProvider.notifier).clearContextDelegate();
+    } catch (_) {}
     _controller.removeListener(_onScroll);
     _controller.dispose();
     super.dispose();

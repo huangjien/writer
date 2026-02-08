@@ -15,6 +15,7 @@ import 'routing/app_router.dart';
 import 'l10n/app_localizations.dart';
 import 'services/app_lifecycle_monitor.dart';
 import 'shared/widgets/error_boundary.dart';
+import 'features/ai_chat/widgets/global_ai_overlay.dart';
 
 // Sidebar UX Strategy:
 // - Primary navigation: LEFT side (drawer)
@@ -147,12 +148,13 @@ class App extends ConsumerWidget {
           supportedLocales: AppLocalizations.supportedLocales,
           builder: (context, child) {
             final mq = MediaQuery.of(context);
-            return MediaQuery(
+            final childWithScale = MediaQuery(
               data: mq.copyWith(
                 textScaler: TextScaler.linear(themeState.fontScale),
               ),
               child: child ?? const SizedBox.shrink(),
             );
+            return GlobalAiAssistantOverlay(child: childWithScale);
           },
         ),
       ),
