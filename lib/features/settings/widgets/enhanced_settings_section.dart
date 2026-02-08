@@ -64,12 +64,20 @@ class EnhancedSettingsSection extends StatelessWidget {
           ),
           const SizedBox(height: Spacing.s),
         ],
-        // Section content card
+        // Section content card with transparent ListTiles
         ThemeAwareCard(
           margin: const EdgeInsets.symmetric(horizontal: Spacing.l),
           semanticType: CardSemanticType.default_,
           padding: EdgeInsets.zero,
-          child: Column(mainAxisSize: MainAxisSize.min, children: children),
+          child: Theme(
+            data: theme.copyWith(
+              listTileTheme: theme.listTileTheme.copyWith(
+                tileColor: Colors.transparent,
+                selectedTileColor: Colors.transparent,
+              ),
+            ),
+            child: Column(mainAxisSize: MainAxisSize.min, children: children),
+          ),
         ),
         const SizedBox(height: Spacing.xl),
       ],
@@ -98,11 +106,28 @@ class SettingsToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ListTile(
-      leading: icon != null ? Icon(icon) : null,
-      title: Text(title, style: Theme.of(context).textTheme.bodyLarge),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      leading: icon != null
+          ? Icon(icon, color: theme.colorScheme.onSurface)
+          : null,
+      title: Text(
+        title,
+        style: theme.textTheme.bodyLarge?.copyWith(
+          color: enabled
+              ? theme.colorScheme.onSurface
+              : theme.colorScheme.onSurface.withValues(alpha: 0.5),
+        ),
+      ),
       subtitle: subtitle != null
-          ? Text(subtitle!, style: Theme.of(context).textTheme.bodySmall)
+          ? Text(
+              subtitle!,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            )
           : null,
       trailing: NeumorphicSwitch(
         value: value,
@@ -134,10 +159,27 @@ class SettingsSelection<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ListTile(
-      leading: icon != null ? Icon(icon) : null,
-      title: Text(title),
-      subtitle: subtitle != null ? Text(subtitle!) : null,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      leading: icon != null
+          ? Icon(icon, color: theme.colorScheme.onSurface)
+          : null,
+      title: Text(
+        title,
+        style: theme.textTheme.bodyLarge?.copyWith(
+          color: theme.colorScheme.onSurface,
+        ),
+      ),
+      subtitle: subtitle != null
+          ? Text(
+              subtitle!,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            )
+          : null,
       trailing: NeumorphicDropdown<T>(
         value: value,
         onChanged: onChanged,

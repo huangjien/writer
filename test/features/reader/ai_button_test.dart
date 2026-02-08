@@ -44,7 +44,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find the AI button
-      final aiIcon = find.byIcon(Icons.smart_toy);
+      final aiIcon = find.byIcon(Icons.auto_awesome);
       expect(aiIcon, findsOneWidget);
 
       // Verify it is disabled
@@ -80,7 +80,7 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      final aiIcon = find.byIcon(Icons.smart_toy);
+      final aiIcon = find.byIcon(Icons.auto_awesome);
       expect(aiIcon, findsOneWidget);
 
       expect(find.byTooltip('AI Assistant'), findsOneWidget);

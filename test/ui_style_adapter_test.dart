@@ -107,7 +107,8 @@ void main() {
         ).applyToTheme(baseTheme, false);
         final ext2 = neu.extension<UiStyleThemeExtension>();
         expect(ext2, isNotNull);
-        expect(ext2!.cardShadows, isNull);
+        expect(ext2!.cardShadows, isNotNull);
+        expect(ext2.cardShadows, isNotEmpty);
       });
 
       test('applies custom card border radius', () {

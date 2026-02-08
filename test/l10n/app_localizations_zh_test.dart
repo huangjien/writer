@@ -769,5 +769,291 @@ void main() {
         expect(zh.chapterContent.isNotEmpty, true);
       });
     });
+
+    group('Locale Verification', () {
+      test('has correct locale name', () {
+        expect(zh.localeName, 'zh');
+      });
+
+      test('locale name is not empty', () {
+        expect(zh.localeName, isNotEmpty);
+        expect(zh.localeName.length, equals(2));
+      });
+    });
+
+    group('Core App Strings', () {
+      test('core app strings match expected Chinese', () {
+        expect(zh.appTitle, '写手');
+        expect(zh.settings, '设置');
+        expect(zh.about, '关于');
+        expect(zh.back, '返回');
+        expect(zh.newChapter, '新章节');
+      });
+
+      test('navigation strings are valid', () {
+        expect(zh.navigation.isNotEmpty, true);
+        expect(zh.home.isNotEmpty, true);
+        expect(zh.libraryTitle.isNotEmpty, true);
+        expect(zh.summary.isNotEmpty, true);
+        expect(zh.characters.isNotEmpty, true);
+        expect(zh.scenes.isNotEmpty, true);
+      });
+    });
+
+    group('Common Action Strings', () {
+      test('common actions are valid Chinese', () {
+        expect(zh.save, '保存');
+        expect(zh.cancel, '取消');
+        expect(zh.delete, '删除');
+        expect(zh.edit, '编辑');
+        expect(zh.close, '关闭');
+        expect(zh.copy, '复制');
+        expect(zh.undo, '撤销');
+        expect(zh.remove, '移除');
+        expect(zh.refresh, '刷新');
+        expect(zh.select, '选择');
+        expect(zh.clear, '清除');
+        expect(zh.create, '创建');
+      });
+    });
+
+    group('Theme Strings', () {
+      test('theme strings are valid', () {
+        expect(zh.themeMode, '主题模式');
+        expect(zh.system, '跟随系统');
+        expect(zh.light, '浅色');
+        expect(zh.dark, '深色');
+      });
+    });
+
+    group('TTS Strings', () {
+      test('TTS settings are valid', () {
+        expect(zh.ttsSettings, 'TTS 设置');
+        expect(zh.enableTTS, '启用 TTS');
+        expect(zh.speechRate, '语速');
+        expect(zh.volume, '音量');
+        expect(zh.pitch, '音高');
+      });
+
+      test('TTS voice strings are valid', () {
+        expect(zh.defaultTTSVoice.isNotEmpty, true);
+        expect(zh.ttsVoice.isNotEmpty, true);
+        expect(zh.ttsLanguage.isNotEmpty, true);
+        expect(zh.testVoice, '测试语音');
+        expect(zh.reloadVoices, '重新加载语音');
+      });
+    });
+
+    group('Error Strings', () {
+      test('error strings are valid', () {
+        expect(zh.error, '错误');
+        expect(zh.errorLoadingProgress.isNotEmpty, true);
+        expect(zh.errorLoadingNovels.isNotEmpty, true);
+        expect(zh.errorLoadingChapters.isNotEmpty, true);
+        expect(zh.errorLoadingUsage.isNotEmpty, true);
+      });
+
+      test('TTS error formats correctly', () {
+        expect(zh.ttsError('测试错误'), contains('TTS 错误'));
+        expect(zh.ttsError('测试错误'), contains('测试错误'));
+      });
+    });
+
+    group('Parameterized Strings - Chapter', () {
+      test('chapterLabel formats correctly', () {
+        expect(zh.chapterLabel(1), '第1章');
+        expect(zh.chapterLabel(100), '第100章');
+      });
+
+      test('chapterWithTitle formats correctly', () {
+        final result = zh.chapterWithTitle(5, '测试章节');
+        expect(result, contains('5'));
+        expect(result, contains('测试章节'));
+      });
+
+      test('chaptersCount formats correctly', () {
+        expect(zh.chaptersCount(10), contains('10'));
+        expect(zh.chaptersCount(1), contains('1'));
+      });
+
+      test('indexLabel formats correctly', () {
+        expect(zh.indexLabel(5), '索引5');
+        expect(zh.indexLabel(0), '索引0');
+      });
+
+      test('indexOutOfRange formats correctly', () {
+        final result = zh.indexOutOfRange(1, 100);
+        expect(result, contains('1'));
+        expect(result, contains('100'));
+      });
+    });
+
+    group('AI Strings', () {
+      test('AI service strings are valid', () {
+        expect(zh.aiServiceUrl.isNotEmpty, true);
+        expect(zh.aiServiceUrlDescription.isNotEmpty, true);
+        expect(zh.aiAssistant.isNotEmpty, true);
+        expect(zh.aiChatHint.isNotEmpty, true);
+        expect(zh.aiChatEmpty.isNotEmpty, true);
+        expect(zh.aiThinking.isNotEmpty, true);
+      });
+    });
+
+    group('Novel Strings', () {
+      test('novel strings are valid', () {
+        expect(zh.novel, '小说');
+        expect(zh.novels, '小说');
+        expect(zh.chapter, '章节');
+        expect(zh.chapters, '章节');
+        expect(zh.myNovels, '我的小说');
+        expect(zh.createNovel, '创建小说');
+        expect(zh.deleteNovel, '删除小说');
+      });
+
+      test('chapter state strings are valid', () {
+        expect(zh.notStarted, '尚未开始');
+        expect(zh.noChaptersFound, '未找到章节。');
+        expect(zh.noNovelsFound, '未找到小说。');
+        expect(zh.unknownNovel, '未知小说');
+        expect(zh.unknownChapter, '未知章节');
+      });
+    });
+
+    group('Editor Strings', () {
+      test('editor strings are valid', () {
+        expect(zh.chapterContent, '章节内容');
+        expect(zh.chapterTitle, '章节标题');
+        expect(zh.edit, '编辑');
+        expect(zh.exitEdit, '退出编辑');
+        expect(zh.createNextChapter.isNotEmpty, true);
+      });
+
+      test('editor prompts are valid', () {
+        expect(zh.enterChapterTitle.isNotEmpty, true);
+        expect(zh.enterChapterContent.isNotEmpty, true);
+        expect(zh.discardChangesTitle.isNotEmpty, true);
+        expect(zh.discardChangesMessage.isNotEmpty, true);
+        expect(zh.keepEditing, '继续编辑');
+        expect(zh.discardChanges, '放弃更改');
+        expect(zh.saveAndExit, '保存并退出');
+      });
+    });
+
+    group('Accessibility Strings', () {
+      test('accessibility strings are valid', () {
+        expect(zh.reduceMotion, '减少动效');
+        expect(zh.reduceMotionDescription.isNotEmpty, true);
+        expect(zh.gesturesEnabled, '启用手势');
+        expect(zh.gesturesEnabledDescription.isNotEmpty, true);
+        expect(zh.readerSwipeSensitivity.isNotEmpty, true);
+        expect(zh.readerSwipeSensitivityDescription.isNotEmpty, true);
+      });
+    });
+
+    group('PDF Strings', () {
+      test('PDF strings are valid', () {
+        expect(zh.pdf, 'PDF');
+        expect(zh.generatingPdf, contains('…'));
+        expect(zh.pdfFailed.isNotEmpty, true);
+        expect(zh.tableOfContents, '目录');
+      });
+    });
+
+    group('Success Messages', () {
+      test('success messages are valid', () {
+        expect(zh.saved, '已保存');
+        expect(zh.progressSaved.isNotEmpty, true);
+        expect(zh.defaultVoiceUpdated.isNotEmpty, true);
+        expect(zh.defaultLanguageSet.isNotEmpty, true);
+        expect(zh.copiedToClipboard, '已复制到剪贴板');
+        expect(zh.offlineCacheCleared.isNotEmpty, true);
+      });
+    });
+
+    group('Validation Messages', () {
+      test('validation messages are valid', () {
+        expect(zh.invalidUrl.isNotEmpty, true);
+        expect(zh.urlTooLong.isNotEmpty, true);
+        expect(zh.urlContainsSpaces.isNotEmpty, true);
+        expect(zh.urlInvalidScheme.isNotEmpty, true);
+        expect(zh.invalidCoverUrl.isNotEmpty, true);
+        expect(zh.required, '必填');
+      });
+    });
+
+    group('Beta Strings', () {
+      test('beta strings are valid Chinese', () {
+        expect(zh.betaEvaluate, '内测');
+        expect(zh.betaEvaluating, contains('正在发送'));
+        expect(zh.betaEvaluationReady.isNotEmpty, true);
+        expect(zh.betaEvaluationFailed.isNotEmpty, true);
+      });
+    });
+
+    group('Token Usage Strings', () {
+      test('token usage strings are valid', () {
+        expect(zh.tokenUsage, '令牌使用量');
+        expect(zh.totalThisMonth.isNotEmpty, true);
+        expect(zh.inputTokens, '输入令牌');
+        expect(zh.outputTokens, '输出令牌');
+        expect(zh.requests, '请求数');
+      });
+    });
+
+    group('Additional Coverage Strings', () {
+      test('additional important strings are valid', () {
+        expect(zh.enterEditMode.isNotEmpty, true);
+        expect(zh.exitEditMode.isNotEmpty, true);
+        expect(zh.confirmDelete.isNotEmpty, true);
+        expect(zh.reachedFirstChapter.isNotEmpty, true);
+        expect(zh.reachedLastChapter.isNotEmpty, true);
+        expect(zh.previousChapter.isNotEmpty, true);
+        expect(zh.nextChapter.isNotEmpty, true);
+        expect(zh.performanceSettings.isNotEmpty, true);
+        expect(zh.prefetchNextChapter.isNotEmpty, true);
+        expect(zh.prefetchNextChapterDescription.isNotEmpty, true);
+        expect(zh.clearOfflineCache.isNotEmpty, true);
+        expect(zh.descriptionLabel.isNotEmpty, true);
+        expect(zh.coverUrlLabel.isNotEmpty, true);
+        expect(zh.novelMetadata.isNotEmpty, true);
+        expect(zh.contributorEmailLabel.isNotEmpty, true);
+        expect(zh.contributorEmailHint.isNotEmpty, true);
+        expect(zh.addContributor.isNotEmpty, true);
+        expect(zh.contributorAdded.isNotEmpty, true);
+        expect(zh.send, '发送');
+        expect(zh.resetToDefault, '重置为默认值');
+        expect(zh.summariesLabel.isNotEmpty, true);
+        expect(zh.synopsesLabel.isNotEmpty, true);
+        expect(zh.locationLabel.isNotEmpty, true);
+        expect(zh.publicLabel, '公开');
+        expect(zh.privateLabel, '私密');
+        expect(zh.refreshTooltip.isNotEmpty, true);
+        expect(zh.untitled, '未命名');
+        expect(zh.newLabel, '新建');
+        expect(zh.deleteSceneTitle.isNotEmpty, true);
+        expect(zh.deleteCharacterTitle.isNotEmpty, true);
+        expect(zh.deleteTemplateTitle.isNotEmpty, true);
+        expect(zh.confirmDeleteGeneric.isNotEmpty, true);
+        expect(zh.saveCredentialsForBiometric.isNotEmpty, true);
+        expect(zh.biometricTokensExpired.isNotEmpty, true);
+        expect(zh.biometricNoTokens.isNotEmpty, true);
+        expect(zh.biometricTokenError.isNotEmpty, true);
+        expect(zh.biometricTechnicalError.isNotEmpty, true);
+        expect(zh.loadingVoices, '正在加载语音...');
+        expect(zh.loadingLanguages, '正在加载语言...');
+        expect(zh.stopTTS.isNotEmpty, true);
+        expect(zh.speak.isNotEmpty, true);
+        expect(zh.autoplayBlocked.isNotEmpty, true);
+        expect(zh.showingCachedPublicData('测试').contains('显示缓存/公共数据'), true);
+        expect(zh.byAuthor('作者名').contains('作者名'), true);
+        expect(zh.pageOfTotal(5, 100).contains('5'), true);
+        expect(zh.pageOfTotal(5, 100).contains('100'), true);
+        expect(zh.languageLabel('zh').contains('zh'), true);
+        expect(zh.removedNovel('测试小说').contains('测试小说'), true);
+        expect(zh.confirmDeleteDescription('测试').contains('测试'), true);
+        expect(zh.totalRecords(42).contains('42'), true);
+        expect(zh.avgWordsPerChapter(2500).contains('2500'), true);
+      });
+    });
   });
 }

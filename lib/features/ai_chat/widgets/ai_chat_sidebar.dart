@@ -128,7 +128,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.smart_toy_outlined,
+                                Icons.auto_awesome,
                                 size: 64,
                                 color: Theme.of(
                                   context,
@@ -322,7 +322,7 @@ class _ChatMessageBubble extends StatelessWidget {
                   radius: 16,
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   child: Icon(
-                    Icons.smart_toy,
+                    Icons.auto_awesome,
                     size: 16,
                     color: Theme.of(context).colorScheme.onPrimary,
                   ),

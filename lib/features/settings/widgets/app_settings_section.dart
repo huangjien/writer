@@ -221,7 +221,7 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
         ),
         ListTile(
           key: const Key('ai_service_url_setting'),
-          leading: const Icon(Icons.smart_toy_outlined),
+          leading: const Icon(Icons.auto_awesome),
           title: Text(l10n.aiServiceUrl),
           trailing: SizedBox(
             width: 48,
@@ -235,7 +235,7 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
         ),
         EnhancedSettingsSection(
           title: isZh ? 'Deep Agent 设置' : 'Deep Agent Settings',
-          icon: Icons.psychology_alt_outlined,
+          icon: Icons.auto_awesome,
           description: isZh
               ? '控制 AI Chat 是否优先使用 Deep Agent，以及反思与调试输出。'
               : 'Control whether AI Chat prefers Deep Agent, plus reflection and debug output.',
@@ -246,7 +246,7 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
                   ? '开启后，普通聊天会先调用 /agents/deep-agent。'
                   : 'When enabled, normal chat calls /agents/deep-agent first.',
               value: aiAgentSettings.preferDeepAgent,
-              icon: Icons.smart_toy_outlined,
+              icon: Icons.auto_awesome,
               onChanged: (v) => ref
                   .read(aiAgentSettingsProvider.notifier)
                   .setPreferDeepAgent(v ?? true),
@@ -270,7 +270,7 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
               subtitle: isZh
                   ? '控制 deep-agent 是否在回答后进行评估与可选重试。'
                   : 'Controls post-answer evaluation and optional retry.',
-              icon: Icons.psychology,
+              icon: Icons.auto_awesome,
               value: aiAgentSettings.deepAgentReflectionMode,
               options: [
                 SettingsOption(

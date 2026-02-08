@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'neumorphic_styles.dart';
 import 'ui_styles.dart';
 import 'theme_extensions.dart';
 
@@ -88,7 +89,7 @@ class StyleThemePatch {
     final resolvedTileColor = _resolveTileColor(base, isDark);
     final resolvedDividerThickness = _resolveDividerThickness();
     final resolvedDividerColor = _resolveDividerColor(base, isDark);
-    final resolvedCardShadows = _resolveCardShadows(isDark);
+    final resolvedCardShadows = _resolveCardShadows(base, isDark);
     final resolvedDropdownBackgroundColor = _resolveDropdownBackgroundColor(
       base,
       isDark,
@@ -101,15 +102,25 @@ class StyleThemePatch {
       base,
       isDark,
     );
+    final resolvedButtonShadows = _resolveButtonShadows(base, isDark);
+    final resolvedButtonPressedColor = _resolveButtonPressedColor(base, isDark);
+    final resolvedButtonPressedShadows = _resolveButtonPressedShadows(
+      base,
+      isDark,
+    );
     final resolvedCardBackgroundColor = _resolveCardBackgroundColor(
       base,
       isDark,
     );
+    final resolvedCardBorder = _resolveCardBorder(base, isDark);
+    final resolvedCardPressedColor = _resolveCardPressedColor(base, isDark);
+    final resolvedCardPressedShadows = _resolveCardPressedShadows(base, isDark);
     final resolvedSwitchBackgroundColor = _resolveSwitchBackgroundColor(
       base,
       isDark,
     );
     final resolvedSwitchThumbColor = _resolveSwitchThumbColor(base, isDark);
+    final resolvedSwitchBorder = _resolveSwitchBorder(base, isDark);
     final resolvedDropdownMenuBackgroundColor =
         _resolveDropdownMenuBackgroundColor(base, isDark);
     final resolvedDropdownMenuSelectedColor = _resolveDropdownMenuSelectedColor(
@@ -180,19 +191,19 @@ class StyleThemePatch {
           useBackdropBlur: useBackdropBlur ?? false,
           cardBlur: cardBlur ?? 0,
           cardColor: cardColor,
-          cardBorder: cardBorder,
+          cardBorder: resolvedCardBorder,
           cardShadows: resolvedCardShadows,
           cardGradient: cardGradient,
           buttonBackgroundColor: resolvedButtonBackgroundColor,
-          buttonShadows: buttonShadows,
+          buttonShadows: resolvedButtonShadows,
           buttonBorder: buttonBorder,
           buttonBorderRadius: buttonBorderRadius,
-          buttonPressedColor: buttonPressedColor,
-          buttonPressedShadows: buttonPressedShadows,
+          buttonPressedColor: resolvedButtonPressedColor,
+          buttonPressedShadows: resolvedButtonPressedShadows,
           cardBackgroundColor: resolvedCardBackgroundColor,
           cardBorderRadius: cardBorderRadius,
-          cardPressedColor: cardPressedColor,
-          cardPressedShadows: cardPressedShadows,
+          cardPressedColor: resolvedCardPressedColor,
+          cardPressedShadows: resolvedCardPressedShadows,
           inputBackgroundColor: resolvedInputBackgroundColor,
           inputBorder: inputBorder,
           inputBorderRadius: inputBorderRadius,
@@ -200,7 +211,7 @@ class StyleThemePatch {
           switchBackgroundColor: resolvedSwitchBackgroundColor,
           switchActiveColor: switchActiveColor,
           switchThumbColor: resolvedSwitchThumbColor,
-          switchBorder: switchBorder,
+          switchBorder: resolvedSwitchBorder,
           dropdownBackgroundColor: resolvedDropdownBackgroundColor,
           dropdownBorder: dropdownBorder,
           dropdownBorderRadius: dropdownBorderRadius,
@@ -212,7 +223,7 @@ class StyleThemePatch {
     );
   }
 
-  List<BoxShadow>? _resolveCardShadows(bool isDark) {
+  List<BoxShadow>? _resolveCardShadows(ThemeData base, bool isDark) {
     if (cardShadows != null) {
       return cardShadows;
     }
@@ -228,10 +239,167 @@ class StyleThemePatch {
           ),
         ];
       case UiStyleFamily.neumorphism:
+        return _neumorphicConvexShadows(isDark: isDark, depth: 14);
       case UiStyleFamily.minimalism:
       case UiStyleFamily.flatDesign:
         return null;
     }
+  }
+
+  Border? _resolveCardBorder(ThemeData base, bool isDark) {
+    if (cardBorder != null) return cardBorder;
+    switch (styleFamily) {
+      case UiStyleFamily.neumorphism:
+        return isDark
+            ? null
+            : Border.all(color: Colors.black.withValues(alpha: 0.08), width: 1);
+      case UiStyleFamily.glassmorphism:
+      case UiStyleFamily.liquidGlass:
+      case UiStyleFamily.minimalism:
+      case UiStyleFamily.flatDesign:
+        return null;
+    }
+  }
+
+  List<BoxShadow>? _resolveButtonShadows(ThemeData base, bool isDark) {
+    if (buttonShadows != null) return buttonShadows;
+    switch (styleFamily) {
+      case UiStyleFamily.neumorphism:
+        return _neumorphicConvexShadows(isDark: isDark, depth: 6);
+      case UiStyleFamily.glassmorphism:
+      case UiStyleFamily.liquidGlass:
+      case UiStyleFamily.minimalism:
+      case UiStyleFamily.flatDesign:
+        return null;
+    }
+  }
+
+  Color? _resolveButtonPressedColor(ThemeData base, bool isDark) {
+    if (buttonPressedColor != null) return buttonPressedColor;
+    switch (styleFamily) {
+      case UiStyleFamily.neumorphism:
+        final bg = _neumorphicBackground(isDark);
+        return Color.lerp(bg, Colors.black, isDark ? 0.05 : 0.02);
+      case UiStyleFamily.glassmorphism:
+      case UiStyleFamily.liquidGlass:
+      case UiStyleFamily.minimalism:
+      case UiStyleFamily.flatDesign:
+        return null;
+    }
+  }
+
+  List<BoxShadow>? _resolveButtonPressedShadows(ThemeData base, bool isDark) {
+    if (buttonPressedShadows != null) return buttonPressedShadows;
+    switch (styleFamily) {
+      case UiStyleFamily.neumorphism:
+        return _neumorphicPressedShadows(isDark: isDark, depth: 6);
+      case UiStyleFamily.glassmorphism:
+      case UiStyleFamily.liquidGlass:
+      case UiStyleFamily.minimalism:
+      case UiStyleFamily.flatDesign:
+        return null;
+    }
+  }
+
+  Color? _resolveCardPressedColor(ThemeData base, bool isDark) {
+    if (cardPressedColor != null) return cardPressedColor;
+    switch (styleFamily) {
+      case UiStyleFamily.neumorphism:
+        final bg = _neumorphicBackground(isDark);
+        return Color.lerp(bg, Colors.black, isDark ? 0.05 : 0.02);
+      case UiStyleFamily.glassmorphism:
+      case UiStyleFamily.liquidGlass:
+      case UiStyleFamily.minimalism:
+      case UiStyleFamily.flatDesign:
+        return null;
+    }
+  }
+
+  List<BoxShadow>? _resolveCardPressedShadows(ThemeData base, bool isDark) {
+    if (cardPressedShadows != null) return cardPressedShadows;
+    switch (styleFamily) {
+      case UiStyleFamily.neumorphism:
+        return _neumorphicPressedShadows(isDark: isDark, depth: 14);
+      case UiStyleFamily.glassmorphism:
+      case UiStyleFamily.liquidGlass:
+      case UiStyleFamily.minimalism:
+      case UiStyleFamily.flatDesign:
+        return null;
+    }
+  }
+
+  Border? _resolveSwitchBorder(ThemeData base, bool isDark) {
+    if (switchBorder != null) return switchBorder;
+    switch (styleFamily) {
+      case UiStyleFamily.neumorphism:
+        return isDark
+            ? null
+            : Border.all(color: Colors.black.withValues(alpha: 0.08), width: 1);
+      case UiStyleFamily.glassmorphism:
+      case UiStyleFamily.liquidGlass:
+      case UiStyleFamily.minimalism:
+      case UiStyleFamily.flatDesign:
+        return null;
+    }
+  }
+
+  Color _neumorphicBackground(bool isDark) {
+    return isDark
+        ? NeumorphicStyles.darkBackground
+        : NeumorphicStyles.lightBackground;
+  }
+
+  List<BoxShadow> _neumorphicConvexShadows({
+    required bool isDark,
+    required double depth,
+  }) {
+    final offset = Offset(depth, depth);
+    final blur = depth * 2.0;
+    final highlightColor = isDark
+        ? NeumorphicStyles.lightHighlightDark
+        : NeumorphicStyles.lightHighlightLight;
+    final shadowColor = isDark
+        ? NeumorphicStyles.darkShadowDark
+        : NeumorphicStyles.darkShadowLight;
+    return [
+      BoxShadow(color: highlightColor, offset: -offset, blurRadius: blur),
+      BoxShadow(color: shadowColor, offset: offset, blurRadius: blur),
+    ];
+  }
+
+  List<BoxShadow> _neumorphicPressedShadows({
+    required bool isDark,
+    required double depth,
+  }) {
+    final blur = depth * 2.0;
+    final insetHighlightColor = isDark
+        ? NeumorphicStyles.insetHighlightDark
+        : NeumorphicStyles.insetHighlightLight;
+    final insetShadowColor = isDark
+        ? NeumorphicStyles.insetShadowDark
+        : NeumorphicStyles.insetShadowLight;
+    final outerShadowColor = isDark
+        ? NeumorphicStyles.darkShadowDark.withValues(alpha: 0.3)
+        : NeumorphicStyles.darkShadowLight.withValues(alpha: 0.15);
+    return [
+      BoxShadow(
+        color: insetShadowColor.withValues(alpha: isDark ? 0.55 : 0.75),
+        offset: Offset(depth * 0.4, depth * 0.4),
+        blurRadius: blur,
+        blurStyle: BlurStyle.inner,
+      ),
+      BoxShadow(
+        color: insetHighlightColor.withValues(alpha: isDark ? 0.35 : 0.55),
+        offset: Offset(-depth * 0.4, -depth * 0.4),
+        blurRadius: blur,
+        blurStyle: BlurStyle.inner,
+      ),
+      BoxShadow(
+        color: outerShadowColor,
+        offset: Offset(depth * 0.3, depth * 0.3),
+        blurRadius: blur,
+      ),
+    ];
   }
 
   double? _resolveDividerThickness() {
@@ -278,7 +446,7 @@ class StyleThemePatch {
           factor: 0.06,
         ).withValues(alpha: isDark ? 0.80 : 0.85);
       case UiStyleFamily.neumorphism:
-        return _deriveLighterColor(surface, factor: 0.02);
+        return _neumorphicBackground(isDark);
       case UiStyleFamily.minimalism:
         return _deriveLighterColor(surface, factor: 0.01);
       case UiStyleFamily.flatDesign:
@@ -302,7 +470,7 @@ class StyleThemePatch {
           factor: 0.08,
         ).withValues(alpha: isDark ? 0.70 : 0.75);
       case UiStyleFamily.neumorphism:
-        return _deriveLighterColor(surface, factor: 0.03);
+        return _neumorphicBackground(isDark);
       case UiStyleFamily.minimalism:
         return _deriveLighterColor(surface, factor: 0.02);
       case UiStyleFamily.flatDesign:
@@ -324,7 +492,7 @@ class StyleThemePatch {
       case UiStyleFamily.liquidGlass:
         return _deriveDarkerColor(surface, factor: 0.06);
       case UiStyleFamily.neumorphism:
-        return _deriveLighterColor(surface, factor: 0.06);
+        return _neumorphicBackground(isDark);
       case UiStyleFamily.minimalism:
         return _deriveLighterColor(surface, factor: 0.04);
       case UiStyleFamily.flatDesign:
@@ -352,7 +520,8 @@ class StyleThemePatch {
           factor: 0.10,
         ).withValues(alpha: 0.6);
       case UiStyleFamily.neumorphism:
-        return _deriveDarkerColor(surface, factor: 0.06);
+        final bg = _neumorphicBackground(isDark);
+        return Color.lerp(bg, Colors.black, isDark ? 0.03 : 0.01);
       case UiStyleFamily.minimalism:
         return _deriveLighterColor(surface, factor: 0.04);
       case UiStyleFamily.flatDesign:
@@ -389,10 +558,7 @@ class StyleThemePatch {
         }
         return cs.primary.withValues(alpha: 0.9);
       case UiStyleFamily.neumorphism:
-        if (isDark) {
-          return _deriveDarkerColor(cs.primary, factor: 0.20);
-        }
-        return _deriveLighterColor(surface, factor: 0.08);
+        return _neumorphicBackground(isDark);
       case UiStyleFamily.minimalism:
         if (isDark) {
           return _deriveDarkerColor(cs.primary, factor: 0.25);
@@ -426,7 +592,7 @@ class StyleThemePatch {
           factor: 0.08,
         ).withValues(alpha: 0.7);
       case UiStyleFamily.neumorphism:
-        return _deriveDarkerColor(surface, factor: 0.04);
+        return _neumorphicBackground(isDark);
       case UiStyleFamily.minimalism:
         return _deriveLighterColor(surface, factor: 0.03);
       case UiStyleFamily.flatDesign:
@@ -448,7 +614,7 @@ class StyleThemePatch {
       case UiStyleFamily.liquidGlass:
         return _deriveLighterColor(surface, factor: 0.12);
       case UiStyleFamily.neumorphism:
-        return _deriveDarkerColor(surface, factor: 0.06);
+        return _neumorphicBackground(isDark);
       case UiStyleFamily.minimalism:
         return _deriveLighterColor(surface, factor: 0.08);
       case UiStyleFamily.flatDesign:
@@ -470,7 +636,7 @@ class StyleThemePatch {
       case UiStyleFamily.liquidGlass:
         return cs.onPrimary;
       case UiStyleFamily.neumorphism:
-        return _deriveLighterColor(surface, factor: 0.10);
+        return _neumorphicBackground(isDark);
       case UiStyleFamily.minimalism:
         return _deriveLighterColor(surface, factor: 0.08);
       case UiStyleFamily.flatDesign:
@@ -502,7 +668,7 @@ class StyleThemePatch {
       case UiStyleFamily.liquidGlass:
         return _deriveLighterColor(surface, factor: 0.12);
       case UiStyleFamily.neumorphism:
-        return _deriveLighterColor(surface, factor: 0.08);
+        return _neumorphicBackground(isDark);
       case UiStyleFamily.minimalism:
         return _deriveLighterColor(surface, factor: 0.06);
       case UiStyleFamily.flatDesign:
@@ -520,7 +686,7 @@ class StyleThemePatch {
       case UiStyleFamily.liquidGlass:
         return cs.primary.withValues(alpha: 0.12);
       case UiStyleFamily.neumorphism:
-        return _deriveLighterColor(surface, factor: 0.12);
+        return _deriveLighterColor(_neumorphicBackground(isDark), factor: 0.04);
       case UiStyleFamily.minimalism:
         return _deriveLighterColor(surface, factor: 0.10);
       case UiStyleFamily.flatDesign:
@@ -538,7 +704,7 @@ class StyleThemePatch {
       case UiStyleFamily.liquidGlass:
         return _deriveLighterColor(surface, factor: 0.10);
       case UiStyleFamily.neumorphism:
-        return _deriveLighterColor(surface, factor: 0.06);
+        return _deriveLighterColor(_neumorphicBackground(isDark), factor: 0.02);
       case UiStyleFamily.minimalism:
         return _deriveLighterColor(surface, factor: 0.04);
       case UiStyleFamily.flatDesign:
@@ -621,63 +787,17 @@ class UiStyleAdapter {
   }
 
   StyleThemePatch _neumorphismPatch() {
-    return StyleThemePatch(
-      cardBorderRadius: const BorderRadius.all(Radius.circular(20)),
-      buttonBorderRadius: const BorderRadius.all(Radius.circular(16)),
+    return const StyleThemePatch(
+      cardBorderRadius: BorderRadius.all(Radius.circular(20)),
+      buttonBorderRadius: BorderRadius.all(Radius.circular(16)),
       elevation: 0,
       useBackdropBlur: false,
-      cardShadows: const [
-        BoxShadow(
-          color: Color(0x1E000000),
-          blurRadius: 28,
-          offset: Offset(14, 14),
-        ),
-        BoxShadow(
-          color: Color(0xBFFFFFFF),
-          blurRadius: 28,
-          offset: Offset(-14, -14),
-        ),
-      ],
       styleFamily: UiStyleFamily.neumorphism,
-      buttonBackgroundColor: const Color(0xFFE0E5EC),
-      buttonShadows: const [
-        BoxShadow(
-          color: Color(0xFFFFFFFF),
-          blurRadius: 12,
-          offset: Offset(-6, -6),
-        ),
-        BoxShadow(
-          color: Color(0xFFA3B1C6),
-          blurRadius: 12,
-          offset: Offset(6, 6),
-        ),
-      ],
-      buttonPressedColor: const Color(0xFFD6DBE3),
-      buttonPressedShadows: const [
-        BoxShadow(
-          color: Color(0xFFA3B1C6),
-          blurRadius: 12,
-          offset: Offset(4, 4),
-        ),
-      ],
-      cardBackgroundColor: const Color(0xFFE0E5EC),
-      cardPressedColor: const Color(0xFFD6DBE3),
-      cardPressedShadows: const [
-        BoxShadow(
-          color: Color(0xFFA3B1C6),
-          blurRadius: 12,
-          offset: Offset(4, 4),
-        ),
-      ],
-      inputBackgroundColor: const Color(0xFFD6DBE3),
-      inputBorderRadius: const BorderRadius.all(Radius.circular(12)),
-      inputFocusedBorderColor: const Color(0xFF6366F1),
-      switchBackgroundColor: const Color(0xFFE0E5EC),
-      switchBorder: Border.all(color: const Color(0xFFA3B1C6), width: 0.5),
-      switchThumbColor: const Color(0xFFE0E5EC),
+      inputBorderRadius: BorderRadius.all(Radius.circular(12)),
+      inputFocusedBorderColor: Color(0xFF6366F1),
       dropdownBackgroundColor: null,
       dropdownBorder: null,
-      dropdownBorderRadius: const BorderRadius.all(Radius.circular(12)),
+      dropdownBorderRadius: BorderRadius.all(Radius.circular(12)),
     );
   }
 

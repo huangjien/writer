@@ -33,6 +33,7 @@ import 'package:writer/features/reader/reader_screen.dart';
 import 'package:writer/shared/widgets/empty_states/novel_empty_state.dart';
 import 'package:writer/shared/widgets/mobile_bottom_sheet.dart';
 import 'package:writer/shared/widgets/global_shortcuts_wrapper.dart';
+import 'package:writer/features/ai_chat/widgets/ai_assistant_button.dart';
 
 enum LibrarySort { titleAsc, authorAsc }
 
@@ -452,6 +453,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     return AppBar(
       title: Text(l10n.libraryTitle),
       actions: [
+        const AiAssistantButton(),
         AppButtons.icon(
           iconData: Icons.more_vert,
           onPressed: () => _showMoreMenu(context, l10n),
@@ -496,6 +498,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
       title: Text(l10n.libraryTitle),
       actions: [
         const SyncStatusIndicator(),
+        const AiAssistantButton(),
         if (isSignedIn)
           AppButtons.icon(
             iconData: Icons.refresh,

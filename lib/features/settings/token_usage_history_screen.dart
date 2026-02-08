@@ -356,7 +356,7 @@ class _UsageHistoryItem extends StatelessWidget {
       case 'embedding':
         return Icons.view_in_ar;
       default:
-        return Icons.psychology;
+        return Icons.auto_awesome;
     }
   }
 }

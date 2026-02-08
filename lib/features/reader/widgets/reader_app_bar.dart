@@ -27,7 +27,7 @@ class ReaderAppBar extends ConsumerWidget implements PreferredSizeWidget {
       ),
       actions: [
         AppButtons.icon(
-          iconData: Icons.smart_toy,
+          iconData: Icons.auto_awesome,
           onPressed: () => ref.read(aiChatUiProvider.notifier).toggleSidebar(),
           enabled: isAiServiceAvailable,
           tooltip: isAiServiceAvailable

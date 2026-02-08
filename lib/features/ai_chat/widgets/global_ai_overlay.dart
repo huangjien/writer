@@ -10,23 +10,10 @@ class GlobalAiAssistantOverlay extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isOpen = ref.watch(aiChatUiProvider);
-    final isServiceAvailable = ref.watch(aiServiceStatusProvider);
 
     return Stack(
       children: [
         child,
-        // FAB (Only if closed)
-        if (!isOpen && isServiceAvailable)
-          Positioned(
-            right: 16,
-            bottom: 16,
-            child: FloatingActionButton(
-              heroTag: 'ai_assistant_fab',
-              onPressed: () =>
-                  ref.read(aiChatUiProvider.notifier).openSidebar(),
-              child: const Icon(Icons.smart_toy),
-            ),
-          ),
         // Sidebar Overlay
         if (isOpen)
           Positioned.fill(
@@ -46,7 +33,17 @@ class GlobalAiAssistantOverlay extends ConsumerWidget {
                       final w = constraints.maxWidth > 400
                           ? 400.0
                           : constraints.maxWidth * 0.85;
-                      return SizedBox(width: w, child: const AiChatSidebar());
+                      return SizedBox(
+                        width: w,
+                        child: Navigator(
+                          onGenerateRoute: (settings) {
+                            return MaterialPageRoute(
+                              builder: (context) =>
+                                  const Material(child: AiChatSidebar()),
+                            );
+                          },
+                        ),
+                      );
                     },
                   ),
                 ),
