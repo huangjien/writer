@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import '../state/ai_chat_providers.dart';
 
 class AiChatHistoryView extends ConsumerWidget {
@@ -8,6 +9,7 @@ class AiChatHistoryView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(aiChatProvider);
     final notifier = ref.read(aiChatProvider.notifier);
     final sessions = state.sessions;
@@ -15,7 +17,7 @@ class AiChatHistoryView extends ConsumerWidget {
     return Column(
       children: [
         AppBar(
-          title: const Text('History'),
+          title: Text(l10n.aiChatHistory),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: onClose,
@@ -27,7 +29,7 @@ class AiChatHistoryView extends ConsumerWidget {
                 notifier.startNewSession();
                 onClose();
               },
-              tooltip: 'New Chat',
+              tooltip: l10n.aiChatNewChat,
             ),
           ],
           elevation: 0,
@@ -35,7 +37,7 @@ class AiChatHistoryView extends ConsumerWidget {
         ),
         Expanded(
           child: sessions.isEmpty
-              ? const Center(child: Text('No history'))
+              ? Center(child: Text(l10n.aiChatNoHistory))
               : ListView.builder(
                   itemCount: sessions.length,
                   itemBuilder: (context, index) {

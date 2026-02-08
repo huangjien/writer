@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/shared/api_exception.dart';
 import 'package:writer/state/ai_agent_settings.dart';
@@ -19,18 +20,27 @@ class AiChatService {
     return null;
   }
 
-  String _formatError(Object e) {
+  String _formatError(Object e, AppLocalizations? l10n) {
     if (e.toString().contains('401')) {
-      return 'Sign in required to use AI service';
+      return l10n?.aiServiceSignInRequired ??
+          'Sign in required to use AI service';
     }
     if (e.toString().contains('403')) {
-      return 'Feature not available for your plan';
+      return l10n?.aiServiceFeatureNotAvailable ??
+          'Feature not available for your plan';
     }
-    return 'Failed to connect to AI service: $e';
+    return l10n?.aiServiceFailedToConnect(e.toString()) ??
+        'Failed to connect to AI service: $e';
   }
 
-  String _formatDeepAgentResponse(dynamic res, {required bool includeDetails}) {
-    final answer = _extractTextAnswer(res) ?? 'No response from AI service';
+  String _formatDeepAgentResponse(
+    dynamic res, {
+    required bool includeDetails,
+    AppLocalizations? l10n,
+  }) {
+    final answer =
+        _extractTextAnswer(res) ??
+        (l10n?.aiServiceNoResponse ?? 'No response from AI service');
     if (!includeDetails || res is! Map) return answer;
 
     final sb = StringBuffer();
@@ -43,9 +53,12 @@ class AiChatService {
 
     sb.writeln('');
     sb.writeln('---');
-    sb.writeln('Deep Agent');
+    sb.writeln(l10n?.aiDeepAgentDetailsTitle ?? 'Deep Agent');
     if (stopReason != null || rounds != null) {
-      sb.writeln('Stop: ${stopReason ?? '-'} (rounds: ${rounds ?? '-'})');
+      sb.writeln(
+        l10n?.aiDeepAgentStop('${stopReason ?? '-'}', rounds ?? '-') ??
+            'Stop: ${stopReason ?? '-'} (rounds: ${rounds ?? '-'})',
+      );
     }
 
     if (plan is Map) {
@@ -54,7 +67,7 @@ class AiChatService {
         final stepStrings = steps.whereType<String>().toList();
         if (stepStrings.isNotEmpty) {
           sb.writeln('');
-          sb.writeln('Plan:');
+          sb.writeln(l10n?.aiDeepAgentPlanLabel ?? 'Plan:');
           for (final step in stepStrings) {
             sb.writeln('- $step');
           }
@@ -66,7 +79,7 @@ class AiChatService {
       final eventMaps = toolEvents.whereType<Map>().toList();
       if (eventMaps.isNotEmpty) {
         sb.writeln('');
-        sb.writeln('Tools:');
+        sb.writeln(l10n?.aiDeepAgentToolsLabel ?? 'Tools:');
         for (final e in eventMaps) {
           final round = e['round'];
           final tool = e['tool'];
@@ -79,20 +92,22 @@ class AiChatService {
     return sb.toString().trimRight();
   }
 
-  Future<String> _sendQa(String message) async {
+  Future<String> _sendQa(String message, {AppLocalizations? l10n}) async {
     final res = await remote.post('agents/qa', {'question': message});
     final answer = _extractTextAnswer(res);
-    return answer ?? 'No response from AI service';
+    return answer ??
+        (l10n?.aiServiceNoResponse ?? 'No response from AI service');
   }
 
   Future<String> sendMessage(
     String message, {
     AiAgentSettings? settings,
+    AppLocalizations? l10n,
   }) async {
     try {
       final preferDeepAgent = settings?.preferDeepAgent ?? true;
       if (!preferDeepAgent) {
-        return await _sendQa(message);
+        return await _sendQa(message, l10n: l10n);
       }
 
       final fallbackToQa = settings?.deepAgentFallbackToQa ?? true;
@@ -110,17 +125,21 @@ class AiChatService {
           if (maxToolRounds != null) 'max_tool_rounds': maxToolRounds,
           'reflection_mode': reflectionMode,
         });
-        return _formatDeepAgentResponse(res, includeDetails: includeDetails);
+        return _formatDeepAgentResponse(
+          res,
+          includeDetails: includeDetails,
+          l10n: l10n,
+        );
       } catch (e) {
         if (fallbackToQa &&
             e is ApiException &&
             (e.statusCode == 404 || e.statusCode == 501)) {
-          return await _sendQa(message);
+          return await _sendQa(message, l10n: l10n);
         }
         rethrow;
       }
     } catch (e) {
-      return _formatError(e);
+      return _formatError(e, l10n);
     }
   }
 
@@ -131,6 +150,7 @@ class AiChatService {
     int? maxToolRounds,
     String reflectionMode = 'off',
     bool includeDetails = false,
+    AppLocalizations? l10n,
   }) async {
     try {
       final body = <String, dynamic>{
@@ -142,9 +162,13 @@ class AiChatService {
       };
 
       final res = await remote.post('agents/deep-agent', body);
-      return _formatDeepAgentResponse(res, includeDetails: includeDetails);
+      return _formatDeepAgentResponse(
+        res,
+        includeDetails: includeDetails,
+        l10n: l10n,
+      );
     } catch (e) {
-      return _formatError(e);
+      return _formatError(e, l10n);
     }
   }
 
@@ -215,7 +239,10 @@ class AiChatService {
     }
   }
 
-  Future<String> compressContext(String context) async {
+  Future<String> compressContext(
+    String context, {
+    AppLocalizations? l10n,
+  }) async {
     try {
       final body = <String, dynamic>{
         'question':
@@ -227,9 +254,9 @@ class AiChatService {
       };
 
       final res = await remote.post('agents/deep-agent', body);
-      return _formatDeepAgentResponse(res, includeDetails: false);
+      return _formatDeepAgentResponse(res, includeDetails: false, l10n: l10n);
     } catch (e) {
-      return _formatError(e);
+      return _formatError(e, l10n);
     }
   }
 

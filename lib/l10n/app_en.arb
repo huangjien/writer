@@ -322,9 +322,78 @@
   "aiServiceUrl": "AI Service URL",
   "aiServiceUrlDescription": "Backend service URL for AI features",
   "aiAssistant": "AI Assistant",
+  "aiChatHistory": "History",
+  "aiChatNewChat": "New Chat",
+  "aiChatNoHistory": "No history",
   "aiChatHint": "Type your message...",
   "aiChatEmpty": "Ask me anything about this chapter or novel",
   "aiThinking": "AI is thinking...",
+  "aiChatContextLabel": "Context",
+  "aiTokenCount": "{count} tokens",
+  "@aiTokenCount": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "aiContextLoadError": "Error loading context: {error}",
+  "@aiContextLoadError": {
+    "placeholders": {"error": {"type": "String"}}
+  },
+  "aiChatContextTooLongCompressing": "Context is too long ({tokens} tokens). Compressing...",
+  "@aiChatContextTooLongCompressing": {
+    "placeholders": {"tokens": {"type": "int"}}
+  },
+  "aiChatContextCompressionFailedNote": "[Note: Context compression failed: {error}]",
+  "@aiChatContextCompressionFailedNote": {
+    "placeholders": {"error": {"type": "String"}}
+  },
+  "aiChatError": "Error: {error}",
+  "@aiChatError": {
+    "placeholders": {"error": {"type": "String"}}
+  },
+  "aiChatDeepAgentError": "Deep Agent Error: {error}",
+  "@aiChatDeepAgentError": {
+    "placeholders": {"error": {"type": "String"}}
+  },
+  "aiChatSearchFailed": "Search failed",
+  "aiChatSearchError": "Search Error: {error}",
+  "@aiChatSearchError": {
+    "placeholders": {"error": {"type": "String"}}
+  },
+  "aiChatRagSearchResultsTitle": "RAG Search Results",
+  "aiChatRagRefinedQuery": "Refined Query: \"{query}\"",
+  "@aiChatRagRefinedQuery": {
+    "placeholders": {"query": {"type": "String"}}
+  },
+  "aiChatRagNoResults": "No results found.",
+  "aiChatRagUnknownType": "unknown",
+  "aiServiceSignInRequired": "Sign in required to use AI service",
+  "aiServiceFeatureNotAvailable": "Feature not available for your plan",
+  "aiServiceFailedToConnect": "Failed to connect to AI service: {error}",
+  "@aiServiceFailedToConnect": {
+    "placeholders": {"error": {"type": "String"}}
+  },
+  "aiServiceNoResponse": "No response from AI service",
+  "aiDeepAgentDetailsTitle": "Deep Agent",
+  "aiDeepAgentStop": "Stop: {reason} (rounds: {rounds})",
+  "@aiDeepAgentStop": {
+    "placeholders": {"reason": {"type": "String"}, "rounds": {"type": "Object"}}
+  },
+  "aiDeepAgentPlanLabel": "Plan:",
+  "aiDeepAgentToolsLabel": "Tools:",
+  "deepAgentSettingsTitle": "Deep Agent Settings",
+  "deepAgentSettingsDescription": "Control whether AI Chat prefers Deep Agent, plus reflection and debug output.",
+  "deepAgentPreferTitle": "Prefer Deep Agent",
+  "deepAgentPreferSubtitle": "When enabled, normal chat calls /agents/deep-agent first.",
+  "deepAgentFallbackTitle": "Fallback to QA if unavailable",
+  "deepAgentFallbackSubtitle": "Automatically calls /agents/qa when deep-agent returns 404/501.",
+  "deepAgentReflectionModeTitle": "Reflection Mode",
+  "deepAgentReflectionModeSubtitle": "Controls post-answer evaluation and optional retry.",
+  "deepAgentReflectionModeOff": "Off",
+  "deepAgentReflectionModeOnFailure": "On failure",
+  "deepAgentReflectionModeAlways": "Always",
+  "deepAgentShowDetailsTitle": "Show Execution Details",
+  "deepAgentShowDetailsSubtitle": "Include plan and tool call logs in /deep output.",
+  "deepAgentMaxPlanSteps": "Max Plan Steps",
+  "deepAgentMaxToolRounds": "Max Tool Rounds",
   "send": "Send",
   "resetToDefault": "Reset to Default",
   "invalidUrl": "Enter a valid http(s) URL without spaces.",

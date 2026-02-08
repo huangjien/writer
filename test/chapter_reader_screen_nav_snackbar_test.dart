@@ -24,6 +24,7 @@ class FakeAiChatService extends AiChatService {
   Future<String> sendMessage(
     String message, {
     AiAgentSettings? settings,
+    AppLocalizations? l10n,
   }) async => 'ok';
 }
 

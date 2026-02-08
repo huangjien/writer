@@ -788,6 +788,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get aiAssistant => 'AI 助手';
 
   @override
+  String get aiChatHistory => '历史';
+
+  @override
+  String get aiChatNewChat => '新对话';
+
+  @override
+  String get aiChatNoHistory => '暂无历史记录';
+
+  @override
   String get aiChatHint => '输入您的消息...';
 
   @override
@@ -795,6 +804,137 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get aiThinking => 'AI 正在思考...';
+
+  @override
+  String get aiChatContextLabel => '上下文';
+
+  @override
+  String aiTokenCount(int count) {
+    return '$count tokens';
+  }
+
+  @override
+  String aiContextLoadError(String error) {
+    return '加载上下文出错：$error';
+  }
+
+  @override
+  String aiChatContextTooLongCompressing(int tokens) {
+    return '上下文过长（$tokens tokens）。正在压缩...';
+  }
+
+  @override
+  String aiChatContextCompressionFailedNote(String error) {
+    return '[注意：上下文压缩失败：$error]';
+  }
+
+  @override
+  String aiChatError(String error) {
+    return '错误：$error';
+  }
+
+  @override
+  String aiChatDeepAgentError(String error) {
+    return 'Deep Agent 错误：$error';
+  }
+
+  @override
+  String get aiChatSearchFailed => '搜索失败';
+
+  @override
+  String aiChatSearchError(String error) {
+    return '搜索错误：$error';
+  }
+
+  @override
+  String get aiChatRagSearchResultsTitle => 'RAG 搜索结果';
+
+  @override
+  String aiChatRagRefinedQuery(String query) {
+    return '优化后的查询：\"$query\"';
+  }
+
+  @override
+  String get aiChatRagNoResults => '未找到结果。';
+
+  @override
+  String get aiChatRagUnknownType => '未知';
+
+  @override
+  String get aiServiceSignInRequired => '需要登录才能使用 AI 服务';
+
+  @override
+  String get aiServiceFeatureNotAvailable => '你的套餐不支持此功能';
+
+  @override
+  String aiServiceFailedToConnect(String error) {
+    return '连接 AI 服务失败：$error';
+  }
+
+  @override
+  String get aiServiceNoResponse => 'AI 服务没有返回结果';
+
+  @override
+  String get aiDeepAgentDetailsTitle => 'Deep Agent';
+
+  @override
+  String aiDeepAgentStop(String reason, Object rounds) {
+    return '停止：$reason（轮次：$rounds）';
+  }
+
+  @override
+  String get aiDeepAgentPlanLabel => '计划：';
+
+  @override
+  String get aiDeepAgentToolsLabel => '工具：';
+
+  @override
+  String get deepAgentSettingsTitle => 'Deep Agent 设置';
+
+  @override
+  String get deepAgentSettingsDescription =>
+      '控制 AI Chat 是否优先使用 Deep Agent，以及反思与调试输出。';
+
+  @override
+  String get deepAgentPreferTitle => '优先使用 Deep Agent';
+
+  @override
+  String get deepAgentPreferSubtitle => '开启后，普通聊天会先调用 /agents/deep-agent。';
+
+  @override
+  String get deepAgentFallbackTitle => 'Deep Agent 不可用时回退 QA';
+
+  @override
+  String get deepAgentFallbackSubtitle =>
+      '当 deep-agent 返回 404/501 时自动调用 /agents/qa。';
+
+  @override
+  String get deepAgentReflectionModeTitle => '反思模式';
+
+  @override
+  String get deepAgentReflectionModeSubtitle =>
+      '控制 deep-agent 是否在回答后进行评估与可选重试。';
+
+  @override
+  String get deepAgentReflectionModeOff => '关闭';
+
+  @override
+  String get deepAgentReflectionModeOnFailure => '仅失败时';
+
+  @override
+  String get deepAgentReflectionModeAlways => '总是';
+
+  @override
+  String get deepAgentShowDetailsTitle => '显示执行细节';
+
+  @override
+  String get deepAgentShowDetailsSubtitle => '在 /deep 命令结果里附加 plan 与工具调用记录。';
+
+  @override
+  String get deepAgentMaxPlanSteps => '规划步数上限';
+
+  @override
+  String get deepAgentMaxToolRounds => '工具轮次上限';
 
   @override
   String get send => '发送';

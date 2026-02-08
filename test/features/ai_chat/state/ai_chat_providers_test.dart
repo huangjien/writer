@@ -47,6 +47,7 @@ void main() {
         () => mockAiChatService.sendMessage(
           any(),
           settings: any(named: 'settings'),
+          l10n: any(named: 'l10n'),
         ),
       ).thenAnswer((_) async => 'AI Response');
 
@@ -73,6 +74,7 @@ void main() {
         () => mockAiChatService.sendMessage(
           any(),
           settings: any(named: 'settings'),
+          l10n: any(named: 'l10n'),
         ),
       ).thenThrow(Exception('API Error'));
 
@@ -91,6 +93,7 @@ void main() {
         () => mockAiChatService.sendMessage(
           any(),
           settings: any(named: 'settings'),
+          l10n: any(named: 'l10n'),
         ),
       ).thenAnswer((_) async => 'AI Response');
 
@@ -195,10 +198,12 @@ void main() {
           when(
             () => mockAiChatService.sendMessageDeepAgent(
               any(),
+              context: any(named: 'context'),
               maxPlanSteps: any(named: 'maxPlanSteps'),
               maxToolRounds: any(named: 'maxToolRounds'),
               reflectionMode: any(named: 'reflectionMode'),
               includeDetails: any(named: 'includeDetails'),
+              l10n: any(named: 'l10n'),
             ),
           ).thenAnswer((_) async => 'Deep Response');
 
@@ -215,10 +220,12 @@ void main() {
           verify(
             () => mockAiChatService.sendMessageDeepAgent(
               'hello world',
+              context: any(named: 'context'),
               maxPlanSteps: any(named: 'maxPlanSteps'),
               maxToolRounds: any(named: 'maxToolRounds'),
               reflectionMode: any(named: 'reflectionMode'),
               includeDetails: any(named: 'includeDetails'),
+              l10n: any(named: 'l10n'),
             ),
           ).called(1);
         },
@@ -228,10 +235,12 @@ void main() {
         when(
           () => mockAiChatService.sendMessageDeepAgent(
             any(),
+            context: any(named: 'context'),
             maxPlanSteps: any(named: 'maxPlanSteps'),
             maxToolRounds: any(named: 'maxToolRounds'),
             reflectionMode: any(named: 'reflectionMode'),
             includeDetails: any(named: 'includeDetails'),
+            l10n: any(named: 'l10n'),
           ),
         ).thenThrow(Exception('Deep Error'));
 

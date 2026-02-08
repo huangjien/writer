@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/library/library_screen.dart';
 import 'package:writer/features/library/library_providers.dart';
+import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/admin_settings.dart';
@@ -36,6 +37,11 @@ class FakeConnectivityChecker implements ConnectivityChecker {
   @override
   Stream<List<ConnectivityResult>> get onConnectivityChanged =>
       Stream.value([ConnectivityResult.wifi]);
+}
+
+class FakeAiChatService extends Fake implements AiChatService {
+  @override
+  Future<bool> checkHealth() async => true;
 }
 
 void main() {
@@ -79,6 +85,7 @@ void main() {
           isSignedInProvider.overrideWith((ref) => false),
           isAdminProvider.overrideWith((ref) => false),
           adminModeProvider.overrideWith((ref) => AdminModeNotifier(prefs)),
+          aiChatServiceProvider.overrideWithValue(FakeAiChatService()),
           libraryNovelsProviderV2.overrideWith((ref) async => novels),
           memberNovelsProviderV2.overrideWith((ref) async => const []),
           chaptersProviderV2.overrideWith((ref, novelId) async => const []),

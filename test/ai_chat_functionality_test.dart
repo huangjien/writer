@@ -15,15 +15,13 @@ class MockAiChatService extends Mock implements AiChatService {}
 
 class MockChatStorageService extends Mock implements ChatStorageService {}
 
-class MockAiContextNotifier extends Mock implements AiContextNotifier {}
-
 class MockSharedPreferences extends Mock implements SharedPreferences {}
 
 void main() {
   group('AI Chat Functionality', () {
     late MockAiChatService mockAiChatService;
     late MockChatStorageService mockStorageService;
-    late MockAiContextNotifier mockContextNotifier;
+    late AiContextNotifier contextNotifier;
     late MockSharedPreferences mockPrefs;
     const defaultSettings = AiAgentSettings(
       preferDeepAgent: true,
@@ -37,7 +35,7 @@ void main() {
     setUp(() {
       mockAiChatService = MockAiChatService();
       mockStorageService = MockChatStorageService();
-      mockContextNotifier = MockAiContextNotifier();
+      contextNotifier = AiContextNotifier(() => const Locale('en'));
       mockPrefs = MockSharedPreferences();
 
       when(
@@ -47,9 +45,6 @@ void main() {
       when(
         () => mockStorageService.saveSessions(any(that: isA<List>())),
       ).thenAnswer((_) async {});
-      when(
-        () => mockContextNotifier.getActiveContext(),
-      ).thenAnswer((_) async => null);
     });
 
     testWidgets('AI chat sidebar renders correctly when open', (
@@ -59,6 +54,7 @@ void main() {
         () => mockAiChatService.sendMessage(
           any(),
           settings: any(named: 'settings'),
+          l10n: any(named: 'l10n'),
         ),
       ).thenAnswer((_) async => 'AI response');
 
@@ -67,13 +63,14 @@ void main() {
           overrides: [
             aiServiceProvider.overrideWith((_) => AiServiceNotifier(mockPrefs)),
             chatStorageServiceProvider.overrideWithValue(mockStorageService),
-            aiContextProvider.overrideWith((ref) => mockContextNotifier),
+            aiContextProvider.overrideWith((ref) => contextNotifier),
             aiChatProvider.overrideWith(
               (ref) => AiChatNotifier(
                 mockAiChatService,
                 () => defaultSettings,
                 mockStorageService,
-                mockContextNotifier,
+                contextNotifier,
+                () => const Locale('en'),
               ),
             ),
             aiChatUiProvider.overrideWith((_) => AiChatUiNotifier()),
@@ -109,13 +106,14 @@ void main() {
           overrides: [
             aiServiceProvider.overrideWith((_) => AiServiceNotifier(mockPrefs)),
             chatStorageServiceProvider.overrideWithValue(mockStorageService),
-            aiContextProvider.overrideWith((ref) => mockContextNotifier),
+            aiContextProvider.overrideWith((ref) => contextNotifier),
             aiChatProvider.overrideWith(
               (ref) => AiChatNotifier(
                 mockAiChatService,
                 () => defaultSettings,
                 mockStorageService,
-                mockContextNotifier,
+                contextNotifier,
+                () => const Locale('en'),
               ),
             ),
             aiChatUiProvider.overrideWith((_) => AiChatUiNotifier()),
@@ -145,6 +143,7 @@ void main() {
         () => mockAiChatService.sendMessage(
           userMessage,
           settings: any(named: 'settings'),
+          l10n: any(named: 'l10n'),
         ),
       ).thenAnswer((_) async {
         // Add a small delay to simulate network request
@@ -157,13 +156,14 @@ void main() {
           overrides: [
             aiServiceProvider.overrideWith((_) => AiServiceNotifier(mockPrefs)),
             chatStorageServiceProvider.overrideWithValue(mockStorageService),
-            aiContextProvider.overrideWith((ref) => mockContextNotifier),
+            aiContextProvider.overrideWith((ref) => contextNotifier),
             aiChatProvider.overrideWith(
               (ref) => AiChatNotifier(
                 mockAiChatService,
                 () => defaultSettings,
                 mockStorageService,
-                mockContextNotifier,
+                contextNotifier,
+                () => const Locale('en'),
               ),
             ),
             aiChatUiProvider.overrideWith((_) => AiChatUiNotifier()),
@@ -206,6 +206,7 @@ void main() {
         () => mockAiChatService.sendMessage(
           userMessage,
           settings: any(named: 'settings'),
+          l10n: any(named: 'l10n'),
         ),
       ).thenAnswer((_) async => aiResponse);
 
@@ -213,7 +214,8 @@ void main() {
         mockAiChatService,
         () => defaultSettings,
         mockStorageService,
-        mockContextNotifier,
+        contextNotifier,
+        () => const Locale('en'),
       );
 
       // Initial state should be empty

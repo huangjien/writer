@@ -120,7 +120,11 @@ void main() {
     // Mock AiChatService
     when(() => mockAiChatService.checkHealth()).thenAnswer((_) async => true);
     when(
-      () => mockAiChatService.sendMessage(any()),
+      () => mockAiChatService.sendMessage(
+        any(),
+        settings: any(named: 'settings'),
+        l10n: any(named: 'l10n'),
+      ),
     ).thenAnswer((_) async => 'AI Response');
     when(() => mockAiChatService.embed(any())).thenAnswer((_) async => []);
 
@@ -566,7 +570,7 @@ void main() {
     chatNotifier.openSidebar();
 
     // Use real instance instead of mock to avoid addListener issues
-    final contextNotifier = AiContextNotifier();
+    final contextNotifier = AiContextNotifier(() => const Locale('en'));
     when(() => mockStorageService.loadSessions()).thenReturn([]);
 
     await tester.pumpWidget(
@@ -595,6 +599,7 @@ void main() {
               ),
               mockStorageService,
               contextNotifier,
+              () => const Locale('en'),
             ),
           ),
         ],

@@ -877,8 +877,8 @@ void main() {
       });
 
       test('indexLabel formats correctly', () {
-        expect(zh.indexLabel(5), '索引5');
-        expect(zh.indexLabel(0), '索引0');
+        expect(zh.indexLabel(5), '第 5 章');
+        expect(zh.indexLabel(0), '第 0 章');
       });
 
       test('indexOutOfRange formats correctly', () {

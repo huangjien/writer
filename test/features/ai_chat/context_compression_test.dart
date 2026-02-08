@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/ai_agent_settings.dart';
 import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/features/ai_chat/utils/context_utils.dart';
@@ -23,12 +24,16 @@ class FakeAiChatService extends Fake implements AiChatService {
   Future<String> sendMessage(
     String message, {
     AiAgentSettings? settings,
+    AppLocalizations? l10n,
   }) async {
     return 'AI Response';
   }
 
   @override
-  Future<String> compressContext(String context) async {
+  Future<String> compressContext(
+    String context, {
+    AppLocalizations? l10n,
+  }) async {
     return '[Compressed: Summary of context]';
   }
 
@@ -40,6 +45,7 @@ class FakeAiChatService extends Fake implements AiChatService {
     int? maxToolRounds,
     String reflectionMode = 'off',
     bool includeDetails = false,
+    AppLocalizations? l10n,
   }) async {
     return 'Deep Agent Response';
   }

@@ -289,9 +289,78 @@
   "aiServiceUrl": "AI 服务地址",
   "aiServiceUrlDescription": "AI 功能的后端服务地址",
   "aiAssistant": "AI 助手",
+  "aiChatHistory": "历史",
+  "aiChatNewChat": "新对话",
+  "aiChatNoHistory": "暂无历史记录",
   "aiChatHint": "输入您的消息...",
   "aiChatEmpty": "询问我关于本章或小说的任何问题",
   "aiThinking": "AI 正在思考...",
+  "aiChatContextLabel": "上下文",
+  "aiTokenCount": "{count} tokens",
+  "@aiTokenCount": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "aiContextLoadError": "加载上下文出错：{error}",
+  "@aiContextLoadError": {
+    "placeholders": {"error": {"type": "String"}}
+  },
+  "aiChatContextTooLongCompressing": "上下文过长（{tokens} tokens）。正在压缩...",
+  "@aiChatContextTooLongCompressing": {
+    "placeholders": {"tokens": {"type": "int"}}
+  },
+  "aiChatContextCompressionFailedNote": "[注意：上下文压缩失败：{error}]",
+  "@aiChatContextCompressionFailedNote": {
+    "placeholders": {"error": {"type": "String"}}
+  },
+  "aiChatError": "错误：{error}",
+  "@aiChatError": {
+    "placeholders": {"error": {"type": "String"}}
+  },
+  "aiChatDeepAgentError": "Deep Agent 错误：{error}",
+  "@aiChatDeepAgentError": {
+    "placeholders": {"error": {"type": "String"}}
+  },
+  "aiChatSearchFailed": "搜索失败",
+  "aiChatSearchError": "搜索错误：{error}",
+  "@aiChatSearchError": {
+    "placeholders": {"error": {"type": "String"}}
+  },
+  "aiChatRagSearchResultsTitle": "RAG 搜索结果",
+  "aiChatRagRefinedQuery": "优化后的查询：\"{query}\"",
+  "@aiChatRagRefinedQuery": {
+    "placeholders": {"query": {"type": "String"}}
+  },
+  "aiChatRagNoResults": "未找到结果。",
+  "aiChatRagUnknownType": "未知",
+  "aiServiceSignInRequired": "需要登录才能使用 AI 服务",
+  "aiServiceFeatureNotAvailable": "你的套餐不支持此功能",
+  "aiServiceFailedToConnect": "连接 AI 服务失败：{error}",
+  "@aiServiceFailedToConnect": {
+    "placeholders": {"error": {"type": "String"}}
+  },
+  "aiServiceNoResponse": "AI 服务没有返回结果",
+  "aiDeepAgentDetailsTitle": "Deep Agent",
+  "aiDeepAgentStop": "停止：{reason}（轮次：{rounds}）",
+  "@aiDeepAgentStop": {
+    "placeholders": {"reason": {"type": "String"}, "rounds": {"type": "Object"}}
+  },
+  "aiDeepAgentPlanLabel": "计划：",
+  "aiDeepAgentToolsLabel": "工具：",
+  "deepAgentSettingsTitle": "Deep Agent 设置",
+  "deepAgentSettingsDescription": "控制 AI Chat 是否优先使用 Deep Agent，以及反思与调试输出。",
+  "deepAgentPreferTitle": "优先使用 Deep Agent",
+  "deepAgentPreferSubtitle": "开启后，普通聊天会先调用 /agents/deep-agent。",
+  "deepAgentFallbackTitle": "Deep Agent 不可用时回退 QA",
+  "deepAgentFallbackSubtitle": "当 deep-agent 返回 404/501 时自动调用 /agents/qa。",
+  "deepAgentReflectionModeTitle": "反思模式",
+  "deepAgentReflectionModeSubtitle": "控制 deep-agent 是否在回答后进行评估与可选重试。",
+  "deepAgentReflectionModeOff": "关闭",
+  "deepAgentReflectionModeOnFailure": "仅失败时",
+  "deepAgentReflectionModeAlways": "总是",
+  "deepAgentShowDetailsTitle": "显示执行细节",
+  "deepAgentShowDetailsSubtitle": "在 /deep 命令结果里附加 plan 与工具调用记录。",
+  "deepAgentMaxPlanSteps": "规划步数上限",
+  "deepAgentMaxToolRounds": "工具轮次上限",
   "send": "发送",
   "resetToDefault": "重置为默认值",
   "invalidUrl": "请输入有效的 http(s) 链接且不包含空格。",

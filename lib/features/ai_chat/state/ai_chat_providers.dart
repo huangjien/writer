@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:uuid/uuid.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/shared/constants.dart';
 import 'package:writer/state/ai_agent_settings.dart';
+import 'package:writer/state/app_settings.dart';
 import '../models/chat_message.dart';
 import '../models/chat_session.dart';
 import '../services/chat_storage_service.dart';
@@ -48,7 +51,21 @@ class AiContextState {
 }
 
 class AiContextNotifier extends StateNotifier<AiContextState> {
-  AiContextNotifier() : super(const AiContextState());
+  AiContextNotifier(this._localeReader) : super(const AiContextState());
+
+  final Locale Function() _localeReader;
+
+  Locale _currentLocale() {
+    try {
+      return _localeReader();
+    } catch (_) {
+      return const Locale('en');
+    }
+  }
+
+  AppLocalizations _l10n() {
+    return lookupAppLocalizations(_currentLocale());
+  }
 
   void setContextDelegate({
     required String type,
@@ -97,7 +114,7 @@ class AiContextNotifier extends StateNotifier<AiContextState> {
       if (mounted) {
         state = state.copyWith(
           isLoading: false,
-          cachedContent: 'Error loading context: $e',
+          cachedContent: _l10n().aiContextLoadError(e.toString()),
           tokenCount: 0,
         );
       }
@@ -117,7 +134,15 @@ class AiContextNotifier extends StateNotifier<AiContextState> {
 
 final aiContextProvider =
     StateNotifierProvider<AiContextNotifier, AiContextState>((ref) {
-      return AiContextNotifier();
+      Locale readLocale() {
+        try {
+          return ref.read(appSettingsProvider);
+        } catch (_) {
+          return const Locale('en');
+        }
+      }
+
+      return AiContextNotifier(readLocale);
     });
 
 // --- Chat Session Provider ---
@@ -156,6 +181,7 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
     this._settingsReader,
     this._storageService,
     this._contextNotifier,
+    this._localeReader,
   ) : super(const AiChatState(messages: [], isLoading: false)) {
     _loadSessions();
   }
@@ -164,6 +190,19 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
   final AiAgentSettings Function() _settingsReader;
   final ChatStorageService _storageService;
   final AiContextNotifier _contextNotifier;
+  final Locale Function() _localeReader;
+
+  Locale _currentLocale() {
+    try {
+      return _localeReader();
+    } catch (_) {
+      return const Locale('en');
+    }
+  }
+
+  AppLocalizations _l10n() {
+    return lookupAppLocalizations(_currentLocale());
+  }
 
   Future<void> _loadSessions() async {
     final sessions = _storageService.loadSessions();
@@ -267,10 +306,12 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
     // Auto-compress if context is too long
     if (contextContent != null &&
         ContextUtils.isContextTooLong(contextContent)) {
+      final l10n = _l10n();
       // Add a system message about compression
       final compressionNotice = ChatMessage(
-        content:
-            'Context is too long (${ContextUtils.estimateTokens(contextContent)} tokens). Compressing...',
+        content: l10n.aiChatContextTooLongCompressing(
+          ContextUtils.estimateTokens(contextContent),
+        ),
         isUser: false,
       );
       final messagesWithNotice = <ChatMessage>[
@@ -280,11 +321,14 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
       state = state.copyWith(messages: messagesWithNotice);
 
       try {
-        contextContent = await _aiChatService.compressContext(contextContent);
+        contextContent = await _aiChatService.compressContext(
+          contextContent,
+          l10n: l10n,
+        );
       } catch (e) {
         // If compression fails, use original context but add error note
         contextContent =
-            '$contextContent\n\n[Note: Context compression failed: $e]';
+            '$contextContent\n\n${l10n.aiChatContextCompressionFailedNote(e.toString())}';
       }
     }
 
@@ -299,9 +343,11 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
     _updateSession(newMessages);
 
     try {
+      final l10n = _l10n();
       final response = await _aiChatService.sendMessage(
         effectiveMessage,
         settings: _settingsReader(),
+        l10n: l10n,
       );
 
       final aiMsg = ChatMessage(content: response, isUser: false);
@@ -310,8 +356,9 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
       state = state.copyWith(messages: finalMessages, isLoading: false);
       _updateSession(finalMessages);
     } catch (e) {
+      final l10n = _l10n();
       final errorMsg = ChatMessage(
-        content: 'Error: ${e.toString()}',
+        content: l10n.aiChatError(e.toString()),
         isUser: false,
       );
       final finalMessages = <ChatMessage>[...newMessages, errorMsg];
@@ -332,6 +379,7 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
     _updateSession(newMessages);
 
     try {
+      final l10n = _l10n();
       // Pass context if enabled
       final contextContent = await _contextNotifier.getActiveContext();
 
@@ -342,6 +390,7 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
         maxToolRounds: settings.deepAgentMaxToolRounds,
         reflectionMode: settings.deepAgentReflectionMode.wireValue,
         includeDetails: settings.deepAgentShowDetails,
+        l10n: l10n,
       );
 
       final aiMsg = ChatMessage(content: response, isUser: false);
@@ -350,8 +399,9 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
       state = state.copyWith(messages: finalMessages, isLoading: false);
       _updateSession(finalMessages);
     } catch (e) {
+      final l10n = _l10n();
       final errorMsg = ChatMessage(
-        content: 'Deep Agent Error: ${e.toString()}',
+        content: l10n.aiChatDeepAgentError(e.toString()),
         isUser: false,
       );
       final finalMessages = <ChatMessage>[...newMessages, errorMsg];
@@ -371,27 +421,30 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
     _updateSession(newMessages);
 
     try {
+      final l10n = _l10n();
       final result = await _aiChatService.ragSearch(query: query);
 
       if (result == null) {
-        throw Exception('Search failed');
+        throw Exception(l10n.aiChatSearchFailed);
       }
 
       final refinedQuery = result['refined_query'];
       final results = (result['results'] as List).cast<Map>();
 
       final sb = StringBuffer();
-      sb.writeln('### RAG Search Results');
+      sb.writeln('### ${l10n.aiChatRagSearchResultsTitle}');
       if (refinedQuery != null) {
-        sb.writeln('> Refined Query: "$refinedQuery"\n');
+        sb.writeln(
+          '> ${l10n.aiChatRagRefinedQuery(refinedQuery.toString())}\n',
+        );
       }
 
       if (results.isEmpty) {
-        sb.writeln('No results found.');
+        sb.writeln(l10n.aiChatRagNoResults);
       } else {
         for (final item in results) {
-          final title = item['title'] ?? 'Untitled';
-          final type = item['type'] ?? 'unknown';
+          final title = item['title'] ?? l10n.untitled;
+          final type = item['type'] ?? l10n.aiChatRagUnknownType;
           final score = ((item['score'] as num) * 100).toStringAsFixed(1);
           final content = item['content'] as String? ?? '';
           final preview = content.length > 150
@@ -410,8 +463,9 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
       state = state.copyWith(messages: finalMessages, isLoading: false);
       _updateSession(finalMessages);
     } catch (e) {
+      final l10n = _l10n();
       final errorMsg = ChatMessage(
-        content: 'Search Error: ${e.toString()}',
+        content: l10n.aiChatSearchError(e.toString()),
         isUser: false,
       );
       final finalMessages = <ChatMessage>[...newMessages, errorMsg];
@@ -432,11 +486,21 @@ final aiChatProvider = StateNotifierProvider<AiChatNotifier, AiChatState>((
   final aiChatService = ref.watch(aiChatServiceProvider);
   final storageService = ref.watch(chatStorageServiceProvider);
   final contextNotifier = ref.watch(aiContextProvider.notifier);
+
+  Locale readLocale() {
+    try {
+      return ref.read(appSettingsProvider);
+    } catch (_) {
+      return const Locale('en');
+    }
+  }
+
   return AiChatNotifier(
     aiChatService,
     () => ref.read(aiAgentSettingsProvider),
     storageService,
     contextNotifier,
+    readLocale,
   );
 });
 

@@ -101,11 +101,11 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.history),
-                        tooltip: 'History',
+                        tooltip: l10n.aiChatHistory,
                         onPressed: () => setState(() => _showHistory = true),
                       ),
                       Text(
-                        'AI Assistant',
+                        l10n.aiAssistant,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       IconButton(
@@ -136,7 +136,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'How can I help you?',
+                                l10n.aiChatEmpty,
                                 style: Theme.of(context).textTheme.bodyLarge
                                     ?.copyWith(
                                       color: Theme.of(context)

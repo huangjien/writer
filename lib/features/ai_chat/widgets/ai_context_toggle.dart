@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import '../state/ai_chat_providers.dart';
 import '../utils/context_utils.dart';
 
@@ -17,7 +18,10 @@ class AiContextToggle extends ConsumerWidget {
     }
 
     final isTooLong = state.tokenCount > ContextUtils.maxContextTokens;
-    final tokenText = state.tokenCount > 0 ? '${state.tokenCount} tokens' : '';
+    final l10n = AppLocalizations.of(context)!;
+    final tokenText = state.tokenCount > 0
+        ? l10n.aiTokenCount(state.tokenCount)
+        : '';
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -46,7 +50,7 @@ class AiContextToggle extends ConsumerWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            'Context',
+            l10n.aiChatContextLabel,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
               color: state.isEnabled
                   ? Theme.of(context).colorScheme.onPrimaryContainer

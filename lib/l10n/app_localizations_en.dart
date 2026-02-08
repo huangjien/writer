@@ -811,6 +811,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aiAssistant => 'AI Assistant';
 
   @override
+  String get aiChatHistory => 'History';
+
+  @override
+  String get aiChatNewChat => 'New Chat';
+
+  @override
+  String get aiChatNoHistory => 'No history';
+
+  @override
   String get aiChatHint => 'Type your message...';
 
   @override
@@ -818,6 +827,140 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aiThinking => 'AI is thinking...';
+
+  @override
+  String get aiChatContextLabel => 'Context';
+
+  @override
+  String aiTokenCount(int count) {
+    return '$count tokens';
+  }
+
+  @override
+  String aiContextLoadError(String error) {
+    return 'Error loading context: $error';
+  }
+
+  @override
+  String aiChatContextTooLongCompressing(int tokens) {
+    return 'Context is too long ($tokens tokens). Compressing...';
+  }
+
+  @override
+  String aiChatContextCompressionFailedNote(String error) {
+    return '[Note: Context compression failed: $error]';
+  }
+
+  @override
+  String aiChatError(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String aiChatDeepAgentError(String error) {
+    return 'Deep Agent Error: $error';
+  }
+
+  @override
+  String get aiChatSearchFailed => 'Search failed';
+
+  @override
+  String aiChatSearchError(String error) {
+    return 'Search Error: $error';
+  }
+
+  @override
+  String get aiChatRagSearchResultsTitle => 'RAG Search Results';
+
+  @override
+  String aiChatRagRefinedQuery(String query) {
+    return 'Refined Query: \"$query\"';
+  }
+
+  @override
+  String get aiChatRagNoResults => 'No results found.';
+
+  @override
+  String get aiChatRagUnknownType => 'unknown';
+
+  @override
+  String get aiServiceSignInRequired => 'Sign in required to use AI service';
+
+  @override
+  String get aiServiceFeatureNotAvailable =>
+      'Feature not available for your plan';
+
+  @override
+  String aiServiceFailedToConnect(String error) {
+    return 'Failed to connect to AI service: $error';
+  }
+
+  @override
+  String get aiServiceNoResponse => 'No response from AI service';
+
+  @override
+  String get aiDeepAgentDetailsTitle => 'Deep Agent';
+
+  @override
+  String aiDeepAgentStop(String reason, Object rounds) {
+    return 'Stop: $reason (rounds: $rounds)';
+  }
+
+  @override
+  String get aiDeepAgentPlanLabel => 'Plan:';
+
+  @override
+  String get aiDeepAgentToolsLabel => 'Tools:';
+
+  @override
+  String get deepAgentSettingsTitle => 'Deep Agent Settings';
+
+  @override
+  String get deepAgentSettingsDescription =>
+      'Control whether AI Chat prefers Deep Agent, plus reflection and debug output.';
+
+  @override
+  String get deepAgentPreferTitle => 'Prefer Deep Agent';
+
+  @override
+  String get deepAgentPreferSubtitle =>
+      'When enabled, normal chat calls /agents/deep-agent first.';
+
+  @override
+  String get deepAgentFallbackTitle => 'Fallback to QA if unavailable';
+
+  @override
+  String get deepAgentFallbackSubtitle =>
+      'Automatically calls /agents/qa when deep-agent returns 404/501.';
+
+  @override
+  String get deepAgentReflectionModeTitle => 'Reflection Mode';
+
+  @override
+  String get deepAgentReflectionModeSubtitle =>
+      'Controls post-answer evaluation and optional retry.';
+
+  @override
+  String get deepAgentReflectionModeOff => 'Off';
+
+  @override
+  String get deepAgentReflectionModeOnFailure => 'On failure';
+
+  @override
+  String get deepAgentReflectionModeAlways => 'Always';
+
+  @override
+  String get deepAgentShowDetailsTitle => 'Show Execution Details';
+
+  @override
+  String get deepAgentShowDetailsSubtitle =>
+      'Include plan and tool call logs in /deep output.';
+
+  @override
+  String get deepAgentMaxPlanSteps => 'Max Plan Steps';
+
+  @override
+  String get deepAgentMaxToolRounds => 'Max Tool Rounds';
 
   @override
   String get send => 'Send';

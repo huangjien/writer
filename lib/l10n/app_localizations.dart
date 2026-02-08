@@ -1610,6 +1610,24 @@ abstract class AppLocalizations {
   /// **'AI Assistant'**
   String get aiAssistant;
 
+  /// No description provided for @aiChatHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get aiChatHistory;
+
+  /// No description provided for @aiChatNewChat.
+  ///
+  /// In en, this message translates to:
+  /// **'New Chat'**
+  String get aiChatNewChat;
+
+  /// No description provided for @aiChatNoHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No history'**
+  String get aiChatNoHistory;
+
   /// No description provided for @aiChatHint.
   ///
   /// In en, this message translates to:
@@ -1627,6 +1645,222 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'AI is thinking...'**
   String get aiThinking;
+
+  /// No description provided for @aiChatContextLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Context'**
+  String get aiChatContextLabel;
+
+  /// No description provided for @aiTokenCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tokens'**
+  String aiTokenCount(int count);
+
+  /// No description provided for @aiContextLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading context: {error}'**
+  String aiContextLoadError(String error);
+
+  /// No description provided for @aiChatContextTooLongCompressing.
+  ///
+  /// In en, this message translates to:
+  /// **'Context is too long ({tokens} tokens). Compressing...'**
+  String aiChatContextTooLongCompressing(int tokens);
+
+  /// No description provided for @aiChatContextCompressionFailedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'[Note: Context compression failed: {error}]'**
+  String aiChatContextCompressionFailedNote(String error);
+
+  /// No description provided for @aiChatError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String aiChatError(String error);
+
+  /// No description provided for @aiChatDeepAgentError.
+  ///
+  /// In en, this message translates to:
+  /// **'Deep Agent Error: {error}'**
+  String aiChatDeepAgentError(String error);
+
+  /// No description provided for @aiChatSearchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Search failed'**
+  String get aiChatSearchFailed;
+
+  /// No description provided for @aiChatSearchError.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Error: {error}'**
+  String aiChatSearchError(String error);
+
+  /// No description provided for @aiChatRagSearchResultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'RAG Search Results'**
+  String get aiChatRagSearchResultsTitle;
+
+  /// No description provided for @aiChatRagRefinedQuery.
+  ///
+  /// In en, this message translates to:
+  /// **'Refined Query: \"{query}\"'**
+  String aiChatRagRefinedQuery(String query);
+
+  /// No description provided for @aiChatRagNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found.'**
+  String get aiChatRagNoResults;
+
+  /// No description provided for @aiChatRagUnknownType.
+  ///
+  /// In en, this message translates to:
+  /// **'unknown'**
+  String get aiChatRagUnknownType;
+
+  /// No description provided for @aiServiceSignInRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in required to use AI service'**
+  String get aiServiceSignInRequired;
+
+  /// No description provided for @aiServiceFeatureNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature not available for your plan'**
+  String get aiServiceFeatureNotAvailable;
+
+  /// No description provided for @aiServiceFailedToConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to connect to AI service: {error}'**
+  String aiServiceFailedToConnect(String error);
+
+  /// No description provided for @aiServiceNoResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'No response from AI service'**
+  String get aiServiceNoResponse;
+
+  /// No description provided for @aiDeepAgentDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deep Agent'**
+  String get aiDeepAgentDetailsTitle;
+
+  /// No description provided for @aiDeepAgentStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop: {reason} (rounds: {rounds})'**
+  String aiDeepAgentStop(String reason, Object rounds);
+
+  /// No description provided for @aiDeepAgentPlanLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan:'**
+  String get aiDeepAgentPlanLabel;
+
+  /// No description provided for @aiDeepAgentToolsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tools:'**
+  String get aiDeepAgentToolsLabel;
+
+  /// No description provided for @deepAgentSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deep Agent Settings'**
+  String get deepAgentSettingsTitle;
+
+  /// No description provided for @deepAgentSettingsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Control whether AI Chat prefers Deep Agent, plus reflection and debug output.'**
+  String get deepAgentSettingsDescription;
+
+  /// No description provided for @deepAgentPreferTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer Deep Agent'**
+  String get deepAgentPreferTitle;
+
+  /// No description provided for @deepAgentPreferSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When enabled, normal chat calls /agents/deep-agent first.'**
+  String get deepAgentPreferSubtitle;
+
+  /// No description provided for @deepAgentFallbackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fallback to QA if unavailable'**
+  String get deepAgentFallbackTitle;
+
+  /// No description provided for @deepAgentFallbackSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically calls /agents/qa when deep-agent returns 404/501.'**
+  String get deepAgentFallbackSubtitle;
+
+  /// No description provided for @deepAgentReflectionModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reflection Mode'**
+  String get deepAgentReflectionModeTitle;
+
+  /// No description provided for @deepAgentReflectionModeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Controls post-answer evaluation and optional retry.'**
+  String get deepAgentReflectionModeSubtitle;
+
+  /// No description provided for @deepAgentReflectionModeOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get deepAgentReflectionModeOff;
+
+  /// No description provided for @deepAgentReflectionModeOnFailure.
+  ///
+  /// In en, this message translates to:
+  /// **'On failure'**
+  String get deepAgentReflectionModeOnFailure;
+
+  /// No description provided for @deepAgentReflectionModeAlways.
+  ///
+  /// In en, this message translates to:
+  /// **'Always'**
+  String get deepAgentReflectionModeAlways;
+
+  /// No description provided for @deepAgentShowDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Execution Details'**
+  String get deepAgentShowDetailsTitle;
+
+  /// No description provided for @deepAgentShowDetailsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Include plan and tool call logs in /deep output.'**
+  String get deepAgentShowDetailsSubtitle;
+
+  /// No description provided for @deepAgentMaxPlanSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Plan Steps'**
+  String get deepAgentMaxPlanSteps;
+
+  /// No description provided for @deepAgentMaxToolRounds.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Tool Rounds'**
+  String get deepAgentMaxToolRounds;
 
   /// No description provided for @send.
   ///

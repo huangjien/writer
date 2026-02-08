@@ -86,7 +86,11 @@ void main() {
     // Mock AiChatService
     when(() => mockAiChatService.checkHealth()).thenAnswer((_) async => true);
     when(
-      () => mockAiChatService.sendMessage(any()),
+      () => mockAiChatService.sendMessage(
+        any(),
+        settings: any(named: 'settings'),
+        l10n: any(named: 'l10n'),
+      ),
     ).thenAnswer((_) async => 'AI Response');
     when(() => mockAiChatService.embed(any())).thenAnswer((_) async => []);
 

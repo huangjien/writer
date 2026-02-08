@@ -158,7 +158,6 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
         ref.watch(biometricAvailableProvider).asData?.value ?? false;
     final sessionId = ref.watch(sessionProvider);
     final aiAgentSettings = ref.watch(aiAgentSettingsProvider);
-    final isZh = appLocale.languageCode == 'zh';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,17 +233,13 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
           subtitle: Text(ref.watch(aiServiceProvider)),
         ),
         EnhancedSettingsSection(
-          title: isZh ? 'Deep Agent 设置' : 'Deep Agent Settings',
+          title: l10n.deepAgentSettingsTitle,
           icon: Icons.auto_awesome,
-          description: isZh
-              ? '控制 AI Chat 是否优先使用 Deep Agent，以及反思与调试输出。'
-              : 'Control whether AI Chat prefers Deep Agent, plus reflection and debug output.',
+          description: l10n.deepAgentSettingsDescription,
           children: [
             SettingsToggle(
-              title: isZh ? '优先使用 Deep Agent' : 'Prefer Deep Agent',
-              subtitle: isZh
-                  ? '开启后，普通聊天会先调用 /agents/deep-agent。'
-                  : 'When enabled, normal chat calls /agents/deep-agent first.',
+              title: l10n.deepAgentPreferTitle,
+              subtitle: l10n.deepAgentPreferSubtitle,
               value: aiAgentSettings.preferDeepAgent,
               icon: Icons.auto_awesome,
               onChanged: (v) => ref
@@ -252,12 +247,8 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
                   .setPreferDeepAgent(v ?? true),
             ),
             SettingsToggle(
-              title: isZh
-                  ? 'Deep Agent 不可用时回退 QA'
-                  : 'Fallback to QA if unavailable',
-              subtitle: isZh
-                  ? '当 deep-agent 返回 404/501 时自动调用 /agents/qa。'
-                  : 'Automatically calls /agents/qa when deep-agent returns 404/501.',
+              title: l10n.deepAgentFallbackTitle,
+              subtitle: l10n.deepAgentFallbackSubtitle,
               value: aiAgentSettings.deepAgentFallbackToQa,
               enabled: aiAgentSettings.preferDeepAgent,
               icon: Icons.alt_route,
@@ -266,23 +257,21 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
                   .setDeepAgentFallbackToQa(v ?? true),
             ),
             SettingsSelection<DeepAgentReflectionMode>(
-              title: isZh ? '反思模式' : 'Reflection Mode',
-              subtitle: isZh
-                  ? '控制 deep-agent 是否在回答后进行评估与可选重试。'
-                  : 'Controls post-answer evaluation and optional retry.',
+              title: l10n.deepAgentReflectionModeTitle,
+              subtitle: l10n.deepAgentReflectionModeSubtitle,
               icon: Icons.auto_awesome,
               value: aiAgentSettings.deepAgentReflectionMode,
               options: [
                 SettingsOption(
-                  label: isZh ? '关闭' : 'Off',
+                  label: l10n.deepAgentReflectionModeOff,
                   value: DeepAgentReflectionMode.off,
                 ),
                 SettingsOption(
-                  label: isZh ? '仅失败时' : 'On failure',
+                  label: l10n.deepAgentReflectionModeOnFailure,
                   value: DeepAgentReflectionMode.onFailure,
                 ),
                 SettingsOption(
-                  label: isZh ? '总是' : 'Always',
+                  label: l10n.deepAgentReflectionModeAlways,
                   value: DeepAgentReflectionMode.always,
                 ),
               ],
@@ -294,10 +283,8 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
               },
             ),
             SettingsToggle(
-              title: isZh ? '显示执行细节' : 'Show Execution Details',
-              subtitle: isZh
-                  ? '在 /deep 命令结果里附加 plan 与工具调用记录。'
-                  : 'Include plan and tool call logs in /deep output.',
+              title: l10n.deepAgentShowDetailsTitle,
+              subtitle: l10n.deepAgentShowDetailsSubtitle,
               value: aiAgentSettings.deepAgentShowDetails,
               icon: Icons.subject,
               onChanged: (v) => ref
@@ -306,7 +293,7 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
             ),
             ListTile(
               leading: const Icon(Icons.format_list_numbered),
-              title: Text(isZh ? '规划步数上限' : 'Max Plan Steps'),
+              title: Text(l10n.deepAgentMaxPlanSteps),
               subtitle: NeumorphicSlider(
                 value: aiAgentSettings.deepAgentMaxPlanSteps.toDouble(),
                 min: 1,
@@ -321,7 +308,7 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
             ),
             ListTile(
               leading: const Icon(Icons.loop),
-              title: Text(isZh ? '工具轮次上限' : 'Max Tool Rounds'),
+              title: Text(l10n.deepAgentMaxToolRounds),
               subtitle: NeumorphicSlider(
                 value: aiAgentSettings.deepAgentMaxToolRounds.toDouble(),
                 min: 1,
