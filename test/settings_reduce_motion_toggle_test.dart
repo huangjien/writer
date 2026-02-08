@@ -118,6 +118,10 @@ void main() {
     await tester.pumpAndSettle();
 
     final reduceMotionToggle = find.byKey(const Key('reduce_motion_setting'));
+
+    await tester.scrollUntilVisible(reduceMotionToggle, 500.0);
+    await tester.pumpAndSettle();
+
     expect(reduceMotionToggle, findsOneWidget);
 
     final switchFinder = find.descendant(
@@ -131,11 +135,19 @@ void main() {
     await tester.tap(switchFinder);
     await tester.pumpAndSettle();
 
-    expect(container.read(motionSettingsProvider).reduceMotion, isTrue);
+    expect(
+      container.read(motionSettingsProvider).reduceMotion,
+      isTrue,
+      reason: 'Reduce motion should be enabled after tapping switch',
+    );
 
     await tester.tap(switchFinder);
     await tester.pumpAndSettle();
 
-    expect(container.read(motionSettingsProvider).reduceMotion, isFalse);
+    expect(
+      container.read(motionSettingsProvider).reduceMotion,
+      isFalse,
+      reason: 'Reduce motion should be disabled after tapping switch again',
+    );
   });
 }

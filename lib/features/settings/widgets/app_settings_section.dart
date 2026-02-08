@@ -223,9 +223,13 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
           key: const Key('ai_service_url_setting'),
           leading: const Icon(Icons.smart_toy_outlined),
           title: Text(l10n.aiServiceUrl),
-          trailing: IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => _showAiServiceUrlDialog(context),
+          trailing: SizedBox(
+            width: 48,
+            height: 48,
+            child: IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () => _showAiServiceUrlDialog(context),
+            ),
           ),
           subtitle: Text(ref.watch(aiServiceProvider)),
         ),
