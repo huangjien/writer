@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/features/settings/widgets/enhanced_settings_section.dart';
 import 'package:writer/shared/widgets/theme_aware_card.dart';
 import 'package:writer/shared/widgets/neumorphic_switch.dart';
-import 'package:writer/shared/widgets/neumorphic_text.dart';
 
 void main() {
   testWidgets(
@@ -55,7 +54,6 @@ void main() {
       ),
     );
 
-    expect(find.byType(NeumorphicText), findsOneWidget);
     expect(find.text('Toggle title'), findsOneWidget);
     expect(find.text('Toggle subtitle'), findsOneWidget);
     expect(find.byIcon(Icons.security), findsOneWidget);

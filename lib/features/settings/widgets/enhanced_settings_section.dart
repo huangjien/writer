@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../theme/design_tokens.dart';
 import '../../../shared/widgets/theme_aware_card.dart';
 import '../../../shared/widgets/neumorphic_switch.dart';
-import '../../../shared/widgets/neumorphic_text.dart';
 import '../../../shared/widgets/neumorphic_dropdown.dart';
 
 /// Enhanced settings section component
@@ -101,11 +100,7 @@ class SettingsToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: icon != null ? Icon(icon) : null,
-      title: NeumorphicText(
-        title,
-        style: Theme.of(context).textTheme.bodyLarge,
-        depth: 1,
-      ),
+      title: Text(title, style: Theme.of(context).textTheme.bodyLarge),
       subtitle: subtitle != null
           ? Text(subtitle!, style: Theme.of(context).textTheme.bodySmall)
           : null,
