@@ -620,5 +620,171 @@ void main() {
         contains('Failed to connect to AI service'),
       );
     });
+
+    test('compressContext returns compressed text', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' &&
+            request.url.path == '/agents/deep-agent') {
+          final body = jsonDecode(request.body);
+          expect(body['question'], contains('summarize and compress'));
+          expect(body['context'], 'Long context to compress');
+          expect(body['max_plan_steps'], 3);
+          expect(body['max_tool_rounds'], 3);
+          expect(body['reflection_mode'], 'off');
+          return http.Response(
+            jsonEncode({'answer': 'Compressed summary'}),
+            200,
+          );
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService(
+        RemoteRepository('http://example.com/', client: client),
+      );
+      final result = await svc.compressContext('Long context to compress');
+      expect(result, 'Compressed summary');
+    });
+
+    test('compressContext handles errors gracefully', () async {
+      final client = MockClient((request) async => http.Response('error', 500));
+      final svc = AiChatService(
+        RemoteRepository('http://example.com', client: client),
+      );
+      final result = await svc.compressContext('context');
+      expect(result, contains('Failed to connect to AI service'));
+    });
+
+    test('compressContext handles 401', () async {
+      final client = MockClient(
+        (request) async => http.Response('unauth', 401),
+      );
+      final svc = AiChatService(
+        RemoteRepository('http://example.com', client: client),
+      );
+      final result = await svc.compressContext('context');
+      expect(result, 'Sign in required to use AI service');
+    });
+
+    test('ragSearch returns search results', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' && request.url.path == '/rag/search') {
+          final body = jsonDecode(request.body);
+          expect(body['query'], 'test query');
+          expect(body['initial_top_k'], 10);
+          expect(body['final_top_k'], 5);
+          expect(body['refinement_enabled'], true);
+          return http.Response(
+            jsonEncode({
+              'results': [
+                {'id': '1', 'text': 'Result 1'},
+                {'id': '2', 'text': 'Result 2'},
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService(
+        RemoteRepository('http://example.com/', client: client),
+      );
+      final result = await svc.ragSearch(query: 'test query');
+      expect(result, isNotNull);
+      expect(result!['results'], isList);
+      expect(result['results'].length, 2);
+    });
+
+    test('ragSearch sends category when provided', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' && request.url.path == '/rag/search') {
+          final body = jsonDecode(request.body);
+          expect(body['category'], 'writing');
+          return http.Response(jsonEncode({'results': []}), 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService(
+        RemoteRepository('http://example.com/', client: client),
+      );
+      final result = await svc.ragSearch(query: 'test', category: 'writing');
+      expect(result, isNotNull);
+    });
+
+    test('ragSearch sends custom top_k values', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' && request.url.path == '/rag/search') {
+          final body = jsonDecode(request.body);
+          expect(body['initial_top_k'], 20);
+          expect(body['final_top_k'], 10);
+          return http.Response(jsonEncode({'results': []}), 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService(
+        RemoteRepository('http://example.com/', client: client),
+      );
+      final result = await svc.ragSearch(
+        query: 'test',
+        initialTopK: 20,
+        finalTopK: 10,
+      );
+      expect(result, isNotNull);
+    });
+
+    test('ragSearch sends refinement_enabled flag', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' && request.url.path == '/rag/search') {
+          final body = jsonDecode(request.body);
+          expect(body['refinement_enabled'], false);
+          return http.Response(jsonEncode({'results': []}), 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService(
+        RemoteRepository('http://example.com/', client: client),
+      );
+      final result = await svc.ragSearch(
+        query: 'test',
+        refinementEnabled: false,
+      );
+      expect(result, isNotNull);
+    });
+
+    test('ragSearch returns null on error', () async {
+      final client = MockClient((request) async => http.Response('error', 500));
+      final svc = AiChatService(
+        RemoteRepository('http://example.com/', client: client),
+      );
+      final result = await svc.ragSearch(query: 'test');
+      expect(result, isNull);
+    });
+
+    test('ragSearch returns null on non-Map response', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' && request.url.path == '/rag/search') {
+          return http.Response(jsonEncode(['not', 'a', 'map']), 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService(
+        RemoteRepository('http://example.com/', client: client),
+      );
+      final result = await svc.ragSearch(query: 'test');
+      expect(result, isNull);
+    });
+
+    test('ragSearch returns null on invalid JSON', () async {
+      final client = MockClient((request) async {
+        if (request.method == 'POST' && request.url.path == '/rag/search') {
+          return http.Response('invalid json', 200);
+        }
+        return http.Response('not found', 404);
+      });
+      final svc = AiChatService(
+        RemoteRepository('http://example.com/', client: client),
+      );
+      final result = await svc.ragSearch(query: 'test');
+      expect(result, isNull);
+    });
   });
 }
