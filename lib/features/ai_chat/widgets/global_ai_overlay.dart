@@ -30,9 +30,9 @@ class GlobalAiAssistantOverlay extends ConsumerWidget {
                   alignment: Alignment.centerRight,
                   child: LayoutBuilder(
                     builder: (context, constraints) {
-                      final w = constraints.maxWidth > 400
-                          ? 400.0
-                          : constraints.maxWidth * 0.85;
+                      final w = constraints.maxWidth < 600
+                          ? constraints.maxWidth * 0.95
+                          : constraints.maxWidth * 0.75;
                       return SizedBox(
                         width: w,
                         child: Navigator(

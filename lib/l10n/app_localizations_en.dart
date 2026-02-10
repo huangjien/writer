@@ -1665,6 +1665,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminLogs => 'Admin Logs';
 
   @override
+  String get viewAndFilterBackendLogs => 'View and filter backend logs';
+
+  @override
   String get styleGlassmorphism => 'Glassmorphism';
 
   @override

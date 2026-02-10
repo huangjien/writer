@@ -126,15 +126,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const Divider(),
             ListTile(
               leading: const Icon(Icons.admin_panel_settings),
-              title: const Text('Admin Logs'),
-              subtitle: const Text('View and filter backend logs'),
+              title: Text(l10n.adminLogs),
+              subtitle: Text(l10n.viewAndFilterBackendLogs),
               onTap: () => context.push('/admin/logs'),
               trailing: const Icon(Icons.chevron_right),
             ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.style),
-              title: const Text('Style Guide'),
+              title: Text(l10n.styleGuide),
               onTap: () => context.push('/style-guide'),
               trailing: const Icon(Icons.chevron_right),
             ),

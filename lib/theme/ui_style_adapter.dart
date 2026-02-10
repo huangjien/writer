@@ -82,7 +82,7 @@ class StyleThemePatch {
   });
 
   ThemeData applyToTheme(ThemeData base, bool isDark) {
-    final resolvedCardRadius = cardBorderRadius ?? BorderRadius.circular(12);
+    final resolvedCardRadius = cardBorderRadius ?? BorderRadius.zero;
     final resolvedButtonRadius = buttonBorderRadius ?? BorderRadius.circular(8);
     final resolvedElevation = elevation ?? base.cardTheme.elevation;
     final resolvedSurfaceColor = _resolveSurfaceColor(base, isDark);
@@ -166,7 +166,7 @@ class StyleThemePatch {
       ),
       dialogTheme: base.dialogTheme.copyWith(
         shape: RoundedRectangleBorder(
-          borderRadius: cardBorderRadius ?? BorderRadius.circular(16),
+          borderRadius: cardBorderRadius ?? BorderRadius.zero,
         ),
         elevation: elevation ?? 8,
       ),
@@ -733,7 +733,7 @@ class UiStyleAdapter {
 
   StyleThemePatch _glassmorphismPatch() {
     return const StyleThemePatch(
-      cardBorderRadius: BorderRadius.all(Radius.circular(16)),
+      cardBorderRadius: BorderRadius.zero,
       buttonBorderRadius: BorderRadius.all(Radius.circular(12)),
       elevation: 0,
       useBackdropBlur: true,
@@ -756,7 +756,7 @@ class UiStyleAdapter {
 
   StyleThemePatch _liquidGlassPatch() {
     return StyleThemePatch(
-      cardBorderRadius: const BorderRadius.all(Radius.circular(20)),
+      cardBorderRadius: BorderRadius.zero,
       buttonBorderRadius: const BorderRadius.all(Radius.circular(14)),
       elevation: 0,
       useBackdropBlur: true,
@@ -788,7 +788,7 @@ class UiStyleAdapter {
 
   StyleThemePatch _neumorphismPatch() {
     return const StyleThemePatch(
-      cardBorderRadius: BorderRadius.all(Radius.circular(20)),
+      cardBorderRadius: BorderRadius.zero,
       buttonBorderRadius: BorderRadius.all(Radius.circular(16)),
       elevation: 0,
       useBackdropBlur: false,
@@ -803,7 +803,7 @@ class UiStyleAdapter {
 
   StyleThemePatch _minimalismPatch() {
     return const StyleThemePatch(
-      cardBorderRadius: BorderRadius.all(Radius.circular(12)),
+      cardBorderRadius: BorderRadius.zero,
       buttonBorderRadius: BorderRadius.all(Radius.circular(8)),
       elevation: 0,
       useBackdropBlur: false,
@@ -831,7 +831,7 @@ class UiStyleAdapter {
 
   StyleThemePatch _flatDesignPatch() {
     return const StyleThemePatch(
-      cardBorderRadius: BorderRadius.all(Radius.circular(4)),
+      cardBorderRadius: BorderRadius.zero,
       buttonBorderRadius: BorderRadius.all(Radius.circular(4)),
       elevation: 0,
       useBackdropBlur: false,

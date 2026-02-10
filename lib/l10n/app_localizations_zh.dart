@@ -1627,6 +1627,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get adminLogs => '管理员日志';
 
   @override
+  String get viewAndFilterBackendLogs => '查看和筛选后端日志';
+
+  @override
   String get styleGlassmorphism => '玻璃拟态';
 
   @override

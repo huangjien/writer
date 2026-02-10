@@ -57,9 +57,13 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
 
     final l10n = AppLocalizations.of(context)!;
     final isRTL = Directionality.of(context) == TextDirection.rtl;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final sidebarWidth =
+        widget.width ??
+        (screenWidth < 600 ? screenWidth * 0.95 : screenWidth * 0.75);
 
     return Container(
-      width: widget.width ?? 350,
+      width: sidebarWidth,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         border: Border(

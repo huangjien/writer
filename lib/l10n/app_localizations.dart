@@ -3170,6 +3170,12 @@ abstract class AppLocalizations {
   /// **'Admin Logs'**
   String get adminLogs;
 
+  /// No description provided for @viewAndFilterBackendLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'View and filter backend logs'**
+  String get viewAndFilterBackendLogs;
+
   /// No description provided for @styleGlassmorphism.
   ///
   /// In en, this message translates to:

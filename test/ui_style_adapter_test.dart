@@ -15,7 +15,7 @@ void main() {
     group('resolveStylePatch', () {
       test('returns glassmorphism patch for glassmorphism style', () {
         final patch = adapter.resolveStylePatch(UiStyleFamily.glassmorphism);
-        expect(patch.cardBorderRadius, BorderRadius.circular(16));
+        expect(patch.cardBorderRadius, BorderRadius.zero);
         expect(patch.buttonBorderRadius, BorderRadius.circular(12));
         expect(patch.elevation, 0);
         expect(patch.useBackdropBlur, true);
@@ -30,7 +30,7 @@ void main() {
 
       test('returns neumorphism patch for neumorphism style', () {
         final patch = adapter.resolveStylePatch(UiStyleFamily.neumorphism);
-        expect(patch.cardBorderRadius, BorderRadius.circular(20));
+        expect(patch.cardBorderRadius, BorderRadius.zero);
         expect(patch.buttonBorderRadius, BorderRadius.circular(16));
         expect(patch.elevation, 0);
         expect(patch.useBackdropBlur, false);
@@ -38,7 +38,7 @@ void main() {
 
       test('returns minimalism patch for minimalism style', () {
         final patch = adapter.resolveStylePatch(UiStyleFamily.minimalism);
-        expect(patch.cardBorderRadius, BorderRadius.circular(12));
+        expect(patch.cardBorderRadius, BorderRadius.zero);
         expect(patch.buttonBorderRadius, BorderRadius.circular(8));
         expect(patch.elevation, 0);
         expect(patch.useBackdropBlur, false);
@@ -46,7 +46,7 @@ void main() {
 
       test('returns flatDesign patch for flatDesign style', () {
         final patch = adapter.resolveStylePatch(UiStyleFamily.flatDesign);
-        expect(patch.cardBorderRadius, BorderRadius.circular(4));
+        expect(patch.cardBorderRadius, BorderRadius.zero);
         expect(patch.buttonBorderRadius, BorderRadius.circular(4));
         expect(patch.elevation, 0);
         expect(patch.useBackdropBlur, false);
