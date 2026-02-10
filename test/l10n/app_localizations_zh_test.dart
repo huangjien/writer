@@ -1055,5 +1055,106 @@ void main() {
         expect(zh.avgWordsPerChapter(2500).contains('2500'), true);
       });
     });
+
+    group('AI Parameterized Methods', () {
+      test('aiTokenCount formats correctly', () {
+        expect(zh.aiTokenCount(100), contains('100'));
+        expect(zh.aiTokenCount(1), contains('1'));
+        expect(zh.aiTokenCount(1000), contains('1000'));
+      });
+
+      test('aiContextLoadError formats correctly', () {
+        final result = zh.aiContextLoadError('Network error');
+        expect(result, contains('Network error'));
+        expect(result.contains('加载上下文') || result.contains('错误'), true);
+      });
+
+      test('aiChatContextTooLongCompressing formats correctly', () {
+        final result = zh.aiChatContextTooLongCompressing(5000);
+        expect(result, contains('5000'));
+      });
+
+      test('aiChatContextCompressionFailedNote formats correctly', () {
+        final result = zh.aiChatContextCompressionFailedNote('Out of memory');
+        expect(result, contains('Out of memory'));
+      });
+
+      test('aiChatError formats correctly', () {
+        final result = zh.aiChatError('Test error');
+        expect(result, contains('Test error'));
+      });
+
+      test('aiChatDeepAgentError formats correctly', () {
+        final result = zh.aiChatDeepAgentError('Agent failed');
+        expect(result, contains('Agent failed'));
+      });
+
+      test('aiChatSearchError formats correctly', () {
+        final result = zh.aiChatSearchError('Search failed');
+        expect(result, contains('Search failed'));
+      });
+
+      test('aiChatRagRefinedQuery formats correctly', () {
+        final result = zh.aiChatRagRefinedQuery('refined query');
+        expect(result, contains('refined query'));
+      });
+
+      test('aiServiceFailedToConnect formats correctly', () {
+        final result = zh.aiServiceFailedToConnect('Connection timeout');
+        expect(result, contains('Connection timeout'));
+      });
+
+      test('aiDeepAgentStop formats correctly', () {
+        final result = zh.aiDeepAgentStop('Max iterations', 10);
+        expect(result, contains('Max iterations'));
+        expect(result, contains('10'));
+      });
+    });
+
+    group('Additional AI Strings', () {
+      test('AI chat history strings are non-empty', () {
+        expect(zh.aiChatHistory.isNotEmpty, true);
+        expect(zh.aiChatNewChat.isNotEmpty, true);
+        expect(zh.aiChatNoHistory.isNotEmpty, true);
+        expect(zh.aiChatContextLabel.isNotEmpty, true);
+      });
+
+      test('AI chat search strings are non-empty', () {
+        expect(zh.aiChatSearchFailed.isNotEmpty, true);
+        expect(zh.aiChatRagSearchResultsTitle.isNotEmpty, true);
+        expect(zh.aiChatRagNoResults.isNotEmpty, true);
+        expect(zh.aiChatRagUnknownType.isNotEmpty, true);
+      });
+
+      test('AI service status strings are non-empty', () {
+        expect(zh.aiServiceSignInRequired.isNotEmpty, true);
+        expect(zh.aiServiceFeatureNotAvailable.isNotEmpty, true);
+        expect(zh.aiServiceNoResponse.isNotEmpty, true);
+      });
+
+      test('Deep Agent strings are non-empty', () {
+        expect(zh.aiDeepAgentDetailsTitle.isNotEmpty, true);
+        expect(zh.aiDeepAgentPlanLabel.isNotEmpty, true);
+        expect(zh.aiDeepAgentToolsLabel.isNotEmpty, true);
+      });
+
+      test('Deep Agent settings strings are non-empty', () {
+        expect(zh.deepAgentSettingsTitle.isNotEmpty, true);
+        expect(zh.deepAgentSettingsDescription.isNotEmpty, true);
+        expect(zh.deepAgentPreferTitle.isNotEmpty, true);
+        expect(zh.deepAgentPreferSubtitle.isNotEmpty, true);
+        expect(zh.deepAgentFallbackTitle.isNotEmpty, true);
+        expect(zh.deepAgentFallbackSubtitle.isNotEmpty, true);
+        expect(zh.deepAgentReflectionModeTitle.isNotEmpty, true);
+        expect(zh.deepAgentReflectionModeSubtitle.isNotEmpty, true);
+        expect(zh.deepAgentReflectionModeOff.isNotEmpty, true);
+        expect(zh.deepAgentReflectionModeOnFailure.isNotEmpty, true);
+        expect(zh.deepAgentReflectionModeAlways.isNotEmpty, true);
+        expect(zh.deepAgentShowDetailsTitle.isNotEmpty, true);
+        expect(zh.deepAgentShowDetailsSubtitle.isNotEmpty, true);
+        expect(zh.deepAgentMaxPlanSteps.isNotEmpty, true);
+        expect(zh.deepAgentMaxToolRounds.isNotEmpty, true);
+      });
+    });
   });
 }

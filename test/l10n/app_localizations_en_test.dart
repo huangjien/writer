@@ -549,5 +549,114 @@ void main() {
         expect(l10n.deleteNovelConfirmation, isNotEmpty);
       });
     });
+
+    group('AI Parameterized Methods', () {
+      test('aiTokenCount formats correctly', () {
+        expect(l10n.aiTokenCount(100), '100 tokens');
+        expect(l10n.aiTokenCount(1), '1 tokens');
+        expect(l10n.aiTokenCount(1000), '1000 tokens');
+      });
+
+      test('aiContextLoadError formats correctly', () {
+        final result = l10n.aiContextLoadError('Network error');
+        expect(result, contains('Network error'));
+        expect(result, contains('Error loading context'));
+      });
+
+      test('aiChatContextTooLongCompressing formats correctly', () {
+        final result = l10n.aiChatContextTooLongCompressing(5000);
+        expect(result, contains('5000'));
+        expect(result, contains('Compressing'));
+      });
+
+      test('aiChatContextCompressionFailedNote formats correctly', () {
+        final result = l10n.aiChatContextCompressionFailedNote('Out of memory');
+        expect(result, contains('Out of memory'));
+        expect(result, contains('compression failed'));
+      });
+
+      test('aiChatError formats correctly', () {
+        final result = l10n.aiChatError('Test error');
+        expect(result, contains('Test error'));
+        expect(result, contains('Error'));
+      });
+
+      test('aiChatDeepAgentError formats correctly', () {
+        final result = l10n.aiChatDeepAgentError('Agent failed');
+        expect(result, contains('Agent failed'));
+        expect(result, contains('Deep Agent Error'));
+      });
+
+      test('aiChatSearchError formats correctly', () {
+        final result = l10n.aiChatSearchError('Search failed');
+        expect(result, contains('Search failed'));
+        expect(result, contains('Search Error'));
+      });
+
+      test('aiChatRagRefinedQuery formats correctly', () {
+        final result = l10n.aiChatRagRefinedQuery('refined query');
+        expect(result, contains('refined query'));
+        expect(result, contains('Refined Query'));
+      });
+
+      test('aiServiceFailedToConnect formats correctly', () {
+        final result = l10n.aiServiceFailedToConnect('Connection timeout');
+        expect(result, contains('Connection timeout'));
+        expect(result, contains('Failed to connect'));
+      });
+
+      test('aiDeepAgentStop formats correctly', () {
+        final result = l10n.aiDeepAgentStop('Max iterations', 10);
+        expect(result, contains('Max iterations'));
+        expect(result, contains('10'));
+        expect(result, contains('Stop'));
+      });
+    });
+
+    group('Additional AI Strings', () {
+      test('AI chat history strings are non-empty', () {
+        expect(l10n.aiChatHistory, isNotEmpty);
+        expect(l10n.aiChatNewChat, isNotEmpty);
+        expect(l10n.aiChatNoHistory, isNotEmpty);
+        expect(l10n.aiChatContextLabel, isNotEmpty);
+      });
+
+      test('AI chat search strings are non-empty', () {
+        expect(l10n.aiChatSearchFailed, isNotEmpty);
+        expect(l10n.aiChatRagSearchResultsTitle, isNotEmpty);
+        expect(l10n.aiChatRagNoResults, isNotEmpty);
+        expect(l10n.aiChatRagUnknownType, isNotEmpty);
+      });
+
+      test('AI service status strings are non-empty', () {
+        expect(l10n.aiServiceSignInRequired, isNotEmpty);
+        expect(l10n.aiServiceFeatureNotAvailable, isNotEmpty);
+        expect(l10n.aiServiceNoResponse, isNotEmpty);
+      });
+
+      test('Deep Agent strings are non-empty', () {
+        expect(l10n.aiDeepAgentDetailsTitle, isNotEmpty);
+        expect(l10n.aiDeepAgentPlanLabel, isNotEmpty);
+        expect(l10n.aiDeepAgentToolsLabel, isNotEmpty);
+      });
+
+      test('Deep Agent settings strings are non-empty', () {
+        expect(l10n.deepAgentSettingsTitle, isNotEmpty);
+        expect(l10n.deepAgentSettingsDescription, isNotEmpty);
+        expect(l10n.deepAgentPreferTitle, isNotEmpty);
+        expect(l10n.deepAgentPreferSubtitle, isNotEmpty);
+        expect(l10n.deepAgentFallbackTitle, isNotEmpty);
+        expect(l10n.deepAgentFallbackSubtitle, isNotEmpty);
+        expect(l10n.deepAgentReflectionModeTitle, isNotEmpty);
+        expect(l10n.deepAgentReflectionModeSubtitle, isNotEmpty);
+        expect(l10n.deepAgentReflectionModeOff, isNotEmpty);
+        expect(l10n.deepAgentReflectionModeOnFailure, isNotEmpty);
+        expect(l10n.deepAgentReflectionModeAlways, isNotEmpty);
+        expect(l10n.deepAgentShowDetailsTitle, isNotEmpty);
+        expect(l10n.deepAgentShowDetailsSubtitle, isNotEmpty);
+        expect(l10n.deepAgentMaxPlanSteps, isNotEmpty);
+        expect(l10n.deepAgentMaxToolRounds, isNotEmpty);
+      });
+    });
   });
 }
