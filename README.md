@@ -176,14 +176,32 @@ Future<http.Response> callBackend(Uri url) async {
   - Automatically runs a plugin patch to ensure `isar_flutter_libs` compiles with SDK 36.
 - Android (AAB for Play Console): `flutter build appbundle --release`
 - Android (APK direct install): `flutter build apk --release`
-- iOS (Xcode project, no codesign): `make build-ios`
+- iOS (IPA for iPhone install): `make build-ios` (alias of `make build-ipa`)
+- iOS (Xcode project, no codesign): `make build-ios-app`
 - iOS (IPA):
-  - Signed: `make build-ipa`
-  - No codesign: `make build-ipa-nocodesign`
+  - Signed (installable on device): `make build-ipa`
+  - No codesign (export-only, not installable): `make build-ipa-nocodesign`
 - Desktop:
   - macOS: `make build-macos`
   - Windows: `make build-windows`
   - Linux: `make build-linux`
+
+### Installing the IPA on iPhone
+- A device-installable IPA must be signed (Apple Development / Ad Hoc / TestFlight).
+- One-time setup:
+  - Open `ios/Runner.xcworkspace` in Xcode
+  - In the Runner target:
+    - Set a unique Bundle Identifier
+    - Set Signing Team (your Apple ID)
+    - Ensure “Automatically manage signing” is enabled (for development builds)
+  - In Xcode: install the required iOS platform/device support under Xcode Settings → Platforms
+- Build:
+  - `make build-ios`
+  - Output: `build/ios/ipa/*.ipa`
+- Install:
+  - Auto-detect + install: `make install-ios`
+    - Optional: `make install-ios DEVICE=<udid> IPA_PATH=build/ios/ipa/your.ipa`
+  - Or manual: Xcode → Window → Devices and Simulators → select your iPhone → drag the `.ipa` onto the device
 
 ## Platform Notes
 - Android
