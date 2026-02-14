@@ -42,7 +42,8 @@ IMAGE ?= writer-web:latest
 AI_SERVICE_URL ?= https://ai.huangjien.com/
 
 .PHONY: help dev-web dev-chrome macos deps test test-expanded analyze lint clean build-web serve-web-build env-print \
-        build-macos build-android build-ios build-windows build-linux build-ipa build-ipa-nocodesign install-hooks icons \
+        build-macos build-android build-ios build-ios-signed build-ios-unsigned build-ios-app build-windows build-linux \
+        build-ipa build-ipa-nocodesign install-ios install-ios-ipa install-ios-dev list-ios-devices install-hooks icons \
         docker-build-web docker-push-web docker-setup-gcp docker-create-repo docker-build-gar docker-deploy-gcp gcp-deploy-full \
         gcp-delete-deployment gcp-status ci
 
@@ -60,9 +61,16 @@ help:
 	@echo "  clean              - Clean Flutter build outputs"
 	@echo "  build-web          - Build Flutter web app (release)"
 	@echo "  build-macos        - Build macOS release app"
-	@echo "  build-ios          - Build iOS release (no codesign)"
+	@echo "  build-ios          - Build signed iOS IPA for device install"
+	@echo "  build-ios-signed   - Build signed iOS IPA (requires signing)"
+	@echo "  build-ios-unsigned - Build iOS IPA without codesign (export-only)"
+	@echo "  build-ios-app      - Build iOS app bundle (no codesign)"
 	@echo "  build-ipa          - Build iOS IPA (requires signing)"
 	@echo "  build-ipa-nocodesign - Build iOS IPA without codesign (export-only)"
+	@echo "  install-ios        - Install latest IPA onto a connected iPhone"
+	@echo "  install-ios-ipa    - Install latest signed IPA onto a connected iPhone"
+	@echo "  install-ios-dev    - Auto-sign Debug .app and install (DEV_TEAM/BUNDLE_ID optional)"
+	@echo "  list-ios-devices   - List physical iOS devices (name, UDID, transport)"
 	@echo "  build-android      - Build Android APK release"
 	@echo "  build-windows      - Build Windows release app"
 	@echo "  build-linux        - Build Linux release app"
@@ -218,7 +226,15 @@ build-macos:
 	fi
 
 build-ios:
-	# Builds without code signing for portability; configure signing in Xcode if needed.
+	$(MAKE) build-ipa
+
+build-ios-signed:
+	$(MAKE) build-ipa
+
+build-ios-unsigned:
+	$(MAKE) build-ipa-nocodesign
+
+build-ios-app:
 	$(FLUTTER) build ios --release --no-codesign $(DF_ARGS)
 
 build-ipa:
@@ -226,7 +242,226 @@ build-ipa:
 
 build-ipa-nocodesign:
 	$(FLUTTER) build ipa --release --no-codesign $(DF_ARGS)
+	@set -euo pipefail; \
+	OUT_DIR="build/ios/ipa"; \
+	mkdir -p build/ios/ipa; \
+	EXISTING_IPA=$$(ls -t build/ios/ipa/*.ipa 2>/dev/null | head -n 1 || true); \
+	if [ -n "$$EXISTING_IPA" ]; then \
+		echo "IPA already present: $$EXISTING_IPA"; \
+		exit 0; \
+	fi; \
+	ARCHIVE_PATH="build/ios/archive/Runner.xcarchive"; \
+	APP_PATH="$$ARCHIVE_PATH/Products/Applications/Runner.app"; \
+	if [ ! -d "$$APP_PATH" ]; then \
+		APP_PATH=$$(ls -td build/ios/iphoneos/*.app 2>/dev/null | head -n 1 || true); \
+	fi; \
+	if [ -z "$$APP_PATH" ] || [ ! -d "$$APP_PATH" ]; then \
+		echo "ERROR: Could not find .app to package into IPA."; \
+		exit 1; \
+	fi; \
+	STAGE_DIR=$$(mktemp -d -t writer_ipa_stage); \
+	mkdir -p "$$STAGE_DIR/Payload"; \
+	cp -R "$$APP_PATH" "$$STAGE_DIR/Payload/"; \
+	PROJ_DIR=$$(pwd -P); \
+	IPA_OUT="$$PROJ_DIR/build/ios/ipa/writer-unsigned.ipa"; \
+	cd "$$STAGE_DIR" && zip -qr "$$IPA_OUT" Payload; \
+	if [ ! -f "$$IPA_OUT" ]; then \
+		echo "ERROR: Failed to create IPA archive"; \
+		exit 1; \
+	fi; \
+	rm -rf "$$STAGE_DIR"; \
+	echo "Unsigned IPA created at $$IPA_OUT"
 
+install-ios-ipa:
+	$(MAKE) install-ios
+
+install-ios:
+	@set -euo pipefail; \
+	IPA_PATH="$${IPA_PATH:-}"; \
+	if [ -z "$$IPA_PATH" ]; then \
+		IPA_PATH=$$(ls -t build/ios/ipa/*.ipa 2>/dev/null | head -n 1 || true); \
+	fi; \
+	if [ -z "$$IPA_PATH" ] || [ ! -f "$$IPA_PATH" ]; then \
+		echo "No IPA found. Building one first..."; \
+		$(MAKE) build-ipa; \
+		IPA_PATH=$$(ls -t build/ios/ipa/*.ipa 2>/dev/null | head -n 1 || true); \
+	fi; \
+	if [ -z "$$IPA_PATH" ] || [ ! -f "$$IPA_PATH" ]; then \
+		echo "ERROR: IPA not found under build/ios/ipa/*.ipa"; \
+		exit 1; \
+	fi; \
+	if ! command -v xcrun >/dev/null 2>&1; then \
+		echo "ERROR: xcrun not found. Install Xcode Command Line Tools."; \
+		exit 1; \
+	fi; \
+	if ! xcrun devicectl --help >/dev/null 2>&1; then \
+		echo "ERROR: devicectl not available. Update Xcode to a version that includes CoreDevice devicectl."; \
+		exit 1; \
+	fi; \
+	if ! command -v unzip >/dev/null 2>&1; then \
+		echo "ERROR: unzip not found."; \
+		exit 1; \
+	fi; \
+	DEVICE="$${DEVICE:-}"; \
+	if [ -z "$$DEVICE" ]; then \
+		DEVICE=$$(xcrun xctrace list devices 2>/dev/null \
+			| grep -E 'iPhone|iPad|iPod|iOS' \
+			| grep -vi simulator \
+			| sed -E -n 's/.*\\(([0-9A-Fa-f-]{25,})\\).*/\\1/p' \
+			| head -n 1 || true); \
+		if [ -z "$$DEVICE" ]; then \
+			TMP_JSON=$$(mktemp -t writer_devices); \
+			xcrun devicectl list devices --timeout 15 --json-output "$$TMP_JSON" >/dev/null || true; \
+			DEVICE=$$(JSON_FILE="$$TMP_JSON" python3 -c 'import os,json; p=os.environ.get("JSON_FILE") or ""; ud="";\
+try:\
+ d=json.load(open(p));\
+ for dev in (d.get("result") or {}).get("devices") or []:\
+  hw=dev.get("hardwareProperties") or {};\
+  if (hw.get("platform") or "").lower()!="ios":\
+   continue;\
+  u=hw.get("udid");\
+  if u: ud=u; break;\
+except Exception:\
+ pass;\
+print(ud)' 2>/dev/null); \
+			rm -f "$$TMP_JSON"; \
+		fi; \
+	fi; \
+	if [ -z "$$DEVICE" ]; then \
+		echo "ERROR: No connected iOS device found."; \
+		echo "Tip: plug in your iPhone (USB), unlock it, and tap Trust on the prompt."; \
+		exit 1; \
+	fi; \
+	echo "IPA: $$IPA_PATH"; \
+	echo "Device: $$DEVICE"; \
+	TMP_DIR=$$(mktemp -d /tmp/writer_ipa.XXXX); \
+	echo "Extracting IPA..."; \
+	unzip -q "$$IPA_PATH" -d "$$TMP_DIR"; \
+	APP_PATH=$$(find "$$TMP_DIR/Payload" -maxdepth 1 -name "*.app" -print | head -n 1 || true); \
+	if [ -z "$$APP_PATH" ] || [ ! -d "$$APP_PATH" ]; then \
+		echo "ERROR: Could not locate .app inside IPA."; \
+		rm -rf "$$TMP_DIR"; \
+		exit 1; \
+	fi; \
+	echo "Installing app: $$(basename "$$APP_PATH")"; \
+	echo "Progress:"; \
+	xcrun devicectl device install app --device "$$DEVICE" "$$APP_PATH" --verbose --timeout 600; \
+	rm -rf "$$TMP_DIR"; \
+	echo "Install complete."
+
+list-ios-devices:
+	@set -euo pipefail; \
+	echo "== xctrace devices =="; \
+	xcrun xctrace list devices || true; \
+	TMP_JSON=$$(mktemp -t writer_devices); \
+	xcrun devicectl list devices --timeout 15 --json-output "$$TMP_JSON" >/dev/null || true; \
+	echo "== devicectl devices (iOS only) =="; \
+	python3 - "$$TMP_JSON" << 'PY' || true \
+import json, sys \
+p = sys.argv[1] \
+try: \
+    d = json.load(open(p)) \
+    devs = (d.get('result') or {}).get('devices') or [] \
+    for dev in devs: \
+        hw = dev.get('hardwareProperties') or {} \
+        conn = dev.get('connectionProperties') or {} \
+        devp = dev.get('deviceProperties') or {} \
+        if (hw.get('platform') or '').lower() != 'ios': \
+            continue \
+        name = devp.get('name') or 'Unknown' \
+        udid = hw.get('udid') or '?' \
+        transport = conn.get('transportType') or '?' \
+        boot = devp.get('bootState') or '?' \
+        pairing = conn.get('pairingState') or '?' \
+        print(f"{name} | {udid} | {transport} | {boot} | {pairing}") \
+except Exception: \
+    pass \
+PY \
+	; \
+	rm -f "$$TMP_JSON"
+install-ios-dev:
+	@set -euo pipefail; \
+	if ! command -v xcodebuild >/dev/null 2>&1; then \
+		echo "ERROR: xcodebuild not found. Install Xcode."; \
+		exit 1; \
+	fi; \
+	if ! xcrun devicectl --help >/dev/null 2>&1; then \
+		echo "ERROR: devicectl not available. Update Xcode to a version that includes CoreDevice devicectl."; \
+		exit 1; \
+	fi; \
+	if [ -n "$${VERBOSE:-}" ]; then \
+		echo "[VERBOSE] Attempting device auto-detection (xctrace first, then devicectl)"; \
+		echo "[VERBOSE] xctrace devices output:"; \
+		xcrun xctrace list devices || true; \
+	fi; \
+	DEVICE="$${DEVICE:-}"; \
+	if [ -z "$$DEVICE" ]; then \
+		DEVICE=$$(xcrun xctrace list devices 2>/dev/null \
+			| grep -E 'iPhone|iPad|iPod|iOS' \
+			| grep -vi simulator \
+			| sed -E -n 's/.*\\(([0-9A-Fa-f-]{25,})\\).*/\\1/p' \
+			| head -n 1 || true); \
+		if [ -z "$$DEVICE" ]; then \
+			TMP_JSON=$$(mktemp -t writer_devices); \
+			xcrun devicectl list devices --timeout 15 --json-output "$$TMP_JSON" >/dev/null || true; \
+			if [ -n "$${VERBOSE:-}" ] && [ -f "$$TMP_JSON" ]; then \
+				echo "[VERBOSE] devicectl JSON saved to $$TMP_JSON"; \
+			fi; \
+			DEVICE=$$(JSON_FILE="$$TMP_JSON" python3 -c 'import os,json; p=os.environ.get("JSON_FILE") or ""; ud="";\
+try:\
+ d=json.load(open(p));\
+ for dev in (d.get("result") or {}).get("devices") or []:\
+  hw=dev.get("hardwareProperties") or {};\
+  if (hw.get("platform") or "").lower()!="ios":\
+   continue;\
+  u=hw.get("udid");\
+  if u: ud=u; break;\
+except Exception:\
+ pass;\
+print(ud)' 2>/dev/null); \
+			rm -f "$$TMP_JSON"; \
+		fi; \
+	fi; \
+	if [ -n "$${VERBOSE:-}" ]; then \
+		if [ -n "$$DEVICE" ]; then \
+			echo "[VERBOSE] Chosen device UDID: $$DEVICE"; \
+		else \
+			echo "[VERBOSE] No device UDID detected"; \
+		fi; \
+	fi; \
+	if [ -z "$$DEVICE" ]; then \
+		echo "ERROR: No connected iOS device found."; \
+		echo "Tip: plug in via USB, unlock, then in Finder click your device and Trust."; \
+		echo "Also check: Settings → Privacy & Security → Developer Mode (enable, reboot)."; \
+		exit 1; \
+	fi; \
+	echo "Building Debug .app with automatic signing..."; \
+	if [ -z "$${DEV_TEAM:-}" ]; then \
+		echo "Tip: pass DEV_TEAM=<TeamID> and optionally BUNDLE_ID=com.example.app to override signing."; \
+	fi; \
+	XCODE_OVERRIDES=""; \
+	if [ -n "$${DEV_TEAM:-}" ]; then \
+		XCODE_OVERRIDES="DEVELOPMENT_TEAM=$$DEV_TEAM CODE_SIGN_STYLE=Automatic CODE_SIGNING_ALLOWED=YES"; \
+	fi; \
+	if [ -n "$${BUNDLE_ID:-}" ]; then \
+		XCODE_OVERRIDES="$$XCODE_OVERRIDES PRODUCT_BUNDLE_IDENTIFIER=$$BUNDLE_ID"; \
+	fi; \
+	xcodebuild \
+		-workspace ios/Runner.xcworkspace \
+		-scheme Runner \
+		-configuration Debug \
+		-destination "id=$$DEVICE" \
+		-derivedDataPath build/xcode \
+		-allowProvisioningUpdates \
+		build $$XCODE_OVERRIDES | sed -e 's/^/  /'; \
+	APP_PATH=$$(ls -td build/xcode/Build/Products/Debug-iphoneos/*.app 2>/dev/null | head -n 1 || true); \
+	if [ -z "$$APP_PATH" ] || [ ! -d "$$APP_PATH" ]; then \
+		echo "ERROR: Debug .app not found. Ensure a Team is set in Xcode and automatic signing is enabled."; \
+		exit 1; \
+	fi; \
+	echo "Installing app: $$(basename "$$APP_PATH")"; \
+	xcrun devicectl device install app --device "$$DEVICE" "$$APP_PATH" --verbose --timeout 600; \
+	echo "Install complete."
 build-android:
 	$(FLUTTER) clean
 	node scripts/patch_isar.js
