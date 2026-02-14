@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/models/character_template_row.dart';
 
+@immutable
 class CharacterFormState {
   final bool isLoading;
   final bool isDirty;

@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart';
+
 enum SyncStatus { synced, syncing, error, offline }
 
+@immutable
 class SyncState {
   final SyncStatus status;
   final int pendingOperations;

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'dart:async';
 import '../models/chapter.dart';
@@ -10,6 +11,7 @@ enum EditRequest { idle, saving, creating, deleting }
 
 enum IndexRoundingMode { before, after }
 
+@immutable
 class ChapterEditState {
   final String chapterId;
   final String novelId;

@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+@immutable
 class TemplateFormState {
   final bool isLoading;
   final bool isRetrieving;

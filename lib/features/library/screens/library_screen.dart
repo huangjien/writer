@@ -36,10 +36,6 @@ import 'package:writer/shared/widgets/mobile_bottom_sheet.dart';
 import 'package:writer/shared/widgets/global_shortcuts_wrapper.dart';
 import 'package:writer/features/ai_chat/widgets/ai_assistant_button.dart';
 
-enum LibrarySort { titleAsc, authorAsc }
-
-enum LibraryFilter { all, reading, completed, downloaded }
-
 class LibraryScreen extends ConsumerStatefulWidget {
   const LibraryScreen({super.key});
 
@@ -48,17 +44,13 @@ class LibraryScreen extends ConsumerStatefulWidget {
 }
 
 class _LibraryScreenState extends ConsumerState<LibraryScreen> {
-  LibraryFilter _filter = LibraryFilter.all;
-  LibrarySort _sort = LibrarySort.titleAsc;
-  LibraryViewMode _viewMode = LibraryViewMode.list;
-  MobileNavTab _currentTab = MobileNavTab.home;
-
   List<Novel> filterNovels(
     List<Novel> novels,
     Set<String> removedIds,
     Set<String> downloadedIds,
     List<UserProgress> recentProgress,
     String searchQuery,
+    LibraryFilter filter,
   ) {
     final query = normalizeForSearch(searchQuery.trim());
     var filtered = query.isEmpty
@@ -68,7 +60,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
               .toList();
 
     // Apply filter chips
-    switch (_filter) {
+    switch (filter) {
       case LibraryFilter.reading:
         // Show novels that are in recent progress OR have downloaded chapters
         final recentIds = recentProgress.map((p) => p.novelId).toSet();
@@ -144,8 +136,8 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
             ? buildMobileAppBar(context, l10n)
             : buildDesktopAppBar(context, l10n, isSignedIn, isAdmin),
         drawer: isMobile ? null : const AppDrawer(),
-        body: isMobile && _currentTab != MobileNavTab.home
-            ? buildMobileTabContent()
+        body: isMobile && libraryScreen.currentTab != MobileNavTab.home
+            ? buildMobileTabContent(libraryScreen.currentTab)
             : Column(
                 children: [
                   const OfflineBanner(),
@@ -194,33 +186,41 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                             filters: [
                               LibraryFilterChip(
                                 label: l10n.allFilter,
-                                selected: _filter == LibraryFilter.all,
-                                onTap: () =>
-                                    setState(() => _filter = LibraryFilter.all),
+                                selected:
+                                    libraryScreen.filter == LibraryFilter.all,
+                                onTap: () => ref
+                                    .read(libraryScreenProvider.notifier)
+                                    .setFilter(LibraryFilter.all),
                                 icon: Icons.apps,
                               ),
                               LibraryFilterChip(
                                 label: l10n.readingFilter,
-                                selected: _filter == LibraryFilter.reading,
-                                onTap: () => setState(
-                                  () => _filter = LibraryFilter.reading,
-                                ),
+                                selected:
+                                    libraryScreen.filter ==
+                                    LibraryFilter.reading,
+                                onTap: () => ref
+                                    .read(libraryScreenProvider.notifier)
+                                    .setFilter(LibraryFilter.reading),
                                 icon: Icons.menu_book,
                               ),
                               LibraryFilterChip(
                                 label: l10n.completedFilter,
-                                selected: _filter == LibraryFilter.completed,
-                                onTap: () => setState(
-                                  () => _filter = LibraryFilter.completed,
-                                ),
+                                selected:
+                                    libraryScreen.filter ==
+                                    LibraryFilter.completed,
+                                onTap: () => ref
+                                    .read(libraryScreenProvider.notifier)
+                                    .setFilter(LibraryFilter.completed),
                                 icon: Icons.check_circle,
                               ),
                               LibraryFilterChip(
                                 label: l10n.downloadedFilter,
-                                selected: _filter == LibraryFilter.downloaded,
-                                onTap: () => setState(
-                                  () => _filter = LibraryFilter.downloaded,
-                                ),
+                                selected:
+                                    libraryScreen.filter ==
+                                    LibraryFilter.downloaded,
+                                onTap: () => ref
+                                    .read(libraryScreenProvider.notifier)
+                                    .setFilter(LibraryFilter.downloaded),
                                 icon: Icons.download_done,
                               ),
                             ],
@@ -235,10 +235,11 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                                   downloadedIds,
                                   recentProgress,
                                   libraryScreen.searchQuery,
+                                  libraryScreen.filter,
                                 );
                                 // Apply sort order
                                 visible.sort((a, b) {
-                                  switch (_sort) {
+                                  switch (libraryScreen.sort) {
                                     case LibrarySort.titleAsc:
                                       return a.title.toLowerCase().compareTo(
                                         b.title.toLowerCase(),
@@ -257,23 +258,33 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                                     LibraryListHeader(
                                       visibleCount: visible.length,
                                       totalCount: novels.length,
-                                      sortValue: _sort == LibrarySort.titleAsc
+                                      sortValue:
+                                          libraryScreen.sort ==
+                                              LibrarySort.titleAsc
                                           ? 'titleAsc'
                                           : 'authorAsc',
                                       onSortChanged: (v) {
                                         if (v == 'titleAsc') {
-                                          setState(
-                                            () => _sort = LibrarySort.titleAsc,
-                                          );
+                                          ref
+                                              .read(
+                                                libraryScreenProvider.notifier,
+                                              )
+                                              .setSort(LibrarySort.titleAsc);
                                         } else if (v == 'authorAsc') {
-                                          setState(
-                                            () => _sort = LibrarySort.authorAsc,
-                                          );
+                                          ref
+                                              .read(
+                                                libraryScreenProvider.notifier,
+                                              )
+                                              .setSort(LibrarySort.authorAsc);
                                         }
                                       },
-                                      viewMode: _viewMode,
+                                      viewMode: libraryScreen.viewMode,
                                       onViewModeChanged: (mode) {
-                                        setState(() => _viewMode = mode);
+                                        ref
+                                            .read(
+                                              libraryScreenProvider.notifier,
+                                            )
+                                            .setViewMode(mode);
                                       },
                                     ),
                                     const SizedBox(height: Spacing.m),
@@ -290,7 +301,9 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                                       )
                                     else
                                       Expanded(
-                                        child: _viewMode == LibraryViewMode.grid
+                                        child:
+                                            libraryScreen.viewMode ==
+                                                LibraryViewMode.grid
                                             ? GridView.builder(
                                                 gridDelegate:
                                                     const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -428,11 +441,9 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
             : null,
         bottomNavigationBar: isMobile
             ? MobileBottomNavBar(
-                currentTab: _currentTab,
+                currentTab: libraryScreen.currentTab,
                 onTabChanged: (tab) {
-                  setState(() {
-                    _currentTab = tab;
-                  });
+                  ref.read(libraryScreenProvider.notifier).setCurrentTab(tab);
                 },
               )
             : null,
@@ -440,14 +451,14 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     );
   }
 
-  Widget buildMobileTabContent() {
-    switch (_currentTab) {
+  Widget buildMobileTabContent(MobileNavTab currentTab) {
+    switch (currentTab) {
       case MobileNavTab.tools:
         return const Center(child: Text('Prompts'));
       case MobileNavTab.more:
         return const Center(child: Text('Settings'));
       default:
-        return Center(child: Text(_currentTab.name));
+        return Center(child: Text(currentTab.name));
     }
   }
 

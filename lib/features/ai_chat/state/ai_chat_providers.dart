@@ -14,6 +14,7 @@ import '../utils/context_utils.dart';
 
 // --- Context Provider ---
 
+@immutable
 class AiContextState {
   final bool isEnabled;
   final String? currentType;
@@ -147,6 +148,7 @@ final aiContextProvider =
 
 // --- Chat Session Provider ---
 
+@immutable
 class AiChatState {
   final List<ChatMessage> messages;
   final bool isLoading;

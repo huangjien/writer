@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+@immutable
 class AuthFormState {
   final bool isLoading;
   final String? error;

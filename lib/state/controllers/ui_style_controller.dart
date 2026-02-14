@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/theme/ui_styles.dart';
@@ -5,6 +6,7 @@ import 'package:writer/state/theme_prefs.dart';
 
 const String _prefUiStyleFamily = prefUiStyleFamily;
 
+@immutable
 class UiStyleState {
   final UiStyleFamily family;
 

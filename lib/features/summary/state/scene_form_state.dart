@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/models/scene_template_row.dart';
 
+@immutable
 class SceneFormState {
   final bool isLoading;
   final bool isDirty;
@@ -68,7 +70,13 @@ class SceneFormNotifier extends Notifier<SceneFormState> {
   String _baseLanguageCode = 'en';
 
   @override
-  SceneFormState build() => const SceneFormState();
+  SceneFormState build() {
+    ref.onDispose(() {
+      _templateSearchTimer?.cancel();
+      _templateSearchTimer = null;
+    });
+    return const SceneFormState();
+  }
 
   void setLoading(bool loading) {
     state = state.copyWith(isLoading: loading);
@@ -174,10 +182,6 @@ class SceneFormNotifier extends Notifier<SceneFormState> {
     if (state.isDirty != dirty) {
       state = state.copyWith(isDirty: dirty);
     }
-  }
-
-  void dispose() {
-    _templateSearchTimer?.cancel();
   }
 }
 

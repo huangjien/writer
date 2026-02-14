@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/story_line.dart';
 import '../story_line_providers.dart';
 import '../../../shared/constants.dart';
 
+@immutable
 class StoryLineListState {
   final List<StoryLine> items;
   final bool searchLoading;

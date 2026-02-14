@@ -22,6 +22,7 @@ const String _prefCustomFontFamily = prefCustomFontFamily;
 const String _prefFontScale = prefFontScale;
 const String _prefReaderBgDepth = prefReaderBgDepth;
 
+@immutable
 class ThemeState {
   final ThemeMode mode;
   final AppThemeFamily family; // unified selection

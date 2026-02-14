@@ -1,12 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:writer/models/summary.dart';
+import 'package:writer/models/summary.dart' as models;
 import 'package:writer/models/snowflake.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/shared/api_exception.dart';
 import 'summary_controller.dart';
 
+@immutable
 class SummaryState {
-  final Summary? baseSummary;
+  final models.Summary? baseSummary;
   final bool saving;
   final String? error;
   final bool refreshing;
@@ -45,7 +47,7 @@ class SummaryState {
   });
 
   SummaryState copyWith({
-    Summary? baseSummary,
+    models.Summary? baseSummary,
     bool? saving,
     String? error,
     bool clearError = false,
@@ -100,7 +102,7 @@ class SummaryNotifier extends Notifier<SummaryState> {
     try {
       await _controller.load(novelId);
       state = state.copyWith(
-        baseSummary: _controller.baseSummary,
+        baseSummary: _controller.baseSummary as models.Summary,
         isDirty: false,
       );
     } catch (e) {
@@ -233,7 +235,7 @@ class SummaryNotifier extends Notifier<SummaryState> {
     state = state.copyWith(expandedLastOutput: output);
   }
 
-  Future<Summary> save({
+  Future<models.Summary> save({
     required String sentence,
     required String paragraph,
     required String page,

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/features/library/widgets/library_list_header.dart';
 import 'package:writer/shared/widgets/mobile_bottom_nav_bar.dart';
@@ -6,6 +7,7 @@ enum LibrarySort { titleAsc, authorAsc }
 
 enum LibraryFilter { all, reading, completed, downloaded }
 
+@immutable
 class LibraryScreenState {
   final LibrarySort sort;
   final LibraryViewMode viewMode;

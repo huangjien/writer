@@ -13,6 +13,7 @@ import 'package:writer/shared/widgets/app_buttons.dart';
 import 'package:writer/shared/widgets/app_dialog.dart';
 import 'package:writer/shared/widgets/loading/skeleton_list_items.dart';
 import 'package:writer/shared/widgets/error_state.dart';
+import 'package:writer/features/summary/state/character_templates_list_providers.dart';
 
 class _EditIntent extends Intent {
   const _EditIntent();
@@ -29,136 +30,113 @@ class CharacterTemplatesListScreen extends ConsumerStatefulWidget {
 
 class _CharacterTemplatesListScreenState
     extends ConsumerState<CharacterTemplatesListScreen> {
-  List<CharacterTemplateRow> _items = const [];
-  List<CharacterTemplateRow> _displayItems = const [];
-  bool _loading = true;
-  bool _searchLoading = false;
-  String? _error;
-  final _searchCtrl = TextEditingController();
-  DateTime? _lastRowTapAt;
-  String? _lastRowTapId;
-  String? _selectedId;
-
   @override
   void initState() {
     super.initState();
-    _load();
+    Future.microtask(() => _load());
   }
 
   @override
   void dispose() {
-    _searchCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+    final notifier = ref.read(characterTemplatesListProvider.notifier);
+    final state = ref.read(characterTemplatesListProvider);
+    notifier.setLoading(true);
+    notifier.setError(null);
+
     try {
       final repo = ref.read(templateRepositoryProvider);
-      if (ref.read(isSignedInProvider)) {
-        _items = await repo.listCharacterTemplates();
-      } else {
-        _items = []; // Or local if we had it
-      }
-      _localSearch();
+      final items = ref.read(isSignedInProvider)
+          ? await repo.listCharacterTemplates()
+          : <CharacterTemplateRow>[];
+
+      final q = state.searchCtrl.text.trim().toLowerCase();
+      final displayItems = q.isEmpty
+          ? items
+          : items.where((t) {
+              final title = (t.title ?? '').toLowerCase();
+              return title.contains(q);
+            }).toList();
+
       if (mounted) {
-        setState(() {
-          _loading = false;
-        });
+        notifier.setItems(items, displayItems);
+        notifier.setLoading(false);
       }
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) return;
       if (mounted) {
-        setState(() {
-          _error = e.toString();
-          _loading = false;
-        });
+        notifier.setError(e.toString());
+        notifier.setLoading(false);
       }
     }
   }
 
-  void _localSearch() {
-    final q = _searchCtrl.text.trim().toLowerCase();
-    if (q.isEmpty) {
-      _displayItems = _items;
-      return;
-    }
-    _displayItems = _items.where((t) {
-      final title = (t.title ?? '').toLowerCase();
-      return title.contains(q);
-    }).toList();
-  }
-
   Future<void> _smartSearch(BuildContext context) async {
-    final q = _searchCtrl.text.trim();
+    final l10n = AppLocalizations.of(context)!;
+    final state = ref.read(characterTemplatesListProvider);
+    final notifier = ref.read(characterTemplatesListProvider.notifier);
+    final q = state.searchCtrl.text.trim();
     if (q.isEmpty) return;
 
     final isSignedIn = ref.read(isSignedInProvider);
     if (!isSignedIn) {
-      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.smartSearchRequiresSignIn)));
       return;
     }
 
-    setState(() {
-      _searchLoading = true;
-    });
+    notifier.setSearchLoading(true);
 
     try {
       final repo = ref.read(templateRepositoryProvider);
       final res = await repo.searchCharacterTemplates(q, limit: 5);
 
-      if (!mounted) return;
-      setState(() {
-        _displayItems = res;
-      });
+      if (mounted) {
+        notifier.setItems(res, res);
+      }
     } catch (e) {
-      if (!mounted) return;
       if (e is ApiException && e.statusCode == 401) return;
-      setState(() {
-        _error = e.toString();
-      });
+      if (mounted) {
+        notifier.setError(e.toString());
+      }
     } finally {
       if (mounted) {
-        setState(() {
-          _searchLoading = false;
-        });
+        notifier.setSearchLoading(false);
       }
     }
   }
 
   void _openEdit(CharacterTemplateRow it) {
-    setState(() {
-      _selectedId = it.id;
-    });
+    ref.read(characterTemplatesListProvider.notifier).setSelectedId(it.id);
     context.push('/novel/${widget.novelId}/character-templates/${it.id}');
   }
 
   void _onRowTap(CharacterTemplateRow it) {
-    setState(() {
-      _selectedId = it.id;
-    });
+    final state = ref.read(characterTemplatesListProvider);
+    final notifier = ref.read(characterTemplatesListProvider.notifier);
+    notifier.setSelectedId(it.id);
+
     final now = DateTime.now();
-    if (_lastRowTapId == it.id &&
-        _lastRowTapAt != null &&
-        now.difference(_lastRowTapAt!) < kDoubleTapThreshold) {
+    if (state.lastRowTapId == it.id &&
+        state.lastRowTapAt != null &&
+        now.difference(state.lastRowTapAt!) < kDoubleTapThreshold) {
       _openEdit(it);
-      _lastRowTapAt = null;
-      _lastRowTapId = null;
+      notifier.setLastRowTap(null, null);
     } else {
-      _lastRowTapAt = now;
-      _lastRowTapId = it.id;
+      notifier.setLastRowTap(now, it.id);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final state = ref.watch(characterTemplatesListProvider);
+    final notifier = ref.read(characterTemplatesListProvider.notifier);
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -170,7 +148,7 @@ class _CharacterTemplatesListScreenState
           leading: BackButton(onPressed: () => context.go('/')),
           title: Text(l10n.characterTemplates),
           actions: [
-            if (_loading || _searchLoading)
+            if (state.isLoading || state.isSearchLoading)
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12),
                 child: SizedBox(
@@ -199,7 +177,7 @@ class _CharacterTemplatesListScreenState
             ),
           ],
         ),
-        body: _loading
+        body: state.isLoading
             ? Center(
                 child: ListView.builder(
                   itemCount: 5,
@@ -207,14 +185,14 @@ class _CharacterTemplatesListScreenState
                       const CharacterItemSkeleton(),
                 ),
               )
-            : _error != null
-            ? ErrorState(message: _error!, onRetry: _load)
+            : state.error != null
+            ? ErrorState(message: state.error!, onRetry: _load)
             : Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                     child: TextField(
-                      controller: _searchCtrl,
+                      controller: state.searchCtrl,
                       decoration: InputDecoration(
                         labelText: l10n.searchLabel,
                         suffixIconConstraints: const BoxConstraints(
@@ -224,14 +202,12 @@ class _CharacterTemplatesListScreenState
                         suffixIcon: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            if (_searchCtrl.text.isNotEmpty)
+                            if (state.searchCtrl.text.isNotEmpty)
                               AppButtons.icon(
                                 iconData: Icons.clear,
                                 onPressed: () {
-                                  _searchCtrl.clear();
-                                  setState(() {
-                                    _displayItems = _items;
-                                  });
+                                  state.searchCtrl.clear();
+                                  notifier.setLocalSearch();
                                 },
                                 tooltip: 'Clear search',
                                 focusPadding: EdgeInsets.zero,
@@ -245,12 +221,7 @@ class _CharacterTemplatesListScreenState
                           ],
                         ),
                       ),
-                      onChanged: (_) {
-                        setState(() {}); // Rebuild to show/hide clear button
-                        setState(() {
-                          _localSearch();
-                        });
-                      },
+                      onChanged: (_) => notifier.setLocalSearch(),
                       onSubmitted: (_) => _smartSearch(context),
                     ),
                   ),
@@ -258,7 +229,7 @@ class _CharacterTemplatesListScreenState
                     child: ListView.separated(
                       padding: const EdgeInsets.all(16),
                       itemBuilder: (ctx, i) {
-                        final it = _displayItems[i];
+                        final it = state.displayItems[i];
                         final title = it.title ?? l10n.untitled;
                         final rawSubtitle =
                             it.characterSummaries ?? it.characterSynopses ?? '';
@@ -300,12 +271,15 @@ class _CharacterTemplatesListScreenState
                                     canRequestFocus: true,
                                     onFocusChange: (hasFocus) {
                                       if (!hasFocus) return;
-                                      setState(() {
-                                        _selectedId = it.id;
-                                      });
+                                      ref
+                                          .read(
+                                            characterTemplatesListProvider
+                                                .notifier,
+                                          )
+                                          .setSelectedId(it.id);
                                     },
                                     child: ListTile(
-                                      selected: _selectedId == it.id,
+                                      selected: state.selectedId == it.id,
                                       selectedTileColor: theme
                                           .colorScheme
                                           .primary
@@ -392,7 +366,7 @@ class _CharacterTemplatesListScreenState
                       },
                       separatorBuilder: (context, index) =>
                           const SizedBox(height: 8),
-                      itemCount: _displayItems.length,
+                      itemCount: state.displayItems.length,
                     ),
                   ),
                 ],
