@@ -29,11 +29,12 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: const MaterialApp(
-          locale: Locale('en'),
+        child: MaterialApp(
+          locale: const Locale('en'),
+          theme: ThemeData(useMaterial3: false),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: SettingsScreen(),
+          home: const SettingsScreen(),
         ),
       ),
     );

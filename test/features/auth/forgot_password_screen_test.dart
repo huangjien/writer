@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:writer/features/auth/forgot_password_screen.dart';
+import 'package:writer/features/auth/screens/forgot_password_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:writer/shared/widgets/neumorphic_button.dart';

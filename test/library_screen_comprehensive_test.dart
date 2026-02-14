@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:writer/features/library/library_screen.dart';
+import 'package:writer/features/library/screens/library_screen.dart';
 import 'package:writer/features/library/widgets/library_error_section.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';

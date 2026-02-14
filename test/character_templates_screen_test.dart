@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:writer/features/summary/character_templates_screen.dart';
+import 'package:writer/features/summary/screens/characters/character_templates_screen.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/models/template.dart';

@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
-import 'package:writer/features/summary/scene_templates_screen.dart';
+import 'package:writer/features/summary/screens/scenes/scene_templates_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/template.dart';
 import 'package:writer/models/scene_template_row.dart';

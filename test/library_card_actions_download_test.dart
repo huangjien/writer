@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:writer/features/library/library_providers.dart'
     as lib_providers;
-import 'package:writer/features/library/library_screen.dart';
+import 'package:writer/features/library/screens/library_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/models/chapter.dart';

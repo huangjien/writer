@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:writer/features/settings/token_usage_history_screen.dart';
+import 'package:writer/features/settings/screens/token_usage_history_screen.dart';
 import 'package:writer/features/settings/state/token_usage_providers.dart';
 import 'package:writer/models/token_usage.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

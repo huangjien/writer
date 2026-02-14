@@ -187,6 +187,7 @@ ThemeData _buildFromScheme(ColorScheme scheme) {
   // outline and fill were unused
 
   return baseTheme.copyWith(
+    splashFactory: InkRipple.splashFactory,
     progressIndicatorTheme: ProgressIndicatorThemeData(
       color: cs.primary,
       circularTrackColor: cs.surfaceContainerHighest,

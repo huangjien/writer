@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:writer/features/summary/summary_controller.dart';
+import 'package:writer/features/summary/state/summary_controller.dart';
 import 'package:writer/models/summary.dart';
 import 'package:writer/repositories/novel_repository.dart';
 

@@ -7,7 +7,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/pattern.dart';
 import 'package:writer/screens/patterns_list_screen.dart';
 import 'package:writer/state/pattern_providers.dart';
-import 'package:writer/state/pattern_list_notifier.dart';
+import 'package:writer/state/notifiers/pattern_list_notifier.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/services/patterns_service.dart';
 

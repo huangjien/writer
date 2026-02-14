@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:writer/features/auth/user_management_screen.dart';
+import 'package:writer/features/auth/screens/user_management_screen.dart';
 import 'package:writer/models/user.dart';
 import 'package:writer/services/storage_service.dart';
 import 'package:writer/state/session_state.dart';

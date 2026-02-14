@@ -84,9 +84,11 @@ void main() {
           localizedReason: any(named: 'localizedReason'),
         ),
       ).thenAnswer((_) async => true);
-      when(
-        () => mockBiometricService.enableBiometricAuth(any()),
-      ).thenAnswer((_) async {});
+      when(() => mockBiometricService.enableBiometricAuth(any())).thenAnswer((
+        _,
+      ) async {
+        return;
+      });
 
       final result = await notifier.enableBiometricAuth('token');
 
@@ -124,9 +126,11 @@ void main() {
       when(
         () => mockBiometricService.getSessionToken(),
       ).thenAnswer((_) async => 'token');
-      when(
-        () => mockSessionNotifier.setSessionId('token'),
-      ).thenAnswer((_) async {});
+      when(() => mockSessionNotifier.setSessionId('token')).thenAnswer((
+        _,
+      ) async {
+        return;
+      });
 
       final result = await notifier.signInWithBiometrics();
 
@@ -211,9 +215,11 @@ void main() {
     );
 
     test('disableBiometricAuth success', () async {
-      when(
-        () => mockBiometricService.disableBiometricAuth(),
-      ).thenAnswer((_) async {});
+      when(() => mockBiometricService.disableBiometricAuth()).thenAnswer((
+        _,
+      ) async {
+        return;
+      });
 
       await notifier.disableBiometricAuth();
 
@@ -221,9 +227,11 @@ void main() {
     });
 
     test('clearBiometricData success', () async {
-      when(
-        () => mockBiometricService.clearBiometricData(),
-      ).thenAnswer((_) async {});
+      when(() => mockBiometricService.clearBiometricData()).thenAnswer((
+        _,
+      ) async {
+        return;
+      });
 
       await notifier.clearBiometricData();
 

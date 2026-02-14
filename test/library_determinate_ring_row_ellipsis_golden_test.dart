@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:writer/features/library/library_screen.dart';
+import 'package:writer/features/library/screens/library_screen.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/user_progress.dart';
@@ -149,6 +149,13 @@ void main() {
       matching: find.byWidgetPredicate(
         (w) =>
             w is Shortcuts &&
+            w.shortcuts.length == 3 &&
+            w.shortcuts.containsKey(
+              const SingleActivator(LogicalKeyboardKey.keyD),
+            ) &&
+            w.shortcuts.containsKey(
+              const SingleActivator(LogicalKeyboardKey.enter),
+            ) &&
             w.shortcuts.containsKey(
               const SingleActivator(LogicalKeyboardKey.delete),
             ),
@@ -276,6 +283,13 @@ void main() {
       matching: find.byWidgetPredicate(
         (w) =>
             w is Shortcuts &&
+            w.shortcuts.length == 3 &&
+            w.shortcuts.containsKey(
+              const SingleActivator(LogicalKeyboardKey.keyD),
+            ) &&
+            w.shortcuts.containsKey(
+              const SingleActivator(LogicalKeyboardKey.enter),
+            ) &&
             w.shortcuts.containsKey(
               const SingleActivator(LogicalKeyboardKey.delete),
             ),

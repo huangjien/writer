@@ -8,7 +8,7 @@ import 'package:writer/state/storage_service_provider.dart';
 
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/services/auth_service.dart';
-import 'package:writer/features/auth/sign_in_screen.dart';
+import 'package:writer/features/auth/screens/sign_in_screen.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/auth_service_provider.dart';
 import 'package:writer/state/biometric_session_state.dart';
@@ -378,7 +378,9 @@ void main() {
       ).thenAnswer((_) async => false);
       when(
         () => mockBiometricService.enableBiometricAuth(any<String>()),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async {
+        return;
+      });
 
       await tester.pumpWidget(
         createTestWidget(
@@ -539,6 +541,7 @@ void main() {
         () => mockBiometricService.enableBiometricAuth(any<String>()),
       ).thenAnswer((_) async {
         await Future.delayed(const Duration(milliseconds: 50));
+        return;
       });
       when(
         () => mockBiometricService.getSessionToken(),

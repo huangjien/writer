@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:writer/features/reader/novel_metadata_editor.dart';
-import 'package:writer/features/summary/summary_screen.dart';
+import 'package:writer/features/summary/screens/summary_screen.dart';
 import 'package:writer/models/summary.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/shared/api_exception.dart';

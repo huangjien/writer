@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:writer/features/auth/reset_password_screen.dart';
+import 'package:writer/features/auth/screens/reset_password_screen.dart';
 import 'package:writer/services/storage_service.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/l10n/app_localizations.dart';

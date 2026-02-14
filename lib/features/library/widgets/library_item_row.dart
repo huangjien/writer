@@ -13,7 +13,7 @@ import '../../../shared/image_utils.dart';
 import '../../../repositories/chapter_repository.dart';
 import '../../../models/chapter.dart';
 import '../../../models/user_progress.dart';
-import '../../library/library_providers.dart';
+import 'package:writer/features/library/state/library_providers.dart';
 import '../../../shared/widgets/app_buttons.dart';
 
 class _DownloadIntent extends Intent {

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:writer/features/editor/mobile_editor_screen.dart';
+import 'package:writer/features/editor/screens/mobile_editor_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/chapter.dart';
 import 'package:writer/repositories/chapter_repository.dart';
@@ -437,6 +437,7 @@ void main() {
         overrides: [
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

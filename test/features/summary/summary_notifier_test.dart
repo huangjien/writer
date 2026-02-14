@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:writer/features/summary/summary_notifier.dart';
+import 'package:writer/features/summary/state/summary_notifier.dart';
 import 'package:writer/models/summary.dart';
 import 'package:writer/models/snowflake.dart';
 import 'package:writer/repositories/novel_repository.dart';

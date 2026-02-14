@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
-import 'package:writer/features/summary/scenes_screen.dart';
+import 'package:writer/features/summary/screens/scenes/scenes_screen.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/l10n/app_localizations.dart';

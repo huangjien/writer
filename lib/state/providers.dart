@@ -7,9 +7,9 @@ import '../services/auth_redirect_service.dart';
 
 import '../services/story_lines_service.dart';
 import '../services/pdf_service.dart';
-import 'ai_service_settings.dart';
-import 'admin_settings.dart';
-import 'session_state.dart';
+import 'controllers/ai_service_settings.dart';
+import 'controllers/admin_settings.dart';
+import 'models/session_state.dart';
 import 'storage_service_provider.dart';
 
 // Export localStorageRepositoryProvider for use in tests
@@ -17,6 +17,13 @@ export 'providers.dart' show localStorageRepositoryProvider;
 
 // Export sharedPreferencesProvider for use in tests
 export 'storage_service_provider.dart' show sharedPreferencesProvider;
+
+// Export session providers
+export 'models/session_state.dart' show sessionProvider;
+
+// Export summary state providers
+// Note: summaryController, summaryNotifier, and snowflakeService are not exported from their files
+// They are provided via the Provider instances below
 
 final isSignedInProvider = Provider<bool>((ref) {
   final sessionId = ref.watch(sessionProvider);

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:writer/features/summary/summary_screen.dart';
+import 'package:writer/features/summary/screens/summary_screen.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/summary.dart';

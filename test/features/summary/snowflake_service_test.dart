@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:writer/features/summary/snowflake_service.dart';
+import 'package:writer/features/summary/services/snowflake_service.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/models/snowflake.dart';
 

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mockito/mockito.dart';
-import 'package:writer/features/auth/sign_in_screen.dart';
+import 'package:writer/features/auth/screens/sign_in_screen.dart';
 import 'package:writer/state/biometric_session_state.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/l10n/app_localizations.dart';
