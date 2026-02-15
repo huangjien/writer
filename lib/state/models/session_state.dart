@@ -16,8 +16,20 @@ class SessionNotifier extends StateNotifier<String?> {
       await clear();
       return;
     }
+    // Update state synchronously first to ensure immediate UI update
     state = sessionId;
-    await _storage.setString(_sessionIdKey, sessionId);
+    // Then persist to storage asynchronously
+    try {
+      await _storage.setString(_sessionIdKey, sessionId);
+      // Verify the state is still set after storage operation
+      // This handles edge cases where provider might be rebuilt during async operation
+      if (state != sessionId) {
+        state = sessionId;
+      }
+    } catch (e) {
+      // If storage fails, still keep the in-memory state
+      // This allows login to work even if persistence fails
+    }
   }
 
   Future<void> setRefreshToken(String? refreshToken) async {
@@ -40,5 +52,6 @@ class SessionNotifier extends StateNotifier<String?> {
 }
 
 final sessionProvider = StateNotifierProvider<SessionNotifier, String?>((ref) {
-  return SessionNotifier(ref.read(storageServiceProvider));
+  final storage = ref.read(storageServiceProvider);
+  return SessionNotifier(storage);
 });
