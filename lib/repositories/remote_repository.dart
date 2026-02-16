@@ -418,4 +418,104 @@ class RemoteRepository {
     }
     return null;
   }
+
+  Future<List<dynamic>> getHotTopicsPlatforms() async {
+    final data = await get('hot-topics/platforms');
+    if (data is List) {
+      return data;
+    }
+    return [];
+  }
+
+  Future<List<dynamic>> getLatestHotTopics({
+    String? regionCode,
+    String? platformKey,
+    int? limit,
+  }) async {
+    final queryParams = <String, String>{};
+    if (regionCode != null && regionCode.isNotEmpty) {
+      queryParams['region_code'] = regionCode;
+    }
+    if (platformKey != null && platformKey.isNotEmpty) {
+      queryParams['platform_key'] = platformKey;
+    }
+    if (limit != null) {
+      queryParams['limit'] = limit.toString();
+    }
+
+    final data = await get('hot-topics/latest', queryParameters: queryParams);
+    if (data is List) {
+      return data;
+    }
+    return [];
+  }
+
+  Future<List<dynamic>> getHotTopicsTracking({
+    String? regionCode,
+    int? minMomentumScore,
+    int? minTimesSeen,
+    int? limit,
+  }) async {
+    final queryParams = <String, String>{};
+    if (regionCode != null && regionCode.isNotEmpty) {
+      queryParams['region_code'] = regionCode;
+    }
+    if (minMomentumScore != null) {
+      queryParams['min_momentum_score'] = minMomentumScore.toString();
+    }
+    if (minTimesSeen != null) {
+      queryParams['min_times_seen'] = minTimesSeen.toString();
+    }
+    if (limit != null) {
+      queryParams['limit'] = limit.toString();
+    }
+
+    final data = await get('hot-topics/tracking', queryParameters: queryParams);
+    if (data is List) {
+      return data;
+    }
+    return [];
+  }
+
+  Future<List<dynamic>> getHotTopicSnapshots(
+    String topicFingerprint, {
+    int? limit,
+  }) async {
+    final queryParams = <String, String>{};
+    if (limit != null) {
+      queryParams['limit'] = limit.toString();
+    }
+
+    final data = await get(
+      'hot-topics/tracking/$topicFingerprint/snapshots',
+      queryParameters: queryParams,
+    );
+    if (data is List) {
+      return data;
+    }
+    return [];
+  }
+
+  Future<List<dynamic>> getTrendingHotTopics({
+    String? regionCode,
+    int? minMomentumScore,
+    int? limit,
+  }) async {
+    final queryParams = <String, String>{};
+    if (regionCode != null && regionCode.isNotEmpty) {
+      queryParams['region_code'] = regionCode;
+    }
+    if (minMomentumScore != null) {
+      queryParams['min_momentum_score'] = minMomentumScore.toString();
+    }
+    if (limit != null) {
+      queryParams['limit'] = limit.toString();
+    }
+
+    final data = await get('hot-topics/trending', queryParameters: queryParams);
+    if (data is List) {
+      return data;
+    }
+    return [];
+  }
 }

@@ -153,6 +153,47 @@ class _NoopRemoteRepository implements RemoteRepository {
   }) async {
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<dynamic>> getHotTopicsPlatforms() async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<dynamic>> getLatestHotTopics({
+    String? regionCode,
+    String? platformKey,
+    int? limit,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<dynamic>> getHotTopicsTracking({
+    String? regionCode,
+    int? minMomentumScore,
+    int? minTimesSeen,
+    int? limit,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<dynamic>> getHotTopicSnapshots(
+    String topicFingerprint, {
+    int? limit,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<dynamic>> getTrendingHotTopics({
+    String? regionCode,
+    int? minMomentumScore,
+    int? limit,
+  }) async {
+    throw UnimplementedError();
+  }
 }
 
 class _FakeLocalStorageRepository extends LocalStorageRepository {

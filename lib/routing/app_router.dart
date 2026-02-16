@@ -35,6 +35,7 @@ import '../screens/patterns_list_screen.dart';
 import '../screens/pattern_form_screen.dart';
 import '../screens/story_lines_list_screen.dart';
 import '../screens/story_line_form_screen.dart';
+import '../features/hot_topics/hot_topics_screen.dart';
 import '../models/prompt.dart';
 import '../models/pattern.dart';
 import '../models/story_line.dart';
@@ -110,6 +111,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/tools',
         name: 'tools',
         builder: (context, state) => const MobileToolsScreen(),
+      ),
+      GoRoute(
+        path: '/hot-topics',
+        name: 'hotTopics',
+        builder: (context, state) => const HotTopicsScreen(),
       ),
       GoRoute(
         path: '/auth',
