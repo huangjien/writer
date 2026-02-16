@@ -1,4 +1,5 @@
 {
+  "@@locale": "fr",
   "newChapter": "New Chapter",
   "back": "Back",
   "helloWorld": "Hello World!",
@@ -137,8 +138,7 @@
         "type": "String"
       }
     }
-  }
-  ,
+  },
   "chapters": "Chapters",
   "noChaptersFound": "No chapters found.",
   "indexLabel": "Index {index}",
@@ -187,16 +187,15 @@
   "themeDefault": "Default",
   "themeEmeraldGreen": "Emerald",
   "themeSolarizedTan": "Solarized Tan",
-"themeNord": "Nord",
-"themeNordFrost": "Nord Frost",
+  "themeNord": "Nord",
+  "themeNordFrost": "Nord Frost",
   "separateDarkPalette": "Use separate dark palette",
   "lightPalette": "Light Palette",
   "darkPalette": "Dark Palette",
   "typographyPreset": "Typography Preset",
   "typographyComfortable": "Comfortable",
   "typographyCompact": "Compact",
-  "typographySerifLike": "Serif-like"
-  ,
+  "typographySerifLike": "Serif-like",
   "fontPack": "Font Pack",
   "separateTypographyPresets": "Use separate typography for light/dark",
   "typographyLight": "Light Typography",
@@ -244,8 +243,7 @@
   "noUsageHistory": "No Usage History",
   "bundleNordCalm": "Nord Calm",
   "bundleSolarizedFocus": "Solarized Focus",
-  "bundleHighContrastReadability": "High Contrast Readability"
-  ,
+  "bundleHighContrastReadability": "High Contrast Readability",
   "customFontFamily": "Custom Font Family",
   "commonFonts": "Common Fonts",
   "readerFontSize": "Reader Font Size",
@@ -258,15 +256,13 @@
   "clear": "Clear",
   "adminMode": "Admin Mode",
   "reduceMotion": "Reduce motion",
-  "reduceMotionDescription": "Minimize animations for motion comfort"
-  ,
+  "reduceMotionDescription": "Minimize animations for motion comfort",
   "gesturesEnabled": "Enable touch gestures",
   "gesturesEnabledDescription": "Enable swipe and tap gestures in the reader",
   "readerSwipeSensitivity": "Reader swipe sensitivity",
   "readerSwipeSensitivityDescription": "Adjust minimum swipe velocity for chapter navigation",
   "remove": "Remove",
   "removedFromLibrary": "Removed from Library",
-  "undo": "Undo",
   "confirmDelete": "Confirm Delete",
   "confirmDeleteDescription": "This will delete '{title}' from your cloud library. Are you sure?",
   "@confirmDeleteDescription": {
@@ -274,8 +270,7 @@
       "title": {"type": "String"}
     }
   },
-  "delete": "Delete"
-  ,
+  "delete": "Delete",
   "reachedFirstChapter": "Reached first chapter",
   "previousChapter": "Previous chapter",
   "nextChapter": "Next chapter",
@@ -287,8 +282,7 @@
   "prefetchNextChapter": "Prefetch next chapter",
   "prefetchNextChapterDescription": "Preload the next chapter to reduce waiting.",
   "clearOfflineCache": "Clear offline cache",
-  "offlineCacheCleared": "Offline cache cleared"
-  ,
+  "offlineCacheCleared": "Offline cache cleared",
   "edit": "Edit",
   "exitEdit": "Exit Edit",
   "enterEditMode": "Enter Edit Mode",
@@ -297,8 +291,7 @@
   "save": "Save",
   "createNextChapter": "Create Next Chapter",
   "enterChapterTitle": "Enter chapter title",
-  "enterChapterContent": "Enter chapter content"
-  ,
+  "enterChapterContent": "Enter chapter content",
   "discardChangesTitle": "Discard changes?",
   "discardChangesMessage": "You have unsaved changes. Do you want to discard them?",
   "keepEditing": "Keep editing",
@@ -438,8 +431,7 @@
   "contributorEmailLabel": "Contributor Email",
   "contributorEmailHint": "Enter user email to add as contributor",
   "addContributor": "Add Contributor",
-  "contributorAdded": "Contributor added"
-  ,
+  "contributorAdded": "Contributor added",
   "pdf": "PDF",
   "generatingPdf": "Generating PDF…",
   "pdfFailed": "Failed to generate PDF",
@@ -525,8 +517,7 @@
   "noRecentChapters": "No recent chapters",
   "failedToLoadConfig": "Failed to load config",
   "makePublicPromptConfirm": "Make public \"{promptKey}\" ({language})?",
-  "@makePublicPromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}}
-  ,
+  "@makePublicPromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}},
   "content": "Content",
   "invalidKey": "Invalid key",
   "invalidLanguage": "Invalid language",
@@ -540,8 +531,7 @@
   "templateName": "Template Name",
   "retrieveProfile": "Retrieve profile",
   "previewLabel": "Preview",
-  "markdownHint": "Enter description in Markdown..."
-  ,
+  "markdownHint": "Enter description in Markdown...",
   "templateNameExists": "Template name already exists",
   "aiServiceUrlHint": "Enter AI service URL (http/https)",
   "urlLabel": "URL",
@@ -598,30 +588,12 @@
   "updatePassword": "Update Password",
   "noActiveSessionFound": "No active session found. Please log in again.",
   "authenticationFailedSignInAgain": "Authentication failed. Please sign in again.",
-  "removedNovel": "Removed {title}",
-  "@removedNovel": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
-  "discover": "Discover",
-  "profile": "Profile",
-  "libraryTitle": "Library",
   "accessDeniedNoAdminPrivileges": "Access denied. You don't have admin privileges.",
   "failedToLoadUsers": "Failed to load users: {statusCode} - {errorBody}",
   "smartSearchRequiresSignIn": "Please sign in to use smart search",
   "smartSearch": "Smart Search",
   "failedToPersistTemplate": "Failed to save template",
-  "listView": "List View",
-  "gridView": "Grid View",
   "userIdCreated": "User {id} created at {createdAt}",
-  "searchNovels": "Search novels...",
-  "allFilter": "All",
-  "readingFilter": "Reading",
-  "completedFilter": "Completed",
-  "downloadedFilter": "Downloaded",
   "tryAdjustingSearchCreateNovel": "Try adjusting your search or create a new novel",
   "sessionExpired": "Session expired",
   "errorLoadingUsers": "Error loading users",
@@ -672,7 +644,7 @@
   "comingSoon": "Coming soon",
   "selectNovelFirst": "Select a novel first",
   "adminLogs": "Admin Logs",
-"viewAndFilterBackendLogs": "View and filter backend logs",
+  "viewAndFilterBackendLogs": "View and filter backend logs",
   "styleGlassmorphism": "Glassmorphism",
   "styleLiquidGlass": "Liquid Glass",
   "styleNeumorphism": "Neumorphism",
@@ -839,7 +811,6 @@
       "count": {"type": "int"}
     }
   },
-  "retry": "Retry",
   "toggleSidebar": "Toggle Sidebar",
   "quickSearch": "Quick Search"
 }

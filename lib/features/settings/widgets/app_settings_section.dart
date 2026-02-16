@@ -177,9 +177,17 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
                         .setLanguage(languageCode);
                   }
                 },
-                items: [
-                  DropdownMenuItem(value: 'en', child: Text(l10n.english)),
-                  DropdownMenuItem(value: 'zh', child: Text(l10n.chinese)),
+                items: const [
+                  DropdownMenuItem(value: 'en', child: Text('English')),
+                  DropdownMenuItem(value: 'zh', child: Text('中文')),
+                  DropdownMenuItem(value: 'zh-TW', child: Text('繁體')),
+                  DropdownMenuItem(value: 'de', child: Text('Deutsch')),
+                  DropdownMenuItem(value: 'es', child: Text('Español')),
+                  DropdownMenuItem(value: 'it', child: Text('Italiano')),
+                  DropdownMenuItem(value: 'fr', child: Text('Français')),
+                  DropdownMenuItem(value: 'ru', child: Text('Русский')),
+                  DropdownMenuItem(value: 'ja', child: Text('日本語')),
+                  DropdownMenuItem(value: 'ko', child: Text('Korean')),
                 ],
               ),
             ],

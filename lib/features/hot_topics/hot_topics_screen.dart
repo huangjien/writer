@@ -39,14 +39,6 @@ class _HotTopicsScreenState extends ConsumerState<HotTopicsScreen> {
         drawer: const AppDrawer(),
         body: Column(
           children: [
-            _RegionFilter(
-              currentRegion: filter.regionCode,
-              onRegionChanged: (region) {
-                ref.read(hotTopicsFilterProvider.notifier).state = filter
-                    .copyWith(regionCode: region);
-                ref.invalidate(latestHotTopicsProvider);
-              },
-            ),
             _PlatformFilter(
               currentPlatform: filter.platformKey,
               platformsAsync: platformsAsync,
@@ -78,57 +70,6 @@ class _HotTopicsScreenState extends ConsumerState<HotTopicsScreen> {
             });
           },
         ),
-      ),
-    );
-  }
-}
-
-class _RegionFilter extends StatelessWidget {
-  final String currentRegion;
-  final ValueChanged<String> onRegionChanged;
-
-  const _RegionFilter({
-    required this.currentRegion,
-    required this.onRegionChanged,
-  });
-
-  static const Map<String, String> regions = {
-    'zh-CN': '🇨🇳 China',
-    'zh-TW': '🇹🇼 Taiwan',
-    'es': '🇪🇸 Spanish',
-    'it': '🇮🇹 Italian',
-    'ru': '🇷🇺 Russian',
-    'de': '🇩🇪 German',
-    'fr': '🇫🇷 French',
-    'ja': '🇯🇵 Japanese',
-    'ko': '🇰🇷 Korean',
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: regions.length,
-        itemBuilder: (context, index) {
-          final regionCode = regions.keys.elementAt(index);
-          final regionName = regions.values.elementAt(index);
-          final isSelected = regionCode == currentRegion;
-
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: FilterChip(
-              label: Text(regionName),
-              selected: isSelected,
-              onSelected: (_) => onRegionChanged(regionCode),
-              selectedColor: Theme.of(context).colorScheme.primaryContainer,
-              checkmarkColor: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
-          );
-        },
       ),
     );
   }
@@ -662,7 +603,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Try selecting a different region or platform',
+            'Try selecting a different platform',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),

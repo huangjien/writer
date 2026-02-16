@@ -2,6 +2,35 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:writer/models/hot_topic.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/state/controllers/app_settings.dart';
+
+String _mapLanguageToRegionCode(String languageCode) {
+  switch (languageCode) {
+    case 'zh':
+      return 'zh-CN';
+    case 'zh-TW':
+      return 'zh-TW';
+    case 'de':
+      return 'de';
+    case 'es':
+      return 'es';
+    case 'it':
+      return 'it';
+    case 'fr':
+      return 'fr';
+    case 'ru':
+      return 'ru';
+    case 'ja':
+      return 'ja';
+    case 'ko':
+      return 'ko';
+    case 'en':
+      // English users get US region hot topics
+      return 'en-US';
+    default:
+      return 'zh-CN';
+  }
+}
 
 final hotTopicsPlatformsProvider =
     FutureProvider.autoDispose<List<HotTopicPlatform>>((ref) async {
@@ -15,11 +44,13 @@ final hotTopicsPlatformsProvider =
     });
 
 final hotTopicsRegionCodeProvider = Provider<String>((ref) {
-  return 'zh-CN';
+  final appLocale = ref.watch(appSettingsProvider);
+  return _mapLanguageToRegionCode(appLocale.languageCode);
 });
 
 final hotTopicsPlatformKeyProvider = Provider<String?>((ref) {
-  return null;
+  final filter = ref.watch(hotTopicsFilterProvider);
+  return filter.platformKey;
 });
 
 final hotTopicsLimitProvider = Provider<int>((ref) {
@@ -80,19 +111,15 @@ final trendingHotTopicsProvider =
     });
 
 final hotTopicsFilterProvider = StateProvider<HotTopicsFilter>((ref) {
-  return const HotTopicsFilter(regionCode: 'zh-CN', platformKey: null);
+  return const HotTopicsFilter(platformKey: null);
 });
 
 class HotTopicsFilter {
-  final String regionCode;
   final String? platformKey;
 
-  const HotTopicsFilter({required this.regionCode, this.platformKey});
+  const HotTopicsFilter({this.platformKey});
 
-  HotTopicsFilter copyWith({String? regionCode, String? platformKey}) {
-    return HotTopicsFilter(
-      regionCode: regionCode ?? this.regionCode,
-      platformKey: platformKey ?? this.platformKey,
-    );
+  HotTopicsFilter copyWith({String? platformKey}) {
+    return HotTopicsFilter(platformKey: platformKey ?? this.platformKey);
   }
 }

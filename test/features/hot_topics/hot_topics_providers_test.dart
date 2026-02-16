@@ -203,7 +203,6 @@ void main() {
       final container = ProviderContainer();
       final filter = container.read(hotTopicsFilterProvider);
 
-      expect(filter.regionCode, 'zh-CN');
       expect(filter.platformKey, isNull);
     });
 
@@ -386,21 +385,19 @@ void main() {
     });
 
     test('HotTopicsFilter copyWith creates updated filter', () {
-      const filter = HotTopicsFilter(regionCode: 'zh-CN', platformKey: null);
+      const filter = HotTopicsFilter(platformKey: null);
 
-      final updated = filter.copyWith(regionCode: 'en', platformKey: 'twitter');
+      final updated = filter.copyWith(platformKey: 'twitter');
 
-      expect(updated.regionCode, 'en');
       expect(updated.platformKey, 'twitter');
     });
 
     test('HotTopicsFilter copyWith preserves unchanged values', () {
-      const filter = HotTopicsFilter(regionCode: 'zh-CN', platformKey: 'weibo');
+      const filter = HotTopicsFilter(platformKey: 'weibo');
 
-      final updated = filter.copyWith(regionCode: 'en');
+      final updated = filter.copyWith(platformKey: 'twitter');
 
-      expect(updated.regionCode, 'en');
-      expect(updated.platformKey, 'weibo');
+      expect(updated.platformKey, 'twitter');
     });
   });
 }

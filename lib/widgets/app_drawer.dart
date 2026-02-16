@@ -99,6 +99,14 @@ class AppDrawer extends ConsumerWidget {
               context.go('/story_lines');
             },
           ),
+          _DrawerListItem(
+            leading: const Icon(Icons.local_fire_department),
+            title: Text(l10n.hotTopics),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/hot-topics');
+            },
+          ),
           const Divider(),
           _DrawerListItem(
             leading: const Icon(Icons.add),

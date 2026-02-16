@@ -483,6 +483,12 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
       context: context,
       items: [
         ActionSheetItem(
+          label: l10n.hotTopics,
+          icon: Icons.local_fire_department,
+          value: 'hot-topics',
+          onPressed: () => context.pushNamed('hotTopics'),
+        ),
+        ActionSheetItem(
           label: l10n.settings,
           icon: Icons.settings,
           value: 'settings',
