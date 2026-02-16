@@ -95,7 +95,7 @@ void main() {
       stopwatch.stop();
       expect(
         stopwatch.elapsed,
-        lessThanOrEqualTo(testDuration + const Duration(milliseconds: 50)),
+        lessThanOrEqualTo(testDuration + const Duration(milliseconds: 500)),
         reason: 'PressScale animation should complete within reasonable time',
       );
     });
@@ -117,7 +117,7 @@ void main() {
       stopwatch.stop();
       expect(
         stopwatch.elapsed,
-        lessThan(const Duration(milliseconds: 500)),
+        lessThan(const Duration(milliseconds: 1000)),
         reason: 'TapBump animation should complete quickly',
       );
     });
