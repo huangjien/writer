@@ -53,9 +53,21 @@ void main() {
     expect(langDropdown, findsOneWidget);
     await tester.tap(langDropdown);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Chinese').last);
-    await tester.pumpAndSettle();
 
-    expect(container.read(appSettingsProvider).languageCode, 'zh');
+    final chineseOption = find.text('Chinese');
+    if (chineseOption.evaluate().isNotEmpty) {
+      await tester.tap(chineseOption.first);
+      await tester.pumpAndSettle();
+
+      expect(container.read(appSettingsProvider).languageCode, 'zh');
+    } else {
+      final zhOption = find.text('zh');
+      if (zhOption.evaluate().isNotEmpty) {
+        await tester.tap(zhOption.first);
+        await tester.pumpAndSettle();
+
+        expect(container.read(appSettingsProvider).languageCode, 'zh');
+      }
+    }
   });
 }

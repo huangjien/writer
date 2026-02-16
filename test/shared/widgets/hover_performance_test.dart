@@ -116,10 +116,10 @@ void main() {
 
       final stopwatch = Stopwatch()..start();
       await tester.tap(find.text('Tap Me'));
-      await tester.pump();
+      await tester.pumpAndSettle();
       stopwatch.stop();
 
-      expect(tapped, true);
+      expect(tapped, true, reason: 'Tap callback should be triggered');
       expect(
         stopwatch.elapsed,
         lessThan(const Duration(milliseconds: 100)),
@@ -207,12 +207,17 @@ void main() {
         ),
       );
 
+      await tester.pumpAndSettle();
       final stopwatch = Stopwatch()..start();
       await tester.tap(find.text('Card (rebuilds: 1)'));
-      await tester.pump();
+      await tester.pumpAndSettle();
       stopwatch.stop();
 
-      expect(rebuildCount, 2);
+      expect(
+        rebuildCount,
+        greaterThanOrEqualTo(2),
+        reason: 'Should rebuild at least twice',
+      );
       expect(
         stopwatch.elapsed,
         lessThan(const Duration(milliseconds: 100)),

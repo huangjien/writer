@@ -1,8 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/hot_topics/hot_topics_providers.dart';
 import 'package:writer/models/token_usage.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/state/controllers/app_settings.dart';
 
 class MockRemoteRepository implements RemoteRepository {
   final List<dynamic> platformsData;
@@ -177,9 +180,22 @@ class MockRemoteRepository implements RemoteRepository {
 }
 
 void main() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   group('hotTopicsProviders', () {
-    test('hotTopicsRegionCodeProvider returns default region code', () {
-      final container = ProviderContainer();
+    test('hotTopicsRegionCodeProvider returns default region code', () async {
+      final prefs = await SharedPreferences.getInstance();
+
+      final container = ProviderContainer(
+        overrides: [
+          appSettingsProvider.overrideWith(
+            (_) => AppSettingsNotifier(prefs)..state = const Locale('zh', 'CN'),
+          ),
+        ],
+      );
+
       final regionCode = container.read(hotTopicsRegionCodeProvider);
 
       expect(regionCode, 'zh-CN');
@@ -190,6 +206,7 @@ void main() {
       final platformKey = container.read(hotTopicsPlatformKeyProvider);
 
       expect(platformKey, isNull);
+      container.dispose();
     });
 
     test('hotTopicsLimitProvider returns default limit', () {
@@ -197,6 +214,7 @@ void main() {
       final limit = container.read(hotTopicsLimitProvider);
 
       expect(limit, 100);
+      container.dispose();
     });
 
     test('hotTopicsFilterProvider returns default filter', () {
@@ -204,6 +222,7 @@ void main() {
       final filter = container.read(hotTopicsFilterProvider);
 
       expect(filter.platformKey, isNull);
+      container.dispose();
     });
 
     test('hotTopicsPlatformsProvider returns list of platforms', () async {
@@ -240,6 +259,7 @@ void main() {
       expect(platforms.value![0].name, 'Weibo');
       expect(platforms.value![1].platformKey, 'twitter');
       expect(platforms.value![1].name, 'Twitter');
+      container.dispose();
     });
 
     test(
@@ -256,6 +276,7 @@ void main() {
         final platforms = container.read(hotTopicsPlatformsProvider);
 
         expect(platforms.value, isEmpty);
+        container.dispose();
       },
     );
 
@@ -287,8 +308,15 @@ void main() {
         ],
       );
 
+      final prefs = await SharedPreferences.getInstance();
+
       final container = ProviderContainer(
-        overrides: [remoteRepositoryProvider.overrideWithValue(mockRepo)],
+        overrides: [
+          remoteRepositoryProvider.overrideWithValue(mockRepo),
+          appSettingsProvider.overrideWith(
+            (_) => AppSettingsNotifier(prefs)..state = const Locale('zh', 'CN'),
+          ),
+        ],
       );
 
       await container.read(latestHotTopicsProvider.future);
@@ -301,13 +329,21 @@ void main() {
       expect(topics.value![0].title, 'Test Topic 1');
       expect(topics.value![1].id, 'topic-2');
       expect(topics.value![1].title, 'Test Topic 2');
+      container.dispose();
     });
 
     test('latestHotTopicsProvider returns empty list when no data', () async {
       final mockRepo = MockRemoteRepository(latestTopicsData: []);
 
+      final prefs = await SharedPreferences.getInstance();
+
       final container = ProviderContainer(
-        overrides: [remoteRepositoryProvider.overrideWithValue(mockRepo)],
+        overrides: [
+          remoteRepositoryProvider.overrideWithValue(mockRepo),
+          appSettingsProvider.overrideWith(
+            (_) => AppSettingsNotifier(prefs)..state = const Locale('zh', 'CN'),
+          ),
+        ],
       );
 
       await container.read(latestHotTopicsProvider.future);
@@ -315,6 +351,7 @@ void main() {
       final topics = container.read(latestHotTopicsProvider);
 
       expect(topics.value, isEmpty);
+      container.dispose();
     });
 
     test('hotTopicsTrackingProvider returns list of tracking data', () async {
@@ -336,8 +373,15 @@ void main() {
         ],
       );
 
+      final prefs = await SharedPreferences.getInstance();
+
       final container = ProviderContainer(
-        overrides: [remoteRepositoryProvider.overrideWithValue(mockRepo)],
+        overrides: [
+          remoteRepositoryProvider.overrideWithValue(mockRepo),
+          appSettingsProvider.overrideWith(
+            (_) => AppSettingsNotifier(prefs)..state = const Locale('zh', 'CN'),
+          ),
+        ],
       );
 
       await container.read(hotTopicsTrackingProvider.future);
@@ -349,6 +393,7 @@ void main() {
       expect(tracking.value![0].topicFingerprint, 'fp-1');
       expect(tracking.value![0].timesSeen, 10);
       expect(tracking.value![0].momentumScore, 80);
+      container.dispose();
     });
 
     test('trendingHotTopicsProvider returns list of trending topics', () async {
@@ -370,8 +415,15 @@ void main() {
         ],
       );
 
+      final prefs = await SharedPreferences.getInstance();
+
       final container = ProviderContainer(
-        overrides: [remoteRepositoryProvider.overrideWithValue(mockRepo)],
+        overrides: [
+          remoteRepositoryProvider.overrideWithValue(mockRepo),
+          appSettingsProvider.overrideWith(
+            (_) => AppSettingsNotifier(prefs)..state = const Locale('zh', 'CN'),
+          ),
+        ],
       );
 
       await container.read(trendingHotTopicsProvider.future);
@@ -382,6 +434,7 @@ void main() {
       expect(trending.value!.length, 1);
       expect(trending.value![0].topicFingerprint, 'fp-2');
       expect(trending.value![0].momentumScore, 90);
+      container.dispose();
     });
 
     test('HotTopicsFilter copyWith creates updated filter', () {
