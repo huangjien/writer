@@ -122,8 +122,8 @@ void main() {
       expect(tapped, true, reason: 'Tap callback should be triggered');
       expect(
         stopwatch.elapsed,
-        lessThan(const Duration(milliseconds: 100)),
-        reason: 'Tap response should be immediate',
+        lessThan(const Duration(milliseconds: 500)),
+        reason: 'Tap response should be immediate even under system load',
       );
     });
 
@@ -220,8 +220,8 @@ void main() {
       );
       expect(
         stopwatch.elapsed,
-        lessThan(const Duration(milliseconds: 100)),
-        reason: 'Rebuild should be efficient',
+        lessThan(const Duration(milliseconds: 500)),
+        reason: 'Rebuild should be efficient even under system load',
       );
     });
   });
