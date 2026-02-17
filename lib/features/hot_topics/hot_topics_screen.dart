@@ -302,7 +302,10 @@ class _TopicsList extends StatelessWidget {
       itemCount: topics.length,
       itemBuilder: (context, index) {
         final topic = topics[index];
-        return _TopicCard(topic: topic, rank: index + 1);
+        return _TopicCard(
+          topic: topic,
+          rank: topic.rank > 0 ? topic.rank : index + 1,
+        );
       },
     );
   }
@@ -365,7 +368,7 @@ class _TopicCard extends StatelessWidget {
                       runSpacing: 4,
                       children: [
                         _PlatformChip(platformKey: topic.platformKey),
-                        if (topic.heatScore != null)
+                        if ((topic.heatScore ?? 0) > 0)
                           _HeatScoreChip(score: topic.heatScore!),
                         if (topic.likeCount != null)
                           _StatChip(

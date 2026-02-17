@@ -76,9 +76,18 @@ final latestHotTopicsProvider = FutureProvider.autoDispose<List<HotTopic>>((
     platformKey: platformKey,
     limit: limit,
   );
-  return data
+  final topics = data
       .map<HotTopic>((item) => HotTopic.fromMap(item as Map<String, dynamic>))
       .toList();
+  final indexed = topics.indexed.toList();
+  indexed.sort((a, b) {
+    final rankA = a.$2.rank <= 0 ? 1 << 30 : a.$2.rank;
+    final rankB = b.$2.rank <= 0 ? 1 << 30 : b.$2.rank;
+    final byRank = rankA.compareTo(rankB);
+    if (byRank != 0) return byRank;
+    return a.$1.compareTo(b.$1);
+  });
+  return indexed.map((e) => e.$2).toList();
 });
 
 final hotTopicsTrackingProvider =
