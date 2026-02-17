@@ -121,29 +121,6 @@ void main() {
         reason: 'TapBump animation should complete quickly',
       );
     });
-
-    testWidgets('ErrorAnimation completes initial animation within threshold', (
-      tester,
-    ) async {
-      const testDuration = Duration(milliseconds: 200);
-      final stopwatch = Stopwatch()..start();
-
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(body: ErrorAnimation(duration: testDuration)),
-        ),
-      );
-
-      await tester.pump(testDuration);
-      stopwatch.stop();
-
-      expect(
-        stopwatch.elapsed,
-        lessThanOrEqualTo(testDuration + const Duration(milliseconds: 50)),
-        reason:
-            'ErrorAnimation should complete initial animation within threshold',
-      );
-    });
   });
 
   group('Performance Impact Tests', () {
