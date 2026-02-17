@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/hot_topic.dart';
 import 'package:writer/features/hot_topics/hot_topics_providers.dart';
+import 'package:writer/shared/utils/open_url.dart';
 import 'package:writer/widgets/app_drawer.dart';
 import 'package:writer/shared/widgets/mobile_bottom_nav_bar.dart';
 import 'package:writer/shared/widgets/global_shortcuts_wrapper.dart';
@@ -21,18 +23,19 @@ class _HotTopicsScreenState extends ConsumerState<HotTopicsScreen> {
     final filter = ref.watch(hotTopicsFilterProvider);
     final latestTopicsAsync = ref.watch(latestHotTopicsProvider);
     final platformsAsync = ref.watch(hotTopicsPlatformsProvider);
+    final l10n = AppLocalizations.of(context);
 
     return GlobalShortcutsWrapper(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Hot Topics'),
+          title: Text(l10n?.hotTopics ?? 'Hot Topics'),
           actions: [
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: () {
                 ref.invalidate(latestHotTopicsProvider);
               },
-              tooltip: 'Refresh',
+              tooltip: l10n?.reload ?? 'Refresh',
             ),
           ],
         ),
@@ -80,6 +83,8 @@ class _PlatformFilter extends StatelessWidget {
   final AsyncValue<List<HotTopicPlatform>> platformsAsync;
   final ValueChanged<String?> onPlatformChanged;
 
+  static const String _allPlatformsKey = '__all__';
+
   const _PlatformFilter({
     required this.currentPlatform,
     required this.platformsAsync,
@@ -88,6 +93,12 @@ class _PlatformFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final selectPlatformLabel =
+        l10n?.hotTopicsSelectPlatform ?? 'Select platform';
+    final allPlatformsLabel = l10n?.hotTopicsAllPlatforms ?? 'All Platforms';
+
     return platformsAsync.when(
       data: (platforms) {
         if (platforms.isEmpty) {
@@ -95,46 +106,139 @@ class _PlatformFilter extends StatelessWidget {
         }
 
         return Container(
-          height: 56,
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: platforms.length + 1,
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    label: const Text('All Platforms'),
-                    selected: currentPlatform == null,
-                    onSelected: (_) => onPlatformChanged(null),
-                    selectedColor: Theme.of(
-                      context,
-                    ).colorScheme.primaryContainer,
-                    checkmarkColor: Theme.of(
-                      context,
-                    ).colorScheme.onPrimaryContainer,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            children: [
+              Icon(
+                Icons.filter_list,
+                color: theme.colorScheme.onSurfaceVariant,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: PopupMenuButton<String>(
+                  tooltip: selectPlatformLabel,
+                  onSelected: (platformKey) {
+                    onPlatformChanged(
+                      platformKey == _allPlatformsKey ? null : platformKey,
+                    );
+                  },
+                  itemBuilder: (context) {
+                    return [
+                      PopupMenuItem<String>(
+                        value: _allPlatformsKey,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.public,
+                              color: theme.colorScheme.primary,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(child: Text(allPlatformsLabel)),
+                            if (currentPlatform == null)
+                              Icon(
+                                Icons.check,
+                                color: theme.colorScheme.primary,
+                                size: 20,
+                              ),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuDivider(height: 1),
+                      ...platforms.map((platform) {
+                        final isSelected =
+                            currentPlatform == platform.platformKey;
+                        return PopupMenuItem<String>(
+                          value: platform.platformKey,
+                          child: Row(
+                            children: [
+                              Icon(
+                                _getPlatformIcon(platform.platformKey),
+                                color: theme.colorScheme.primary,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(_getPlatformLabel(l10n, platform)),
+                                    Text(
+                                      _getPlatformDescription(
+                                        l10n,
+                                        platform.platformKey,
+                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                            fontSize: 11,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (isSelected)
+                                Icon(
+                                  Icons.check,
+                                  color: theme.colorScheme.primary,
+                                  size: 20,
+                                ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ];
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: theme.colorScheme.outlineVariant,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                      color: theme.colorScheme.surfaceContainerHighest,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          currentPlatform == null
+                              ? Icons.public
+                              : _getPlatformIcon(currentPlatform!),
+                          color: theme.colorScheme.primary,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            currentPlatform == null
+                                ? allPlatformsLabel
+                                : _getPlatformLabel(
+                                    l10n,
+                                    platforms.firstWhere(
+                                      (p) => p.platformKey == currentPlatform,
+                                      orElse: () => platforms.first,
+                                    ),
+                                  ),
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_drop_down,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ],
+                    ),
                   ),
-                );
-              }
-
-              final platform = platforms[index - 1];
-              final isSelected = currentPlatform == platform.platformKey;
-
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: FilterChip(
-                  label: Text(platform.name),
-                  selected: isSelected,
-                  onSelected: (_) => onPlatformChanged(platform.platformKey),
-                  selectedColor: Theme.of(context).colorScheme.primaryContainer,
-                  checkmarkColor: Theme.of(
-                    context,
-                  ).colorScheme.onPrimaryContainer,
                 ),
-              );
-            },
+              ),
+            ],
           ),
         );
       },
@@ -144,6 +248,45 @@ class _PlatformFilter extends StatelessWidget {
       ),
       error: (_, _) => const SizedBox.shrink(),
     );
+  }
+
+  IconData _getPlatformIcon(String platformKey) {
+    switch (platformKey) {
+      case 'weibo':
+        return Icons.forum;
+      case 'zhihu':
+        return Icons.help_outline;
+      case 'douyin':
+        return Icons.video_library;
+      default:
+        return Icons.public;
+    }
+  }
+
+  String _getPlatformLabel(AppLocalizations? l10n, HotTopicPlatform platform) {
+    switch (platform.platformKey) {
+      case 'weibo':
+        return l10n?.hotTopicsPlatformWeibo ?? 'Weibo';
+      case 'zhihu':
+        return l10n?.hotTopicsPlatformZhihu ?? 'Zhihu';
+      case 'douyin':
+        return l10n?.hotTopicsPlatformDouyin ?? 'Douyin';
+      default:
+        return platform.name;
+    }
+  }
+
+  String _getPlatformDescription(AppLocalizations? l10n, String platformKey) {
+    switch (platformKey) {
+      case 'weibo':
+        return l10n?.hotTopicsPlatformDescWeibo ?? 'Chinese microblogging';
+      case 'zhihu':
+        return l10n?.hotTopicsPlatformDescZhihu ?? 'Q&A platform';
+      case 'douyin':
+        return l10n?.hotTopicsPlatformDescDouyin ?? 'Video sharing';
+      default:
+        return '';
+    }
   }
 }
 
@@ -175,15 +318,18 @@ class _TopicCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
+    final url = topic.url;
+    final hasUrl = url != null && url.isNotEmpty;
+    final description = topic.description?.trim();
+    final summaryText = (description != null && description.isNotEmpty)
+        ? description
+        : (hasUrl ? _displayUrl(url) : null);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
-        onTap: topic.url != null
-            ? () {
-                // TODO: Open URL or show topic details
-              }
-            : null,
+        onTap: hasUrl ? () => openUrl(context, url) : null,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -202,15 +348,14 @@ class _TopicCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (topic.description != null &&
-                        topic.description!.isNotEmpty) ...[
+                    if (summaryText != null) ...[
                       const SizedBox(height: 4),
                       Text(
-                        topic.description!,
+                        summaryText,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
@@ -246,11 +391,25 @@ class _TopicCard extends StatelessWidget {
                   ],
                 ),
               ),
+              if (hasUrl)
+                IconButton(
+                  tooltip: l10n?.openLink ?? 'Open link',
+                  onPressed: () => openUrl(context, url),
+                  icon: const Icon(Icons.open_in_new),
+                  color: colorScheme.primary,
+                ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  String _displayUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return url;
+    if (uri.host.isEmpty) return url;
+    return uri.host;
   }
 
   String _formatCount(int count) {
@@ -302,14 +461,15 @@ class _PlatformChip extends StatelessWidget {
 
   const _PlatformChip({required this.platformKey});
 
-  String get _platformName {
+  String _platformName(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     switch (platformKey.toLowerCase()) {
       case 'weibo':
-        return 'Weibo';
+        return l10n?.hotTopicsPlatformWeibo ?? 'Weibo';
       case 'zhihu':
-        return 'Zhihu';
+        return l10n?.hotTopicsPlatformZhihu ?? 'Zhihu';
       case 'douyin':
-        return 'Douyin';
+        return l10n?.hotTopicsPlatformDouyin ?? 'Douyin';
       default:
         return platformKey;
     }
@@ -318,7 +478,7 @@ class _PlatformChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Chip(
-      label: Text(_platformName),
+      label: Text(_platformName(context)),
       visualDensity: VisualDensity.compact,
       labelStyle: TextStyle(
         fontSize: 12,

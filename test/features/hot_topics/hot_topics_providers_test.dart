@@ -138,7 +138,7 @@ class MockRemoteRepository implements RemoteRepository {
   }
 
   @override
-  Future<List<dynamic>> getHotTopicsPlatforms() async {
+  Future<List<dynamic>> getHotTopicsPlatforms({String? regionCode}) async {
     return platformsData;
   }
 
@@ -245,8 +245,14 @@ void main() {
         ],
       );
 
+      final prefs = await SharedPreferences.getInstance();
       final container = ProviderContainer(
-        overrides: [remoteRepositoryProvider.overrideWithValue(mockRepo)],
+        overrides: [
+          remoteRepositoryProvider.overrideWithValue(mockRepo),
+          appSettingsProvider.overrideWith(
+            (_) => AppSettingsNotifier(prefs)..state = const Locale('zh', 'CN'),
+          ),
+        ],
       );
 
       await container.read(hotTopicsPlatformsProvider.future);
@@ -254,11 +260,9 @@ void main() {
       final platforms = container.read(hotTopicsPlatformsProvider);
 
       expect(platforms.value, isNotNull);
-      expect(platforms.value!.length, 2);
+      expect(platforms.value!.length, 1);
       expect(platforms.value![0].platformKey, 'weibo');
       expect(platforms.value![0].name, 'Weibo');
-      expect(platforms.value![1].platformKey, 'twitter');
-      expect(platforms.value![1].name, 'Twitter');
       container.dispose();
     });
 
@@ -267,8 +271,15 @@ void main() {
       () async {
         final mockRepo = MockRemoteRepository(platformsData: []);
 
+        final prefs = await SharedPreferences.getInstance();
         final container = ProviderContainer(
-          overrides: [remoteRepositoryProvider.overrideWithValue(mockRepo)],
+          overrides: [
+            remoteRepositoryProvider.overrideWithValue(mockRepo),
+            appSettingsProvider.overrideWith(
+              (_) =>
+                  AppSettingsNotifier(prefs)..state = const Locale('zh', 'CN'),
+            ),
+          ],
         );
 
         await container.read(hotTopicsPlatformsProvider.future);

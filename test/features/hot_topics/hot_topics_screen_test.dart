@@ -208,7 +208,7 @@ class MockRemoteRepository implements RemoteRepository {
   }
 
   @override
-  Future<List<dynamic>> getHotTopicsPlatforms() async {
+  Future<List<dynamic>> getHotTopicsPlatforms({String? regionCode}) async {
     return platformsData;
   }
 
@@ -749,6 +749,88 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Novel: 40'), findsOneWidget);
+    });
+
+    testWidgets('shows url host as summary and allows open link', (
+      tester,
+    ) async {
+      final mockRepo = MockRemoteRepository(
+        platformsData: [],
+        latestTopicsData: [
+          {
+            'id': 'topic-1',
+            'platform_key': 'weibo',
+            'region_code': 'zh-CN',
+            'language_code': 'zh',
+            'rank': 1,
+            'title': 'Test Topic',
+            'url': 'https://example.com/path',
+            'crawled_at': '2024-01-01T00:00:00.000Z',
+            'created_at': '2024-01-01T00:00:00.000Z',
+            'updated_at': '2024-01-01T00:00:00.000Z',
+          },
+        ],
+      );
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          child: const HotTopicsScreen(),
+          mockRepo: mockRepo,
+          mockLocale: mockLocale,
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('example.com'), findsOneWidget);
+      expect(find.byIcon(Icons.open_in_new), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.open_in_new));
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('renders platform filter menu with platforms', (tester) async {
+      final mockRepo = MockRemoteRepository(
+        platformsData: [
+          {
+            'platform_key': 'weibo',
+            'name': 'Weibo',
+            'icon_url': null,
+            'region_code': 'zh-CN',
+            'is_active': true,
+          },
+        ],
+        latestTopicsData: [
+          {
+            'id': 'topic-1',
+            'platform_key': 'weibo',
+            'region_code': 'zh-CN',
+            'language_code': 'zh',
+            'rank': 1,
+            'title': 'Test Topic',
+            'crawled_at': '2024-01-01T00:00:00.000Z',
+            'created_at': '2024-01-01T00:00:00.000Z',
+            'updated_at': '2024-01-01T00:00:00.000Z',
+          },
+        ],
+      );
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          child: const HotTopicsScreen(),
+          mockRepo: mockRepo,
+          mockLocale: mockLocale,
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byTooltip('Select platform'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('All Platforms'), findsWidgets);
+      expect(find.text('Weibo'), findsWidgets);
     });
   });
 }

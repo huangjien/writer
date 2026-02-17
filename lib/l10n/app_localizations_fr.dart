@@ -1089,6 +1089,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get close => 'Close';
 
   @override
+  String get openLink => 'Open link';
+
+  @override
+  String get invalidLink => 'Invalid link';
+
+  @override
+  String get unableToOpenLink => 'Unable to open link';
+
+  @override
   String get copy => 'Copy';
 
   @override
@@ -1140,6 +1149,30 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get hotTopics => 'Hot Topics';
+
+  @override
+  String get hotTopicsSelectPlatform => 'Select platform';
+
+  @override
+  String get hotTopicsAllPlatforms => 'All Platforms';
+
+  @override
+  String get hotTopicsPlatformWeibo => 'Weibo';
+
+  @override
+  String get hotTopicsPlatformZhihu => 'Zhihu';
+
+  @override
+  String get hotTopicsPlatformDouyin => 'Douyin';
+
+  @override
+  String get hotTopicsPlatformDescWeibo => 'Chinese microblogging';
+
+  @override
+  String get hotTopicsPlatformDescZhihu => 'Q&A platform';
+
+  @override
+  String get hotTopicsPlatformDescDouyin => 'Video sharing';
 
   @override
   String get tools => 'Tools';

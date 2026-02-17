@@ -35,12 +35,18 @@ String _mapLanguageToRegionCode(String languageCode) {
 final hotTopicsPlatformsProvider =
     FutureProvider.autoDispose<List<HotTopicPlatform>>((ref) async {
       final repo = ref.watch(remoteRepositoryProvider);
-      final data = await repo.getHotTopicsPlatforms();
-      return data
+      final regionCode = ref.watch(hotTopicsRegionCodeProvider);
+      final data = await repo.getHotTopicsPlatforms(regionCode: regionCode);
+      final platforms = data
           .map<HotTopicPlatform>(
             (item) => HotTopicPlatform.fromMap(item as Map<String, dynamic>),
           )
+          .where((p) => p.isActive)
           .toList();
+      final regional = platforms
+          .where((p) => p.regionCode == regionCode)
+          .toList();
+      return regional.isNotEmpty ? regional : platforms;
     });
 
 final hotTopicsRegionCodeProvider = Provider<String>((ref) {
@@ -119,7 +125,13 @@ class HotTopicsFilter {
 
   const HotTopicsFilter({this.platformKey});
 
-  HotTopicsFilter copyWith({String? platformKey}) {
-    return HotTopicsFilter(platformKey: platformKey ?? this.platformKey);
+  static const Object _unset = Object();
+
+  HotTopicsFilter copyWith({Object? platformKey = _unset}) {
+    return HotTopicsFilter(
+      platformKey: identical(platformKey, _unset)
+          ? this.platformKey
+          : platformKey as String?,
+    );
   }
 }

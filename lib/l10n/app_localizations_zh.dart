@@ -1062,6 +1062,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get close => '关闭';
 
   @override
+  String get openLink => '打开链接';
+
+  @override
+  String get invalidLink => '链接无效';
+
+  @override
+  String get unableToOpenLink => '无法打开链接';
+
+  @override
   String get copy => '复制';
 
   @override
@@ -1113,6 +1122,30 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get hotTopics => '热门话题';
+
+  @override
+  String get hotTopicsSelectPlatform => '选择平台';
+
+  @override
+  String get hotTopicsAllPlatforms => '全部平台';
+
+  @override
+  String get hotTopicsPlatformWeibo => '微博';
+
+  @override
+  String get hotTopicsPlatformZhihu => '知乎';
+
+  @override
+  String get hotTopicsPlatformDouyin => '抖音';
+
+  @override
+  String get hotTopicsPlatformDescWeibo => '中文微博热搜';
+
+  @override
+  String get hotTopicsPlatformDescZhihu => '中文问答热榜';
+
+  @override
+  String get hotTopicsPlatformDescDouyin => '短视频热榜';
 
   @override
   String get tools => '工具';
@@ -3059,6 +3092,15 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get close => '关闭';
 
   @override
+  String get openLink => '開啟連結';
+
+  @override
+  String get invalidLink => '連結無效';
+
+  @override
+  String get unableToOpenLink => '無法開啟連結';
+
+  @override
   String get copy => '复制';
 
   @override
@@ -3110,6 +3152,30 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get hotTopics => '热门话题';
+
+  @override
+  String get hotTopicsSelectPlatform => '選擇平台';
+
+  @override
+  String get hotTopicsAllPlatforms => '全部平台';
+
+  @override
+  String get hotTopicsPlatformWeibo => '微博';
+
+  @override
+  String get hotTopicsPlatformZhihu => '知乎';
+
+  @override
+  String get hotTopicsPlatformDouyin => '抖音';
+
+  @override
+  String get hotTopicsPlatformDescWeibo => '中文微博熱搜';
+
+  @override
+  String get hotTopicsPlatformDescZhihu => '中文問答熱榜';
+
+  @override
+  String get hotTopicsPlatformDescDouyin => '短影音熱榜';
 
   @override
   String get tools => '工具';

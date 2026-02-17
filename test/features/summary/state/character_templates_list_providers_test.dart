@@ -125,7 +125,7 @@ class MockRemoteRepository implements RemoteRepository {
   }
 
   @override
-  Future<List<dynamic>> getHotTopicsPlatforms() async {
+  Future<List<dynamic>> getHotTopicsPlatforms({String? regionCode}) async {
     throw UnimplementedError();
   }
 

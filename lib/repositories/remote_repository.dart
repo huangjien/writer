@@ -419,8 +419,15 @@ class RemoteRepository {
     return null;
   }
 
-  Future<List<dynamic>> getHotTopicsPlatforms() async {
-    final data = await get('hot-topics/platforms');
+  Future<List<dynamic>> getHotTopicsPlatforms({String? regionCode}) async {
+    final queryParams = <String, String>{};
+    if (regionCode != null && regionCode.isNotEmpty) {
+      queryParams['region_code'] = regionCode;
+    }
+    final data = await get(
+      'hot-topics/platforms',
+      queryParameters: queryParams,
+    );
     if (data is List) {
       return data;
     }
