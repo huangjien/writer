@@ -5,7 +5,6 @@ import 'package:writer/models/hot_topic.dart';
 import 'package:writer/features/hot_topics/hot_topics_providers.dart';
 import 'package:writer/shared/utils/open_url.dart';
 import 'package:writer/widgets/app_drawer.dart';
-import 'package:writer/shared/widgets/mobile_bottom_nav_bar.dart';
 import 'package:writer/shared/widgets/global_shortcuts_wrapper.dart';
 
 class HotTopicsScreen extends ConsumerStatefulWidget {
@@ -16,8 +15,6 @@ class HotTopicsScreen extends ConsumerStatefulWidget {
 }
 
 class _HotTopicsScreenState extends ConsumerState<HotTopicsScreen> {
-  MobileNavTab _currentTab = MobileNavTab.home;
-
   @override
   Widget build(BuildContext context) {
     final filter = ref.watch(hotTopicsFilterProvider);
@@ -64,14 +61,6 @@ class _HotTopicsScreenState extends ConsumerState<HotTopicsScreen> {
               ),
             ),
           ],
-        ),
-        bottomNavigationBar: MobileBottomNavBar(
-          currentTab: _currentTab,
-          onTabChanged: (tab) {
-            setState(() {
-              _currentTab = tab;
-            });
-          },
         ),
       ),
     );

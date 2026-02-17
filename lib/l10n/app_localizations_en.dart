@@ -18,6 +18,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helloWorld => 'Hello World!';
 
   @override
+  String get home => 'Home';
+
+  @override
   String get settings => 'Settings';
 
   @override
@@ -766,9 +769,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get navigation => 'Navigation';
-
-  @override
-  String get home => 'Home';
 
   @override
   String get chapterIndex => 'Chapter Index';

@@ -1,6 +1,7 @@
 {
   "@@locale": "zh",
   "helloWorld": "你好世界！",
+  "home": "首页",
   "settings": "设置",
   "appTitle": "写手",
   "about": "关于",

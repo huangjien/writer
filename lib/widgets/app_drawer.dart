@@ -42,6 +42,14 @@ class AppDrawer extends ConsumerWidget {
             ),
           ),
           _DrawerListItem(
+            leading: const Icon(Icons.home),
+            title: Text(l10n.home),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/');
+            },
+          ),
+          _DrawerListItem(
             leading: const Icon(Icons.settings),
             title: Text(l10n.settings),
             onTap: () {
@@ -49,6 +57,15 @@ class AppDrawer extends ConsumerWidget {
               context.go('/settings');
             },
           ),
+          _DrawerListItem(
+            leading: const Icon(Icons.local_fire_department),
+            title: Text(l10n.hotTopics),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/hot-topics');
+            },
+          ),
+          const Divider(),
           _DrawerListItem(
             leading: const Icon(Icons.assignment_ind_outlined),
             title: Text(l10n.characterTemplates),
@@ -97,14 +114,6 @@ class AppDrawer extends ConsumerWidget {
             onTap: () {
               Navigator.pop(context);
               context.go('/story_lines');
-            },
-          ),
-          _DrawerListItem(
-            leading: const Icon(Icons.local_fire_department),
-            title: Text(l10n.hotTopics),
-            onTap: () {
-              Navigator.pop(context);
-              context.go('/hot-topics');
             },
           ),
           const Divider(),

@@ -18,6 +18,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get helloWorld => '你好世界！';
 
   @override
+  String get home => '主页';
+
+  @override
   String get settings => '设置';
 
   @override
@@ -744,9 +747,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get navigation => '导航';
-
-  @override
-  String get home => '主页';
 
   @override
   String get chapterIndex => '章节索引';
@@ -2048,6 +2048,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get helloWorld => '你好世界！';
 
   @override
+  String get home => '主页';
+
+  @override
   String get settings => '设置';
 
   @override
@@ -2774,9 +2777,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get navigation => '导航';
-
-  @override
-  String get home => '主页';
 
   @override
   String get chapterIndex => '章节索引';
