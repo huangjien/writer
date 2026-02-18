@@ -82,12 +82,11 @@ List<String> chineseTextFallback() {
   ordered.addAll(_embeddedChineseFonts);
 
   if (!disableGoogleFontsForTesting) {
-    // Add Google Fonts fallback just in case
     try {
       final gf = GoogleFonts.notoSansSc().fontFamily;
       if (gf != null) ordered.add(gf);
     } catch (e) {
-      // Ignore errors in test/offline
+      debugPrint('Error adding Google Fonts fallback: $e');
     }
   }
 
@@ -271,7 +270,6 @@ Future<void> preloadEmbeddedChineseFonts() async {
   _preloadEmbeddedChineseFontsFuture = () async {
     try {
       // 1. Try loading from local assets (fastest, works offline)
-      // Note: We use 'Noto Sans SC' with spaces to match pubspec.yaml and common usage
       final loader = FontLoader(embeddedChineseSansFamily);
       loader.addFont(rootBundle.load('assets/fonts/NotoSansSC-Regular.ttf'));
       loader.addFont(rootBundle.load('assets/fonts/NotoSansSC-Bold.ttf'));

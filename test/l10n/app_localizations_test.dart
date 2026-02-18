@@ -6,7 +6,6 @@ import 'package:writer/l10n/app_localizations_es.dart';
 import 'package:writer/l10n/app_localizations_fr.dart';
 import 'package:writer/l10n/app_localizations_it.dart';
 import 'package:writer/l10n/app_localizations_ja.dart';
-import 'package:writer/l10n/app_localizations_ko.dart';
 import 'package:writer/l10n/app_localizations_ru.dart';
 import 'package:writer/l10n/app_localizations_zh.dart';
 
@@ -254,38 +253,6 @@ void main() {
     });
   });
 
-  group('AppLocalizationsKo Tests', () {
-    late AppLocalizationsKo ko;
-
-    setUp(() {
-      ko = AppLocalizationsKo();
-    });
-
-    test('provides correct locale', () {
-      expect(ko.localeName, 'ko');
-    });
-
-    test('newChapter returns non-empty value', () {
-      expect(ko.newChapter, isNotEmpty);
-    });
-
-    test('back returns non-empty value', () {
-      expect(ko.back, isNotEmpty);
-    });
-
-    test('settings returns non-empty value', () {
-      expect(ko.settings, isNotEmpty);
-    });
-
-    test('appTitle returns non-empty value', () {
-      expect(ko.appTitle, isNotEmpty);
-    });
-
-    test('signedInAs formats correctly', () {
-      expect(ko.signedInAs('test@example.com'), contains('test@example.com'));
-    });
-  });
-
   group('AppLocalizationsRu Tests', () {
     late AppLocalizationsRu ru;
 
@@ -328,7 +295,6 @@ void main() {
         AppLocalizationsFr(),
         AppLocalizationsIt(),
         AppLocalizationsJa(),
-        AppLocalizationsKo(),
         AppLocalizationsRu(),
       ];
 
@@ -349,7 +315,6 @@ void main() {
         AppLocalizationsFr(),
         AppLocalizationsIt(),
         AppLocalizationsJa(),
-        AppLocalizationsKo(),
         AppLocalizationsRu(),
       ];
 

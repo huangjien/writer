@@ -31,7 +31,28 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
     // Check availability when settings are opened
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(biometricSessionProvider.notifier).checkBiometricAvailability();
+      _resetUnsupportedLocale();
     });
+  }
+
+  void _resetUnsupportedLocale() {
+    final currentLocale = ref.read(appSettingsProvider);
+    final supportedLocales = [
+      'en',
+      'zh',
+      'zh-TW',
+      'de',
+      'es',
+      'fr',
+      'it',
+      'ja',
+      'ko',
+    ];
+    final currentLocaleTag = currentLocale.toLanguageTag();
+
+    if (!supportedLocales.contains(currentLocaleTag)) {
+      ref.read(appSettingsProvider.notifier).setLanguage('en');
+    }
   }
 
   void _showAiServiceUrlDialog(BuildContext context) {
@@ -169,7 +190,7 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
             children: [
               Expanded(child: Text(l10n.appLanguage)),
               NeumorphicDropdown<String>(
-                value: appLocale.languageCode,
+                value: appLocale.toLanguageTag(),
                 onChanged: (String? languageCode) {
                   if (languageCode != null) {
                     ref
@@ -183,11 +204,9 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
                   DropdownMenuItem(value: 'zh-TW', child: Text('繁體')),
                   DropdownMenuItem(value: 'de', child: Text('Deutsch')),
                   DropdownMenuItem(value: 'es', child: Text('Español')),
-                  DropdownMenuItem(value: 'it', child: Text('Italiano')),
                   DropdownMenuItem(value: 'fr', child: Text('Français')),
-                  DropdownMenuItem(value: 'ru', child: Text('Русский')),
+                  DropdownMenuItem(value: 'it', child: Text('Italiano')),
                   DropdownMenuItem(value: 'ja', child: Text('日本語')),
-                  DropdownMenuItem(value: 'ko', child: Text('Korean')),
                 ],
               ),
             ],

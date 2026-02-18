@@ -6,7 +6,6 @@ import 'package:writer/l10n/app_localizations_es.dart';
 import 'package:writer/l10n/app_localizations_fr.dart';
 import 'package:writer/l10n/app_localizations_it.dart';
 import 'package:writer/l10n/app_localizations_ja.dart';
-import 'package:writer/l10n/app_localizations_ko.dart';
 import 'package:writer/l10n/app_localizations_ru.dart';
 import 'package:writer/l10n/app_localizations_zh.dart';
 
@@ -22,7 +21,6 @@ void main() {
         AppLocalizationsFr(),
         AppLocalizationsIt(),
         AppLocalizationsJa(),
-        AppLocalizationsKo(),
         AppLocalizationsRu(),
         AppLocalizationsZh(),
       ];
@@ -1252,69 +1250,6 @@ void main() {
       expect(ja.charsCount(500), isNotEmpty);
       expect(ja.deletePromptConfirm('key', 'ja'), contains('key'));
       expect(ja.conversionFailed('test'), contains('test'));
-    });
-  });
-
-  group('Korean Ultra Comprehensive Tests', () {
-    final ko = AppLocalizationsKo();
-
-    test('all extended properties non-empty', () {
-      expect(ko.pdf, isNotEmpty);
-      expect(ko.novelMetadata, isNotEmpty);
-      expect(ko.contributorEmailLabel, isNotEmpty);
-      expect(ko.addContributor, isNotEmpty);
-      expect(ko.tableOfContents, isNotEmpty);
-      expect(ko.close, isNotEmpty);
-      expect(ko.copy, isNotEmpty);
-      expect(ko.aiConfigurations, isNotEmpty);
-      expect(ko.prompts, isNotEmpty);
-      expect(ko.patterns, isNotEmpty);
-      expect(ko.storyLines, isNotEmpty);
-      expect(ko.hotTopics, isNotEmpty);
-      expect(ko.tools, isNotEmpty);
-      expect(ko.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(ko.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(ko.hotTopicsPlatformDouyin, isNotEmpty);
-      expect(ko.searchLabel, isNotEmpty);
-      expect(ko.lockedOnly, isNotEmpty);
-      expect(ko.unlockedOnly, isNotEmpty);
-      expect(ko.newPrompt, isNotEmpty);
-      expect(ko.newPattern, isNotEmpty);
-      expect(ko.newStoryLine, isNotEmpty);
-      expect(ko.templateLabel, isNotEmpty);
-      expect(ko.aiConvert, isNotEmpty);
-      expect(ko.confirm, isNotEmpty);
-      expect(ko.invalidKey, isNotEmpty);
-      expect(ko.invalidJson, isNotEmpty);
-      expect(ko.errorUnauthorized, isNotEmpty);
-      expect(ko.errorForbidden, isNotEmpty);
-      expect(ko.errorNotFound, isNotEmpty);
-      expect(ko.loginFailed, isNotEmpty);
-      expect(ko.signUp, isNotEmpty);
-      expect(ko.forgotPassword, isNotEmpty);
-      expect(ko.createAccount, isNotEmpty);
-      expect(ko.resetPassword, isNotEmpty);
-      expect(ko.newPassword, isNotEmpty);
-      expect(ko.failedToAnalyze, isNotEmpty);
-      expect(ko.aiCoachAnalyzing, isNotEmpty);
-      expect(ko.retry, isNotEmpty);
-      expect(ko.startAiCoaching, isNotEmpty);
-      expect(ko.regenerate, isNotEmpty);
-      expect(ko.imSatisfied, isNotEmpty);
-    });
-
-    test('extended parameterized methods', () {
-      expect(ko.byAuthor('Test Author'), contains('Test Author'));
-      expect(ko.pageOfTotal(5, 100), isNotEmpty);
-      expect(ko.showingCachedPublicData('Test'), contains('Test'));
-      expect(ko.deletedWithTitle('Test'), contains('Test'));
-      expect(ko.deleteFailedWithTitle('Test'), contains('Test'));
-      expect(ko.deleteErrorWithMessage('Error'), contains('Error'));
-      expect(ko.retrieveFailed('Error'), contains('Error'));
-      expect(ko.makePublicPromptConfirm('key', 'ko'), contains('key'));
-      expect(ko.charsCount(500), isNotEmpty);
-      expect(ko.deletePromptConfirm('key', 'ko'), contains('key'));
-      expect(ko.conversionFailed('test'), contains('test'));
     });
   });
 

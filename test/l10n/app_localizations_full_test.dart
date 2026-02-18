@@ -5,7 +5,6 @@ import 'package:writer/l10n/app_localizations_es.dart';
 import 'package:writer/l10n/app_localizations_fr.dart';
 import 'package:writer/l10n/app_localizations_it.dart';
 import 'package:writer/l10n/app_localizations_ja.dart';
-import 'package:writer/l10n/app_localizations_ko.dart';
 import 'package:writer/l10n/app_localizations_ru.dart';
 import 'package:writer/l10n/app_localizations_zh.dart';
 
@@ -1074,69 +1073,6 @@ void main() {
       'signedInAs formats correctly',
       () => expect(
         ja.signedInAs('test@example.com'),
-        contains('test@example.com'),
-      ),
-    );
-  });
-
-  group('AppLocalizationsKo - Essential Getters', () {
-    late AppLocalizationsKo ko;
-
-    setUp(() {
-      ko = AppLocalizationsKo();
-    });
-
-    test(
-      'newChapter returns non-empty value',
-      () => expect(ko.newChapter, isNotEmpty),
-    );
-    test('back returns non-empty value', () => expect(ko.back, isNotEmpty));
-    test(
-      'settings returns non-empty value',
-      () => expect(ko.settings, isNotEmpty),
-    );
-    test(
-      'appTitle returns non-empty value',
-      () => expect(ko.appTitle, isNotEmpty),
-    );
-    test('about returns non-empty value', () => expect(ko.about, isNotEmpty));
-    test(
-      'version returns non-empty value',
-      () => expect(ko.version, isNotEmpty),
-    );
-    test(
-      'appLanguage returns non-empty value',
-      () => expect(ko.appLanguage, isNotEmpty),
-    );
-    test('signIn returns non-empty value', () => expect(ko.signIn, isNotEmpty));
-    test(
-      'continueLabel returns non-empty value',
-      () => expect(ko.continueLabel, isNotEmpty),
-    );
-    test(
-      'signOut returns non-empty value',
-      () => expect(ko.signOut, isNotEmpty),
-    );
-    test(
-      'appSettings returns non-empty value',
-      () => expect(ko.appSettings, isNotEmpty),
-    );
-    test('cancel returns non-empty value', () => expect(ko.cancel, isNotEmpty));
-    test('create returns non-empty value', () => expect(ko.create, isNotEmpty));
-    test(
-      'chapter returns non-empty value',
-      () => expect(ko.chapter, isNotEmpty),
-    );
-    test('novel returns non-empty value', () => expect(ko.novel, isNotEmpty));
-    test(
-      'ttsSettings returns non-empty value',
-      () => expect(ko.ttsSettings, isNotEmpty),
-    );
-    test('error returns non-empty value', () => expect(ko.error, isNotEmpty));
-    test(
-      'signedInAs formats correctly',
-      () => expect(
-        ko.signedInAs('test@example.com'),
         contains('test@example.com'),
       ),
     );

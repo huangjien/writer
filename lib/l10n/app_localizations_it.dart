@@ -9,203 +9,206 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
-  String get newChapter => 'New Chapter';
+  String get newChapter => 'Nuovo capitolo';
 
   @override
-  String get back => 'Back';
+  String get back => 'Indietro';
 
   @override
-  String get helloWorld => 'Hello World!';
+  String get helloWorld => 'Ciao mondo!';
 
   @override
   String get home => 'Home';
 
   @override
-  String get settings => 'Settings';
+  String get settings => 'Impostazioni';
 
   @override
   String get appTitle => 'Writer';
 
   @override
-  String get about => 'About';
+  String get about => 'Informazioni';
 
   @override
   String get aboutDescription =>
-      'Read and manage novels, with cloud-backed storage, offline support, and Text-To-Speech playback. Use the Library to browse, search, and open chapters; sign in to sync progress; adjust settings for theme, typography, and motion.';
+      'Leggi e gestisci romanzi, con archiviazione cloud, supporto offline e riproduzione sintesi vocale. Usa la Libreria per sfogliare, cercare e aprire capitoli; accedi per sincronizzare i progressi; regola le impostazioni per tema, tipografia e animazioni.';
 
   @override
   String get aboutIntro =>
-      'AuthorConsole helps you plan, write, and read novels across devices. It focuses on simplicity for readers and power for authors, offering a unified place to manage chapters, summaries, characters, and scenes.';
+      'AuthorConsole ti aiuta a pianificare, scrivere e leggere romanzi su più dispositivi. Si concentra sulla semplicità per i lettori e sulla potenza per gli autori, offrendo un luogo unificato per gestire capitoli, riassunti, personaggi e scene.';
 
   @override
   String get aboutSecurity =>
-      'With cloud-backed storage and strict access controls, your data remains protected. Authenticated users can sync progress, metadata, and templates while maintaining privacy.';
+      'Con l\'archiviazione cloud e controlli di accesso rigorosi, i tuoi dati rimangono protetti. Gli utenti autenticati possono sincronizzare progressi, metadati e modelli mantenendo la privacy.';
 
   @override
   String get aboutCoach =>
-      'The built‑in AI Coach uses the Snowflake method to improve your story summary. It asks focused questions, offers suggestions, and when ready, provides a refined summary that the app applies to your document.';
+      'L\'AI Coach integrato utilizza il metodo Snowflake per migliorare il riassunto della storia. Fa domande mirate, offre suggerimenti e quando è pronto, fornisce un riassunto raffinato che l\'app applica al tuo documento.';
 
   @override
   String get aboutFeatureCreate =>
-      '• Create a new novel and organize chapters.';
+      '• Crea un nuovo romanzo e organizza i capitoli.';
 
   @override
   String get aboutFeatureTemplates =>
-      '• Use character and scene templates to bootstrap ideas.';
+      '• Usa modelli di personaggi e scene per avviare idee.';
 
   @override
   String get aboutFeatureTracking =>
-      '• Track reading progress and resume across devices.';
+      '• Tieni traccia dei progressi di lettura e riprendi su più dispositivi.';
 
   @override
   String get aboutFeatureCoach =>
-      '• Refine your summary with the AI Coach and apply improvements.';
+      '• Affina il tuo riassunto con l\'AI Coach e applica miglioramenti.';
 
   @override
   String get aboutFeaturePrompts =>
-      '• Manage prompts and experiment with AI-assisted workflows.';
+      '• Gestisci i prompt e sperimenta con flussi di lavoro assistiti dall\'AI.';
 
   @override
-  String get aboutUsage => 'Usage';
+  String get aboutUsage => 'Utilizzo';
 
   @override
   String get aboutUsageList =>
-      '• Library: search and open novels\n• Reader: navigate chapters, toggle TTS\n• Templates: manage character and scene templates\n• Settings: theme, typography, and preferences\n• Sign In: enable cloud sync';
+      '• Libreria: cerca e apri romanzi\n• Lettore: naviga tra i capitoli, attiva TTS\n• Modelli: gestisci modelli di personaggi e scene\n• Impostazioni: tema, tipografia e preferenze\n• Accedi: abilita la sincronizzazione cloud';
 
   @override
-  String get version => 'Version';
+  String get version => 'Versione';
 
   @override
-  String get appLanguage => 'App Language';
+  String get appLanguage => 'Lingua app';
 
   @override
-  String get english => 'English';
+  String get english => 'Inglese';
 
   @override
-  String get chinese => 'Chinese';
+  String get chinese => 'Cinese';
 
   @override
-  String get supabaseIntegrationInitialized => 'Cloud sync initialized';
+  String get supabaseIntegrationInitialized =>
+      'Sincronizzazione cloud inizializzata';
 
   @override
   String get configureEnvironment =>
-      'Please configure your environment variables to enable cloud sync';
+      'Configura le variabili d\'ambiente per abilitare la sincronizzazione cloud';
 
   @override
   String signedInAs(String email) {
-    return 'Signed in as $email';
+    return 'Accesso effettuato come $email';
   }
 
   @override
-  String get guest => 'Guest';
+  String get guest => 'Ospite';
 
   @override
-  String get notSignedIn => 'Not signed in';
+  String get notSignedIn => 'Non accessibile';
 
   @override
-  String get signIn => 'Sign In';
+  String get signIn => 'Accedi';
 
   @override
-  String get continueLabel => 'Continue';
+  String get continueLabel => 'Continua';
 
   @override
-  String get reload => 'Reload';
+  String get reload => 'Ricarica';
 
   @override
-  String get signInToSync => 'Sign in to sync progress across devices.';
+  String get signInToSync =>
+      'Accedi per sincronizzare i progressi tra i dispositivi.';
 
   @override
-  String get currentProgress => 'Current Progress';
+  String get currentProgress => 'Progresso attuale';
 
   @override
-  String get loadingProgress => 'Loading progress...';
+  String get loadingProgress => 'Caricamento progressi...';
 
   @override
-  String get recentlyRead => 'Recently Read';
+  String get recentlyRead => 'Letti di recente';
 
   @override
-  String get noSupabase => 'Cloud sync is not enabled in this build.';
+  String get noSupabase =>
+      'La sincronizzazione cloud non è abilitata in questa build.';
 
   @override
-  String get errorLoadingProgress => 'Error loading progress';
+  String get errorLoadingProgress => 'Errore nel caricamento dei progressi';
 
   @override
-  String get noProgress => 'No progress found';
+  String get noProgress => 'Nessun progresso trovato';
 
   @override
-  String get errorLoadingNovels => 'Error loading novels';
+  String get errorLoadingNovels => 'Errore nel caricamento dei romanzi';
 
   @override
-  String get loadingNovels => 'Loading novels…';
+  String get loadingNovels => 'Caricamento romanzi…';
 
   @override
-  String get titleLabel => 'Title';
+  String get titleLabel => 'Titolo';
 
   @override
-  String get authorLabel => 'Author';
+  String get authorLabel => 'Autore';
 
   @override
-  String get noNovelsFound => 'No novels found.';
+  String get noNovelsFound => 'Nessun romanzo trovato.';
 
   @override
-  String get myNovels => 'My Novels';
+  String get myNovels => 'I miei romanzi';
 
   @override
-  String get createNovel => 'Create Novel';
+  String get createNovel => 'Crea romanzo';
 
   @override
-  String get create => 'Create';
+  String get create => 'Crea';
 
   @override
-  String get errorLoadingChapters => 'Error loading chapters';
+  String get errorLoadingChapters => 'Errore nel caricamento dei capitoli';
 
   @override
-  String get loadingChapter => 'Loading chapter…';
+  String get loadingChapter => 'Caricamento capitolo…';
 
   @override
-  String get notStarted => 'Not started';
+  String get notStarted => 'Non iniziato';
 
   @override
-  String get unknownNovel => 'Unknown Novel';
+  String get unknownNovel => 'Romanzo sconosciuto';
 
   @override
-  String get unknownChapter => 'Unknown chapter';
+  String get unknownChapter => 'Capitolo sconosciuto';
 
   @override
-  String get chapter => 'Chapter';
+  String get chapter => 'Capitolo';
 
   @override
-  String get novel => 'Novel';
+  String get novel => 'Romanzo';
 
   @override
-  String get chapterTitle => 'Chapter Title';
+  String get chapterTitle => 'Titolo del capitolo';
 
   @override
-  String get scrollOffset => 'Scroll Offset';
+  String get scrollOffset => 'Scorrimento offset';
 
   @override
-  String get ttsIndex => 'TTS Index';
+  String get ttsIndex => 'Indice TTS';
 
   @override
-  String get speechRate => 'Speech Rate';
+  String get speechRate => 'Velocità parlata';
 
   @override
   String get volume => 'Volume';
 
   @override
-  String get defaultTTSVoice => 'Default TTS Voice';
+  String get defaultTTSVoice => 'Voce TTS predefinita';
 
   @override
-  String get defaultVoiceUpdated => 'Default voice updated';
+  String get defaultVoiceUpdated => 'Voce predefinita aggiornata';
 
   @override
-  String get defaultLanguageSet => 'Default language set';
+  String get defaultLanguageSet => 'Lingua predefinita impostata';
 
   @override
-  String get searchByTitle => 'Search by title…';
+  String get searchByTitle => 'Cerca per titolo…';
 
   @override
-  String get chooseLanguage => 'Choose Language';
+  String get chooseLanguage => 'Scegli lingua';
 
   @override
   String get email => 'Email';
@@ -214,898 +217,904 @@ class AppLocalizationsIt extends AppLocalizations {
   String get password => 'Password';
 
   @override
-  String get signInWithGoogle => 'Sign in with Google';
+  String get signInWithGoogle => 'Accedi con Google';
 
   @override
-  String get signInWithApple => 'Sign in with Apple';
+  String get signInWithApple => 'Accedi con Apple';
 
   @override
-  String get testVoice => 'Test Voice';
+  String get testVoice => 'Prova voce';
 
   @override
-  String get reloadVoices => 'Reload Voices';
+  String get reloadVoices => 'Ricarica voci';
 
   @override
-  String get signOut => 'Sign Out';
+  String get signOut => 'Esci';
 
   @override
-  String get signedOut => 'Signed Out';
+  String get signedOut => 'Disconnesso';
 
   @override
-  String get appSettings => 'App Settings';
+  String get appSettings => 'Impostazioni app';
 
   @override
-  String get supabaseSettings => 'Cloud Sync Settings';
+  String get supabaseSettings => 'Impostazioni sincronizzazione cloud';
 
   @override
-  String get supabaseNotEnabled => 'Cloud sync not enabled';
+  String get supabaseNotEnabled => 'Sincronizzazione cloud non abilitata';
 
   @override
   String get supabaseNotEnabledDescription =>
-      'Cloud sync is not configured for this build.';
+      'La sincronizzazione cloud non è configurata per questa build.';
 
   @override
   String get authDisabledInBuild =>
-      'Cloud sync is not configured. Authentication is disabled in this build.';
+      'Sincronizzazione cloud non configurata. L\'autenticazione è disabilitata in questa build.';
 
   @override
-  String get fetchFromSupabase => 'Fetch from cloud';
+  String get fetchFromSupabase => 'Recupera dal cloud';
 
   @override
   String get fetchFromSupabaseDescription =>
-      'Fetch latest novels and progress from the cloud.';
+      'Recupera gli ultimi romanzi e progressi dal cloud.';
 
   @override
-  String get confirmFetch => 'Confirm Fetch';
+  String get confirmFetch => 'Conferma recupero';
 
   @override
   String get confirmFetchDescription =>
-      'This will overwrite your local data. Are you sure?';
+      'Questo sovrascriverà i tuoi dati locali. Sei sicuro?';
 
   @override
-  String get cancel => 'Cancel';
+  String get cancel => 'Annulla';
 
   @override
-  String get fetch => 'Fetch';
+  String get fetch => 'Recupera';
 
   @override
-  String get downloadChapters => 'Download chapters';
+  String get downloadChapters => 'Scarica capitoli';
 
   @override
-  String get modeSupabase => 'Mode: Cloud sync';
+  String get modeSupabase => 'Modalità: sincronizzazione cloud';
 
   @override
-  String get modeMockData => 'Mode: Mock data';
+  String get modeMockData => 'Modalità: dati di prova';
 
   @override
   String continueAtChapter(String title) {
-    return 'Continue at chapter • $title';
+    return 'Continua al capitolo • $title';
   }
 
   @override
-  String get error => 'Error';
+  String get error => 'Errore';
 
   @override
-  String get ttsSettings => 'TTS Settings';
+  String get ttsSettings => 'Impostazioni TTS';
 
   @override
-  String get enableTTS => 'Enable TTS';
+  String get enableTTS => 'Abilita TTS';
 
   @override
-  String get sentenceSummary => 'Sentence Summary';
+  String get sentenceSummary => 'Riassunto frase';
 
   @override
-  String get paragraphSummary => 'Paragraph Summary';
+  String get paragraphSummary => 'Riassunto paragrafo';
 
   @override
-  String get pageSummary => 'Page Summary';
+  String get pageSummary => 'Riassunto pagina';
 
   @override
-  String get expandedSummary => 'Expanded Summary';
+  String get expandedSummary => 'Riassunto esteso';
 
   @override
-  String get pitch => 'Pitch';
+  String get pitch => 'Tonalità';
 
   @override
-  String get signInWithBiometrics => 'Sign in with biometrics';
+  String get signInWithBiometrics => 'Accedi con biometria';
 
   @override
-  String get enableBiometricLogin => 'Enable Biometric Login';
+  String get enableBiometricLogin => 'Abilita accesso biometrico';
 
   @override
   String get enableBiometricLoginDescription =>
-      'Use fingerprint or face recognition to sign in.';
+      'Usa l\'impronta digitale o il riconoscimento facciale per accedere.';
 
   @override
-  String get biometricAuthFailed => 'Biometric authentication failed';
+  String get biometricAuthFailed => 'Autenticazione biometrica fallita';
 
   @override
   String get saveCredentialsForBiometric =>
-      'Save credentials for biometric login';
+      'Salva credenziali per accesso biometrico';
 
   @override
   String get saveCredentialsForBiometricDescription =>
-      'Securely store your credentials for faster biometric authentication';
+      'Archivia in modo sicuro le tue credenziali per un\'autenticazione biometrica più rapida';
 
   @override
-  String get biometricTokensExpired => 'Biometric tokens have expired';
+  String get biometricTokensExpired => 'I token biometrici sono scaduti';
 
   @override
-  String get biometricNoTokens => 'No biometric tokens found';
+  String get biometricNoTokens => 'Nessun token biometrico trovato';
 
   @override
-  String get biometricTokenError => 'Biometric token error';
+  String get biometricTokenError => 'Errore token biometrico';
 
   @override
-  String get biometricTechnicalError => 'Biometric technical error';
+  String get biometricTechnicalError => 'Errore tecnico biometrico';
 
   @override
-  String get ttsVoice => 'TTS Voice';
+  String get ttsVoice => 'Voce TTS';
 
   @override
-  String get loadingVoices => 'Loading voices...';
+  String get loadingVoices => 'Caricamento voci...';
 
   @override
-  String get selectVoice => 'Select a voice';
+  String get selectVoice => 'Seleziona una voce';
 
   @override
-  String get ttsLanguage => 'TTS Language';
+  String get ttsLanguage => 'Lingua TTS';
 
   @override
-  String get loadingLanguages => 'Loading languages...';
+  String get loadingLanguages => 'Caricamento lingue...';
 
   @override
-  String get selectLanguage => 'Select a language';
+  String get selectLanguage => 'Seleziona una lingua';
 
   @override
-  String get ttsSpeechRate => 'Speech Rate';
+  String get ttsSpeechRate => 'Velocità parlata';
 
   @override
-  String get ttsSpeechVolume => 'Speech Volume';
+  String get ttsSpeechVolume => 'Volume parlato';
 
   @override
-  String get ttsSpeechPitch => 'Speech Pitch';
+  String get ttsSpeechPitch => 'Tonalità parlata';
 
   @override
-  String get novelsAndProgress => 'Novels and Progress';
+  String get novelsAndProgress => 'Romanzi e progressi';
 
   @override
-  String get novels => 'Novels';
+  String get novels => 'Romanzi';
 
   @override
-  String get progress => 'Progress';
+  String get progress => 'Progressi';
 
   @override
   String novelsAndProgressSummary(int count, String progress) {
-    return 'Novels: $count, Progress: $progress';
+    return 'Romanzi: $count, Progressi: $progress';
   }
 
   @override
-  String get chapters => 'Chapters';
+  String get chapters => 'Capitoli';
 
   @override
-  String get noChaptersFound => 'No chapters found.';
+  String get noChaptersFound => 'Nessun capitolo trovato.';
 
   @override
   String indexLabel(int index) {
-    return 'Index $index';
+    return 'Indice $index';
   }
 
   @override
-  String get enterFloatIndexHint => 'Enter decimal index to reposition';
+  String get enterFloatIndexHint =>
+      'Inserisci indice decimale per riposizionare';
 
   @override
   String indexOutOfRange(int min, int max) {
-    return 'Index must be between $min and $max';
+    return 'L\'indice deve essere tra $min e $max';
   }
 
   @override
-  String get indexUnchanged => 'Index unchanged';
+  String get indexUnchanged => 'Indice invariato';
 
   @override
-  String get roundingBefore => 'Always before';
+  String get roundingBefore => 'Sempr prima';
 
   @override
-  String get roundingAfter => 'Always after';
+  String get roundingAfter => 'Sempre dopo';
 
   @override
-  String get stopTTS => 'Stop TTS';
+  String get stopTTS => 'Ferma TTS';
 
   @override
-  String get speak => 'Speak';
+  String get speak => 'Parla';
 
   @override
   String get supabaseProgressNotSaved =>
-      'Cloud sync not configured; progress not saved';
+      'Sincronizzazione cloud non configurata; progressi non salvati';
 
   @override
-  String get progressSaved => 'Progress saved';
+  String get progressSaved => 'Progressi salvati';
 
   @override
-  String get errorSavingProgress => 'Error saving progress';
+  String get errorSavingProgress => 'Errore nel salvataggio dei progressi';
 
   @override
-  String get autoplayBlocked => 'Auto-play blocked. Tap Continue to start.';
+  String get autoplayBlocked =>
+      'Riproduzione automatica bloccata. Tocca Continua per iniziare.';
 
   @override
   String get autoplayBlockedInline =>
-      'Auto-play is blocked by the browser. Tap Continue to start reading.';
+      'La riproduzione automatica è bloccata dal browser. Tocca Continua per iniziare a leggere.';
 
   @override
-  String get reachedLastChapter => 'Reached last chapter';
+  String get reachedLastChapter => 'Ultimo capitolo raggiunto';
 
   @override
   String ttsError(String msg) {
-    return 'TTS error: $msg';
+    return 'Errore TTS: $msg';
   }
 
   @override
-  String get themeMode => 'Theme Mode';
+  String get themeMode => 'Modalità tema';
 
   @override
-  String get system => 'System';
+  String get system => 'Sistema';
 
   @override
-  String get light => 'Light';
+  String get light => 'Chiaro';
 
   @override
-  String get dark => 'Dark';
+  String get dark => 'Scuro';
 
   @override
-  String get colorTheme => 'Color Theme';
+  String get colorTheme => 'Tema colore';
 
   @override
-  String get themeLight => 'Light';
+  String get themeLight => 'Chiaro';
 
   @override
-  String get themeSepia => 'Sepia';
+  String get themeSepia => 'Seppia';
 
   @override
-  String get themeHighContrast => 'Contrast';
+  String get themeHighContrast => 'Contrasto';
 
   @override
-  String get themeDefault => 'Default';
+  String get themeDefault => 'Predefinito';
 
   @override
-  String get themeEmeraldGreen => 'Emerald';
+  String get themeEmeraldGreen => 'Smeraldo';
 
   @override
-  String get themeSolarizedTan => 'Solarized Tan';
+  String get themeSolarizedTan => 'Solarizzato Beige';
 
   @override
   String get themeNord => 'Nord';
 
   @override
-  String get themeNordFrost => 'Nord Frost';
+  String get themeNordFrost => 'Nord Gelo';
 
   @override
-  String get separateDarkPalette => 'Use separate dark palette';
+  String get separateDarkPalette => 'Usa tavolozza scura separata';
 
   @override
-  String get lightPalette => 'Light Palette';
+  String get lightPalette => 'Tavolozza chiara';
 
   @override
-  String get darkPalette => 'Dark Palette';
+  String get darkPalette => 'Tavolozza scura';
 
   @override
-  String get typographyPreset => 'Typography Preset';
+  String get typographyPreset => 'Preset tipografia';
 
   @override
-  String get typographyComfortable => 'Comfortable';
+  String get typographyComfortable => 'Confortevole';
 
   @override
-  String get typographyCompact => 'Compact';
+  String get typographyCompact => 'Compatto';
 
   @override
-  String get typographySerifLike => 'Serif-like';
+  String get typographySerifLike => 'Tipo Serif';
 
   @override
-  String get fontPack => 'Font Pack';
+  String get fontPack => 'Pack font';
 
   @override
   String get separateTypographyPresets =>
-      'Use separate typography for light/dark';
+      'Usa tipografia separata per chiaro/scuro';
 
   @override
-  String get typographyLight => 'Light Typography';
+  String get typographyLight => 'Tipografia chiara';
 
   @override
-  String get typographyDark => 'Dark Typography';
+  String get typographyDark => 'Tipografia scura';
 
   @override
-  String get readerBundles => 'Reader Theme Bundles';
+  String get readerBundles => 'Bundle tema lettore';
 
   @override
-  String get tokenUsage => 'Token Usage';
+  String get tokenUsage => 'Utilizzo token';
 
   @override
   String removedNovel(String title) {
-    return 'Removed $title';
+    return 'Rimosso $title';
   }
 
   @override
-  String get discover => 'Discover';
+  String get discover => 'Scopri';
 
   @override
-  String get profile => 'Profile';
+  String get profile => 'Profilo';
 
   @override
-  String get libraryTitle => 'Library';
+  String get libraryTitle => 'Libreria';
 
   @override
-  String get undo => 'Undo';
+  String get undo => 'Annulla';
 
   @override
-  String get allFilter => 'All';
+  String get allFilter => 'Tutti';
 
   @override
-  String get readingFilter => 'Reading';
+  String get readingFilter => 'In lettura';
 
   @override
-  String get completedFilter => 'Completed';
+  String get completedFilter => 'Completati';
 
   @override
-  String get downloadedFilter => 'Downloaded';
+  String get downloadedFilter => 'Scaricati';
 
   @override
-  String get searchNovels => 'Search novels...';
+  String get searchNovels => 'Cerca romanzi...';
 
   @override
-  String get listView => 'List View';
+  String get listView => 'Vista elenco';
 
   @override
-  String get gridView => 'Grid View';
+  String get gridView => 'Vista griglia';
 
   @override
-  String get userManagement => 'User Management';
+  String get userManagement => 'Gestione utenti';
 
   @override
-  String get totalThisMonth => 'Total This Month';
+  String get totalThisMonth => 'Totale questo mese';
 
   @override
-  String get inputTokens => 'Input Tokens';
+  String get inputTokens => 'Token in input';
 
   @override
-  String get outputTokens => 'Output Tokens';
+  String get outputTokens => 'Token in output';
 
   @override
-  String get requests => 'Requests';
+  String get requests => 'Richieste';
 
   @override
-  String get viewHistory => 'View history';
+  String get viewHistory => 'Visualizza cronologia';
 
   @override
-  String get noUsageThisMonth => 'No usage this month';
+  String get noUsageThisMonth => 'Nessun utilizzo questo mese';
 
   @override
   String get startUsingAiFeatures =>
-      'Start using AI features to see your token consumption';
+      'Inizia a usare le funzionalità AI per vedere il consumo di token';
 
   @override
-  String get errorLoadingUsage => 'Error loading usage';
+  String get errorLoadingUsage => 'Errore nel caricamento dell\'utilizzo';
 
   @override
-  String get refresh => 'Refresh';
+  String get refresh => 'Aggiorna';
 
   @override
   String totalRecords(int count) {
-    return 'Total Records: $count';
+    return 'Record totali: $count';
   }
 
   @override
-  String get total => 'Total';
+  String get total => 'Totale';
 
   @override
-  String get noUsageHistory => 'No Usage History';
+  String get noUsageHistory => 'Nessuna cronologia di utilizzo';
 
   @override
-  String get bundleNordCalm => 'Nord Calm';
+  String get bundleNordCalm => 'Nord Calmo';
 
   @override
-  String get bundleSolarizedFocus => 'Solarized Focus';
+  String get bundleSolarizedFocus => 'Focus Solarizzato';
 
   @override
-  String get bundleHighContrastReadability => 'High Contrast Readability';
+  String get bundleHighContrastReadability => 'Leggibilità alto contrasto';
 
   @override
-  String get customFontFamily => 'Custom Font Family';
+  String get customFontFamily => 'Famiglia font personalizzata';
 
   @override
-  String get commonFonts => 'Common Fonts';
+  String get commonFonts => 'Font comuni';
 
   @override
-  String get readerFontSize => 'Reader Font Size';
+  String get readerFontSize => 'Dimensione font lettore';
 
   @override
-  String get textScale => 'Text Scale';
+  String get textScale => 'Scala testo';
 
   @override
-  String get readerBackgroundDepth => 'Reader Background Depth';
+  String get readerBackgroundDepth => 'Profondità sfondo lettore';
 
   @override
-  String get depthLow => 'Low';
+  String get depthLow => 'Bassa';
 
   @override
-  String get depthMedium => 'Medium';
+  String get depthMedium => 'Media';
 
   @override
-  String get depthHigh => 'High';
+  String get depthHigh => 'Alta';
 
   @override
-  String get select => 'Select';
+  String get select => 'Seleziona';
 
   @override
-  String get clear => 'Clear';
+  String get clear => 'Cancella';
 
   @override
-  String get adminMode => 'Admin Mode';
+  String get adminMode => 'Modalità admin';
 
   @override
-  String get reduceMotion => 'Reduce motion';
+  String get reduceMotion => 'Riduci movimento';
 
   @override
   String get reduceMotionDescription =>
-      'Minimize animations for motion comfort';
+      'Minimizza le animazioni per il comfort visivo';
 
   @override
-  String get gesturesEnabled => 'Enable touch gestures';
+  String get gesturesEnabled => 'Abilita gesture touch';
 
   @override
   String get gesturesEnabledDescription =>
-      'Enable swipe and tap gestures in the reader';
+      'Abilita scorrimento e tocco nel lettore';
 
   @override
-  String get readerSwipeSensitivity => 'Reader swipe sensitivity';
+  String get readerSwipeSensitivity => 'Sensibilità scorrimento lettore';
 
   @override
   String get readerSwipeSensitivityDescription =>
-      'Adjust minimum swipe velocity for chapter navigation';
+      'Regola la velocità minima di scorrimento per la navigazione dei capitoli';
 
   @override
-  String get remove => 'Remove';
+  String get remove => 'Rimuovi';
 
   @override
-  String get removedFromLibrary => 'Removed from Library';
+  String get removedFromLibrary => 'Rimosso dalla libreria';
 
   @override
-  String get confirmDelete => 'Confirm Delete';
+  String get confirmDelete => 'Conferma eliminazione';
 
   @override
   String confirmDeleteDescription(String title) {
-    return 'This will delete \'$title\' from your cloud library. Are you sure?';
+    return 'Questo eliminerà \'$title\' dalla tua libreria cloud. Sei sicuro?';
   }
 
   @override
-  String get delete => 'Delete';
+  String get delete => 'Elimina';
 
   @override
-  String get reachedFirstChapter => 'Reached first chapter';
+  String get reachedFirstChapter => 'Primo capitolo raggiunto';
 
   @override
-  String get previousChapter => 'Previous chapter';
+  String get previousChapter => 'Capitolo precedente';
 
   @override
-  String get nextChapter => 'Next chapter';
+  String get nextChapter => 'Capitolo successivo';
 
   @override
   String get betaEvaluate => 'Beta';
 
   @override
-  String get betaEvaluating => 'Sending for beta evaluation…';
+  String get betaEvaluating => 'Invio per valutazione beta…';
 
   @override
-  String get betaEvaluationReady => 'Beta evaluation ready';
+  String get betaEvaluationReady => 'Valutazione beta pronta';
 
   @override
-  String get betaEvaluationFailed => 'Beta evaluation failed';
+  String get betaEvaluationFailed => 'Valutazione beta fallita';
 
   @override
-  String get performanceSettings => 'Performance Settings';
+  String get performanceSettings => 'Impostazioni prestazioni';
 
   @override
-  String get prefetchNextChapter => 'Prefetch next chapter';
+  String get prefetchNextChapter => 'Precarica prossimo capitolo';
 
   @override
   String get prefetchNextChapterDescription =>
-      'Preload the next chapter to reduce waiting.';
+      'Precarica il prossimo capitolo per ridurre l\'attesa.';
 
   @override
-  String get clearOfflineCache => 'Clear offline cache';
+  String get clearOfflineCache => 'Svuota cache offline';
 
   @override
-  String get offlineCacheCleared => 'Offline cache cleared';
+  String get offlineCacheCleared => 'Cache offline svuotata';
 
   @override
-  String get edit => 'Edit';
+  String get edit => 'Modifica';
 
   @override
-  String get exitEdit => 'Exit Edit';
+  String get exitEdit => 'Esci da modifica';
 
   @override
-  String get enterEditMode => 'Enter Edit Mode';
+  String get enterEditMode => 'Entra in modalità modifica';
 
   @override
-  String get exitEditMode => 'Exit Edit Mode';
+  String get exitEditMode => 'Esci dalla modalità modifica';
 
   @override
-  String get chapterContent => 'Chapter Content';
+  String get chapterContent => 'Contenuto del capitolo';
 
   @override
-  String get save => 'Save';
+  String get save => 'Salva';
 
   @override
-  String get createNextChapter => 'Create Next Chapter';
+  String get createNextChapter => 'Crea prossimo capitolo';
 
   @override
-  String get enterChapterTitle => 'Enter chapter title';
+  String get enterChapterTitle => 'Inserisci titolo del capitolo';
 
   @override
-  String get enterChapterContent => 'Enter chapter content';
+  String get enterChapterContent => 'Inserisci contenuto del capitolo';
 
   @override
-  String get discardChangesTitle => 'Discard changes?';
+  String get discardChangesTitle => 'Scartare le modifiche?';
 
   @override
   String get discardChangesMessage =>
-      'You have unsaved changes. Do you want to discard them?';
+      'Hai modifiche non salvate. Vuoi scartarle?';
 
   @override
-  String get keepEditing => 'Keep editing';
+  String get keepEditing => 'Continua a modificare';
 
   @override
-  String get discardChanges => 'Discard changes';
+  String get discardChanges => 'Scarta modifiche';
 
   @override
-  String get saveAndExit => 'Save & Exit';
+  String get saveAndExit => 'Salva ed esci';
 
   @override
-  String get descriptionLabel => 'Description';
+  String get descriptionLabel => 'Descrizione';
 
   @override
-  String get coverUrlLabel => 'Cover URL';
+  String get coverUrlLabel => 'URL copertina';
 
   @override
-  String get invalidCoverUrl => 'Enter a valid http(s) URL without spaces.';
+  String get invalidCoverUrl => 'Inserisci un URL http(s) valido senza spazi.';
 
   @override
-  String get navigation => 'Navigation';
+  String get navigation => 'Navigazione';
 
   @override
-  String get chapterIndex => 'Chapter Index';
+  String get chapterIndex => 'Indice capitoli';
 
   @override
-  String get summary => 'Summary';
+  String get summary => 'Riassunto';
 
   @override
-  String get characters => 'Characters';
+  String get characters => 'Personaggi';
 
   @override
-  String get scenes => 'Scenes';
+  String get scenes => 'Scene';
 
   @override
-  String get characterTemplates => 'Character Templates';
+  String get characterTemplates => 'Modelli personaggi';
 
   @override
-  String get sceneTemplates => 'Scene Templates';
+  String get sceneTemplates => 'Modelli scene';
 
   @override
-  String get updateNovel => 'Update Novel';
+  String get updateNovel => 'Aggiorna romanzo';
 
   @override
-  String get deleteNovel => 'Delete Novel';
+  String get deleteNovel => 'Elimina romanzo';
 
   @override
   String get deleteNovelConfirmation =>
-      'This will permanently delete the novel. Continue?';
+      'Questo eliminerà definitivamente il romanzo. Continuare?';
 
   @override
-  String get format => 'Format';
+  String get format => 'Formato';
 
   @override
-  String get aiServiceUrl => 'AI Service URL';
+  String get aiServiceUrl => 'URL servizio AI';
 
   @override
-  String get aiServiceUrlDescription => 'Backend service URL for AI features';
+  String get aiServiceUrlDescription =>
+      'URL del servizio backend per funzionalità AI';
 
   @override
-  String get aiAssistant => 'AI Assistant';
+  String get aiAssistant => 'Assistente AI';
 
   @override
-  String get aiChatHistory => 'History';
+  String get aiChatHistory => 'Cronologia';
 
   @override
-  String get aiChatNewChat => 'New Chat';
+  String get aiChatNewChat => 'Nuova chat';
 
   @override
-  String get aiChatNoHistory => 'No history';
+  String get aiChatNoHistory => 'Nessuna cronologia';
 
   @override
-  String get aiChatHint => 'Type your message...';
+  String get aiChatHint => 'Scrivi il tuo messaggio...';
 
   @override
-  String get aiChatEmpty => 'Ask me anything about this chapter or novel';
+  String get aiChatEmpty =>
+      'Chiedimi qualsiasi cosa su questo capitolo o romanzo';
 
   @override
-  String get aiThinking => 'AI is thinking...';
+  String get aiThinking => 'AI sta pensando...';
 
   @override
-  String get aiChatContextLabel => 'Context';
+  String get aiChatContextLabel => 'Contesto';
 
   @override
   String aiTokenCount(int count) {
-    return '$count tokens';
+    return '$count token';
   }
 
   @override
   String aiContextLoadError(String error) {
-    return 'Error loading context: $error';
+    return 'Errore nel caricamento del contesto: $error';
   }
 
   @override
   String aiChatContextTooLongCompressing(int tokens) {
-    return 'Context is too long ($tokens tokens). Compressing...';
+    return 'Il contesto è troppo lungo ($tokens token). Compressione...';
   }
 
   @override
   String aiChatContextCompressionFailedNote(String error) {
-    return '[Note: Context compression failed: $error]';
+    return '[Nota: compressione contesto fallita: $error]';
   }
 
   @override
   String aiChatError(String error) {
-    return 'Error: $error';
+    return 'Errore: $error';
   }
 
   @override
   String aiChatDeepAgentError(String error) {
-    return 'Deep Agent Error: $error';
+    return 'Errore Deep Agent: $error';
   }
 
   @override
-  String get aiChatSearchFailed => 'Search failed';
+  String get aiChatSearchFailed => 'Ricerca fallita';
 
   @override
   String aiChatSearchError(String error) {
-    return 'Search Error: $error';
+    return 'Errore ricerca: $error';
   }
 
   @override
-  String get aiChatRagSearchResultsTitle => 'RAG Search Results';
+  String get aiChatRagSearchResultsTitle => 'Risultati ricerca RAG';
 
   @override
   String aiChatRagRefinedQuery(String query) {
-    return 'Refined Query: \"$query\"';
+    return 'Query raffinata: \"$query\"';
   }
 
   @override
-  String get aiChatRagNoResults => 'No results found.';
+  String get aiChatRagNoResults => 'Nessun risultato trovato.';
 
   @override
-  String get aiChatRagUnknownType => 'unknown';
+  String get aiChatRagUnknownType => 'sconosciuto';
 
   @override
-  String get aiServiceSignInRequired => 'Sign in required to use AI service';
+  String get aiServiceSignInRequired =>
+      'Accesso richiesto per usare il servizio AI';
 
   @override
   String get aiServiceFeatureNotAvailable =>
-      'Feature not available for your plan';
+      'Funzionalità non disponibile per il tuo piano';
 
   @override
   String aiServiceFailedToConnect(String error) {
-    return 'Failed to connect to AI service: $error';
+    return 'Impossibile connettersi al servizio AI: $error';
   }
 
   @override
-  String get aiServiceNoResponse => 'No response from AI service';
+  String get aiServiceNoResponse => 'Nessuna risposta dal servizio AI';
 
   @override
   String get aiDeepAgentDetailsTitle => 'Deep Agent';
 
   @override
   String aiDeepAgentStop(String reason, Object rounds) {
-    return 'Stop: $reason (rounds: $rounds)';
+    return 'Stop: $reason (round: $rounds)';
   }
 
   @override
-  String get aiDeepAgentPlanLabel => 'Plan:';
+  String get aiDeepAgentPlanLabel => 'Piano:';
 
   @override
-  String get aiDeepAgentToolsLabel => 'Tools:';
+  String get aiDeepAgentToolsLabel => 'Strumenti:';
 
   @override
-  String get deepAgentSettingsTitle => 'Deep Agent Settings';
+  String get deepAgentSettingsTitle => 'Impostazioni Deep Agent';
 
   @override
   String get deepAgentSettingsDescription =>
-      'Control whether AI Chat prefers Deep Agent, plus reflection and debug output.';
+      'Controlla se AI Chat preferisce Deep Agent, più riflessione e output debug.';
 
   @override
-  String get deepAgentPreferTitle => 'Prefer Deep Agent';
+  String get deepAgentPreferTitle => 'Preferisci Deep Agent';
 
   @override
   String get deepAgentPreferSubtitle =>
-      'When enabled, normal chat calls /agents/deep-agent first.';
+      'Se abilitato, le chat normali chiamano prima /agents/deep-agent.';
 
   @override
-  String get deepAgentFallbackTitle => 'Fallback to QA if unavailable';
+  String get deepAgentFallbackTitle => 'Fallback su QA se non disponibile';
 
   @override
   String get deepAgentFallbackSubtitle =>
-      'Automatically calls /agents/qa when deep-agent returns 404/501.';
+      'Chiama automaticamente /agents/qa quando deep-agent restituisce 404/501.';
 
   @override
-  String get deepAgentReflectionModeTitle => 'Reflection Mode';
+  String get deepAgentReflectionModeTitle => 'Modalità riflessione';
 
   @override
   String get deepAgentReflectionModeSubtitle =>
-      'Controls post-answer evaluation and optional retry.';
+      'Controlla valutazione post-risposta e ripristino opzionale.';
 
   @override
-  String get deepAgentReflectionModeOff => 'Off';
+  String get deepAgentReflectionModeOff => 'Spento';
 
   @override
-  String get deepAgentReflectionModeOnFailure => 'On failure';
+  String get deepAgentReflectionModeOnFailure => 'Su errore';
 
   @override
-  String get deepAgentReflectionModeAlways => 'Always';
+  String get deepAgentReflectionModeAlways => 'Sempre';
 
   @override
-  String get deepAgentShowDetailsTitle => 'Show Execution Details';
+  String get deepAgentShowDetailsTitle => 'Mostra dettagli esecuzione';
 
   @override
   String get deepAgentShowDetailsSubtitle =>
-      'Include plan and tool call logs in /deep output.';
+      'Include log di piano e chiamate strumenti nell\'output /deep.';
 
   @override
-  String get deepAgentMaxPlanSteps => 'Max Plan Steps';
+  String get deepAgentMaxPlanSteps => 'Max passi piano';
 
   @override
-  String get deepAgentMaxToolRounds => 'Max Tool Rounds';
+  String get deepAgentMaxToolRounds => 'Max round strumenti';
 
   @override
-  String get send => 'Send';
+  String get send => 'Invia';
 
   @override
-  String get resetToDefault => 'Reset to Default';
+  String get resetToDefault => 'Ripristina predefiniti';
 
   @override
-  String get invalidUrl => 'Enter a valid http(s) URL without spaces.';
+  String get invalidUrl => 'Inserisci un URL http(s) valido senza spazi.';
 
   @override
-  String get urlTooLong => 'URL must be 2048 characters or less.';
+  String get urlTooLong => 'L\'URL deve essere di 2048 caratteri o meno.';
 
   @override
-  String get urlContainsSpaces => 'URL cannot contain spaces.';
+  String get urlContainsSpaces => 'L\'URL non può contenere spazi.';
 
   @override
-  String get urlInvalidScheme => 'URL must start with http:// or https://.';
+  String get urlInvalidScheme => 'L\'URL deve iniziare con http:// o https://.';
 
   @override
-  String get saved => 'Saved';
+  String get saved => 'Salvato';
 
   @override
-  String get required => 'Required';
+  String get required => 'Richiesto';
 
   @override
-  String get summariesLabel => 'Summaries';
+  String get summariesLabel => 'Riassunti';
 
   @override
-  String get synopsesLabel => 'Synopses';
+  String get synopsesLabel => 'Sinossi';
 
   @override
-  String get locationLabel => 'Location';
+  String get locationLabel => 'Posizione';
 
   @override
   String languageLabel(String code) {
-    return 'Language: $code';
+    return 'Lingua: $code';
   }
 
   @override
-  String get publicLabel => 'Public';
+  String get publicLabel => 'Pubblico';
 
   @override
-  String get privateLabel => 'Private';
+  String get privateLabel => 'Privato';
 
   @override
   String chaptersCount(int count) {
-    return 'Chapters: $count';
+    return 'Capitoli: $count';
   }
 
   @override
   String avgWordsPerChapter(int avg) {
-    return 'Avg words/chapter: $avg';
+    return 'Media parole/capitolo: $avg';
   }
 
   @override
   String chapterLabel(int idx) {
-    return 'Chapter $idx';
+    return 'Capitolo $idx';
   }
 
   @override
   String chapterWithTitle(int idx, String title) {
-    return 'Chapter $idx: $title';
+    return 'Capitolo $idx: $title';
   }
 
   @override
-  String get refreshTooltip => 'Refresh';
+  String get refreshTooltip => 'Aggiorna';
 
   @override
-  String get untitled => 'Untitled';
+  String get untitled => 'Senza titolo';
 
   @override
-  String get newLabel => 'New';
+  String get newLabel => 'Nuovo';
 
   @override
-  String get deleteSceneTitle => 'Delete Scene';
+  String get deleteSceneTitle => 'Elimina scena';
 
   @override
-  String get deleteCharacterTitle => 'Delete Character';
+  String get deleteCharacterTitle => 'Elimina personaggio';
 
   @override
-  String get deleteTemplateTitle => 'Delete Template';
+  String get deleteTemplateTitle => 'Elimina modello';
 
   @override
   String get confirmDeleteGeneric =>
-      'Are you sure you want to delete this item?';
+      'Sei sicuro di voler eliminare questo elemento?';
 
   @override
-  String get novelMetadata => 'Novel Metadata';
+  String get novelMetadata => 'Metadati romanzo';
 
   @override
-  String get contributorEmailLabel => 'Contributor Email';
+  String get contributorEmailLabel => 'Email collaboratore';
 
   @override
-  String get contributorEmailHint => 'Enter user email to add as contributor';
+  String get contributorEmailHint =>
+      'Inserisci email utente da aggiungere come collaboratore';
 
   @override
-  String get addContributor => 'Add Contributor';
+  String get addContributor => 'Aggiungi collaboratore';
 
   @override
-  String get contributorAdded => 'Contributor added';
+  String get contributorAdded => 'Collaboratore aggiunto';
 
   @override
   String get pdf => 'PDF';
 
   @override
-  String get generatingPdf => 'Generating PDF…';
+  String get generatingPdf => 'Generazione PDF…';
 
   @override
-  String get pdfFailed => 'Failed to generate PDF';
+  String get pdfFailed => 'Generazione PDF fallita';
 
   @override
-  String get tableOfContents => 'Table of Contents';
+  String get tableOfContents => 'Indice';
 
   @override
   String byAuthor(String name) {
-    return 'by $name';
+    return 'di $name';
   }
 
   @override
   String pageOfTotal(int page, int total) {
-    return 'Page $page of $total';
+    return 'Pagina $page di $total';
   }
 
   @override
-  String get close => 'Close';
+  String get close => 'Chiudi';
 
   @override
-  String get openLink => 'Open link';
+  String get openLink => 'Apri link';
 
   @override
-  String get invalidLink => 'Invalid link';
+  String get invalidLink => 'Link non valido';
 
   @override
-  String get unableToOpenLink => 'Unable to open link';
+  String get unableToOpenLink => 'Impossibile aprire il link';
 
   @override
-  String get copy => 'Copy';
+  String get copy => 'Copia';
 
   @override
-  String get copiedToClipboard => 'Copied to clipboard';
+  String get copiedToClipboard => 'Copiato negli appunti';
 
   @override
   String showingCachedPublicData(String msg) {
-    return '$msg — showing cached/public data';
+    return '$msg — visualizzazione dati cache/pubblici';
   }
 
   @override
@@ -1115,46 +1124,46 @@ class AppLocalizationsIt extends AppLocalizations {
   String get metaLabel => 'Meta';
 
   @override
-  String get aiServiceUnavailable => 'AI Service Unavailable';
+  String get aiServiceUnavailable => 'Servizio AI non disponibile';
 
   @override
-  String get aiConfigurations => 'AI Configurations';
+  String get aiConfigurations => 'Configurazioni AI';
 
   @override
-  String get modelLabel => 'Model';
+  String get modelLabel => 'Modello';
 
   @override
-  String get temperatureLabel => 'Temperature';
+  String get temperatureLabel => 'Temperatura';
 
   @override
-  String get saveFailed => 'Save failed';
+  String get saveFailed => 'Salvataggio fallito';
 
   @override
-  String get saveMyVersion => 'Save My Version';
+  String get saveMyVersion => 'Salva la mia versione';
 
   @override
-  String get resetToPublic => 'Reset to public';
+  String get resetToPublic => 'Ripristina pubblico';
 
   @override
-  String get resetFailed => 'Reset failed';
+  String get resetFailed => 'Ripristino fallito';
 
   @override
-  String get prompts => 'Prompts';
+  String get prompts => 'Prompt';
 
   @override
-  String get patterns => 'Patterns';
+  String get patterns => 'Pattern';
 
   @override
-  String get storyLines => 'Story Lines';
+  String get storyLines => 'Story line';
 
   @override
-  String get hotTopics => 'Hot Topics';
+  String get hotTopics => 'Tendenze';
 
   @override
-  String get hotTopicsSelectPlatform => 'Select platform';
+  String get hotTopicsSelectPlatform => 'Seleziona piattaforma';
 
   @override
-  String get hotTopicsAllPlatforms => 'All Platforms';
+  String get hotTopicsAllPlatforms => 'Tutte le piattaforme';
 
   @override
   String get hotTopicsPlatformWeibo => 'Weibo';
@@ -1166,236 +1175,238 @@ class AppLocalizationsIt extends AppLocalizations {
   String get hotTopicsPlatformDouyin => 'Douyin';
 
   @override
-  String get hotTopicsPlatformDescWeibo => 'Chinese microblogging';
+  String get hotTopicsPlatformDescWeibo => 'Microblogging cinese';
 
   @override
-  String get hotTopicsPlatformDescZhihu => 'Q&A platform';
+  String get hotTopicsPlatformDescZhihu => 'Piattaforma Q&A';
 
   @override
-  String get hotTopicsPlatformDescDouyin => 'Video sharing';
+  String get hotTopicsPlatformDescDouyin => 'Condivisione video';
 
   @override
-  String get tools => 'Tools';
+  String get tools => 'Strumenti';
 
   @override
-  String get preview => 'Preview';
+  String get preview => 'Anteprima';
 
   @override
-  String get actions => 'Actions';
+  String get actions => 'Azioni';
 
   @override
-  String get searchLabel => 'Search';
+  String get searchLabel => 'Cerca';
 
   @override
-  String get allLabel => 'All';
+  String get allLabel => 'Tutti';
 
   @override
-  String get filterByLocked => 'Filter by Locked';
+  String get filterByLocked => 'Filtra per bloccati';
 
   @override
-  String get lockedOnly => 'Locked Only';
+  String get lockedOnly => 'Solo bloccati';
 
   @override
-  String get unlockedOnly => 'Unlocked Only';
+  String get unlockedOnly => 'Solo sbloccati';
 
   @override
-  String get promptKey => 'Prompt Key';
+  String get promptKey => 'Chiave prompt';
 
   @override
-  String get language => 'Language';
+  String get language => 'Lingua';
 
   @override
-  String get filterByKey => 'Filter by key';
+  String get filterByKey => 'Filtra per chiave';
 
   @override
-  String get viewPublic => 'View public';
+  String get viewPublic => 'Visualizza pubblico';
 
   @override
-  String get groupNone => 'None';
+  String get groupNone => 'Nessuno';
 
   @override
-  String get groupLanguage => 'Language';
+  String get groupLanguage => 'Lingua';
 
   @override
-  String get groupKey => 'Key';
+  String get groupKey => 'Chiave';
 
   @override
-  String get newPrompt => 'New Prompt';
+  String get newPrompt => 'Nuovo prompt';
 
   @override
-  String get newPattern => 'New Pattern';
+  String get newPattern => 'Nuovo pattern';
 
   @override
-  String get newStoryLine => 'New Story Line';
+  String get newStoryLine => 'Nuova story line';
 
   @override
-  String get editPrompt => 'Edit Prompt';
+  String get editPrompt => 'Modifica prompt';
 
   @override
-  String get editPattern => 'Edit Pattern';
+  String get editPattern => 'Modifica pattern';
 
   @override
-  String get editStoryLine => 'Edit Story Line';
+  String get editStoryLine => 'Modifica story line';
 
   @override
   String deletedWithTitle(String title) {
-    return 'Deleted: $title';
+    return 'Eliminato: $title';
   }
 
   @override
   String deleteFailedWithTitle(String title) {
-    return 'Delete failed: $title';
+    return 'Eliminazione fallita: $title';
   }
 
   @override
   String deleteErrorWithMessage(String error) {
-    return 'Delete error: $error';
+    return 'Errore eliminazione: $error';
   }
 
   @override
-  String get makePublic => 'Make Public';
+  String get makePublic => 'Rendi pubblico';
 
   @override
-  String get noPrompts => 'No prompts found';
+  String get noPrompts => 'Nessun prompt trovato';
 
   @override
-  String get noPatterns => 'No patterns';
+  String get noPatterns => 'Nessun pattern';
 
   @override
-  String get noStoryLines => 'No story lines';
+  String get noStoryLines => 'Nessuna story line';
 
   @override
   String conversionFailed(String error) {
-    return 'Conversion failed: $error';
+    return 'Conversione fallita: $error';
   }
 
   @override
-  String get failedToAnalyze => 'Failed to analyze';
+  String get failedToAnalyze => 'Analisi fallita';
 
   @override
-  String get aiCoachAnalyzing => 'AI Coach is analyzing...';
+  String get aiCoachAnalyzing => 'AI Coach sta analizzando...';
 
   @override
-  String get retry => 'Retry';
+  String get retry => 'Riprova';
 
   @override
-  String get startAiCoaching => 'Start AI Coaching';
+  String get startAiCoaching => 'Avvia coaching AI';
 
   @override
-  String get refinementComplete => 'Refinement Complete!';
+  String get refinementComplete => 'Raffinamento completato!';
 
   @override
-  String get coachQuestion => 'Coach\'s Question';
+  String get coachQuestion => 'Domanda del coach';
 
   @override
-  String get summaryLooksGood => 'Great job! Your summary looks solid.';
+  String get summaryLooksGood =>
+      'Ottimo lavoro! Il tuo riassunto sembra solido.';
 
   @override
-  String get howToImprove => 'How can we improve this?';
+  String get howToImprove => 'Come possiamo migliorarlo?';
 
   @override
-  String get suggestionsLabel => 'Suggestions:';
+  String get suggestionsLabel => 'Suggerimenti:';
 
   @override
-  String get reviewSuggestionsHint => 'Review suggestions or type answer...';
+  String get reviewSuggestionsHint =>
+      'Rivedi i suggerimenti o digita una risposta...';
 
   @override
-  String get aiGenerationComplete => 'AI generation complete';
+  String get aiGenerationComplete => 'Generazione AI completata';
 
   @override
-  String get clickRegenerateForNew => 'Click Regenerate for new suggestions';
+  String get clickRegenerateForNew => 'Clicca Rigenera per nuovi suggerimenti';
 
   @override
-  String get regenerate => 'Regenerate';
+  String get regenerate => 'Rigenera';
 
   @override
-  String get imSatisfied => 'I\'m satisfied';
+  String get imSatisfied => 'Sono soddisfatto';
 
   @override
-  String get templateLabel => 'Template';
+  String get templateLabel => 'Modello';
 
   @override
-  String get exampleCharacterName => 'e.g. Harry Potter';
+  String get exampleCharacterName => 'es. Harry Potter';
 
   @override
-  String get aiConvert => 'AI Convert';
+  String get aiConvert => 'Conversione AI';
 
   @override
-  String get toggleAiCoach => 'Toggle AI Coach';
+  String get toggleAiCoach => 'Attiva/Disattiva AI Coach';
 
   @override
   String retrieveFailed(String error) {
-    return 'Retrieve failed: $error';
+    return 'Recupero fallito: $error';
   }
 
   @override
-  String get confirm => 'Confirm';
+  String get confirm => 'Conferma';
 
   @override
-  String get lastRead => 'Last read';
+  String get lastRead => 'Letto l\'ultima volta';
 
   @override
-  String get noRecentChapters => 'No recent chapters';
+  String get noRecentChapters => 'Nessun capitolo recente';
 
   @override
-  String get failedToLoadConfig => 'Failed to load config';
+  String get failedToLoadConfig => 'Caricamento configurazione fallito';
 
   @override
   String makePublicPromptConfirm(String promptKey, String language) {
-    return 'Make public \"$promptKey\" ($language)?';
+    return 'Rendere pubblico \"$promptKey\" ($language)?';
   }
 
   @override
-  String get content => 'Content';
+  String get content => 'Contenuto';
 
   @override
-  String get invalidKey => 'Invalid key';
+  String get invalidKey => 'Chiave non valida';
 
   @override
-  String get invalidLanguage => 'Invalid language';
+  String get invalidLanguage => 'Lingua non valida';
 
   @override
-  String get invalidInput => 'Invalid input';
+  String get invalidInput => 'Input non valido';
 
   @override
   String charsCount(int count) {
-    return 'Characters: $count';
+    return 'Caratteri: $count';
   }
 
   @override
   String deletePromptConfirm(String promptKey, String language) {
-    return 'Delete prompt \"$promptKey\" ($language)?';
+    return 'Eliminare il prompt \"$promptKey\" ($language)?';
   }
 
   @override
-  String get profileRetrieved => 'Profile retrieved';
+  String get profileRetrieved => 'Profilo recuperato';
 
   @override
-  String get noProfileFound => 'No profile found';
+  String get noProfileFound => 'Nessun profilo trovato';
 
   @override
-  String get templateName => 'Template Name';
+  String get templateName => 'Nome modello';
 
   @override
-  String get retrieveProfile => 'Retrieve profile';
+  String get retrieveProfile => 'Recupera profilo';
 
   @override
-  String get previewLabel => 'Preview';
+  String get previewLabel => 'Anteprima';
 
   @override
-  String get markdownHint => 'Enter description in Markdown...';
+  String get markdownHint => 'Inserisci descrizione in Markdown...';
 
   @override
-  String get templateNameExists => 'Template name already exists';
+  String get templateNameExists => 'Il nome modello esiste già';
 
   @override
-  String get aiServiceUrlHint => 'Enter AI service URL (http/https)';
+  String get aiServiceUrlHint => 'Inserisci URL servizio AI (http/https)';
 
   @override
   String get urlLabel => 'URL';
 
   @override
-  String get systemFont => 'System Font';
+  String get systemFont => 'Font di sistema';
 
   @override
   String get fontInter => 'Inter';
@@ -1404,503 +1415,505 @@ class AppLocalizationsIt extends AppLocalizations {
   String get fontMerriweather => 'Merriweather';
 
   @override
-  String get editPatternTitle => 'Edit Pattern';
+  String get editPatternTitle => 'Modifica pattern';
 
   @override
-  String get newPatternTitle => 'New Pattern';
+  String get newPatternTitle => 'Nuovo pattern';
 
   @override
-  String get editStoryLineTitle => 'Edit Story Line';
+  String get editStoryLineTitle => 'Modifica story line';
 
   @override
-  String get newStoryLineTitle => 'New Story Line';
+  String get newStoryLineTitle => 'Nuova story line';
 
   @override
-  String get usageRulesLabel => 'Usage Rules (JSON)';
+  String get usageRulesLabel => 'Regole utilizzo (JSON)';
 
   @override
-  String get publicPatternLabel => 'Public pattern';
+  String get publicPatternLabel => 'Pattern pubblico';
 
   @override
-  String get publicStoryLineLabel => 'Public story line';
+  String get publicStoryLineLabel => 'Story line pubblica';
 
   @override
-  String get lockedLabel => 'Locked';
+  String get lockedLabel => 'Bloccato';
 
   @override
-  String get unlockedLabel => 'Unlocked';
+  String get unlockedLabel => 'Sbloccato';
 
   @override
   String get aiButton => 'AI';
 
   @override
-  String get invalidJson => 'Invalid JSON';
+  String get invalidJson => 'JSON non valido';
 
   @override
-  String get deleteFailed => 'Delete failed';
+  String get deleteFailed => 'Eliminazione fallita';
 
   @override
-  String get lockPattern => 'Lock pattern';
+  String get lockPattern => 'Blocca pattern';
 
   @override
-  String get errorUnauthorized => 'Unauthorized';
+  String get errorUnauthorized => 'Non autorizzato';
 
   @override
-  String get errorForbidden => 'Forbidden';
+  String get errorForbidden => 'Vietato';
 
   @override
-  String get errorSessionExpired => 'Session expired';
+  String get errorSessionExpired => 'Sessione scaduta';
 
   @override
-  String get errorValidation => 'Validation error';
+  String get errorValidation => 'Errore validazione';
 
   @override
-  String get errorInvalidInput => 'Invalid input';
+  String get errorInvalidInput => 'Input non valido';
 
   @override
-  String get errorDuplicateTitle => 'Duplicate title';
+  String get errorDuplicateTitle => 'Titolo duplicato';
 
   @override
-  String get errorNotFound => 'Not found';
+  String get errorNotFound => 'Non trovato';
 
   @override
-  String get errorServiceUnavailable => 'Service unavailable';
+  String get errorServiceUnavailable => 'Servizio non disponibile';
 
   @override
-  String get errorAiNotConfigured => 'AI service not configured';
+  String get errorAiNotConfigured => 'Servizio AI non configurato';
 
   @override
-  String get errorSupabaseError => 'Cloud service error';
+  String get errorSupabaseError => 'Errore servizio cloud';
 
   @override
-  String get errorRateLimited => 'Too many requests';
+  String get errorRateLimited => 'Troppe richieste';
 
   @override
-  String get errorInternal => 'Internal server error';
+  String get errorInternal => 'Errore interno del server';
 
   @override
   String get errorBadGateway => 'Bad gateway';
 
   @override
-  String get errorGatewayTimeout => 'Gateway timeout';
+  String get errorGatewayTimeout => 'Timeout gateway';
 
   @override
-  String get loginFailed => 'Login failed';
+  String get loginFailed => 'Accesso fallito';
 
   @override
-  String get invalidResponseFromServer => 'Invalid response from server';
+  String get invalidResponseFromServer => 'Risposta non valida dal server';
 
   @override
-  String get signUp => 'Sign Up';
+  String get signUp => 'Registrati';
 
   @override
-  String get forgotPassword => 'Forgot Password?';
+  String get forgotPassword => 'Password dimenticata?';
 
   @override
-  String get signupFailed => 'Signup failed';
+  String get signupFailed => 'Registrazione fallita';
 
   @override
   String get accountCreatedCheckEmail =>
-      'Account created! Please check your email to verify.';
+      'Account creato! Controlla la tua email per verificare.';
 
   @override
-  String get backToSignIn => 'Back to Sign In';
+  String get backToSignIn => 'Torna ad accedi';
 
   @override
-  String get createAccount => 'Create Account';
+  String get createAccount => 'Crea account';
 
   @override
-  String get alreadyHaveAccountSignIn => 'Already have an account? Sign In';
+  String get alreadyHaveAccountSignIn => 'Hai già un account? Accedi';
 
   @override
-  String get requestFailed => 'Request failed';
+  String get requestFailed => 'Richiesta fallita';
 
   @override
   String get ifAccountExistsResetLinkSent =>
-      'If an account exists, a reset link has been sent to your email.';
+      'Se esiste un account, un link di reset è stato inviato alla tua email.';
 
   @override
   String get enterEmailForResetLink =>
-      'Enter your email address to receive a password reset link.';
+      'Inserisci il tuo indirizzo email per ricevere un link di reset password.';
 
   @override
-  String get sendResetLink => 'Send Reset Link';
+  String get sendResetLink => 'Invia link reset';
 
   @override
-  String get passwordsDoNotMatch => 'Passwords do not match';
+  String get passwordsDoNotMatch => 'Le password non corrispondono';
 
   @override
   String get sessionInvalidLoginAgain =>
-      'Session invalid. Please login or use the reset link again.';
+      'Sessione non valida. Accedi o usa il link reset di nuovo.';
 
   @override
-  String get updateFailed => 'Update failed';
+  String get updateFailed => 'Aggiornamento fallito';
 
   @override
-  String get passwordUpdatedSuccessfully => 'Password updated successfully!';
+  String get passwordUpdatedSuccessfully => 'Password aggiornata con successo!';
 
   @override
-  String get resetPassword => 'Reset Password';
+  String get resetPassword => 'Resetta password';
 
   @override
-  String get newPassword => 'New Password';
+  String get newPassword => 'Nuova password';
 
   @override
-  String get confirmPassword => 'Confirm Password';
+  String get confirmPassword => 'Conferma password';
 
   @override
-  String get updatePassword => 'Update Password';
+  String get updatePassword => 'Aggiorna password';
 
   @override
   String get noActiveSessionFound =>
-      'No active session found. Please log in again.';
+      'Nessuna sessione attiva trovata. Accedi di nuovo.';
 
   @override
   String get authenticationFailedSignInAgain =>
-      'Authentication failed. Please sign in again.';
+      'Autenticazione fallita. Accedi di nuovo.';
 
   @override
   String get accessDeniedNoAdminPrivileges =>
-      'Access denied. You don\'t have admin privileges.';
+      'Accesso negato. Non hai privilegi admin.';
 
   @override
   String failedToLoadUsers(int statusCode, String errorBody) {
-    return 'Failed to load users: $statusCode - $errorBody';
+    return 'Caricamento utenti fallito: $statusCode - $errorBody';
   }
 
   @override
-  String get smartSearchRequiresSignIn => 'Please sign in to use smart search';
+  String get smartSearchRequiresSignIn => 'Accedi per usare la ricerca smart';
 
   @override
-  String get smartSearch => 'Smart Search';
+  String get smartSearch => 'Ricerca smart';
 
   @override
-  String get failedToPersistTemplate => 'Failed to save template';
+  String get failedToPersistTemplate => 'Salvataggio modello fallito';
 
   @override
   String userIdCreated(String id, String createdAt) {
-    return 'User $id created at $createdAt';
+    return 'Utente $id creato il $createdAt';
   }
 
   @override
   String get tryAdjustingSearchCreateNovel =>
-      'Try adjusting your search or create a new novel';
+      'Prova a modificare la ricerca o crea un nuovo romanzo';
 
   @override
-  String get sessionExpired => 'Session expired';
+  String get sessionExpired => 'Sessione scaduta';
 
   @override
-  String get errorLoadingUsers => 'Error loading users';
+  String get errorLoadingUsers => 'Errore caricamento utenti';
 
   @override
-  String get unknownError => 'Unknown error';
+  String get unknownError => 'Errore sconosciuto';
 
   @override
-  String get goBack => 'Go Back';
+  String get goBack => 'Torna indietro';
 
   @override
-  String get unableToLoadAsset => 'Unable to load asset';
+  String get unableToLoadAsset => 'Impossibile caricare risorsa';
 
   @override
   String get youDontHavePermission =>
-      'You don\'t have permission to perform this action.';
+      'Non hai i permessi per eseguire questa azione.';
 
   @override
-  String get continueReading => 'Continue Reading';
+  String get continueReading => 'Continua a leggere';
 
   @override
-  String get removeFromLibrary => 'Remove from Library';
+  String get removeFromLibrary => 'Rimuovi dalla libreria';
 
   @override
   String get createFirstNovelSubtitle =>
-      'Create your first novel to get started.';
+      'Crea il tuo primo romanzo per iniziare.';
 
   @override
-  String get navigationError => 'Navigation error';
+  String get navigationError => 'Errore navigazione';
 
   @override
-  String get pdfStepPreparing => 'Preparing chapters';
+  String get pdfStepPreparing => 'Preparazione capitoli';
 
   @override
-  String get pdfStepGenerating => 'Generating PDF';
+  String get pdfStepGenerating => 'Generazione PDF';
 
   @override
-  String get pdfStepSharing => 'Sharing';
+  String get pdfStepSharing => 'Condivisione';
 
   @override
-  String get tipIntention => 'Tip: Write one clear intention per scene.';
+  String get tipIntention =>
+      'Suggerimento: Scrivi un\'intenzione chiara per scena.';
 
   @override
-  String get tipVerbs => 'Tip: Strong verbs make sentences feel alive.';
+  String get tipVerbs => 'Suggerimento: I verbi forti rendono le frasi vive.';
 
   @override
-  String get tipStuck => 'Tip: If stuck, rewrite the last paragraph.';
+  String get tipStuck =>
+      'Suggerimento: Se sei bloccato, riscrivi l\'ultimo paragrafo.';
 
   @override
   String get tipDialogue =>
-      'Tip: Dialogue reveals character faster than description.';
+      'Suggerimento: Il dialogo rivela il personaggio più velocemente della descrizione.';
 
   @override
-  String get errorNovelNotFound => 'Novel not found';
+  String get errorNovelNotFound => 'Romanzo non trovato';
 
   @override
-  String get noSentenceSummary => 'No sentence summary available.';
+  String get noSentenceSummary => 'Nessun riassunto frase disponibile.';
 
   @override
-  String get noParagraphSummary => 'No paragraph summary available.';
+  String get noParagraphSummary => 'Nessun riassunto paragrafo disponibile.';
 
   @override
-  String get noPageSummary => 'No page summary available.';
+  String get noPageSummary => 'Nessun riassunto pagina disponibile.';
 
   @override
-  String get noExpandedSummary => 'No expanded summary available.';
+  String get noExpandedSummary => 'Nessun riassunto esteso disponibile.';
 
   @override
-  String get aiSentenceSummaryTooltip => 'AI sentence summary';
+  String get aiSentenceSummaryTooltip => 'Riassunto frase AI';
 
   @override
-  String get aiParagraphSummaryTooltip => 'AI paragraph summary';
+  String get aiParagraphSummaryTooltip => 'Riassunto paragrafo AI';
 
   @override
-  String get aiPageSummaryTooltip => 'AI page summary';
+  String get aiPageSummaryTooltip => 'Riassunto pagina AI';
 
   @override
-  String get keyboardShortcuts => 'Keyboard shortcuts';
+  String get keyboardShortcuts => 'Scorciatoie tastiera';
 
   @override
-  String get shortcutSpace => 'Space: Play / stop';
+  String get shortcutSpace => 'Spazio: Riproduci / ferma';
 
   @override
-  String get shortcutArrows => '← / →: Previous / next';
+  String get shortcutArrows => '← / →: Precedente / successivo';
 
   @override
-  String get shortcutRate => 'Ctrl/⌘ + R: Speech rate';
+  String get shortcutRate => 'Ctrl/⌘ + R: Velocità parlata';
 
   @override
-  String get shortcutVoice => 'Ctrl/⌘ + V: Voice';
+  String get shortcutVoice => 'Ctrl/⌘ + V: Voce';
 
   @override
-  String get shortcutHelp => 'Ctrl/⌘ + /: Show shortcuts';
+  String get shortcutHelp => 'Ctrl/⌘ + /: Mostra scorciatoie';
 
   @override
-  String get shortcutEsc => 'Esc: Close';
+  String get shortcutEsc => 'Esc: Chiudi';
 
   @override
-  String get styles => 'Styles';
+  String get styles => 'Stili';
 
   @override
-  String get noVoicesAvailable => 'No voices available';
+  String get noVoicesAvailable => 'Nessuna voce disponibile';
 
   @override
-  String get comingSoon => 'Coming soon';
+  String get comingSoon => 'Prossimamente';
 
   @override
-  String get selectNovelFirst => 'Select a novel first';
+  String get selectNovelFirst => 'Seleziona prima un romanzo';
 
   @override
-  String get adminLogs => 'Admin Logs';
+  String get adminLogs => 'Log admin';
 
   @override
-  String get viewAndFilterBackendLogs => 'View and filter backend logs';
+  String get viewAndFilterBackendLogs => 'Visualizza e filtra log backend';
 
   @override
-  String get styleGlassmorphism => 'Glassmorphism';
+  String get styleGlassmorphism => 'Vetromorfismo';
 
   @override
-  String get styleLiquidGlass => 'Liquid Glass';
+  String get styleLiquidGlass => 'Vetro liquido';
 
   @override
-  String get styleNeumorphism => 'Neumorphism';
+  String get styleNeumorphism => 'Neumorfismo';
 
   @override
-  String get styleClaymorphism => 'Claymorphism';
+  String get styleClaymorphism => 'Claymorfismo';
 
   @override
-  String get styleMinimalism => 'Minimalism';
+  String get styleMinimalism => 'Minimalismo';
 
   @override
-  String get styleBrutalism => 'Brutalism';
+  String get styleBrutalism => 'Brutalismo';
 
   @override
-  String get styleSkeuomorphism => 'Skeuomorphism';
+  String get styleSkeuomorphism => 'Skeuomorfismo';
 
   @override
-  String get styleBentoGrid => 'Bento Grid';
+  String get styleBentoGrid => 'Griglia Bento';
 
   @override
-  String get styleResponsive => 'Responsive';
+  String get styleResponsive => 'Responsivo';
 
   @override
-  String get styleFlatDesign => 'Flat Design';
+  String get styleFlatDesign => 'Design piatto';
 
   @override
-  String get scrollToBottom => 'Scroll to bottom';
+  String get scrollToBottom => 'Scorri in basso';
 
   @override
-  String get scrollToTop => 'Scroll to top';
+  String get scrollToTop => 'Scorri in alto';
 
   @override
-  String get numberOfLines => 'Number of lines';
+  String get numberOfLines => 'Numero di righe';
 
   @override
-  String get lines => 'lines';
+  String get lines => 'righe';
 
   @override
-  String get load => 'Load';
+  String get load => 'Carica';
 
   @override
-  String get noLogsAvailable => 'No logs available.';
+  String get noLogsAvailable => 'Nessun log disponibile.';
 
   @override
-  String get failedToLoadLogs => 'Failed to load logs';
+  String get failedToLoadLogs => 'Caricamento log fallito';
 
   @override
   String wordCount(int count) {
-    return 'Word count: $count';
+    return 'Conteggio parole: $count';
   }
 
   @override
   String characterCount(int count) {
-    return 'Character count: $count';
+    return 'Conteggio caratteri: $count';
   }
 
   @override
-  String get startWriting => 'Start writing...';
+  String get startWriting => 'Inizia a scrivere...';
 
   @override
   String failedToLoadChapter(String error) {
-    return 'Failed to load chapter: $error';
+    return 'Caricamento capitolo fallito: $error';
   }
 
   @override
-  String get saving => 'Saving…';
+  String get saving => 'Salvataggio…';
 
   @override
-  String get wordCountLabel => 'Word Count';
+  String get wordCountLabel => 'Conteggio parole';
 
   @override
-  String get characterCountLabel => 'Character Count';
+  String get characterCountLabel => 'Conteggio caratteri';
 
   @override
-  String get discard => 'Discard';
+  String get discard => 'Scarta';
 
   @override
-  String get saveShortcut => 'Save';
+  String get saveShortcut => 'Salva';
 
   @override
-  String get previewShortcut => 'Preview';
+  String get previewShortcut => 'Anteprima';
 
   @override
-  String get boldShortcut => 'Bold';
+  String get boldShortcut => 'Grassetto';
 
   @override
-  String get italicShortcut => 'Italic';
+  String get italicShortcut => 'Corsivo';
 
   @override
-  String get underlineShortcut => 'Underline';
+  String get underlineShortcut => 'Sottolineato';
 
   @override
-  String get headingShortcut => 'Heading';
+  String get headingShortcut => 'Intestazione';
 
   @override
-  String get insertLinkShortcut => 'Insert link';
+  String get insertLinkShortcut => 'Inserisci link';
 
   @override
-  String get shortcutsHelpShortcut => 'Shortcuts help';
+  String get shortcutsHelpShortcut => 'Aiuto scorciatoie';
 
   @override
-  String get closeShortcut => 'Close';
+  String get closeShortcut => 'Chiudi';
 
   @override
-  String get designSystemStyleGuide => 'Design System Style Guide';
+  String get designSystemStyleGuide => 'Guida design system';
 
   @override
-  String get headlineLarge => 'Headline Large';
+  String get headlineLarge => 'Intestazione grande';
 
   @override
-  String get headlineMedium => 'Headline Medium';
+  String get headlineMedium => 'Intestazione media';
 
   @override
-  String get titleLarge => 'Title Large';
+  String get titleLarge => 'Titolo grande';
 
   @override
-  String get bodyLarge => 'Body Large';
+  String get bodyLarge => 'Corpo grande';
 
   @override
-  String get bodyMedium => 'Body Medium';
+  String get bodyMedium => 'Corpo medio';
 
   @override
-  String get primaryButton => 'Primary Button';
+  String get primaryButton => 'Pulsante primario';
 
   @override
-  String get disabled => 'Disabled';
+  String get disabled => 'Disabilitato';
 
   @override
   String checkboxState(bool value) {
-    return 'Checkbox State: $value';
+    return 'Stato checkbox: $value';
   }
 
   @override
-  String get option1 => 'Option 1';
+  String get option1 => 'Opzione 1';
 
   @override
-  String get option2 => 'Option 2';
+  String get option2 => 'Opzione 2';
 
   @override
   String switchState(bool value) {
-    return 'Switch State: $value';
+    return 'Stato interruttore: $value';
   }
 
   @override
   String sliderValue(String value) {
-    return 'Value: $value';
+    return 'Valore: $value';
   }
 
   @override
-  String get enterTextHere => 'Enter text here...';
+  String get enterTextHere => 'Inserisci testo qui...';
 
   @override
-  String get selectAnOption => 'Select an option';
+  String get selectAnOption => 'Seleziona un\'opzione';
 
   @override
-  String get optionA => 'Option A';
+  String get optionA => 'Opzione A';
 
   @override
-  String get optionB => 'Option B';
+  String get optionB => 'Opzione B';
 
   @override
-  String get optionC => 'Option C';
+  String get optionC => 'Opzione C';
 
   @override
-  String get contrastIssuesDetected => 'Contrast Issues Detected';
+  String get contrastIssuesDetected => 'Problemi di contrasto rilevati';
 
   @override
   String foundContrastIssues(int count) {
-    return 'Found $count contrast issue(s) that may affect readability.';
+    return 'Trovati $count problema/i di contrasto che potrebbero affettare la leggibilità.';
   }
 
   @override
-  String get allGood => 'All Good!';
+  String get allGood => 'Tutto OK!';
 
   @override
   String get allGoodContrast =>
-      'All text elements meet WCAG 2.1 AA contrast standards.';
+      'Tutti gli elementi testo soddisfano gli standard di contrasto WCAG 2.1 AA.';
 
   @override
-  String get ignore => 'Ignore';
+  String get ignore => 'Ignora';
 
   @override
-  String get applyBestFix => 'Apply Best Fix';
+  String get applyBestFix => 'Applica miglior fix';
 
   @override
-  String get moreMenuComingSoon => 'More menu coming soon';
+  String get moreMenuComingSoon => 'Altro menu prossimamente';
 
   @override
-  String get styleGuide => 'Style Guide';
+  String get styleGuide => 'Guida stile';
 
   @override
   String get themeFactoryNotDefined =>
-      'Theme factory not defined any themes, using default theme.';
+      'Theme factory non ha definito temi, uso tema predefinito.';
 
   @override
   String progressPercentage(int percent) {
@@ -1908,168 +1921,171 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get review => 'Review';
+  String get review => 'Revisiona';
 
   @override
-  String get wordsLabel => 'Words';
+  String get wordsLabel => 'Parole';
 
   @override
-  String get charsLabel => 'Chars';
+  String get charsLabel => 'Caratteri';
 
   @override
-  String get readLabel => 'Read';
+  String get readLabel => 'Leggi';
 
   @override
-  String get streakLabel => 'Streak';
+  String get streakLabel => 'Serie';
 
   @override
-  String get pause => 'Pause';
+  String get pause => 'Pausa';
 
   @override
-  String get start => 'Start';
+  String get start => 'Avvia';
 
   @override
-  String get editMode => 'Edit mode';
+  String get editMode => 'Modalità modifica';
 
   @override
-  String get previewMode => 'Preview mode';
+  String get previewMode => 'Modalità anteprima';
 
   @override
-  String get quote => 'Quote';
+  String get quote => 'Citazione';
 
   @override
-  String get inlineCode => 'Inline code';
+  String get inlineCode => 'Codice inline';
 
   @override
-  String get bulletedList => 'Bulleted list';
+  String get bulletedList => 'Elenco puntato';
 
   @override
-  String get numberedList => 'Numbered list';
+  String get numberedList => 'Elenco numerato';
 
   @override
-  String get previewTab => 'Preview';
+  String get previewTab => 'Anteprima';
 
   @override
-  String get editTab => 'Edit';
+  String get editTab => 'Modifica';
 
   @override
-  String get noExpandedSummaryAvailable => 'No expanded summary available.';
+  String get noExpandedSummaryAvailable =>
+      'Nessun riassunto esteso disponibile.';
 
   @override
-  String get analyze => 'Analyze';
+  String get analyze => 'Analizza';
 
   @override
   String youreOffline(String message) {
-    return 'You\'re offline. $message';
+    return 'Sei offline. $message';
   }
 
   @override
-  String get download => 'Download';
+  String get download => 'Scarica';
 
   @override
-  String get moreActions => 'More actions';
+  String get moreActions => 'Più azioni';
 
   @override
-  String get doubleTapToOpen => 'Double tap to open. Long press for actions.';
+  String get doubleTapToOpen =>
+      'Doppio tocco per aprire. Pressione lunga per azioni.';
 
   @override
-  String get more => 'More';
+  String get more => 'Altro';
 
   @override
-  String get pressD => 'Press D';
+  String get pressD => 'Premi D';
 
   @override
-  String get pressEnter => 'Press Enter';
+  String get pressEnter => 'Premi Invio';
 
   @override
-  String get pressDelete => 'Press Delete';
+  String get pressDelete => 'Premi Canc';
 
   @override
-  String get exitPreview => 'Exit preview';
+  String get exitPreview => 'Esci dall\'anteprima';
 
   @override
-  String get saveLabel => 'Save';
+  String get saveLabel => 'Salva';
 
   @override
-  String get exitZenMode => 'Exit Zen mode';
+  String get exitZenMode => 'Esci modalità Zen';
 
   @override
-  String get clearSearch => 'Clear search';
+  String get clearSearch => 'Cancella ricerca';
 
   @override
-  String get notSignedInLabel => 'Not signed in';
+  String get notSignedInLabel => 'Non accessibile';
 
   @override
-  String get stylePreviewGrid => 'Style preview grid';
+  String get stylePreviewGrid => 'Griglia anteprima stile';
 
   @override
-  String get themeOceanDepths => 'Ocean Depths';
+  String get themeOceanDepths => 'Profondità oceaniche';
 
   @override
-  String get themeSunsetBoulevard => 'Sunset Boulevard';
+  String get themeSunsetBoulevard => 'Viale al tramonto';
 
   @override
-  String get themeForestCanopy => 'Forest Canopy';
+  String get themeForestCanopy => 'Chioma foresta';
 
   @override
-  String get themeModernMinimalist => 'Modern Minimalist';
+  String get themeModernMinimalist => 'Minimalista moderno';
 
   @override
-  String get themeGoldenHour => 'Golden Hour';
+  String get themeGoldenHour => 'Ora d\'oro';
 
   @override
-  String get themeArcticFrost => 'Arctic Frost';
+  String get themeArcticFrost => 'Gelo artico';
 
   @override
-  String get themeDesertRose => 'Desert Rose';
+  String get themeDesertRose => 'Rosa del deserto';
 
   @override
-  String get themeTechInnovation => 'Tech Innovation';
+  String get themeTechInnovation => 'Innovazione tech';
 
   @override
-  String get themeBotanicalGarden => 'Botanical Garden';
+  String get themeBotanicalGarden => 'Giardino botanico';
 
   @override
-  String get themeMidnightGalaxy => 'Midnight Galaxy';
+  String get themeMidnightGalaxy => 'Galassia di mezzanotte';
 
   @override
-  String get standardLight => 'Standard Light';
+  String get standardLight => 'Chiaro standard';
 
   @override
-  String get warmPaper => 'Warm Paper';
+  String get warmPaper => 'Carta calda';
 
   @override
-  String get coolGrey => 'Cool Grey';
+  String get coolGrey => 'Grigio freddo';
 
   @override
-  String get sepiaLabel => 'Sepia';
+  String get sepiaLabel => 'Seppia';
 
   @override
-  String get standardDark => 'Standard Dark';
+  String get standardDark => 'Scuro standard';
 
   @override
-  String get midnight => 'Midnight';
+  String get midnight => 'Mezzanotte';
 
   @override
-  String get darkSepia => 'Dark Sepia';
+  String get darkSepia => 'Seppia scuro';
 
   @override
-  String get deepOcean => 'Deep Ocean';
+  String get deepOcean => 'Oceano profondo';
 
   @override
-  String get youreOfflineLabel => 'You\'re offline';
+  String get youreOfflineLabel => 'Sei offline';
 
   @override
-  String get changesWillSync => 'Changes will sync when you\'re back online';
+  String get changesWillSync =>
+      'Le modifiche verranno sincronizzate quando tornerai online';
 
   @override
   String changesWillSyncCount(int count) {
-    return '$count change(s) will sync when you\'re back online';
+    return '$count modifica/e verranno sincronizzate quando tornerai online';
   }
 
   @override
-  String get toggleSidebar => 'Toggle Sidebar';
+  String get toggleSidebar => 'Attiva/Disattiva barra laterale';
 
   @override
-  String get quickSearch => 'Quick Search';
+  String get quickSearch => 'Ricerca rapida';
 }

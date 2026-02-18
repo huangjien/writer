@@ -6,7 +6,6 @@ import 'package:writer/l10n/app_localizations_es.dart';
 import 'package:writer/l10n/app_localizations_fr.dart';
 import 'package:writer/l10n/app_localizations_it.dart';
 import 'package:writer/l10n/app_localizations_ja.dart';
-import 'package:writer/l10n/app_localizations_ko.dart';
 import 'package:writer/l10n/app_localizations_ru.dart';
 import 'package:writer/l10n/app_localizations_zh.dart';
 
@@ -22,7 +21,6 @@ void main() {
         AppLocalizationsFr(),
         AppLocalizationsIt(),
         AppLocalizationsJa(),
-        AppLocalizationsKo(),
         AppLocalizationsRu(),
         AppLocalizationsZh(),
       ];
@@ -1209,54 +1207,6 @@ void main() {
       expect(ja.aiChatRagRefinedQuery('q'), contains('q'));
       expect(ja.aiServiceFailedToConnect('err'), contains('err'));
       expect(ja.aiDeepAgentStop('reason', 5), isNotEmpty);
-    });
-  });
-
-  group('Korean Extended Coverage Tests', () {
-    final ko = AppLocalizationsKo();
-
-    test('extended property coverage', () {
-      expect(ko.typographyPreset, isNotEmpty);
-      expect(ko.tokenUsage, isNotEmpty);
-      expect(ko.libraryTitle, isNotEmpty);
-      expect(ko.readerBundles, isNotEmpty);
-      expect(ko.performanceSettings, isNotEmpty);
-      expect(ko.edit, isNotEmpty);
-      expect(ko.summary, isNotEmpty);
-      expect(ko.characters, isNotEmpty);
-      expect(ko.scenes, isNotEmpty);
-      expect(ko.aiAssistant, isNotEmpty);
-      expect(ko.deepAgentSettingsTitle, isNotEmpty);
-      expect(ko.summariesLabel, isNotEmpty);
-      expect(ko.synopsesLabel, isNotEmpty);
-      expect(ko.locationLabel, isNotEmpty);
-      expect(ko.publicLabel, isNotEmpty);
-      expect(ko.privateLabel, isNotEmpty);
-      expect(ko.refreshTooltip, isNotEmpty);
-      expect(ko.untitled, isNotEmpty);
-      expect(ko.adminMode, isNotEmpty);
-      expect(ko.reduceMotion, isNotEmpty);
-    });
-
-    test('extended parameterized coverage', () {
-      expect(ko.removedNovel('Test'), isNotEmpty);
-      expect(ko.totalRecords(100), isNotEmpty);
-      expect(ko.confirmDeleteDescription('Test'), contains('Test'));
-      expect(ko.languageLabel('en'), contains('en'));
-      expect(ko.chaptersCount(10), isNotEmpty);
-      expect(ko.avgWordsPerChapter(5000), isNotEmpty);
-      expect(ko.chapterLabel(5), isNotEmpty);
-      expect(ko.chapterWithTitle(1, 'Test'), contains('Test'));
-      expect(ko.aiTokenCount(1000), isNotEmpty);
-      expect(ko.aiContextLoadError('err'), contains('err'));
-      expect(ko.aiChatContextTooLongCompressing(5000), isNotEmpty);
-      expect(ko.aiChatContextCompressionFailedNote('err'), contains('err'));
-      expect(ko.aiChatError('err'), contains('err'));
-      expect(ko.aiChatDeepAgentError('err'), contains('err'));
-      expect(ko.aiChatSearchError('err'), contains('err'));
-      expect(ko.aiChatRagRefinedQuery('q'), contains('q'));
-      expect(ko.aiServiceFailedToConnect('err'), contains('err'));
-      expect(ko.aiDeepAgentStop('reason', 5), isNotEmpty);
     });
   });
 

@@ -6,7 +6,6 @@ import 'package:writer/l10n/app_localizations_es.dart';
 import 'package:writer/l10n/app_localizations_fr.dart';
 import 'package:writer/l10n/app_localizations_it.dart';
 import 'package:writer/l10n/app_localizations_ja.dart';
-import 'package:writer/l10n/app_localizations_ko.dart';
 import 'package:writer/l10n/app_localizations_ru.dart';
 import 'package:writer/l10n/app_localizations_zh.dart';
 
@@ -22,7 +21,6 @@ void main() {
         AppLocalizationsFr(),
         AppLocalizationsIt(),
         AppLocalizationsJa(),
-        AppLocalizationsKo(),
         AppLocalizationsRu(),
         AppLocalizationsZh(),
       ];
@@ -830,71 +828,6 @@ void main() {
       expect(ja.themeSolarizedTan, isNotEmpty);
       expect(ja.themeNord, isNotEmpty);
       expect(ja.themeNordFrost, isNotEmpty);
-    });
-  });
-
-  group('Korean (ko) Comprehensive Tests', () {
-    final ko = AppLocalizationsKo();
-
-    test('all basic strings are non-empty', () {
-      expect(ko.newChapter, isNotEmpty);
-      expect(ko.back, isNotEmpty);
-      expect(ko.settings, isNotEmpty);
-      expect(ko.helloWorld, isNotEmpty);
-      expect(ko.about, isNotEmpty);
-      expect(ko.appTitle, isNotEmpty);
-      expect(ko.version, isNotEmpty);
-      expect(ko.signIn, isNotEmpty);
-      expect(ko.signOut, isNotEmpty);
-      expect(ko.email, isNotEmpty);
-      expect(ko.password, isNotEmpty);
-      expect(ko.ttsSettings, isNotEmpty);
-      expect(ko.enableTTS, isNotEmpty);
-      expect(ko.themeMode, isNotEmpty);
-      expect(ko.appSettings, isNotEmpty);
-      expect(ko.myNovels, isNotEmpty);
-      expect(ko.createNovel, isNotEmpty);
-      expect(ko.novels, isNotEmpty);
-      expect(ko.chapters, isNotEmpty);
-      expect(ko.error, isNotEmpty);
-    });
-
-    test('parameterized strings work correctly', () {
-      expect(ko.signedInAs('user@test.com'), contains('user@test.com'));
-      expect(ko.continueAtChapter('Test Chapter'), isNotEmpty);
-      expect(ko.novelsAndProgressSummary(5, '50%'), isNotEmpty);
-      expect(ko.indexLabel(1), isNotEmpty);
-      expect(ko.indexOutOfRange(1, 10), isNotEmpty);
-      expect(ko.ttsError('test error'), isNotEmpty);
-    });
-
-    test('TTS-related strings are non-empty', () {
-      expect(ko.testVoice, isNotEmpty);
-      expect(ko.reloadVoices, isNotEmpty);
-      expect(ko.ttsVoice, isNotEmpty);
-      expect(ko.loadingVoices, isNotEmpty);
-      expect(ko.selectVoice, isNotEmpty);
-      expect(ko.stopTTS, isNotEmpty);
-      expect(ko.speak, isNotEmpty);
-      expect(ko.ttsSpeechRate, isNotEmpty);
-      expect(ko.ttsSpeechVolume, isNotEmpty);
-      expect(ko.ttsSpeechPitch, isNotEmpty);
-      expect(ko.pitch, isNotEmpty);
-    });
-
-    test('theme strings are non-empty', () {
-      expect(ko.system, isNotEmpty);
-      expect(ko.light, isNotEmpty);
-      expect(ko.dark, isNotEmpty);
-      expect(ko.colorTheme, isNotEmpty);
-      expect(ko.themeLight, isNotEmpty);
-      expect(ko.themeSepia, isNotEmpty);
-      expect(ko.themeHighContrast, isNotEmpty);
-      expect(ko.themeDefault, isNotEmpty);
-      expect(ko.themeEmeraldGreen, isNotEmpty);
-      expect(ko.themeSolarizedTan, isNotEmpty);
-      expect(ko.themeNord, isNotEmpty);
-      expect(ko.themeNordFrost, isNotEmpty);
     });
   });
 

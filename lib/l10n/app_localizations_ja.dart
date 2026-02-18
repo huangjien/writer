@@ -9,1393 +9,1368 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
-  String get newChapter => 'New Chapter';
+  String get newChapter => '新しい章';
 
   @override
-  String get back => 'Back';
+  String get back => '戻る';
 
   @override
-  String get helloWorld => 'Hello World!';
+  String get helloWorld => 'こんにちは、世界！';
 
   @override
-  String get home => 'Home';
+  String get home => 'ホーム';
 
   @override
-  String get settings => 'Settings';
+  String get settings => '設定';
 
   @override
   String get appTitle => 'Writer';
 
   @override
-  String get about => 'About';
+  String get about => 'このアプリについて';
 
   @override
   String get aboutDescription =>
-      'Read and manage novels, with cloud-backed storage, offline support, and Text-To-Speech playback. Use the Library to browse, search, and open chapters; sign in to sync progress; adjust settings for theme, typography, and motion.';
+      '小説の読書・管理をクラウド保存、オフライン対応、音声合成再生で行います。ライブラリで小説を検索・開いてください。サインインして進捗を同期し、テーマ、タイポグラフィ、モーションの設定を調整してください。';
 
   @override
   String get aboutIntro =>
-      'AuthorConsole helps you plan, write, and read novels across devices. It focuses on simplicity for readers and power for authors, offering a unified place to manage chapters, summaries, characters, and scenes.';
+      'AuthorConsoleは、デバイス間で小説の企画・執筆・読書をサポートします。読者にはシンプルに、作者には強力な機能を提供し、章、要約、キャラクター、シーンを一元管理します。';
 
   @override
   String get aboutSecurity =>
-      'With cloud-backed storage and strict access controls, your data remains protected. Authenticated users can sync progress, metadata, and templates while maintaining privacy.';
+      'クラウド保存と厳格なアクセス制御により、データは保護されます。認証ユーザーは進捗、メタデータ、テンプレートをプライバシーを保ったまま同期できます。';
 
   @override
   String get aboutCoach =>
-      'The built‑in AI Coach uses the Snowflake method to improve your story summary. It asks focused questions, offers suggestions, and when ready, provides a refined summary that the app applies to your document.';
+      '内蔵AIコーチはスノーフレーク法でストーリーの要約を改善します。的確な質問を投げかけ、提案を提供し、準備ができれば洗練された要約をドキュメントに適用します。';
 
   @override
-  String get aboutFeatureCreate =>
-      '• Create a new novel and organize chapters.';
+  String get aboutFeatureCreate => '• 新しい小説を作成し、章を整理。';
 
   @override
-  String get aboutFeatureTemplates =>
-      '• Use character and scene templates to bootstrap ideas.';
+  String get aboutFeatureTemplates => '• キャラクターとシーンのテンプレートを使用してアイデアを起動。';
 
   @override
-  String get aboutFeatureTracking =>
-      '• Track reading progress and resume across devices.';
+  String get aboutFeatureTracking => '• 読書の進捗を追跡し、デバイス間で再開。';
 
   @override
-  String get aboutFeatureCoach =>
-      '• Refine your summary with the AI Coach and apply improvements.';
+  String get aboutFeatureCoach => '• AIコーチで要約を洗練させ、改善を適用。';
 
   @override
-  String get aboutFeaturePrompts =>
-      '• Manage prompts and experiment with AI-assisted workflows.';
+  String get aboutFeaturePrompts => '• プロンプトを管理し、AI支援ワークフローを実験。';
 
   @override
-  String get aboutUsage => 'Usage';
+  String get aboutUsage => '使用方法';
 
   @override
   String get aboutUsageList =>
-      '• Library: search and open novels\n• Reader: navigate chapters, toggle TTS\n• Templates: manage character and scene templates\n• Settings: theme, typography, and preferences\n• Sign In: enable cloud sync';
+      '• ライブラリ: 小説の検索・開く\n• リーダー: 章のナビゲーション、音声合成の切り替え\n• テンプレート: キャラクター・シーンテンプレートの管理\n• 設定: テーマ、タイポグラフィ、環境設定\n• サインイン: クラウド同期を有効化';
 
   @override
-  String get version => 'Version';
+  String get version => 'バージョン';
 
   @override
-  String get appLanguage => 'App Language';
+  String get appLanguage => 'アプリ言語';
 
   @override
-  String get english => 'English';
+  String get english => '英語';
 
   @override
-  String get chinese => 'Chinese';
+  String get chinese => '中国語';
 
   @override
-  String get supabaseIntegrationInitialized => 'Cloud sync initialized';
+  String get supabaseIntegrationInitialized => 'クラウド同期が初期化されました';
 
   @override
-  String get configureEnvironment =>
-      'Please configure your environment variables to enable cloud sync';
+  String get configureEnvironment => 'クラウド同期を有効にするために環境変数を設定してください';
 
   @override
   String signedInAs(String email) {
-    return 'Signed in as $email';
+    return '$emailとしてサインイン中';
   }
 
   @override
-  String get guest => 'Guest';
+  String get guest => 'ゲスト';
 
   @override
-  String get notSignedIn => 'Not signed in';
+  String get notSignedIn => '未サインイン';
 
   @override
-  String get signIn => 'Sign In';
+  String get signIn => 'サインイン';
 
   @override
-  String get continueLabel => 'Continue';
+  String get continueLabel => '続行';
 
   @override
-  String get reload => 'Reload';
+  String get reload => '再読み込み';
 
   @override
-  String get signInToSync => 'Sign in to sync progress across devices.';
+  String get signInToSync => 'デバイス間で進捗を同期するにはサインインしてください。';
 
   @override
-  String get currentProgress => 'Current Progress';
+  String get currentProgress => '現在の進捗';
 
   @override
-  String get loadingProgress => 'Loading progress...';
+  String get loadingProgress => '進捗を読み込み中...';
 
   @override
-  String get recentlyRead => 'Recently Read';
+  String get recentlyRead => '最近読んだもの';
 
   @override
-  String get noSupabase => 'Cloud sync is not enabled in this build.';
+  String get noSupabase => 'このビルドではクラウド同期が有効になっていません。';
 
   @override
-  String get errorLoadingProgress => 'Error loading progress';
+  String get errorLoadingProgress => '進捗の読み込みエラー';
 
   @override
-  String get noProgress => 'No progress found';
+  String get noProgress => '進捗が見つかりません';
 
   @override
-  String get errorLoadingNovels => 'Error loading novels';
+  String get errorLoadingNovels => '小説の読み込みエラー';
 
   @override
-  String get loadingNovels => 'Loading novels…';
+  String get loadingNovels => '小説を読み込み中…';
 
   @override
-  String get titleLabel => 'Title';
+  String get titleLabel => 'タイトル';
 
   @override
-  String get authorLabel => 'Author';
+  String get authorLabel => '作者';
 
   @override
-  String get noNovelsFound => 'No novels found.';
+  String get noNovelsFound => '小説が見つかりません。';
 
   @override
-  String get myNovels => 'My Novels';
+  String get myNovels => 'マイ小説';
 
   @override
-  String get createNovel => 'Create Novel';
+  String get createNovel => '小説を作成';
 
   @override
-  String get create => 'Create';
+  String get create => '作成';
 
   @override
-  String get errorLoadingChapters => 'Error loading chapters';
+  String get errorLoadingChapters => '章の読み込みエラー';
 
   @override
-  String get loadingChapter => 'Loading chapter…';
+  String get loadingChapter => '章を読み込み中…';
 
   @override
-  String get notStarted => 'Not started';
+  String get notStarted => '未開始';
 
   @override
-  String get unknownNovel => 'Unknown Novel';
+  String get unknownNovel => '不明な小説';
 
   @override
-  String get unknownChapter => 'Unknown chapter';
+  String get unknownChapter => '不明な章';
 
   @override
-  String get chapter => 'Chapter';
+  String get chapter => '章';
 
   @override
-  String get novel => 'Novel';
+  String get novel => '小説';
 
   @override
-  String get chapterTitle => 'Chapter Title';
+  String get chapterTitle => '章のタイトル';
 
   @override
-  String get scrollOffset => 'Scroll Offset';
+  String get scrollOffset => 'スクロール位置';
 
   @override
-  String get ttsIndex => 'TTS Index';
+  String get ttsIndex => '音声合成インデックス';
 
   @override
-  String get speechRate => 'Speech Rate';
+  String get speechRate => '読み上げ速度';
 
   @override
-  String get volume => 'Volume';
+  String get volume => '音量';
 
   @override
-  String get defaultTTSVoice => 'Default TTS Voice';
+  String get defaultTTSVoice => 'デフォルトの音声';
 
   @override
-  String get defaultVoiceUpdated => 'Default voice updated';
+  String get defaultVoiceUpdated => 'デフォルトの音声を更新しました';
 
   @override
-  String get defaultLanguageSet => 'Default language set';
+  String get defaultLanguageSet => 'デフォルト言語を設定しました';
 
   @override
-  String get searchByTitle => 'Search by title…';
+  String get searchByTitle => 'タイトルで検索…';
 
   @override
-  String get chooseLanguage => 'Choose Language';
+  String get chooseLanguage => '言語を選択';
 
   @override
-  String get email => 'Email';
+  String get email => 'メールアドレス';
 
   @override
-  String get password => 'Password';
+  String get password => 'パスワード';
 
   @override
-  String get signInWithGoogle => 'Sign in with Google';
+  String get signInWithGoogle => 'Googleでサインイン';
 
   @override
-  String get signInWithApple => 'Sign in with Apple';
+  String get signInWithApple => 'Appleでサインイン';
 
   @override
-  String get testVoice => 'Test Voice';
+  String get testVoice => '音声をテスト';
 
   @override
-  String get reloadVoices => 'Reload Voices';
+  String get reloadVoices => '音声を再読み込み';
 
   @override
-  String get signOut => 'Sign Out';
+  String get signOut => 'サインアウト';
 
   @override
-  String get signedOut => 'Signed Out';
+  String get signedOut => 'サインアウトしました';
 
   @override
-  String get appSettings => 'App Settings';
+  String get appSettings => 'アプリ設定';
 
   @override
-  String get supabaseSettings => 'Cloud Sync Settings';
+  String get supabaseSettings => 'クラウド同期設定';
 
   @override
-  String get supabaseNotEnabled => 'Cloud sync not enabled';
+  String get supabaseNotEnabled => 'クラウド同期が有効になっていません';
 
   @override
-  String get supabaseNotEnabledDescription =>
-      'Cloud sync is not configured for this build.';
+  String get supabaseNotEnabledDescription => 'このビルドではクラウド同期が設定されていません。';
 
   @override
-  String get authDisabledInBuild =>
-      'Cloud sync is not configured. Authentication is disabled in this build.';
+  String get authDisabledInBuild => 'クラウド同期が設定されていません。このビルドでは認証が無効です。';
 
   @override
-  String get fetchFromSupabase => 'Fetch from cloud';
+  String get fetchFromSupabase => 'クラウドから取得';
 
   @override
-  String get fetchFromSupabaseDescription =>
-      'Fetch latest novels and progress from the cloud.';
+  String get fetchFromSupabaseDescription => 'クラウドから最新の小説と進捗を取得します。';
 
   @override
-  String get confirmFetch => 'Confirm Fetch';
+  String get confirmFetch => '取得を確認';
 
   @override
-  String get confirmFetchDescription =>
-      'This will overwrite your local data. Are you sure?';
+  String get confirmFetchDescription => 'これによりローカルデータが上書きされます。よろしいですか？';
 
   @override
-  String get cancel => 'Cancel';
+  String get cancel => 'キャンセル';
 
   @override
-  String get fetch => 'Fetch';
+  String get fetch => '取得';
 
   @override
-  String get downloadChapters => 'Download chapters';
+  String get downloadChapters => '章をダウンロード';
 
   @override
-  String get modeSupabase => 'Mode: Cloud sync';
+  String get modeSupabase => 'モード: クラウド同期';
 
   @override
-  String get modeMockData => 'Mode: Mock data';
+  String get modeMockData => 'モード: モックデータ';
 
   @override
   String continueAtChapter(String title) {
-    return 'Continue at chapter • $title';
+    return '「$title」から続きを';
   }
 
   @override
-  String get error => 'Error';
+  String get error => 'エラー';
 
   @override
-  String get ttsSettings => 'TTS Settings';
+  String get ttsSettings => '音声合成設定';
 
   @override
-  String get enableTTS => 'Enable TTS';
+  String get enableTTS => '音声合成を有効化';
 
   @override
-  String get sentenceSummary => 'Sentence Summary';
+  String get sentenceSummary => '文の要約';
 
   @override
-  String get paragraphSummary => 'Paragraph Summary';
+  String get paragraphSummary => '段落の要約';
 
   @override
-  String get pageSummary => 'Page Summary';
+  String get pageSummary => 'ページの要約';
 
   @override
-  String get expandedSummary => 'Expanded Summary';
+  String get expandedSummary => '詳細な要約';
 
   @override
-  String get pitch => 'Pitch';
+  String get pitch => 'ピッチ';
 
   @override
-  String get signInWithBiometrics => 'Sign in with biometrics';
+  String get signInWithBiometrics => '生体認証でサインイン';
 
   @override
-  String get enableBiometricLogin => 'Enable Biometric Login';
+  String get enableBiometricLogin => '生体認証ログインを有効化';
 
   @override
-  String get enableBiometricLoginDescription =>
-      'Use fingerprint or face recognition to sign in.';
+  String get enableBiometricLoginDescription => '指紋認証または顔認証でサインインします。';
 
   @override
-  String get biometricAuthFailed => 'Biometric authentication failed';
+  String get biometricAuthFailed => '生体認証に失敗しました';
 
   @override
-  String get saveCredentialsForBiometric =>
-      'Save credentials for biometric login';
+  String get saveCredentialsForBiometric => '生体認証用に資格情報を保存';
 
   @override
   String get saveCredentialsForBiometricDescription =>
-      'Securely store your credentials for faster biometric authentication';
+      '生体認証を素早く行うために資格情報を安全に保存します';
 
   @override
-  String get biometricTokensExpired => 'Biometric tokens have expired';
+  String get biometricTokensExpired => '生体認証トークンの有効期限が切れました';
 
   @override
-  String get biometricNoTokens => 'No biometric tokens found';
+  String get biometricNoTokens => '生体認証トークンが見つかりません';
 
   @override
-  String get biometricTokenError => 'Biometric token error';
+  String get biometricTokenError => '生体認証トークンエラー';
 
   @override
-  String get biometricTechnicalError => 'Biometric technical error';
+  String get biometricTechnicalError => '生体認証技術エラー';
 
   @override
-  String get ttsVoice => 'TTS Voice';
+  String get ttsVoice => '音声合成の音声';
 
   @override
-  String get loadingVoices => 'Loading voices...';
+  String get loadingVoices => '音声を読み込み中...';
 
   @override
-  String get selectVoice => 'Select a voice';
+  String get selectVoice => '音声を選択';
 
   @override
-  String get ttsLanguage => 'TTS Language';
+  String get ttsLanguage => '音声合成の言語';
 
   @override
-  String get loadingLanguages => 'Loading languages...';
+  String get loadingLanguages => '言語を読み込み中...';
 
   @override
-  String get selectLanguage => 'Select a language';
+  String get selectLanguage => '言語を選択';
 
   @override
-  String get ttsSpeechRate => 'Speech Rate';
+  String get ttsSpeechRate => '読み上げ速度';
 
   @override
-  String get ttsSpeechVolume => 'Speech Volume';
+  String get ttsSpeechVolume => '読み上げ音量';
 
   @override
-  String get ttsSpeechPitch => 'Speech Pitch';
+  String get ttsSpeechPitch => '読み上げピッチ';
 
   @override
-  String get novelsAndProgress => 'Novels and Progress';
+  String get novelsAndProgress => '小説と進捗';
 
   @override
-  String get novels => 'Novels';
+  String get novels => '小説';
 
   @override
-  String get progress => 'Progress';
+  String get progress => '進捗';
 
   @override
   String novelsAndProgressSummary(int count, String progress) {
-    return 'Novels: $count, Progress: $progress';
+    return '小説: $count、進捗: $progress';
   }
 
   @override
-  String get chapters => 'Chapters';
+  String get chapters => '章';
 
   @override
-  String get noChaptersFound => 'No chapters found.';
+  String get noChaptersFound => '章が見つかりません。';
 
   @override
   String indexLabel(int index) {
-    return 'Index $index';
+    return 'インデックス $index';
   }
 
   @override
-  String get enterFloatIndexHint => 'Enter decimal index to reposition';
+  String get enterFloatIndexHint => '小数点インデックスを入力して再配置';
 
   @override
   String indexOutOfRange(int min, int max) {
-    return 'Index must be between $min and $max';
+    return 'インデックスは$minから$maxの間である必要があります';
   }
 
   @override
-  String get indexUnchanged => 'Index unchanged';
+  String get indexUnchanged => 'インデックスは変更されていません';
 
   @override
-  String get roundingBefore => 'Always before';
+  String get roundingBefore => '常に前';
 
   @override
-  String get roundingAfter => 'Always after';
+  String get roundingAfter => '常に後';
 
   @override
-  String get stopTTS => 'Stop TTS';
+  String get stopTTS => '音声合成を停止';
 
   @override
-  String get speak => 'Speak';
+  String get speak => '読み上げ';
 
   @override
-  String get supabaseProgressNotSaved =>
-      'Cloud sync not configured; progress not saved';
+  String get supabaseProgressNotSaved => 'クラウド同期が設定されていません。進捗は保存されません';
 
   @override
-  String get progressSaved => 'Progress saved';
+  String get progressSaved => '進捗を保存しました';
 
   @override
-  String get errorSavingProgress => 'Error saving progress';
+  String get errorSavingProgress => '進捗の保存エラー';
 
   @override
-  String get autoplayBlocked => 'Auto-play blocked. Tap Continue to start.';
+  String get autoplayBlocked => '自動再生がブロックされました。「続行」をタップして開始してください。';
 
   @override
   String get autoplayBlockedInline =>
-      'Auto-play is blocked by the browser. Tap Continue to start reading.';
+      'ブラウザにより自動再生がブロックされています。「続行」をタップして読書を開始してください。';
 
   @override
-  String get reachedLastChapter => 'Reached last chapter';
+  String get reachedLastChapter => '最後の章に到達しました';
 
   @override
   String ttsError(String msg) {
-    return 'TTS error: $msg';
+    return '音声合成エラー: $msg';
   }
 
   @override
-  String get themeMode => 'Theme Mode';
+  String get themeMode => 'テーマモード';
 
   @override
-  String get system => 'System';
+  String get system => 'システム';
 
   @override
-  String get light => 'Light';
+  String get light => 'ライト';
 
   @override
-  String get dark => 'Dark';
+  String get dark => 'ダーク';
 
   @override
-  String get colorTheme => 'Color Theme';
+  String get colorTheme => 'カラーテーマ';
 
   @override
-  String get themeLight => 'Light';
+  String get themeLight => 'ライト';
 
   @override
-  String get themeSepia => 'Sepia';
+  String get themeSepia => 'セピア';
 
   @override
-  String get themeHighContrast => 'Contrast';
+  String get themeHighContrast => 'コントラスト';
 
   @override
-  String get themeDefault => 'Default';
+  String get themeDefault => 'デフォルト';
 
   @override
-  String get themeEmeraldGreen => 'Emerald';
+  String get themeEmeraldGreen => 'エメラルド';
 
   @override
-  String get themeSolarizedTan => 'Solarized Tan';
+  String get themeSolarizedTan => 'ソラライズベージュ';
 
   @override
-  String get themeNord => 'Nord';
+  String get themeNord => 'ノルド';
 
   @override
-  String get themeNordFrost => 'Nord Frost';
+  String get themeNordFrost => 'ノルドフロスト';
 
   @override
-  String get separateDarkPalette => 'Use separate dark palette';
+  String get separateDarkPalette => 'ダークパレットを分離';
 
   @override
-  String get lightPalette => 'Light Palette';
+  String get lightPalette => 'ライトパレット';
 
   @override
-  String get darkPalette => 'Dark Palette';
+  String get darkPalette => 'ダークパレット';
 
   @override
-  String get typographyPreset => 'Typography Preset';
+  String get typographyPreset => 'タイポグラフィプリセット';
 
   @override
-  String get typographyComfortable => 'Comfortable';
+  String get typographyComfortable => '快適';
 
   @override
-  String get typographyCompact => 'Compact';
+  String get typographyCompact => 'コンパクト';
 
   @override
-  String get typographySerifLike => 'Serif-like';
+  String get typographySerifLike => 'セリフ風';
 
   @override
-  String get fontPack => 'Font Pack';
+  String get fontPack => 'フォントパック';
 
   @override
-  String get separateTypographyPresets =>
-      'Use separate typography for light/dark';
+  String get separateTypographyPresets => 'ライト/ダークで別々のタイポグラフィを使用';
 
   @override
-  String get typographyLight => 'Light Typography';
+  String get typographyLight => 'ライトタイポグラフィ';
 
   @override
-  String get typographyDark => 'Dark Typography';
+  String get typographyDark => 'ダークタイポグラフィ';
 
   @override
-  String get readerBundles => 'Reader Theme Bundles';
+  String get readerBundles => 'リーダーテーマバンドル';
 
   @override
-  String get tokenUsage => 'Token Usage';
+  String get tokenUsage => 'トークン使用量';
 
   @override
   String removedNovel(String title) {
-    return 'Removed $title';
+    return '「$title」を削除しました';
   }
 
   @override
-  String get discover => 'Discover';
+  String get discover => '発見';
 
   @override
-  String get profile => 'Profile';
+  String get profile => 'プロフィール';
 
   @override
-  String get libraryTitle => 'Library';
+  String get libraryTitle => 'ライブラリ';
 
   @override
-  String get undo => 'Undo';
+  String get undo => '元に戻す';
 
   @override
-  String get allFilter => 'All';
+  String get allFilter => 'すべて';
 
   @override
-  String get readingFilter => 'Reading';
+  String get readingFilter => '読書中';
 
   @override
-  String get completedFilter => 'Completed';
+  String get completedFilter => '完了';
 
   @override
-  String get downloadedFilter => 'Downloaded';
+  String get downloadedFilter => 'ダウンロード済み';
 
   @override
-  String get searchNovels => 'Search novels...';
+  String get searchNovels => '小説を検索...';
 
   @override
-  String get listView => 'List View';
+  String get listView => 'リスト表示';
 
   @override
-  String get gridView => 'Grid View';
+  String get gridView => 'グリッド表示';
 
   @override
-  String get userManagement => 'User Management';
+  String get userManagement => 'ユーザー管理';
 
   @override
-  String get totalThisMonth => 'Total This Month';
+  String get totalThisMonth => '今月の合計';
 
   @override
-  String get inputTokens => 'Input Tokens';
+  String get inputTokens => '入力トークン';
 
   @override
-  String get outputTokens => 'Output Tokens';
+  String get outputTokens => '出力トークン';
 
   @override
-  String get requests => 'Requests';
+  String get requests => 'リクエスト';
 
   @override
-  String get viewHistory => 'View history';
+  String get viewHistory => '履歴を表示';
 
   @override
-  String get noUsageThisMonth => 'No usage this month';
+  String get noUsageThisMonth => '今月の使用量はありません';
 
   @override
-  String get startUsingAiFeatures =>
-      'Start using AI features to see your token consumption';
+  String get startUsingAiFeatures => 'AI機能を使い始めてトークン消費量を確認してください';
 
   @override
-  String get errorLoadingUsage => 'Error loading usage';
+  String get errorLoadingUsage => '使用量の読み込みエラー';
 
   @override
-  String get refresh => 'Refresh';
+  String get refresh => '更新';
 
   @override
   String totalRecords(int count) {
-    return 'Total Records: $count';
+    return '総レコード数: $count';
   }
 
   @override
-  String get total => 'Total';
+  String get total => '合計';
 
   @override
-  String get noUsageHistory => 'No Usage History';
+  String get noUsageHistory => '使用履歴なし';
 
   @override
-  String get bundleNordCalm => 'Nord Calm';
+  String get bundleNordCalm => 'ノルドカーム';
 
   @override
-  String get bundleSolarizedFocus => 'Solarized Focus';
+  String get bundleSolarizedFocus => 'ソラライズフォーカス';
 
   @override
-  String get bundleHighContrastReadability => 'High Contrast Readability';
+  String get bundleHighContrastReadability => 'ハイコントラスト読みやすさ';
 
   @override
-  String get customFontFamily => 'Custom Font Family';
+  String get customFontFamily => 'カスタムフォントファミリー';
 
   @override
-  String get commonFonts => 'Common Fonts';
+  String get commonFonts => '共通フォント';
 
   @override
-  String get readerFontSize => 'Reader Font Size';
+  String get readerFontSize => 'リーダーフォントサイズ';
 
   @override
-  String get textScale => 'Text Scale';
+  String get textScale => 'テキストスケール';
 
   @override
-  String get readerBackgroundDepth => 'Reader Background Depth';
+  String get readerBackgroundDepth => 'リーダー背景の深さ';
 
   @override
-  String get depthLow => 'Low';
+  String get depthLow => '低';
 
   @override
-  String get depthMedium => 'Medium';
+  String get depthMedium => '中';
 
   @override
-  String get depthHigh => 'High';
+  String get depthHigh => '高';
 
   @override
-  String get select => 'Select';
+  String get select => '選択';
 
   @override
-  String get clear => 'Clear';
+  String get clear => 'クリア';
 
   @override
-  String get adminMode => 'Admin Mode';
+  String get adminMode => '管理者モード';
 
   @override
-  String get reduceMotion => 'Reduce motion';
+  String get reduceMotion => '動作を減らす';
 
   @override
-  String get reduceMotionDescription =>
-      'Minimize animations for motion comfort';
+  String get reduceMotionDescription => '視覚的な快適さのためにアニメーションを最小化します';
 
   @override
-  String get gesturesEnabled => 'Enable touch gestures';
+  String get gesturesEnabled => 'タッチジェスチャーを有効化';
 
   @override
-  String get gesturesEnabledDescription =>
-      'Enable swipe and tap gestures in the reader';
+  String get gesturesEnabledDescription => 'リーダーでスワイプとタップジェスチャーを有効にします';
 
   @override
-  String get readerSwipeSensitivity => 'Reader swipe sensitivity';
+  String get readerSwipeSensitivity => 'リーダースワイプ感度';
 
   @override
-  String get readerSwipeSensitivityDescription =>
-      'Adjust minimum swipe velocity for chapter navigation';
+  String get readerSwipeSensitivityDescription => '章ナビゲーションの最小スワイプ速度を調整します';
 
   @override
-  String get remove => 'Remove';
+  String get remove => '削除';
 
   @override
-  String get removedFromLibrary => 'Removed from Library';
+  String get removedFromLibrary => 'ライブラリから削除しました';
 
   @override
-  String get confirmDelete => 'Confirm Delete';
+  String get confirmDelete => '削除の確認';
 
   @override
   String confirmDeleteDescription(String title) {
-    return 'This will delete \'$title\' from your cloud library. Are you sure?';
+    return 'これによりクラウドライブラリから「$title」が削除されます。よろしいですか？';
   }
 
   @override
-  String get delete => 'Delete';
+  String get delete => '削除';
 
   @override
-  String get reachedFirstChapter => 'Reached first chapter';
+  String get reachedFirstChapter => '最初の章に到達しました';
 
   @override
-  String get previousChapter => 'Previous chapter';
+  String get previousChapter => '前の章';
 
   @override
-  String get nextChapter => 'Next chapter';
+  String get nextChapter => '次の章';
 
   @override
-  String get betaEvaluate => 'Beta';
+  String get betaEvaluate => 'ベータ';
 
   @override
-  String get betaEvaluating => 'Sending for beta evaluation…';
+  String get betaEvaluating => 'ベータ評価送信中…';
 
   @override
-  String get betaEvaluationReady => 'Beta evaluation ready';
+  String get betaEvaluationReady => 'ベータ評価の準備完了';
 
   @override
-  String get betaEvaluationFailed => 'Beta evaluation failed';
+  String get betaEvaluationFailed => 'ベータ評価に失敗しました';
 
   @override
-  String get performanceSettings => 'Performance Settings';
+  String get performanceSettings => 'パフォーマンス設定';
 
   @override
-  String get prefetchNextChapter => 'Prefetch next chapter';
+  String get prefetchNextChapter => '次の章をプリフェッチ';
 
   @override
-  String get prefetchNextChapterDescription =>
-      'Preload the next chapter to reduce waiting.';
+  String get prefetchNextChapterDescription => '待ち時間を減らすために次の章を事前に読み込みます。';
 
   @override
-  String get clearOfflineCache => 'Clear offline cache';
+  String get clearOfflineCache => 'オフラインキャッシュをクリア';
 
   @override
-  String get offlineCacheCleared => 'Offline cache cleared';
+  String get offlineCacheCleared => 'オフラインキャッシュをクリアしました';
 
   @override
-  String get edit => 'Edit';
+  String get edit => '編集';
 
   @override
-  String get exitEdit => 'Exit Edit';
+  String get exitEdit => '編集を終了';
 
   @override
-  String get enterEditMode => 'Enter Edit Mode';
+  String get enterEditMode => '編集モードに入る';
 
   @override
-  String get exitEditMode => 'Exit Edit Mode';
+  String get exitEditMode => '編集モードを終了';
 
   @override
-  String get chapterContent => 'Chapter Content';
+  String get chapterContent => '章の内容';
 
   @override
-  String get save => 'Save';
+  String get save => '保存';
 
   @override
-  String get createNextChapter => 'Create Next Chapter';
+  String get createNextChapter => '次の章を作成';
 
   @override
-  String get enterChapterTitle => 'Enter chapter title';
+  String get enterChapterTitle => '章のタイトルを入力';
 
   @override
-  String get enterChapterContent => 'Enter chapter content';
+  String get enterChapterContent => '章の内容を入力';
 
   @override
-  String get discardChangesTitle => 'Discard changes?';
+  String get discardChangesTitle => '変更を破棄しますか？';
 
   @override
-  String get discardChangesMessage =>
-      'You have unsaved changes. Do you want to discard them?';
+  String get discardChangesMessage => '保存されていない変更があります。破棄しますか？';
 
   @override
-  String get keepEditing => 'Keep editing';
+  String get keepEditing => '編集を続ける';
 
   @override
-  String get discardChanges => 'Discard changes';
+  String get discardChanges => '変更を破棄';
 
   @override
-  String get saveAndExit => 'Save & Exit';
+  String get saveAndExit => '保存して終了';
 
   @override
-  String get descriptionLabel => 'Description';
+  String get descriptionLabel => '説明';
 
   @override
-  String get coverUrlLabel => 'Cover URL';
+  String get coverUrlLabel => '表紙URL';
 
   @override
-  String get invalidCoverUrl => 'Enter a valid http(s) URL without spaces.';
+  String get invalidCoverUrl => 'スペースを含まない有効なhttp(s) URLを入力してください。';
 
   @override
-  String get navigation => 'Navigation';
+  String get navigation => 'ナビゲーション';
 
   @override
-  String get chapterIndex => 'Chapter Index';
+  String get chapterIndex => '章の索引';
 
   @override
-  String get summary => 'Summary';
+  String get summary => '要約';
 
   @override
-  String get characters => 'Characters';
+  String get characters => 'キャラクター';
 
   @override
-  String get scenes => 'Scenes';
+  String get scenes => 'シーン';
 
   @override
-  String get characterTemplates => 'Character Templates';
+  String get characterTemplates => 'キャラクターテンプレート';
 
   @override
-  String get sceneTemplates => 'Scene Templates';
+  String get sceneTemplates => 'シーンテンプレート';
 
   @override
-  String get updateNovel => 'Update Novel';
+  String get updateNovel => '小説を更新';
 
   @override
-  String get deleteNovel => 'Delete Novel';
+  String get deleteNovel => '小説を削除';
 
   @override
-  String get deleteNovelConfirmation =>
-      'This will permanently delete the novel. Continue?';
+  String get deleteNovelConfirmation => 'これにより小説が完全に削除されます。続行しますか？';
 
   @override
-  String get format => 'Format';
+  String get format => '形式';
 
   @override
-  String get aiServiceUrl => 'AI Service URL';
+  String get aiServiceUrl => 'AIサービスURL';
 
   @override
-  String get aiServiceUrlDescription => 'Backend service URL for AI features';
+  String get aiServiceUrlDescription => 'AI機能用バックエンドサービスURL';
 
   @override
-  String get aiAssistant => 'AI Assistant';
+  String get aiAssistant => 'AIアシスタント';
 
   @override
-  String get aiChatHistory => 'History';
+  String get aiChatHistory => '履歴';
 
   @override
-  String get aiChatNewChat => 'New Chat';
+  String get aiChatNewChat => '新しいチャット';
 
   @override
-  String get aiChatNoHistory => 'No history';
+  String get aiChatNoHistory => '履歴なし';
 
   @override
-  String get aiChatHint => 'Type your message...';
+  String get aiChatHint => 'メッセージを入力...';
 
   @override
-  String get aiChatEmpty => 'Ask me anything about this chapter or novel';
+  String get aiChatEmpty => 'この章や小説について何でも聞いてください';
 
   @override
-  String get aiThinking => 'AI is thinking...';
+  String get aiThinking => 'AIが考えています...';
 
   @override
-  String get aiChatContextLabel => 'Context';
+  String get aiChatContextLabel => 'コンテキスト';
 
   @override
   String aiTokenCount(int count) {
-    return '$count tokens';
+    return '$countトークン';
   }
 
   @override
   String aiContextLoadError(String error) {
-    return 'Error loading context: $error';
+    return 'コンテキスト読み込みエラー: $error';
   }
 
   @override
   String aiChatContextTooLongCompressing(int tokens) {
-    return 'Context is too long ($tokens tokens). Compressing...';
+    return 'コンテキストが長すぎます（$tokensトークン）。圧縮中...';
   }
 
   @override
   String aiChatContextCompressionFailedNote(String error) {
-    return '[Note: Context compression failed: $error]';
+    return '[注: コンテキスト圧縮失敗: $error]';
   }
 
   @override
   String aiChatError(String error) {
-    return 'Error: $error';
+    return 'エラー: $error';
   }
 
   @override
   String aiChatDeepAgentError(String error) {
-    return 'Deep Agent Error: $error';
+    return 'ディープエージェントエラー: $error';
   }
 
   @override
-  String get aiChatSearchFailed => 'Search failed';
+  String get aiChatSearchFailed => '検索失敗';
 
   @override
   String aiChatSearchError(String error) {
-    return 'Search Error: $error';
+    return '検索エラー: $error';
   }
 
   @override
-  String get aiChatRagSearchResultsTitle => 'RAG Search Results';
+  String get aiChatRagSearchResultsTitle => 'RAG検索結果';
 
   @override
   String aiChatRagRefinedQuery(String query) {
-    return 'Refined Query: \"$query\"';
+    return '洗練されたクエリ: 「$query」';
   }
 
   @override
-  String get aiChatRagNoResults => 'No results found.';
+  String get aiChatRagNoResults => '結果が見つかりませんでした。';
 
   @override
-  String get aiChatRagUnknownType => 'unknown';
+  String get aiChatRagUnknownType => '不明';
 
   @override
-  String get aiServiceSignInRequired => 'Sign in required to use AI service';
+  String get aiServiceSignInRequired => 'AIサービスを使用するにはサインインが必要です';
 
   @override
-  String get aiServiceFeatureNotAvailable =>
-      'Feature not available for your plan';
+  String get aiServiceFeatureNotAvailable => 'このプランでは機能をご利用いただけません';
 
   @override
   String aiServiceFailedToConnect(String error) {
-    return 'Failed to connect to AI service: $error';
+    return 'AIサービスへの接続に失敗しました: $error';
   }
 
   @override
-  String get aiServiceNoResponse => 'No response from AI service';
+  String get aiServiceNoResponse => 'AIサービスからの応答がありません';
 
   @override
-  String get aiDeepAgentDetailsTitle => 'Deep Agent';
+  String get aiDeepAgentDetailsTitle => 'ディープエージェント';
 
   @override
   String aiDeepAgentStop(String reason, Object rounds) {
-    return 'Stop: $reason (rounds: $rounds)';
+    return '停止: $reason（ラウンド: $rounds）';
   }
 
   @override
-  String get aiDeepAgentPlanLabel => 'Plan:';
+  String get aiDeepAgentPlanLabel => 'プラン:';
 
   @override
-  String get aiDeepAgentToolsLabel => 'Tools:';
+  String get aiDeepAgentToolsLabel => 'ツール:';
 
   @override
-  String get deepAgentSettingsTitle => 'Deep Agent Settings';
+  String get deepAgentSettingsTitle => 'ディープエージェント設定';
 
   @override
   String get deepAgentSettingsDescription =>
-      'Control whether AI Chat prefers Deep Agent, plus reflection and debug output.';
+      'AIチャットがディープエージェントを優先するか、リフレクションとデバッグ出力を制御します。';
 
   @override
-  String get deepAgentPreferTitle => 'Prefer Deep Agent';
+  String get deepAgentPreferTitle => 'ディープエージェントを優先';
 
   @override
   String get deepAgentPreferSubtitle =>
-      'When enabled, normal chat calls /agents/deep-agent first.';
+      '有効にすると、通常のチャットが最初に/agents/deep-agentを呼び出します。';
 
   @override
-  String get deepAgentFallbackTitle => 'Fallback to QA if unavailable';
+  String get deepAgentFallbackTitle => '利用不可の場合はQAにフォールバック';
 
   @override
   String get deepAgentFallbackSubtitle =>
-      'Automatically calls /agents/qa when deep-agent returns 404/501.';
+      'deep-agentが404/501を返すときに自動的に/agents/qaを呼び出します。';
 
   @override
-  String get deepAgentReflectionModeTitle => 'Reflection Mode';
+  String get deepAgentReflectionModeTitle => 'リフレクションモード';
 
   @override
-  String get deepAgentReflectionModeSubtitle =>
-      'Controls post-answer evaluation and optional retry.';
+  String get deepAgentReflectionModeSubtitle => '応答後の評価とオプションの再試行を制御します。';
 
   @override
-  String get deepAgentReflectionModeOff => 'Off';
+  String get deepAgentReflectionModeOff => 'オフ';
 
   @override
-  String get deepAgentReflectionModeOnFailure => 'On failure';
+  String get deepAgentReflectionModeOnFailure => '失敗時';
 
   @override
-  String get deepAgentReflectionModeAlways => 'Always';
+  String get deepAgentReflectionModeAlways => '常に';
 
   @override
-  String get deepAgentShowDetailsTitle => 'Show Execution Details';
+  String get deepAgentShowDetailsTitle => '実行の詳細を表示';
 
   @override
-  String get deepAgentShowDetailsSubtitle =>
-      'Include plan and tool call logs in /deep output.';
+  String get deepAgentShowDetailsSubtitle => 'プランとツール呼び出しログを/deep出力に含めます。';
 
   @override
-  String get deepAgentMaxPlanSteps => 'Max Plan Steps';
+  String get deepAgentMaxPlanSteps => '最大プランステップ数';
 
   @override
-  String get deepAgentMaxToolRounds => 'Max Tool Rounds';
+  String get deepAgentMaxToolRounds => '最大ツールラウンド数';
 
   @override
-  String get send => 'Send';
+  String get send => '送信';
 
   @override
-  String get resetToDefault => 'Reset to Default';
+  String get resetToDefault => 'デフォルトにリセット';
 
   @override
-  String get invalidUrl => 'Enter a valid http(s) URL without spaces.';
+  String get invalidUrl => 'スペースを含まない有効なhttp(s) URLを入力してください。';
 
   @override
-  String get urlTooLong => 'URL must be 2048 characters or less.';
+  String get urlTooLong => 'URLは2048文字以下である必要があります。';
 
   @override
-  String get urlContainsSpaces => 'URL cannot contain spaces.';
+  String get urlContainsSpaces => 'URLにスペースを含めることはできません。';
 
   @override
-  String get urlInvalidScheme => 'URL must start with http:// or https://.';
+  String get urlInvalidScheme => 'URLはhttp://またはhttps://で始まる必要があります。';
 
   @override
-  String get saved => 'Saved';
+  String get saved => '保存しました';
 
   @override
-  String get required => 'Required';
+  String get required => '必須';
 
   @override
-  String get summariesLabel => 'Summaries';
+  String get summariesLabel => '要約';
 
   @override
-  String get synopsesLabel => 'Synopses';
+  String get synopsesLabel => '概要';
 
   @override
-  String get locationLabel => 'Location';
+  String get locationLabel => '場所';
 
   @override
   String languageLabel(String code) {
-    return 'Language: $code';
+    return '言語: $code';
   }
 
   @override
-  String get publicLabel => 'Public';
+  String get publicLabel => '公開';
 
   @override
-  String get privateLabel => 'Private';
+  String get privateLabel => '非公開';
 
   @override
   String chaptersCount(int count) {
-    return 'Chapters: $count';
+    return '章数: $count';
   }
 
   @override
   String avgWordsPerChapter(int avg) {
-    return 'Avg words/chapter: $avg';
+    return '平均字数/章: $avg';
   }
 
   @override
   String chapterLabel(int idx) {
-    return 'Chapter $idx';
+    return '第$idx章';
   }
 
   @override
   String chapterWithTitle(int idx, String title) {
-    return 'Chapter $idx: $title';
+    return '第$idx章: $title';
   }
 
   @override
-  String get refreshTooltip => 'Refresh';
+  String get refreshTooltip => '更新';
 
   @override
-  String get untitled => 'Untitled';
+  String get untitled => '無題';
 
   @override
-  String get newLabel => 'New';
+  String get newLabel => '新規';
 
   @override
-  String get deleteSceneTitle => 'Delete Scene';
+  String get deleteSceneTitle => 'シーンを削除';
 
   @override
-  String get deleteCharacterTitle => 'Delete Character';
+  String get deleteCharacterTitle => 'キャラクターを削除';
 
   @override
-  String get deleteTemplateTitle => 'Delete Template';
+  String get deleteTemplateTitle => 'テンプレートを削除';
 
   @override
-  String get confirmDeleteGeneric =>
-      'Are you sure you want to delete this item?';
+  String get confirmDeleteGeneric => 'この項目を削除してもよろしいですか？';
 
   @override
-  String get novelMetadata => 'Novel Metadata';
+  String get novelMetadata => '小説メタデータ';
 
   @override
-  String get contributorEmailLabel => 'Contributor Email';
+  String get contributorEmailLabel => '協力者メールアドレス';
 
   @override
-  String get contributorEmailHint => 'Enter user email to add as contributor';
+  String get contributorEmailHint => '協力者として追加するユーザーメールアドレスを入力';
 
   @override
-  String get addContributor => 'Add Contributor';
+  String get addContributor => '協力者を追加';
 
   @override
-  String get contributorAdded => 'Contributor added';
+  String get contributorAdded => '協力者を追加しました';
 
   @override
   String get pdf => 'PDF';
 
   @override
-  String get generatingPdf => 'Generating PDF…';
+  String get generatingPdf => 'PDF生成中…';
 
   @override
-  String get pdfFailed => 'Failed to generate PDF';
+  String get pdfFailed => 'PDF生成に失敗しました';
 
   @override
-  String get tableOfContents => 'Table of Contents';
+  String get tableOfContents => '目次';
 
   @override
   String byAuthor(String name) {
-    return 'by $name';
+    return '作者: $name';
   }
 
   @override
   String pageOfTotal(int page, int total) {
-    return 'Page $page of $total';
+    return '$totalページ中$pageページ目';
   }
 
   @override
-  String get close => 'Close';
+  String get close => '閉じる';
 
   @override
-  String get openLink => 'Open link';
+  String get openLink => 'リンクを開く';
 
   @override
-  String get invalidLink => 'Invalid link';
+  String get invalidLink => '無効なリンク';
 
   @override
-  String get unableToOpenLink => 'Unable to open link';
+  String get unableToOpenLink => 'リンクを開けません';
 
   @override
-  String get copy => 'Copy';
+  String get copy => 'コピー';
 
   @override
-  String get copiedToClipboard => 'Copied to clipboard';
+  String get copiedToClipboard => 'クリップボードにコピーしました';
 
   @override
   String showingCachedPublicData(String msg) {
-    return '$msg — showing cached/public data';
+    return '$msg — キャッシュ/公開データを表示中';
   }
 
   @override
-  String get menu => 'Menu';
+  String get menu => 'メニュー';
 
   @override
-  String get metaLabel => 'Meta';
+  String get metaLabel => 'メタ';
 
   @override
-  String get aiServiceUnavailable => 'AI Service Unavailable';
+  String get aiServiceUnavailable => 'AIサービス利用不可';
 
   @override
-  String get aiConfigurations => 'AI Configurations';
+  String get aiConfigurations => 'AI設定';
 
   @override
-  String get modelLabel => 'Model';
+  String get modelLabel => 'モデル';
 
   @override
-  String get temperatureLabel => 'Temperature';
+  String get temperatureLabel => '温度';
 
   @override
-  String get saveFailed => 'Save failed';
+  String get saveFailed => '保存失敗';
 
   @override
-  String get saveMyVersion => 'Save My Version';
+  String get saveMyVersion => 'マイバージョンを保存';
 
   @override
-  String get resetToPublic => 'Reset to public';
+  String get resetToPublic => '公開にリセット';
 
   @override
-  String get resetFailed => 'Reset failed';
+  String get resetFailed => 'リセット失敗';
 
   @override
-  String get prompts => 'Prompts';
+  String get prompts => 'プロンプト';
 
   @override
-  String get patterns => 'Patterns';
+  String get patterns => 'パターン';
 
   @override
-  String get storyLines => 'Story Lines';
+  String get storyLines => 'ストーリーライン';
 
   @override
-  String get hotTopics => 'Hot Topics';
+  String get hotTopics => '話題のトレンド';
 
   @override
-  String get hotTopicsSelectPlatform => 'Select platform';
+  String get hotTopicsSelectPlatform => 'プラットフォームを選択';
 
   @override
-  String get hotTopicsAllPlatforms => 'All Platforms';
+  String get hotTopicsAllPlatforms => 'すべてのプラットフォーム';
 
   @override
-  String get hotTopicsPlatformWeibo => 'Weibo';
+  String get hotTopicsPlatformWeibo => '微博';
 
   @override
-  String get hotTopicsPlatformZhihu => 'Zhihu';
+  String get hotTopicsPlatformZhihu => '知乎';
 
   @override
-  String get hotTopicsPlatformDouyin => 'Douyin';
+  String get hotTopicsPlatformDouyin => '抖音';
 
   @override
-  String get hotTopicsPlatformDescWeibo => 'Chinese microblogging';
+  String get hotTopicsPlatformDescWeibo => '中国のミクロブログ';
 
   @override
-  String get hotTopicsPlatformDescZhihu => 'Q&A platform';
+  String get hotTopicsPlatformDescZhihu => 'Q&Aプラットフォーム';
 
   @override
-  String get hotTopicsPlatformDescDouyin => 'Video sharing';
+  String get hotTopicsPlatformDescDouyin => '動画共有';
 
   @override
-  String get tools => 'Tools';
+  String get tools => 'ツール';
 
   @override
-  String get preview => 'Preview';
+  String get preview => 'プレビュー';
 
   @override
-  String get actions => 'Actions';
+  String get actions => 'アクション';
 
   @override
-  String get searchLabel => 'Search';
+  String get searchLabel => '検索';
 
   @override
-  String get allLabel => 'All';
+  String get allLabel => 'すべて';
 
   @override
-  String get filterByLocked => 'Filter by Locked';
+  String get filterByLocked => 'ロック済みでフィルター';
 
   @override
-  String get lockedOnly => 'Locked Only';
+  String get lockedOnly => 'ロック済みのみ';
 
   @override
-  String get unlockedOnly => 'Unlocked Only';
+  String get unlockedOnly => 'ロック解除のみ';
 
   @override
-  String get promptKey => 'Prompt Key';
+  String get promptKey => 'プロンプトキー';
 
   @override
-  String get language => 'Language';
+  String get language => '言語';
 
   @override
-  String get filterByKey => 'Filter by key';
+  String get filterByKey => 'キーでフィルター';
 
   @override
-  String get viewPublic => 'View public';
+  String get viewPublic => '公開を表示';
 
   @override
-  String get groupNone => 'None';
+  String get groupNone => 'なし';
 
   @override
-  String get groupLanguage => 'Language';
+  String get groupLanguage => '言語';
 
   @override
-  String get groupKey => 'Key';
+  String get groupKey => 'キー';
 
   @override
-  String get newPrompt => 'New Prompt';
+  String get newPrompt => '新しいプロンプト';
 
   @override
-  String get newPattern => 'New Pattern';
+  String get newPattern => '新しいパターン';
 
   @override
-  String get newStoryLine => 'New Story Line';
+  String get newStoryLine => '新しいストーリーライン';
 
   @override
-  String get editPrompt => 'Edit Prompt';
+  String get editPrompt => 'プロンプトを編集';
 
   @override
-  String get editPattern => 'Edit Pattern';
+  String get editPattern => 'パターンを編集';
 
   @override
-  String get editStoryLine => 'Edit Story Line';
+  String get editStoryLine => 'ストーリーラインを編集';
 
   @override
   String deletedWithTitle(String title) {
-    return 'Deleted: $title';
+    return '削除済み: $title';
   }
 
   @override
   String deleteFailedWithTitle(String title) {
-    return 'Delete failed: $title';
+    return '削除失敗: $title';
   }
 
   @override
   String deleteErrorWithMessage(String error) {
-    return 'Delete error: $error';
+    return '削除エラー: $error';
   }
 
   @override
-  String get makePublic => 'Make Public';
+  String get makePublic => '公開にする';
 
   @override
-  String get noPrompts => 'No prompts found';
+  String get noPrompts => 'プロンプトが見つかりません';
 
   @override
-  String get noPatterns => 'No patterns';
+  String get noPatterns => 'パターンがありません';
 
   @override
-  String get noStoryLines => 'No story lines';
+  String get noStoryLines => 'ストーリーラインがありません';
 
   @override
   String conversionFailed(String error) {
-    return 'Conversion failed: $error';
+    return '変換失敗: $error';
   }
 
   @override
-  String get failedToAnalyze => 'Failed to analyze';
+  String get failedToAnalyze => '分析失敗';
 
   @override
-  String get aiCoachAnalyzing => 'AI Coach is analyzing...';
+  String get aiCoachAnalyzing => 'AIコーチが分析しています...';
 
   @override
-  String get retry => 'Retry';
+  String get retry => '再試行';
 
   @override
-  String get startAiCoaching => 'Start AI Coaching';
+  String get startAiCoaching => 'AIコーチングを開始';
 
   @override
-  String get refinementComplete => 'Refinement Complete!';
+  String get refinementComplete => '洗練完了！';
 
   @override
-  String get coachQuestion => 'Coach\'s Question';
+  String get coachQuestion => 'コーチの質問';
 
   @override
-  String get summaryLooksGood => 'Great job! Your summary looks solid.';
+  String get summaryLooksGood => 'よくできました！要約はしっかりしています。';
 
   @override
-  String get howToImprove => 'How can we improve this?';
+  String get howToImprove => 'どう改善できますか？';
 
   @override
-  String get suggestionsLabel => 'Suggestions:';
+  String get suggestionsLabel => '提案:';
 
   @override
-  String get reviewSuggestionsHint => 'Review suggestions or type answer...';
+  String get reviewSuggestionsHint => '提案を確認するか、回答を入力...';
 
   @override
-  String get aiGenerationComplete => 'AI generation complete';
+  String get aiGenerationComplete => 'AI生成完了';
 
   @override
-  String get clickRegenerateForNew => 'Click Regenerate for new suggestions';
+  String get clickRegenerateForNew => '「再生成」をクリックして新しい提案を取得';
 
   @override
-  String get regenerate => 'Regenerate';
+  String get regenerate => '再生成';
 
   @override
-  String get imSatisfied => 'I\'m satisfied';
+  String get imSatisfied => '満足しました';
 
   @override
-  String get templateLabel => 'Template';
+  String get templateLabel => 'テンプレート';
 
   @override
-  String get exampleCharacterName => 'e.g. Harry Potter';
+  String get exampleCharacterName => '例: ハリー・ポッター';
 
   @override
-  String get aiConvert => 'AI Convert';
+  String get aiConvert => 'AI変換';
 
   @override
-  String get toggleAiCoach => 'Toggle AI Coach';
+  String get toggleAiCoach => 'AIコーチの切り替え';
 
   @override
   String retrieveFailed(String error) {
-    return 'Retrieve failed: $error';
+    return '取得失敗: $error';
   }
 
   @override
-  String get confirm => 'Confirm';
+  String get confirm => '確認';
 
   @override
-  String get lastRead => 'Last read';
+  String get lastRead => '最終読書';
 
   @override
-  String get noRecentChapters => 'No recent chapters';
+  String get noRecentChapters => '最近の章はありません';
 
   @override
-  String get failedToLoadConfig => 'Failed to load config';
+  String get failedToLoadConfig => '設定の読み込み失敗';
 
   @override
   String makePublicPromptConfirm(String promptKey, String language) {
-    return 'Make public \"$promptKey\" ($language)?';
+    return '「$promptKey」($language)を公開にしますか？';
   }
 
   @override
-  String get content => 'Content';
+  String get content => 'コンテンツ';
 
   @override
-  String get invalidKey => 'Invalid key';
+  String get invalidKey => '無効なキー';
 
   @override
-  String get invalidLanguage => 'Invalid language';
+  String get invalidLanguage => '無効な言語';
 
   @override
-  String get invalidInput => 'Invalid input';
+  String get invalidInput => '無効な入力';
 
   @override
   String charsCount(int count) {
-    return 'Characters: $count';
+    return '文字数: $count';
   }
 
   @override
   String deletePromptConfirm(String promptKey, String language) {
-    return 'Delete prompt \"$promptKey\" ($language)?';
+    return 'プロンプト「$promptKey」($language)を削除しますか？';
   }
 
   @override
-  String get profileRetrieved => 'Profile retrieved';
+  String get profileRetrieved => 'プロフィールを取得しました';
 
   @override
-  String get noProfileFound => 'No profile found';
+  String get noProfileFound => 'プロフィールが見つかりません';
 
   @override
-  String get templateName => 'Template Name';
+  String get templateName => 'テンプレート名';
 
   @override
-  String get retrieveProfile => 'Retrieve profile';
+  String get retrieveProfile => 'プロフィールを取得';
 
   @override
-  String get previewLabel => 'Preview';
+  String get previewLabel => 'プレビュー';
 
   @override
-  String get markdownHint => 'Enter description in Markdown...';
+  String get markdownHint => 'Markdownで説明を入力...';
 
   @override
-  String get templateNameExists => 'Template name already exists';
+  String get templateNameExists => 'テンプレート名は既に存在します';
 
   @override
-  String get aiServiceUrlHint => 'Enter AI service URL (http/https)';
+  String get aiServiceUrlHint => 'AIサービスURLを入力（http/https）';
 
   @override
   String get urlLabel => 'URL';
 
   @override
-  String get systemFont => 'System Font';
+  String get systemFont => 'システムフォント';
 
   @override
   String get fontInter => 'Inter';
@@ -1404,503 +1379,493 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fontMerriweather => 'Merriweather';
 
   @override
-  String get editPatternTitle => 'Edit Pattern';
+  String get editPatternTitle => 'パターンを編集';
 
   @override
-  String get newPatternTitle => 'New Pattern';
+  String get newPatternTitle => '新しいパターン';
 
   @override
-  String get editStoryLineTitle => 'Edit Story Line';
+  String get editStoryLineTitle => 'ストーリーラインを編集';
 
   @override
-  String get newStoryLineTitle => 'New Story Line';
+  String get newStoryLineTitle => '新しいストーリーライン';
 
   @override
-  String get usageRulesLabel => 'Usage Rules (JSON)';
+  String get usageRulesLabel => '使用ルール（JSON）';
 
   @override
-  String get publicPatternLabel => 'Public pattern';
+  String get publicPatternLabel => '公開パターン';
 
   @override
-  String get publicStoryLineLabel => 'Public story line';
+  String get publicStoryLineLabel => '公開ストーリーライン';
 
   @override
-  String get lockedLabel => 'Locked';
+  String get lockedLabel => 'ロック中';
 
   @override
-  String get unlockedLabel => 'Unlocked';
+  String get unlockedLabel => 'ロック解除';
 
   @override
   String get aiButton => 'AI';
 
   @override
-  String get invalidJson => 'Invalid JSON';
+  String get invalidJson => '無効なJSON';
 
   @override
-  String get deleteFailed => 'Delete failed';
+  String get deleteFailed => '削除失敗';
 
   @override
-  String get lockPattern => 'Lock pattern';
+  String get lockPattern => 'パターンをロック';
 
   @override
-  String get errorUnauthorized => 'Unauthorized';
+  String get errorUnauthorized => '認証されていません';
 
   @override
-  String get errorForbidden => 'Forbidden';
+  String get errorForbidden => '禁止されています';
 
   @override
-  String get errorSessionExpired => 'Session expired';
+  String get errorSessionExpired => 'セッションの有効期限切れ';
 
   @override
-  String get errorValidation => 'Validation error';
+  String get errorValidation => '検証エラー';
 
   @override
-  String get errorInvalidInput => 'Invalid input';
+  String get errorInvalidInput => '無効な入力';
 
   @override
-  String get errorDuplicateTitle => 'Duplicate title';
+  String get errorDuplicateTitle => '重複するタイトル';
 
   @override
-  String get errorNotFound => 'Not found';
+  String get errorNotFound => '見つかりません';
 
   @override
-  String get errorServiceUnavailable => 'Service unavailable';
+  String get errorServiceUnavailable => 'サービス利用不可';
 
   @override
-  String get errorAiNotConfigured => 'AI service not configured';
+  String get errorAiNotConfigured => 'AIサービスが設定されていません';
 
   @override
-  String get errorSupabaseError => 'Cloud service error';
+  String get errorSupabaseError => 'クラウドサービスエラー';
 
   @override
-  String get errorRateLimited => 'Too many requests';
+  String get errorRateLimited => 'リクエストが多すぎます';
 
   @override
-  String get errorInternal => 'Internal server error';
+  String get errorInternal => '内部サーバーエラー';
 
   @override
-  String get errorBadGateway => 'Bad gateway';
+  String get errorBadGateway => '不正なゲートウェイ';
 
   @override
-  String get errorGatewayTimeout => 'Gateway timeout';
+  String get errorGatewayTimeout => 'ゲートウェイタイムアウト';
 
   @override
-  String get loginFailed => 'Login failed';
+  String get loginFailed => 'ログイン失敗';
 
   @override
-  String get invalidResponseFromServer => 'Invalid response from server';
+  String get invalidResponseFromServer => 'サーバーからの無効な応答';
 
   @override
-  String get signUp => 'Sign Up';
+  String get signUp => 'サインアップ';
 
   @override
-  String get forgotPassword => 'Forgot Password?';
+  String get forgotPassword => 'パスワードをお忘れですか？';
 
   @override
-  String get signupFailed => 'Signup failed';
+  String get signupFailed => 'サインアップ失敗';
 
   @override
-  String get accountCreatedCheckEmail =>
-      'Account created! Please check your email to verify.';
+  String get accountCreatedCheckEmail => 'アカウントを作成しました！確認のためメールをご確認ください。';
 
   @override
-  String get backToSignIn => 'Back to Sign In';
+  String get backToSignIn => 'サインインに戻る';
 
   @override
-  String get createAccount => 'Create Account';
+  String get createAccount => 'アカウントを作成';
 
   @override
-  String get alreadyHaveAccountSignIn => 'Already have an account? Sign In';
+  String get alreadyHaveAccountSignIn => '既にアカウントをお持ちですか？サインイン';
 
   @override
-  String get requestFailed => 'Request failed';
+  String get requestFailed => 'リクエスト失敗';
 
   @override
   String get ifAccountExistsResetLinkSent =>
-      'If an account exists, a reset link has been sent to your email.';
+      'アカウントが存在する場合、パスワードリセットリンクがメールに送信されます。';
 
   @override
-  String get enterEmailForResetLink =>
-      'Enter your email address to receive a password reset link.';
+  String get enterEmailForResetLink => 'パスワードリセットリンクを受け取るためのメールアドレスを入力してください。';
 
   @override
-  String get sendResetLink => 'Send Reset Link';
+  String get sendResetLink => 'リセットリンクを送信';
 
   @override
-  String get passwordsDoNotMatch => 'Passwords do not match';
+  String get passwordsDoNotMatch => 'パスワードが一致しません';
 
   @override
   String get sessionInvalidLoginAgain =>
-      'Session invalid. Please login or use the reset link again.';
+      'セッションが無効です。再度ログインするか、リセットリンクを再び使用してください。';
 
   @override
-  String get updateFailed => 'Update failed';
+  String get updateFailed => '更新失敗';
 
   @override
-  String get passwordUpdatedSuccessfully => 'Password updated successfully!';
+  String get passwordUpdatedSuccessfully => 'パスワードを正常に更新しました！';
 
   @override
-  String get resetPassword => 'Reset Password';
+  String get resetPassword => 'パスワードをリセット';
 
   @override
-  String get newPassword => 'New Password';
+  String get newPassword => '新しいパスワード';
 
   @override
-  String get confirmPassword => 'Confirm Password';
+  String get confirmPassword => 'パスワードを確認';
 
   @override
-  String get updatePassword => 'Update Password';
+  String get updatePassword => 'パスワードを更新';
 
   @override
-  String get noActiveSessionFound =>
-      'No active session found. Please log in again.';
+  String get noActiveSessionFound => 'アクティブなセッションが見つかりません。再度ログインしてください。';
 
   @override
-  String get authenticationFailedSignInAgain =>
-      'Authentication failed. Please sign in again.';
+  String get authenticationFailedSignInAgain => '認証に失敗しました。再度サインインしてください。';
 
   @override
-  String get accessDeniedNoAdminPrivileges =>
-      'Access denied. You don\'t have admin privileges.';
+  String get accessDeniedNoAdminPrivileges => 'アクセス拒否。管理者権限がありません。';
 
   @override
   String failedToLoadUsers(int statusCode, String errorBody) {
-    return 'Failed to load users: $statusCode - $errorBody';
+    return 'ユーザー読み込み失敗: $statusCode - $errorBody';
   }
 
   @override
-  String get smartSearchRequiresSignIn => 'Please sign in to use smart search';
+  String get smartSearchRequiresSignIn => 'スマート検索を使用するにはサインインしてください';
 
   @override
-  String get smartSearch => 'Smart Search';
+  String get smartSearch => 'スマート検索';
 
   @override
-  String get failedToPersistTemplate => 'Failed to save template';
+  String get failedToPersistTemplate => 'テンプレートの保存失敗';
 
   @override
   String userIdCreated(String id, String createdAt) {
-    return 'User $id created at $createdAt';
+    return 'ユーザー$idが$createdAtに作成されました';
   }
 
   @override
-  String get tryAdjustingSearchCreateNovel =>
-      'Try adjusting your search or create a new novel';
+  String get tryAdjustingSearchCreateNovel => '検索を調整するか、新しい小説を作成してください';
 
   @override
-  String get sessionExpired => 'Session expired';
+  String get sessionExpired => 'セッションの有効期限切れ';
 
   @override
-  String get errorLoadingUsers => 'Error loading users';
+  String get errorLoadingUsers => 'ユーザー読み込みエラー';
 
   @override
-  String get unknownError => 'Unknown error';
+  String get unknownError => '不明なエラー';
 
   @override
-  String get goBack => 'Go Back';
+  String get goBack => '戻る';
 
   @override
-  String get unableToLoadAsset => 'Unable to load asset';
+  String get unableToLoadAsset => 'アセットを読み込めません';
 
   @override
-  String get youDontHavePermission =>
-      'You don\'t have permission to perform this action.';
+  String get youDontHavePermission => 'この操作を実行する権限がありません。';
 
   @override
-  String get continueReading => 'Continue Reading';
+  String get continueReading => '読書を続ける';
 
   @override
-  String get removeFromLibrary => 'Remove from Library';
+  String get removeFromLibrary => 'ライブラリから削除';
 
   @override
-  String get createFirstNovelSubtitle =>
-      'Create your first novel to get started.';
+  String get createFirstNovelSubtitle => '最初の小説を作成して始めましょう。';
 
   @override
-  String get navigationError => 'Navigation error';
+  String get navigationError => 'ナビゲーションエラー';
 
   @override
-  String get pdfStepPreparing => 'Preparing chapters';
+  String get pdfStepPreparing => '章を準備中';
 
   @override
-  String get pdfStepGenerating => 'Generating PDF';
+  String get pdfStepGenerating => 'PDF生成中';
 
   @override
-  String get pdfStepSharing => 'Sharing';
+  String get pdfStepSharing => '共有中';
 
   @override
-  String get tipIntention => 'Tip: Write one clear intention per scene.';
+  String get tipIntention => 'ヒント: 各シーンに明確な意図を1つ書きます。';
 
   @override
-  String get tipVerbs => 'Tip: Strong verbs make sentences feel alive.';
+  String get tipVerbs => 'ヒント: 強力な動詞で文を生き生きとさせます。';
 
   @override
-  String get tipStuck => 'Tip: If stuck, rewrite the last paragraph.';
+  String get tipStuck => 'ヒント: 行き詰まったら、最後の段落を書き直してください。';
 
   @override
-  String get tipDialogue =>
-      'Tip: Dialogue reveals character faster than description.';
+  String get tipDialogue => 'ヒント: 会話は描写よりも早くキャラクターを表現します。';
 
   @override
-  String get errorNovelNotFound => 'Novel not found';
+  String get errorNovelNotFound => '小説が見つかりません';
 
   @override
-  String get noSentenceSummary => 'No sentence summary available.';
+  String get noSentenceSummary => '文の要約がありません。';
 
   @override
-  String get noParagraphSummary => 'No paragraph summary available.';
+  String get noParagraphSummary => '段落の要約がありません。';
 
   @override
-  String get noPageSummary => 'No page summary available.';
+  String get noPageSummary => 'ページの要約がありません。';
 
   @override
-  String get noExpandedSummary => 'No expanded summary available.';
+  String get noExpandedSummary => '詳細な要約がありません。';
 
   @override
-  String get aiSentenceSummaryTooltip => 'AI sentence summary';
+  String get aiSentenceSummaryTooltip => 'AI文の要約';
 
   @override
-  String get aiParagraphSummaryTooltip => 'AI paragraph summary';
+  String get aiParagraphSummaryTooltip => 'AI段落の要約';
 
   @override
-  String get aiPageSummaryTooltip => 'AI page summary';
+  String get aiPageSummaryTooltip => 'AIページの要約';
 
   @override
-  String get keyboardShortcuts => 'Keyboard shortcuts';
+  String get keyboardShortcuts => 'キーボードショートカット';
 
   @override
-  String get shortcutSpace => 'Space: Play / stop';
+  String get shortcutSpace => 'スペース: 再生 / 停止';
 
   @override
-  String get shortcutArrows => '← / →: Previous / next';
+  String get shortcutArrows => '← / →: 前 / 次';
 
   @override
-  String get shortcutRate => 'Ctrl/⌘ + R: Speech rate';
+  String get shortcutRate => 'Ctrl/⌘ + R: 読み上げ速度';
 
   @override
-  String get shortcutVoice => 'Ctrl/⌘ + V: Voice';
+  String get shortcutVoice => 'Ctrl/⌘ + V: 音声';
 
   @override
-  String get shortcutHelp => 'Ctrl/⌘ + /: Show shortcuts';
+  String get shortcutHelp => 'Ctrl/⌘ + /: ショートカットを表示';
 
   @override
-  String get shortcutEsc => 'Esc: Close';
+  String get shortcutEsc => 'Esc: 閉じる';
 
   @override
-  String get styles => 'Styles';
+  String get styles => 'スタイル';
 
   @override
-  String get noVoicesAvailable => 'No voices available';
+  String get noVoicesAvailable => '利用可能な音声がありません';
 
   @override
-  String get comingSoon => 'Coming soon';
+  String get comingSoon => '近日公開';
 
   @override
-  String get selectNovelFirst => 'Select a novel first';
+  String get selectNovelFirst => '最初に小説を選択してください';
 
   @override
-  String get adminLogs => 'Admin Logs';
+  String get adminLogs => '管理者ログ';
 
   @override
-  String get viewAndFilterBackendLogs => 'View and filter backend logs';
+  String get viewAndFilterBackendLogs => 'バックエンドログを表示・フィルター';
 
   @override
-  String get styleGlassmorphism => 'Glassmorphism';
+  String get styleGlassmorphism => 'グラスモーフィズム';
 
   @override
-  String get styleLiquidGlass => 'Liquid Glass';
+  String get styleLiquidGlass => 'リキッドグラス';
 
   @override
-  String get styleNeumorphism => 'Neumorphism';
+  String get styleNeumorphism => 'ニューモーフィズム';
 
   @override
-  String get styleClaymorphism => 'Claymorphism';
+  String get styleClaymorphism => 'クレイモーフィズム';
 
   @override
-  String get styleMinimalism => 'Minimalism';
+  String get styleMinimalism => 'ミニマリズム';
 
   @override
-  String get styleBrutalism => 'Brutalism';
+  String get styleBrutalism => 'ブルータリズム';
 
   @override
-  String get styleSkeuomorphism => 'Skeuomorphism';
+  String get styleSkeuomorphism => 'スキューモーフィズム';
 
   @override
-  String get styleBentoGrid => 'Bento Grid';
+  String get styleBentoGrid => 'ベントグリッド';
 
   @override
-  String get styleResponsive => 'Responsive';
+  String get styleResponsive => 'レスポンシブ';
 
   @override
-  String get styleFlatDesign => 'Flat Design';
+  String get styleFlatDesign => 'フラットデザイン';
 
   @override
-  String get scrollToBottom => 'Scroll to bottom';
+  String get scrollToBottom => '下にスクロール';
 
   @override
-  String get scrollToTop => 'Scroll to top';
+  String get scrollToTop => '上にスクロール';
 
   @override
-  String get numberOfLines => 'Number of lines';
+  String get numberOfLines => '行数';
 
   @override
-  String get lines => 'lines';
+  String get lines => '行';
 
   @override
-  String get load => 'Load';
+  String get load => '読み込み';
 
   @override
-  String get noLogsAvailable => 'No logs available.';
+  String get noLogsAvailable => '利用可能なログがありません。';
 
   @override
-  String get failedToLoadLogs => 'Failed to load logs';
+  String get failedToLoadLogs => 'ログの読み込み失敗';
 
   @override
   String wordCount(int count) {
-    return 'Word count: $count';
+    return '文字数: $count';
   }
 
   @override
   String characterCount(int count) {
-    return 'Character count: $count';
+    return '文字数: $count';
   }
 
   @override
-  String get startWriting => 'Start writing...';
+  String get startWriting => '執筆を開始...';
 
   @override
   String failedToLoadChapter(String error) {
-    return 'Failed to load chapter: $error';
+    return '章の読み込み失敗: $error';
   }
 
   @override
-  String get saving => 'Saving…';
+  String get saving => '保存中…';
 
   @override
-  String get wordCountLabel => 'Word Count';
+  String get wordCountLabel => '文字数';
 
   @override
-  String get characterCountLabel => 'Character Count';
+  String get characterCountLabel => '文字数';
 
   @override
-  String get discard => 'Discard';
+  String get discard => '破棄';
 
   @override
-  String get saveShortcut => 'Save';
+  String get saveShortcut => '保存';
 
   @override
-  String get previewShortcut => 'Preview';
+  String get previewShortcut => 'プレビュー';
 
   @override
-  String get boldShortcut => 'Bold';
+  String get boldShortcut => '太字';
 
   @override
-  String get italicShortcut => 'Italic';
+  String get italicShortcut => '斜体';
 
   @override
-  String get underlineShortcut => 'Underline';
+  String get underlineShortcut => '下線';
 
   @override
-  String get headingShortcut => 'Heading';
+  String get headingShortcut => '見出し';
 
   @override
-  String get insertLinkShortcut => 'Insert link';
+  String get insertLinkShortcut => 'リンクを挿入';
 
   @override
-  String get shortcutsHelpShortcut => 'Shortcuts help';
+  String get shortcutsHelpShortcut => 'ショートカットヘルプ';
 
   @override
-  String get closeShortcut => 'Close';
+  String get closeShortcut => '閉じる';
 
   @override
-  String get designSystemStyleGuide => 'Design System Style Guide';
+  String get designSystemStyleGuide => 'デザインシステムスタイルガイド';
 
   @override
-  String get headlineLarge => 'Headline Large';
+  String get headlineLarge => '大見出し';
 
   @override
-  String get headlineMedium => 'Headline Medium';
+  String get headlineMedium => '中見出し';
 
   @override
-  String get titleLarge => 'Title Large';
+  String get titleLarge => '大タイトル';
 
   @override
-  String get bodyLarge => 'Body Large';
+  String get bodyLarge => '大本文';
 
   @override
-  String get bodyMedium => 'Body Medium';
+  String get bodyMedium => '中本文';
 
   @override
-  String get primaryButton => 'Primary Button';
+  String get primaryButton => 'プライマリボタン';
 
   @override
-  String get disabled => 'Disabled';
+  String get disabled => '無効';
 
   @override
   String checkboxState(bool value) {
-    return 'Checkbox State: $value';
+    return 'チェックボックスの状態: $value';
   }
 
   @override
-  String get option1 => 'Option 1';
+  String get option1 => 'オプション1';
 
   @override
-  String get option2 => 'Option 2';
+  String get option2 => 'オプション2';
 
   @override
   String switchState(bool value) {
-    return 'Switch State: $value';
+    return 'スイッチの状態: $value';
   }
 
   @override
   String sliderValue(String value) {
-    return 'Value: $value';
+    return '値: $value';
   }
 
   @override
-  String get enterTextHere => 'Enter text here...';
+  String get enterTextHere => 'ここにテキストを入力...';
 
   @override
-  String get selectAnOption => 'Select an option';
+  String get selectAnOption => 'オプションを選択';
 
   @override
-  String get optionA => 'Option A';
+  String get optionA => 'オプションA';
 
   @override
-  String get optionB => 'Option B';
+  String get optionB => 'オプションB';
 
   @override
-  String get optionC => 'Option C';
+  String get optionC => 'オプションC';
 
   @override
-  String get contrastIssuesDetected => 'Contrast Issues Detected';
+  String get contrastIssuesDetected => 'コントラストの問題を検出';
 
   @override
   String foundContrastIssues(int count) {
-    return 'Found $count contrast issue(s) that may affect readability.';
+    return '可読性に影響する$count個のコントラスト問題が見つかりました。';
   }
 
   @override
-  String get allGood => 'All Good!';
+  String get allGood => 'すべて良好！';
 
   @override
-  String get allGoodContrast =>
-      'All text elements meet WCAG 2.1 AA contrast standards.';
+  String get allGoodContrast => 'すべてのテキスト要素がWCAG 2.1 AAコントラスト標準を満たしています。';
 
   @override
-  String get ignore => 'Ignore';
+  String get ignore => '無視';
 
   @override
-  String get applyBestFix => 'Apply Best Fix';
+  String get applyBestFix => '最適な修正を適用';
 
   @override
-  String get moreMenuComingSoon => 'More menu coming soon';
+  String get moreMenuComingSoon => 'その他のメニューは近日公開';
 
   @override
-  String get styleGuide => 'Style Guide';
+  String get styleGuide => 'スタイルガイド';
 
   @override
   String get themeFactoryNotDefined =>
-      'Theme factory not defined any themes, using default theme.';
+      'テーマファクトリーがテーマを定義していないため、デフォルトテーマを使用します。';
 
   @override
   String progressPercentage(int percent) {
@@ -1908,168 +1873,168 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get review => 'Review';
+  String get review => 'レビュー';
 
   @override
-  String get wordsLabel => 'Words';
+  String get wordsLabel => '文字';
 
   @override
-  String get charsLabel => 'Chars';
+  String get charsLabel => '文字';
 
   @override
-  String get readLabel => 'Read';
+  String get readLabel => '読書';
 
   @override
-  String get streakLabel => 'Streak';
+  String get streakLabel => '連続記録';
 
   @override
-  String get pause => 'Pause';
+  String get pause => '一時停止';
 
   @override
-  String get start => 'Start';
+  String get start => '開始';
 
   @override
-  String get editMode => 'Edit mode';
+  String get editMode => '編集モード';
 
   @override
-  String get previewMode => 'Preview mode';
+  String get previewMode => 'プレビューモード';
 
   @override
-  String get quote => 'Quote';
+  String get quote => '引用';
 
   @override
-  String get inlineCode => 'Inline code';
+  String get inlineCode => 'インラインコード';
 
   @override
-  String get bulletedList => 'Bulleted list';
+  String get bulletedList => '箇条書きリスト';
 
   @override
-  String get numberedList => 'Numbered list';
+  String get numberedList => '番号付きリスト';
 
   @override
-  String get previewTab => 'Preview';
+  String get previewTab => 'プレビュー';
 
   @override
-  String get editTab => 'Edit';
+  String get editTab => '編集';
 
   @override
-  String get noExpandedSummaryAvailable => 'No expanded summary available.';
+  String get noExpandedSummaryAvailable => '詳細な要約がありません。';
 
   @override
-  String get analyze => 'Analyze';
+  String get analyze => '分析';
 
   @override
   String youreOffline(String message) {
-    return 'You\'re offline. $message';
+    return 'オフラインです。$message';
   }
 
   @override
-  String get download => 'Download';
+  String get download => 'ダウンロード';
 
   @override
-  String get moreActions => 'More actions';
+  String get moreActions => 'その他のアクション';
 
   @override
-  String get doubleTapToOpen => 'Double tap to open. Long press for actions.';
+  String get doubleTapToOpen => 'ダブルタップで開きます。長押しでアクションを表示。';
 
   @override
-  String get more => 'More';
+  String get more => 'その他';
 
   @override
-  String get pressD => 'Press D';
+  String get pressD => 'Dを押す';
 
   @override
-  String get pressEnter => 'Press Enter';
+  String get pressEnter => 'Enterを押す';
 
   @override
-  String get pressDelete => 'Press Delete';
+  String get pressDelete => 'Deleteを押す';
 
   @override
-  String get exitPreview => 'Exit preview';
+  String get exitPreview => 'プレビューを終了';
 
   @override
-  String get saveLabel => 'Save';
+  String get saveLabel => '保存';
 
   @override
-  String get exitZenMode => 'Exit Zen mode';
+  String get exitZenMode => '禅モードを終了';
 
   @override
-  String get clearSearch => 'Clear search';
+  String get clearSearch => '検索をクリア';
 
   @override
-  String get notSignedInLabel => 'Not signed in';
+  String get notSignedInLabel => '未サインイン';
 
   @override
-  String get stylePreviewGrid => 'Style preview grid';
+  String get stylePreviewGrid => 'スタイルプレビューグリッド';
 
   @override
-  String get themeOceanDepths => 'Ocean Depths';
+  String get themeOceanDepths => 'オーシャンの深さ';
 
   @override
-  String get themeSunsetBoulevard => 'Sunset Boulevard';
+  String get themeSunsetBoulevard => 'サンセット大通り';
 
   @override
-  String get themeForestCanopy => 'Forest Canopy';
+  String get themeForestCanopy => '森の樹冠';
 
   @override
-  String get themeModernMinimalist => 'Modern Minimalist';
+  String get themeModernMinimalist => 'モダンミニマリスト';
 
   @override
-  String get themeGoldenHour => 'Golden Hour';
+  String get themeGoldenHour => 'ゴールデンアワー';
 
   @override
-  String get themeArcticFrost => 'Arctic Frost';
+  String get themeArcticFrost => '北極の霜';
 
   @override
-  String get themeDesertRose => 'Desert Rose';
+  String get themeDesertRose => '砂漠のバラ';
 
   @override
-  String get themeTechInnovation => 'Tech Innovation';
+  String get themeTechInnovation => 'テクノロジーイノベーション';
 
   @override
-  String get themeBotanicalGarden => 'Botanical Garden';
+  String get themeBotanicalGarden => '植物園';
 
   @override
-  String get themeMidnightGalaxy => 'Midnight Galaxy';
+  String get themeMidnightGalaxy => '真夜中の銀河';
 
   @override
-  String get standardLight => 'Standard Light';
+  String get standardLight => '標準ライト';
 
   @override
-  String get warmPaper => 'Warm Paper';
+  String get warmPaper => 'ウォームペーパー';
 
   @override
-  String get coolGrey => 'Cool Grey';
+  String get coolGrey => 'クールグレー';
 
   @override
-  String get sepiaLabel => 'Sepia';
+  String get sepiaLabel => 'セピア';
 
   @override
-  String get standardDark => 'Standard Dark';
+  String get standardDark => '標準ダーク';
 
   @override
-  String get midnight => 'Midnight';
+  String get midnight => '真夜中';
 
   @override
-  String get darkSepia => 'Dark Sepia';
+  String get darkSepia => 'ダークセピア';
 
   @override
-  String get deepOcean => 'Deep Ocean';
+  String get deepOcean => '深い海';
 
   @override
-  String get youreOfflineLabel => 'You\'re offline';
+  String get youreOfflineLabel => 'オフラインです';
 
   @override
-  String get changesWillSync => 'Changes will sync when you\'re back online';
+  String get changesWillSync => 'オンラインに戻ったときに変更が同期されます';
 
   @override
   String changesWillSyncCount(int count) {
-    return '$count change(s) will sync when you\'re back online';
+    return 'オンラインに戻ったときに$count件の変更が同期されます';
   }
 
   @override
-  String get toggleSidebar => 'Toggle Sidebar';
+  String get toggleSidebar => 'サイドバーを切り替え';
 
   @override
-  String get quickSearch => 'Quick Search';
+  String get quickSearch => 'クイック検索';
 }

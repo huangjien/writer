@@ -15,10 +15,10 @@ import 'app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Font preloading is handled by web/index.html preload links
-  try {
-    await preloadEmbeddedChineseFonts();
-  } catch (_) {}
+  // Preload fonts in background without blocking app startup
+  preloadEmbeddedChineseFonts().catchError((e) {
+    debugPrint('Font preloading error (non-fatal): $e');
+  });
 
   final prefs = await SharedPreferences.getInstance();
   final appSettings = AppSettingsNotifier(prefs);

@@ -6,7 +6,6 @@ import 'package:writer/l10n/app_localizations_es.dart';
 import 'package:writer/l10n/app_localizations_fr.dart';
 import 'package:writer/l10n/app_localizations_it.dart';
 import 'package:writer/l10n/app_localizations_ja.dart';
-import 'package:writer/l10n/app_localizations_ko.dart';
 import 'package:writer/l10n/app_localizations_ru.dart';
 import 'package:writer/l10n/app_localizations_zh.dart';
 
@@ -22,7 +21,6 @@ void main() {
         AppLocalizationsFr(),
         AppLocalizationsIt(),
         AppLocalizationsJa(),
-        AppLocalizationsKo(),
         AppLocalizationsRu(),
         AppLocalizationsZh(),
       ];
@@ -1202,60 +1200,6 @@ void main() {
       expect(ja.progressPercentage(75), isNotEmpty);
       expect(ja.youreOffline('msg'), contains('msg'));
       expect(ja.changesWillSyncCount(10), isNotEmpty);
-    });
-  });
-
-  group('Korean Complete Coverage Tests', () {
-    final ko = AppLocalizationsKo();
-
-    test('all complete coverage properties non-empty', () {
-      expect(ko.authenticationFailedSignInAgain, isNotEmpty);
-      expect(ko.accessDeniedNoAdminPrivileges, isNotEmpty);
-      expect(ko.smartSearchRequiresSignIn, isNotEmpty);
-      expect(ko.smartSearch, isNotEmpty);
-      expect(ko.failedToPersistTemplate, isNotEmpty);
-      expect(ko.sessionExpired, isNotEmpty);
-      expect(ko.errorLoadingUsers, isNotEmpty);
-      expect(ko.unknownError, isNotEmpty);
-      expect(ko.goBack, isNotEmpty);
-      expect(ko.continueReading, isNotEmpty);
-      expect(ko.removeFromLibrary, isNotEmpty);
-      expect(ko.createFirstNovelSubtitle, isNotEmpty);
-      expect(ko.navigationError, isNotEmpty);
-      expect(ko.pdfStepPreparing, isNotEmpty);
-      expect(ko.tipIntention, isNotEmpty);
-      expect(ko.noSentenceSummary, isNotEmpty);
-      expect(ko.keyboardShortcuts, isNotEmpty);
-      expect(ko.adminLogs, isNotEmpty);
-      expect(ko.styleGlassmorphism, isNotEmpty);
-      expect(ko.scrollToBottom, isNotEmpty);
-      expect(ko.startWriting, isNotEmpty);
-      expect(ko.saving, isNotEmpty);
-      expect(ko.discard, isNotEmpty);
-      expect(ko.analyze, isNotEmpty);
-      expect(ko.quote, isNotEmpty);
-      expect(ko.designSystemStyleGuide, isNotEmpty);
-      expect(ko.contrastIssuesDetected, isNotEmpty);
-      expect(ko.themeOceanDepths, isNotEmpty);
-      expect(ko.standardLight, isNotEmpty);
-      expect(ko.youreOfflineLabel, isNotEmpty);
-      expect(ko.toggleSidebar, isNotEmpty);
-      expect(ko.themeFactoryNotDefined, isNotEmpty);
-    });
-
-    test('parameterized methods complete', () {
-      expect(ko.userIdCreated('123', '2024-01-01'), contains('123'));
-      expect(ko.failedToLoadUsers(500, 'err'), isNotEmpty);
-      expect(ko.wordCount(5000), isNotEmpty);
-      expect(ko.characterCount(25000), isNotEmpty);
-      expect(ko.failedToLoadChapter('err'), contains('err'));
-      expect(ko.checkboxState(true), isNotEmpty);
-      expect(ko.switchState(false), isNotEmpty);
-      expect(ko.sliderValue('50'), isNotEmpty);
-      expect(ko.foundContrastIssues(5), isNotEmpty);
-      expect(ko.progressPercentage(75), isNotEmpty);
-      expect(ko.youreOffline('msg'), contains('msg'));
-      expect(ko.changesWillSyncCount(10), isNotEmpty);
     });
   });
 
