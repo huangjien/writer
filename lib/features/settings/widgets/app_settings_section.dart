@@ -254,6 +254,7 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
             height: 48,
             child: IconButton(
               icon: const Icon(Icons.edit),
+              color: Theme.of(context).colorScheme.primary,
               onPressed: () => _showAiServiceUrlDialog(context),
             ),
           ),

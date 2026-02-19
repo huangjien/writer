@@ -307,12 +307,18 @@ ThemeData _buildFromScheme(ColorScheme scheme) {
         ),
       ),
     ),
-    iconButtonTheme: const IconButtonThemeData(
+    iconButtonTheme: IconButtonThemeData(
       style: ButtonStyle(
-        minimumSize: WidgetStatePropertyAll(
+        foregroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.disabled)) {
+            return cs.onSurface.withValues(alpha: 0.38);
+          }
+          return cs.primary;
+        }),
+        minimumSize: const WidgetStatePropertyAll(
           Size(MobileSpacing.touchTargetMin, MobileSpacing.touchTargetMin),
         ),
-        padding: WidgetStatePropertyAll(EdgeInsets.all(Spacing.s)),
+        padding: const WidgetStatePropertyAll(EdgeInsets.all(Spacing.s)),
       ),
     ),
     checkboxTheme: CheckboxThemeData(
