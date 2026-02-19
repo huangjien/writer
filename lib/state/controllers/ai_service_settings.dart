@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 const String _aiServiceUrlKey = 'ai_service_url';
 const String _defaultAiServiceUrl = String.fromEnvironment(
   'AI_SERVICE_URL',
-  defaultValue: 'https://ai.huangjien.com/',
+  defaultValue: 'http://localhost:5600/',
 );
 
 class AiServiceNotifier extends StateNotifier<String> {
