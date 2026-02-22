@@ -20,7 +20,6 @@ import 'package:writer/state/providers.dart';
 import 'package:writer/state/progress_providers.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/user_progress.dart';
-import 'package:writer/widgets/app_drawer.dart';
 import 'package:writer/widgets/offline_banner.dart';
 import 'package:writer/theme/design_tokens.dart';
 import 'package:writer/widgets/recent_chapters.dart';
@@ -135,7 +134,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
         appBar: isMobile
             ? buildMobileAppBar(context, l10n)
             : buildDesktopAppBar(context, l10n, isSignedIn, isAdmin),
-        drawer: isMobile ? null : const AppDrawer(),
+        drawer: null,
         body: isMobile && libraryScreen.currentTab != MobileNavTab.home
             ? buildMobileTabContent(libraryScreen.currentTab)
             : Column(

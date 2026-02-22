@@ -40,82 +40,119 @@ import '../models/prompt.dart';
 import '../models/pattern.dart';
 import '../models/story_line.dart';
 import '../state/providers.dart';
+import '../shared/widgets/app_shell.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: ref.read(globalNavigatorKeyProvider),
     routes: [
-      GoRoute(
-        path: '/',
-        name: 'library',
-        builder: (context, state) => const LibraryScreen(),
-      ),
-      GoRoute(
-        path: '/prompts',
-        name: 'prompts',
-        builder: (context, state) {
-          final svc = ref.watch(promptsServiceProvider);
-          final isAdmin = ref.watch(isAdminProvider);
-          return PromptsListScreen(service: svc, isAdmin: isAdmin);
+      ShellRoute(
+        builder: (context, state, child) {
+          return AppShell(shellType: AppShellType.appDrawer, child: child);
         },
-      ),
-      GoRoute(
-        path: '/patterns',
-        name: 'patterns',
-        builder: (context, state) => const PatternsListScreen(),
-      ),
-      GoRoute(
-        path: '/story_lines',
-        name: 'storyLines',
-        builder: (context, state) => const StoryLinesListScreen(),
-      ),
-      GoRoute(
-        path: '/prompt_form',
-        name: 'promptForm',
-        builder: (context, state) {
-          final svc = ref.watch(promptsServiceProvider);
-          final initial = state.extra is Prompt ? state.extra as Prompt? : null;
-          final isAdmin = ref.watch(isAdminProvider);
-          final isSignedIn = ref.watch(isSignedInProvider);
-          final canEdit = initial == null ? true : isSignedIn;
-          return PromptFormScreen(
-            service: svc,
-            initial: initial,
-            isAdmin: isAdmin,
-            isSignedIn: isSignedIn,
-            canEdit: canEdit,
-          );
-        },
-      ),
-      GoRoute(
-        path: '/pattern_form',
-        name: 'patternForm',
-        builder: (context, state) {
-          final initial = state.extra is Pattern
-              ? state.extra as Pattern?
-              : null;
-          return PatternFormScreen(initial: initial);
-        },
-      ),
-      GoRoute(
-        path: '/story_line_form',
-        name: 'storyLineForm',
-        builder: (context, state) {
-          final initial = state.extra is StoryLine
-              ? state.extra as StoryLine?
-              : null;
-          return StoryLineFormScreen(initial: initial);
-        },
-      ),
-      GoRoute(
-        path: '/tools',
-        name: 'tools',
-        builder: (context, state) => const MobileToolsScreen(),
-      ),
-      GoRoute(
-        path: '/hot-topics',
-        name: 'hotTopics',
-        builder: (context, state) => const HotTopicsScreen(),
+        routes: [
+          GoRoute(
+            path: '/',
+            name: 'library',
+            builder: (context, state) => const LibraryScreen(),
+          ),
+          GoRoute(
+            path: '/prompts',
+            name: 'prompts',
+            builder: (context, state) {
+              final svc = ref.watch(promptsServiceProvider);
+              final isAdmin = ref.watch(isAdminProvider);
+              return PromptsListScreen(service: svc, isAdmin: isAdmin);
+            },
+          ),
+          GoRoute(
+            path: '/patterns',
+            name: 'patterns',
+            builder: (context, state) => const PatternsListScreen(),
+          ),
+          GoRoute(
+            path: '/story_lines',
+            name: 'storyLines',
+            builder: (context, state) => const StoryLinesListScreen(),
+          ),
+          GoRoute(
+            path: '/prompt_form',
+            name: 'promptForm',
+            builder: (context, state) {
+              final svc = ref.watch(promptsServiceProvider);
+              final initial = state.extra is Prompt
+                  ? state.extra as Prompt?
+                  : null;
+              final isAdmin = ref.watch(isAdminProvider);
+              final isSignedIn = ref.watch(isSignedInProvider);
+              final canEdit = initial == null ? true : isSignedIn;
+              return PromptFormScreen(
+                service: svc,
+                initial: initial,
+                isAdmin: isAdmin,
+                isSignedIn: isSignedIn,
+                canEdit: canEdit,
+              );
+            },
+          ),
+          GoRoute(
+            path: '/pattern_form',
+            name: 'patternForm',
+            builder: (context, state) {
+              final initial = state.extra is Pattern
+                  ? state.extra as Pattern?
+                  : null;
+              return PatternFormScreen(initial: initial);
+            },
+          ),
+          GoRoute(
+            path: '/story_line_form',
+            name: 'storyLineForm',
+            builder: (context, state) {
+              final initial = state.extra is StoryLine
+                  ? state.extra as StoryLine?
+                  : null;
+              return StoryLineFormScreen(initial: initial);
+            },
+          ),
+          GoRoute(
+            path: '/tools',
+            name: 'tools',
+            builder: (context, state) => const MobileToolsScreen(),
+          ),
+          GoRoute(
+            path: '/hot-topics',
+            name: 'hotTopics',
+            builder: (context, state) => const HotTopicsScreen(),
+          ),
+          GoRoute(
+            path: '/my-novels',
+            name: 'myNovels',
+            builder: (context, state) => const MyNovelsScreen(),
+          ),
+          GoRoute(
+            path: '/create-novel',
+            name: 'createNovel',
+            builder: (context, state) => const CreateNovelScreen(),
+          ),
+          GoRoute(
+            path: '/settings',
+            name: 'settings',
+            builder: (context, state) => const SettingsScreen(),
+            routes: [
+              GoRoute(
+                path: 'token-usage-history',
+                name: 'tokenUsageHistory',
+                builder: (context, state) => const TokenUsageHistoryScreen(),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/about',
+            name: 'about',
+            builder: (context, state) => const AboutScreen(),
+          ),
+        ],
       ),
       GoRoute(
         path: '/auth',
@@ -156,33 +193,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/admin/logs',
         name: 'adminLogs',
         builder: (context, state) => const AdminLogsScreen(),
-      ),
-      GoRoute(
-        path: '/my-novels',
-        name: 'myNovels',
-        builder: (context, state) => const MyNovelsScreen(),
-      ),
-      GoRoute(
-        path: '/create-novel',
-        name: 'createNovel',
-        builder: (context, state) => const CreateNovelScreen(),
-      ),
-      GoRoute(
-        path: '/settings',
-        name: 'settings',
-        builder: (context, state) => const SettingsScreen(),
-        routes: [
-          GoRoute(
-            path: 'token-usage-history',
-            name: 'tokenUsageHistory',
-            builder: (context, state) => const TokenUsageHistoryScreen(),
-          ),
-        ],
-      ),
-      GoRoute(
-        path: '/about',
-        name: 'about',
-        builder: (context, state) => const AboutScreen(),
       ),
       GoRoute(
         path: '/novel/:id',

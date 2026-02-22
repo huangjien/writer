@@ -4,7 +4,6 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/hot_topic.dart';
 import 'package:writer/features/hot_topics/hot_topics_providers.dart';
 import 'package:writer/shared/utils/open_url.dart';
-import 'package:writer/widgets/app_drawer.dart';
 import 'package:writer/shared/widgets/global_shortcuts_wrapper.dart';
 
 class HotTopicsScreen extends ConsumerStatefulWidget {
@@ -36,7 +35,7 @@ class _HotTopicsScreenState extends ConsumerState<HotTopicsScreen> {
             ),
           ],
         ),
-        drawer: const AppDrawer(),
+        drawer: null,
         body: Column(
           children: [
             _PlatformFilter(
