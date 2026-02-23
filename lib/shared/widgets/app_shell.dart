@@ -55,8 +55,13 @@ class AppShell extends ConsumerWidget {
           appBar: isMobile
               ? appBar
               : (showSidebar
-                  ? _buildDesktopAppBarWithToggle(context, ref, appBar, isExpanded)
-                  : null),
+                    ? _buildDesktopAppBarWithToggle(
+                        context,
+                        ref,
+                        appBar,
+                        isExpanded,
+                      )
+                    : null),
           drawer: effectiveDrawer,
           body: isMobile
               ? child
