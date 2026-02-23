@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:writer/features/summary/screens/characters/character_templates_screen.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/repositories/template_repository.dart';
 import 'package:writer/models/template.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/providers.dart';
@@ -64,10 +65,54 @@ class MockRemoteRepo extends RemoteRepository {
   @override
   Future<String?> fetchCharacterProfile(String name) async {
     queryName = name;
-    // Add small delay to ensure UI can render loading state
     await Future.delayed(const Duration(milliseconds: 50));
     if (shouldFail) throw Exception('Network error');
     return mockResponse;
+  }
+
+  @override
+  Future<Map<String, dynamic>?> generateCharacterTemplate({
+    required String title,
+    required String templateContent,
+    String? name,
+    String? languageCode,
+  }) async {
+    queryName = name;
+    await Future.delayed(const Duration(milliseconds: 50));
+    if (shouldFail) throw Exception('Network error');
+    return {'id': 'test-id-123', 'title': title};
+  }
+}
+
+class MockTemplateRepo extends TemplateRepository {
+  MockTemplateRepo() : super(MockRemoteRepo());
+
+  String? queryName;
+
+  @override
+  Future<Map<String, dynamic>?> generateCharacterTemplate({
+    required String title,
+    required String templateContent,
+    String? name,
+    String? languageCode,
+  }) async {
+    queryName = name;
+    await Future.delayed(const Duration(milliseconds: 50));
+    return {'id': 'test-id-123', 'title': title};
+  }
+}
+
+class ThrowingTemplateRepo extends TemplateRepository {
+  ThrowingTemplateRepo() : super(MockRemoteRepo());
+
+  @override
+  Future<Map<String, dynamic>?> generateCharacterTemplate({
+    required String title,
+    required String templateContent,
+    String? name,
+    String? languageCode,
+  }) async {
+    throw Exception('Network error');
   }
 }
 
@@ -133,6 +178,7 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     final localRepo = CapturingLocalRepo();
     final remoteRepo = MockRemoteRepo();
+    final templateRepo = MockTemplateRepo();
     remoteRepo.mockResponse = '''
 ### Archetype: The Hero
 - **Role**: Protagonist
@@ -145,6 +191,7 @@ void main() {
           sharedPreferencesProvider.overrideWithValue(prefs),
           localStorageRepositoryProvider.overrideWith((_) => localRepo),
           remoteRepositoryProvider.overrideWith((_) => remoteRepo),
+          templateRepositoryProvider.overrideWith((_) => templateRepo),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -186,19 +233,9 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify repo called
-    expect(remoteRepo.queryName, 'Harry Potter');
+    expect(templateRepo.queryName, 'Harry Potter');
 
-    // Verify description filled in Edit tab
-    final descField = find.widgetWithText(
-      TextFormField,
-      'Enter description in Markdown...',
-    );
-    final descText =
-        (tester.widget(descField) as TextFormField).controller!.text;
-
-    expect(descText, contains('### Archetype: The Hero'));
-    expect(descText, contains('Protagonist'));
-    expect(descText, contains('Save the world'));
+    // Verify snackbar shown
     expect(find.text('Profile retrieved'), findsOneWidget);
   });
 
@@ -214,6 +251,9 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           remoteRepositoryProvider.overrideWith((_) => remoteRepo),
+          templateRepositoryProvider.overrideWith(
+            (_) => ThrowingTemplateRepo(),
+          ),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

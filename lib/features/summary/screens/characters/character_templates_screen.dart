@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/models/template.dart';
-import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/repositories/template_repository.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/shared/api_exception.dart';
@@ -109,12 +108,17 @@ class _CharacterTemplatesContentState
     notifier.clearError();
 
     try {
-      final repo = ref.read(remoteRepositoryProvider);
-      final profile = await repo.fetchCharacterProfile(name);
+      final templateRepo = ref.read(templateRepositoryProvider);
+      final result = await templateRepo.generateCharacterTemplate(
+        title: name,
+        templateContent: _descController.text.trim().isEmpty
+            ? 'Character: $name'
+            : _descController.text.trim(),
+        name: name,
+        languageCode: 'en',
+      );
 
-      if (profile != null) {
-        _descController.text = profile.trim();
-
+      if (result != null && result.containsKey('id')) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

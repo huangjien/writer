@@ -72,6 +72,20 @@ class TemplateRepository {
     await _remote.delete('templates/characters/$id');
   }
 
+  Future<Map<String, dynamic>?> generateCharacterTemplate({
+    required String title,
+    required String templateContent,
+    String? name,
+    String? languageCode,
+  }) async {
+    return _remote.generateCharacterTemplate(
+      title: title,
+      templateContent: templateContent,
+      name: name,
+      languageCode: languageCode,
+    );
+  }
+
   Future<List<CharacterTemplateRow>> searchCharacterTemplates(
     String query, {
     int limit = 10,
@@ -164,6 +178,20 @@ class TemplateRepository {
 
   Future<void> deleteSceneTemplate(String id) async {
     await _remote.delete('templates/scenes/$id');
+  }
+
+  Future<Map<String, dynamic>?> generateSceneTemplate({
+    required String title,
+    required String templateContent,
+    String? name,
+    String? languageCode,
+  }) async {
+    return _remote.generateSceneTemplate(
+      title: title,
+      templateContent: templateContent,
+      name: name,
+      languageCode: languageCode,
+    );
   }
 
   Future<List<SceneTemplateRow>> searchSceneTemplates(

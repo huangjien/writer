@@ -19,6 +19,9 @@ class CapturingTemplateRepo extends TemplateRepository {
   String? upsertedSummaries;
   String? upsertedLanguageCode;
   String? refreshedId;
+  String? generatedName;
+  bool generateShouldFail = false;
+  bool generateReturnsNull = false;
 
   @override
   Future<String?> upsertSceneTemplate({
@@ -33,6 +36,19 @@ class CapturingTemplateRepo extends TemplateRepository {
     upsertedSummaries = summaries;
     upsertedLanguageCode = languageCode;
     return id ?? 't-1';
+  }
+
+  @override
+  Future<Map<String, dynamic>?> generateSceneTemplate({
+    required String title,
+    required String templateContent,
+    String? name,
+    String? languageCode,
+  }) async {
+    generatedName = name;
+    if (generateShouldFail) throw Exception('Network error');
+    if (generateReturnsNull) return null;
+    return {'id': 'generated-id-123', 'title': title};
   }
 
   @override
@@ -129,12 +145,12 @@ void main() {
     tester,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    final remote = FakeRemoteRepo('# Profile');
+    final templates = CapturingTemplateRepo();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
-          remoteRepositoryProvider.overrideWithValue(remote),
+          templateRepositoryProvider.overrideWithValue(templates),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -163,12 +179,13 @@ void main() {
     tester,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    final remote = FakeRemoteRepo(null);
+    final templates = CapturingTemplateRepo();
+    templates.generateReturnsNull = true;
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
-          remoteRepositoryProvider.overrideWithValue(remote),
+          templateRepositoryProvider.overrideWithValue(templates),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

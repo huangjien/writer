@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:writer/models/template.dart';
 import 'package:writer/l10n/app_localizations.dart';
-import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/repositories/template_repository.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/shared/api_exception.dart';
@@ -99,19 +98,18 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
     ref.read(templateFormProvider.notifier).clearError();
 
     try {
-      final repo = ref.read(remoteRepositoryProvider);
-      final profile = await repo.fetchSceneProfile(name);
+      final templateRepo = ref.read(templateRepositoryProvider);
+      final result = await templateRepo.generateSceneTemplate(
+        title: name,
+        templateContent: _descController.text.trim().isEmpty
+            ? 'Scene: $name'
+            : _descController.text.trim(),
+        name: name,
+        languageCode: 'en',
+      );
 
-      if (profile != null) {
-        _descController.text = profile.trim();
+      if (result != null && result.containsKey('id')) {
         if (mounted) {
-          ref
-              .read(templateFormProvider.notifier)
-              .updateDirty(
-                _nameController.text,
-                _descController.text,
-                ref.read(templateFormProvider).languageCode,
-              );
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context)!.profileRetrieved),

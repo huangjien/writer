@@ -113,6 +113,26 @@ class _NoopRemoteRepository implements RemoteRepository {
   }
 
   @override
+  Future<Map<String, dynamic>?> generateCharacterTemplate({
+    required String title,
+    required String templateContent,
+    String? name,
+    String? languageCode,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Map<String, dynamic>?> generateSceneTemplate({
+    required String title,
+    required String templateContent,
+    String? name,
+    String? languageCode,
+  }) async {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<String?> convertScene({
     required String name,
     required String templateContent,

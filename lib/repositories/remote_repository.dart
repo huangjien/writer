@@ -343,6 +343,34 @@ class RemoteRepository {
     }, 'result');
   }
 
+  Future<Map<String, dynamic>?> generateCharacterTemplate({
+    required String title,
+    required String templateContent,
+    String? name,
+    String? languageCode,
+  }) async {
+    return _postJson('templates/characters/generate', {
+      'title': title,
+      'template_content': templateContent,
+      if (name != null) 'name': name,
+      if (languageCode != null) 'language_code': languageCode,
+    });
+  }
+
+  Future<Map<String, dynamic>?> generateSceneTemplate({
+    required String title,
+    required String templateContent,
+    String? name,
+    String? languageCode,
+  }) async {
+    return _postJson('templates/scenes/generate', {
+      'title': title,
+      'template_content': templateContent,
+      if (name != null) 'name': name,
+      if (languageCode != null) 'language_code': languageCode,
+    });
+  }
+
   Future<TokenUsage?> getCurrentMonthUsage() async {
     final data = await get('token-usage/current-month');
     if (data == null) return null;
