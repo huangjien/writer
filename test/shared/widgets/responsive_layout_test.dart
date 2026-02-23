@@ -9,11 +9,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Builder(
-            builder: (context) {
-              actualWidth = Responsive.getWidth(context);
-              return const SizedBox();
-            },
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(800, 600)),
+            child: Builder(
+              builder: (context) {
+                actualWidth = Responsive.getWidth(context);
+                return const SizedBox();
+              },
+            ),
           ),
         ),
       );
