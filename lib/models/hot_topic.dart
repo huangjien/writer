@@ -183,7 +183,7 @@ class HotTopicPlatform {
   factory HotTopicPlatform.fromMap(Map<String, dynamic> map) {
     return HotTopicPlatform(
       platformKey: (map['platform_key'] ?? '') as String,
-      name: (map['name'] ?? '') as String,
+      name: (map['display_name'] ?? map['name'] ?? '') as String,
       iconUrl: map['icon_url'] as String?,
       regionCode: (map['region_code'] ?? '') as String,
       isActive: (map['is_active'] ?? false) as bool,

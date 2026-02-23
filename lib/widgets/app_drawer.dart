@@ -45,7 +45,6 @@ class AppDrawer extends ConsumerWidget {
             leading: const Icon(Icons.home),
             title: Text(l10n.home),
             onTap: () {
-              Navigator.pop(context);
               context.go('/');
             },
           ),
@@ -53,7 +52,6 @@ class AppDrawer extends ConsumerWidget {
             leading: const Icon(Icons.settings),
             title: Text(l10n.settings),
             onTap: () {
-              Navigator.pop(context);
               context.go('/settings');
             },
           ),
@@ -61,7 +59,6 @@ class AppDrawer extends ConsumerWidget {
             leading: const Icon(Icons.local_fire_department),
             title: Text(l10n.hotTopics),
             onTap: () {
-              Navigator.pop(context);
               context.go('/hot-topics');
             },
           ),
@@ -70,7 +67,6 @@ class AppDrawer extends ConsumerWidget {
             leading: const Icon(Icons.assignment_ind_outlined),
             title: Text(l10n.characterTemplates),
             onTap: () {
-              Navigator.pop(context);
               final id = defaultNovelId;
               if (id != null) {
                 context.go('/novel/$id/character-templates');
@@ -83,7 +79,6 @@ class AppDrawer extends ConsumerWidget {
             leading: const Icon(Icons.assignment_outlined),
             title: Text(l10n.sceneTemplates),
             onTap: () {
-              Navigator.pop(context);
               final id = defaultNovelId;
               if (id != null) {
                 context.go('/novel/$id/scene-templates');
@@ -96,7 +91,6 @@ class AppDrawer extends ConsumerWidget {
             leading: const Icon(Icons.text_snippet),
             title: Text(l10n.prompts),
             onTap: () {
-              Navigator.pop(context);
               context.go('/prompts');
             },
           ),
@@ -104,7 +98,6 @@ class AppDrawer extends ConsumerWidget {
             leading: const Icon(Icons.auto_awesome),
             title: Text(l10n.patterns),
             onTap: () {
-              Navigator.pop(context);
               context.go('/patterns');
             },
           ),
@@ -112,7 +105,6 @@ class AppDrawer extends ConsumerWidget {
             leading: const Icon(Icons.timeline),
             title: Text(l10n.storyLines),
             onTap: () {
-              Navigator.pop(context);
               context.go('/story_lines');
             },
           ),
@@ -121,7 +113,6 @@ class AppDrawer extends ConsumerWidget {
             leading: const Icon(Icons.add),
             title: Text(l10n.createNovel),
             onTap: () {
-              Navigator.pop(context);
               context.go('/create-novel');
             },
           ),
@@ -129,7 +120,6 @@ class AppDrawer extends ConsumerWidget {
             leading: const Icon(Icons.info_outline),
             title: Text(l10n.about),
             onTap: () {
-              Navigator.pop(context);
               context.go('/about');
             },
           ),
