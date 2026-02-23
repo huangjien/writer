@@ -159,6 +159,11 @@ class MockRemoteRepository implements RemoteRepository {
 
   @override
   Future<List<dynamic>> getHotTopicsPlatforms({String? regionCode}) async {
+    if (regionCode != null) {
+      return platformsData
+          .where((item) => item['region_code'] == regionCode)
+          .toList();
+    }
     return platformsData;
   }
 
@@ -250,16 +255,14 @@ void main() {
         platformsData: [
           {
             'platform_key': 'weibo',
-            'name': 'Weibo',
-            'icon_url': 'https://example.com/weibo.png',
+            'display_name': 'Weibo Hot Search',
             'region_code': 'zh-CN',
             'is_active': true,
           },
           {
             'platform_key': 'twitter',
-            'name': 'Twitter',
-            'icon_url': 'https://example.com/twitter.png',
-            'region_code': 'en',
+            'display_name': 'Twitter Trends',
+            'region_code': 'en-US',
             'is_active': true,
           },
         ],
@@ -282,7 +285,7 @@ void main() {
       expect(platforms.value, isNotNull);
       expect(platforms.value!.length, 1);
       expect(platforms.value![0].platformKey, 'weibo');
-      expect(platforms.value![0].name, 'Weibo');
+      expect(platforms.value![0].name, 'Weibo Hot Search');
       container.dispose();
     });
 

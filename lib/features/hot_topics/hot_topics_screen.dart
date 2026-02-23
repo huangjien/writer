@@ -356,6 +356,7 @@ class _TopicCard extends StatelessWidget {
                       runSpacing: 4,
                       children: [
                         _PlatformChip(platformKey: topic.platformKey),
+                        _DateChip(crawledAt: topic.crawledAt),
                         if ((topic.heatScore ?? 0) > 0)
                           _HeatScoreChip(score: topic.heatScore!),
                         if (topic.likeCount != null)
@@ -471,6 +472,47 @@ class _PlatformChip extends StatelessWidget {
     return Chip(
       label: Text(_platformName(context)),
       visualDensity: VisualDensity.compact,
+      labelStyle: TextStyle(
+        fontSize: 12,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+    );
+  }
+}
+
+class _DateChip extends StatelessWidget {
+  final DateTime crawledAt;
+
+  const _DateChip({required this.crawledAt});
+
+  String _formatDate(BuildContext context) {
+    final now = DateTime.now();
+    final difference = now.difference(crawledAt);
+    
+    if (difference.inMinutes < 1) {
+      return 'Just now';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}m ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays}d ago';
+    } else {
+      return '${crawledAt.year}-${crawledAt.month.toString().padLeft(2, '0')}-${crawledAt.day.toString().padLeft(2, '0')}';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Chip(
+      label: Text(_formatDate(context)),
+      visualDensity: VisualDensity.compact,
+      avatar: Icon(
+        Icons.schedule,
+        size: 14,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
       labelStyle: TextStyle(
         fontSize: 12,
         color: Theme.of(context).colorScheme.onSurfaceVariant,

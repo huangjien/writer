@@ -43,10 +43,7 @@ final hotTopicsPlatformsProvider =
           )
           .where((p) => p.isActive)
           .toList();
-      final regional = platforms
-          .where((p) => p.regionCode == regionCode)
-          .toList();
-      return regional.isNotEmpty ? regional : platforms;
+      return platforms;
     });
 
 final hotTopicsRegionCodeProvider = Provider<String>((ref) {
