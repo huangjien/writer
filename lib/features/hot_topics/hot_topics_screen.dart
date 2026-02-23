@@ -489,7 +489,7 @@ class _DateChip extends StatelessWidget {
   String _formatDate(BuildContext context) {
     final now = DateTime.now();
     final difference = now.difference(crawledAt);
-    
+
     if (difference.inMinutes < 1) {
       return 'Just now';
     } else if (difference.inMinutes < 60) {
