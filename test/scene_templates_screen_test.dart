@@ -51,15 +51,34 @@ class CapturingTemplateRepo extends TemplateRepository {
     return {'id': 'generated-id-123', 'title': title};
   }
 
+  int getTemplateCallCount = 0;
+
   @override
   Future<SceneTemplateRow?> getSceneTemplateById(String id) async {
     refreshedId = id;
+    getTemplateCallCount++;
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    if (getTemplateCallCount == 1) {
+      return SceneTemplateRow(
+        id: id,
+        idx: 1,
+        title: upsertedTitle ?? 'Existing',
+        sceneSummaries: '',
+        sceneSynopses: '',
+        languageCode: upsertedLanguageCode ?? 'zh',
+        createdBy: null,
+        createdAt: DateTime(2024, 1, 1),
+        updatedAt: DateTime(2024, 1, 1),
+      );
+    }
+
     return SceneTemplateRow(
       id: id,
       idx: 1,
       title: upsertedTitle ?? 'Existing',
       sceneSummaries: upsertedSummaries ?? 'Old',
-      sceneSynopses: null,
+      sceneSynopses: 'AI-generated synopsis content',
       languageCode: upsertedLanguageCode ?? 'zh',
       createdBy: null,
       createdAt: DateTime(2024, 1, 1),
@@ -168,6 +187,16 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.download));
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    // Simulate polling - first poll returns empty, second returns content
+    await tester.pump(const Duration(seconds: 8));
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 8));
+
+    // Wait for everything to finish
     await tester.pumpAndSettle();
 
     expect(find.text('Profile retrieved'), findsOneWidget);

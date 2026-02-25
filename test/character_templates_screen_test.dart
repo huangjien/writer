@@ -7,6 +7,7 @@ import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/repositories/template_repository.dart';
 import 'package:writer/models/template.dart';
+import 'package:writer/models/character_template_row.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/services/storage_service.dart';
@@ -88,6 +89,7 @@ class MockTemplateRepo extends TemplateRepository {
   MockTemplateRepo() : super(MockRemoteRepo());
 
   String? queryName;
+  int callCount = 0;
 
   @override
   Future<Map<String, dynamic>?> generateCharacterTemplate({
@@ -98,7 +100,38 @@ class MockTemplateRepo extends TemplateRepository {
   }) async {
     queryName = name;
     await Future.delayed(const Duration(milliseconds: 50));
+    callCount = 0;
     return {'id': 'test-id-123', 'title': title};
+  }
+
+  @override
+  Future<CharacterTemplateRow?> getCharacterTemplateById(String id) async {
+    callCount++;
+    await Future.delayed(const Duration(milliseconds: 50));
+    if (callCount < 2) {
+      return CharacterTemplateRow(
+        id: id,
+        idx: 1,
+        title: 'Harry Potter',
+        characterSummaries: '',
+        characterSynopses: '',
+        languageCode: 'en',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+    }
+    return CharacterTemplateRow(
+      id: id,
+      idx: 1,
+      title: 'Harry Potter',
+      characterSummaries:
+          '### Archetype: The Hero\n- **Role**: Protagonist\n- **Goal**: Save the world',
+      characterSynopses:
+          'Harry is a brave hero who must save the world from evil.',
+      languageCode: 'en',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
   }
 }
 
@@ -222,14 +255,19 @@ void main() {
     // Click retrieve
     await tester.tap(retrieveBtnFinder);
 
-    // Pump a single frame to allow setState to run and show the spinner
+    // Pump to start the async operation and show spinner
     await tester.pump();
-    // Do NOT settle yet, because settle waits for the async task to finish (and spinner to go away)
-
-    // Verify spinner exists
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-    // Now wait for everything to finish
+    // Simulate polling - pump enough time for multiple polls
+    // Each poll waits 7 seconds, so we need to pump for >7 seconds to get the second poll
+    await tester.pump(const Duration(seconds: 8));
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    // Pump again to get the second poll that returns content
+    await tester.pump(const Duration(seconds: 8));
+
+    // Wait for everything to finish including snackbar
     await tester.pumpAndSettle();
 
     // Verify repo called
@@ -271,8 +309,12 @@ void main() {
 
     await tester.tap(find.widgetWithIcon(IconButton, Icons.download));
     await tester.pump(); // Start spinner
-    await tester.pumpAndSettle(); // Finish async
 
-    expect(find.textContaining('Retrieve failed'), findsOneWidget);
+    // The polling will run for 26 * 7 seconds, but in test we pump shorter time
+    // since ThrowingTemplateRepo throws immediately on generateCharacterTemplate
+    await tester.pumpAndSettle(const Duration(seconds: 1));
+
+    // Error should be shown
+    expect(find.textContaining('Network error'), findsOneWidget);
   });
 }

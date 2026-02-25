@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:logging/logging.dart';
 import 'package:writer/models/template.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/template_repository.dart';
@@ -8,6 +9,8 @@ import 'package:writer/state/providers.dart';
 import 'package:writer/shared/api_exception.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
 import '../../state/template_form_state.dart';
+
+final _logger = Logger('SceneTemplatesScreen');
 
 class SceneTemplatesScreen extends ConsumerWidget {
   const SceneTemplatesScreen({
@@ -110,11 +113,19 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
 
       if (result != null && result.containsKey('id')) {
         if (mounted) {
+          final newId = result['id'] as String;
+          setState(() {
+            _templateId = newId;
+          });
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context)!.profileRetrieved),
+              duration: const Duration(seconds: 2),
             ),
           );
+
+          _pollForContent(newId);
         }
       } else {
         if (mounted) {
@@ -123,20 +134,75 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
               content: Text(AppLocalizations.of(context)!.noProfileFound),
             ),
           );
+          ref.read(templateFormProvider.notifier).setRetrieving(false);
         }
       }
     } catch (e) {
       if (mounted) {
         if (e is ApiException && e.statusCode == 401) return;
-        final l10n = AppLocalizations.of(context)!;
-        ref
-            .read(templateFormProvider.notifier)
-            .setError(l10n.retrieveFailed(e.toString()));
-      }
-    } finally {
-      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_extractErrorMessage(e)),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
         ref.read(templateFormProvider.notifier).setRetrieving(false);
       }
+    }
+  }
+
+  String _extractErrorMessage(Object error) {
+    if (error is ApiException) {
+      if (error.errorResponse != null) {
+        return error.errorResponse!.message;
+      }
+      return error.rawMessage ?? error.toString();
+    }
+    return error.toString();
+  }
+
+  Future<void> _pollForContent(String templateId) async {
+    const maxAttempts = 26;
+    const interval = Duration(seconds: 7);
+
+    for (int i = 0; i < maxAttempts; i++) {
+      await Future.delayed(interval);
+
+      if (!mounted) return;
+
+      try {
+        final repo = ref.read(templateRepositoryProvider);
+        final template = await repo.getSceneTemplateById(templateId);
+
+        if (template != null &&
+            template.sceneSummaries != null &&
+            template.sceneSummaries!.isNotEmpty &&
+            template.sceneSynopses != null &&
+            template.sceneSynopses!.isNotEmpty) {
+          if (mounted) {
+            _nameController.text = template.title ?? '';
+            _descController.text = template.sceneSummaries ?? '';
+            ref
+                .read(templateFormProvider.notifier)
+                .setLanguageCode(template.languageCode);
+            ref.read(templateFormProvider.notifier).setRetrieving(false);
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(AppLocalizations.of(context)!.profileRetrieved),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+              ),
+            );
+          }
+          return;
+        }
+      } catch (e) {
+        _logger.warning('Error polling for template content: $e');
+      }
+    }
+
+    if (mounted) {
+      ref.read(templateFormProvider.notifier).setRetrieving(false);
     }
   }
 
@@ -373,15 +439,6 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
                     enabled: !(formState.isLoading || !formState.isDirty),
                     isLoading: formState.isLoading,
                   ),
-                  const SizedBox(width: 12),
-                  if (formState.error != null)
-                    Expanded(
-                      child: Text(
-                        formState.error!,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: Colors.redAccent),
-                      ),
-                    ),
                 ],
               ),
             ],
