@@ -1148,33 +1148,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get storyLines => 'Story Lines';
 
   @override
-  String get hotTopics => 'Hot Topics';
-
-  @override
-  String get hotTopicsSelectPlatform => 'Select platform';
-
-  @override
-  String get hotTopicsAllPlatforms => 'All Platforms';
-
-  @override
-  String get hotTopicsPlatformWeibo => 'Weibo';
-
-  @override
-  String get hotTopicsPlatformZhihu => 'Zhihu';
-
-  @override
-  String get hotTopicsPlatformDouyin => 'Douyin';
-
-  @override
-  String get hotTopicsPlatformDescWeibo => 'Chinese microblogging';
-
-  @override
-  String get hotTopicsPlatformDescZhihu => 'Q&A platform';
-
-  @override
-  String get hotTopicsPlatformDescDouyin => 'Video sharing';
-
-  @override
   String get tools => 'Tools';
 
   @override

@@ -115,22 +115,6 @@ void main() {
       expect(zh.editMode, isNotEmpty);
       expect(zh.previewMode, isNotEmpty);
     });
-
-    test('all hot topics strings work', () {
-      expect(zh.hotTopics, isNotEmpty);
-      expect(zh.hotTopicsSelectPlatform, isNotEmpty);
-      expect(zh.hotTopicsAllPlatforms, isNotEmpty);
-      expect(zh.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(zh.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(zh.hotTopicsPlatformDouyin, isNotEmpty);
-    });
-
-    test('all offline strings work', () {
-      expect(zh.youreOfflineLabel, isNotEmpty);
-      expect(zh.youreOffline('test'), contains('test'));
-      expect(zh.changesWillSync, isNotEmpty);
-      expect(zh.changesWillSyncCount(5), contains('5'));
-    });
   });
 
   group('AppLocalizationsZhTw - Final Coverage Boost', () {

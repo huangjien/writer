@@ -309,24 +309,10 @@ void main() {
       expect(zh.prompts, isNotEmpty);
       expect(zh.patterns, isNotEmpty);
       expect(zh.storyLines, isNotEmpty);
-      expect(zh.hotTopics, isNotEmpty);
       expect(zh.tools, isNotEmpty);
       expect(zhTW.prompts, isNotEmpty);
       expect(zhTW.patterns, isNotEmpty);
       expect(zhTW.tools, isNotEmpty);
-    });
-
-    test('Hot Topics Platform properties', () {
-      expect(zh.hotTopicsSelectPlatform, isNotEmpty);
-      expect(zh.hotTopicsAllPlatforms, isNotEmpty);
-      expect(zh.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(zh.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(zh.hotTopicsPlatformDouyin, isNotEmpty);
-      expect(zh.hotTopicsPlatformDescWeibo, isNotEmpty);
-      expect(zh.hotTopicsPlatformDescZhihu, isNotEmpty);
-      expect(zh.hotTopicsPlatformDescDouyin, isNotEmpty);
-      expect(zhTW.hotTopicsSelectPlatform, isNotEmpty);
-      expect(zhTW.hotTopicsPlatformWeibo, isNotEmpty);
     });
 
     test('Preview and Actions properties', () {

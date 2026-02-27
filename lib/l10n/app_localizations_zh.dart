@@ -1121,33 +1121,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get storyLines => '故事线';
 
   @override
-  String get hotTopics => '热门话题';
-
-  @override
-  String get hotTopicsSelectPlatform => '选择平台';
-
-  @override
-  String get hotTopicsAllPlatforms => '全部平台';
-
-  @override
-  String get hotTopicsPlatformWeibo => '微博';
-
-  @override
-  String get hotTopicsPlatformZhihu => '知乎';
-
-  @override
-  String get hotTopicsPlatformDouyin => '抖音';
-
-  @override
-  String get hotTopicsPlatformDescWeibo => '中文微博热搜';
-
-  @override
-  String get hotTopicsPlatformDescZhihu => '中文问答热榜';
-
-  @override
-  String get hotTopicsPlatformDescDouyin => '短视频热榜';
-
-  @override
   String get tools => '工具';
 
   @override
@@ -3149,33 +3122,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get storyLines => '故事線';
-
-  @override
-  String get hotTopics => '熱門話題';
-
-  @override
-  String get hotTopicsSelectPlatform => '選擇平台';
-
-  @override
-  String get hotTopicsAllPlatforms => '全部平台';
-
-  @override
-  String get hotTopicsPlatformWeibo => '微博';
-
-  @override
-  String get hotTopicsPlatformZhihu => '知乎';
-
-  @override
-  String get hotTopicsPlatformDouyin => '抖音';
-
-  @override
-  String get hotTopicsPlatformDescWeibo => '中文微博熱搜';
-
-  @override
-  String get hotTopicsPlatformDescZhihu => '中文問答熱榜';
-
-  @override
-  String get hotTopicsPlatformDescDouyin => '短影音熱榜';
 
   @override
   String get tools => '工具';

@@ -2211,60 +2211,6 @@ abstract class AppLocalizations {
   /// **'Story Lines'**
   String get storyLines;
 
-  /// No description provided for @hotTopics.
-  ///
-  /// In en, this message translates to:
-  /// **'Hot Topics'**
-  String get hotTopics;
-
-  /// No description provided for @hotTopicsSelectPlatform.
-  ///
-  /// In en, this message translates to:
-  /// **'Select platform'**
-  String get hotTopicsSelectPlatform;
-
-  /// No description provided for @hotTopicsAllPlatforms.
-  ///
-  /// In en, this message translates to:
-  /// **'All Platforms'**
-  String get hotTopicsAllPlatforms;
-
-  /// No description provided for @hotTopicsPlatformWeibo.
-  ///
-  /// In en, this message translates to:
-  /// **'Weibo'**
-  String get hotTopicsPlatformWeibo;
-
-  /// No description provided for @hotTopicsPlatformZhihu.
-  ///
-  /// In en, this message translates to:
-  /// **'Zhihu'**
-  String get hotTopicsPlatformZhihu;
-
-  /// No description provided for @hotTopicsPlatformDouyin.
-  ///
-  /// In en, this message translates to:
-  /// **'Douyin'**
-  String get hotTopicsPlatformDouyin;
-
-  /// No description provided for @hotTopicsPlatformDescWeibo.
-  ///
-  /// In en, this message translates to:
-  /// **'Chinese microblogging'**
-  String get hotTopicsPlatformDescWeibo;
-
-  /// No description provided for @hotTopicsPlatformDescZhihu.
-  ///
-  /// In en, this message translates to:
-  /// **'Q&A platform'**
-  String get hotTopicsPlatformDescZhihu;
-
-  /// No description provided for @hotTopicsPlatformDescDouyin.
-  ///
-  /// In en, this message translates to:
-  /// **'Video sharing'**
-  String get hotTopicsPlatformDescDouyin;
-
   /// No description provided for @tools.
   ///
   /// In en, this message translates to:

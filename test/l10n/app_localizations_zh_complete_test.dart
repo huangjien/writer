@@ -392,18 +392,9 @@ void main() {
       expect(zh.prompts, isNotEmpty);
       expect(zh.patterns, isNotEmpty);
       expect(zh.storyLines, isNotEmpty);
-      expect(zh.hotTopics, isNotEmpty);
       expect(zh.tools, isNotEmpty);
       expect(zh.preview, isNotEmpty);
       expect(zh.actions, isNotEmpty);
-      expect(zh.hotTopicsSelectPlatform, isNotEmpty);
-      expect(zh.hotTopicsAllPlatforms, isNotEmpty);
-      expect(zh.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(zh.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(zh.hotTopicsPlatformDouyin, isNotEmpty);
-      expect(zh.hotTopicsPlatformDescWeibo, isNotEmpty);
-      expect(zh.hotTopicsPlatformDescZhihu, isNotEmpty);
-      expect(zh.hotTopicsPlatformDescDouyin, isNotEmpty);
       expect(zh.searchLabel, isNotEmpty);
       expect(zh.allLabel, isNotEmpty);
       expect(zh.filterByLocked, isNotEmpty);

@@ -172,11 +172,6 @@ void main() {
           isNotEmpty,
           reason: '${locale.localeName}: storyLines',
         );
-        expect(
-          locale.hotTopics,
-          isNotEmpty,
-          reason: '${locale.localeName}: hotTopics',
-        );
         expect(locale.tools, isNotEmpty, reason: '${locale.localeName}: tools');
         expect(
           locale.preview,
@@ -187,51 +182,6 @@ void main() {
           locale.actions,
           isNotEmpty,
           reason: '${locale.localeName}: actions',
-        );
-      }
-    });
-
-    test('all locales have hot topics strings', () {
-      for (final locale in locales) {
-        expect(
-          locale.hotTopicsSelectPlatform,
-          isNotEmpty,
-          reason: '${locale.localeName}: hotTopicsSelectPlatform',
-        );
-        expect(
-          locale.hotTopicsAllPlatforms,
-          isNotEmpty,
-          reason: '${locale.localeName}: hotTopicsAllPlatforms',
-        );
-        expect(
-          locale.hotTopicsPlatformWeibo,
-          isNotEmpty,
-          reason: '${locale.localeName}: hotTopicsPlatformWeibo',
-        );
-        expect(
-          locale.hotTopicsPlatformZhihu,
-          isNotEmpty,
-          reason: '${locale.localeName}: hotTopicsPlatformZhihu',
-        );
-        expect(
-          locale.hotTopicsPlatformDouyin,
-          isNotEmpty,
-          reason: '${locale.localeName}: hotTopicsPlatformDouyin',
-        );
-        expect(
-          locale.hotTopicsPlatformDescWeibo,
-          isNotEmpty,
-          reason: '${locale.localeName}: hotTopicsPlatformDescWeibo',
-        );
-        expect(
-          locale.hotTopicsPlatformDescZhihu,
-          isNotEmpty,
-          reason: '${locale.localeName}: hotTopicsPlatformDescZhihu',
-        );
-        expect(
-          locale.hotTopicsPlatformDescDouyin,
-          isNotEmpty,
-          reason: '${locale.localeName}: hotTopicsPlatformDescDouyin',
         );
       }
     });
@@ -953,11 +903,7 @@ void main() {
       expect(de.prompts, isNotEmpty);
       expect(de.patterns, isNotEmpty);
       expect(de.storyLines, isNotEmpty);
-      expect(de.hotTopics, isNotEmpty);
       expect(de.tools, isNotEmpty);
-      expect(de.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(de.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(de.hotTopicsPlatformDouyin, isNotEmpty);
       expect(de.searchLabel, isNotEmpty);
       expect(de.lockedOnly, isNotEmpty);
       expect(de.unlockedOnly, isNotEmpty);
@@ -1016,11 +962,7 @@ void main() {
       expect(es.prompts, isNotEmpty);
       expect(es.patterns, isNotEmpty);
       expect(es.storyLines, isNotEmpty);
-      expect(es.hotTopics, isNotEmpty);
       expect(es.tools, isNotEmpty);
-      expect(es.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(es.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(es.hotTopicsPlatformDouyin, isNotEmpty);
       expect(es.searchLabel, isNotEmpty);
       expect(es.lockedOnly, isNotEmpty);
       expect(es.unlockedOnly, isNotEmpty);
@@ -1079,11 +1021,7 @@ void main() {
       expect(fr.prompts, isNotEmpty);
       expect(fr.patterns, isNotEmpty);
       expect(fr.storyLines, isNotEmpty);
-      expect(fr.hotTopics, isNotEmpty);
       expect(fr.tools, isNotEmpty);
-      expect(fr.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(fr.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(fr.hotTopicsPlatformDouyin, isNotEmpty);
       expect(fr.searchLabel, isNotEmpty);
       expect(fr.lockedOnly, isNotEmpty);
       expect(fr.unlockedOnly, isNotEmpty);
@@ -1142,11 +1080,7 @@ void main() {
       expect(it.prompts, isNotEmpty);
       expect(it.patterns, isNotEmpty);
       expect(it.storyLines, isNotEmpty);
-      expect(it.hotTopics, isNotEmpty);
       expect(it.tools, isNotEmpty);
-      expect(it.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(it.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(it.hotTopicsPlatformDouyin, isNotEmpty);
       expect(it.searchLabel, isNotEmpty);
       expect(it.lockedOnly, isNotEmpty);
       expect(it.unlockedOnly, isNotEmpty);
@@ -1205,11 +1139,7 @@ void main() {
       expect(ja.prompts, isNotEmpty);
       expect(ja.patterns, isNotEmpty);
       expect(ja.storyLines, isNotEmpty);
-      expect(ja.hotTopics, isNotEmpty);
       expect(ja.tools, isNotEmpty);
-      expect(ja.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(ja.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(ja.hotTopicsPlatformDouyin, isNotEmpty);
       expect(ja.searchLabel, isNotEmpty);
       expect(ja.lockedOnly, isNotEmpty);
       expect(ja.unlockedOnly, isNotEmpty);
@@ -1268,11 +1198,7 @@ void main() {
       expect(ru.prompts, isNotEmpty);
       expect(ru.patterns, isNotEmpty);
       expect(ru.storyLines, isNotEmpty);
-      expect(ru.hotTopics, isNotEmpty);
       expect(ru.tools, isNotEmpty);
-      expect(ru.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(ru.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(ru.hotTopicsPlatformDouyin, isNotEmpty);
       expect(ru.searchLabel, isNotEmpty);
       expect(ru.lockedOnly, isNotEmpty);
       expect(ru.unlockedOnly, isNotEmpty);
@@ -1331,11 +1257,7 @@ void main() {
       expect(zh.prompts, isNotEmpty);
       expect(zh.patterns, isNotEmpty);
       expect(zh.storyLines, isNotEmpty);
-      expect(zh.hotTopics, isNotEmpty);
       expect(zh.tools, isNotEmpty);
-      expect(zh.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(zh.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(zh.hotTopicsPlatformDouyin, isNotEmpty);
       expect(zh.searchLabel, isNotEmpty);
       expect(zh.lockedOnly, isNotEmpty);
       expect(zh.unlockedOnly, isNotEmpty);

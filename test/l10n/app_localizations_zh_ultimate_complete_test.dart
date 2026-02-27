@@ -205,9 +205,6 @@ void main() {
       expect(zh.updatePassword, isNotEmpty);
       expect(zh.noActiveSessionFound, isNotEmpty);
       expect(zh.authenticationFailedSignInAgain, isNotEmpty);
-      expect(zh.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(zh.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(zh.hotTopicsPlatformDouyin, isNotEmpty);
       expect(zh.tryAdjustingSearchCreateNovel, isNotEmpty);
       expect(zh.youreOfflineLabel, isNotEmpty);
       expect(zh.changesWillSync, isNotEmpty);
@@ -390,9 +387,6 @@ void main() {
       expect(zhTW.confirmPassword, isNotEmpty);
       expect(zhTW.updatePassword, isNotEmpty);
       expect(zhTW.noActiveSessionFound, isNotEmpty);
-      expect(zhTW.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(zhTW.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(zhTW.hotTopicsPlatformDouyin, isNotEmpty);
       expect(zhTW.tryAdjustingSearchCreateNovel, isNotEmpty);
       expect(zhTW.youreOfflineLabel, isNotEmpty);
       expect(zhTW.changesWillSync, isNotEmpty);

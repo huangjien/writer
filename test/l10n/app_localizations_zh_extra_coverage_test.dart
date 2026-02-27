@@ -143,15 +143,6 @@ void main() {
       expect(zh.typographyDark, isNotEmpty);
     });
 
-    test('all hot topics strings work', () {
-      expect(zh.hotTopics, isNotEmpty);
-      expect(zh.hotTopicsSelectPlatform, isNotEmpty);
-      expect(zh.hotTopicsAllPlatforms, isNotEmpty);
-      expect(zh.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(zh.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(zh.hotTopicsPlatformDouyin, isNotEmpty);
-    });
-
     test('all offline strings work', () {
       expect(zh.youreOfflineLabel, isNotEmpty);
       expect(zh.youreOffline('test'), contains('test'));

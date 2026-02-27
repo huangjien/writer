@@ -1123,33 +1123,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get storyLines => 'ストーリーライン';
 
   @override
-  String get hotTopics => '話題のトレンド';
-
-  @override
-  String get hotTopicsSelectPlatform => 'プラットフォームを選択';
-
-  @override
-  String get hotTopicsAllPlatforms => 'すべてのプラットフォーム';
-
-  @override
-  String get hotTopicsPlatformWeibo => '微博';
-
-  @override
-  String get hotTopicsPlatformZhihu => '知乎';
-
-  @override
-  String get hotTopicsPlatformDouyin => '抖音';
-
-  @override
-  String get hotTopicsPlatformDescWeibo => '中国のミクロブログ';
-
-  @override
-  String get hotTopicsPlatformDescZhihu => 'Q&Aプラットフォーム';
-
-  @override
-  String get hotTopicsPlatformDescDouyin => '動画共有';
-
-  @override
   String get tools => 'ツール';
 
   @override

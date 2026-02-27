@@ -349,12 +349,6 @@ void main() {
       expect(zh.authenticationFailedSignInAgain, isNotEmpty);
 
       // Hot Topics
-      expect(zh.hotTopics, isNotEmpty);
-      expect(zh.hotTopicsSelectPlatform, isNotEmpty);
-      expect(zh.hotTopicsAllPlatforms, isNotEmpty);
-      expect(zh.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(zh.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(zh.hotTopicsPlatformDouyin, isNotEmpty);
 
       // Smart Search
       expect(zh.smartSearchRequiresSignIn, isNotEmpty);
@@ -716,12 +710,6 @@ void main() {
       expect(zhTW.confirmPassword, isNotEmpty);
       expect(zhTW.updatePassword, isNotEmpty);
       expect(zhTW.noActiveSessionFound, isNotEmpty);
-      expect(zhTW.hotTopics, isNotEmpty);
-      expect(zhTW.hotTopicsSelectPlatform, isNotEmpty);
-      expect(zhTW.hotTopicsAllPlatforms, isNotEmpty);
-      expect(zhTW.hotTopicsPlatformWeibo, isNotEmpty);
-      expect(zhTW.hotTopicsPlatformZhihu, isNotEmpty);
-      expect(zhTW.hotTopicsPlatformDouyin, isNotEmpty);
       expect(zhTW.smartSearchRequiresSignIn, isNotEmpty);
       expect(zhTW.smartSearch, isNotEmpty);
       expect(zhTW.youreOfflineLabel, isNotEmpty);
