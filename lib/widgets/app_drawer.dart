@@ -55,13 +55,6 @@ class AppDrawer extends ConsumerWidget {
               context.go('/settings');
             },
           ),
-          _DrawerListItem(
-            leading: const Icon(Icons.local_fire_department),
-            title: Text(l10n.hotTopics),
-            onTap: () {
-              context.go('/hot-topics');
-            },
-          ),
           const Divider(),
           _DrawerListItem(
             leading: const Icon(Icons.assignment_ind_outlined),

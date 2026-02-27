@@ -58,14 +58,6 @@ void main() {
             body: const Center(child: Text('My Novels Screen')),
           ),
         ),
-        GoRoute(
-          path: '/hot-topics',
-          builder: (context, state) => Scaffold(
-            appBar: AppBar(title: const Text('Hot Topics')),
-            drawer: const AppDrawer(),
-            body: const Center(child: Text('Hot Topics Screen')),
-          ),
-        ),
       ],
     );
   }
@@ -173,35 +165,5 @@ void main() {
     await tester.tap(find.text('Scene Templates'));
     await tester.pumpAndSettle();
     expect(find.text('My Novels Screen'), findsOneWidget);
-  });
-
-  testWidgets('AppDrawer navigates to home and hot topics', (tester) async {
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp.router(
-          routerConfig: createRouter(),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(find.text('Home Screen'), findsOneWidget);
-    final s1 = tester.state<ScaffoldState>(find.byType(Scaffold));
-    s1.openDrawer();
-    await tester.pumpAndSettle();
-    final homeFinder = find.descendant(
-      of: find.byType(Drawer),
-      matching: find.text('Home'),
-    );
-    await tester.tap(homeFinder);
-    await tester.pumpAndSettle();
-    expect(find.text('Home Screen'), findsOneWidget);
-    final s2 = tester.state<ScaffoldState>(find.byType(Scaffold));
-    s2.openDrawer();
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Hot Topics'));
-    await tester.pumpAndSettle();
-    expect(find.text('Hot Topics Screen'), findsOneWidget);
   });
 }
