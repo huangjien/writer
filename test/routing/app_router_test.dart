@@ -247,7 +247,7 @@ void main() {
       addTearDown(container.dispose);
 
       final router = container.read(appRouterProvider);
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         title: 'Chapter 1',
         content: 'Content',

@@ -253,7 +253,7 @@ void main() {
   }
 
   testWidgets('ChapterReaderScreen renders title and content', (tester) async {
-    final chapter = const Chapter(
+    const chapter = Chapter(
       id: chapterId,
       novelId: novelId,
       idx: 0,
@@ -416,7 +416,7 @@ void main() {
     ).thenThrow(const UnknownFailure('Initial Error'));
 
     // We pass empty content so loadInitial runs
-    final chapter = const Chapter(
+    const chapter = Chapter(
       id: 'c1',
       novelId: novelId,
       idx: 0,
@@ -547,7 +547,7 @@ void main() {
   });
 
   testWidgets('Beta evaluation fails for empty content', (tester) async {
-    final emptyChapter = const Chapter(
+    const emptyChapter = Chapter(
       id: 'c1',
       novelId: novelId,
       idx: 0,

@@ -76,9 +76,9 @@ void main() {
 
   group('buildWordSpans', () {
     test('applies styles to changed words and inserts spaces', () {
-      final base = const TextStyle(fontSize: 12, color: Colors.black);
-      final bg = Colors.yellow;
-      final fg = Colors.red;
+      const base = TextStyle(fontSize: 12, color: Colors.black);
+      const bg = Colors.yellow;
+      const fg = Colors.red;
       final spans = buildWordSpans(['a', 'b'], [false, true], base, bg, fg);
       expect(spans.length, 3);
       expect(spans[0].toPlainText(), 'a');
@@ -91,7 +91,7 @@ void main() {
     });
 
     test('returns a single empty span when no words', () {
-      final base = const TextStyle(fontSize: 12, color: Colors.black);
+      const base = TextStyle(fontSize: 12, color: Colors.black);
       final spans = buildWordSpans(
         const [],
         const [],

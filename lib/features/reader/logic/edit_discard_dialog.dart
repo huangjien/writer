@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../models/chapter.dart';
-import '../../../state/chapter_edit_controller.dart';
-import '../../../shared/widgets/app_buttons.dart';
-import '../../../shared/widgets/app_dialog.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/state/chapter_edit_controller.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
 
 enum DiscardDecision { keepEditing, discard, saveAndExit }
 

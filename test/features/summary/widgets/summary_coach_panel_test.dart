@@ -20,7 +20,7 @@ void main() {
       final pageController = TextEditingController(text: 'test');
       final expandedController = TextEditingController(text: 'test');
 
-      final summaryState = const SummaryState(
+      const summaryState = SummaryState(
         showCoach: false,
         showSentenceCoach: false,
         showParagraphCoach: false,
@@ -67,7 +67,7 @@ void main() {
       final pageController = TextEditingController(text: 'test');
       final expandedController = TextEditingController(text: 'test');
 
-      final summaryState = const SummaryState(
+      const summaryState = SummaryState(
         showCoach: false,
         showSentenceCoach: true,
         showParagraphCoach: false,
@@ -116,7 +116,7 @@ void main() {
       final expandedController = TextEditingController(text: 'test');
       bool onFieldChangedCalled = false;
 
-      final summaryState = const SummaryState(
+      const summaryState = SummaryState(
         showCoach: false,
         showSentenceCoach: true,
         showParagraphCoach: false,
@@ -168,7 +168,7 @@ void main() {
       final pageController = TextEditingController(text: 'test');
       final expandedController = TextEditingController(text: 'test');
 
-      final summaryState = const SummaryState(
+      const summaryState = SummaryState(
         showCoach: false,
         showSentenceCoach: false,
         showParagraphCoach: true,
@@ -214,7 +214,7 @@ void main() {
       final pageController = TextEditingController(text: 'test');
       final expandedController = TextEditingController(text: 'test');
 
-      final summaryState = const SummaryState(
+      const summaryState = SummaryState(
         showCoach: false,
         showSentenceCoach: false,
         showParagraphCoach: false,
@@ -260,7 +260,7 @@ void main() {
       final pageController = TextEditingController(text: 'test');
       final expandedController = TextEditingController(text: 'test');
 
-      final summaryState = const SummaryState(
+      const summaryState = SummaryState(
         showCoach: true,
         showSentenceCoach: false,
         showParagraphCoach: false,
@@ -308,7 +308,7 @@ void main() {
       final pageController = TextEditingController(text: 'test');
       final expandedController = TextEditingController(text: 'test');
 
-      final summaryState = const SummaryState(
+      const summaryState = SummaryState(
         showCoach: true,
         showSentenceCoach: true,
         showParagraphCoach: true,
@@ -357,7 +357,7 @@ void main() {
       final expandedController = TextEditingController(text: 'test');
       bool onFieldChangedCalled = false;
 
-      final summaryState = const SummaryState(
+      const summaryState = SummaryState(
         showCoach: false,
         showSentenceCoach: true,
         showParagraphCoach: false,
@@ -413,7 +413,7 @@ void main() {
       final expandedController = TextEditingController(text: 'test');
       bool onFieldChangedCalled = false;
 
-      final summaryState = const SummaryState(
+      const summaryState = SummaryState(
         showCoach: false,
         showSentenceCoach: false,
         showParagraphCoach: true,
@@ -469,7 +469,7 @@ void main() {
       final expandedController = TextEditingController(text: 'test');
       bool onFieldChangedCalled = false;
 
-      final summaryState = const SummaryState(
+      const summaryState = SummaryState(
         showCoach: false,
         showSentenceCoach: false,
         showParagraphCoach: false,
@@ -525,7 +525,7 @@ void main() {
       final expandedController = TextEditingController(text: 'initial');
       bool onFieldChangedCalled = false;
 
-      final summaryState = const SummaryState(
+      const summaryState = SummaryState(
         showCoach: true,
         showSentenceCoach: false,
         showParagraphCoach: false,
@@ -580,7 +580,7 @@ void main() {
       final pageController = TextEditingController(text: 'test');
       final expandedController = TextEditingController(text: 'test');
 
-      final summaryState = const SummaryState(
+      const summaryState = SummaryState(
         showCoach: false,
         showSentenceCoach: true,
         showParagraphCoach: false,
@@ -588,7 +588,7 @@ void main() {
         sentenceAiSatisfied: true,
       );
 
-      final testOutput = const SnowflakeRefinementOutput(
+      const testOutput = SnowflakeRefinementOutput(
         novelId: 'novel-1',
         summaryContent: 'AI generated summary',
         status: 'completed',
@@ -651,7 +651,7 @@ void main() {
       final pageController = TextEditingController(text: 'test');
       final expandedController = TextEditingController(text: 'test');
 
-      final summaryState = const SummaryState(
+      const summaryState = SummaryState(
         showCoach: false,
         showSentenceCoach: false,
         showParagraphCoach: true,
@@ -659,7 +659,7 @@ void main() {
         paragraphAiSatisfied: true,
       );
 
-      final testOutput = const SnowflakeRefinementOutput(
+      const testOutput = SnowflakeRefinementOutput(
         novelId: 'novel-1',
         summaryContent: 'AI generated summary',
         status: 'completed',
@@ -722,7 +722,7 @@ void main() {
       final pageController = TextEditingController(text: 'test');
       final expandedController = TextEditingController(text: 'test');
 
-      final summaryState = const SummaryState(
+      const summaryState = SummaryState(
         showCoach: false,
         showSentenceCoach: false,
         showParagraphCoach: false,
@@ -730,7 +730,7 @@ void main() {
         pageAiSatisfied: true,
       );
 
-      final testOutput = const SnowflakeRefinementOutput(
+      const testOutput = SnowflakeRefinementOutput(
         novelId: 'novel-1',
         summaryContent: 'AI generated summary',
         status: 'completed',
@@ -793,7 +793,7 @@ void main() {
       final pageController = TextEditingController(text: 'test');
       final expandedController = TextEditingController(text: 'test');
 
-      final summaryState = const SummaryState(
+      const summaryState = SummaryState(
         showCoach: true,
         showSentenceCoach: false,
         showParagraphCoach: false,
@@ -801,7 +801,7 @@ void main() {
         expandedAiSatisfied: true,
       );
 
-      final testOutput = const SnowflakeRefinementOutput(
+      const testOutput = SnowflakeRefinementOutput(
         novelId: 'novel-1',
         summaryContent: 'AI generated summary',
         status: 'completed',

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../theme/theme_extensions.dart';
-import '../utils/contrast_utils.dart';
+import 'package:writer/theme/theme_extensions.dart';
+import 'package:writer/shared/utils/contrast_utils.dart';
 import 'focus_wrapper.dart';
 
 class NeumorphicSwitch extends StatelessWidget {

@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../state/app_settings.dart';
-import '../../../state/tts_settings.dart';
+import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/tts_settings.dart';
 import 'tts_driver.dart';
-import '../tts_chunker.dart';
-import '../../../shared/constants.dart';
+import 'package:writer/features/reader/tts_chunker.dart';
+import 'package:writer/shared/constants.dart';
 
 typedef ProgressCb = void Function(int index);
 typedef FlagCb = void Function();
@@ -23,7 +23,7 @@ class ReaderPlaybackController {
   int _lastIndex = 0;
 
   @visibleForTesting
-  DateTime Function() nowProvider = () => DateTime.now();
+  DateTime Function() nowProvider = DateTime.now;
 
   int computeTotalLen(String content, int startIndex) {
     final base = startIndex.clamp(0, content.length);
@@ -139,7 +139,7 @@ class ReaderPlaybackController {
     required FlagCb onComplete,
   }) {
     _autoStartRetry?.cancel();
-    final delays = kTtsRetryDelays;
+    const delays = kTtsRetryDelays;
     final idx = _attempts.clamp(0, delays.length - 1);
     final delay = delays[idx];
     _autoStartRetry = Timer(delay, () {

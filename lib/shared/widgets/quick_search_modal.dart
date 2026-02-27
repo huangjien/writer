@@ -5,7 +5,7 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/shared/widgets/keyboard_shortcuts.dart';
 import 'package:writer/theme/design_tokens.dart';
 import 'package:go_router/go_router.dart';
-import '../../state/novel_providers.dart';
+import 'package:writer/state/novel_providers.dart';
 
 /// Quick Search Modal - Global search dialog for rapid navigation
 /// Activated by ⌘/Ctrl + K shortcut
@@ -198,15 +198,15 @@ class _QuickSearchModalState extends ConsumerState<QuickSearchModal> {
                         final result = _results[index];
                         final isSelected = index == _selectedIndex;
                         return Shortcuts(
-                          shortcuts: <ShortcutActivator, Intent>{
-                            const SingleActivator(LogicalKeyboardKey.escape):
-                                const CloseIntent(),
-                            const SingleActivator(LogicalKeyboardKey.enter):
-                                const NavigateResultIntent(),
-                            const SingleActivator(LogicalKeyboardKey.arrowDown):
-                                const NextResultIntent(),
-                            const SingleActivator(LogicalKeyboardKey.arrowUp):
-                                const PrevResultIntent(),
+                          shortcuts: const <ShortcutActivator, Intent>{
+                            SingleActivator(LogicalKeyboardKey.escape):
+                                CloseIntent(),
+                            SingleActivator(LogicalKeyboardKey.enter):
+                                NavigateResultIntent(),
+                            SingleActivator(LogicalKeyboardKey.arrowDown):
+                                NextResultIntent(),
+                            SingleActivator(LogicalKeyboardKey.arrowUp):
+                                PrevResultIntent(),
                           },
                           child: Actions(
                             actions: <Type, Action<Intent>>{

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import '../services/connectivity_checker.dart';
+import 'package:writer/services/connectivity_checker.dart';
 
 /// Monitor for network connectivity
 ///

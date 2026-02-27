@@ -72,7 +72,7 @@ class FailingChapterRepo implements ChapterPort {
 }
 
 void main() {
-  final chapter = const Chapter(
+  const chapter = Chapter(
     id: 'c1',
     novelId: 'n1',
     idx: 1,

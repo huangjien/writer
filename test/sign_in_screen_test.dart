@@ -103,7 +103,7 @@ void main() {
       });
       final mockBiometricService = MockBiometricService();
       when(
-        () => mockBiometricService.isBiometricAvailable(),
+        mockBiometricService.isBiometricAvailable,
       ).thenAnswer((_) async => false);
 
       await tester.pumpWidget(
@@ -138,7 +138,7 @@ void main() {
       });
       final mockBiometricService = MockBiometricService();
       when(
-        () => mockBiometricService.isBiometricAvailable(),
+        mockBiometricService.isBiometricAvailable,
       ).thenAnswer((_) async => false);
 
       await tester.pumpWidget(
@@ -169,10 +169,10 @@ void main() {
       final mockAuthService = MockAuthService();
       final mockBiometricService = MockBiometricService();
       when(
-        () => mockBiometricService.isBiometricAvailable(),
+        mockBiometricService.isBiometricAvailable,
       ).thenAnswer((_) async => true);
       when(
-        () => mockBiometricService.isBiometricEnabled(),
+        mockBiometricService.isBiometricEnabled,
       ).thenAnswer((_) async => true);
 
       await tester.pumpWidget(
@@ -200,7 +200,7 @@ void main() {
       final mockAuthService = MockAuthService();
       final mockBiometricService = MockBiometricService();
       when(
-        () => mockBiometricService.isBiometricAvailable(),
+        mockBiometricService.isBiometricAvailable,
       ).thenAnswer((_) async => false);
 
       await tester.pumpWidget(
@@ -227,7 +227,7 @@ void main() {
       ).thenAnswer((_) async => SignInResult.failure('Invalid credentials'));
       final mockBiometricService = MockBiometricService();
       when(
-        () => mockBiometricService.isBiometricAvailable(),
+        mockBiometricService.isBiometricAvailable,
       ).thenAnswer((_) async => false);
 
       await tester.pumpWidget(
@@ -259,7 +259,7 @@ void main() {
       });
       final mockBiometricService = MockBiometricService();
       when(
-        () => mockBiometricService.isBiometricAvailable(),
+        mockBiometricService.isBiometricAvailable,
       ).thenAnswer((_) async => false);
 
       await tester.pumpWidget(
@@ -290,7 +290,7 @@ void main() {
       ).thenAnswer((_) async => SignInResult.failure('First error'));
       final mockBiometricService = MockBiometricService();
       when(
-        () => mockBiometricService.isBiometricAvailable(),
+        mockBiometricService.isBiometricAvailable,
       ).thenAnswer((_) async => false);
 
       await tester.pumpWidget(
@@ -337,7 +337,7 @@ void main() {
       ).thenAnswer((_) async => SignInResult.success('s-123'));
       final mockBiometricService = MockBiometricService();
       when(
-        () => mockBiometricService.isBiometricAvailable(),
+        mockBiometricService.isBiometricAvailable,
       ).thenAnswer((_) async => false);
 
       await tester.pumpWidget(
@@ -371,10 +371,10 @@ void main() {
       ).thenAnswer((_) async => SignInResult.success('s-123'));
       final mockBiometricService = MockBiometricService();
       when(
-        () => mockBiometricService.isBiometricAvailable(),
+        mockBiometricService.isBiometricAvailable,
       ).thenAnswer((_) async => true);
       when(
-        () => mockBiometricService.isBiometricEnabled(),
+        mockBiometricService.isBiometricEnabled,
       ).thenAnswer((_) async => false);
       when(
         () => mockBiometricService.enableBiometricAuth(any<String>()),
@@ -415,10 +415,10 @@ void main() {
       ).thenAnswer((_) async => SignInResult.success('s-123'));
       final mockBiometricService = MockBiometricService();
       when(
-        () => mockBiometricService.isBiometricAvailable(),
+        mockBiometricService.isBiometricAvailable,
       ).thenAnswer((_) async => true);
       when(
-        () => mockBiometricService.isBiometricEnabled(),
+        mockBiometricService.isBiometricEnabled,
       ).thenAnswer((_) async => false);
 
       await tester.pumpWidget(
@@ -456,10 +456,10 @@ void main() {
       final mockAuthService = MockAuthService();
       final mockBiometricService = MockBiometricService();
       when(
-        () => mockBiometricService.isBiometricAvailable(),
+        mockBiometricService.isBiometricAvailable,
       ).thenAnswer((_) async => true);
       when(
-        () => mockBiometricService.isBiometricEnabled(),
+        mockBiometricService.isBiometricEnabled,
       ).thenAnswer((_) async => true);
       when(
         () => mockBiometricService.authenticate(
@@ -494,10 +494,10 @@ void main() {
       final mockAuthService = MockAuthService();
       final mockBiometricService = MockBiometricService();
       when(
-        () => mockBiometricService.isBiometricAvailable(),
+        mockBiometricService.isBiometricAvailable,
       ).thenAnswer((_) async => true);
       when(
-        () => mockBiometricService.isBiometricEnabled(),
+        mockBiometricService.isBiometricEnabled,
       ).thenAnswer((_) async => true);
       when(
         () => mockBiometricService.authenticate(
@@ -525,10 +525,10 @@ void main() {
       final mockAuthService = MockAuthService();
       final mockBiometricService = MockBiometricService();
       when(
-        () => mockBiometricService.isBiometricAvailable(),
+        mockBiometricService.isBiometricAvailable,
       ).thenAnswer((_) async => true);
       when(
-        () => mockBiometricService.isBiometricEnabled(),
+        mockBiometricService.isBiometricEnabled,
       ).thenAnswer((_) async => true);
       when(
         () => mockBiometricService.authenticate(
@@ -544,7 +544,7 @@ void main() {
         return;
       });
       when(
-        () => mockBiometricService.getSessionToken(),
+        mockBiometricService.getSessionToken,
       ).thenAnswer((_) async => 'test-session-token');
 
       await tester.pumpWidget(

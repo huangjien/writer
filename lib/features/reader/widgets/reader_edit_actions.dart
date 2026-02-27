@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../state/chapter_edit_controller.dart';
-import '../../../models/chapter.dart';
-import '../../../shared/widgets/app_buttons.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/chapter_edit_controller.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
 
 class ReaderEditActions extends ConsumerWidget {
   const ReaderEditActions({
@@ -45,7 +45,7 @@ class ReaderEditActions extends ConsumerWidget {
     final Widget formatBtn = AppButtons.icon(
       iconData: Icons.format_align_left,
       tooltip: l10n.format,
-      onPressed: () => controller.formatContent(),
+      onPressed: controller.formatContent,
       enabled: !disabled,
     );
     // Summary edit mode: only show save button prominently
@@ -59,7 +59,7 @@ class ReaderEditActions extends ConsumerWidget {
         SizedBox(width: spacing),
         // Prominent save button
         AppButtons.primary(
-          onPressed: () => controller.save(),
+          onPressed: controller.save,
           icon: Icons.save,
           label: l10n.save,
           isLoading: editState.isSaving,

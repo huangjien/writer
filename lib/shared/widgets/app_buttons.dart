@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../theme/design_tokens.dart';
-import '../../theme/theme_extensions.dart';
-import '../../theme/ui_styles.dart';
-import '../utils/contrast_utils.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/theme/theme_extensions.dart';
+import 'package:writer/theme/ui_styles.dart';
+import 'package:writer/shared/utils/contrast_utils.dart';
 import 'focus_wrapper.dart';
 import 'micro_interactions.dart';
 import 'neumorphic_button.dart';

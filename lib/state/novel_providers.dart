@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/novel.dart';
-import '../models/chapter.dart';
-import '../models/recent_progress_details.dart';
-import '../repositories/novel_repository.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/models/recent_progress_details.dart';
+import 'package:writer/repositories/novel_repository.dart';
 import 'providers.dart';
 import 'progress_providers.dart';
 

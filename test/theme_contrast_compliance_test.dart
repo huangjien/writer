@@ -185,8 +185,10 @@ void main() {
       if (kDebugMode) {
         print('\n=== Primary Text Contrast Report ===');
         for (final result in allResults) {
+          final lightRatio = result['light'] as num;
+          final darkRatio = result['dark'] as num;
           print(
-            '${result['theme']}: Light=${result['light'].toStringAsFixed(2)} (${result['light_passes'] ? 'PASS' : 'FAIL'}), Dark=${result['dark'].toStringAsFixed(2)} (${result['dark_passes'] ? 'PASS' : 'FAIL'})',
+            '${result['theme']}: Light=${lightRatio.toStringAsFixed(2)} (${result['light_passes'] ? 'PASS' : 'FAIL'}), Dark=${darkRatio.toStringAsFixed(2)} (${result['dark_passes'] ? 'PASS' : 'FAIL'})',
           );
         }
 

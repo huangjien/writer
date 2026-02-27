@@ -116,7 +116,7 @@ void main() {
     });
 
     testWidgets('displays logs when loaded successfully', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepository.getAdminLogsEnhanced(
@@ -233,7 +233,7 @@ void main() {
     });
 
     testWidgets('refresh button works correctly', (tester) async {
-      final initialLogs = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final initialLogs = sampleLogs.map(jsonEncode).join('\n');
       final refreshedLogs = [
         {
           'timestamp': '2026-02-02 12:35:00,000',
@@ -242,9 +242,7 @@ void main() {
           'logger': 'authorconsole.app',
         },
       ];
-      final refreshedLogsString = refreshedLogs
-          .map((log) => jsonEncode(log))
-          .join('\n');
+      final refreshedLogsString = refreshedLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepository.getAdminLogsEnhanced(
@@ -335,7 +333,7 @@ void main() {
           'logger': 'authorconsole.app',
         },
       );
-      final logsString = longLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = longLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepository.getAdminLogsEnhanced(
@@ -496,7 +494,7 @@ void main() {
     });
 
     testWidgets('displays log entries with correct styling', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepository.getAdminLogsEnhanced(

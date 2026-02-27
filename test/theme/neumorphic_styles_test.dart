@@ -151,8 +151,8 @@ void main() {
 
   group('NeumorphicStyles.inputDecoration', () {
     test('returns a concave InputDecoration with expected properties', () {
-      final prefix = const Icon(Icons.search);
-      final suffix = const Icon(Icons.clear);
+      const prefix = Icon(Icons.search);
+      const suffix = Icon(Icons.clear);
       final decoration = NeumorphicStyles.inputDecoration(
         isDark: false,
         hintText: 'Search',

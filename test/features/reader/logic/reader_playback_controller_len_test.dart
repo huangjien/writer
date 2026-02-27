@@ -13,7 +13,7 @@ void main() {
     final container = ProviderContainer();
     final refProvider = Provider((ref) => ref);
     final ctrl = ReaderPlaybackController(driver, container.read(refProvider));
-    final content = '  Hello world.  ';
+    const content = '  Hello world.  ';
     final len = ctrl.computeTotalLen(content, 2);
     expect(len, greaterThanOrEqualTo(2));
     expect(len, 2 + 'Hello world.'.length);

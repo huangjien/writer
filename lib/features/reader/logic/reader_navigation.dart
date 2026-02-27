@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/chapter.dart';
-import '../../../repositories/chapter_repository.dart';
-import '../../../state/performance_settings.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/state/performance_settings.dart';
 
 class ChapterNavResult {
   final String chapterId;

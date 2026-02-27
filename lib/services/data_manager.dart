@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
-import '../models/novel.dart';
-import '../models/chapter.dart';
-import '../models/chapter_cache.dart';
-import '../repositories/local_storage_repository.dart';
-import '../repositories/remote_repository.dart';
-import '../repositories/novel_repository.dart';
-import '../services/network_monitor.dart';
-import '../models/cache_metadata.dart';
-import '../services/storage_service.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/models/chapter_cache.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
+import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/repositories/novel_repository.dart';
+import 'package:writer/services/network_monitor.dart';
+import 'package:writer/models/cache_metadata.dart';
+import 'package:writer/services/storage_service.dart';
 
 enum DataManagerState { idle, loading, syncing, error }
 
@@ -138,12 +138,12 @@ class DataManager {
 
       if (cached.isNotEmpty && !forceRefresh && isCacheValid) {
         _syncChapters(novelId).ignore();
-        return cached.map((c) => Chapter.fromCache(c)).toList();
+        return cached.map(Chapter.fromCache).toList();
       }
 
       if (!_network.isOnline) {
         if (cached.isNotEmpty) {
-          return cached.map((c) => Chapter.fromCache(c)).toList();
+          return cached.map(Chapter.fromCache).toList();
         }
         return [];
       }
@@ -172,7 +172,7 @@ class DataManager {
     } catch (e) {
       _setState(DataManagerState.error, error: e.toString());
       final cached = await _local.getChaptersList(novelId);
-      return cached.map((c) => Chapter.fromCache(c)).toList();
+      return cached.map(Chapter.fromCache).toList();
     }
   }
 

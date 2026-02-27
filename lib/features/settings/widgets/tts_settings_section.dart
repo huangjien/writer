@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../state/tts_settings.dart';
-import '../../../shared/widgets/neumorphic_dropdown.dart';
-import '../../../shared/widgets/neumorphic_slider.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/tts_settings.dart';
+import 'package:writer/shared/widgets/neumorphic_dropdown.dart';
+import 'package:writer/shared/widgets/neumorphic_slider.dart';
 
 class TtsSettingsSection extends ConsumerWidget {
   const TtsSettingsSection({

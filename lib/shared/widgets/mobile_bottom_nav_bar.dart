@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../theme/design_tokens.dart';
-import '../../theme/theme_extensions.dart';
-import '../../theme/ui_styles.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/theme/theme_extensions.dart';
+import 'package:writer/theme/ui_styles.dart';
 import 'focus_wrapper.dart';
 
 /// Mobile-optimized bottom navigation bar

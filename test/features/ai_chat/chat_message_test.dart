@@ -57,7 +57,7 @@ void main() {
     });
 
     test('handles special characters in content', () {
-      final specialContent = 'Test with emoji 😊 and symbols @#\$%';
+      const specialContent = 'Test with emoji 😊 and symbols @#\$%';
       final message = ChatMessage(
         content: specialContent,
         isUser: true,
@@ -68,7 +68,7 @@ void main() {
     });
 
     test('handles multiline content', () {
-      final multilineContent = '''Line 1
+      const multilineContent = '''Line 1
 Line 2
 Line 3''';
       final message = ChatMessage(
@@ -101,7 +101,7 @@ Line 3''';
     });
 
     test('handles unicode content', () {
-      final unicodeContent = 'Hello 世界 🌍';
+      const unicodeContent = 'Hello 世界 🌍';
       final message = ChatMessage(
         content: unicodeContent,
         isUser: true,

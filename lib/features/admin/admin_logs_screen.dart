@@ -9,9 +9,9 @@ import 'widgets/admin_log_detail_dialog.dart';
 import 'widgets/admin_logs_controls.dart';
 import 'widgets/admin_logs_level_filters.dart';
 import 'widgets/admin_logs_list.dart';
-import '../../repositories/remote_repository.dart';
-import '../../shared/api_exception.dart';
-import '../../l10n/app_localizations.dart';
+import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/shared/api_exception.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class AdminLogsScreen extends ConsumerStatefulWidget {
   const AdminLogsScreen({super.key});

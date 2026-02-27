@@ -86,14 +86,14 @@ void main() {
       );
 
       when(
-        () => mockRepository.getCurrentMonthUsage(),
+        mockRepository.getCurrentMonthUsage,
       ).thenAnswer((_) async => expectedUsage);
 
       final provider = container.read(currentMonthUsageProvider.future);
       final result = await provider;
 
       expect(result, expectedUsage);
-      verify(() => mockRepository.getCurrentMonthUsage()).called(1);
+      verify(mockRepository.getCurrentMonthUsage).called(1);
     });
 
     test('returns null when repository returns null', () async {
@@ -102,15 +102,13 @@ void main() {
         overrides: [remoteRepositoryProvider.overrideWithValue(mockRepository)],
       );
 
-      when(
-        () => mockRepository.getCurrentMonthUsage(),
-      ).thenAnswer((_) async => null);
+      when(mockRepository.getCurrentMonthUsage).thenAnswer((_) async => null);
 
       final provider = container.read(currentMonthUsageProvider.future);
       final result = await provider;
 
       expect(result, isNull);
-      verify(() => mockRepository.getCurrentMonthUsage()).called(1);
+      verify(mockRepository.getCurrentMonthUsage).called(1);
     });
   });
 

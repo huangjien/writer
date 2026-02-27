@@ -49,7 +49,7 @@ void main() {
       ProviderScope(
         child: MaterialApp(
           locale: const Locale('en'),
-          localizationsDelegates: [
+          localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,

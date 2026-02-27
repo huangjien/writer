@@ -341,7 +341,7 @@ void main() {
     test('betaEvaluateChapter returns evaluation map', () async {
       final client = MockClient((request) async {
         if (request.method == 'POST' && request.url.path == '/beta/evaluate') {
-          final body = jsonDecode(request.body);
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
           expect(body['language'], 'en');
           return http.Response(
             jsonEncode({
@@ -367,7 +367,7 @@ void main() {
     test('betaEvaluateChapter sends language', () async {
       final client = MockClient((request) async {
         if (request.method == 'POST' && request.url.path == '/beta/evaluate') {
-          final body = jsonDecode(request.body);
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
           expect(body['language'], 'zh');
           return http.Response(
             jsonEncode({
@@ -625,7 +625,7 @@ void main() {
       final client = MockClient((request) async {
         if (request.method == 'POST' &&
             request.url.path == '/agents/deep-agent') {
-          final body = jsonDecode(request.body);
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
           expect(body['question'], contains('summarize and compress'));
           expect(body['context'], 'Long context to compress');
           expect(body['max_plan_steps'], 3);
@@ -668,7 +668,7 @@ void main() {
     test('ragSearch returns search results', () async {
       final client = MockClient((request) async {
         if (request.method == 'POST' && request.url.path == '/rag/search') {
-          final body = jsonDecode(request.body);
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
           expect(body['query'], 'test query');
           expect(body['initial_top_k'], 10);
           expect(body['final_top_k'], 5);
@@ -691,13 +691,13 @@ void main() {
       final result = await svc.ragSearch(query: 'test query');
       expect(result, isNotNull);
       expect(result!['results'], isList);
-      expect(result['results'].length, 2);
+      expect((result['results'] as List).length, 2);
     });
 
     test('ragSearch sends category when provided', () async {
       final client = MockClient((request) async {
         if (request.method == 'POST' && request.url.path == '/rag/search') {
-          final body = jsonDecode(request.body);
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
           expect(body['category'], 'writing');
           return http.Response(jsonEncode({'results': []}), 200);
         }
@@ -713,7 +713,7 @@ void main() {
     test('ragSearch sends custom top_k values', () async {
       final client = MockClient((request) async {
         if (request.method == 'POST' && request.url.path == '/rag/search') {
-          final body = jsonDecode(request.body);
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
           expect(body['initial_top_k'], 20);
           expect(body['final_top_k'], 10);
           return http.Response(jsonEncode({'results': []}), 200);
@@ -734,7 +734,7 @@ void main() {
     test('ragSearch sends refinement_enabled flag', () async {
       final client = MockClient((request) async {
         if (request.method == 'POST' && request.url.path == '/rag/search') {
-          final body = jsonDecode(request.body);
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
           expect(body['refinement_enabled'], false);
           return http.Response(jsonEncode({'results': []}), 200);
         }

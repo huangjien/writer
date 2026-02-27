@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../state/novel_providers.dart';
+import 'package:writer/state/novel_providers.dart';
 
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({super.key});

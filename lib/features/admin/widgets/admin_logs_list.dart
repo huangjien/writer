@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../admin_logs_utils.dart';
+import 'package:writer/features/admin/admin_logs_utils.dart';
 import 'admin_log_level_badge.dart';
 
 class AdminLogsList extends StatelessWidget {

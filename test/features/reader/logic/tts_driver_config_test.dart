@@ -75,14 +75,14 @@ void main() {
     () async {
       final tts = MockFlutterTts();
       final driver = TtsDriver(tts: tts);
-      when(() => tts.stop()).thenAnswer((_) async {});
-      when(() => tts.pause()).thenAnswer((_) async {});
+      when(tts.stop).thenAnswer((_) async {});
+      when(tts.pause).thenAnswer((_) async {});
       await driver.stop();
       expect(driver.speaking, false);
       await driver.pause();
       expect(driver.speaking, false);
-      verify(() => tts.stop()).called(1);
-      verify(() => tts.pause()).called(1);
+      verify(tts.stop).called(1);
+      verify(tts.pause).called(1);
     },
   );
 }

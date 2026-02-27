@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../../../theme/design_tokens.dart';
+import 'package:writer/theme/design_tokens.dart';
 
 class ErrorAnimation extends StatefulWidget {
   const ErrorAnimation({

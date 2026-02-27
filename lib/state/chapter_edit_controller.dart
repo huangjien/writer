@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'dart:async';
-import '../models/chapter.dart';
-import '../repositories/chapter_repository.dart';
-import '../repositories/chapter_port.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/repositories/chapter_port.dart';
 
-import '../common/errors/offline_exception.dart';
+import 'package:writer/common/errors/offline_exception.dart';
 
 enum EditRequest { idle, saving, creating, deleting }
 

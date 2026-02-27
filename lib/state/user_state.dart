@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import '../repositories/user_repository.dart';
+import 'package:writer/repositories/user_repository.dart';
 import 'session_state.dart';
 import 'ai_service_settings.dart';
-import '../models/user.dart';
+import 'package:writer/models/user.dart';
 
 class UserStateNotifier extends StateNotifier<AsyncValue<User?>> {
   final Ref ref;

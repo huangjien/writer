@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import '../../../models/chapter.dart';
-import '../../../common/errors/failures.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/common/errors/failures.dart';
 
 @immutable
 class ReaderSessionState {

@@ -273,7 +273,7 @@ void main() {
     test('biometricAvailableProvider reflects service value', () async {
       final mockBiometricService = MockBiometricService();
       when(
-        () => mockBiometricService.isBiometricAvailable(),
+        mockBiometricService.isBiometricAvailable,
       ).thenAnswer((_) async => true);
 
       final container = ProviderContainer(
@@ -292,7 +292,7 @@ void main() {
     test('biometricEnabledProvider reflects service value', () async {
       final mockBiometricService = MockBiometricService();
       when(
-        () => mockBiometricService.isBiometricEnabled(),
+        mockBiometricService.isBiometricEnabled,
       ).thenAnswer((_) async => false);
 
       final container = ProviderContainer(

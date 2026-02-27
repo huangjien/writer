@@ -3,8 +3,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'tts_settings_section.dart';
-import '../../../state/app_settings.dart';
-import '../../../state/tts_settings.dart';
+import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/tts_settings.dart';
 
 class TtsSettingsContainer extends ConsumerStatefulWidget {
   const TtsSettingsContainer({super.key});

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../theme/design_tokens.dart';
+import 'package:writer/theme/design_tokens.dart';
 import 'loading/loading_story.dart';
 import 'loading/shimmer_skeleton.dart';
 import 'loading/step_progress.dart';

@@ -8,7 +8,7 @@ import 'package:writer/repositories/template_repository.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/shared/api_exception.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
-import '../../state/template_form_state.dart';
+import 'package:writer/features/summary/state/template_form_state.dart';
 
 final _logger = Logger('SceneTemplatesScreen');
 

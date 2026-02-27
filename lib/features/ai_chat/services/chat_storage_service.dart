@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/chat_session.dart';
-import '../../../state/storage_service_provider.dart';
+import 'package:writer/features/ai_chat/models/chat_session.dart';
+import 'package:writer/state/storage_service_provider.dart';
 
 class ChatStorageService {
   final SharedPreferences _prefs;

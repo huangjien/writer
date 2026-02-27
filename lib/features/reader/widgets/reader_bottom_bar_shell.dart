@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../theme/design_tokens.dart';
-import '../../../theme/theme_extensions.dart';
-import '../../../models/chapter.dart';
-import '../widgets/reader_edit_actions.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/theme/theme_extensions.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/features/reader/widgets/reader_edit_actions.dart';
 import 'reader_bottom_bar.dart';
 
 class ReaderBottomBarShell extends StatelessWidget {

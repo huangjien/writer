@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:writer/shared/api_exception.dart';
 
-import '../../../l10n/app_localizations.dart';
-import '../../../models/novel.dart';
-import '../../../state/novel_providers_v2.dart';
-import '../../../state/providers.dart';
-import '../../../shared/image_utils.dart';
-import '../../../shared/widgets/app_buttons.dart';
-import '../../../shared/widgets/empty_states/novel_empty_state.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/state/novel_providers_v2.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/shared/image_utils.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/empty_states/novel_empty_state.dart';
 
 class MyNovelsScreen extends ConsumerWidget {
   const MyNovelsScreen({super.key});

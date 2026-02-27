@@ -1,4 +1,4 @@
-import '../models/chapter.dart';
+import 'package:writer/models/chapter.dart';
 
 /// Lightweight repository interface for chapter operations.
 /// Mirrors the style of `ProgressPort` to keep layers clean.

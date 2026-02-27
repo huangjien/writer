@@ -10,7 +10,7 @@ void main() {
       // but we can test the logic
 
       // Simulate the null user case
-      final String? userId = null;
+      const String? userId = null;
       expect(userId, isNull);
 
       // When userId is null, the providers should return:
@@ -20,7 +20,7 @@ void main() {
       // Test the logic that would be used in the providers
       if (userId == null) {
         // This is what latestUserProgressProvider would return
-        final latestProgress = null;
+        const latestProgress = null;
         expect(latestProgress, isNull);
 
         // This is what recentUserProgressProvider would return
@@ -59,9 +59,7 @@ void main() {
       expect(singleProgress.ttsCharIndex, 50);
 
       // Test list conversion (for recentUserProgressProvider)
-      final progressList = testData
-          .map((item) => UserProgress.fromJson(item))
-          .toList();
+      final progressList = testData.map(UserProgress.fromJson).toList();
       expect(progressList.length, 2);
       expect(progressList.first.userId, 'user123');
       expect(progressList.last.userId, 'user456');
@@ -78,9 +76,7 @@ void main() {
       expect(latestResult, isNull);
 
       // For recentUserProgressProvider, empty list should return empty list
-      final recentResult = emptyList
-          .map((item) => UserProgress.fromJson(item))
-          .toList();
+      final recentResult = emptyList.map(UserProgress.fromJson).toList();
       expect(recentResult, isEmpty);
     });
 
@@ -105,9 +101,7 @@ void main() {
       expect(latestResult?.userId, 'user123');
 
       // Simulate the stream transformation for recentUserProgressProvider
-      final recentResult = testData
-          .map((item) => UserProgress.fromJson(item))
-          .toList();
+      final recentResult = testData.map(UserProgress.fromJson).toList();
       expect(recentResult, isA<List<UserProgress>>());
       expect(recentResult.length, 1);
       expect(recentResult.first.userId, 'user123');
@@ -149,9 +143,7 @@ void main() {
       expect(latestResult?.chapterId, 'chapter789'); // First item in the list
 
       // For recentUserProgressProvider, should return all items (limited to 3 in the actual provider)
-      final recentResult = testData
-          .map((item) => UserProgress.fromJson(item))
-          .toList();
+      final recentResult = testData.map(UserProgress.fromJson).toList();
       expect(recentResult.length, 3);
       expect(recentResult.first.chapterId, 'chapter789');
       expect(recentResult.last.chapterId, 'chapter791');

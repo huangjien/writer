@@ -59,7 +59,7 @@ void main() {
     });
 
     test('generates PDF with title page containing novel title', () async {
-      final novel = const Novel(
+      const novel = Novel(
         id: '1',
         title: 'Test Novel',
         author: 'Test Author',
@@ -105,7 +105,7 @@ void main() {
     test(
       'generates PDF with author information when author is provided',
       () async {
-        final novel = const Novel(
+        const novel = Novel(
           id: '1',
           title: 'Test Novel',
           author: 'Test Author',
@@ -150,7 +150,7 @@ void main() {
     );
 
     test('handles novel with empty or null author', () async {
-      final novel = const Novel(
+      const novel = Novel(
         id: '1',
         title: 'Test Novel',
         author: '',
@@ -191,7 +191,7 @@ void main() {
     });
 
     test('handles novel with whitespace-only author', () async {
-      final novel = const Novel(
+      const novel = Novel(
         id: '1',
         title: 'Test Novel',
         author: '   ',
@@ -226,7 +226,7 @@ void main() {
     });
 
     test('generates PDF with table of contents', () async {
-      final novel = const Novel(
+      const novel = Novel(
         id: '1',
         title: 'Test Novel',
         author: 'Test Author',
@@ -274,7 +274,7 @@ void main() {
     });
 
     test('handles chapters with empty or null titles', () async {
-      final novel = const Novel(
+      const novel = Novel(
         id: '1',
         title: 'Test Novel',
         author: 'Test Author',
@@ -322,7 +322,7 @@ void main() {
     });
 
     test('handles chapters with empty or null content', () async {
-      final novel = const Novel(
+      const novel = Novel(
         id: '1',
         title: 'Test Novel',
         author: 'Test Author',
@@ -370,7 +370,7 @@ void main() {
     });
 
     test('handles chapters with whitespace-only content', () async {
-      final novel = const Novel(
+      const novel = Novel(
         id: '1',
         title: 'Test Novel',
         author: 'Test Author',
@@ -405,7 +405,7 @@ void main() {
     });
 
     test('generates PDF with multiple chapters', () async {
-      final novel = const Novel(
+      const novel = Novel(
         id: '1',
         title: 'Test Novel',
         author: 'Test Author',
@@ -444,7 +444,7 @@ void main() {
     });
 
     test('generates PDF with custom localization strings', () async {
-      final novel = const Novel(
+      const novel = Novel(
         id: '1',
         title: '测试小说',
         author: '测试作者',
@@ -488,7 +488,7 @@ void main() {
     });
 
     test('handles empty chapter list', () async {
-      final novel = const Novel(
+      const novel = Novel(
         id: '1',
         title: 'Test Novel',
         author: 'Test Author',
@@ -523,7 +523,7 @@ void main() {
     test(
       'generates correct filename with spaces replaced by underscores',
       () async {
-        final novel = const Novel(
+        const novel = Novel(
           id: '1',
           title: 'Test Novel With Spaces',
           author: 'Test Author',
@@ -565,7 +565,7 @@ void main() {
     );
 
     test('includes page numbers in footer', () async {
-      final novel = const Novel(
+      const novel = Novel(
         id: '1',
         title: 'Test Novel',
         author: 'Test Author',
@@ -606,7 +606,7 @@ void main() {
     });
 
     test('includes novel title in header', () async {
-      final novel = const Novel(
+      const novel = Novel(
         id: '1',
         title: 'Test Novel Header',
         author: 'Test Author',

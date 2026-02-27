@@ -50,9 +50,7 @@ void main() {
       expect(result, isNull);
 
       // This should return empty list for recentUserProgressProvider
-      final resultList = emptyList
-          .map((item) => UserProgress.fromJson(item))
-          .toList();
+      final resultList = emptyList.map(UserProgress.fromJson).toList();
       expect(resultList, isEmpty);
     });
 

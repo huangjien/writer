@@ -59,7 +59,7 @@ class _CharacterTemplatesContentState
           .setContextDelegate(
             type: 'character_template',
             loader: () async {
-              return "Character Template: ${_nameController.text}\n\nDescription:\n${_descController.text}";
+              return 'Character Template: ${_nameController.text}\n\nDescription:\n${_descController.text}';
             },
           );
     });

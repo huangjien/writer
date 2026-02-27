@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/user_progress.dart';
-import '../../../state/progress_providers.dart';
-import '../../../state/progress_notifier.dart';
-import '../../../state/providers.dart';
+import 'package:writer/models/user_progress.dart';
+import 'package:writer/state/progress_providers.dart';
+import 'package:writer/state/progress_notifier.dart';
+import 'package:writer/state/providers.dart';
 
 enum SaveStatus { notEnabled, noUser, saved, error }
 

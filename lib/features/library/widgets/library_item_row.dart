@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../models/novel.dart';
+import 'package:writer/models/novel.dart';
 import 'package:writer/l10n/app_localizations.dart';
-import '../../../theme/design_tokens.dart';
-import '../../../state/motion_settings.dart';
-import '../../../state/novel_providers_v2.dart';
-import '../../../state/progress_providers.dart';
-import '../../../shared/image_utils.dart';
-import '../../../repositories/chapter_repository.dart';
-import '../../../models/chapter.dart';
-import '../../../models/user_progress.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/state/motion_settings.dart';
+import 'package:writer/state/novel_providers_v2.dart';
+import 'package:writer/state/progress_providers.dart';
+import 'package:writer/shared/image_utils.dart';
+import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/models/user_progress.dart';
 import 'package:writer/features/library/state/library_providers.dart';
-import '../../../shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
 
 class _DownloadIntent extends Intent {
   const _DownloadIntent();

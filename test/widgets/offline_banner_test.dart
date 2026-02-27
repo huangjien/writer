@@ -10,7 +10,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 void main() {
   Widget buildTestWidget(Widget child) {
     return MaterialApp(
-      localizationsDelegates: [
+      localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

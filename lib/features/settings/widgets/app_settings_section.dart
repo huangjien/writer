@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../state/ai_agent_settings.dart';
-import '../../../state/ai_service_settings.dart';
-import '../../../state/app_settings.dart';
-import '../../../state/admin_settings.dart';
-import '../../../state/biometric_session_state.dart';
-import '../../../state/motion_settings.dart';
-import '../../../state/session_state.dart';
-import '../../../state/theme_controller.dart';
-import '../../../theme/design_tokens.dart';
-import '../../../shared/widgets/app_buttons.dart';
-import '../../../shared/widgets/app_dialog.dart';
-import '../../../shared/widgets/neumorphic_slider.dart';
-import '../../../shared/widgets/neumorphic_dropdown.dart';
-import '../../../shared/widgets/neumorphic_textfield.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/ai_agent_settings.dart';
+import 'package:writer/state/ai_service_settings.dart';
+import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/admin_settings.dart';
+import 'package:writer/state/biometric_session_state.dart';
+import 'package:writer/state/motion_settings.dart';
+import 'package:writer/state/session_state.dart';
+import 'package:writer/state/theme_controller.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
+import 'package:writer/shared/widgets/neumorphic_slider.dart';
+import 'package:writer/shared/widgets/neumorphic_dropdown.dart';
+import 'package:writer/shared/widgets/neumorphic_textfield.dart';
 import 'enhanced_settings_section.dart';
 
 class AppSettingsSection extends ConsumerStatefulWidget {

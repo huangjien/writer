@@ -112,7 +112,7 @@ void main() {
       });
 
       test('applies custom card border radius', () {
-        final patch = const StyleThemePatch(
+        const patch = StyleThemePatch(
           cardBorderRadius: BorderRadius.all(Radius.circular(20)),
           styleFamily: UiStyleFamily.glassmorphism,
         );
@@ -125,7 +125,7 @@ void main() {
       });
 
       test('applies custom button border radius', () {
-        final patch = const StyleThemePatch(
+        const patch = StyleThemePatch(
           buttonBorderRadius: BorderRadius.all(Radius.circular(16)),
           styleFamily: UiStyleFamily.glassmorphism,
         );
@@ -141,7 +141,7 @@ void main() {
       });
 
       test('applies custom elevation', () {
-        final patch = const StyleThemePatch(
+        const patch = StyleThemePatch(
           elevation: 8,
           styleFamily: UiStyleFamily.glassmorphism,
         );
@@ -154,7 +154,7 @@ void main() {
       });
 
       test('uses base elevation when patch elevation is null', () {
-        final patch = const StyleThemePatch(
+        const patch = StyleThemePatch(
           elevation: null,
           styleFamily: UiStyleFamily.glassmorphism,
         );
@@ -165,9 +165,7 @@ void main() {
       });
 
       test('applies card margin', () {
-        final patch = const StyleThemePatch(
-          styleFamily: UiStyleFamily.glassmorphism,
-        );
+        const patch = StyleThemePatch(styleFamily: UiStyleFamily.glassmorphism);
         final baseTheme = ThemeData.light();
         final modified = patch.applyToTheme(baseTheme, false);
 
@@ -175,7 +173,7 @@ void main() {
       });
 
       test('applies dialog border radius', () {
-        final patch = const StyleThemePatch(
+        const patch = StyleThemePatch(
           cardBorderRadius: BorderRadius.all(Radius.circular(24)),
           styleFamily: UiStyleFamily.glassmorphism,
         );
@@ -188,7 +186,7 @@ void main() {
       });
 
       test('applies floating action button border radius', () {
-        final patch = const StyleThemePatch(
+        const patch = StyleThemePatch(
           buttonBorderRadius: BorderRadius.all(Radius.circular(20)),
           styleFamily: UiStyleFamily.glassmorphism,
         );
@@ -205,7 +203,7 @@ void main() {
       });
 
       test('applies bottom sheet border radius', () {
-        final patch = const StyleThemePatch(
+        const patch = StyleThemePatch(
           cardBorderRadius: BorderRadius.all(Radius.circular(20)),
           styleFamily: UiStyleFamily.glassmorphism,
         );
@@ -219,9 +217,7 @@ void main() {
       });
 
       test('applies input decoration theme', () {
-        final patch = const StyleThemePatch(
-          styleFamily: UiStyleFamily.glassmorphism,
-        );
+        const patch = StyleThemePatch(styleFamily: UiStyleFamily.glassmorphism);
         final baseTheme = ThemeData.light();
         final modified = patch.applyToTheme(baseTheme, false);
 
@@ -248,7 +244,7 @@ void main() {
       });
 
       test('applies list tile shape from card border radius', () {
-        final patch = const StyleThemePatch(
+        const patch = StyleThemePatch(
           cardBorderRadius: BorderRadius.all(Radius.circular(20)),
           styleFamily: UiStyleFamily.glassmorphism,
         );
@@ -261,9 +257,7 @@ void main() {
       });
 
       test('applies minimalism divider thickness', () {
-        final patch = const StyleThemePatch(
-          styleFamily: UiStyleFamily.minimalism,
-        );
+        const patch = StyleThemePatch(styleFamily: UiStyleFamily.minimalism);
         final baseTheme = ThemeData.light();
         final modified = patch.applyToTheme(baseTheme, false);
 
@@ -271,7 +265,7 @@ void main() {
       });
 
       test('applies to light theme', () {
-        final patch = const StyleThemePatch(
+        const patch = StyleThemePatch(
           cardBorderRadius: BorderRadius.all(Radius.circular(16)),
           elevation: 4,
           styleFamily: UiStyleFamily.glassmorphism,
@@ -284,7 +278,7 @@ void main() {
       });
 
       test('applies to dark theme', () {
-        final patch = const StyleThemePatch(
+        const patch = StyleThemePatch(
           cardBorderRadius: BorderRadius.all(Radius.circular(16)),
           elevation: 4,
           styleFamily: UiStyleFamily.glassmorphism,

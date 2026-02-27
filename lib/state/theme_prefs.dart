@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../theme/reader_background.dart';
-import '../theme/themes.dart';
-import '../theme/reader_typography.dart';
-import '../theme/font_packs.dart';
-import '../theme/ui_styles.dart';
+import 'package:writer/theme/reader_background.dart';
+import 'package:writer/theme/themes.dart';
+import 'package:writer/theme/reader_typography.dart';
+import 'package:writer/theme/font_packs.dart';
+import 'package:writer/theme/ui_styles.dart';
 
 const String prefThemeMode = 'theme_mode';
 const String prefLightTheme = 'light_theme';

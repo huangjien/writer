@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:async';
-import '../tts_chunker.dart';
-import '../../../shared/constants.dart';
+import 'package:writer/features/reader/tts_chunker.dart';
+import 'package:writer/shared/constants.dart';
 import 'dart:math' as math;
 
 typedef TtsProgress = void Function(int index);

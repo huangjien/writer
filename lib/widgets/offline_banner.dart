@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../state/sync_service_provider.dart';
-import '../state/network_monitor_provider.dart';
-import '../theme/design_tokens.dart';
-import '../theme/theme_extensions.dart';
-import '../shared/widgets/neumorphic_button.dart';
-import '../l10n/app_localizations.dart';
+import 'package:writer/state/sync_service_provider.dart';
+import 'package:writer/state/network_monitor_provider.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/theme/theme_extensions.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 /// Warning banner displayed when offline with pending operations
 /// Shows at the top of the screen or below the app bar

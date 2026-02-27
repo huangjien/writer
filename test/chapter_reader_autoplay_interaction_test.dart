@@ -68,7 +68,7 @@ void main() {
     tester.view.physicalSize = const Size(1200, 800);
     tester.view.devicePixelRatio = 1.0;
 
-    final chapters = const [
+    const chapters = [
       Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'Ch1', content: 'Hello'),
     ];
 
@@ -76,7 +76,7 @@ void main() {
       child: ProviderScope(
         overrides: [ttsDriverProvider.overrideWithValue(FakeTtsDriver())],
         child: materialAppFor(
-          home: ChapterReaderScreen(
+          home: const ChapterReaderScreen(
             chapterId: 'c1',
             title: 'Ch1',
             content: 'Hello',

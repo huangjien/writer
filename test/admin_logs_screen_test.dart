@@ -99,7 +99,7 @@ void main() {
     });
 
     testWidgets('displays logs correctly', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepo.getAdminLogsEnhanced(
@@ -191,7 +191,7 @@ void main() {
 
   group('AdminLogsScreen Search Tests', () {
     testWidgets('filters logs by search text', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepo.getAdminLogsEnhanced(
@@ -243,7 +243,7 @@ void main() {
     });
 
     testWidgets('clears search text', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepo.getAdminLogsEnhanced(
@@ -300,7 +300,7 @@ void main() {
 
   group('AdminLogsScreen Level Filter Tests', () {
     testWidgets('filters by log level', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepo.getAdminLogsEnhanced(
@@ -351,7 +351,7 @@ void main() {
     });
 
     testWidgets('resets level filter with ALL chip', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepo.getAdminLogsEnhanced(
@@ -402,7 +402,7 @@ void main() {
 
   group('AdminLogsScreen File Selection Tests', () {
     testWidgets('displays available log files', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepo.getAdminLogsEnhanced(
@@ -445,7 +445,7 @@ void main() {
     });
 
     testWidgets('switches between log files', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepo.getAdminLogsEnhanced(
@@ -513,7 +513,7 @@ void main() {
 
   group('AdminLogsScreen Size Selection Tests', () {
     testWidgets('displays size options', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepo.getAdminLogsEnhanced(
@@ -549,7 +549,7 @@ void main() {
     });
 
     testWidgets('changes max size', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepo.getAdminLogsEnhanced(
@@ -607,7 +607,7 @@ void main() {
 
   group('AdminLogsScreen Action Buttons Tests', () {
     testWidgets('refreshes logs on refresh button tap', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepo.getAdminLogsEnhanced(
@@ -656,7 +656,7 @@ void main() {
     });
 
     testWidgets('shows log detail dialog on tap', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepo.getAdminLogsEnhanced(
@@ -709,7 +709,7 @@ void main() {
 
   group('AdminLogsScreen Scroll Tests', () {
     testWidgets('scrolls to bottom', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepo.getAdminLogsEnhanced(
@@ -748,7 +748,7 @@ void main() {
     });
 
     testWidgets('scrolls to top', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepo.getAdminLogsEnhanced(
@@ -789,7 +789,7 @@ void main() {
 
   group('AdminLogsScreen Syntax Highlighting Tests', () {
     testWidgets('displays log levels with correct colors', (tester) async {
-      final logsString = sampleLogs.map((log) => jsonEncode(log)).join('\n');
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
 
       when(
         () => mockRemoteRepo.getAdminLogsEnhanced(

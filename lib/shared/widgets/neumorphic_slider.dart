@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../theme/design_tokens.dart';
-import '../../theme/theme_extensions.dart';
-import '../../theme/neumorphic_styles.dart';
-import '../utils/contrast_utils.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/theme/theme_extensions.dart';
+import 'package:writer/theme/neumorphic_styles.dart';
+import 'package:writer/shared/utils/contrast_utils.dart';
 import 'focus_wrapper.dart';
 
 class NeumorphicSlider extends StatelessWidget {

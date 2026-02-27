@@ -19,7 +19,7 @@ void main() {
   });
 
   testWidgets('description text field alignment check', (tester) async {
-    final novel = const Novel(
+    const novel = Novel(
       id: 'novel-1',
       title: 'Test Novel',
       author: 'author-1',

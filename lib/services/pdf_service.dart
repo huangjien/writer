@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import '../models/chapter.dart';
-import '../models/novel.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/models/novel.dart';
 
 abstract class PdfPrinter {
   Future<void> sharePdf({required Uint8List bytes, required String filename});

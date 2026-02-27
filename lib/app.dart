@@ -114,7 +114,7 @@ class App extends ConsumerWidget {
       hasSeparate: themeState.hasSeparateTypography,
     );
 
-    final styleAdapter = const UiStyleAdapter();
+    const styleAdapter = UiStyleAdapter();
     final stylePatch = styleAdapter.resolveStylePatch(uiStyleState.family);
 
     final lightThemeWithStyle = stylePatch.applyToTheme(

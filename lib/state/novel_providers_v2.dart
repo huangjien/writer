@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/novel.dart';
-import '../models/chapter.dart';
-import '../models/recent_progress_details.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/models/recent_progress_details.dart';
 import './data_manager_provider.dart';
 import './progress_providers.dart';
 import './providers.dart';

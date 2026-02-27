@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/offline_operation.dart';
+import 'package:writer/models/offline_operation.dart';
 
 const String _queueKey = 'offline_ops_queue';
 const String _opPrefix = 'offline_op_';

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../state/theme_controller.dart';
-import '../../../theme/themes.dart';
-import '../../../shared/widgets/neumorphic_dropdown.dart';
-import '../../../shared/widgets/neumorphic_switch.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/theme_controller.dart';
+import 'package:writer/theme/themes.dart';
+import 'package:writer/shared/widgets/neumorphic_dropdown.dart';
+import 'package:writer/shared/widgets/neumorphic_switch.dart';
 import 'theme_preview.dart';
 
 class PaletteSettingsSection extends ConsumerWidget {
@@ -14,7 +14,7 @@ class PaletteSettingsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final themeState = ref.watch(themeControllerProvider);
-    final themes = themeFactoryThemes;
+    const themes = themeFactoryThemes;
     final hasThemes = themes.isNotEmpty;
     final dropdownItems = themes
         .map((t) {

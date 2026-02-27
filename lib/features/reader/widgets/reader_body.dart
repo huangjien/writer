@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/material.dart';
-import '../../../theme/design_tokens.dart';
+import 'package:writer/theme/design_tokens.dart';
 import 'reader_paragraphs.dart';
 import 'autoplay_blocked_card.dart';
 

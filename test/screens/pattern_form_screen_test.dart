@@ -276,7 +276,7 @@ void main() {
   testWidgets('PatternFormScreen edit calls update', (tester) async {
     final svc = FakePatternsService();
     final prefs = await SharedPreferences.getInstance();
-    final initial = const Pattern(
+    const initial = Pattern(
       id: 'p1',
       title: 'Old',
       description: null,
@@ -286,7 +286,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: createCommonOverrides(prefs, svc),
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: PatternFormScreen(initial: initial),
@@ -314,7 +314,7 @@ void main() {
   ) async {
     final svc = FakePatternsService();
     final prefs = await SharedPreferences.getInstance();
-    final initial = const Pattern(
+    const initial = Pattern(
       id: 'p1',
       title: 'Old',
       content: 'A',
@@ -323,7 +323,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: createCommonOverrides(prefs, svc),
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: PatternFormScreen(initial: initial),
@@ -358,7 +358,7 @@ void main() {
   ) async {
     final svc = FakePatternsService();
     final prefs = await SharedPreferences.getInstance();
-    final initial = const Pattern(
+    const initial = Pattern(
       id: 'p1',
       title: 'Old',
       content: 'A',
@@ -367,7 +367,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: createCommonOverrides(prefs, svc),
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: PatternFormScreen(initial: initial),
@@ -404,11 +404,11 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     svc.pauseSave();
 
-    final initial = const Pattern(id: 'p1', title: 'Old', content: 'A');
+    const initial = Pattern(id: 'p1', title: 'Old', content: 'A');
     await tester.pumpWidget(
       ProviderScope(
         overrides: createCommonOverrides(prefs, svc),
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: PatternFormScreen(initial: initial),
@@ -504,7 +504,7 @@ void main() {
   ) async {
     final svc = FakePatternsService();
 
-    final initial = const Pattern(
+    const initial = Pattern(
       id: 'p1',
       title: 'Old',
       content: 'A',
@@ -520,8 +520,8 @@ void main() {
             return const BackendUser(id: 'u1');
           }),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: PatternFormScreen(initial: initial),
@@ -549,7 +549,7 @@ void main() {
   ) async {
     final svc = FakePatternsService();
 
-    final initial = const Pattern(
+    const initial = Pattern(
       id: 'p1',
       title: 'Old',
       content: 'A',
@@ -565,8 +565,8 @@ void main() {
             return const BackendUser(id: 'u1');
           }),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child: const MaterialApp(
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: PatternFormScreen(initial: initial),

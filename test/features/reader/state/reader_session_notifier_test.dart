@@ -130,21 +130,21 @@ void main() {
   });
 
   test('loadNextChapter updates state and prefetches', () async {
-    final c1 = const Chapter(
+    const c1 = Chapter(
       id: 'c1',
       novelId: 'n1',
       idx: 1,
       title: 'One',
       content: 'Content 1',
     );
-    final c2 = const Chapter(
+    const c2 = Chapter(
       id: 'c2',
       novelId: 'n1',
       idx: 2,
       title: 'Two',
       content: 'Content 2',
     );
-    final c3 = const Chapter(
+    const c3 = Chapter(
       id: 'c3',
       novelId: 'n1',
       idx: 3,
@@ -152,7 +152,7 @@ void main() {
       content: 'Content 3',
     );
 
-    final initialState = ReaderSessionState(
+    const initialState = ReaderSessionState(
       chapterId: 'c1',
       title: 'One',
       allChapters: [c1, c2, c3],
@@ -213,14 +213,14 @@ void main() {
   });
 
   test('loadPrevChapter updates state and stops playback', () async {
-    final c1 = const Chapter(
+    const c1 = Chapter(
       id: 'c1',
       novelId: 'n1',
       idx: 1,
       title: 'One',
       content: 'Content 1',
     );
-    final c2 = const Chapter(
+    const c2 = Chapter(
       id: 'c2',
       novelId: 'n1',
       idx: 2,
@@ -228,7 +228,7 @@ void main() {
       content: 'Content 2',
     );
 
-    final initialState = ReaderSessionState(
+    const initialState = ReaderSessionState(
       chapterId: 'c2',
       title: 'Two',
       allChapters: [c1, c2],
@@ -271,14 +271,14 @@ void main() {
   });
 
   test('playStop toggles playback', () async {
-    final c1 = const Chapter(
+    const c1 = Chapter(
       id: 'c1',
       novelId: 'n1',
       idx: 1,
       title: 'One',
       content: 'Content 1',
     );
-    final initialState = ReaderSessionState(
+    const initialState = ReaderSessionState(
       chapterId: 'c1',
       title: 'One',
       allChapters: [c1],
@@ -325,14 +325,14 @@ void main() {
   });
 
   test('toggle flags update state', () async {
-    final c1 = const Chapter(
+    const c1 = Chapter(
       id: 'c1',
       novelId: 'n1',
       idx: 1,
       title: 'One',
       content: 'Content 1',
     );
-    final initialState = ReaderSessionState(
+    const initialState = ReaderSessionState(
       chapterId: 'c1',
       title: 'One',
       allChapters: [c1],
@@ -378,21 +378,21 @@ void main() {
   test('configure TTS maps locale zh to zh-CN', () async {});
 
   test('prefetchNext respects settings', () async {
-    final c1 = const Chapter(
+    const c1 = Chapter(
       id: 'c1',
       novelId: 'n1',
       idx: 1,
       title: 'One',
       content: 'Content 1',
     );
-    final c2 = const Chapter(
+    const c2 = Chapter(
       id: 'c2',
       novelId: 'n1',
       idx: 2,
       title: 'Two',
       content: 'Content 2',
     );
-    final initialState = ReaderSessionState(
+    const initialState = ReaderSessionState(
       chapterId: 'c1',
       title: 'One',
       allChapters: [c1, c2],
@@ -426,14 +426,14 @@ void main() {
   });
 
   test('saveProgress calls repository', () async {
-    final c1 = const Chapter(
+    const c1 = Chapter(
       id: 'c1',
       novelId: 'n1',
       idx: 1,
       title: 'One',
       content: 'Content 1',
     );
-    final initialState = ReaderSessionState(
+    const initialState = ReaderSessionState(
       chapterId: 'c1',
       title: 'One',
       allChapters: [c1],
@@ -474,14 +474,14 @@ void main() {
 
   group('loadInitial', () {
     test('loads content successfully when content is empty', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -559,14 +559,14 @@ void main() {
     });
 
     test('does not load when content already exists', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Existing content',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -638,14 +638,14 @@ void main() {
     });
 
     test('handles repository errors gracefully', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: null,
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -724,7 +724,7 @@ void main() {
     });
 
     test('returns early when allChapters is empty', () async {
-      final initialState = const ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [], // Empty chapters
@@ -797,14 +797,14 @@ void main() {
 
   group('startTts', () {
     test('starts TTS with optimistic flag', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -851,14 +851,14 @@ void main() {
     });
 
     test('starts TTS without optimistic flag', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -906,14 +906,14 @@ void main() {
 
   group('stopTts', () {
     test('stops TTS and updates speaking state', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -966,14 +966,14 @@ void main() {
 
   group('tryAutoStartTts', () {
     test('attempts auto start without throwing errors', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1017,14 +1017,14 @@ void main() {
     });
 
     test('does not block when TTS starts successfully', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1081,14 +1081,14 @@ void main() {
 
   group('updateScrollProgress', () {
     test('updates scroll progress when difference is significant', () {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1130,14 +1130,14 @@ void main() {
     });
 
     test('does not update when difference is insignificant', () {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1181,21 +1181,21 @@ void main() {
 
   group('jumpToCreated', () {
     test('jumps to newly created chapter', () {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final c2 = const Chapter(
+      const c2 = Chapter(
         id: 'c2',
         novelId: 'n1',
         idx: 2,
         title: 'Two',
         content: 'Content 2',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1248,14 +1248,14 @@ void main() {
 
   group('TTS configuration', () {
     test('configures TTS with default locale', () {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1304,14 +1304,14 @@ void main() {
 
   group('Edge cases for chapter navigation', () {
     test('loadNextChapter returns false when at last chapter', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1352,14 +1352,14 @@ void main() {
     });
 
     test('loadPrevChapter returns false when at first chapter', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1400,21 +1400,21 @@ void main() {
     });
 
     test('handles repository errors in loadNextChapter gracefully', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final c2 = const Chapter(
+      const c2 = Chapter(
         id: 'c2',
         novelId: 'n1',
         idx: 2,
         title: 'Two',
         content: null, // Null content to trigger fetch
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1, c2],
@@ -1466,14 +1466,14 @@ void main() {
 
   group('TTS configuration edge cases', () {
     test('configures TTS with zh locale maps to zh-CN', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1527,14 +1527,14 @@ void main() {
     });
 
     test('configures TTS with unsupported locale defaults to en-US', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1627,14 +1627,14 @@ void main() {
 
   group('Error handling in TTS operations', () {
     test('handles startTts errors gracefully', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1690,14 +1690,14 @@ void main() {
     });
 
     test('handles stopTts errors gracefully', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1748,14 +1748,14 @@ void main() {
 
   group('Progress saving edge cases', () {
     test('saveProgress handles repository errors', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1803,14 +1803,14 @@ void main() {
     });
 
     test('saveProgress handles offline mode', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1855,14 +1855,14 @@ void main() {
 
   group('State consistency tests', () {
     test('maintains basic state consistency', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1924,14 +1924,14 @@ void main() {
     });
 
     test('handles rapid state changes without corruption', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -1992,14 +1992,14 @@ void main() {
 
   group('Dispose behavior', () {
     test('disposes resources correctly', () async {
-      final c1 = const Chapter(
+      const c1 = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
         title: 'One',
         content: 'Content 1',
       );
-      final initialState = ReaderSessionState(
+      const initialState = ReaderSessionState(
         chapterId: 'c1',
         title: 'One',
         allChapters: [c1],
@@ -2063,7 +2063,7 @@ void main() {
       container.read(notifierProvider.notifier);
 
       // Disposing should complete without errors
-      expect(() => container.dispose(), returnsNormally);
+      expect(container.dispose, returnsNormally);
     });
   });
 }

@@ -160,7 +160,7 @@ void main() {
           return http.Response('unauthorized', 401);
         }
         expect(request.headers.containsKey('X-Session-Id'), false);
-        return http.Response("{}", 200);
+        return http.Response('{}', 200);
       }),
     );
 
@@ -290,7 +290,7 @@ void main() {
         calls++;
         final keys = request.headers.keys.map((k) => k.toLowerCase()).toSet();
         expect(keys.contains('x-session-id'), false);
-        return http.Response("{}", 200);
+        return http.Response('{}', 200);
       }),
     );
 
@@ -338,7 +338,7 @@ void main() {
       client: MockClient((request) async {
         calls++;
         if (calls == 1) return http.Response('unauthorized', 401);
-        return http.Response("{}", 200);
+        return http.Response('{}', 200);
       }),
     );
 

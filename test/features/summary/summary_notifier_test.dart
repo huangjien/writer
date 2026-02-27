@@ -42,7 +42,7 @@ class MockNovelRepository implements NovelRepository {
 void main() {
   group('SummaryState', () {
     test('creates with default values', () {
-      final state = const SummaryState();
+      const state = SummaryState();
       expect(state.baseSummary, isNull);
       expect(state.saving, false);
       expect(state.error, isNull);
@@ -128,7 +128,7 @@ void main() {
     });
 
     test('copyWith updates specified fields', () {
-      final state = const SummaryState();
+      const state = SummaryState();
       final updated = state.copyWith(
         saving: true,
         error: 'New error',
@@ -141,17 +141,13 @@ void main() {
     });
 
     test('copyWith clearError clears error', () {
-      final state = const SummaryState(error: 'Test error');
+      const state = SummaryState(error: 'Test error');
       final updated = state.copyWith(clearError: true);
       expect(updated.error, isNull);
     });
 
     test('copyWith keeps original values when not specified', () {
-      final state = const SummaryState(
-        saving: true,
-        isDirty: true,
-        error: 'Error',
-      );
+      const state = SummaryState(saving: true, isDirty: true, error: 'Error');
       final updated = state.copyWith(saving: false);
       expect(updated.saving, false);
       expect(updated.isDirty, true);
@@ -306,7 +302,7 @@ void main() {
         expandedSummary: 'Original',
       );
 
-      final output = const SnowflakeRefinementOutput(
+      const output = SnowflakeRefinementOutput(
         novelId: 'novel-1',
         summaryContent: 'Summary',
         status: 'completed',
@@ -454,7 +450,7 @@ void main() {
     });
 
     test('setSentenceLastOutput sets output', () {
-      final output = const SnowflakeRefinementOutput(
+      const output = SnowflakeRefinementOutput(
         novelId: 'novel-1',
         summaryContent: 'Summary',
         status: 'completed',
@@ -466,7 +462,7 @@ void main() {
     });
 
     test('setParagraphLastOutput sets output', () {
-      final output = const SnowflakeRefinementOutput(
+      const output = SnowflakeRefinementOutput(
         novelId: 'novel-1',
         summaryContent: 'Summary',
         status: 'completed',
@@ -478,7 +474,7 @@ void main() {
     });
 
     test('setPageLastOutput sets output', () {
-      final output = const SnowflakeRefinementOutput(
+      const output = SnowflakeRefinementOutput(
         novelId: 'novel-1',
         summaryContent: 'Summary',
         status: 'completed',
@@ -490,7 +486,7 @@ void main() {
     });
 
     test('setExpandedLastOutput sets output', () {
-      final output = const SnowflakeRefinementOutput(
+      const output = SnowflakeRefinementOutput(
         novelId: 'novel-1',
         summaryContent: 'Summary',
         status: 'completed',

@@ -33,7 +33,7 @@ class _CharacterTemplatesListScreenState
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => _load());
+    Future.microtask(_load);
   }
 
   @override

@@ -7,8 +7,8 @@ import 'package:writer/models/token_usage.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/services/auth_redirect_service.dart';
-import '../shared/api_exception.dart';
-import '../shared/constants.dart';
+import 'package:writer/shared/api_exception.dart';
+import 'package:writer/shared/constants.dart';
 
 final httpClientProvider = Provider<http.Client>((ref) => http.Client());
 

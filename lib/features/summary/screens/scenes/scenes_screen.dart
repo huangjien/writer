@@ -14,7 +14,7 @@ import 'package:writer/shared/api_exception.dart';
 import 'widgets/scene_description_field.dart';
 import 'widgets/scene_template_picker.dart';
 import 'widgets/scenes_support_widgets.dart';
-import '../../state/scene_form_state.dart';
+import 'package:writer/features/summary/state/scene_form_state.dart';
 
 class ScenesScreen extends ConsumerWidget {
   const ScenesScreen({super.key, required this.novelId, this.idx});
@@ -360,7 +360,7 @@ class _ScenesContentState extends ConsumerState<_ScenesContent> {
                               .read(sceneFormProvider.notifier)
                               .setSelectedTemplate(tpl);
                         },
-                        onQueryChanged: (q) => _scheduleTemplateSearch(q),
+                        onQueryChanged: _scheduleTemplateSearch,
                         onTemplateControllerAvailable: (controller) {},
                         isConverting: formState.isConverting,
                         onConvertPressed: _convertScene,

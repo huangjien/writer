@@ -23,13 +23,13 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: TtsSettingsSection(
-              voiceItems: [],
-              uniqueVoices: {},
+              voiceItems: const [],
+              uniqueVoices: const {},
               voiceKey: (v) => '',
               loadingVoices: false,
               loadingLocales: false,
               effectiveSelectedKey: null,
-              filteredLocales: [],
+              filteredLocales: const [],
               effectiveSelectedLocale: null,
             ),
           ),

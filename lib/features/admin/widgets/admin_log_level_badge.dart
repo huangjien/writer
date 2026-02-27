@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../admin_logs_utils.dart';
+import 'package:writer/features/admin/admin_logs_utils.dart';
 
 class AdminLogLevelBadge extends StatelessWidget {
   const AdminLogLevelBadge({super.key, required this.level});

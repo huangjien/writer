@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../state/novel_providers.dart';
-import '../state/edit_permissions.dart';
-import '../features/reader/novel_metadata_editor.dart';
-import '../l10n/app_localizations.dart';
-import '../repositories/novel_repository.dart';
-import '../shared/widgets/app_buttons.dart';
-import '../shared/widgets/app_dialog.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/edit_permissions.dart';
+import 'package:writer/features/reader/novel_metadata_editor.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/repositories/novel_repository.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
 
 class SideBar extends ConsumerWidget {
   final String novelId;

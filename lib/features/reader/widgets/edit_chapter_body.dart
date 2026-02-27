@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../repositories/chapter_repository.dart';
-import '../../../models/chapter.dart';
-import '../../../state/chapter_edit_controller.dart';
-import '../../../theme/design_tokens.dart';
-import '../widgets/preview_panel.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/state/chapter_edit_controller.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/features/reader/widgets/preview_panel.dart';
 import 'contrast_monitor.dart';
 import 'contrast_alert_dialog.dart';
 
@@ -133,7 +133,7 @@ class EditChapterBody extends ConsumerWidget {
                                 maxIdx = editState.idx;
                               }
                               if (maxIdx < 1) maxIdx = 1;
-                              final minIdx = 1;
+                              const minIdx = 1;
                               final newIdx = mode == IndexRoundingMode.after
                                   ? v.ceil()
                                   : v.floor();

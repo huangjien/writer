@@ -41,7 +41,7 @@ void main() {
     );
 
     final repo = ChapterRepository(FailingRemoteRepository(), local);
-    final base = const Chapter(
+    const base = Chapter(
       id: 'c1',
       novelId: 'n1',
       idx: 1,

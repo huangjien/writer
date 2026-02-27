@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../theme/design_tokens.dart';
-import '../../../shared/widgets/neumorphic_button.dart';
-import '../../../shared/widgets/neumorphic_textfield.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
+import 'package:writer/shared/widgets/neumorphic_textfield.dart';
 
 /// Enhanced search bar with filter chips
 /// Features:

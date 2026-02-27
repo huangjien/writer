@@ -393,7 +393,7 @@ void main() {
 
   group('ActionSheetItem', () {
     test('creates item with required parameters', () {
-      final item = const ActionSheetItem(label: 'Test Item', value: 'test');
+      const item = ActionSheetItem(label: 'Test Item', value: 'test');
 
       expect(item.label, 'Test Item');
       expect(item.value, 'test');
@@ -425,7 +425,7 @@ void main() {
 
   group('SheetOption', () {
     test('creates option with required parameters', () {
-      final option = const SheetOption(label: 'Test Option', value: 'test');
+      const option = SheetOption(label: 'Test Option', value: 'test');
 
       expect(option.label, 'Test Option');
       expect(option.value, 'test');

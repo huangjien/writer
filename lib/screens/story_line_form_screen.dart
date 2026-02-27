@@ -2,16 +2,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../theme/design_tokens.dart';
-import '../shared/widgets/neumorphic_checkbox.dart';
-import '../shared/widgets/app_buttons.dart';
-import '../shared/widgets/app_dialog.dart';
-import '../shared/widgets/responsive_button_row.dart';
-import '../models/story_line.dart';
-import '../shared/api_exception.dart';
-import '../state/story_line_providers.dart';
-import '../state/providers.dart';
-import '../l10n/app_localizations.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/shared/widgets/neumorphic_checkbox.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
+import 'package:writer/shared/widgets/responsive_button_row.dart';
+import 'package:writer/models/story_line.dart';
+import 'package:writer/shared/api_exception.dart';
+import 'package:writer/state/story_line_providers.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class StoryLineFormScreen extends ConsumerStatefulWidget {
   final StoryLine? initial;

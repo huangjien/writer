@@ -43,10 +43,7 @@ void main() {
       ];
     });
 
-    setUpAll(() {
-      // Set mobile screen size to ensure MobileNovelCard is used
-      TestWidgetsFlutterBinding.ensureInitialized();
-    });
+    setUpAll(TestWidgetsFlutterBinding.ensureInitialized);
 
     Widget createTestWidget({required List<Novel> novels}) {
       return ProviderScope(

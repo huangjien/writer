@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../theme/design_tokens.dart';
+import 'package:writer/theme/design_tokens.dart';
 import 'app_buttons.dart';
 
 /// Empty state component for displaying when no content is available

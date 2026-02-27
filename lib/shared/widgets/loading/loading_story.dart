@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../../theme/design_tokens.dart';
+import 'package:writer/theme/design_tokens.dart';
 
 class LoadingStory extends StatefulWidget {
   const LoadingStory({

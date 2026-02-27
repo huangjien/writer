@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../shared/strings.dart';
+import 'package:writer/shared/strings.dart';
 
 /// Optional font packs for reader UI.
 enum ReaderFontPack { system, inter, merriweather }

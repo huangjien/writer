@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/repositories/remote_repository.dart';
-import '../models/character_template_row.dart';
-import '../models/scene_template_row.dart';
+import 'package:writer/models/character_template_row.dart';
+import 'package:writer/models/scene_template_row.dart';
 
 final templateRepositoryProvider = Provider<TemplateRepository>((ref) {
   final remote = ref.watch(remoteRepositoryProvider);

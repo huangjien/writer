@@ -60,7 +60,7 @@ List<LineDiff> pairLines(String orig, String draft) {
 }
 
 List<String> splitWords(String s) {
-  final parts = s.split(RegExp(r"(\s+)"));
+  final parts = s.split(RegExp(r'(\s+)'));
   return parts.where((e) => e.isNotEmpty).toList();
 }
 

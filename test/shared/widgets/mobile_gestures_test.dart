@@ -15,11 +15,11 @@ void main() {
 
     test('has static methods for different haptic impacts', () {
       // Test that methods exist and can be called
-      expect(() => MobileGestures.lightImpact(), returnsNormally);
-      expect(() => MobileGestures.mediumImpact(), returnsNormally);
-      expect(() => MobileGestures.heavyImpact(), returnsNormally);
-      expect(() => MobileGestures.selectionClick(), returnsNormally);
-      expect(() => MobileGestures.toggleImpact(), returnsNormally);
+      expect(MobileGestures.lightImpact, returnsNormally);
+      expect(MobileGestures.mediumImpact, returnsNormally);
+      expect(MobileGestures.heavyImpact, returnsNormally);
+      expect(MobileGestures.selectionClick, returnsNormally);
+      expect(MobileGestures.toggleImpact, returnsNormally);
     });
   });
 
@@ -277,7 +277,7 @@ void main() {
 
   group('SwipeDirection', () {
     test('has two enum values', () {
-      final values = SwipeDirection.values;
+      const values = SwipeDirection.values;
       expect(values.length, 2);
       expect(values, contains(SwipeDirection.endToStart));
       expect(values, contains(SwipeDirection.startToEnd));
@@ -291,7 +291,7 @@ void main() {
 
   group('HapticImpact', () {
     test('has three enum values', () {
-      final values = HapticImpact.values;
+      const values = HapticImpact.values;
       expect(values.length, 3);
       expect(values, contains(HapticImpact.light));
       expect(values, contains(HapticImpact.medium));

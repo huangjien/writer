@@ -109,7 +109,7 @@ void main() {
 
   test('character form save/get and note payload save/get', () async {
     final repo = LocalStorageRepository(MockStorageService());
-    final ch = const Character(
+    const ch = Character(
       novelId: 'n1',
       name: 'Alice',
       role: 'hero',
@@ -136,7 +136,7 @@ void main() {
 
   test('scene form save/get and listSceneNotes offline fallback', () async {
     final repo = LocalStorageRepository(MockStorageService());
-    final scene = const Scene(
+    const scene = Scene(
       novelId: 'n1',
       title: 'S1',
       location: 'L',
@@ -153,7 +153,7 @@ void main() {
 
   test('template save/get and summary text save/get', () async {
     final repo = LocalStorageRepository(MockStorageService());
-    final itemC = const TemplateItem(
+    const itemC = TemplateItem(
       novelId: 'n1',
       name: 'Char',
       description: 'Desc',
@@ -163,7 +163,7 @@ void main() {
     expect(gotC?.name, 'Char');
     expect(gotC?.description, 'Desc');
 
-    final itemS = const TemplateItem(
+    const itemS = TemplateItem(
       novelId: 'n1',
       name: 'Scene',
       description: 'Desc2',

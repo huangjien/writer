@@ -382,7 +382,8 @@ void main() {
         return http.Response(jsonEncode({'result': 'patched'}), 200);
       });
       final repo = RemoteRepository('http://example.com/', client: client);
-      final result = await repo.patch('test', {'data': 'patched'});
+      final result =
+          await repo.patch('test', {'data': 'patched'}) as Map<String, dynamic>;
       expect(result['result'], 'patched');
     });
 
@@ -436,7 +437,7 @@ void main() {
         },
       );
 
-      final result = await repo.get('test');
+      final result = await repo.get('test') as Map<String, dynamic>;
       expect(onUnauthorizedCalled, isTrue);
       expect(result['result'], 'retry-success');
     });
@@ -483,9 +484,9 @@ void main() {
         onUnauthorized: () async {},
       );
 
-      final result = await repo.post('test', {
-        'data': 'value',
-      }, retryUnauthorized: true);
+      final result =
+          await repo.post('test', {'data': 'value'}, retryUnauthorized: true)
+              as Map<String, dynamic>;
       expect(result['result'], 'retry-success');
     });
 
@@ -511,9 +512,9 @@ void main() {
         },
       );
 
-      final result = await repo.patch('test', {
-        'data': 'value',
-      }, retryUnauthorized: true);
+      final result =
+          await repo.patch('test', {'data': 'value'}, retryUnauthorized: true)
+              as Map<String, dynamic>;
       expect(result['result'], 'patched');
       expect(callCount, 2);
       expect(unauthorizedCalled, 1);
@@ -620,7 +621,7 @@ void main() {
     test('getCurrentMonthUsage throws ApiException on failure', () async {
       final client = MockClient((request) async => http.Response('Error', 500));
       final repo = RemoteRepository('http://example.com/', client: client);
-      expect(() => repo.getCurrentMonthUsage(), throwsA(isA<ApiException>()));
+      expect(repo.getCurrentMonthUsage, throwsA(isA<ApiException>()));
     });
 
     test('getUsageHistory with date parameters', () async {
@@ -674,7 +675,7 @@ void main() {
     test('getAdminLogs throws ApiException on failure', () async {
       final client = MockClient((request) async => http.Response('Error', 500));
       final repo = RemoteRepository('http://example.com/', client: client);
-      expect(() => repo.getAdminLogs(), throwsA(isA<ApiException>()));
+      expect(repo.getAdminLogs, throwsA(isA<ApiException>()));
     });
 
     test('getUsageHistory returns null on empty response', () async {

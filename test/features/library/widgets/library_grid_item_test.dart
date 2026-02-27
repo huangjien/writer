@@ -11,7 +11,7 @@ import 'package:writer/models/novel.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final novel = const Novel(
+  const novel = Novel(
     id: '123',
     title: 'Test Novel',
     languageCode: 'en',
@@ -22,7 +22,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      ProviderScope(
+      const ProviderScope(
         child: MaterialApp(
           home: Scaffold(
             body: LibraryGridItem(
@@ -46,7 +46,7 @@ void main() {
   testWidgets('LibraryGridItem renders image when coverUrl is present', (
     tester,
   ) async {
-    final novelWithCover = const Novel(
+    const novelWithCover = Novel(
       id: '124',
       title: 'Cover Novel',
       coverUrl: 'https://example.com/cover.jpg',
@@ -56,7 +56,7 @@ void main() {
 
     await HttpOverrides.runZoned(() async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
             home: Scaffold(
               body: LibraryGridItem(
@@ -82,7 +82,7 @@ void main() {
       routes: [
         GoRoute(
           path: '/',
-          builder: (context, state) => Scaffold(
+          builder: (context, state) => const Scaffold(
             body: LibraryGridItem(
               novel: novel,
               isSignedIn: true,

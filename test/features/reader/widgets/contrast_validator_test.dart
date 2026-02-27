@@ -40,7 +40,7 @@ void main() {
     });
 
     test('validates text style with explicit color', () {
-      final style = const TextStyle(color: Colors.black);
+      const style = TextStyle(color: Colors.black);
       final result = ContrastValidator.validateTextStyle(style, Colors.white);
 
       expect(result.foreground, Colors.black);
@@ -48,7 +48,7 @@ void main() {
     });
 
     test('validates text style without color defaults to black', () {
-      final style = const TextStyle();
+      const style = TextStyle();
       final result = ContrastValidator.validateTextStyle(style, Colors.white);
 
       expect(result.foreground, Colors.black);
@@ -134,7 +134,7 @@ void main() {
 
   group('ContrastReport', () {
     test('calculates pass percentage correctly', () {
-      final report = const ContrastReport(
+      const report = ContrastReport(
         totalChecks: 10,
         passed: 8,
         failed: 2,
@@ -146,7 +146,7 @@ void main() {
     });
 
     test('handles zero total checks', () {
-      final report = const ContrastReport(
+      const report = ContrastReport(
         totalChecks: 0,
         passed: 0,
         failed: 0,
@@ -158,7 +158,7 @@ void main() {
     });
 
     test('generates success summary', () {
-      final report = const ContrastReport(
+      const report = ContrastReport(
         totalChecks: 5,
         passed: 5,
         failed: 0,
@@ -170,7 +170,7 @@ void main() {
     });
 
     test('generates failure summary', () {
-      final report = const ContrastReport(
+      const report = ContrastReport(
         totalChecks: 10,
         passed: 7,
         failed: 3,
@@ -272,7 +272,7 @@ void main() {
     });
 
     test('validates all reader colors with high contrast', () {
-      final readerColors = const ReaderColors(
+      const readerColors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Color(0xFF424242),
@@ -287,7 +287,7 @@ void main() {
     });
 
     test('validates all reader colors with mixed contrast', () {
-      final readerColors = const ReaderColors(
+      const readerColors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Color(0xFFCCCCCC),
@@ -302,7 +302,7 @@ void main() {
     });
 
     test('generates report for all valid colors', () {
-      final readerColors = const ReaderColors(
+      const readerColors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Color(0xFF424242),
@@ -318,7 +318,7 @@ void main() {
     });
 
     test('generates report with failed colors', () {
-      final readerColors = const ReaderColors(
+      const readerColors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Color(0xFFCCCCCC),
@@ -417,7 +417,7 @@ void main() {
             home: Builder(
               builder: (context) {
                 notifier = ReaderColorsNotifier(context);
-                final preset = const PresetColorScheme(
+                const preset = PresetColorScheme(
                   name: 'Test',
                   background: Colors.white,
                   text: Colors.black,
@@ -446,7 +446,7 @@ void main() {
             home: Builder(
               builder: (context) {
                 notifier = ReaderColorsNotifier(context);
-                final preset = const PresetColorScheme(
+                const preset = PresetColorScheme(
                   name: 'Dark',
                   background: Color(0xFF121212),
                   text: Color(0xFFE0E0E0),
@@ -545,7 +545,7 @@ void main() {
     });
 
     test('handles text style with inherited color', () {
-      final style = const TextStyle(inherit: true);
+      const style = TextStyle(inherit: true);
       final result = ContrastValidator.validateTextStyle(style, Colors.white);
 
       expect(result.foreground, Colors.black);

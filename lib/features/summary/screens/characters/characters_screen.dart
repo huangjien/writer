@@ -12,7 +12,7 @@ import 'package:writer/shared/api_exception.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/shared/widgets/neumorphic_dropdown.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
-import '../../state/character_form_state.dart';
+import 'package:writer/features/summary/state/character_form_state.dart';
 
 class CharactersScreen extends ConsumerWidget {
   const CharactersScreen({super.key, required this.novelId, this.idx});

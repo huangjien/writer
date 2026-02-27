@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../state/novel_providers_v2.dart';
-import '../../../shared/widgets/app_buttons.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/novel_providers_v2.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
 
 class LibraryErrorSection extends ConsumerWidget {
   const LibraryErrorSection({

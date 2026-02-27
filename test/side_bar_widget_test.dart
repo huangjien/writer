@@ -14,7 +14,7 @@ import 'package:mocktail/mocktail.dart';
 class MockNovelRepository extends Mock implements NovelRepository {}
 
 void main() {
-  final sampleNovel = const Novel(
+  const sampleNovel = Novel(
     id: 'novel-1',
     title: 'Sample Novel',
     author: 'Author',

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../l10n/app_localizations.dart';
-import '../../../theme/design_tokens.dart';
-import '../../../shared/widgets/app_buttons.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
 
 class ReaderBottomBar extends StatelessWidget {
   const ReaderBottomBar({

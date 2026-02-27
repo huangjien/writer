@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../theme/design_tokens.dart';
-import '../../../shared/widgets/theme_aware_card.dart';
-import '../../../shared/widgets/neumorphic_switch.dart';
-import '../../../shared/widgets/neumorphic_dropdown.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/shared/widgets/theme_aware_card.dart';
+import 'package:writer/shared/widgets/neumorphic_switch.dart';
+import 'package:writer/shared/widgets/neumorphic_dropdown.dart';
 
 /// Enhanced settings section component
 /// Features:
@@ -131,7 +131,7 @@ class SettingsToggle extends StatelessWidget {
           : null,
       trailing: NeumorphicSwitch(
         value: value,
-        onChanged: enabled ? (v) => onChanged(v) : null,
+        onChanged: enabled ? onChanged : null,
         isEnabled: enabled,
       ),
     );

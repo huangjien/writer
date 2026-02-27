@@ -50,7 +50,7 @@ class CapturingChapterPort implements ChapterPort {
 void main() {
   testWidgets('Discard dialog returns decisions and can save', (tester) async {
     final port = CapturingChapterPort();
-    final chapter = const Chapter(
+    const chapter = Chapter(
       id: 'c1',
       novelId: 'n1',
       idx: 1,

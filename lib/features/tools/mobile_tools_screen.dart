@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../theme/design_tokens.dart';
-import '../../shared/widgets/app_buttons.dart';
-import '../../shared/widgets/mobile_bottom_nav_bar.dart';
-import '../../l10n/app_localizations.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/mobile_bottom_nav_bar.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 /// Mobile-optimized tools screen
 /// Features:
@@ -125,8 +125,8 @@ class _MobileToolsScreenState extends State<MobileToolsScreen> {
           decoration: BoxDecoration(
             color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(Radii.l),
-            boxShadow: [
-              const BoxShadow(
+            boxShadow: const [
+              BoxShadow(
                 color: AppColors.shadowColor,
                 blurRadius: 4,
                 offset: Offset(0, 2),

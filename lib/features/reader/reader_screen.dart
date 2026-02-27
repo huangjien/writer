@@ -1,22 +1,22 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../theme/design_tokens.dart';
-import '../../widgets/side_bar.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/widgets/side_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../state/novel_providers.dart';
-import '../../state/novel_providers_v2.dart';
-import '../../state/edit_permissions.dart';
-import '../../l10n/app_localizations.dart';
-import '../../l10n/app_localizations_en.dart';
-import '../../models/chapter.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/state/novel_providers_v2.dart';
+import 'package:writer/state/edit_permissions.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations_en.dart';
+import 'package:writer/models/chapter.dart';
 import 'chapter_reader_screen.dart' as cr;
-import '../../repositories/chapter_repository.dart';
-import '../../shared/api_exception.dart';
-import '../../shared/widgets/app_buttons.dart';
-import '../../state/providers.dart';
-import '../../shared/widgets/empty_states/chapter_empty_state.dart';
-import '../../shared/widgets/loading_state.dart';
+import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/shared/api_exception.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/shared/widgets/empty_states/chapter_empty_state.dart';
+import 'package:writer/shared/widgets/loading_state.dart';
 
 class ReaderScreen extends ConsumerStatefulWidget {
   const ReaderScreen({super.key, required this.novelId, this.chapterId});

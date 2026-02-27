@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../../theme/design_tokens.dart';
-import '../theme_aware_card.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/shared/widgets/theme_aware_card.dart';
 import 'success_animation.dart';
 
 enum EnhancedToastTone { info, success, warning, error }

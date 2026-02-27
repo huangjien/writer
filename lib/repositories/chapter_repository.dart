@@ -1,21 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/repositories/remote_repository.dart';
 
-import '../models/chapter.dart';
-import '../models/chapter_cache.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/models/chapter_cache.dart';
 import 'chapter_port.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import '../repositories/local_storage_repository.dart';
+import 'package:writer/repositories/local_storage_repository.dart';
 
-import '../services/offline_queue_service.dart';
-import '../services/network_monitor.dart';
-import '../models/offline_operation.dart';
-import '../common/errors/offline_exception.dart';
-import '../state/network_monitor_provider.dart';
-import '../state/providers.dart';
-import '../services/connectivity_checker.dart';
-import '../shared/api_exception.dart';
+import 'package:writer/services/offline_queue_service.dart';
+import 'package:writer/services/network_monitor.dart';
+import 'package:writer/models/offline_operation.dart';
+import 'package:writer/common/errors/offline_exception.dart';
+import 'package:writer/state/network_monitor_provider.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/services/connectivity_checker.dart';
+import 'package:writer/shared/api_exception.dart';
 
 final chapterRepositoryProvider = Provider<ChapterPort>((ref) {
   final remote = ref.watch(remoteRepositoryProvider);

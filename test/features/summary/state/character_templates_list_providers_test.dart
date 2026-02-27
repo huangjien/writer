@@ -214,8 +214,8 @@ void main() {
     test('creates state with all required fields', () {
       final searchCtrl = TextEditingController();
       final state = CharacterTemplatesListState(
-        items: [],
-        displayItems: [],
+        items: const [],
+        displayItems: const [],
         searchCtrl: searchCtrl,
       );
 
@@ -233,8 +233,8 @@ void main() {
     test('copyWith creates new state with updated fields', () {
       final searchCtrl = TextEditingController();
       final state = CharacterTemplatesListState(
-        items: [],
-        displayItems: [],
+        items: const [],
+        displayItems: const [],
         searchCtrl: searchCtrl,
       );
 

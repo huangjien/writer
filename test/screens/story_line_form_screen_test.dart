@@ -318,7 +318,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService();
-    final initial = const StoryLine(
+    const initial = StoryLine(
       id: 's1',
       title: 'Old',
       description: null,
@@ -333,7 +333,7 @@ void main() {
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: StoryLineFormScreen(initial: initial),
@@ -359,7 +359,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService();
-    final initial = const StoryLine(
+    const initial = StoryLine(
       id: 's1',
       title: 'Old',
       content: 'A',
@@ -372,7 +372,7 @@ void main() {
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: StoryLineFormScreen(initial: initial),
@@ -397,7 +397,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService();
-    final initial = const StoryLine(
+    const initial = StoryLine(
       id: 's1',
       title: 'Old',
       content: 'A',
@@ -410,7 +410,7 @@ void main() {
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: StoryLineFormScreen(initial: initial),
@@ -506,7 +506,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService();
-    final initial = const StoryLine(
+    const initial = StoryLine(
       id: 's1',
       title: 'Old',
       content: 'A',
@@ -520,7 +520,7 @@ void main() {
           storyLinesServiceRefProvider.overrideWith((_) => svc),
           isAdminProvider.overrideWithValue(false),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: StoryLineFormScreen(initial: initial),
@@ -612,7 +612,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final svc = FakeStoryLinesService()..pauseSave();
-    final initial = const StoryLine(id: 's1', title: 'Old', content: 'A');
+    const initial = StoryLine(id: 's1', title: 'Old', content: 'A');
     final appSettings = AppSettingsNotifier(prefs);
     final ttsSettings = TtsSettingsNotifier(prefs);
     final motion = MotionSettingsNotifier(prefs);
@@ -637,7 +637,7 @@ void main() {
             (ref) => AiChatService(RemoteRepository('http://localhost:5600/')),
           ),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: StoryLineFormScreen(initial: initial),
@@ -658,7 +658,7 @@ void main() {
   });
 
   testWidgets('Delete dialog opens when canDelete is true', (tester) async {
-    final initial = const StoryLine(
+    const initial = StoryLine(
       id: 's1',
       title: 'Old',
       content: 'A',
@@ -670,7 +670,7 @@ void main() {
           isAdminProvider.overrideWith((_) => true),
           isSignedInProvider.overrideWithValue(true),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: StoryLineFormScreen(initial: initial),

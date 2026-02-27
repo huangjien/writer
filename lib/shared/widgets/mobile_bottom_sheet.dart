@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../theme/design_tokens.dart';
+import 'package:writer/theme/design_tokens.dart';
 import 'theme_aware_card.dart';
 import 'focus_wrapper.dart';
 

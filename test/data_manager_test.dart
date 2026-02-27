@@ -162,7 +162,7 @@ void main() {
       dataManager.dispose();
     });
 
-    final testNovel = const Novel(
+    const testNovel = Novel(
       id: 'n-1',
       title: 'Test Novel',
       author: 'Author',
@@ -172,7 +172,7 @@ void main() {
       isPublic: true,
     );
 
-    final testChapter = const Chapter(
+    const testChapter = Chapter(
       id: 'c-1',
       novelId: 'n-1',
       idx: 1,

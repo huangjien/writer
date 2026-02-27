@@ -25,7 +25,7 @@ void main() {
     testWidgets('EditChapterBody shows fields when not in preview mode', (
       tester,
     ) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -43,10 +43,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -73,7 +73,7 @@ void main() {
     testWidgets('EditChapterBody shows PreviewPanel when in preview mode', (
       tester,
     ) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -91,10 +91,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -115,7 +115,7 @@ void main() {
     testWidgets('renders without errors with null title and content', (
       tester,
     ) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -133,10 +133,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -153,7 +153,7 @@ void main() {
     });
 
     testWidgets('renders without errors with empty strings', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -171,10 +171,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -193,7 +193,7 @@ void main() {
 
   group('Field interactions', () {
     testWidgets('EditChapterBody updates title and content', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -211,10 +211,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -244,7 +244,7 @@ void main() {
     });
 
     testWidgets('title field has correct text input action', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -262,10 +262,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -291,7 +291,7 @@ void main() {
     });
 
     testWidgets('content field has correct text input action', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -309,10 +309,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -340,7 +340,7 @@ void main() {
     testWidgets('content field expands to fill available space', (
       tester,
     ) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -358,10 +358,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -388,7 +388,7 @@ void main() {
     });
 
     testWidgets('index field has decimal keyboard type', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -406,10 +406,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -440,7 +440,7 @@ void main() {
 
   group('Focus management', () {
     testWidgets('title field focus moves to content on submit', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -458,10 +458,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -496,7 +496,7 @@ void main() {
 
   group('Index change handling', () {
     testWidgets('EditChapterBody index change submits', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -520,10 +520,10 @@ void main() {
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
             chapterRepositoryProvider.overrideWithValue(mockRepo),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -556,7 +556,7 @@ void main() {
     });
 
     testWidgets('index change shows snackbar when unchanged', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -576,10 +576,10 @@ void main() {
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
             chapterRepositoryProvider.overrideWithValue(mockRepo),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -607,7 +607,7 @@ void main() {
     testWidgets('index change shows snackbar when out of range', (
       tester,
     ) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -627,10 +627,10 @@ void main() {
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
             chapterRepositoryProvider.overrideWithValue(mockRepo),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -656,7 +656,7 @@ void main() {
     });
 
     testWidgets('index change ignores invalid input', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -675,10 +675,10 @@ void main() {
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
             chapterRepositoryProvider.overrideWithValue(mockRepo),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -705,7 +705,7 @@ void main() {
     });
 
     testWidgets('index change handles repository error', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -725,10 +725,10 @@ void main() {
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
             chapterRepositoryProvider.overrideWithValue(mockRepo),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -756,7 +756,7 @@ void main() {
 
   group('Saving indicator', () {
     testWidgets('shows saving indicator when isSaving is true', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -778,10 +778,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -805,7 +805,7 @@ void main() {
     testWidgets('hides saving indicator when isSaving is false', (
       tester,
     ) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -827,10 +827,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -852,7 +852,7 @@ void main() {
 
   group('Error messages', () {
     testWidgets('shows error message when present', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -875,10 +875,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -897,7 +897,7 @@ void main() {
     });
 
     testWidgets('hides error message when null', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -918,10 +918,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -944,7 +944,7 @@ void main() {
 
   group('Theme handling', () {
     testWidgets('renders correctly in light mode', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -967,7 +967,7 @@ void main() {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             locale: const Locale('en'),
-            home: Scaffold(
+            home: const Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
                 current: chapter,
@@ -983,7 +983,7 @@ void main() {
     });
 
     testWidgets('renders correctly in dark mode', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -1006,7 +1006,7 @@ void main() {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             locale: const Locale('en'),
-            home: Scaffold(
+            home: const Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
                 current: chapter,
@@ -1026,7 +1026,7 @@ void main() {
     testWidgets('PreviewPanel receives correct props in preview mode', (
       tester,
     ) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -1044,10 +1044,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -1074,7 +1074,7 @@ void main() {
     testWidgets(
       'PreviewPanel receives null original values when chapter has null',
       (tester) async {
-        final chapter = const Chapter(
+        const chapter = Chapter(
           id: 'c1',
           novelId: 'n1',
           idx: 1,
@@ -1092,10 +1092,10 @@ void main() {
                 'n1',
               ).overrideWith((ref) => Future.value(EditRole.contributor)),
             ],
-            child: MaterialApp(
+            child: const MaterialApp(
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
-              locale: const Locale('en'),
+              locale: Locale('en'),
               home: Scaffold(
                 body: EditChapterBody(
                   novelId: 'n1',
@@ -1123,7 +1123,7 @@ void main() {
 
   group('Layout and structure', () {
     testWidgets('has proper padding around content', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -1141,10 +1141,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -1171,7 +1171,7 @@ void main() {
     });
 
     testWidgets('content area is expanded', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -1189,10 +1189,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -1260,8 +1260,8 @@ void main() {
     });
 
     testWidgets('handles special characters in content', (tester) async {
-      final specialContent = 'Special: @#\$%^&*()_+-=[]{}|;:,.<>?';
-      final chapter = Chapter(
+      const specialContent = 'Special: @#\$%^&*()_+-=[]{}|;:,.<>?';
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -1279,10 +1279,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -1299,8 +1299,8 @@ void main() {
     });
 
     testWidgets('handles unicode characters', (tester) async {
-      final unicodeContent = 'Unicode: 你好世界 🌍 Ñoño';
-      final chapter = Chapter(
+      const unicodeContent = 'Unicode: 你好世界 🌍 Ñoño';
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 1,
@@ -1318,10 +1318,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',
@@ -1338,7 +1338,7 @@ void main() {
     });
 
     testWidgets('handles very large chapter index', (tester) async {
-      final chapter = const Chapter(
+      const chapter = Chapter(
         id: 'c1',
         novelId: 'n1',
         idx: 999999,
@@ -1356,10 +1356,10 @@ void main() {
               'n1',
             ).overrideWith((ref) => Future.value(EditRole.contributor)),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: Locale('en'),
             home: Scaffold(
               body: EditChapterBody(
                 novelId: 'n1',

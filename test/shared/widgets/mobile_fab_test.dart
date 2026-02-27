@@ -454,7 +454,7 @@ void main() {
 
   group('MobileFabType', () {
     test('has three enum values', () {
-      final values = MobileFabType.values;
+      const values = MobileFabType.values;
       expect(values.length, 3);
       expect(values, contains(MobileFabType.primary));
       expect(values, contains(MobileFabType.secondary));

@@ -11,7 +11,7 @@ import 'helpers/fake_chapter_port.dart';
 
 void main() {
   testWidgets('EditChapterBody shows form and owner metadata', (tester) async {
-    final chapter = const Chapter(
+    const chapter = Chapter(
       id: 'c1',
       novelId: 'n1',
       idx: 1,
@@ -23,7 +23,7 @@ void main() {
         editRoleProvider.overrideWith((ref, novelId) async => EditRole.owner),
         chapterRepositoryProvider.overrideWithValue(FakeChapterPort()),
       ],
-      child: MaterialApp(
+      child: const MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
@@ -48,7 +48,7 @@ void main() {
   testWidgets('EditChapterBody shows PreviewPanel when previewMode true', (
     tester,
   ) async {
-    final chapter = const Chapter(
+    const chapter = Chapter(
       id: 'c1',
       novelId: 'n1',
       idx: 1,
@@ -59,7 +59,7 @@ void main() {
       overrides: [
         chapterRepositoryProvider.overrideWithValue(FakeChapterPort()),
       ],
-      child: MaterialApp(
+      child: const MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(

@@ -10,9 +10,7 @@ void main() {
   ) async {
     final errors = <FlutterErrorDetails>[];
     final oldOnError = FlutterError.onError;
-    FlutterError.onError = (details) {
-      errors.add(details);
-    };
+    FlutterError.onError = errors.add;
     addTearDown(() => FlutterError.onError = oldOnError);
 
     await tester.pumpWidget(
@@ -48,9 +46,7 @@ void main() {
   ) async {
     final errors = <FlutterErrorDetails>[];
     final oldOnError = FlutterError.onError;
-    FlutterError.onError = (details) {
-      errors.add(details);
-    };
+    FlutterError.onError = errors.add;
     addTearDown(() => FlutterError.onError = oldOnError);
 
     await tester.pumpWidget(

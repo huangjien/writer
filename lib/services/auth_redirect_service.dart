@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../state/navigator_key_provider.dart';
-import '../state/redirect_provider.dart';
+import 'package:writer/state/navigator_key_provider.dart';
+import 'package:writer/state/redirect_provider.dart';
 
 /// Service for handling authentication redirects
 ///

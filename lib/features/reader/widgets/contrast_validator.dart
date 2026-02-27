@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import '../../../theme/accessibility/contrast_checker.dart';
+import 'package:writer/theme/accessibility/contrast_checker.dart';
 
 class ContrastValidationResult {
   final Color foreground;

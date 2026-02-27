@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import '../models/user_progress.dart';
-import '../repositories/progress_port.dart';
+import 'package:writer/models/user_progress.dart';
+import 'package:writer/repositories/progress_port.dart';
 import 'progress_providers.dart';
 export 'progress_providers.dart' show progressRepositoryProvider;
 

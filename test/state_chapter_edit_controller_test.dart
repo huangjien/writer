@@ -91,7 +91,7 @@ class FakeChapterRepo implements ChapterPort {
 }
 
 void main() {
-  final initial = const Chapter(
+  const initial = Chapter(
     id: 'c1',
     novelId: 'n1',
     idx: 1,
@@ -175,7 +175,7 @@ void main() {
     'changeIndexFromFloat reorders by rounding and shifting up range',
     () async {
       final repo = FakeChapterRepo();
-      final initialHigh = const Chapter(
+      const initialHigh = Chapter(
         id: 'c118',
         novelId: 'n1',
         idx: 118,
@@ -262,7 +262,7 @@ void main() {
     'deleteCurrentChapter normalizes indices to contiguous sequence',
     () async {
       final repo = FakeChapterRepo();
-      final toDelete = const Chapter(
+      const toDelete = Chapter(
         id: 'c121',
         novelId: 'n1',
         idx: 121,

@@ -72,7 +72,7 @@ void main() {
   });
 
   test('ContextUtils estimates tokens correctly', () {
-    final shortText = 'Hello world';
+    const shortText = 'Hello world';
     final longText = 'a' * 16000; // ~4000 tokens
 
     expect(ContextUtils.estimateTokens(shortText), lessThan(10));
@@ -80,7 +80,7 @@ void main() {
   });
 
   test('ContextUtils detects when context is too long', () {
-    final shortText = 'Short context';
+    const shortText = 'Short context';
     final longText = 'a' * 20000; // ~5000 tokens
 
     expect(ContextUtils.isContextTooLong(shortText), false);
@@ -141,7 +141,7 @@ void main() {
     final chatNotifier = container.read(aiChatProvider.notifier);
 
     // Set up a short context (< 4000 tokens)
-    final shortContext = 'Short context content';
+    const shortContext = 'Short context content';
     contextNotifier.setContextDelegate(
       type: 'test',
       loader: () async => shortContext,

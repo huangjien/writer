@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../state/sync_service_provider.dart';
-import '../models/sync_state.dart';
+import 'package:writer/state/sync_service_provider.dart';
+import 'package:writer/models/sync_state.dart';
 
 /// Visual indicator showing the current sync state
 /// Displays in the app bar or as a standalone widget

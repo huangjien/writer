@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/l10n/app_localizations.dart';
-import '../state/ai_chat_providers.dart';
-import '../utils/context_utils.dart';
+import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
+import 'package:writer/features/ai_chat/utils/context_utils.dart';
 
 class AiContextToggle extends ConsumerWidget {
   const AiContextToggle({super.key});
@@ -44,7 +44,7 @@ class AiContextToggle extends ConsumerWidget {
             height: 24,
             child: Switch(
               value: state.isEnabled,
-              onChanged: (v) => notifier.toggle(v),
+              onChanged: notifier.toggle,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
           ),

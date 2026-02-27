@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/pattern.dart';
-import '../../shared/constants.dart';
-import '../../state/providers.dart';
-import '../../state/pattern_providers.dart';
+import 'package:writer/models/pattern.dart';
+import 'package:writer/shared/constants.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/state/pattern_providers.dart';
 
 @immutable
 class PatternListState {
@@ -65,9 +65,10 @@ class PatternListNotifier extends Notifier<PatternListState> {
   void setSearchQuery(String query) {
     state = state.copyWith(searchQuery: query);
     _searchTimer?.cancel();
-    _searchTimer = Timer(const Duration(milliseconds: kSearchDebounceMs), () {
-      _performSearch();
-    });
+    _searchTimer = Timer(
+      const Duration(milliseconds: kSearchDebounceMs),
+      _performSearch,
+    );
   }
 
   void clearSearch() {

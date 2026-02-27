@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/novel.dart';
-import '../models/chapter.dart';
-import '../models/summary.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/models/summary.dart';
 import 'remote_repository.dart';
 
 final novelRepositoryProvider = Provider<NovelRepository>((ref) {

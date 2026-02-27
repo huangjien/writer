@@ -114,12 +114,12 @@ void main() {
     final fake = FakeTtsDriver();
     final ctrl = ReaderPlaybackController(fake, captured!);
 
-    var blockedStates = <bool>[];
+    final blockedStates = <bool>[];
     var promptCount = 0;
     ctrl.tryAutoStart(
       content: 'hello world',
       startIndex: 0,
-      setAutoplayBlocked: (b) => blockedStates.add(b),
+      setAutoplayBlocked: blockedStates.add,
       showAutoplayPrompt: () => promptCount += 1,
       onProgress: (_) {},
       onStart: () {},
@@ -159,12 +159,12 @@ void main() {
     final fake = FakeTtsDriver();
     final ctrl = ReaderPlaybackController(fake, captured!);
 
-    var blockedStates = <bool>[];
+    final blockedStates = <bool>[];
     var promptCount = 0;
     ctrl.tryAutoStart(
       content: 'hello world',
       startIndex: 0,
-      setAutoplayBlocked: (b) => blockedStates.add(b),
+      setAutoplayBlocked: blockedStates.add,
       showAutoplayPrompt: () => promptCount += 1,
       onProgress: (_) {},
       onStart: () {},

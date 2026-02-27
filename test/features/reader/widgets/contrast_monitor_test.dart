@@ -101,7 +101,7 @@ void main() {
     });
 
     test('monitors reader colors with all valid combinations', () {
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Colors.black87,
@@ -115,7 +115,7 @@ void main() {
     });
 
     test('detects invalid primary text contrast', () {
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Color(0xFFCCCCCC),
         secondaryText: Colors.black,
@@ -132,7 +132,7 @@ void main() {
     });
 
     test('detects invalid secondary text contrast', () {
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Color(0xFFDDDDDD),
@@ -148,7 +148,7 @@ void main() {
     });
 
     test('detects invalid accent text contrast', () {
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Colors.black87,
@@ -164,7 +164,7 @@ void main() {
     });
 
     test('detects invalid link text contrast', () {
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Colors.black87,
@@ -180,7 +180,7 @@ void main() {
     });
 
     test('detects multiple invalid color combinations', () {
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Color(0xFFCCCCCC),
         secondaryText: Color(0xFFDDDDDD),
@@ -198,7 +198,7 @@ void main() {
     });
 
     test('alerts contain adjustment suggestions', () {
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Color(0xFFCCCCCC),
         secondaryText: Colors.black,
@@ -217,7 +217,7 @@ void main() {
     });
 
     test('alerts contain descriptive messages', () {
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Color(0xFFCCCCCC),
         secondaryText: Colors.black,
@@ -233,15 +233,15 @@ void main() {
     });
 
     test('alerts store correct color information', () {
-      final foreground = const Color(0xFFCCCCCC);
-      final background = Colors.white;
+      const foreground = Color(0xFFCCCCCC);
+      const background = Colors.white;
 
-      final colors = ReaderColors(
+      const colors = ReaderColors(
         background: background,
         primaryText: foreground,
         secondaryText: Colors.black,
         accentText: Colors.black,
-        linkText: const Color(0xFF0000EE),
+        linkText: Color(0xFF0000EE),
       );
 
       final alerts = ContrastMonitor.monitorReaderColors(colors);
@@ -264,7 +264,7 @@ void main() {
     test('sets colors and validates them', () {
       final notifier = ContrastMonitorNotifier();
 
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Colors.black87,
@@ -281,7 +281,7 @@ void main() {
     test('sets colors with invalid combinations produces alerts', () {
       final notifier = ContrastMonitorNotifier();
 
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Color(0xFFCCCCCC),
         secondaryText: Colors.black,
@@ -299,7 +299,7 @@ void main() {
     test('updates individual color field', () {
       final notifier = ContrastMonitorNotifier();
 
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Color(0xFFCCCCCC),
         secondaryText: Colors.black,
@@ -318,7 +318,7 @@ void main() {
     test('updates background color', () {
       final notifier = ContrastMonitorNotifier();
 
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Colors.black87,
@@ -336,7 +336,7 @@ void main() {
     test('updates secondary text color', () {
       final notifier = ContrastMonitorNotifier();
 
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Color(0xFFDDDDDD),
@@ -354,7 +354,7 @@ void main() {
     test('updates accent text color', () {
       final notifier = ContrastMonitorNotifier();
 
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Colors.black87,
@@ -372,7 +372,7 @@ void main() {
     test('updates link text color', () {
       final notifier = ContrastMonitorNotifier();
 
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Colors.black87,
@@ -398,7 +398,7 @@ void main() {
     test('applies suggestion to primary text', () {
       final notifier = ContrastMonitorNotifier();
 
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Color(0xFFCCCCCC),
         secondaryText: Colors.black,
@@ -409,7 +409,7 @@ void main() {
       notifier.setColors(colors);
       expect(notifier.state.length, 1);
 
-      final suggestion = const AdjustmentSuggestion(
+      const suggestion = AdjustmentSuggestion(
         description: 'Darken foreground',
         suggestedForeground: Colors.black,
         suggestedBackground: Colors.white,
@@ -423,7 +423,7 @@ void main() {
     test('applies suggestion to secondary text', () {
       final notifier = ContrastMonitorNotifier();
 
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Color(0xFFDDDDDD),
@@ -434,7 +434,7 @@ void main() {
       notifier.setColors(colors);
       expect(notifier.state.length, 1);
 
-      final suggestion = const AdjustmentSuggestion(
+      const suggestion = AdjustmentSuggestion(
         description: 'Darken foreground',
         suggestedForeground: Colors.black87,
         suggestedBackground: Colors.white,
@@ -448,7 +448,7 @@ void main() {
     test('applies suggestion to accent text', () {
       final notifier = ContrastMonitorNotifier();
 
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Colors.black87,
@@ -459,7 +459,7 @@ void main() {
       notifier.setColors(colors);
       expect(notifier.state.length, 1);
 
-      final suggestion = const AdjustmentSuggestion(
+      const suggestion = AdjustmentSuggestion(
         description: 'Darken foreground',
         suggestedForeground: Colors.black,
         suggestedBackground: Colors.white,
@@ -473,7 +473,7 @@ void main() {
     test('applies suggestion to link text', () {
       final notifier = ContrastMonitorNotifier();
 
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Colors.black,
         secondaryText: Colors.black87,
@@ -484,7 +484,7 @@ void main() {
       notifier.setColors(colors);
       expect(notifier.state.length, 1);
 
-      final suggestion = const AdjustmentSuggestion(
+      const suggestion = AdjustmentSuggestion(
         description: 'Darken foreground',
         suggestedForeground: Color(0xFF0000EE),
         suggestedBackground: Colors.white,
@@ -498,7 +498,7 @@ void main() {
     test('does not apply suggestion when colors are not set', () {
       final notifier = ContrastMonitorNotifier();
 
-      final suggestion = const AdjustmentSuggestion(
+      const suggestion = AdjustmentSuggestion(
         description: 'Darken foreground',
         suggestedForeground: Colors.black,
         suggestedBackground: Colors.white,
@@ -512,7 +512,7 @@ void main() {
     test('correctly identifies critical alerts', () {
       final notifier = ContrastMonitorNotifier();
 
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Color(0xFFCCCCCC),
         secondaryText: Color(0xFFDDDDDD),
@@ -765,7 +765,7 @@ void main() {
     test('full workflow: set colors, detect alerts, apply suggestion', () {
       final notifier = ContrastMonitorNotifier();
 
-      final initialColors = const ReaderColors(
+      const initialColors = ReaderColors(
         background: Colors.white,
         primaryText: Color(0xFFCCCCCC),
         secondaryText: Colors.black,
@@ -787,7 +787,7 @@ void main() {
     test('full workflow: update colors incrementally', () {
       final notifier = ContrastMonitorNotifier();
 
-      final initialColors = const ReaderColors(
+      const initialColors = ReaderColors(
         background: Colors.white,
         primaryText: Color(0xFFCCCCCC),
         secondaryText: Color(0xFFDDDDDD),
@@ -812,7 +812,7 @@ void main() {
     });
 
     test('monitor returns suggestions sorted by improved ratio', () {
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Color(0xFFCCCCCC),
         secondaryText: Colors.black,
@@ -834,7 +834,7 @@ void main() {
     });
 
     test('monitor limits suggestions to top 5', () {
-      final colors = const ReaderColors(
+      const colors = ReaderColors(
         background: Colors.white,
         primaryText: Color(0xFFCCCCCC),
         secondaryText: Colors.black,

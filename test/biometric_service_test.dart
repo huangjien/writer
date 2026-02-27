@@ -12,7 +12,7 @@ void main() {
     });
 
     test('enum values are unique', () {
-      final values = BiometricTokenStatus.values;
+      const values = BiometricTokenStatus.values;
       final uniqueValues = values.toSet();
       expect(values.length, uniqueValues.length);
     });

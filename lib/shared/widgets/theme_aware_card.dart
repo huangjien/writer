@@ -2,9 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../theme/design_tokens.dart';
-import '../../theme/ui_styles.dart';
-import '../../theme/theme_extensions.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/theme/ui_styles.dart';
+import 'package:writer/theme/theme_extensions.dart';
 import 'focus_wrapper.dart';
 
 class ThemeAwareCard extends StatelessWidget {

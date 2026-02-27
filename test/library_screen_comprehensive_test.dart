@@ -451,10 +451,10 @@ void main() {
     testWidgets('handles very long titles gracefully', (tester) async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
-      final longTitle =
+      const longTitle =
           'This is an extremely long novel title that should be truncated properly in the UI without breaking the layout or causing overflow issues';
       final novels = [
-        Novel(
+        const Novel(
           id: 'n1',
           title: longTitle,
           description: '',

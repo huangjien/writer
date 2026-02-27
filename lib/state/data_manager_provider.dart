@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/data_manager.dart';
+import 'package:writer/services/data_manager.dart';
 import './providers.dart';
 import './network_monitor_provider.dart';
-import '../repositories/remote_repository.dart';
+import 'package:writer/repositories/remote_repository.dart';
 import './storage_service_provider.dart';
 
 final dataManagerProvider = Provider<DataManager>((ref) {

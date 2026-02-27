@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/story_line.dart';
-import '../story_line_providers.dart';
-import '../../../shared/constants.dart';
+import 'package:writer/models/story_line.dart';
+import 'package:writer/state/story_line_providers.dart';
+import 'package:writer/shared/constants.dart';
 
 @immutable
 class StoryLineListState {
@@ -75,7 +75,7 @@ class StoryLineListNotifier extends Notifier<StoryLineListState> {
     }
     _searchTimer = Timer(
       const Duration(milliseconds: kSearchDebounceMs),
-      () => performSearch(),
+      performSearch,
     );
   }
 

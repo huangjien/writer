@@ -7,7 +7,7 @@ import 'package:writer/shared/widgets/gestures/swipe_actions.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final mockNovel = const Novel(
+  const mockNovel = Novel(
     id: '1',
     title: 'Test Novel Title',
     author: 'Test Author',
@@ -20,7 +20,7 @@ void main() {
   group('MobileNovelCard', () {
     testWidgets('renders novel information correctly', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(body: MobileNovelCard(novel: mockNovel)),
         ),
       );
@@ -33,7 +33,7 @@ void main() {
 
     testWidgets('renders with custom padding and styling', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(body: MobileNovelCard(novel: mockNovel)),
         ),
       );
@@ -83,7 +83,7 @@ void main() {
 
     testWidgets('displays progress when progress > 0', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: MobileNovelCard(novel: mockNovel, progress: 0.75),
           ),
@@ -96,7 +96,7 @@ void main() {
 
     testWidgets('does not display progress when progress = 0', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: MobileNovelCard(novel: mockNovel, progress: 0.0),
           ),
@@ -109,7 +109,7 @@ void main() {
 
     testWidgets('displays lastRead when provided', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: MobileNovelCard(novel: mockNovel, lastRead: '2 hours ago'),
           ),
@@ -121,7 +121,7 @@ void main() {
 
     testWidgets('hides actions when showActions is false', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: MobileNovelCard(novel: mockNovel, showActions: false),
           ),
@@ -213,7 +213,7 @@ void main() {
 
     testWidgets('shows more button when showActions is true', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: MobileNovelCard(novel: mockNovel, showActions: true),
           ),
@@ -225,7 +225,7 @@ void main() {
 
     testWidgets('wraps card with SwipeActions', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(body: MobileNovelCard(novel: mockNovel)),
         ),
       );
@@ -234,7 +234,7 @@ void main() {
     });
 
     testWidgets('handles novel without author', (tester) async {
-      final novelWithoutAuthor = const Novel(
+      const novelWithoutAuthor = Novel(
         id: '2',
         title: 'Novel Without Author',
         description: 'Description',
@@ -243,7 +243,7 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(body: MobileNovelCard(novel: novelWithoutAuthor)),
         ),
       );
@@ -254,7 +254,7 @@ void main() {
     });
 
     testWidgets('handles long title truncation', (tester) async {
-      final longTitleNovel = const Novel(
+      const longTitleNovel = Novel(
         id: '3',
         title:
             'This is a very long title that should be truncated properly in the card display',
@@ -265,7 +265,7 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(body: MobileNovelCard(novel: longTitleNovel)),
         ),
       );
@@ -277,7 +277,7 @@ void main() {
 
     testWidgets('renders with proper layout structure', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: MobileNovelCard(novel: mockNovel, showActions: true),
           ),

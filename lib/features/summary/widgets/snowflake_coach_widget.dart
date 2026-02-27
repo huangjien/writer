@@ -229,7 +229,7 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
             SparkleEffect(
               controller: _sparkleController,
               child: ElevatedButton(
-                onPressed: () => _analyze(),
+                onPressed: _analyze,
                 child: Text(l10n.retry),
               ),
             ),
@@ -281,7 +281,7 @@ class _SnowflakeCoachWidgetState extends ConsumerState<SnowflakeCoachWidget> {
       messages: messages,
       isDone: isDone,
       timestampText: timestampText,
-      onAnalyze: () => _analyze(),
+      onAnalyze: _analyze,
       onSendUserResponse: (val) => _analyze(userResponse: val),
       onSuggestionSelected: (s) {
         _inputController.text = s;

@@ -5,7 +5,7 @@ import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 import 'package:writer/shared/widgets/mobile_bottom_sheet.dart';
 import 'package:writer/theme/design_tokens.dart';
 import 'package:writer/l10n/app_localizations.dart';
-import '../logic/reader_shortcuts.dart';
+import 'package:writer/features/reader/logic/reader_shortcuts.dart';
 
 class ReaderShortcutsWrapper extends ConsumerWidget {
   const ReaderShortcutsWrapper({

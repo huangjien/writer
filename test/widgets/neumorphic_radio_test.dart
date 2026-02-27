@@ -288,7 +288,7 @@ void main() {
       });
 
       testWidgets('does not call onChanged when null', (tester) async {
-        bool wasCalled = false;
+        const bool wasCalled = false;
         await tester.pumpWidget(
           const MaterialApp(
             home: Scaffold(

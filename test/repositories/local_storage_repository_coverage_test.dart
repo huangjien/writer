@@ -158,7 +158,7 @@ void main() {
     });
 
     test('saveNovelsList and getNovelsList', () async {
-      final novel = const Novel(
+      const novel = Novel(
         id: 'n1',
         title: 'T',
         languageCode: 'en',
@@ -181,7 +181,7 @@ void main() {
     });
 
     test('save and get LibraryNovels', () async {
-      final novel = const Novel(
+      const novel = Novel(
         id: 'n1',
         title: 'T',
         languageCode: 'en',
@@ -199,7 +199,7 @@ void main() {
     });
 
     test('save and get CharacterForm', () async {
-      final char = const Character(novelId: 'n1', name: 'name');
+      const char = Character(novelId: 'n1', name: 'name');
       await repository.saveCharacterForm('n1', char);
       final loaded = await repository.getCharacterForm('n1');
       expect(loaded, isNotNull);
@@ -224,7 +224,7 @@ void main() {
     });
 
     test('save and get SceneForm', () async {
-      final scene = const Scene(novelId: 'n1', title: 'T');
+      const scene = Scene(novelId: 'n1', title: 'T');
       await repository.saveSceneForm('n1', scene);
       final loaded = await repository.getSceneForm('n1');
       expect(loaded, isNotNull);
@@ -240,7 +240,7 @@ void main() {
     });
 
     test('save and get CharacterTemplateForm', () async {
-      final t = const TemplateItem(novelId: 'n1', name: 'N');
+      const t = TemplateItem(novelId: 'n1', name: 'N');
       await repository.saveCharacterTemplateForm('n1', t);
       final loaded = await repository.getCharacterTemplateForm('n1');
       expect(loaded, isNotNull);
@@ -252,7 +252,7 @@ void main() {
     });
 
     test('save and get SceneTemplateForm', () async {
-      final t = const TemplateItem(novelId: 'n1', name: 'N');
+      const t = TemplateItem(novelId: 'n1', name: 'N');
       await repository.saveSceneTemplateForm('n1', t);
       final loaded = await repository.getSceneTemplateForm('n1');
       expect(loaded, isNotNull);
@@ -263,7 +263,7 @@ void main() {
     });
 
     test('save and get Novel', () async {
-      final novel = const Novel(
+      const novel = Novel(
         id: 'n1',
         title: 'T',
         languageCode: 'en',

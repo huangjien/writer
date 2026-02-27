@@ -7,7 +7,7 @@ import 'package:writer/shared/widgets/neumorphic_slider.dart';
 import 'package:writer/shared/widgets/neumorphic_switch.dart';
 import 'package:writer/shared/widgets/neumorphic_textfield.dart';
 import 'package:writer/theme/design_tokens.dart';
-import '../../l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class StyleGuideScreen extends StatefulWidget {
   const StyleGuideScreen({super.key});

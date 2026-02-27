@@ -6,254 +6,254 @@ void main() {
   group('KeyboardShortcuts', () {
     group('Intent Classes', () {
       test('NavigateHomeIntent can be created', () {
-        final intent = const NavigateHomeIntent();
+        const intent = NavigateHomeIntent();
         expect(intent, isNotNull);
       });
 
       test('NavigateSettingsIntent can be created', () {
-        final intent = const NavigateSettingsIntent();
+        const intent = NavigateSettingsIntent();
         expect(intent, isNotNull);
       });
 
       test('ShowShortcutsHelpIntent can be created', () {
-        final intent = const ShowShortcutsHelpIntent();
+        const intent = ShowShortcutsHelpIntent();
         expect(intent, isNotNull);
       });
 
       test('QuickSearchIntent can be created', () {
-        final intent = const QuickSearchIntent();
+        const intent = QuickSearchIntent();
         expect(intent, isNotNull);
       });
 
       test('CloseIntent can be created', () {
-        final intent = const CloseIntent();
+        const intent = CloseIntent();
         expect(intent, isNotNull);
       });
 
       test('NavigateBackIntent can be created', () {
-        final intent = const NavigateBackIntent();
+        const intent = NavigateBackIntent();
         expect(intent, isNotNull);
       });
 
       test('NavigateForwardIntent can be created', () {
-        final intent = const NavigateForwardIntent();
+        const intent = NavigateForwardIntent();
         expect(intent, isNotNull);
       });
 
       test('ForceRefreshIntent can be created', () {
-        final intent = const ForceRefreshIntent();
+        const intent = ForceRefreshIntent();
         expect(intent, isNotNull);
       });
 
       test('CreateNovelIntent can be created', () {
-        final intent = const CreateNovelIntent();
+        const intent = CreateNovelIntent();
         expect(intent, isNotNull);
       });
 
       test('FocusSearchIntent can be created', () {
-        final intent = const FocusSearchIntent();
+        const intent = FocusSearchIntent();
         expect(intent, isNotNull);
       });
 
       test('OpenSelectedNovelIntent can be created', () {
-        final intent = const OpenSelectedNovelIntent();
+        const intent = OpenSelectedNovelIntent();
         expect(intent, isNotNull);
       });
 
       test('DeleteNovelIntent can be created', () {
-        final intent = const DeleteNovelIntent();
+        const intent = DeleteNovelIntent();
         expect(intent, isNotNull);
       });
 
       test('CreateChapterIntent can be created', () {
-        final intent = const CreateChapterIntent();
+        const intent = CreateChapterIntent();
         expect(intent, isNotNull);
       });
 
       test('RefreshChaptersIntent can be created', () {
-        final intent = const RefreshChaptersIntent();
+        const intent = RefreshChaptersIntent();
         expect(intent, isNotNull);
       });
 
       test('DuplicateChapterIntent can be created', () {
-        final intent = const DuplicateChapterIntent();
+        const intent = DuplicateChapterIntent();
         expect(intent, isNotNull);
       });
 
       test('DeleteChapterIntent can be created', () {
-        final intent = const DeleteChapterIntent();
+        const intent = DeleteChapterIntent();
         expect(intent, isNotNull);
       });
 
       test('SaveIntent can be created', () {
-        final intent = const SaveIntent();
+        const intent = SaveIntent();
         expect(intent, isNotNull);
       });
 
       test('SaveAndCloseIntent can be created', () {
-        final intent = const SaveAndCloseIntent();
+        const intent = SaveAndCloseIntent();
         expect(intent, isNotNull);
       });
 
       test('CloseWithoutSavingIntent can be created', () {
-        final intent = const CloseWithoutSavingIntent();
+        const intent = CloseWithoutSavingIntent();
         expect(intent, isNotNull);
       });
 
       test('BoldIntent can be created', () {
-        final intent = const BoldIntent();
+        const intent = BoldIntent();
         expect(intent, isNotNull);
       });
 
       test('ItalicIntent can be created', () {
-        final intent = const ItalicIntent();
+        const intent = ItalicIntent();
         expect(intent, isNotNull);
       });
 
       test('UnderlineIntent can be created', () {
-        final intent = const UnderlineIntent();
+        const intent = UnderlineIntent();
         expect(intent, isNotNull);
       });
 
       test('InsertLinkIntent can be created', () {
-        final intent = const InsertLinkIntent();
+        const intent = InsertLinkIntent();
         expect(intent, isNotNull);
       });
 
       test('InsertCodeBlockIntent can be created', () {
-        final intent = const InsertCodeBlockIntent();
+        const intent = InsertCodeBlockIntent();
         expect(intent, isNotNull);
       });
 
       test('Heading1Intent can be created', () {
-        final intent = const Heading1Intent();
+        const intent = Heading1Intent();
         expect(intent, isNotNull);
       });
 
       test('Heading2Intent can be created', () {
-        final intent = const Heading2Intent();
+        const intent = Heading2Intent();
         expect(intent, isNotNull);
       });
 
       test('Heading3Intent can be created', () {
-        final intent = const Heading3Intent();
+        const intent = Heading3Intent();
         expect(intent, isNotNull);
       });
 
       test('ParagraphIntent can be created', () {
-        final intent = const ParagraphIntent();
+        const intent = ParagraphIntent();
         expect(intent, isNotNull);
       });
 
       test('ToggleTTSIntent can be created', () {
-        final intent = const ToggleTTSIntent();
+        const intent = ToggleTTSIntent();
         expect(intent, isNotNull);
       });
 
       test('PreviousChapterIntent can be created', () {
-        final intent = const PreviousChapterIntent();
+        const intent = PreviousChapterIntent();
         expect(intent, isNotNull);
       });
 
       test('NextChapterIntent can be created', () {
-        final intent = const NextChapterIntent();
+        const intent = NextChapterIntent();
         expect(intent, isNotNull);
       });
 
       test('IncreaseSpeechRateIntent can be created', () {
-        final intent = const IncreaseSpeechRateIntent();
+        const intent = IncreaseSpeechRateIntent();
         expect(intent, isNotNull);
       });
 
       test('DecreaseSpeechRateIntent can be created', () {
-        final intent = const DecreaseSpeechRateIntent();
+        const intent = DecreaseSpeechRateIntent();
         expect(intent, isNotNull);
       });
 
       test('ChangeVoiceIntent can be created', () {
-        final intent = const ChangeVoiceIntent();
+        const intent = ChangeVoiceIntent();
         expect(intent, isNotNull);
       });
 
       test('MuteUnmuteIntent can be created', () {
-        final intent = const MuteUnmuteIntent();
+        const intent = MuteUnmuteIntent();
         expect(intent, isNotNull);
       });
 
       test('EnterFullscreenIntent can be created', () {
-        final intent = const EnterFullscreenIntent();
+        const intent = EnterFullscreenIntent();
         expect(intent, isNotNull);
       });
 
       test('FocusAppSettingsIntent can be created', () {
-        final intent = const FocusAppSettingsIntent();
+        const intent = FocusAppSettingsIntent();
         expect(intent, isNotNull);
       });
 
       test('FocusColorThemeIntent can be created', () {
-        final intent = const FocusColorThemeIntent();
+        const intent = FocusColorThemeIntent();
         expect(intent, isNotNull);
       });
 
       test('FocusTypographyIntent can be created', () {
-        final intent = const FocusTypographyIntent();
+        const intent = FocusTypographyIntent();
         expect(intent, isNotNull);
       });
 
       test('FocusPerformanceIntent can be created', () {
-        final intent = const FocusPerformanceIntent();
+        const intent = FocusPerformanceIntent();
         expect(intent, isNotNull);
       });
 
       test('FocusTTSSettingsIntent can be created', () {
-        final intent = const FocusTTSSettingsIntent();
+        const intent = FocusTTSSettingsIntent();
         expect(intent, isNotNull);
       });
 
       test('ToggleSidebarIntent can be created', () {
-        final intent = const ToggleSidebarIntent();
+        const intent = ToggleSidebarIntent();
         expect(intent, isNotNull);
       });
 
       test('NavigateToChaptersIntent can be created', () {
-        final intent = const NavigateToChaptersIntent();
+        const intent = NavigateToChaptersIntent();
         expect(intent, isNotNull);
       });
 
       test('NavigateToCharactersIntent can be created', () {
-        final intent = const NavigateToCharactersIntent();
+        const intent = NavigateToCharactersIntent();
         expect(intent, isNotNull);
       });
 
       test('NavigateToScenesIntent can be created', () {
-        final intent = const NavigateToScenesIntent();
+        const intent = NavigateToScenesIntent();
         expect(intent, isNotNull);
       });
 
       test('NavigateToSummariesIntent can be created', () {
-        final intent = const NavigateToSummariesIntent();
+        const intent = NavigateToSummariesIntent();
         expect(intent, isNotNull);
       });
 
       test('OpenUserManagementIntent can be created', () {
-        final intent = const OpenUserManagementIntent();
+        const intent = OpenUserManagementIntent();
         expect(intent, isNotNull);
       });
 
       test('OpenAdminLogsIntent can be created', () {
-        final intent = const OpenAdminLogsIntent();
+        const intent = OpenAdminLogsIntent();
         expect(intent, isNotNull);
       });
 
       test('ToggleAdminModeIntent can be created', () {
-        final intent = const ToggleAdminModeIntent();
+        const intent = ToggleAdminModeIntent();
         expect(intent, isNotNull);
       });
     });
 
     group('Helper Functions', () {
       test('modifierKeyLabel returns Ctrl for web', () {
-        final value = kIsWeb;
+        const value = kIsWeb;
         if (value) {
           expect(modifierKeyLabel, 'Ctrl');
         }

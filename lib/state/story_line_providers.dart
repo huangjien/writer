@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/story_line.dart';
+import 'package:writer/models/story_line.dart';
 import 'providers.dart';
-import '../services/story_lines_service.dart';
+import 'package:writer/services/story_lines_service.dart';
 
 final storyLinesServiceRefProvider = Provider<StoryLinesService>((ref) {
   return ref.watch(storyLinesServiceProvider);

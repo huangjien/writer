@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../state/session_state.dart';
-import '../../../state/user_state.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../repositories/remote_repository.dart';
-import '../../../shared/api_exception.dart';
-import '../../../shared/widgets/app_buttons.dart';
-import '../../../shared/widgets/neumorphic_switch.dart';
-import '../state/user_management_state.dart';
+import 'package:writer/state/session_state.dart';
+import 'package:writer/state/user_state.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/repositories/remote_repository.dart';
+import 'package:writer/shared/api_exception.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/neumorphic_switch.dart';
+import 'package:writer/features/auth/state/user_management_state.dart';
 
 class UserManagementScreen extends ConsumerWidget {
   const UserManagementScreen({super.key});
@@ -82,7 +82,7 @@ class _UserManagementContentState
         '[UserManagement] Current user: ${currentUser?.email}, Admin: ${currentUser?.isAdmin}',
       );
 
-      final data = await repo.get('admin/users');
+      final data = await repo.get('admin/users') as Map<String, dynamic>;
       ref
           .read(userManagementProvider.notifier)
           .setUsers(data['users'] as List<dynamic>);
@@ -108,7 +108,8 @@ class _UserManagementContentState
 
       final data = await repo.get('auth/verify');
       debugPrint('[UserManagement] User data: $data');
-      final isAdmin = data['is_admin'] ?? false;
+      final dataMap = data as Map<String, dynamic>;
+      final isAdmin = dataMap['is_admin'] ?? false;
       debugPrint('[UserManagement] Backend says admin: $isAdmin');
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) return;
@@ -214,7 +215,8 @@ class _UserManagementContentState
           : ListView.builder(
               itemCount: managementState.users.length,
               itemBuilder: (context, index) {
-                final user = managementState.users[index];
+                final user =
+                    managementState.users[index] as Map<String, dynamic>;
                 final isApproved = user['is_approved'] == true;
                 final email = user['email'] ?? 'No Email';
                 final id = user['id'];

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../theme/design_tokens.dart';
-import '../empty_state.dart';
-import '../theme_aware_card.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/shared/widgets/empty_state.dart';
+import 'package:writer/shared/widgets/theme_aware_card.dart';
 
 class ChapterEmptyState extends StatelessWidget {
   const ChapterEmptyState({

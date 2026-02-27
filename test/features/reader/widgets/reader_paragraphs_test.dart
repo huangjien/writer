@@ -196,7 +196,7 @@ void main() {
         'highlights second paragraph when ttsIndex is in second paragraph',
         (tester) async {
           const text = 'First paragraph\n\nSecond paragraph';
-          final firstParagraphLength = 'First paragraph'.length;
+          const firstParagraphLength = 'First paragraph'.length;
 
           await tester.pumpWidget(
             createTestWidget(
@@ -218,7 +218,7 @@ void main() {
         tester,
       ) async {
         const text = 'First paragraph\n\nSecond paragraph';
-        final secondParagraphStart = 'First paragraph'.length + 2;
+        const secondParagraphStart = 'First paragraph'.length + 2;
 
         await tester.pumpWidget(
           createTestWidget(text: text, ttsIndex: secondParagraphStart),
@@ -232,7 +232,7 @@ void main() {
         tester,
       ) async {
         const text = 'First paragraph\n\nSecond paragraph';
-        final secondParagraphEnd =
+        const secondParagraphEnd =
             'First paragraph'.length + 2 + 'Second paragraph'.length;
 
         await tester.pumpWidget(
@@ -262,7 +262,7 @@ void main() {
         tester,
       ) async {
         const text = 'First\n\nSecond\n\nThird';
-        final secondParagraphStart = 'First'.length + 2;
+        const secondParagraphStart = 'First'.length + 2;
 
         await tester.pumpWidget(
           createTestWidget(text: text, ttsIndex: secondParagraphStart + 2),
@@ -274,7 +274,7 @@ void main() {
 
       testWidgets('updates highlight when ttsIndex changes', (tester) async {
         const text = 'First paragraph\n\nSecond paragraph';
-        final firstParagraphLength = 'First paragraph'.length;
+        const firstParagraphLength = 'First paragraph'.length;
 
         // Initial state - first paragraph highlighted
         await tester.pumpWidget(createTestWidget(text: text, ttsIndex: 0));

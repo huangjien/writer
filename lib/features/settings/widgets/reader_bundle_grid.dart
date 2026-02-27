@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../theme/reader_bundles.dart';
-import '../../../theme/themes.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/theme/reader_bundles.dart';
+import 'package:writer/theme/themes.dart';
 
 class ReaderBundleGrid extends StatelessWidget {
   const ReaderBundleGrid({super.key, required this.onApply});

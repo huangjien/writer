@@ -14,8 +14,8 @@ import 'package:writer/features/settings/widgets/palette_settings_section.dart';
 import 'package:writer/features/settings/widgets/style_settings_section.dart';
 import 'package:writer/features/settings/widgets/tts_settings_container.dart';
 import 'package:writer/features/settings/widgets/token_usage_section.dart';
-import '../../../state/user_state.dart';
-import '../../../shared/widgets/app_buttons.dart';
+import 'package:writer/state/user_state.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});

@@ -3,7 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../mobile_gestures.dart';
+import 'package:writer/shared/widgets/mobile_gestures.dart';
 
 class SwipeActionItem {
   const SwipeActionItem({

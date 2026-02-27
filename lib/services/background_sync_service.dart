@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/data_manager.dart';
-import '../services/network_monitor.dart';
-import '../state/data_manager_provider.dart';
-import '../state/network_monitor_provider.dart';
+import 'package:writer/services/data_manager.dart';
+import 'package:writer/services/network_monitor.dart';
+import 'package:writer/state/data_manager_provider.dart';
+import 'package:writer/state/network_monitor_provider.dart';
 
 enum SyncStatus { idle, syncing, success, error }
 
@@ -115,9 +115,7 @@ final backgroundSyncServiceProvider = Provider<BackgroundSyncService>((ref) {
     network: network,
   );
 
-  ref.onDispose(() {
-    service.dispose();
-  });
+  ref.onDispose(service.dispose);
 
   return service;
 });

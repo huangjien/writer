@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/pattern.dart';
+import 'package:writer/models/pattern.dart';
 import 'providers.dart';
-import '../services/patterns_service.dart';
+import 'package:writer/services/patterns_service.dart';
 
 final patternsServiceRefProvider = Provider<PatternsService>((ref) {
   return ref.watch(patternsServiceProvider);

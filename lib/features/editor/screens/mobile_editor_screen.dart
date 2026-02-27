@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../shared/widgets/mobile_bottom_nav_bar.dart';
-import '../../../repositories/chapter_repository.dart';
-import '../../../models/chapter.dart';
-import '../../../state/novel_providers_v2.dart';
-import '../../../state/storage_service_provider.dart';
-import '../../../shared/strings.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/shared/widgets/mobile_bottom_nav_bar.dart';
+import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/state/novel_providers_v2.dart';
+import 'package:writer/state/storage_service_provider.dart';
+import 'package:writer/shared/strings.dart';
 
-import '../../../shared/widgets/app_buttons.dart';
-import '../../../shared/widgets/app_dialog.dart';
-import '../../../shared/widgets/mobile_bottom_sheet.dart';
-import '../../../shared/widgets/feedback/enhanced_toast.dart';
-import '../focus_timer.dart';
-import '../writing_prompts.dart';
-import '../services/writing_streak_tracker.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
+import 'package:writer/shared/widgets/mobile_bottom_sheet.dart';
+import 'package:writer/shared/widgets/feedback/enhanced_toast.dart';
+import 'package:writer/features/editor/focus_timer.dart';
+import 'package:writer/features/editor/writing_prompts.dart';
+import 'package:writer/features/editor/services/writing_streak_tracker.dart';
 import 'mobile_editor/mobile_editor_app_bar.dart';
 import 'mobile_editor/mobile_editor_body.dart';
 import 'mobile_editor/mobile_editor_menus.dart';
@@ -122,7 +122,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
           message: 'Failed to load chapter: $e',
           tone: EnhancedToastTone.error,
           actionLabel: 'Retry',
-          onAction: () => _loadChapter(),
+          onAction: _loadChapter,
         );
       }
     }
@@ -196,7 +196,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
           message: 'Save failed: $e',
           tone: EnhancedToastTone.error,
           actionLabel: 'Retry',
-          onAction: () => _saveContent(),
+          onAction: _saveContent,
         );
       }
     }

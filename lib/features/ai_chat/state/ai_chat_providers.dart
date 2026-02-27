@@ -7,10 +7,10 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/shared/constants.dart';
 import 'package:writer/state/ai_agent_settings.dart';
 import 'package:writer/state/app_settings.dart';
-import '../models/chat_message.dart';
-import '../models/chat_session.dart';
-import '../services/chat_storage_service.dart';
-import '../utils/context_utils.dart';
+import 'package:writer/features/ai_chat/models/chat_message.dart';
+import 'package:writer/features/ai_chat/models/chat_session.dart';
+import 'package:writer/features/ai_chat/services/chat_storage_service.dart';
+import 'package:writer/features/ai_chat/utils/context_utils.dart';
 
 // --- Context Provider ---
 
@@ -335,7 +335,7 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
     }
 
     final effectiveMessage = contextContent != null
-        ? "Context:\n$contextContent\n\nQuestion:\n$message"
+        ? 'Context:\n$contextContent\n\nQuestion:\n$message'
         : message;
 
     final userMsg = ChatMessage(content: message, isUser: true);
@@ -538,7 +538,7 @@ class AiServiceStatusNotifier extends StateNotifier<bool> {
 
   void _scheduleNext(Duration delay) {
     _timer?.cancel();
-    _timer = Timer(delay, () => _checkAndSchedule());
+    _timer = Timer(delay, _checkAndSchedule);
   }
 
   Future<void> _checkAndSchedule({bool initial = false}) async {

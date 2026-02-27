@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import '../models/user.dart';
+import 'package:writer/models/user.dart';
 
 /// Abstract repository for user-related operations
 ///

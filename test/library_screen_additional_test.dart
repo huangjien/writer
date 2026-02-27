@@ -574,7 +574,7 @@ void main() {
 
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
-      final novels = const <Novel>[];
+      const novels = <Novel>[];
 
       await tester.pumpWidget(
         ProviderScope(
@@ -608,7 +608,7 @@ void main() {
 
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
-      final novels = const <Novel>[];
+      const novels = <Novel>[];
 
       await tester.pumpWidget(
         ProviderScope(

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:go_router/go_router.dart';
 
-import '../models/prompt.dart';
-import '../services/prompts_service.dart';
-import '../l10n/app_localizations.dart';
-import '../shared/api_exception.dart';
-import '../shared/widgets/neumorphic_switch.dart';
-import '../shared/widgets/app_buttons.dart';
-import '../shared/widgets/responsive_button_row.dart';
+import 'package:writer/models/prompt.dart';
+import 'package:writer/services/prompts_service.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/shared/api_exception.dart';
+import 'package:writer/shared/widgets/neumorphic_switch.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/responsive_button_row.dart';
 
 const _keys = [
   'system.beta.male',

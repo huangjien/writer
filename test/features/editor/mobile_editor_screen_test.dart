@@ -132,7 +132,7 @@ void main() {
   testWidgets('loads chapter content when chapterId is provided', (
     tester,
   ) async {
-    final chapter = const Chapter(
+    const chapter = Chapter(
       id: 'chapter-1',
       novelId: 'novel-1',
       title: 'Chapter 1',
@@ -487,7 +487,7 @@ void main() {
   });
 
   testWidgets('handles load error', (tester) async {
-    final chapter = const Chapter(
+    const chapter = Chapter(
       id: 'chapter-1',
       novelId: 'novel-1',
       title: 'Chapter 1',

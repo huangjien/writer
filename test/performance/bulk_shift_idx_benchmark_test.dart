@@ -67,13 +67,13 @@ void main() {
       if (request.method == 'PATCH' &&
           request.url.path.endsWith('/novels/$novelId/chapters/reorder')) {
         reorderCalls++;
-        return http.Response("{}", 200);
+        return http.Response('{}', 200);
       }
 
       if (request.method == 'PATCH' &&
           request.url.path.contains('/chapters/')) {
         chapterPatchCalls++;
-        return http.Response("{}", 200);
+        return http.Response('{}', 200);
       }
 
       return http.Response('Not Found', 404);

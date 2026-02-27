@@ -51,23 +51,23 @@ const double kRadiusMedium = 8.0;
 const double kRadiusLarge = 12.0;
 const double kRadiusXLarge = 16.0;
 
-final BorderRadius kBorderRadiusSmall = const BorderRadius.all(
+const BorderRadius kBorderRadiusSmall = BorderRadius.all(
   Radius.circular(kRadiusSmall),
 );
-final BorderRadius kBorderRadiusMedium = const BorderRadius.all(
+const BorderRadius kBorderRadiusMedium = BorderRadius.all(
   Radius.circular(kRadiusMedium),
 );
-final BorderRadius kBorderRadiusLarge = const BorderRadius.all(
+const BorderRadius kBorderRadiusLarge = BorderRadius.all(
   Radius.circular(kRadiusLarge),
 );
-final BorderRadius kBorderRadiusXLarge = const BorderRadius.all(
+const BorderRadius kBorderRadiusXLarge = BorderRadius.all(
   Radius.circular(kRadiusXLarge),
 );
 
 // Animation Durations
-final Duration kAnimationFast = const Duration(milliseconds: 150);
-final Duration kAnimationMedium = const Duration(milliseconds: 300);
-final Duration kAnimationSlow = const Duration(milliseconds: 500);
+const Duration kAnimationFast = Duration(milliseconds: 150);
+const Duration kAnimationMedium = Duration(milliseconds: 300);
+const Duration kAnimationSlow = Duration(milliseconds: 500);
 
 // Size Constraints
 const double kButtonHeight = 40.0;

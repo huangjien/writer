@@ -3,15 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animations/animations.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../models/novel.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../theme/design_tokens.dart';
-import '../../../state/motion_settings.dart';
-import '../../../shared/image_utils.dart';
-import '../../../shared/widgets/neumorphic_button.dart';
-import '../../../shared/widgets/gestures/pinch_to_zoom.dart';
-import '../../../shared/widgets/theme_aware_card.dart';
-import '../../reader/reader_screen.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/state/motion_settings.dart';
+import 'package:writer/shared/image_utils.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
+import 'package:writer/shared/widgets/gestures/pinch_to_zoom.dart';
+import 'package:writer/shared/widgets/theme_aware_card.dart';
+import 'package:writer/features/reader/reader_screen.dart';
 
 class LibraryGridItem extends ConsumerWidget {
   const LibraryGridItem({

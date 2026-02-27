@@ -2,17 +2,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import '../../../repositories/chapter_repository.dart';
-import '../../../state/app_settings.dart';
-import '../../../state/performance_settings.dart';
-import '../../../state/tts_settings.dart';
-import '../logic/reader_navigation.dart';
-import '../logic/reader_playback_controller.dart';
-import '../logic/tts_driver.dart';
-import '../logic/progress_saver.dart';
+import 'package:writer/repositories/chapter_repository.dart';
+import 'package:writer/state/app_settings.dart';
+import 'package:writer/state/performance_settings.dart';
+import 'package:writer/state/tts_settings.dart';
+import 'package:writer/features/reader/logic/reader_navigation.dart';
+import 'package:writer/features/reader/logic/reader_playback_controller.dart';
+import 'package:writer/features/reader/logic/tts_driver.dart';
+import 'package:writer/features/reader/logic/progress_saver.dart';
 import 'reader_session_state.dart';
-import '../../../models/chapter.dart';
-import '../../../common/errors/failures.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/common/errors/failures.dart';
 
 final readerSessionProvider =
     StateNotifierProvider.autoDispose<

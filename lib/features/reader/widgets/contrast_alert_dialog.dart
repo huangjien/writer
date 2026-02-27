@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'contrast_monitor.dart';
-import '../../../l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class ContrastAlertDialog extends ConsumerWidget {
   final VoidCallback onDismiss;
@@ -70,9 +70,7 @@ class ContrastAlertDialog extends ConsumerWidget {
         if (criticalAlerts.isNotEmpty)
           ElevatedButton.icon(
             onPressed: () {
-              if (onApplyPreset != null) {
-                onApplyPreset!();
-              }
+              onApplyPreset?.call();
               onDismiss();
             },
             icon: const Icon(Icons.auto_fix_high),

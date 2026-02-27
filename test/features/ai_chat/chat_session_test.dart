@@ -103,7 +103,7 @@ void main() {
     });
 
     test('handles special characters in title', () {
-      final specialTitle = 'Chat: "Test" & Review 😊';
+      const specialTitle = 'Chat: "Test" & Review 😊';
       final session = ChatSession(
         id: 'test-id',
         title: specialTitle,
@@ -117,7 +117,7 @@ void main() {
     });
 
     test('handles special characters in preview', () {
-      final specialPreview = 'User said: "Hello @user #tag" 🎉';
+      const specialPreview = 'User said: "Hello @user #tag" 🎉';
       final session = ChatSession(
         id: 'test-id',
         title: 'Session',
@@ -131,7 +131,7 @@ void main() {
     });
 
     test('creates session with UUID as id', () {
-      final uuid = '123e4567-e89b-12d3-a456-426614174000';
+      const uuid = '123e4567-e89b-12d3-a456-426614174000';
       final session = ChatSession(
         id: uuid,
         title: 'UUID Session',
@@ -215,7 +215,7 @@ void main() {
     });
 
     test('handles multiline preview', () {
-      final multilinePreview = '''First line
+      const multilinePreview = '''First line
 Second line
 Third line''';
       final session = ChatSession(
@@ -284,7 +284,7 @@ Third line''';
       expect(json['lastUpdatedAt'], '2024-01-01T11:30:00.000');
       expect(json['preview'], 'Preview text');
       expect(json['messages'], isList);
-      expect(json['messages'].length, 2);
+      expect((json['messages'] as List).length, 2);
     });
 
     test('deserializes from JSON correctly', () {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../theme/design_tokens.dart';
+import 'package:writer/theme/design_tokens.dart';
 import 'shimmer_skeleton.dart';
 
 class LibraryItemRowSkeleton extends StatelessWidget {

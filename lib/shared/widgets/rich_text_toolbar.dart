@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../theme/design_tokens.dart';
-import '../strings.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/shared/strings.dart';
 import 'app_buttons.dart';
 
 class RichTextToolbar extends StatelessWidget {

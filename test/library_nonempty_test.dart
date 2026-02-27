@@ -91,7 +91,7 @@ void main() {
           pendingOperationsCountProvider.overrideWith((ref) => 0),
           networkMonitorProvider.overrideWith((ref) {
             final monitor = NetworkMonitor(FakeConnectivityChecker());
-            ref.onDispose(() => monitor.stopMonitoring());
+            ref.onDispose(monitor.stopMonitoring);
             return monitor;
           }),
         ],

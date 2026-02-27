@@ -9,11 +9,11 @@ import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/state/providers.dart';
 import 'widgets/beta_evaluation/beta_evaluation_dialog.dart';
 
-import '../../models/chapter.dart';
-import '../../state/edit_permissions.dart';
-import '../../state/motion_settings.dart';
-import '../../state/theme_controller.dart';
-import '../../theme/reader_background.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/state/edit_permissions.dart';
+import 'package:writer/state/motion_settings.dart';
+import 'package:writer/state/theme_controller.dart';
+import 'package:writer/theme/reader_background.dart';
 
 import 'widgets/edit_chapter_body.dart';
 import 'widgets/reader_bottom_bar_shell.dart';
@@ -23,15 +23,15 @@ import 'widgets/reader_body.dart';
 import 'widgets/contrast_validator.dart';
 import 'widgets/contrast_monitor.dart';
 import 'widgets/contrast_alert_dialog.dart';
-import '../../widgets/side_bar.dart';
+import 'package:writer/widgets/side_bar.dart';
 import 'logic/edit_discard_dialog.dart';
 import 'logic/edit_mode.dart';
 import 'state/reader_session_state.dart';
 import 'state/reader_session_notifier.dart';
-import '../../shared/widgets/error_view.dart';
-import '../../shared/widgets/feedback/enhanced_toast.dart';
-import '../../common/errors/failures.dart';
-import '../../shared/api_exception.dart';
+import 'package:writer/shared/widgets/error_view.dart';
+import 'package:writer/shared/widgets/feedback/enhanced_toast.dart';
+import 'package:writer/common/errors/failures.dart';
+import 'package:writer/shared/api_exception.dart';
 
 class ChapterReaderScreen extends ConsumerWidget {
   const ChapterReaderScreen({
@@ -238,7 +238,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
         message: e is AppFailure ? e.message : 'Failed to load chapter',
         tone: EnhancedToastTone.error,
         actionLabel: 'Retry',
-        onAction: () => _onNextPressed(),
+        onAction: _onNextPressed,
       );
     }
   }
@@ -264,7 +264,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
         message: e is AppFailure ? e.message : 'Failed to load chapter',
         tone: EnhancedToastTone.error,
         actionLabel: 'Retry',
-        onAction: () => _onPrevPressed(),
+        onAction: _onPrevPressed,
       );
     }
   }
@@ -498,9 +498,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
             child: state.failure != null
                 ? ErrorView(
                     message: state.failure!.message,
-                    onRetry: () {
-                      notifier.loadInitial();
-                    },
+                    onRetry: notifier.loadInitial,
                   )
                 : state.editMode
                 ? EditChapterBody(
@@ -585,9 +583,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
                         current: current,
                         previewMode: state.previewMode,
                         onTogglePreview: notifier.togglePreviewMode,
-                        onCreated: (created) {
-                          notifier.jumpToCreated(created);
-                        },
+                        onCreated: notifier.jumpToCreated,
                         onBetaEvaluate: _onBetaEvaluatePressed,
                         showBeta: isSignedIn,
                         betaLoading: _betaLoading,

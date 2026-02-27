@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../theme/themes.dart';
-import '../../../l10n/app_localizations.dart';
+import 'package:writer/theme/themes.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 String _getThemeLabel(AppThemeFamily family, BuildContext context) {
   final l10n = AppLocalizations.of(context)!;

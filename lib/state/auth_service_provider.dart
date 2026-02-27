@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/auth_service.dart';
+import 'package:writer/services/auth_service.dart';
 import 'ai_service_settings.dart';
 
 /// Provider for AuthService

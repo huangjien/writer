@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../theme/reader_typography.dart';
-import '../../../theme/font_packs.dart';
-import '../../../theme/reader_background.dart';
-import '../../../state/theme_controller.dart';
-import '../../../shared/widgets/neumorphic_dropdown.dart';
-import '../../../shared/widgets/neumorphic_slider.dart';
-import '../../../shared/widgets/neumorphic_switch.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/theme/reader_typography.dart';
+import 'package:writer/theme/font_packs.dart';
+import 'package:writer/theme/reader_background.dart';
+import 'package:writer/state/theme_controller.dart';
+import 'package:writer/shared/widgets/neumorphic_dropdown.dart';
+import 'package:writer/shared/widgets/neumorphic_slider.dart';
+import 'package:writer/shared/widgets/neumorphic_switch.dart';
 
 class TypographySettingsSection extends ConsumerWidget {
   const TypographySettingsSection({super.key});

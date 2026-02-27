@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/l10n/app_localizations.dart';
-import '../state/ai_chat_providers.dart';
+import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 
 class AiChatHistoryView extends ConsumerWidget {
   const AiChatHistoryView({super.key, required this.onClose});

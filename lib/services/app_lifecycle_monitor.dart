@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../state/sync_service_provider.dart';
-import '../services/sync_service.dart';
-import '../services/background_sync_service.dart';
+import 'package:writer/state/sync_service_provider.dart';
+import 'package:writer/services/sync_service.dart';
+import 'package:writer/services/background_sync_service.dart';
 
 /// Monitors app lifecycle events to start/stop sync monitoring
 /// Starts sync when app comes to foreground, stops when in background

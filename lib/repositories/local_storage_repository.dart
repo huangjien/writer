@@ -1,15 +1,15 @@
 import 'dart:convert';
-import '../services/storage_service.dart';
-import '../models/chapter_cache.dart';
-import '../models/novel.dart';
-import '../models/character.dart';
-import '../models/character_note.dart';
-import '../models/scene.dart';
-import '../models/scene_note.dart';
-import '../models/template.dart';
-import '../models/character_template_row.dart';
-import '../models/scene_template_row.dart';
-import '../models/cache_metadata.dart';
+import 'package:writer/services/storage_service.dart';
+import 'package:writer/models/chapter_cache.dart';
+import 'package:writer/models/novel.dart';
+import 'package:writer/models/character.dart';
+import 'package:writer/models/character_note.dart';
+import 'package:writer/models/scene.dart';
+import 'package:writer/models/scene_note.dart';
+import 'package:writer/models/template.dart';
+import 'package:writer/models/character_template_row.dart';
+import 'package:writer/models/scene_template_row.dart';
+import 'package:writer/models/cache_metadata.dart';
 
 /// Repository for local storage operations
 ///
@@ -292,7 +292,7 @@ class LocalStorageRepository {
         final json = _storage.getString(key);
         if (json != null) {
           try {
-            final map = jsonDecode(json);
+            final map = jsonDecode(json) as Map<String, dynamic>;
             if (map['novelId'] != null) {
               novelIds.add(map['novelId'] as String);
             }

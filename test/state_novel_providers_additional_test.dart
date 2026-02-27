@@ -42,7 +42,7 @@ void main() {
     () async {
       final cache = CapturingLocalRepo();
       final prefs = await SharedPreferences.getInstance();
-      final testNovels = const [
+      const testNovels = [
         Novel(
           id: 'n1',
           title: 'A',
@@ -115,12 +115,8 @@ void main() {
         ),
       ];
 
-      when(
-        () => repo.fetchPublicNovels(),
-      ).thenAnswer((_) async => publicNovels);
-      when(
-        () => local.getLibraryNovels(),
-      ).thenAnswer((_) async => cachedNovels);
+      when(repo.fetchPublicNovels).thenAnswer((_) async => publicNovels);
+      when(local.getLibraryNovels).thenAnswer((_) async => cachedNovels);
 
       final container = ProviderContainer(
         overrides: [
@@ -155,10 +151,8 @@ void main() {
         ),
       ];
 
-      when(
-        () => repo.fetchPublicNovels(),
-      ).thenAnswer((_) async => publicNovels);
-      when(() => local.getLibraryNovels()).thenAnswer((_) async => const []);
+      when(repo.fetchPublicNovels).thenAnswer((_) async => publicNovels);
+      when(local.getLibraryNovels).thenAnswer((_) async => const []);
 
       final container = ProviderContainer(
         overrides: [
@@ -234,10 +228,10 @@ void main() {
         isPublic: false,
       ),
     ];
-    when(() => local.getLibraryNovels()).thenAnswer((_) async => cached);
+    when(local.getLibraryNovels).thenAnswer((_) async => cached);
 
     final manager = MockDataManager();
-    when(() => manager.getAllNovels()).thenAnswer((_) async => const []);
+    when(manager.getAllNovels).thenAnswer((_) async => const []);
 
     final container = ProviderContainer(
       overrides: [
@@ -251,12 +245,12 @@ void main() {
 
     final novels = await container.read(novelsProviderV2.future);
     expect(novels.map((n) => n.id).toList(), ['c1']);
-    verifyNever(() => manager.getAllNovels());
+    verifyNever(manager.getAllNovels);
   });
 
   test('novelsProviderV2 returns data manager novels when signed in', () async {
     final local = CapturingLocalRepo();
-    when(() => local.getLibraryNovels()).thenAnswer((_) async => const []);
+    when(local.getLibraryNovels).thenAnswer((_) async => const []);
 
     final manager = MockDataManager();
     const fromManager = [
@@ -270,7 +264,7 @@ void main() {
         isPublic: false,
       ),
     ];
-    when(() => manager.getAllNovels()).thenAnswer((_) async => fromManager);
+    when(manager.getAllNovels).thenAnswer((_) async => fromManager);
 
     final container = ProviderContainer(
       overrides: [
@@ -284,12 +278,12 @@ void main() {
 
     final novels = await container.read(novelsProviderV2.future);
     expect(novels.map((n) => n.id).toList(), ['d1']);
-    verify(() => manager.getAllNovels()).called(1);
+    verify(manager.getAllNovels).called(1);
   });
 
   test('novelsProvider returns empty when not signed in', () async {
     final repo = MockNovelRepository();
-    when(() => repo.fetchPublicNovels()).thenAnswer((_) async => const []);
+    when(repo.fetchPublicNovels).thenAnswer((_) async => const []);
 
     final container = ProviderContainer(
       overrides: [
@@ -302,12 +296,12 @@ void main() {
 
     final novels = await container.read(novelsProvider.future);
     expect(novels, isEmpty);
-    verifyNever(() => repo.fetchPublicNovels());
+    verifyNever(repo.fetchPublicNovels);
   });
 
   test('memberNovelsProvider returns empty when not signed in', () async {
     final repo = MockNovelRepository();
-    when(() => repo.fetchMemberNovels()).thenAnswer((_) async => const []);
+    when(repo.fetchMemberNovels).thenAnswer((_) async => const []);
 
     final container = ProviderContainer(
       overrides: [
@@ -320,7 +314,7 @@ void main() {
 
     final novels = await container.read(memberNovelsProvider.future);
     expect(novels, isEmpty);
-    verifyNever(() => repo.fetchMemberNovels());
+    verifyNever(repo.fetchMemberNovels);
   });
 
   test(

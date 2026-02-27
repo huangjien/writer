@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../theme/theme_extensions.dart';
-import '../../theme/neumorphic_styles.dart';
-import '../utils/contrast_utils.dart';
+import 'package:writer/theme/theme_extensions.dart';
+import 'package:writer/theme/neumorphic_styles.dart';
+import 'package:writer/shared/utils/contrast_utils.dart';
 
 class NeumorphicText extends StatelessWidget {
   const NeumorphicText(

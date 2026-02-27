@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../theme/design_tokens.dart';
-import '../../../theme/theme_extensions.dart';
-import '../empty_state.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/theme/theme_extensions.dart';
+import 'package:writer/shared/widgets/empty_state.dart';
 
 class NovelEmptyState extends StatelessWidget {
   const NovelEmptyState({

@@ -59,8 +59,8 @@ class CharacterTemplatesListNotifier
     extends Notifier<CharacterTemplatesListState> {
   @override
   CharacterTemplatesListState build() => CharacterTemplatesListState(
-    items: [],
-    displayItems: [],
+    items: const [],
+    displayItems: const [],
     isLoading: true,
     isSearchLoading: false,
     searchCtrl: TextEditingController(),

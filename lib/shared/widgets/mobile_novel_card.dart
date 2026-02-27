@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
-import '../../theme/design_tokens.dart';
-import '../../theme/theme_extensions.dart';
-import '../../models/novel.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/theme/theme_extensions.dart';
+import 'package:writer/models/novel.dart';
 import 'mobile_bottom_sheet.dart';
 import 'mobile_gestures.dart';
-import '../image_utils.dart';
+import 'package:writer/shared/image_utils.dart';
 import 'neumorphic_button.dart';
 import 'gestures/swipe_actions.dart';
 import 'gestures/pinch_to_zoom.dart';

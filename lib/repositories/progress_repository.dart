@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/user_progress.dart';
+import 'package:writer/models/user_progress.dart';
 import 'progress_port.dart';
 import 'remote_repository.dart';
 

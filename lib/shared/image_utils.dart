@@ -22,9 +22,7 @@ class ImageUtils {
         '.webp',
         '.svg',
       ];
-      final hasImageExtension = imageExtensions.any(
-        (ext) => path.endsWith(ext),
-      );
+      final hasImageExtension = imageExtensions.any(path.endsWith);
 
       // Allow Unsplash URLs and other common image hosts without extensions
       final isKnownImageHost =

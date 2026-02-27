@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
 
-import '../state/novel_providers.dart';
+import 'package:writer/state/novel_providers.dart';
 
 class RecentChapters extends ConsumerWidget {
   const RecentChapters({super.key});

@@ -11,7 +11,7 @@ import 'package:writer/shared/widgets/app_buttons.dart';
 import 'package:writer/shared/widgets/app_dialog.dart';
 import 'package:writer/shared/widgets/loading/skeleton_list_items.dart';
 import 'package:writer/shared/widgets/error_state.dart';
-import '../../state/template_list_state.dart';
+import 'package:writer/features/summary/state/template_list_state.dart';
 
 class SceneTemplatesListScreen extends ConsumerWidget {
   const SceneTemplatesListScreen({super.key, required this.novelId});

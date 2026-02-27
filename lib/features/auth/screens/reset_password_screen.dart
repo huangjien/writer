@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:go_router/go_router.dart';
-import '../../../state/ai_service_settings.dart';
-import '../../../state/session_state.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../shared/widgets/app_buttons.dart';
-import '../../../shared/widgets/neumorphic_textfield.dart';
-import '../state/auth_form_state.dart';
+import 'package:writer/state/ai_service_settings.dart';
+import 'package:writer/state/session_state.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/neumorphic_textfield.dart';
+import 'package:writer/features/auth/state/auth_form_state.dart';
 
 class ResetPasswordScreen extends ConsumerWidget {
   const ResetPasswordScreen({super.key, this.client});
@@ -98,8 +98,8 @@ class _ResetPasswordContentState extends ConsumerState<_ResetPasswordContent> {
       if (res.statusCode != 200) {
         String msg = l10n.updateFailed;
         try {
-          final decoded = jsonDecode(res.body);
-          if (decoded['detail'] != null) {
+          final decoded = jsonDecode(res.body) as Map<String, dynamic>?;
+          if (decoded != null && decoded['detail'] != null) {
             msg = decoded['detail'].toString();
           }
         } catch (_) {}

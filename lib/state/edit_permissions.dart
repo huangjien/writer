@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../repositories/remote_repository.dart';
+import 'package:writer/repositories/remote_repository.dart';
 import 'providers.dart';
 
 /// Granular edit role used to gate UI controls.

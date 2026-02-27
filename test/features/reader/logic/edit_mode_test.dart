@@ -46,7 +46,7 @@ class DummyChapterPort implements ChapterPort {
 
 void main() {
   testWidgets('isEditDirty returns false by default', (tester) async {
-    final chapter = const Chapter(
+    const chapter = Chapter(
       id: 'c1',
       novelId: 'n1',
       idx: 1,
@@ -76,7 +76,7 @@ void main() {
   testWidgets('showDiscardDialogBridge delegates to showDiscardDialog', (
     tester,
   ) async {
-    final chapter = const Chapter(
+    const chapter = Chapter(
       id: 'c1',
       novelId: 'n1',
       idx: 1,

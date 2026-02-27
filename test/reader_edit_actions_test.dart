@@ -55,7 +55,7 @@ class CapturingChapterPort implements ChapterPort {
 void main() {
   testWidgets('ReaderEditActions triggers save', (tester) async {
     final port = CapturingChapterPort();
-    final current = const Chapter(
+    const current = Chapter(
       id: 'c1',
       novelId: 'n1',
       idx: 1,

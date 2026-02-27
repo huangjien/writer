@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../theme/design_tokens.dart';
-import '../../theme/theme_extensions.dart';
-import '../utils/contrast_utils.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/theme/theme_extensions.dart';
+import 'package:writer/shared/utils/contrast_utils.dart';
 
 class NeumorphicDropdown<T> extends StatelessWidget {
   const NeumorphicDropdown({

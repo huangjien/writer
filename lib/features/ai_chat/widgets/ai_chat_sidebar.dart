@@ -7,7 +7,7 @@ import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
 import 'ai_context_toggle.dart';
 import 'ai_chat_history_view.dart';
-import '../models/chat_message.dart';
+import 'package:writer/features/ai_chat/models/chat_message.dart';
 
 class AiChatSidebar extends ConsumerStatefulWidget {
   const AiChatSidebar({super.key, this.width});
@@ -276,7 +276,7 @@ class _ChatMessageBubble extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final extras = 48.0;
+          const extras = 48.0;
           final maxW = (constraints.maxWidth - extras).clamp(
             100.0,
             constraints.maxWidth,

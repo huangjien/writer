@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/chapter.dart';
-import '../../../state/chapter_edit_controller.dart';
+import 'package:writer/models/chapter.dart';
+import 'package:writer/state/chapter_edit_controller.dart';
 import 'edit_discard_dialog.dart';
 
 bool isEditDirty(WidgetRef ref, Chapter current) {

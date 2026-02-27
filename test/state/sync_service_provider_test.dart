@@ -72,7 +72,7 @@ void main() {
       container.dispose();
 
       // Verify that disposal doesn't throw
-      expect(() => container.dispose(), returnsNormally);
+      expect(container.dispose, returnsNormally);
     });
   });
 

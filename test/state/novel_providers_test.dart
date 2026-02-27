@@ -4,7 +4,7 @@ import 'package:writer/models/novel.dart';
 void main() {
   group('Novel', () {
     test('Novel class can be created with required fields', () {
-      final novel = const Novel(
+      const novel = Novel(
         id: '1',
         title: 'Test Novel',
         languageCode: 'en',
@@ -16,7 +16,7 @@ void main() {
     });
 
     test('Novel class with optional fields', () {
-      final novel = const Novel(
+      const novel = Novel(
         id: '2',
         title: 'Another Novel',
         author: 'Test Author',
@@ -31,7 +31,7 @@ void main() {
     });
 
     test('Novel can be copied', () {
-      final novel = const Novel(
+      const novel = Novel(
         id: '1',
         title: 'Test Novel',
         languageCode: 'en',
@@ -45,7 +45,7 @@ void main() {
     });
 
     test('Novel has default values for optional fields', () {
-      final novel = const Novel(
+      const novel = Novel(
         id: '3',
         title: 'Minimal Novel',
         languageCode: 'en',
@@ -58,7 +58,7 @@ void main() {
     });
 
     test('Novel can be converted to map', () {
-      final novel = const Novel(
+      const novel = Novel(
         id: '4',
         title: 'Mapped Novel',
         author: 'Test Author',
@@ -123,7 +123,7 @@ void main() {
     });
 
     test('Novel.toMap converts to snake_case', () {
-      final novel = const Novel(
+      const novel = Novel(
         id: '8',
         title: 'Snake Case Novel',
         languageCode: 'en',
@@ -138,7 +138,7 @@ void main() {
     });
 
     test('Novel.copyWith can update all fields', () {
-      final novel = const Novel(
+      const novel = Novel(
         id: '9',
         title: 'Original Title',
         languageCode: 'en',
@@ -165,7 +165,7 @@ void main() {
     });
 
     test('Novel.copyWith preserves null fields', () {
-      final novel = const Novel(
+      const novel = Novel(
         id: '11',
         title: 'Preserve Null Novel',
         author: 'Original Author',
@@ -181,7 +181,7 @@ void main() {
     });
 
     test('Novel.isPublic can be toggled', () {
-      final novel = const Novel(
+      const novel = Novel(
         id: '12',
         title: 'Public Novel',
         languageCode: 'en',

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../state/ui_style_controller.dart';
-import '../../../theme/ui_styles.dart';
-import '../../../shared/widgets/neumorphic_dropdown.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/ui_style_controller.dart';
+import 'package:writer/theme/ui_styles.dart';
+import 'package:writer/shared/widgets/neumorphic_dropdown.dart';
 
 class StyleSettingsSection extends ConsumerWidget {
   const StyleSettingsSection({super.key});
@@ -97,7 +97,7 @@ class StylePreviewGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = UiStyleFamily.values;
+    const styles = UiStyleFamily.values;
     final screenWidth = MediaQuery.of(context).size.width;
     // User requested panels to be 1/4 of current size, so we double the crossAxisCount
     // (halving width and height = 1/4 area)

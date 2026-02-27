@@ -21,8 +21,8 @@ void main() {
         const Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'One'),
       ];
 
-      final content = 'First paragraph line.\n\nSecond paragraph line.';
-      final secondStartIndex =
+      const content = 'First paragraph line.\n\nSecond paragraph line.';
+      const secondStartIndex =
           'First paragraph line.'.length + 2; // account for two newlines
 
       final app1 = await buildAppScope(

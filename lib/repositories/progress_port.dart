@@ -1,4 +1,4 @@
-import '../models/user_progress.dart';
+import 'package:writer/models/user_progress.dart';
 
 abstract class ProgressPort {
   Future<void> upsertProgress(UserProgress progress);

@@ -160,9 +160,7 @@ void main() {
       );
 
       final statuses = <SyncStatus>[];
-      final subscription = service.syncStatusStream.listen((status) {
-        statuses.add(status);
-      });
+      final subscription = service.syncStatusStream.listen(statuses.add);
 
       await service.performSync();
 

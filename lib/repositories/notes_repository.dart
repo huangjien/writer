@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/repositories/remote_repository.dart';
-import '../models/character_note.dart';
-import '../models/scene_note.dart';
+import 'package:writer/models/character_note.dart';
+import 'package:writer/models/scene_note.dart';
 
 final notesRepositoryProvider = Provider<NotesRepository>((ref) {
   final remote = ref.watch(remoteRepositoryProvider);

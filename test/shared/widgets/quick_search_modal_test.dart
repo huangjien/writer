@@ -183,7 +183,7 @@ void main() {
     });
 
     test('SearchResult holds required properties', () {
-      final result = const SearchResult(
+      const result = SearchResult(
         type: SearchResultType.novel,
         id: '1',
         title: 'Test Novel',
@@ -198,7 +198,7 @@ void main() {
     });
 
     test('SearchResult with subtitle', () {
-      final result = const SearchResult(
+      const result = SearchResult(
         type: SearchResultType.novel,
         id: '1',
         title: 'Test Novel',

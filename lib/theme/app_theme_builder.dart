@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../theme/themes.dart';
-import '../theme/reader_typography.dart';
+import 'package:writer/theme/themes.dart';
+import 'package:writer/theme/reader_typography.dart';
 import '../theme/font_packs.dart' show ReaderFontPack;
 import '../theme/font_packs.dart' as font_packs;
-import '../theme/design_tokens.dart';
+import 'package:writer/theme/design_tokens.dart';
 
-import '../theme/no_animation_transitions.dart';
-import '../theme/fade_through_page_transitions.dart';
+import 'package:writer/theme/no_animation_transitions.dart';
+import 'package:writer/theme/fade_through_page_transitions.dart';
 
 /// Builder for app themes
 ///

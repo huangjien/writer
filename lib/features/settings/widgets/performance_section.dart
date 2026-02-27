@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../state/performance_settings.dart';
-import '../../../state/providers.dart';
-import '../../../shared/widgets/neumorphic_switch.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/state/performance_settings.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/shared/widgets/neumorphic_switch.dart';
 
 class PerformanceSection extends ConsumerWidget {
   const PerformanceSection({super.key});

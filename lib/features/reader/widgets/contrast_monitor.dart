@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'contrast_validator.dart';
-import '../../../theme/accessibility/contrast_checker.dart';
+import 'package:writer/theme/accessibility/contrast_checker.dart';
 
 enum ContrastSeverity { ok, warning, error }
 

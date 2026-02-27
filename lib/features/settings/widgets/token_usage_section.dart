@@ -5,9 +5,9 @@ import 'package:writer/features/settings/state/token_usage_providers.dart';
 import 'package:writer/models/token_usage.dart';
 import 'package:writer/shared/api_exception.dart';
 import 'package:intl/intl.dart';
-import '../../../theme/design_tokens.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../shared/widgets/gradient_background.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/shared/widgets/gradient_background.dart';
 
 /// Enhanced token usage section with modern design
 /// Features:

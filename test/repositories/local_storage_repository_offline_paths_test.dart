@@ -94,7 +94,7 @@ void main() {
     });
 
     test('saveCharacterForm uses correct key path', () async {
-      final character = const Character(
+      const character = Character(
         novelId: 'nov1',
         name: 'Char1',
         role: 'Role',
@@ -110,7 +110,7 @@ void main() {
     });
 
     test('saveSceneForm uses correct key path', () async {
-      final scene = const Scene(
+      const scene = Scene(
         novelId: 'nov1',
         title: 'Scene1',
         location: 'Loc',

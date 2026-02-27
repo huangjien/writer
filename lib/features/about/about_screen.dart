@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class AboutScreen extends ConsumerStatefulWidget {
   const AboutScreen({super.key});

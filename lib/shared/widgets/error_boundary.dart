@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../l10n/app_localizations.dart';
-import '../../services/logger_service.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/services/logger_service.dart';
 import 'error_view.dart';
 
 class ErrorBoundary extends StatefulWidget {

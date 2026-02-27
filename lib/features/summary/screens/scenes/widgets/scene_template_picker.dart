@@ -52,7 +52,7 @@ class SceneTemplatePicker extends StatelessWidget {
                 (t) => (t.title ?? '').toLowerCase().contains(q.toLowerCase()),
               );
             },
-            onSelected: (selection) => onSelectedTemplate(selection),
+            onSelected: onSelectedTemplate,
             fieldViewBuilder:
                 (context, textEditingController, focusNode, onFieldSubmitted) {
                   onTemplateControllerAvailable(textEditingController);

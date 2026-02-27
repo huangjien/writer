@@ -1,4 +1,4 @@
-import '../models/api_error_response.dart';
+import 'package:writer/models/api_error_response.dart';
 
 class ApiException implements Exception {
   final int statusCode;

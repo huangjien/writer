@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import '../models/story_line.dart';
-import '../models/api_error_response.dart';
-import '../shared/constants.dart';
-import '../shared/api_exception.dart';
+import 'package:writer/models/story_line.dart';
+import 'package:writer/models/api_error_response.dart';
+import 'package:writer/shared/constants.dart';
+import 'package:writer/shared/api_exception.dart';
 
 class StoryLinesService {
   final String baseUrl;

@@ -56,7 +56,7 @@ void main() {
       final monitor = NetworkMonitor(checker);
 
       // Should not throw when disposing
-      expect(() => monitor.dispose(), returnsNormally);
+      expect(monitor.dispose, returnsNormally);
       checker.dispose();
     });
 
@@ -66,7 +66,7 @@ void main() {
       monitor.dispose();
 
       // Should not throw
-      expect(() => monitor.dispose(), returnsNormally);
+      expect(monitor.dispose, returnsNormally);
       checker.dispose();
     });
 
@@ -77,7 +77,7 @@ void main() {
       monitor.dispose();
 
       // Should not throw
-      expect(() => monitor.dispose(), returnsNormally);
+      expect(monitor.dispose, returnsNormally);
       checker.dispose();
     });
 
@@ -98,9 +98,9 @@ void main() {
       'should handle stream subscription without starting monitoring',
       () async {
         final connectivityEvents = <bool>[];
-        final subscription = networkMonitor.connectivityStream.listen((event) {
-          connectivityEvents.add(event);
-        });
+        final subscription = networkMonitor.connectivityStream.listen(
+          connectivityEvents.add,
+        );
 
         await pumpEventQueue();
         await subscription.cancel();
@@ -114,13 +114,13 @@ void main() {
       final events1 = <bool>[];
       final events2 = <bool>[];
 
-      final subscription1 = networkMonitor.connectivityStream.listen((event) {
-        events1.add(event);
-      });
+      final subscription1 = networkMonitor.connectivityStream.listen(
+        events1.add,
+      );
 
-      final subscription2 = networkMonitor.connectivityStream.listen((event) {
-        events2.add(event);
-      });
+      final subscription2 = networkMonitor.connectivityStream.listen(
+        events2.add,
+      );
 
       await pumpEventQueue();
 
@@ -160,7 +160,7 @@ void main() {
       bool errorOccurred = false;
 
       final subscription = networkMonitor.connectivityStream.listen(
-        (event) => connectivityEvents.add(event),
+        connectivityEvents.add,
         onError: (error) {
           errorOccurred = true;
         },
@@ -283,9 +283,9 @@ void main() {
       final monitor = NetworkMonitor(checker);
       final connectivityEvents = <bool>[];
 
-      final subscription = monitor.connectivityStream.listen((event) {
-        connectivityEvents.add(event);
-      });
+      final subscription = monitor.connectivityStream.listen(
+        connectivityEvents.add,
+      );
 
       // Start monitoring
       monitor.startMonitoring();
@@ -464,7 +464,7 @@ void main() {
       final monitor = NetworkMonitor(checker);
 
       // Stop without starting
-      expect(() => monitor.stopMonitoring(), returnsNormally);
+      expect(monitor.stopMonitoring, returnsNormally);
 
       monitor.dispose();
       checker.dispose();

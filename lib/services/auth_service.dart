@@ -68,15 +68,16 @@ class RemoteAuthService implements AuthService {
       if (response.statusCode != 200) {
         String errorMessage = 'Sign in failed';
         try {
-          final decoded = jsonDecode(response.body);
-          if (decoded['detail'] != null) {
+          final decoded = jsonDecode(response.body) as Map<String, dynamic>?;
+          if (decoded != null && decoded['detail'] != null) {
             errorMessage = decoded['detail'].toString();
           }
         } catch (_) {}
         return SignInResult.failure(errorMessage);
       }
 
-      final data = jsonDecode(utf8.decode(response.bodyBytes));
+      final data =
+          jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
       final sessionId = data['session_id'];
       final refreshToken = data['refresh_token'];
       if (sessionId is String && sessionId.isNotEmpty) {
@@ -104,15 +105,16 @@ class RemoteAuthService implements AuthService {
       if (response.statusCode != 200) {
         String errorMessage = 'Refresh failed';
         try {
-          final decoded = jsonDecode(response.body);
-          if (decoded['detail'] != null) {
+          final decoded = jsonDecode(response.body) as Map<String, dynamic>?;
+          if (decoded != null && decoded['detail'] != null) {
             errorMessage = decoded['detail'].toString();
           }
         } catch (_) {}
         return SignInResult.failure(errorMessage);
       }
 
-      final data = jsonDecode(utf8.decode(response.bodyBytes));
+      final data =
+          jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
       final sessionId = data['session_id'];
       final newRefreshToken = data['refresh_token'];
       if (sessionId is String && sessionId.isNotEmpty) {

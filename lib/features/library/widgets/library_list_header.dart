@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../theme/design_tokens.dart';
-import '../../../shared/widgets/neumorphic_button.dart';
-import '../../../shared/widgets/neumorphic_dropdown.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/shared/widgets/neumorphic_button.dart';
+import 'package:writer/shared/widgets/neumorphic_dropdown.dart';
 
 enum LibraryViewMode { list, grid }
 

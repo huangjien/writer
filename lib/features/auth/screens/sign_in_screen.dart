@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../state/session_state.dart';
-import '../../../state/biometric_session_state.dart';
-import '../../../state/redirect_provider.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../services/auth_service.dart';
-import '../../../state/auth_service_provider.dart';
-import '../../../shared/widgets/app_buttons.dart';
-import '../../../shared/widgets/app_dialog.dart';
-import '../../../shared/widgets/neumorphic_textfield.dart';
-import '../../../theme/design_tokens.dart';
-import '../state/sign_in_state.dart';
+import 'package:writer/state/session_state.dart';
+import 'package:writer/state/biometric_session_state.dart';
+import 'package:writer/state/redirect_provider.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/services/auth_service.dart';
+import 'package:writer/state/auth_service_provider.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/app_dialog.dart';
+import 'package:writer/shared/widgets/neumorphic_textfield.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/features/auth/state/sign_in_state.dart';
 
 class SignInScreen extends ConsumerWidget {
   const SignInScreen({super.key});

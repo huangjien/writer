@@ -6,7 +6,7 @@ import 'package:writer/models/scene_template_row.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/shared/api_exception.dart';
 import 'package:writer/shared/widgets/error_state.dart';
-import '../../state/template_list_state.dart';
+import 'package:writer/features/summary/state/template_list_state.dart';
 
 class ScenesListScreen extends ConsumerWidget {
   const ScenesListScreen({super.key, required this.novelId});

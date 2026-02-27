@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../shared/widgets/loading/shimmer_skeleton.dart';
-import '../../../shared/widgets/loading/skeleton_list_items.dart';
-import '../../../theme/design_tokens.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/shared/widgets/loading/shimmer_skeleton.dart';
+import 'package:writer/shared/widgets/loading/skeleton_list_items.dart';
+import 'package:writer/theme/design_tokens.dart';
 
 class LibraryLoadingList extends StatelessWidget {
   const LibraryLoadingList({super.key});

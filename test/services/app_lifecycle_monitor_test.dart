@@ -204,9 +204,7 @@ void main() {
   group('AppLifecycleMonitor error handling', () {
     testWidgets('should debugPrint errors in debug mode', (tester) async {
       final mockSyncService = MockSyncService();
-      when(
-        () => mockSyncService.startMonitoring(),
-      ).thenThrow(Exception('Debug error'));
+      when(mockSyncService.startMonitoring).thenThrow(Exception('Debug error'));
 
       // Capture debug print calls
       final debugPrints = <String>[];
@@ -252,7 +250,7 @@ void main() {
       );
 
       // Create and dispose quickly
-      final widget = const AppLifecycleMonitor();
+      const widget = AppLifecycleMonitor();
       await tester.pumpWidget(
         UncontrolledProviderScope(container: testContainer, child: widget),
       );
@@ -293,8 +291,8 @@ void main() {
       );
       await tester.pumpWidget(Container());
 
-      verify(() => localMockSyncService.startMonitoring()).called(1);
-      verify(() => localMockSyncService.stopMonitoring()).called(2);
+      verify(localMockSyncService.startMonitoring).called(1);
+      verify(localMockSyncService.stopMonitoring).called(2);
 
       testContainer.dispose();
     });

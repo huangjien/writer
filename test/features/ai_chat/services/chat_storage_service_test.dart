@@ -65,11 +65,12 @@ void main() {
 
       final jsonString = prefs.getString('ai_chat_sessions');
       expect(jsonString, isNotNull);
-      final json = jsonDecode(jsonString!);
+      final json = jsonDecode(jsonString!) as List<dynamic>;
       expect(json, isList);
       expect(json.length, 1);
-      expect(json[0]['id'], 'test-id');
-      expect(json[0]['title'], 'Test Session');
+      final firstItem = json[0] as Map<String, dynamic>;
+      expect(firstItem['id'], 'test-id');
+      expect(firstItem['title'], 'Test Session');
     });
 
     test('saveSessions overwrites existing data', () async {

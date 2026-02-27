@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../shared/strings.dart';
-import '../../../state/providers.dart';
-import '../../../state/novel_providers.dart';
-import '../../../repositories/novel_repository.dart';
-import '../../../theme/design_tokens.dart';
-import '../../../shared/widgets/neumorphic_dropdown.dart';
-import '../../../shared/widgets/app_buttons.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/shared/strings.dart';
+import 'package:writer/state/providers.dart';
+import 'package:writer/state/novel_providers.dart';
+import 'package:writer/repositories/novel_repository.dart';
+import 'package:writer/theme/design_tokens.dart';
+import 'package:writer/shared/widgets/neumorphic_dropdown.dart';
+import 'package:writer/shared/widgets/app_buttons.dart';
 import '../../../features/auth/state/auth_form_state.dart'
     show authFormProvider;
 

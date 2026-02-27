@@ -22,7 +22,7 @@ void main() {
     });
 
     test('copyWith updates provided fields', () {
-      final n = const Novel(
+      const n = Novel(
         id: 'n1',
         title: 'A',
         author: 'B',

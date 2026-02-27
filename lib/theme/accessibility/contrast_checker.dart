@@ -283,7 +283,7 @@ class ContrastAdjuster {
   }
 
   static bool _isInverted(Color original, Color modified) {
-    final threshold = 20;
+    const threshold = 20;
     return ((original.r - modified.r).abs() * 255).round().clamp(0, 255) >
             threshold &&
         ((original.g - modified.g).abs() * 255).round().clamp(0, 255) >

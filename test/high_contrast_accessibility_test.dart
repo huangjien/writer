@@ -45,8 +45,8 @@ void main() {
     });
 
     test('ContrastAdjuster provides valid suggestions for low contrast', () {
-      final foreground = const Color(0xFFCCCCCC);
-      final background = const Color(0xFFE0E0E0);
+      const foreground = Color(0xFFCCCCCC);
+      const background = Color(0xFFE0E0E0);
       final result = ContrastChecker.calculateContrast(foreground, background);
 
       if (!result.passesAA) {
@@ -135,7 +135,7 @@ void main() {
     });
 
     test('ReaderColors.fromTheme extracts correct colors from theme', () {
-      final colorScheme = const ColorScheme.light(
+      const colorScheme = ColorScheme.light(
         primary: Colors.blue,
         onPrimary: Colors.white,
         secondary: Colors.green,
@@ -161,8 +161,8 @@ void main() {
 
   group('Dynamic Contrast Detection', () {
     test('ContrastAdjuster provides multiple adjustment strategies', () {
-      final lowContrastForeground = const Color(0xFFCCCCCC);
-      final background = const Color(0xFFE0E0E0);
+      const lowContrastForeground = Color(0xFFCCCCCC);
+      const background = Color(0xFFE0E0E0);
 
       final suggestions = ContrastAdjuster.suggestColorAdjustments(
         lowContrastForeground,

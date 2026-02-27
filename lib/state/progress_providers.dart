@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers.dart';
 
-import '../models/user_progress.dart';
-import '../repositories/progress_repository.dart';
-import '../repositories/progress_port.dart';
-import '../repositories/remote_repository.dart';
+import 'package:writer/models/user_progress.dart';
+import 'package:writer/repositories/progress_repository.dart';
+import 'package:writer/repositories/progress_port.dart';
+import 'package:writer/repositories/remote_repository.dart';
 
 final progressRepositoryProvider = Provider<ProgressPort>((ref) {
   return ProgressRepository(ref.watch(remoteRepositoryProvider));
