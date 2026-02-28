@@ -8,7 +8,7 @@ import 'package:writer/widgets/side_bar.dart';
 enum AppShellType { none, appDrawer, novel }
 
 final appDrawerExpandedProvider = StateProvider.autoDispose<bool>(
-  (ref) => true,
+  (ref) => false,
 );
 
 class AppShell extends ConsumerWidget {

@@ -1326,6 +1326,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get retrieveProfile => '获取个人资料';
 
   @override
+  String get templateRetrieved => '已获取模板';
+
+  @override
+  String get noTemplateFound => '未找到模板';
+
+  @override
+  String get retrieveTemplate => '获取模板';
+
+  @override
   String get previewLabel => '预览';
 
   @override

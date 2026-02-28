@@ -199,7 +199,7 @@ void main() {
     // Wait for everything to finish
     await tester.pumpAndSettle();
 
-    expect(find.text('Profile retrieved'), findsOneWidget);
+    expect(find.text('Template retrieved'), findsOneWidget);
 
     expect(find.text('Save'), findsOneWidget);
   });
@@ -234,7 +234,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.download));
     await tester.pumpAndSettle();
 
-    expect(find.text('No profile found'), findsOneWidget);
+    expect(find.text('No template found'), findsOneWidget);
   });
 
   testWidgets('SceneTemplatesScreen updates existing templateId', (

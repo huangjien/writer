@@ -9,10 +9,13 @@ import 'package:writer/repositories/remote_repository.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:writer/repositories/notes_repository.dart';
 import 'package:writer/shared/api_exception.dart';
+import 'package:writer/shared/constants.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/shared/widgets/neumorphic_dropdown.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
 import 'package:writer/features/summary/state/character_form_state.dart';
+import 'package:writer/shared/widgets/language_indicator.dart';
+import 'package:writer/shared/mixins/language_detection_helper.dart';
 
 class CharactersScreen extends ConsumerWidget {
   const CharactersScreen({super.key, required this.novelId, this.idx});
@@ -41,13 +44,30 @@ class _CharactersContentState extends ConsumerState<_CharactersContent> {
   final _titleController = TextEditingController();
   final _summariesController = TextEditingController();
   final _synopsesController = TextEditingController();
+  late final LanguageDetectionHelper _langDetection;
 
   List<CharacterTemplateRow> _templates = [];
 
   @override
   void initState() {
     super.initState();
+    _langDetection = LanguageDetectionHelper();
+    _titleController.addListener(_onTextChanged);
     _load();
+  }
+
+  @override
+  void dispose() {
+    _titleController.removeListener(_onTextChanged);
+    _langDetection.dispose();
+    _titleController.dispose();
+    _summariesController.dispose();
+    _synopsesController.dispose();
+    super.dispose();
+  }
+
+  void _onTextChanged() {
+    _langDetection.updateDetection(_titleController.text);
   }
 
   Future<void> _load() async {
@@ -82,6 +102,7 @@ class _CharactersContentState extends ConsumerState<_CharactersContent> {
       _synopsesController.text = (data['character_synopses'] as String?) ?? '';
       final lc = (data['language_code'] as String?) ?? 'en';
       ref.read(characterFormProvider.notifier).setLanguageCode(lc);
+      _langDetection.updateDetection(_titleController.text);
     }
 
     ref
@@ -213,14 +234,6 @@ class _CharactersContentState extends ConsumerState<_CharactersContent> {
   }
 
   @override
-  void dispose() {
-    _titleController.dispose();
-    _summariesController.dispose();
-    _synopsesController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
     final formState = ref.watch(characterFormProvider);
@@ -254,7 +267,7 @@ class _CharactersContentState extends ConsumerState<_CharactersContent> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: TextFormField(
@@ -270,25 +283,35 @@ class _CharactersContentState extends ConsumerState<_CharactersContent> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        NeumorphicDropdown<String>(
-                          value: formState.languageCode,
-                          onChanged: (code) {
-                            if (code == null) return;
-                            ref
-                                .read(characterFormProvider.notifier)
-                                .setLanguageCode(code);
-                            _updateDirty();
-                          },
-                          items: [
-                            DropdownMenuItem(
-                              value: 'en',
-                              child: Text(l10n.english),
-                            ),
-                            DropdownMenuItem(
-                              value: 'zh',
-                              child: Text(l10n.chinese),
-                            ),
-                          ],
+                        Padding(
+                          padding: kInputIndicatorPadding,
+                          child: LiveLanguageIndicator(
+                            languageNotifier: _langDetection.notifier,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Padding(
+                          padding: kInputIndicatorPadding,
+                          child: NeumorphicDropdown<String>(
+                            value: formState.languageCode,
+                            onChanged: (code) {
+                              if (code == null) return;
+                              ref
+                                  .read(characterFormProvider.notifier)
+                                  .setLanguageCode(code);
+                              _updateDirty();
+                            },
+                            items: [
+                              DropdownMenuItem(
+                                value: 'en',
+                                child: Text(l10n.english),
+                              ),
+                              DropdownMenuItem(
+                                value: 'zh',
+                                child: Text(l10n.chinese),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),

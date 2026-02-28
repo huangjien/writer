@@ -1364,6 +1364,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get retrieveProfile => 'Recuperar perfil';
 
   @override
+  String get templateRetrieved => 'Template retrieved';
+
+  @override
+  String get noTemplateFound => 'No template found';
+
+  @override
+  String get retrieveTemplate => 'Retrieve template';
+
+  @override
   String get previewLabel => 'Vista previa';
 
   @override

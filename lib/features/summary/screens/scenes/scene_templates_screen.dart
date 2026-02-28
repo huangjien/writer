@@ -9,6 +9,8 @@ import 'package:writer/state/providers.dart';
 import 'package:writer/shared/api_exception.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
 import 'package:writer/features/summary/state/template_form_state.dart';
+import 'package:writer/utils/language_detector.dart';
+import 'package:writer/theme/font_packs.dart';
 
 final _logger = Logger('SceneTemplatesScreen');
 
@@ -46,13 +48,41 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
   final _descController = TextEditingController();
   late TabController _tabController;
   String? _templateId;
+  final _detectedLanguage = ValueNotifier<String>('en');
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
     _templateId = widget.templateId;
+    _nameController.addListener(_updateLanguageDetection);
     _load();
+  }
+
+  @override
+  void dispose() {
+    _nameController.removeListener(_updateLanguageDetection);
+    _detectedLanguage.dispose();
+    _nameController.dispose();
+    _descController.dispose();
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _updateLanguageDetection() {
+    _detectedLanguage.value = LanguageDetector.detectLanguage(
+      _nameController.text,
+    );
+  }
+
+  void _showSnackBar(String message, {Color? backgroundColor}) {
+    final fallback = chineseTextFallback();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: TextStyle(fontFamilyFallback: fallback)),
+        backgroundColor: backgroundColor,
+      ),
+    );
   }
 
   Future<void> _load() async {
@@ -66,6 +96,7 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
           if (remote != null) {
             _nameController.text = remote.title ?? '';
             _descController.text = remote.sceneSummaries ?? '';
+            _detectedLanguage.value = remote.languageCode;
             ref
                 .read(templateFormProvider.notifier)
                 .setLanguageCode(remote.languageCode);
@@ -75,6 +106,7 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
           if (row != null) {
             _nameController.text = row.title ?? '';
             _descController.text = row.sceneSummaries ?? '';
+            _detectedLanguage.value = row.languageCode;
             ref
                 .read(templateFormProvider.notifier)
                 .setLanguageCode(row.languageCode);
@@ -83,6 +115,7 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
       } else {
         _nameController.text = '';
         _descController.text = '';
+        _detectedLanguage.value = 'en';
         ref.read(templateFormProvider.notifier).setLanguageCode('en');
       }
     } catch (e) {
@@ -90,7 +123,11 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
     }
     ref
         .read(templateFormProvider.notifier)
-        .setBaseValues(_nameController.text, _descController.text, 'en');
+        .setBaseValues(
+          _nameController.text,
+          _descController.text,
+          _detectedLanguage.value,
+        );
   }
 
   Future<void> _onRetrieve() async {
@@ -102,13 +139,14 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
 
     try {
       final templateRepo = ref.read(templateRepositoryProvider);
+      final detectedLanguage = LanguageDetector.detectLanguage(name);
       final result = await templateRepo.generateSceneTemplate(
         title: name,
         templateContent: _descController.text.trim().isEmpty
             ? 'Scene: $name'
             : _descController.text.trim(),
         name: name,
-        languageCode: 'en',
+        languageCode: detectedLanguage,
       );
 
       if (result != null && result.containsKey('id')) {
@@ -118,33 +156,22 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
             _templateId = newId;
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.profileRetrieved),
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          _showSnackBar(AppLocalizations.of(context)!.templateRetrieved);
 
           _pollForContent(newId);
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.noProfileFound),
-            ),
-          );
+          _showSnackBar(AppLocalizations.of(context)!.noTemplateFound);
           ref.read(templateFormProvider.notifier).setRetrieving(false);
         }
       }
     } catch (e) {
       if (mounted) {
         if (e is ApiException && e.statusCode == 401) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_extractErrorMessage(e)),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
+        _showSnackBar(
+          _extractErrorMessage(e),
+          backgroundColor: Theme.of(context).colorScheme.error,
         );
         ref.read(templateFormProvider.notifier).setRetrieving(false);
       }
@@ -174,12 +201,15 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
         final repo = ref.read(templateRepositoryProvider);
         final template = await repo.getSceneTemplateById(templateId);
 
+        _logger.info(
+          'Poll attempt $i/$maxAttempts: sceneSummaries=${template?.sceneSummaries != null ? "${template!.sceneSummaries!.substring(0, template.sceneSummaries!.length > 50 ? 50 : template.sceneSummaries!.length)}..." : "null"} (${template?.sceneSummaries?.length ?? 0} chars), sceneSynopses=${template?.sceneSynopses != null ? "${template!.sceneSynopses!.substring(0, template.sceneSynopses!.length > 50 ? 50 : template.sceneSynopses!.length)}..." : "null"} (${template?.sceneSynopses?.length ?? 0} chars)',
+        );
+
         if (template != null &&
             template.sceneSummaries != null &&
-            template.sceneSummaries!.isNotEmpty &&
-            template.sceneSynopses != null &&
-            template.sceneSynopses!.isNotEmpty) {
+            template.sceneSummaries!.isNotEmpty) {
           if (mounted) {
+            _logger.info('Content ready! Stopping polling.');
             _nameController.text = template.title ?? '';
             _descController.text = template.sceneSummaries ?? '';
             ref
@@ -187,11 +217,9 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
                 .setLanguageCode(template.languageCode);
             ref.read(templateFormProvider.notifier).setRetrieving(false);
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(AppLocalizations.of(context)!.profileRetrieved),
-                backgroundColor: Theme.of(context).colorScheme.primary,
-              ),
+            _showSnackBar(
+              AppLocalizations.of(context)!.templateRetrieved,
+              backgroundColor: Theme.of(context).colorScheme.primary,
             );
           }
           return;
@@ -202,16 +230,9 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
     }
 
     if (mounted) {
+      _logger.warning('Polling exhausted after $maxAttempts attempts');
       ref.read(templateFormProvider.notifier).setRetrieving(false);
     }
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _descController.dispose();
-    _tabController.dispose();
-    super.dispose();
   }
 
   @override
@@ -250,23 +271,24 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
                   ),
                   const SizedBox(width: 8),
                   Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: DropdownButton<String>(
-                      value: formState.languageCode,
-                      onChanged: (code) {
-                        if (code == null) return;
-                        ref
-                            .read(templateFormProvider.notifier)
-                            .setLanguageCode(code);
-                      },
-                      items: [
-                        DropdownMenuItem(
-                          value: 'en',
-                          child: Text(l10n.english),
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.auto_awesome,
+                          size: 16,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
-                        DropdownMenuItem(
-                          value: 'zh',
-                          child: Text(l10n.chinese),
+                        const SizedBox(width: 4),
+                        ValueListenableBuilder<String>(
+                          valueListenable: _detectedLanguage,
+                          builder: (context, language, _) {
+                            return Text(
+                              LanguageDetector.getLanguageName(language),
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -287,7 +309,7 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.download),
-                      tooltip: l10n.retrieveProfile,
+                      tooltip: l10n.retrieveTemplate,
                     ),
                   ),
                 ],
@@ -410,9 +432,7 @@ class _SceneTemplatesContentState extends ConsumerState<_SceneTemplatesContent>
                                     formState.languageCode,
                                   );
                               if (!context.mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(l10n.saved)),
-                              );
+                              _showSnackBar(l10n.saved);
                             } catch (e) {
                               if (e is ApiException && e.statusCode == 401) {
                                 return;

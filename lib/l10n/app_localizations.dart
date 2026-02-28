@@ -2589,6 +2589,24 @@ abstract class AppLocalizations {
   /// **'Retrieve profile'**
   String get retrieveProfile;
 
+  /// No description provided for @templateRetrieved.
+  ///
+  /// In en, this message translates to:
+  /// **'Template retrieved'**
+  String get templateRetrieved;
+
+  /// No description provided for @noTemplateFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No template found'**
+  String get noTemplateFound;
+
+  /// No description provided for @retrieveTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Retrieve template'**
+  String get retrieveTemplate;
+
   /// No description provided for @previewLabel.
   ///
   /// In en, this message translates to:

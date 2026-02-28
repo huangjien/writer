@@ -3,12 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/shared/strings.dart';
+import 'package:writer/shared/constants.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/theme/design_tokens.dart';
 import 'package:writer/shared/widgets/neumorphic_dropdown.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/language_indicator.dart';
+import 'package:writer/shared/mixins/language_detection_helper.dart';
 import '../../../features/auth/state/auth_form_state.dart'
     show authFormProvider;
 
@@ -51,14 +54,28 @@ class _CreateNovelContentState extends ConsumerState<_CreateNovelContent> {
   final _descriptionController = TextEditingController();
   final _coverUrlController = TextEditingController();
   String _languageCode = 'en';
+  late final LanguageDetectionHelper _langDetection;
+
+  @override
+  void initState() {
+    super.initState();
+    _langDetection = LanguageDetectionHelper();
+    _titleController.addListener(_onTextChanged);
+  }
 
   @override
   void dispose() {
+    _titleController.removeListener(_onTextChanged);
+    _langDetection.dispose();
     _titleController.dispose();
     _authorController.dispose();
     _descriptionController.dispose();
     _coverUrlController.dispose();
     super.dispose();
+  }
+
+  void _onTextChanged() {
+    _langDetection.updateDetection(_titleController.text);
   }
 
   Future<void> _submit() async {
@@ -126,7 +143,7 @@ class _CreateNovelContentState extends ConsumerState<_CreateNovelContent> {
           child: ListView(
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: _NeumorphicTextFormField(
@@ -137,16 +154,32 @@ class _CreateNovelContentState extends ConsumerState<_CreateNovelContent> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  NeumorphicDropdown<String>(
-                    value: _languageCode,
-                    onChanged: (code) {
-                      if (code == null) return;
-                      setState(() => _languageCode = code);
-                    },
-                    items: [
-                      DropdownMenuItem(value: 'en', child: Text(l10n.english)),
-                      DropdownMenuItem(value: 'zh', child: Text(l10n.chinese)),
-                    ],
+                  Padding(
+                    padding: kInputIndicatorPadding,
+                    child: LiveLanguageIndicator(
+                      languageNotifier: _langDetection.notifier,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Padding(
+                    padding: kInputIndicatorPadding,
+                    child: NeumorphicDropdown<String>(
+                      value: _languageCode,
+                      onChanged: (code) {
+                        if (code == null) return;
+                        setState(() => _languageCode = code);
+                      },
+                      items: [
+                        DropdownMenuItem(
+                          value: 'en',
+                          child: Text(l10n.english),
+                        ),
+                        DropdownMenuItem(
+                          value: 'zh',
+                          child: Text(l10n.chinese),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

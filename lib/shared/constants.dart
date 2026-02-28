@@ -69,6 +69,11 @@ const Duration kAnimationFast = Duration(milliseconds: 150);
 const Duration kAnimationMedium = Duration(milliseconds: 300);
 const Duration kAnimationSlow = Duration(milliseconds: 500);
 
+// Debounce Durations
+const Duration kDebounceShort = Duration(milliseconds: 150);
+const Duration kDebounceMedium = Duration(milliseconds: 300);
+const Duration kDebounceLong = Duration(milliseconds: 500);
+
 // Size Constraints
 const double kButtonHeight = 40.0;
 const double kButtonHeightSmall = 32.0;
@@ -76,3 +81,9 @@ const double kButtonHeightLarge = 48.0;
 const double kIconSize = 24.0;
 const double kIconSizeSmall = 16.0;
 const double kIconSizeLarge = 32.0;
+
+// Form Layout
+const double kInputFieldLabelHeight = 28.0;
+const EdgeInsets kInputIndicatorPadding = EdgeInsets.only(
+  top: kInputFieldLabelHeight,
+);

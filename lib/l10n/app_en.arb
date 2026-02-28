@@ -542,6 +542,9 @@
   "noProfileFound": "No profile found",
   "templateName": "Template Name",
   "retrieveProfile": "Retrieve profile",
+  "templateRetrieved": "Template retrieved",
+  "noTemplateFound": "No template found",
+  "retrieveTemplate": "Retrieve template",
   "previewLabel": "Preview",
   "markdownHint": "Enter description in Markdown..."
   ,

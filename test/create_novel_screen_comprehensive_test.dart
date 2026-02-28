@@ -166,23 +166,25 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Should show English selected by default
-      expect(find.text('English'), findsOneWidget);
+      // Should show English selected by default (both in indicator and dropdown)
+      expect(find.text('English'), findsWidgets);
 
       // Tap dropdown to open
-      await tester.tap(find.byType(DropdownButton<String>));
+      final dropdown = find.byType(DropdownButton<String>);
+      await tester.tap(dropdown);
       await tester.pumpAndSettle();
 
       // Should show both options
       expect(find.text('English'), findsWidgets);
       expect(find.text('Chinese'), findsOneWidget);
 
-      // Select Chinese
-      await tester.tap(find.text('Chinese'));
+      // Select Chinese (tap the menu item, not the dropdown button)
+      final chineseItems = find.text('Chinese');
+      await tester.tap(chineseItems.first);
       await tester.pumpAndSettle();
 
-      // Should show Chinese selected
-      expect(find.text('Chinese'), findsOneWidget);
+      // Should show Chinese selected in both places
+      expect(find.text('Chinese'), findsWidgets);
     });
   });
 

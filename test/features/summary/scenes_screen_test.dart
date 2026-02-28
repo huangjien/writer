@@ -313,7 +313,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('Converted summary for'), findsOneWidget);
 
-    await tester.tap(find.text('Save'));
+    final saveButton = find.text('Save');
+    await tester.ensureVisible(saveButton);
+    await tester.pumpAndSettle();
+    await tester.tap(saveButton, warnIfMissed: false);
     await tester.pumpAndSettle();
 
     expect(find.text('Saved'), findsOneWidget);
@@ -394,7 +397,8 @@ void main() {
       await tester.pumpAndSettle();
       final saveButton = find.text('Save');
       await tester.ensureVisible(saveButton);
-      await tester.tap(saveButton);
+      await tester.pumpAndSettle();
+      await tester.tap(saveButton, warnIfMissed: false);
       await tester.pumpAndSettle();
     },
   );

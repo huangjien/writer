@@ -10,10 +10,10 @@ import 'package:writer/shared/api_exception.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 import 'package:writer/features/summary/state/template_form_state.dart';
+import 'package:writer/utils/language_detector.dart';
+import 'package:writer/theme/font_packs.dart';
 
 final _logger = Logger('CharacterTemplatesScreen');
-
-const _defaultLanguage = 'en';
 
 class CharacterTemplatesScreen extends ConsumerWidget {
   const CharacterTemplatesScreen({
@@ -48,17 +48,17 @@ class _CharacterTemplatesContentState
   final _descController = TextEditingController();
   late TabController _tabController;
   String? _templateId;
-  String? _languageCode;
   bool _isPollingCancelled = false;
+  final _detectedLanguage = ValueNotifier<String>('en');
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
     _templateId = widget.templateId;
+    _nameController.addListener(_updateLanguageDetection);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        _languageCode = Localizations.localeOf(context).languageCode;
         _load();
         ref
             .read(aiContextProvider.notifier)
@@ -80,9 +80,11 @@ class _CharacterTemplatesContentState
   void _onFormChanged() {
     if (!mounted) return;
     final notifier = ref.read(templateFormProvider.notifier);
-    final langCode =
-        _languageCode ?? Localizations.localeOf(context).languageCode;
-    notifier.updateDirty(_nameController.text, _descController.text, langCode);
+    notifier.updateDirty(
+      _nameController.text,
+      _descController.text,
+      _detectedLanguage.value,
+    );
   }
 
   Future<void> _load() async {
@@ -98,44 +100,44 @@ class _CharacterTemplatesContentState
               .getCharacterTemplateById(_templateId!);
           if (remote != null && mounted) {
             _populateControllers(remote.title, remote.characterSummaries);
-            _languageCode = remote.languageCode;
           }
         } else {
           final row = await repo.getCharacterTemplateById(_templateId!);
           if (row != null && mounted) {
             _populateControllers(row.title, row.characterSummaries);
-            _languageCode = row.languageCode;
           }
         }
       }
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.sessionExpired),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          _showSnackBar(
+            AppLocalizations.of(context)!.sessionExpired,
+            backgroundColor: Theme.of(context).colorScheme.error,
           );
         }
         return;
       }
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_extractErrorMessage(e)),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
+        _showSnackBar(
+          _extractErrorMessage(e),
+          backgroundColor: Theme.of(context).colorScheme.error,
         );
       }
     }
-    final langCode = _languageCode ?? _defaultLanguage;
+    final detected = LanguageDetector.detectLanguage(_nameController.text);
     notifier.setBaseValues(
       _nameController.text,
       _descController.text,
-      langCode,
+      detected,
     );
-    notifier.updateDirty(_nameController.text, _descController.text, langCode);
+    notifier.updateDirty(_nameController.text, _descController.text, detected);
+  }
+
+  void _updateLanguageDetection() {
+    _detectedLanguage.value = LanguageDetector.detectLanguage(
+      _nameController.text,
+    );
   }
 
   String _extractErrorMessage(Object error) {
@@ -146,6 +148,16 @@ class _CharacterTemplatesContentState
       return error.rawMessage ?? error.toString();
     }
     return error.toString();
+  }
+
+  void _showSnackBar(String message, {Color? backgroundColor}) {
+    final fallback = chineseTextFallback();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: TextStyle(fontFamilyFallback: fallback)),
+        backgroundColor: backgroundColor,
+      ),
+    );
   }
 
   Future<void> _pollForContent(String templateId) async {
@@ -165,23 +177,24 @@ class _CharacterTemplatesContentState
         final repo = ref.read(templateRepositoryProvider);
         final template = await repo.getCharacterTemplateById(templateId);
 
+        _logger.info(
+          'Poll attempt $attempt/$maxAttempts: characterSummaries=${template?.characterSummaries != null ? "${template!.characterSummaries!.substring(0, template.characterSummaries!.length > 50 ? 50 : template.characterSummaries!.length)}..." : "null"} (${template?.characterSummaries?.length ?? 0} chars), characterSynopses=${template?.characterSynopses != null ? "${template!.characterSynopses!.substring(0, template.characterSynopses!.length > 50 ? 50 : template.characterSynopses!.length)}..." : "null"} (${template?.characterSynopses?.length ?? 0} chars)',
+        );
+
         if (template != null &&
             template.characterSummaries != null &&
-            template.characterSummaries!.isNotEmpty &&
-            template.characterSynopses != null &&
-            template.characterSynopses!.isNotEmpty) {
+            template.characterSummaries!.isNotEmpty) {
           if (mounted) {
+            _logger.info('Content ready! Stopping polling.');
             _populateControllers(template.title, template.characterSummaries);
             ref
                 .read(templateFormProvider.notifier)
                 .setLanguageCode(template.languageCode);
             ref.read(templateFormProvider.notifier).setRetrieving(false);
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(AppLocalizations.of(context)!.profileRetrieved),
-                backgroundColor: Theme.of(context).colorScheme.primary,
-              ),
+            _showSnackBar(
+              AppLocalizations.of(context)!.profileRetrieved,
+              backgroundColor: Theme.of(context).colorScheme.primary,
             );
           }
           return;
@@ -197,16 +210,12 @@ class _CharacterTemplatesContentState
     }
 
     if (mounted) {
+      _logger.warning('Polling exhausted after $maxAttempts attempts');
       ref.read(templateFormProvider.notifier).setRetrieving(false);
       final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${l10n.errorGatewayTimeout}. ${l10n.retrieveProfile} ${l10n.retry}',
-          ),
-          backgroundColor: Theme.of(context).colorScheme.error,
-          duration: const Duration(seconds: 4),
-        ),
+      _showSnackBar(
+        '${l10n.errorGatewayTimeout}. ${l10n.retrieveProfile} ${l10n.retry}',
+        backgroundColor: Theme.of(context).colorScheme.error,
       );
     }
   }
@@ -214,6 +223,8 @@ class _CharacterTemplatesContentState
   @override
   void dispose() {
     _isPollingCancelled = true;
+    _nameController.removeListener(_updateLanguageDetection);
+    _detectedLanguage.dispose();
     try {
       ref.read(aiContextProvider.notifier).clearContextDelegate();
     } catch (_) {}
@@ -233,7 +244,7 @@ class _CharacterTemplatesContentState
         summaries: _descController.text.trim().isEmpty
             ? null
             : _descController.text.trim(),
-        languageCode: _languageCode ?? _defaultLanguage,
+        languageCode: _detectedLanguage.value,
       );
     } else {
       await templateRepo.upsertCharacterTemplate(
@@ -241,7 +252,7 @@ class _CharacterTemplatesContentState
         summaries: _descController.text.trim().isEmpty
             ? null
             : _descController.text.trim(),
-        languageCode: _languageCode ?? _defaultLanguage,
+        languageCode: _detectedLanguage.value,
       );
     }
   }
@@ -270,14 +281,14 @@ class _CharacterTemplatesContentState
 
     try {
       final templateRepo = ref.read(templateRepositoryProvider);
+      final detectedLanguage = LanguageDetector.detectLanguage(name);
       final result = await templateRepo.generateCharacterTemplate(
         title: name,
         templateContent: _descController.text.trim().isEmpty
             ? 'Character: $name'
             : _descController.text.trim(),
         name: name,
-        languageCode:
-            _languageCode ?? Localizations.localeOf(context).languageCode,
+        languageCode: detectedLanguage,
       );
 
       if (result != null && result.containsKey('id')) {
@@ -285,33 +296,22 @@ class _CharacterTemplatesContentState
           final newId = result['id'] as String;
           _templateId = newId;
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.profileRetrieved),
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          _showSnackBar(AppLocalizations.of(context)!.profileRetrieved);
 
           _pollForContent(newId);
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.noProfileFound),
-            ),
-          );
+          _showSnackBar(AppLocalizations.of(context)!.noProfileFound);
           notifier.setRetrieving(false);
         }
       }
     } catch (e) {
       if (mounted) {
         if (e is ApiException && e.statusCode == 401) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_extractErrorMessage(e)),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
+        _showSnackBar(
+          _extractErrorMessage(e),
+          backgroundColor: Theme.of(context).colorScheme.error,
         );
         notifier.setRetrieving(false);
       }

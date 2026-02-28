@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:writer/shared/constants.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/l10n/app_localizations_en.dart';
@@ -15,6 +16,8 @@ import 'widgets/scene_description_field.dart';
 import 'widgets/scene_template_picker.dart';
 import 'widgets/scenes_support_widgets.dart';
 import 'package:writer/features/summary/state/scene_form_state.dart';
+import 'package:writer/shared/widgets/language_indicator.dart';
+import 'package:writer/shared/mixins/language_detection_helper.dart';
 
 class ScenesScreen extends ConsumerWidget {
   const ScenesScreen({super.key, required this.novelId, this.idx});
@@ -43,13 +46,30 @@ class _ScenesContentState extends ConsumerState<_ScenesContent> {
   final _titleController = TextEditingController();
   final _locationController = TextEditingController();
   final _summaryController = TextEditingController();
+  late final LanguageDetectionHelper _langDetection;
 
   List<SceneTemplateRow> _templates = [];
 
   @override
   void initState() {
     super.initState();
+    _langDetection = LanguageDetectionHelper();
+    _titleController.addListener(_onTextChanged);
     _load();
+  }
+
+  @override
+  void dispose() {
+    _titleController.removeListener(_onTextChanged);
+    _langDetection.dispose();
+    _titleController.dispose();
+    _locationController.dispose();
+    _summaryController.dispose();
+    super.dispose();
+  }
+
+  void _onTextChanged() {
+    _langDetection.updateDetection(_titleController.text);
   }
 
   Future<void> _load() async {
@@ -97,6 +117,7 @@ class _ScenesContentState extends ConsumerState<_ScenesContent> {
       _titleController.text = item.title;
       _locationController.text = item.location ?? '';
       _summaryController.text = item.summary ?? '';
+      _langDetection.updateDetection(item.title);
     }
 
     ref
@@ -268,14 +289,6 @@ class _ScenesContentState extends ConsumerState<_ScenesContent> {
   }
 
   @override
-  void dispose() {
-    _titleController.dispose();
-    _locationController.dispose();
-    _summaryController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context) ?? AppLocalizationsEn();
     final formState = ref.watch(sceneFormProvider);
@@ -306,7 +319,7 @@ class _ScenesContentState extends ConsumerState<_ScenesContent> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: TextFormField(
@@ -321,25 +334,35 @@ class _ScenesContentState extends ConsumerState<_ScenesContent> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        DropdownButton<String>(
-                          value: formState.languageCode,
-                          onChanged: (code) {
-                            if (code == null) return;
-                            ref
-                                .read(sceneFormProvider.notifier)
-                                .setLanguageCode(code);
-                            _updateDirty();
-                          },
-                          items: [
-                            DropdownMenuItem(
-                              value: 'en',
-                              child: Text(l10n.english),
-                            ),
-                            DropdownMenuItem(
-                              value: 'zh',
-                              child: Text(l10n.chinese),
-                            ),
-                          ],
+                        Padding(
+                          padding: kInputIndicatorPadding,
+                          child: LiveLanguageIndicator(
+                            languageNotifier: _langDetection.notifier,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Padding(
+                          padding: kInputIndicatorPadding,
+                          child: DropdownButton<String>(
+                            value: formState.languageCode,
+                            onChanged: (code) {
+                              if (code == null) return;
+                              ref
+                                  .read(sceneFormProvider.notifier)
+                                  .setLanguageCode(code);
+                              _updateDirty();
+                            },
+                            items: [
+                              DropdownMenuItem(
+                                value: 'en',
+                                child: Text(l10n.english),
+                              ),
+                              DropdownMenuItem(
+                                value: 'zh',
+                                child: Text(l10n.chinese),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
