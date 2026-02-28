@@ -13,6 +13,8 @@ import 'package:writer/features/summary/state/template_form_state.dart';
 
 final _logger = Logger('CharacterTemplatesScreen');
 
+const _defaultLanguage = 'en';
+
 class CharacterTemplatesScreen extends ConsumerWidget {
   const CharacterTemplatesScreen({
     super.key,
@@ -47,6 +49,7 @@ class _CharacterTemplatesContentState
   late TabController _tabController;
   String? _templateId;
   String? _languageCode;
+  bool _isPollingCancelled = false;
 
   @override
   void initState() {
@@ -77,10 +80,11 @@ class _CharacterTemplatesContentState
   void _onFormChanged() {
     if (!mounted) return;
     final notifier = ref.read(templateFormProvider.notifier);
+    final langCode = _languageCode ?? Localizations.localeOf(context).languageCode;
     notifier.updateDirty(
       _nameController.text,
       _descController.text,
-      _languageCode ?? 'en',
+      langCode,
     );
   }
 
@@ -119,17 +123,25 @@ class _CharacterTemplatesContentState
         }
         return;
       }
-      rethrow;
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_extractErrorMessage(e)),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
+    final langCode = _languageCode ?? _defaultLanguage;
     notifier.setBaseValues(
       _nameController.text,
       _descController.text,
-      _languageCode ?? 'en',
+      langCode,
     );
     notifier.updateDirty(
       _nameController.text,
       _descController.text,
-      _languageCode ?? 'en',
+      langCode,
     );
   }
 
@@ -144,6 +156,7 @@ class _CharacterTemplatesContentState
   }
 
   Future<void> _pollForContent(String templateId) async {
+    _isPollingCancelled = false;
     const maxAttempts = 26;
     const initialDelay = Duration(seconds: 7);
     const maxDelay = Duration(seconds: 30);
@@ -153,7 +166,7 @@ class _CharacterTemplatesContentState
     for (int attempt = 0; attempt < maxAttempts; attempt++) {
       await Future.delayed(currentDelay);
 
-      if (!mounted) return;
+      if (!mounted || _isPollingCancelled) return;
 
       try {
         final repo = ref.read(templateRepositoryProvider);
@@ -207,6 +220,7 @@ class _CharacterTemplatesContentState
 
   @override
   void dispose() {
+    _isPollingCancelled = true;
     try {
       ref.read(aiContextProvider.notifier).clearContextDelegate();
     } catch (_) {}
@@ -226,7 +240,7 @@ class _CharacterTemplatesContentState
         summaries: _descController.text.trim().isEmpty
             ? null
             : _descController.text.trim(),
-        languageCode: _languageCode ?? 'en',
+        languageCode: _languageCode ?? _defaultLanguage,
       );
     } else {
       await templateRepo.upsertCharacterTemplate(
@@ -234,7 +248,7 @@ class _CharacterTemplatesContentState
         summaries: _descController.text.trim().isEmpty
             ? null
             : _descController.text.trim(),
-        languageCode: _languageCode ?? 'en',
+        languageCode: _languageCode ?? _defaultLanguage,
       );
     }
   }
