@@ -8,6 +8,8 @@ import 'package:writer/repositories/template_repository.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/shared/api_exception.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
+import 'package:writer/shared/widgets/language_indicator.dart';
+import 'package:writer/shared/mixins/language_detection_helper.dart';
 import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 import 'package:writer/features/summary/state/template_form_state.dart';
 import 'package:writer/utils/language_detector.dart';
@@ -49,14 +51,16 @@ class _CharacterTemplatesContentState
   late TabController _tabController;
   String? _templateId;
   bool _isPollingCancelled = false;
-  final _detectedLanguage = ValueNotifier<String>('en');
+  late final LanguageDetectionHelper _langDetection;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
     _templateId = widget.templateId;
-    _nameController.addListener(_updateLanguageDetection);
+    _langDetection = LanguageDetectionHelper();
+    _nameController.addListener(_onNameChanged);
+    _langDetection.notifier.addListener(_onLanguageChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _load();
@@ -77,13 +81,21 @@ class _CharacterTemplatesContentState
     _descController.text = summaries ?? '';
   }
 
+  void _onNameChanged() {
+    _langDetection.updateDetection(_nameController.text);
+  }
+
+  void _onLanguageChanged() {
+    _onFormChanged();
+  }
+
   void _onFormChanged() {
     if (!mounted) return;
     final notifier = ref.read(templateFormProvider.notifier);
     notifier.updateDirty(
       _nameController.text,
       _descController.text,
-      _detectedLanguage.value,
+      _langDetection.notifier.value,
     );
   }
 
@@ -132,12 +144,6 @@ class _CharacterTemplatesContentState
       detected,
     );
     notifier.updateDirty(_nameController.text, _descController.text, detected);
-  }
-
-  void _updateLanguageDetection() {
-    _detectedLanguage.value = LanguageDetector.detectLanguage(
-      _nameController.text,
-    );
   }
 
   String _extractErrorMessage(Object error) {
@@ -223,8 +229,9 @@ class _CharacterTemplatesContentState
   @override
   void dispose() {
     _isPollingCancelled = true;
-    _nameController.removeListener(_updateLanguageDetection);
-    _detectedLanguage.dispose();
+    _nameController.removeListener(_onNameChanged);
+    _langDetection.notifier.removeListener(_onLanguageChanged);
+    _langDetection.dispose();
     try {
       ref.read(aiContextProvider.notifier).clearContextDelegate();
     } catch (_) {}
@@ -244,7 +251,7 @@ class _CharacterTemplatesContentState
         summaries: _descController.text.trim().isEmpty
             ? null
             : _descController.text.trim(),
-        languageCode: _detectedLanguage.value,
+        languageCode: _langDetection.notifier.value,
       );
     } else {
       await templateRepo.upsertCharacterTemplate(
@@ -252,7 +259,7 @@ class _CharacterTemplatesContentState
         summaries: _descController.text.trim().isEmpty
             ? null
             : _descController.text.trim(),
-        languageCode: _detectedLanguage.value,
+        languageCode: _langDetection.notifier.value,
       );
     }
   }
@@ -381,6 +388,13 @@ class _CharacterTemplatesContentState
                       validator: (v) =>
                           v == null || v.trim().isEmpty ? l10n.required : null,
                       onChanged: (_) => _onFormChanged(),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: LiveLanguageIndicator(
+                      languageNotifier: _langDetection.notifier,
                     ),
                   ),
                   const SizedBox(width: 8),

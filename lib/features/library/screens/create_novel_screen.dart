@@ -61,11 +61,13 @@ class _CreateNovelContentState extends ConsumerState<_CreateNovelContent> {
     super.initState();
     _langDetection = LanguageDetectionHelper();
     _titleController.addListener(_onTextChanged);
+    _langDetection.notifier.addListener(_onLanguageChanged);
   }
 
   @override
   void dispose() {
     _titleController.removeListener(_onTextChanged);
+    _langDetection.notifier.removeListener(_onLanguageChanged);
     _langDetection.dispose();
     _titleController.dispose();
     _authorController.dispose();
@@ -76,6 +78,10 @@ class _CreateNovelContentState extends ConsumerState<_CreateNovelContent> {
 
   void _onTextChanged() {
     _langDetection.updateDetection(_titleController.text);
+  }
+
+  void _onLanguageChanged() {
+    setState(() => _languageCode = _langDetection.notifier.value);
   }
 
   Future<void> _submit() async {

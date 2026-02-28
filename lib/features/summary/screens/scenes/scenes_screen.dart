@@ -55,12 +55,14 @@ class _ScenesContentState extends ConsumerState<_ScenesContent> {
     super.initState();
     _langDetection = LanguageDetectionHelper();
     _titleController.addListener(_onTextChanged);
+    _langDetection.notifier.addListener(_onLanguageChanged);
     _load();
   }
 
   @override
   void dispose() {
     _titleController.removeListener(_onTextChanged);
+    _langDetection.notifier.removeListener(_onLanguageChanged);
     _langDetection.dispose();
     _titleController.dispose();
     _locationController.dispose();
@@ -70,6 +72,11 @@ class _ScenesContentState extends ConsumerState<_ScenesContent> {
 
   void _onTextChanged() {
     _langDetection.updateDetection(_titleController.text);
+  }
+
+  void _onLanguageChanged() {
+    final detectedCode = _langDetection.notifier.value;
+    ref.read(sceneFormProvider.notifier).setLanguageCode(detectedCode);
   }
 
   Future<void> _load() async {
