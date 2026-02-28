@@ -80,12 +80,9 @@ class _CharacterTemplatesContentState
   void _onFormChanged() {
     if (!mounted) return;
     final notifier = ref.read(templateFormProvider.notifier);
-    final langCode = _languageCode ?? Localizations.localeOf(context).languageCode;
-    notifier.updateDirty(
-      _nameController.text,
-      _descController.text,
-      langCode,
-    );
+    final langCode =
+        _languageCode ?? Localizations.localeOf(context).languageCode;
+    notifier.updateDirty(_nameController.text, _descController.text, langCode);
   }
 
   Future<void> _load() async {
@@ -138,11 +135,7 @@ class _CharacterTemplatesContentState
       _descController.text,
       langCode,
     );
-    notifier.updateDirty(
-      _nameController.text,
-      _descController.text,
-      langCode,
-    );
+    notifier.updateDirty(_nameController.text, _descController.text, langCode);
   }
 
   String _extractErrorMessage(Object error) {
