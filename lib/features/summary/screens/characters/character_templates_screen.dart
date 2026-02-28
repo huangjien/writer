@@ -46,26 +46,47 @@ class _CharacterTemplatesContentState
   final _descController = TextEditingController();
   late TabController _tabController;
   String? _templateId;
+  String? _languageCode;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
     _templateId = widget.templateId;
-    _load();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref
-          .read(aiContextProvider.notifier)
-          .setContextDelegate(
-            type: 'character_template',
-            loader: () async {
-              return 'Character Template: ${_nameController.text}\n\nDescription:\n${_descController.text}';
-            },
-          );
+      if (mounted) {
+        _languageCode = Localizations.localeOf(context).languageCode;
+        _load();
+        ref
+            .read(aiContextProvider.notifier)
+            .setContextDelegate(
+              type: 'character_template',
+              loader: () async {
+                return 'Character Template: ${_nameController.text}\n\nDescription:\n${_descController.text}';
+              },
+            );
+      }
     });
   }
 
+  void _populateControllers(String? title, String? summaries) {
+    _nameController.text = title ?? '';
+    _descController.text = summaries ?? '';
+  }
+
+  void _onFormChanged() {
+    if (!mounted) return;
+    final notifier = ref.read(templateFormProvider.notifier);
+    notifier.updateDirty(
+      _nameController.text,
+      _descController.text,
+      _languageCode ?? 'en',
+    );
+  }
+
   Future<void> _load() async {
+    if (!mounted) return;
+
     final notifier = ref.read(templateFormProvider.notifier);
     final repo = ref.read(localStorageRepositoryProvider);
     try {
@@ -74,23 +95,42 @@ class _CharacterTemplatesContentState
           final remote = await ref
               .read(templateRepositoryProvider)
               .getCharacterTemplateById(_templateId!);
-          if (remote != null) {
-            _nameController.text = remote.title ?? '';
-            _descController.text = remote.characterSummaries ?? '';
+          if (remote != null && mounted) {
+            _populateControllers(remote.title, remote.characterSummaries);
+            _languageCode = remote.languageCode;
           }
         } else {
           final row = await repo.getCharacterTemplateById(_templateId!);
-          if (row != null) {
-            _nameController.text = row.title ?? '';
-            _descController.text = row.characterSummaries ?? '';
+          if (row != null && mounted) {
+            _populateControllers(row.title, row.characterSummaries);
+            _languageCode = row.languageCode;
           }
         }
       }
     } catch (e) {
-      if (e is ApiException && e.statusCode == 401) return;
+      if (e is ApiException && e.statusCode == 401) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.sessionExpired),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+        return;
+      }
+      rethrow;
     }
-    notifier.setBaseValues(_nameController.text, _descController.text, 'en');
-    notifier.updateDirty(_nameController.text, _descController.text, 'en');
+    notifier.setBaseValues(
+      _nameController.text,
+      _descController.text,
+      _languageCode ?? 'en',
+    );
+    notifier.updateDirty(
+      _nameController.text,
+      _descController.text,
+      _languageCode ?? 'en',
+    );
   }
 
   String _extractErrorMessage(Object error) {
@@ -105,10 +145,13 @@ class _CharacterTemplatesContentState
 
   Future<void> _pollForContent(String templateId) async {
     const maxAttempts = 26;
-    const interval = Duration(seconds: 7);
+    const initialDelay = Duration(seconds: 7);
+    const maxDelay = Duration(seconds: 30);
 
-    for (int i = 0; i < maxAttempts; i++) {
-      await Future.delayed(interval);
+    Duration currentDelay = initialDelay;
+
+    for (int attempt = 0; attempt < maxAttempts; attempt++) {
+      await Future.delayed(currentDelay);
 
       if (!mounted) return;
 
@@ -122,8 +165,7 @@ class _CharacterTemplatesContentState
             template.characterSynopses != null &&
             template.characterSynopses!.isNotEmpty) {
           if (mounted) {
-            _nameController.text = template.title ?? '';
-            _descController.text = template.characterSummaries ?? '';
+            _populateControllers(template.title, template.characterSummaries);
             ref
                 .read(templateFormProvider.notifier)
                 .setLanguageCode(template.languageCode);
@@ -141,10 +183,25 @@ class _CharacterTemplatesContentState
       } catch (e) {
         _logger.warning('Error polling for template content: $e');
       }
+
+      final nextDelay = (currentDelay.inSeconds * 1.2).floor();
+      currentDelay = Duration(
+        seconds: nextDelay.clamp(initialDelay.inSeconds, maxDelay.inSeconds),
+      );
     }
 
     if (mounted) {
       ref.read(templateFormProvider.notifier).setRetrieving(false);
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${l10n.errorGatewayTimeout}. ${l10n.retrieveProfile} ${l10n.retry}',
+          ),
+          backgroundColor: Theme.of(context).colorScheme.error,
+          duration: const Duration(seconds: 4),
+        ),
+      );
     }
   }
 
@@ -157,6 +214,43 @@ class _CharacterTemplatesContentState
     _descController.dispose();
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> _saveRemote() async {
+    final templateRepo = ref.read(templateRepositoryProvider);
+
+    if (widget.templateId != null) {
+      await templateRepo.upsertCharacterTemplate(
+        id: widget.templateId,
+        title: _nameController.text.trim(),
+        summaries: _descController.text.trim().isEmpty
+            ? null
+            : _descController.text.trim(),
+        languageCode: _languageCode ?? 'en',
+      );
+    } else {
+      await templateRepo.upsertCharacterTemplate(
+        title: _nameController.text.trim(),
+        summaries: _descController.text.trim().isEmpty
+            ? null
+            : _descController.text.trim(),
+        languageCode: _languageCode ?? 'en',
+      );
+    }
+  }
+
+  Future<void> _saveLocal() async {
+    final repo = ref.read(localStorageRepositoryProvider);
+    await repo.saveCharacterTemplateForm(
+      widget.novelId,
+      TemplateItem(
+        novelId: widget.novelId,
+        name: _nameController.text.trim(),
+        description: _descController.text.trim().isEmpty
+            ? null
+            : _descController.text.trim(),
+      ),
+    );
   }
 
   Future<void> _onRetrieve() async {
@@ -175,7 +269,8 @@ class _CharacterTemplatesContentState
             ? 'Character: $name'
             : _descController.text.trim(),
         name: name,
-        languageCode: 'en',
+        languageCode:
+            _languageCode ?? Localizations.localeOf(context).languageCode,
       );
 
       if (result != null && result.containsKey('id')) {
@@ -216,6 +311,43 @@ class _CharacterTemplatesContentState
     }
   }
 
+  void _handleSave() {
+    final ok = _formKey.currentState?.validate() ?? false;
+    if (!ok) return;
+    final notifier = ref.read(templateFormProvider.notifier);
+    notifier.setLoading(true);
+    notifier.clearError();
+    _saveAndNotify().then((_) {
+      if (mounted) {
+        notifier.setLoading(false);
+      }
+    });
+  }
+
+  Future<void> _saveAndNotify() async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      if (ref.read(isSignedInProvider)) {
+        await _saveRemote();
+      } else {
+        await _saveLocal();
+      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.saved)));
+    } catch (e) {
+      if (e is ApiException && e.statusCode == 401) {
+        return;
+      }
+      if (!mounted) return;
+      final msg = e.toString().contains('Duplicate template name')
+          ? AppLocalizations.of(context)!.templateNameExists
+          : e.toString();
+      ref.read(templateFormProvider.notifier).setError(msg);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final formState = ref.watch(templateFormProvider);
@@ -241,16 +373,7 @@ class _CharacterTemplatesContentState
                       ),
                       validator: (v) =>
                           v == null || v.trim().isEmpty ? l10n.required : null,
-                      onChanged: (_) {
-                        final notifier = ref.read(
-                          templateFormProvider.notifier,
-                        );
-                        notifier.updateDirty(
-                          _nameController.text,
-                          _descController.text,
-                          'en',
-                        );
-                      },
+                      onChanged: (_) => _onFormChanged(),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -314,16 +437,7 @@ class _CharacterTemplatesContentState
                       maxLines: null,
                       expands: true,
                       textAlignVertical: TextAlignVertical.top,
-                      onChanged: (_) {
-                        final notifier = ref.read(
-                          templateFormProvider.notifier,
-                        );
-                        notifier.updateDirty(
-                          _nameController.text,
-                          _descController.text,
-                          'en',
-                        );
-                      },
+                      onChanged: (_) => _onFormChanged(),
                     ),
                   ],
                 ),
@@ -333,84 +447,7 @@ class _CharacterTemplatesContentState
                 children: [
                   AppButtons.primary(
                     label: l10n.save,
-                    onPressed: (formState.isLoading || !formState.isDirty)
-                        ? () {}
-                        : () async {
-                            final ok =
-                                _formKey.currentState?.validate() ?? false;
-                            if (!ok) return;
-                            final notifier = ref.read(
-                              templateFormProvider.notifier,
-                            );
-                            notifier.setLoading(true);
-                            notifier.clearError();
-                            try {
-                              final repo = ref.read(
-                                localStorageRepositoryProvider,
-                              );
-
-                              final templateRepo = ref.read(
-                                templateRepositoryProvider,
-                              );
-                              if (widget.templateId != null &&
-                                  ref.read(isSignedInProvider)) {
-                                await templateRepo.upsertCharacterTemplate(
-                                  id: widget.templateId,
-                                  title: _nameController.text.trim(),
-                                  summaries: _descController.text.trim().isEmpty
-                                      ? null
-                                      : _descController.text.trim(),
-                                  languageCode: 'en',
-                                );
-                              } else {
-                                // For local save or creation, we might not have ID logic properly set up solely in local repo
-                                // But if isSignedIn is false, we can only save to local.
-                                await repo.saveCharacterTemplateForm(
-                                  widget.novelId,
-                                  TemplateItem(
-                                    novelId: widget.novelId,
-                                    name: _nameController.text.trim(),
-                                    description:
-                                        _descController.text.trim().isEmpty
-                                        ? null
-                                        : _descController.text.trim(),
-                                  ),
-                                );
-                              }
-                              // Creation logic for remote? If widget.templateId is null?
-                              if (widget.templateId == null &&
-                                  ref.read(isSignedInProvider)) {
-                                await templateRepo.upsertCharacterTemplate(
-                                  title: _nameController.text.trim(),
-                                  summaries: _descController.text.trim().isEmpty
-                                      ? null
-                                      : _descController.text.trim(),
-                                  languageCode: 'en',
-                                );
-                              }
-                              if (!context.mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(l10n.saved)),
-                              );
-                            } catch (e) {
-                              if (e is ApiException && e.statusCode == 401) {
-                                return;
-                              }
-                              final msg =
-                                  e.toString().contains(
-                                    'Duplicate template name',
-                                  )
-                                  ? AppLocalizations.of(
-                                      context,
-                                    )!.templateNameExists
-                                  : e.toString();
-                              notifier.setError(msg);
-                            } finally {
-                              if (mounted) {
-                                notifier.setLoading(false);
-                              }
-                            }
-                          },
+                    onPressed: _handleSave,
                     enabled: !(formState.isLoading || !formState.isDirty),
                     isLoading: formState.isLoading,
                   ),
