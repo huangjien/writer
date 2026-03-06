@@ -927,5 +927,8 @@
   },
   "retry": "重試",
   "toggleSidebar": "切換側邊欄",
-  "quickSearch": "快速搜尋"
+  "quickSearch": "快速搜尋",
+  "templateRetrieved": "範本已擷取",
+  "noTemplateFound": "找不到範本",
+  "retrieveTemplate": "擷取範本"
 }

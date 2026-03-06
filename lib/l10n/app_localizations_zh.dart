@@ -3338,6 +3338,15 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get retrieveProfile => '取得個人資料';
 
   @override
+  String get templateRetrieved => '範本已擷取';
+
+  @override
+  String get noTemplateFound => '找不到範本';
+
+  @override
+  String get retrieveTemplate => '擷取範本';
+
+  @override
   String get previewLabel => '預覽';
 
   @override

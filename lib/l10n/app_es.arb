@@ -813,5 +813,8 @@
     }
   },
   "toggleSidebar": "Alternar barra lateral",
-  "quickSearch": "Búsqueda rápida"
+  "quickSearch": "Búsqueda rápida",
+  "templateRetrieved": "Plantilla recuperada",
+  "noTemplateFound": "No se encontró plantilla",
+  "retrieveTemplate": "Recuperar plantilla"
 }

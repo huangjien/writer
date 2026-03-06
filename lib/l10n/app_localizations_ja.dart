@@ -1328,13 +1328,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get retrieveProfile => 'プロフィールを取得';
 
   @override
-  String get templateRetrieved => 'Template retrieved';
+  String get templateRetrieved => 'テンプレートを取得しました';
 
   @override
-  String get noTemplateFound => 'No template found';
+  String get noTemplateFound => 'テンプレートが見つかりません';
 
   @override
-  String get retrieveTemplate => 'Retrieve template';
+  String get retrieveTemplate => 'テンプレートを取得';
 
   @override
   String get previewLabel => 'プレビュー';

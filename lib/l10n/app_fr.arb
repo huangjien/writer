@@ -813,5 +813,8 @@
     }
   },
   "toggleSidebar": "Basculer la barre latérale",
-  "quickSearch": "Recherche rapide"
+  "quickSearch": "Recherche rapide",
+  "templateRetrieved": "Modèle récupéré",
+  "noTemplateFound": "Aucun modèle trouvé",
+  "retrieveTemplate": "Récupérer le modèle"
 }

@@ -1367,13 +1367,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get retrieveProfile => 'Profil abrufen';
 
   @override
-  String get templateRetrieved => 'Template retrieved';
+  String get templateRetrieved => 'Vorlage abgerufen';
 
   @override
-  String get noTemplateFound => 'No template found';
+  String get noTemplateFound => 'Keine Vorlage gefunden';
 
   @override
-  String get retrieveTemplate => 'Retrieve template';
+  String get retrieveTemplate => 'Vorlage abrufen';
 
   @override
   String get previewLabel => 'Vorschau';

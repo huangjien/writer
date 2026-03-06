@@ -813,6 +813,9 @@
       "count": {"type": "int"}
     }
   },
-  "toggleSidebar": "Toggle Sidebar",
-  "quickSearch": "Quick Search"
+  "toggleSidebar": "Переключить боковую панель",
+  "quickSearch": "Быстрый поиск",
+  "templateRetrieved": "Шаблон получен",
+  "noTemplateFound": "Шаблон не найден",
+  "retrieveTemplate": "Получить шаблон"
 }

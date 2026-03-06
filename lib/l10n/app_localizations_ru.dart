@@ -1353,13 +1353,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get retrieveProfile => 'Retrieve profile';
 
   @override
-  String get templateRetrieved => 'Template retrieved';
+  String get templateRetrieved => 'Шаблон получен';
 
   @override
-  String get noTemplateFound => 'No template found';
+  String get noTemplateFound => 'Шаблон не найден';
 
   @override
-  String get retrieveTemplate => 'Retrieve template';
+  String get retrieveTemplate => 'Получить шаблон';
 
   @override
   String get previewLabel => 'Preview';
@@ -2050,8 +2050,8 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get toggleSidebar => 'Toggle Sidebar';
+  String get toggleSidebar => 'Переключить боковую панель';
 
   @override
-  String get quickSearch => 'Quick Search';
+  String get quickSearch => 'Быстрый поиск';
 }

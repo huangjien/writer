@@ -845,5 +845,8 @@
   },
   "retry": "再試行",
   "toggleSidebar": "サイドバーを切り替え",
-  "quickSearch": "クイック検索"
+  "quickSearch": "クイック検索",
+  "templateRetrieved": "テンプレートを取得しました",
+  "noTemplateFound": "テンプレートが見つかりません",
+  "retrieveTemplate": "テンプレートを取得"
 }

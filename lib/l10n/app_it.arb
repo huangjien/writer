@@ -845,5 +845,8 @@
   },
   "retry": "Riprova",
   "toggleSidebar": "Attiva/Disattiva barra laterale",
-  "quickSearch": "Ricerca rapida"
+  "quickSearch": "Ricerca rapida",
+  "templateRetrieved": "Modello recuperato",
+  "noTemplateFound": "Nessun modello trovato",
+  "retrieveTemplate": "Recupera modello"
 }

@@ -813,5 +813,8 @@
     }
   },
   "toggleSidebar": "Seitenleiste umschalten",
-  "quickSearch": "Schnellsuche"
+  "quickSearch": "Schnellsuche",
+  "templateRetrieved": "Vorlage abgerufen",
+  "noTemplateFound": "Keine Vorlage gefunden",
+  "retrieveTemplate": "Vorlage abrufen"
 }
