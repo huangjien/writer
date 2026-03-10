@@ -48,20 +48,16 @@ class SyncService {
     _initializeSyncState().then((_) {});
   }
 
-  /// Stream of sync state updates
   Stream<SyncState> get syncStatusStream => _syncStateController.stream;
 
-  /// Current sync state
   SyncState get currentSyncState {
     return _currentSyncState;
   }
 
-  /// Get pending operations count
   Future<int> get pendingOperationsCount async {
     return await _offlineQueue.getPendingCount();
   }
 
-  /// Initialize sync state based on current network status
   Future<void> _initializeSyncState() async {
     final isOnline = _networkMonitor.isOnline;
     final pendingCount = await _offlineQueue.getPendingCount();
@@ -93,7 +89,6 @@ class SyncService {
     _syncStateController.add(_currentSyncState);
   }
 
-  /// Start monitoring and syncing
   void startMonitoring() {
     // Start network monitoring
     _networkMonitor.startMonitoring();
@@ -118,14 +113,12 @@ class SyncService {
     });
   }
 
-  /// Stop monitoring and syncing
   void stopMonitoring() {
     _connectivitySubscription?.cancel();
     _connectivitySubscription = null;
     _networkMonitor.stopMonitoring();
   }
 
-  /// Sync all pending operations
   Future<void> syncPendingOperations() async {
     final operations = await _offlineQueue.getPendingOperations();
     if (operations.isEmpty) return;
@@ -182,7 +175,6 @@ class SyncService {
     }
   }
 
-  /// Sync a single operation
   Future<({bool success, String? error})> _syncOperation(
     OfflineOperation op,
   ) async {
@@ -221,7 +213,6 @@ class SyncService {
     return null;
   }
 
-  /// Sync create operation
   Future<bool> _syncCreate(OfflineOperation op) async {
     final data = op.data ?? const <String, dynamic>{};
     final idx = _intFromData(data, const ['idx']) ?? 1;
@@ -260,7 +251,6 @@ class SyncService {
     return false;
   }
 
-  /// Sync update operation
   Future<bool> _syncUpdate(OfflineOperation op) async {
     final data = op.data ?? const <String, dynamic>{};
     final storedServerId = _stringFromData(data, const ['serverId']);
@@ -287,7 +277,6 @@ class SyncService {
     return true;
   }
 
-  /// Sync delete operation
   Future<bool> _syncDelete(OfflineOperation op) async {
     final chapterId = op.chapterId;
     if (chapterId == null || chapterId.isEmpty) {
@@ -297,7 +286,6 @@ class SyncService {
     return true;
   }
 
-  /// Sync move operation (update chapter index)
   Future<bool> _syncMove(OfflineOperation op) async {
     final data = op.data ?? const <String, dynamic>{};
     final storedServerId = _stringFromData(data, const ['serverId']);
@@ -315,7 +303,6 @@ class SyncService {
     return true;
   }
 
-  /// Update operation with server ID after successful sync
   Future<void> _updateOperationWithServerId(
     String opId,
     String serverId,
@@ -339,7 +326,6 @@ class SyncService {
     }
   }
 
-  /// Schedule sync with debounce
   void _scheduleSync() {
     _syncDebounceTimer?.cancel();
     _syncDebounceTimer = Timer(_syncDebounceDuration, () {
@@ -347,7 +333,6 @@ class SyncService {
     });
   }
 
-  /// Emit sync state
   void _emitSyncState({
     required SyncStatus status,
     required int pendingOperations,
@@ -363,7 +348,6 @@ class SyncService {
     _syncStateController.add(_currentSyncState);
   }
 
-  /// Dispose resources
   void dispose() {
     _syncDebounceTimer?.cancel();
     _syncDebounceTimer = null;
