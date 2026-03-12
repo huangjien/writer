@@ -76,10 +76,14 @@ const List<ThemeFactoryDef> themeFactoryThemes = [
   ThemeFactoryDef(
     id: AppThemeFamily.goldenHour,
     label: 'Golden Hour',
-    primary: Color(0xFFB07800), // Darkened for contrast (was F4A900)
+    primary: Color(
+      0xFF9A6600,
+    ), // Further darkened for WCAG AA (4.91:1 with white)
     secondary: Color(0xFFC1666B),
-    tertiary: Color(0xFFC9A961), // Darkened for better contrast
-    lightSurface: Color(0xFFC9A961), // Darkened from D4B896 for WCAG AA
+    tertiary: Color(0xFFD4B896), // Golden tone
+    lightSurface: Color(
+      0xFFD4B896,
+    ), // luminance 0.5048, BLACK text, contrast 11.10:1 ✅
     darkSurface: Color(0xFF4A403A),
   ),
   ThemeFactoryDef(
