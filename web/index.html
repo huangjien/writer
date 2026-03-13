@@ -36,8 +36,183 @@
   <title>writer</title>
   <link rel="manifest" href="manifest.json">
 
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #loading {
+      text-align: center;
+    }
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(255,255,255,0.1);
+      border-top-color: #4a9eff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    #error-container {
+      display: none;
+      text-align: center;
+      max-width: 400px;
+      padding: 24px;
+    }
+    #error-container h2 {
+      color: #ff6b6b;
+      margin-bottom: 16px;
+    }
+    #error-container p {
+      color: #aaa;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    #clear-cache-btn {
+      background: #4a9eff;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #clear-cache-btn:hover {
+      background: #3a8eef;
+    }
+    #error-details {
+      margin-top: 20px;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      font-size: 12px;
+      color: #888;
+      text-align: left;
+      display: none;
+    }
+  </style>
+
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+  <div id="loading">
+    <div class="spinner"></div>
+    <div>Loading...</div>
+  </div>
+
+  <div id="error-container">
+    <h2>Unable to Load</h2>
+    <p>This may be caused by cached data from a previous version. Please clear your browser cache and reload.</p>
+    <button id="clear-cache-btn">Clear Cache & Reload</button>
+    <div id="error-details"></div>
+  </div>
+
+  <script>
+    (function() {
+      const loadingEl = document.getElementById('loading');
+      const errorContainer = document.getElementById('error-container');
+      const errorDetails = document.getElementById('error-details');
+      const clearCacheBtn = document.getElementById('clear-cache-btn');
+
+      let hasFlutterStarted = false;
+      let hasCriticalError = false;
+
+      function showError(message, details) {
+        if (hasCriticalError) return;
+        hasCriticalError = true;
+        loadingEl.style.display = 'none';
+        errorContainer.style.display = 'block';
+        if (details) {
+          errorDetails.textContent = details;
+          errorDetails.style.display = 'block';
+        }
+      }
+
+      clearCacheBtn.addEventListener('click', async function() {
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+        }
+        const baseHref = document.querySelector('base').href;
+        window.location.href = baseHref + '?t=' + Date.now();
+      });
+
+      window.addEventListener('error', function(e) {
+        if (e.message && (
+          e.message.includes('PathBuilder') ||
+          e.message.includes('flutterCanvasKit') ||
+          e.message.includes('canvasKit')
+        )) {
+          showError(
+            'CanvasKit failed to load',
+            'Error: ' + e.message + '\nThis usually happens when browser cache contains files from a previous app version.'
+          );
+        }
+      });
+
+      window.addEventListener('unhandledrejection', function(e) {
+        if (e.reason && e.reason.message && (
+          e.reason.message.includes('PathBuilder') ||
+          e.reason.message.includes('flutterCanvasKit') ||
+          e.reason.message.includes('canvasKit')
+        )) {
+          showError(
+            'CanvasKit failed to load',
+            'Error: ' + e.reason.message
+          );
+        }
+      });
+
+      const originalOnerror = window.onerror;
+      window.onerror = function(message, source, lineno, colno, error) {
+        if (message && (
+          message.includes('PathBuilder') ||
+          message.includes('flutterCanvasKit') ||
+          message.includes('canvasKit')
+        )) {
+          showError(
+            'CanvasKit failed to load',
+            'Error at ' + source + ':' + lineno + ':' + colno + '\n' + message
+          );
+          return true;
+        }
+        if (originalOnerror) {
+          return originalOnerror(message, source, lineno, colno, error);
+        }
+      };
+
+      const checkFlutterInterval = setInterval(function() {
+        if (hasCriticalError) {
+          clearInterval(checkFlutterInterval);
+          return;
+        }
+        if (window.flutter && window.flutter.loader) {
+          hasFlutterStarted = true;
+          clearInterval(checkFlutterInterval);
+        }
+      }, 100);
+
+      setTimeout(function() {
+        if (!hasFlutterStarted && !hasCriticalError) {
+          showError(
+            'Loading timeout',
+            'The app took too long to start. This may be a network issue or the service worker may be stuck.'
+          );
+        }
+      }, 15000);
+    })();
+  </script>
+
+  <script src="flutter_bootstrap.js" async onerror="document.getElementById('error-container').style.display='block';document.getElementById('loading').style.display='none';"></script>
 </body>
 </html>
