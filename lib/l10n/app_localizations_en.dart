@@ -2054,4 +2054,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get quickSearch => 'Quick Search';
+
+  // Admin logs
+  @override
+  String adminLogsSavedTo(String filePath) => 'Logs saved to: $filePath';
+
+  @override
+  String adminLogsFailedToDownload(String error) =>
+      'Failed to download logs: $error';
+
+  @override
+  String get adminLogsEntry => 'Log Entry';
+
+  @override
+  String get adminLogsCopiedToClipboard => 'Copied to clipboard';
+
+  @override
+  String get adminLogsCopy => 'Copy';
+
+  @override
+  String get adminLogsClose => 'Close';
+
+  @override
+  String adminLogsMaxSize(String size) => 'Max file size: $size';
+
+  @override
+  String adminLogsSelected(String size) => 'Selected: $size';
 }

@@ -2077,4 +2077,30 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get quickSearch => 'Schnellsuche';
+
+  // Admin logs
+  @override
+  String adminLogsSavedTo(String filePath) => 'Logs gespeichert in: $filePath';
+
+  @override
+  String adminLogsFailedToDownload(String error) =>
+      'Fehler beim Herunterladen der Logs: $error';
+
+  @override
+  String get adminLogsEntry => 'Log-Eintrag';
+
+  @override
+  String get adminLogsCopiedToClipboard => 'In die Zwischenablage kopiert';
+
+  @override
+  String get adminLogsCopy => 'Kopieren';
+
+  @override
+  String get adminLogsClose => 'Schließen';
+
+  @override
+  String adminLogsMaxSize(String size) => 'Maximale Dateigröße: $size';
+
+  @override
+  String adminLogsSelected(String size) => 'Ausgewählt: $size';
 }

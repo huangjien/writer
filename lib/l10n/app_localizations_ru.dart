@@ -2054,4 +2054,30 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get quickSearch => 'Быстрый поиск';
+
+  // Admin logs
+  @override
+  String adminLogsSavedTo(String filePath) => 'Логи сохранены в: $filePath';
+
+  @override
+  String adminLogsFailedToDownload(String error) =>
+      'Ошибка загрузки логов: $error';
+
+  @override
+  String get adminLogsEntry => 'Запись лога';
+
+  @override
+  String get adminLogsCopiedToClipboard => 'Скопировано в буфер обмена';
+
+  @override
+  String get adminLogsCopy => 'Копировать';
+
+  @override
+  String get adminLogsClose => 'Закрыть';
+
+  @override
+  String adminLogsMaxSize(String size) => 'Макс. размер: $size';
+
+  @override
+  String adminLogsSelected(String size) => 'Выбрано: $size';
 }

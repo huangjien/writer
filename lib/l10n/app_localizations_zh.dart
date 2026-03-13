@@ -2014,6 +2014,31 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get quickSearch => '快速搜索';
+
+  // Admin logs
+  @override
+  String adminLogsSavedTo(String filePath) => '日志已保存到：$filePath';
+
+  @override
+  String adminLogsFailedToDownload(String error) => '下载日志失败：$error';
+
+  @override
+  String get adminLogsEntry => '日志条目';
+
+  @override
+  String get adminLogsCopiedToClipboard => '已复制到剪贴板';
+
+  @override
+  String get adminLogsCopy => '复制';
+
+  @override
+  String get adminLogsClose => '关闭';
+
+  @override
+  String adminLogsMaxSize(String size) => '最大文件大小：$size';
+
+  @override
+  String adminLogsSelected(String size) => '已选择：$size';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

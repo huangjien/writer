@@ -544,7 +544,7 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      expect(find.text('Max Size (KB)'), findsOneWidget);
+      expect(find.text('Max Size'), findsOneWidget);
       expect(find.text('50 KB'), findsOneWidget);
     });
 
@@ -581,7 +581,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final sizeDropdown = find.ancestor(
-        of: find.text('Max Size (KB)'),
+        of: find.text('Max Size'),
         matching: find.byType(DropdownButtonFormField<int>),
       );
 
