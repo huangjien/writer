@@ -122,12 +122,13 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
       await file.writeAsString(logsText);
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Logs saved to: ${file.path}'),
+            content: Text(l10n.adminLogsSavedTo(file.path)),
             duration: const Duration(seconds: 5),
             action: SnackBarAction(
-              label: 'Copy Path',
+              label: l10n.adminLogsCopy,
               textColor: Colors.blue,
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: file.path));
@@ -138,9 +139,10 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to download logs: $e'),
+            content: Text(l10n.adminLogsFailedToDownload(e.toString())),
             backgroundColor: Colors.red,
           ),
         );

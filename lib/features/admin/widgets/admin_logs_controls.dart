@@ -100,7 +100,7 @@ class AdminLogsControls extends StatelessWidget {
                 child: DropdownButtonFormField<int>(
                   initialValue: maxSizeKb,
                   decoration: const InputDecoration(
-                    labelText: 'Max Size (KB)',
+                    labelText: 'Max Size',
                     border: OutlineInputBorder(),
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 12,

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 import 'admin_log_level_badge.dart';
 
@@ -23,7 +24,7 @@ void showAdminLogDetailDialog(
         children: [
           AdminLogLevelBadge(level: level),
           const SizedBox(width: 12),
-          const Text('Log Entry'),
+          Text(AppLocalizations.of(context)!.adminLogsEntry),
         ],
       ),
       content: SizedBox(
@@ -105,19 +106,20 @@ void showAdminLogDetailDialog(
         TextButton.icon(
           onPressed: () {
             Clipboard.setData(ClipboardData(text: jsonEncode(log)));
+            final l10n = AppLocalizations.of(dialogContext)!;
             ScaffoldMessenger.of(dialogContext).showSnackBar(
-              const SnackBar(
-                content: Text('Copied to clipboard'),
-                duration: Duration(seconds: 2),
+              SnackBar(
+                content: Text(l10n.adminLogsCopiedToClipboard),
+                duration: const Duration(seconds: 2),
               ),
             );
           },
           icon: const Icon(Icons.copy, size: 18),
-          label: const Text('Copy'),
+          label: Text(AppLocalizations.of(dialogContext)!.adminLogsCopy),
         ),
         TextButton(
           onPressed: () => Navigator.of(dialogContext).pop(),
-          child: const Text('Close'),
+          child: Text(AppLocalizations.of(dialogContext)!.adminLogsClose),
         ),
       ],
     ),

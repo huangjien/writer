@@ -3920,6 +3920,55 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Quick Search'**
   String get quickSearch;
+
+  // Admin logs localization
+  /// No description provided for @adminLogsSavedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Logs saved to: {filePath}'**
+  String adminLogsSavedTo(String filePath);
+
+  /// No description provided for @adminLogsFailedToDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to download logs: {error}'**
+  String adminLogsFailedToDownload(String error);
+
+  /// No description provided for @adminLogsEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Entry'**
+  String get adminLogsEntry;
+
+  /// No description provided for @adminLogsCopiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get adminLogsCopiedToClipboard;
+
+  /// No description provided for @adminLogsCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get adminLogsCopy;
+
+  /// No description provided for @adminLogsClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get adminLogsClose;
+
+  /// No description provided for @adminLogsMaxSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Max file size: {size}'**
+  String adminLogsMaxSize(String size);
+
+  /// No description provided for @adminLogsSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected: {size}'**
+  String adminLogsSelected(String size);
 }
 
 class _AppLocalizationsDelegate
