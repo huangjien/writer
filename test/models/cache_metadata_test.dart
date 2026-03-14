@@ -6,10 +6,7 @@ void main() {
     group('Constructor', () {
       test('creates instance with required fields', () {
         final now = DateTime.now();
-        final metadata = CacheMetadata(
-          key: 'test_key',
-          lastUpdated: now,
-        );
+        final metadata = CacheMetadata(key: 'test_key', lastUpdated: now);
         expect(metadata.key, 'test_key');
         expect(metadata.lastUpdated, now);
         expect(metadata.lastSynced, isNull);
@@ -38,7 +35,10 @@ void main() {
         };
         final metadata = CacheMetadata.fromJson(json);
         expect(metadata.key, 'test_key');
-        expect(metadata.lastUpdated, DateTime.parse('2024-03-13T12:00:00.000Z'));
+        expect(
+          metadata.lastUpdated,
+          DateTime.parse('2024-03-13T12:00:00.000Z'),
+        );
         expect(metadata.lastSynced, DateTime.parse('2024-03-13T13:00:00.000Z'));
       });
 
@@ -49,16 +49,19 @@ void main() {
         };
         final metadata = CacheMetadata.fromJson(json);
         expect(metadata.key, 'test_key');
-        expect(metadata.lastUpdated, DateTime.parse('2024-03-13T12:00:00.000Z'));
+        expect(
+          metadata.lastUpdated,
+          DateTime.parse('2024-03-13T12:00:00.000Z'),
+        );
         expect(metadata.lastSynced, isNull);
       });
 
       test('throws on invalid date format', () {
-        final json = {
-          'key': 'test_key',
-          'lastUpdated': 'invalid-date',
-        };
-        expect(() => CacheMetadata.fromJson(json), throwsA(isA<FormatException>()));
+        final json = {'key': 'test_key', 'lastUpdated': 'invalid-date'};
+        expect(
+          () => CacheMetadata.fromJson(json),
+          throwsA(isA<FormatException>()),
+        );
       });
     });
 
@@ -79,10 +82,7 @@ void main() {
 
       test('serializes without optional lastSynced', () {
         final now = DateTime(2024, 3, 13, 12, 0, 0);
-        final metadata = CacheMetadata(
-          key: 'test_key',
-          lastUpdated: now,
-        );
+        final metadata = CacheMetadata(key: 'test_key', lastUpdated: now);
         final json = metadata.toJson();
         expect(json.containsKey('lastSynced'), false);
       });
@@ -184,7 +184,9 @@ void main() {
       test('returns true for cache over max age by 1ms', () {
         final metadata = CacheMetadata(
           key: 'test_key',
-          lastUpdated: DateTime.now().subtract(const Duration(hours: 24, milliseconds: 1)),
+          lastUpdated: DateTime.now().subtract(
+            const Duration(hours: 24, milliseconds: 1),
+          ),
         );
         expect(metadata.isExpired(), true);
       });
@@ -209,10 +211,7 @@ void main() {
 
     group('Edge Cases', () {
       test('handles empty string key', () {
-        final metadata = CacheMetadata(
-          key: '',
-          lastUpdated: DateTime.now(),
-        );
+        final metadata = CacheMetadata(key: '', lastUpdated: DateTime.now());
         expect(metadata.key, '');
       });
 
