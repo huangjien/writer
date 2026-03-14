@@ -677,6 +677,22 @@
   "selectNovelFirst": "Seleziona prima un romanzo",
   "adminLogs": "Log admin",
   "viewAndFilterBackendLogs": "Visualizza e filtra log backend",
+  "adminLogsSavedTo": "Log salvati in {path}",
+  "@adminLogsSavedTo": {
+    "placeholders": {
+      "path": {"type": "String"}
+    }
+  },
+  "adminLogsCopy": "Copia",
+  "adminLogsFailedToDownload": "Salvataggio fallito: {error}",
+  "@adminLogsFailedToDownload": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "adminLogsEntry": "Voce di log",
+  "adminLogsCopiedToClipboard": "Copiato negli appunti",
+  "adminLogsClose": "Chiudi",
   "styleGlassmorphism": "Vetromorfismo",
   "styleLiquidGlass": "Vetro liquido",
   "styleNeumorphism": "Neumorfismo",

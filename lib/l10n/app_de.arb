@@ -647,6 +647,22 @@
   "selectNovelFirst": "Wählen Sie zuerst einen Roman",
   "adminLogs": "Admin-Logs",
   "viewAndFilterBackendLogs": "Backend-Logs anzeigen und filtern",
+  "adminLogsSavedTo": "Logs gespeichert unter {path}",
+  "@adminLogsSavedTo": {
+    "placeholders": {
+      "path": {"type": "String"}
+    }
+  },
+  "adminLogsCopy": "Kopieren",
+  "adminLogsFailedToDownload": "Speichern fehlgeschlagen: {error}",
+  "@adminLogsFailedToDownload": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "adminLogsEntry": "Log-Eintrag",
+  "adminLogsCopiedToClipboard": "In Zwischenablage kopiert",
+  "adminLogsClose": "Schließen",
   "styleGlassmorphism": "Glassmorphismus",
   "styleLiquidGlass": "Liquid Glass",
   "styleNeumorphism": "Neumorphismus",

@@ -759,6 +759,22 @@
   "selectNovelFirst": "請先選擇小說",
   "adminLogs": "管理員日誌",
   "viewAndFilterBackendLogs": "查看和篩選後端日誌",
+  "adminLogsSavedTo": "日誌已儲存至 {path}",
+  "@adminLogsSavedTo": {
+    "placeholders": {
+      "path": {"type": "String"}
+    }
+  },
+  "adminLogsCopy": "複製",
+  "adminLogsFailedToDownload": "儲存失敗: {error}",
+  "@adminLogsFailedToDownload": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "adminLogsEntry": "日誌項目",
+  "adminLogsCopiedToClipboard": "已複製到剪貼簿",
+  "adminLogsClose": "關閉",
   "styleGlassmorphism": "玻璃擬態",
   "styleLiquidGlass": "液態玻璃",
   "styleNeumorphism": "新擬態",

@@ -677,6 +677,22 @@
   "selectNovelFirst": "最初に小説を選択してください",
   "adminLogs": "管理者ログ",
   "viewAndFilterBackendLogs": "バックエンドログを表示・フィルター",
+  "adminLogsSavedTo": "ログを保存しました: {path}",
+  "@adminLogsSavedTo": {
+    "placeholders": {
+      "path": {"type": "String"}
+    }
+  },
+  "adminLogsCopy": "コピー",
+  "adminLogsFailedToDownload": "保存に失敗しました: {error}",
+  "@adminLogsFailedToDownload": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "adminLogsEntry": "ログエントリ",
+  "adminLogsCopiedToClipboard": "クリップボードにコピーしました",
+  "adminLogsClose": "閉じる",
   "styleGlassmorphism": "グラスモーフィズム",
   "styleLiquidGlass": "リキッドグラス",
   "styleNeumorphism": "ニューモーフィズム",

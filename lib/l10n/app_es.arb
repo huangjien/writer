@@ -647,6 +647,22 @@
   "selectNovelFirst": "Seleccione una novela primero",
   "adminLogs": "Registros de administrador",
   "viewAndFilterBackendLogs": "Ver y filtrar registros del backend",
+  "adminLogsSavedTo": "Registros guardados en {path}",
+  "@adminLogsSavedTo": {
+    "placeholders": {
+      "path": {"type": "String"}
+    }
+  },
+  "adminLogsCopy": "Copiar",
+  "adminLogsFailedToDownload": "Error al guardar: {error}",
+  "@adminLogsFailedToDownload": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "adminLogsEntry": "Entrada de registro",
+  "adminLogsCopiedToClipboard": "Copiado al portapapeles",
+  "adminLogsClose": "Cerrar",
   "styleGlassmorphism": "Glassmorfismo",
   "styleLiquidGlass": "Liquid Glass",
   "styleNeumorphism": "Neumorfismo",

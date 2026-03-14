@@ -1705,6 +1705,28 @@ class AppLocalizationsFr extends AppLocalizations {
   String get viewAndFilterBackendLogs => 'Voir et filtrer les journaux backend';
 
   @override
+  String adminLogsSavedTo(String path) {
+    return 'Journaux enregistrés dans $path';
+  }
+
+  @override
+  String get adminLogsCopy => 'Copier';
+
+  @override
+  String adminLogsFailedToDownload(String error) {
+    return 'Échec de l\'enregistrement: $error';
+  }
+
+  @override
+  String get adminLogsEntry => 'Entrée de journal';
+
+  @override
+  String get adminLogsCopiedToClipboard => 'Copié dans le presse-papiers';
+
+  @override
+  String get adminLogsClose => 'Fermer';
+
+  @override
   String get styleGlassmorphism => 'Glassmorphisme';
 
   @override
@@ -2075,31 +2097,4 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get quickSearch => 'Recherche rapide';
-
-  // Admin logs
-  @override
-  String adminLogsSavedTo(String filePath) =>
-      'Logs enregistrés dans: $filePath';
-
-  @override
-  String adminLogsFailedToDownload(String error) =>
-      'Échec du téléchargement des logs: $error';
-
-  @override
-  String get adminLogsEntry => 'Entrée de log';
-
-  @override
-  String get adminLogsCopiedToClipboard => 'Copié dans le presse-papiers';
-
-  @override
-  String get adminLogsCopy => 'Copier';
-
-  @override
-  String get adminLogsClose => 'Fermer';
-
-  @override
-  String adminLogsMaxSize(String size) => 'Taille max: $size';
-
-  @override
-  String adminLogsSelected(String size) => 'Sélectionné: $size';
 }

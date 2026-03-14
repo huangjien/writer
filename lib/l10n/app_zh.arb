@@ -762,7 +762,23 @@
   "comingSoon": "即将推出",
   "selectNovelFirst": "请先选择小说",
   "adminLogs": "管理员日志",
-"viewAndFilterBackendLogs": "查看和筛选后端日志",
+  "viewAndFilterBackendLogs": "查看和筛选后端日志",
+  "adminLogsSavedTo": "日志已保存至 {path}",
+  "@adminLogsSavedTo": {
+    "placeholders": {
+      "path": {"type": "String"}
+    }
+  },
+  "adminLogsCopy": "复制",
+  "adminLogsFailedToDownload": "保存失败: {error}",
+  "@adminLogsFailedToDownload": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "adminLogsEntry": "日志条目",
+  "adminLogsCopiedToClipboard": "已复制到剪贴板",
+  "adminLogsClose": "关闭",
   "styleGlassmorphism": "玻璃拟态",
   "styleLiquidGlass": "液态玻璃",
   "styleNeumorphism": "新拟态",

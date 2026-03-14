@@ -1652,6 +1652,28 @@ class AppLocalizationsJa extends AppLocalizations {
   String get viewAndFilterBackendLogs => 'バックエンドログを表示・フィルター';
 
   @override
+  String adminLogsSavedTo(String path) {
+    return 'ログを保存しました: $path';
+  }
+
+  @override
+  String get adminLogsCopy => 'コピー';
+
+  @override
+  String adminLogsFailedToDownload(String error) {
+    return '保存に失敗しました: $error';
+  }
+
+  @override
+  String get adminLogsEntry => 'ログエントリ';
+
+  @override
+  String get adminLogsCopiedToClipboard => 'クリップボードにコピーしました';
+
+  @override
+  String get adminLogsClose => '閉じる';
+
+  @override
   String get styleGlassmorphism => 'グラスモーフィズム';
 
   @override
@@ -2019,29 +2041,4 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get quickSearch => 'クイック検索';
-
-  // Admin logs
-  @override
-  String adminLogsSavedTo(String filePath) => 'ログを保存しました: $filePath';
-
-  @override
-  String adminLogsFailedToDownload(String error) => 'ログのダウンロードに失敗しました: $error';
-
-  @override
-  String get adminLogsEntry => 'ログエントリ';
-
-  @override
-  String get adminLogsCopiedToClipboard => 'クリップボードにコピーしました';
-
-  @override
-  String get adminLogsCopy => 'コピー';
-
-  @override
-  String get adminLogsClose => '閉じる';
-
-  @override
-  String adminLogsMaxSize(String size) => '最大ファイルサイズ: $size';
-
-  @override
-  String adminLogsSelected(String size) => '選択中: $size';
 }

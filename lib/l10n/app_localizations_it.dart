@@ -1699,6 +1699,28 @@ class AppLocalizationsIt extends AppLocalizations {
   String get viewAndFilterBackendLogs => 'Visualizza e filtra log backend';
 
   @override
+  String adminLogsSavedTo(String path) {
+    return 'Log salvati in $path';
+  }
+
+  @override
+  String get adminLogsCopy => 'Copia';
+
+  @override
+  String adminLogsFailedToDownload(String error) {
+    return 'Salvataggio fallito: $error';
+  }
+
+  @override
+  String get adminLogsEntry => 'Voce di log';
+
+  @override
+  String get adminLogsCopiedToClipboard => 'Copiato negli appunti';
+
+  @override
+  String get adminLogsClose => 'Chiudi';
+
+  @override
   String get styleGlassmorphism => 'Vetromorfismo';
 
   @override
@@ -2070,30 +2092,4 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get quickSearch => 'Ricerca rapida';
-
-  // Admin logs
-  @override
-  String adminLogsSavedTo(String filePath) => 'Log salvati in: $filePath';
-
-  @override
-  String adminLogsFailedToDownload(String error) =>
-      'Errore nel download dei log: $error';
-
-  @override
-  String get adminLogsEntry => 'Voce di log';
-
-  @override
-  String get adminLogsCopiedToClipboard => 'Copiato negli appunti';
-
-  @override
-  String get adminLogsCopy => 'Copia';
-
-  @override
-  String get adminLogsClose => 'Chiudi';
-
-  @override
-  String adminLogsMaxSize(String size) => 'Dimensione max: $size';
-
-  @override
-  String adminLogsSelected(String size) => 'Selezionato: $size';
 }

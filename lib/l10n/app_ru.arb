@@ -647,6 +647,22 @@
   "selectNovelFirst": "Select a novel first",
   "adminLogs": "Admin Logs",
   "viewAndFilterBackendLogs": "View and filter backend logs",
+  "adminLogsSavedTo": "Logs saved to {path}",
+  "@adminLogsSavedTo": {
+    "placeholders": {
+      "path": {"type": "String"}
+    }
+  },
+  "adminLogsCopy": "Copy",
+  "adminLogsFailedToDownload": "Failed to save: {error}",
+  "@adminLogsFailedToDownload": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "adminLogsEntry": "Log Entry",
+  "adminLogsCopiedToClipboard": "Copied to clipboard",
+  "adminLogsClose": "Close",
   "styleGlassmorphism": "Glassmorphism",
   "styleLiquidGlass": "Liquid Glass",
   "styleNeumorphism": "Neumorphism",

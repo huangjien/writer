@@ -1648,6 +1648,28 @@ class AppLocalizationsZh extends AppLocalizations {
   String get viewAndFilterBackendLogs => '查看和筛选后端日志';
 
   @override
+  String adminLogsSavedTo(String path) {
+    return '日志已保存至 $path';
+  }
+
+  @override
+  String get adminLogsCopy => '复制';
+
+  @override
+  String adminLogsFailedToDownload(String error) {
+    return '保存失败: $error';
+  }
+
+  @override
+  String get adminLogsEntry => '日志条目';
+
+  @override
+  String get adminLogsCopiedToClipboard => '已复制到剪贴板';
+
+  @override
+  String get adminLogsClose => '关闭';
+
+  @override
   String get styleGlassmorphism => '玻璃拟态';
 
   @override
@@ -2014,31 +2036,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get quickSearch => '快速搜索';
-
-  // Admin logs
-  @override
-  String adminLogsSavedTo(String filePath) => '日志已保存到：$filePath';
-
-  @override
-  String adminLogsFailedToDownload(String error) => '下载日志失败：$error';
-
-  @override
-  String get adminLogsEntry => '日志条目';
-
-  @override
-  String get adminLogsCopiedToClipboard => '已复制到剪贴板';
-
-  @override
-  String get adminLogsCopy => '复制';
-
-  @override
-  String get adminLogsClose => '关闭';
-
-  @override
-  String adminLogsMaxSize(String size) => '最大文件大小：$size';
-
-  @override
-  String adminLogsSelected(String size) => '已选择：$size';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3683,6 +3680,28 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get viewAndFilterBackendLogs => '查看和篩選後端日誌';
+
+  @override
+  String adminLogsSavedTo(String path) {
+    return '日誌已儲存至 $path';
+  }
+
+  @override
+  String get adminLogsCopy => '複製';
+
+  @override
+  String adminLogsFailedToDownload(String error) {
+    return '儲存失敗: $error';
+  }
+
+  @override
+  String get adminLogsEntry => '日誌項目';
+
+  @override
+  String get adminLogsCopiedToClipboard => '已複製到剪貼簿';
+
+  @override
+  String get adminLogsClose => '關閉';
 
   @override
   String get styleGlassmorphism => '玻璃擬態';

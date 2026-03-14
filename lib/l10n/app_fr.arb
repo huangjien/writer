@@ -647,6 +647,22 @@
   "selectNovelFirst": "Sélectionnez d'abord un roman",
   "adminLogs": "Journaux d'admin",
   "viewAndFilterBackendLogs": "Voir et filtrer les journaux backend",
+  "adminLogsSavedTo": "Journaux enregistrés dans {path}",
+  "@adminLogsSavedTo": {
+    "placeholders": {
+      "path": {"type": "String"}
+    }
+  },
+  "adminLogsCopy": "Copier",
+  "adminLogsFailedToDownload": "Échec de l'enregistrement: {error}",
+  "@adminLogsFailedToDownload": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "adminLogsEntry": "Entrée de journal",
+  "adminLogsCopiedToClipboard": "Copié dans le presse-papiers",
+  "adminLogsClose": "Fermer",
   "styleGlassmorphism": "Glassmorphisme",
   "styleLiquidGlass": "Liquid Glass",
   "styleNeumorphism": "Neumorphisme",
