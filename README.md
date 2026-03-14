@@ -2,6 +2,37 @@
 
 A Flutter application for reading novels with localization and Text-To-Speech (TTS) support.
 
+## Quick Start
+
+Get up and running in 3 steps:
+
+1. **Install dependencies**
+   ```bash
+   make deps
+   ```
+
+2. **Run the app**
+   ```bash
+   # Web (recommended for quick start)
+   make dev-web
+
+   # Or choose a platform:
+   make dev-chrome    # Chrome desktop app
+   make macos         # macOS app
+   make dev-android   # Android device/emulator
+   ```
+
+3. **Verify setup**
+   ```bash
+   # Run tests
+   make test
+
+   # Check code quality
+   make lint
+   ```
+
+That's it! 🎉
+
 ## Overview
 - Reads novels/chapters from the backend and supports offline caching.
 - Saves reading progress.
