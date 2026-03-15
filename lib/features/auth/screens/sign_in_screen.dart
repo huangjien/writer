@@ -45,40 +45,92 @@ class _SignInContentState extends ConsumerState<_SignInContent> {
   }
 
   Future<void> _signIn(BuildContext context) async {
+    if (kDebugMode) {
+      try {
+        debugPrint('_SignIn: Method called');
+      } catch (_) {}
+    }
     final l10n = AppLocalizations.of(context)!;
     ref.read(signInProvider.notifier).setLoading(true);
     ref.read(signInProvider.notifier).clearError();
     try {
+      final password = _passwordController.text;
+      if (kDebugMode) {
+        try {
+          debugPrint(
+            '_SignIn: Calling auth service with email=${_emailController.text.trim()} password=$password',
+          );
+        } catch (_) {}
+      }
       final result = await _authService.signIn(
         _emailController.text.trim(),
-        _passwordController.text,
+        password,
       );
+
+      if (kDebugMode) {
+        try {
+          debugPrint(
+            '_SignIn: Auth service returned success=${result.success}',
+          );
+        } catch (_) {}
+      }
 
       if (!result.success) {
         throw Exception(result.errorMessage ?? l10n.loginFailed);
       }
 
       await ref.read(sessionProvider.notifier).setSessionId(result.sessionId!);
+      if (kDebugMode) {
+        try {
+          debugPrint('_SignIn: Session ID set');
+        } catch (_) {}
+      }
       if (result.refreshToken != null) {
         await ref
             .read(sessionProvider.notifier)
             .setRefreshToken(result.refreshToken);
+        if (kDebugMode) {
+          try {
+            debugPrint('_SignIn: Refresh token set');
+          } catch (_) {}
+        }
       }
       _passwordController.clear();
 
       final biometricState = ref.read(biometricSessionProvider);
+      if (kDebugMode) {
+        try {
+          debugPrint('_SignIn: biometricState=$biometricState');
+          debugPrint(
+            '_SignIn: unavailable=${biometricState == BiometricAuthState.unavailable}',
+          );
+          debugPrint(
+            '_SignIn: enabled=${biometricState == BiometricAuthState.enabled}',
+          );
+        } catch (_) {}
+      }
       if (biometricState != BiometricAuthState.unavailable &&
           biometricState != BiometricAuthState.enabled) {
         if (!mounted) return;
+        if (kDebugMode) {
+          try {
+            debugPrint('_SignIn: Showing biometric setup dialog');
+          } catch (_) {}
+        }
         _showBiometricSetupDialog(
           // ignore: use_build_context_synchronously
           context,
           result.sessionId!,
           result.refreshToken,
           email: _emailController.text.trim(),
-          password: _passwordController.text,
+          password: password,
         );
       } else {
+        if (kDebugMode) {
+          try {
+            debugPrint('_SignIn: Navigating to success instead');
+          } catch (_) {}
+        }
         _navigateToSuccess();
       }
     } catch (e) {
@@ -297,111 +349,113 @@ class _SignInContentState extends ConsumerState<_SignInContent> {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.signIn)),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            NeumorphicTextField(
-              key: const Key('email_field'),
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              hintText: l10n.email,
-              textInputAction: TextInputAction.next,
-              onSubmitted: (_) {
-                FocusScope.of(context).nextFocus();
-              },
-            ),
-            const SizedBox(height: 12),
-            NeumorphicTextField(
-              key: const Key('password_field'),
-              controller: _passwordController,
-              obscureText: signInState.obscurePassword,
-              hintText: l10n.password,
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      signInState.obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              NeumorphicTextField(
+                key: const Key('email_field'),
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                hintText: l10n.email,
+                textInputAction: TextInputAction.next,
+                onSubmitted: (_) {
+                  FocusScope.of(context).nextFocus();
+                },
+              ),
+              const SizedBox(height: 12),
+              NeumorphicTextField(
+                key: const Key('password_field'),
+                controller: _passwordController,
+                obscureText: signInState.obscurePassword,
+                hintText: l10n.password,
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        signInState.obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        ref
+                            .read(signInProvider.notifier)
+                            .togglePasswordVisibility();
+                      },
                     ),
-                    onPressed: () {
-                      ref
-                          .read(signInProvider.notifier)
-                          .togglePasswordVisibility();
-                    },
+                    IconButton(
+                      key: const Key('sign_in_button'),
+                      icon: const Icon(Icons.login),
+                      onPressed: signInState.isLoading
+                          ? null
+                          : () => _signIn(context),
+                    ),
+                  ],
+                ),
+                onSubmitted: (_) => _signIn(context),
+              ),
+              const SizedBox(height: 20),
+              if (signInState.error != null) ...[
+                Text(
+                  signInState.error!,
+                  style: const TextStyle(color: Colors.red),
+                ),
+                const SizedBox(height: 8),
+              ],
+              if (signInState.isLoading)
+                const Center(
+                  child: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
                   ),
-                  IconButton(
-                    key: const Key('sign_in_button'),
-                    icon: const Icon(Icons.login),
-                    onPressed: signInState.isLoading
-                        ? null
-                        : () => _signIn(context),
+                ),
+              Consumer(
+                builder: (context, ref, child) {
+                  final biometricState = ref.watch(biometricSessionProvider);
+
+                  if (biometricState == BiometricAuthState.unavailable) {
+                    return const SizedBox.shrink();
+                  }
+
+                  if (biometricState == BiometricAuthState.enabled) {
+                    return AppButtons.primary(
+                      onPressed: signInState.isBiometricLoading
+                          ? () {}
+                          : () => _signInWithBiometrics(context),
+                      icon: signInState.isBiometricLoading
+                          ? null
+                          : Icons.fingerprint,
+                      label: l10n.signInWithBiometrics,
+                      isLoading: signInState.isBiometricLoading,
+                      fullWidth: true,
+                    );
+                  }
+
+                  return const SizedBox.shrink();
+                },
+              ),
+              const SizedBox(height: 20),
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                runSpacing: Spacing.s,
+                spacing: Spacing.m,
+                children: [
+                  AppButtons.text(
+                    onPressed: () => context.push('/signup'),
+                    label: l10n.signUp,
+                  ),
+                  AppButtons.text(
+                    onPressed: () => context.push('/forgot-password'),
+                    label: l10n.forgotPassword,
                   ),
                 ],
               ),
-              onSubmitted: (_) => _signIn(context),
-            ),
-            const SizedBox(height: 20),
-            if (signInState.error != null) ...[
-              Text(
-                signInState.error!,
-                style: const TextStyle(color: Colors.red),
-              ),
-              const SizedBox(height: 8),
             ],
-            if (signInState.isLoading)
-              const Center(
-                child: SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            Consumer(
-              builder: (context, ref, child) {
-                final biometricState = ref.watch(biometricSessionProvider);
-
-                if (biometricState == BiometricAuthState.unavailable) {
-                  return const SizedBox.shrink();
-                }
-
-                if (biometricState == BiometricAuthState.enabled) {
-                  return AppButtons.primary(
-                    onPressed: signInState.isBiometricLoading
-                        ? () {}
-                        : () => _signInWithBiometrics(context),
-                    icon: signInState.isBiometricLoading
-                        ? null
-                        : Icons.fingerprint,
-                    label: l10n.signInWithBiometrics,
-                    isLoading: signInState.isBiometricLoading,
-                    fullWidth: true,
-                  );
-                }
-
-                return const SizedBox.shrink();
-              },
-            ),
-            const SizedBox(height: 20),
-            Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              runSpacing: Spacing.s,
-              spacing: Spacing.m,
-              children: [
-                AppButtons.text(
-                  onPressed: () => context.push('/signup'),
-                  label: l10n.signUp,
-                ),
-                AppButtons.text(
-                  onPressed: () => context.push('/forgot-password'),
-                  label: l10n.forgotPassword,
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );

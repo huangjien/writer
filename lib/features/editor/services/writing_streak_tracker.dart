@@ -53,7 +53,11 @@ class WritingStreakTracker {
       }
 
       final diff = today.difference(_dateOnly(lastDate)).inDays;
-      if (diff == 0) return currentStreak;
+
+      if (diff == 0) {
+        await storage.setString(_lastWriteDateKey, todayKey);
+        return currentStreak;
+      }
 
       final next = diff == 1 ? (currentStreak <= 0 ? 2 : currentStreak + 1) : 1;
       await storage.setString(_lastWriteDateKey, todayKey);

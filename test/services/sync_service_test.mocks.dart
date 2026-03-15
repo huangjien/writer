@@ -109,6 +109,21 @@ class MockOfflineQueueService extends _i1.Mock
             returnValueForMissingStub: _i3.Future<void>.value(),
           )
           as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> replaceChapterId({
+    required String? fromId,
+    required String? toId,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#replaceChapterId, [], {
+              #fromId: fromId,
+              #toId: toId,
+            }),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
 }
 
 /// A class which mocks [RemoteRepository].
@@ -250,6 +265,42 @@ class MockRemoteRepository extends _i1.Mock implements _i5.RemoteRepository {
           as _i3.Future<String?>);
 
   @override
+  _i3.Future<Map<String, dynamic>?> generateCharacterTemplate({
+    required String? title,
+    required String? templateContent,
+    String? name,
+    String? languageCode,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#generateCharacterTemplate, [], {
+              #title: title,
+              #templateContent: templateContent,
+              #name: name,
+              #languageCode: languageCode,
+            }),
+            returnValue: _i3.Future<Map<String, dynamic>?>.value(),
+          )
+          as _i3.Future<Map<String, dynamic>?>);
+
+  @override
+  _i3.Future<Map<String, dynamic>?> generateSceneTemplate({
+    required String? title,
+    required String? templateContent,
+    String? name,
+    String? languageCode,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#generateSceneTemplate, [], {
+              #title: title,
+              #templateContent: templateContent,
+              #name: name,
+              #languageCode: languageCode,
+            }),
+            returnValue: _i3.Future<Map<String, dynamic>?>.value(),
+          )
+          as _i3.Future<Map<String, dynamic>?>);
+
+  @override
   _i3.Future<_i7.TokenUsage?> getCurrentMonthUsage() =>
       (super.noSuchMethod(
             Invocation.method(#getCurrentMonthUsage, []),
@@ -282,6 +333,30 @@ class MockRemoteRepository extends _i1.Mock implements _i5.RemoteRepository {
             returnValue: _i3.Future<String?>.value(),
           )
           as _i3.Future<String?>);
+
+  @override
+  _i3.Future<Map<String, dynamic>?> getAdminLogsEnhanced({
+    int? maxSizeKb = 50,
+    int? fileIndex = 0,
+    String? level,
+    String? logger,
+    String? searchText,
+    String? startDate,
+    String? endDate,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#getAdminLogsEnhanced, [], {
+              #maxSizeKb: maxSizeKb,
+              #fileIndex: fileIndex,
+              #level: level,
+              #logger: logger,
+              #searchText: searchText,
+              #startDate: startDate,
+              #endDate: endDate,
+            }),
+            returnValue: _i3.Future<Map<String, dynamic>?>.value(),
+          )
+          as _i3.Future<Map<String, dynamic>?>);
 }
 
 /// A class which mocks [NetworkMonitor].
