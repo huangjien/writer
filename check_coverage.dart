@@ -18,9 +18,9 @@ bool _isTrackedDartFile(String path) {
 }
 
 double _parseThreshold(List<String> args) {
-  if (args.isEmpty) return 70.0;
+  if (args.isEmpty) return 75.0;
   final v = double.tryParse(args.first);
-  return v ?? 70.0;
+  return v ?? 75.0;
 }
 
 void main(List<String> args) {

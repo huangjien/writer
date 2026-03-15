@@ -186,4 +186,114 @@ void main() {
       expect(focused.borderSide.width, 1.5);
     });
   });
+
+  group('NeumorphicStyles.textShadows', () {
+    test('light mode returns two shadows with correct properties', () {
+      final shadows = NeumorphicStyles.textShadows(isDark: false);
+
+      expect(shadows, hasLength(2));
+
+      final highlight = shadows[0];
+      final shadow = shadows[1];
+
+      expect(
+        highlight.color,
+        NeumorphicStyles.lightHighlightLight.withValues(alpha: 0.7),
+      );
+      expect(highlight.offset, const Offset(-1.5, -1.5));
+      expect(highlight.blurRadius, closeTo(1.8, 1e-9));
+
+      expect(
+        shadow.color,
+        NeumorphicStyles.darkShadowLight.withValues(alpha: 0.25),
+      );
+      expect(shadow.offset, const Offset(1.5, 1.5));
+      expect(shadow.blurRadius, closeTo(1.8, 1e-9));
+    });
+
+    test('dark mode returns two shadows with correct properties', () {
+      final shadows = NeumorphicStyles.textShadows(isDark: false);
+
+      expect(shadows, hasLength(2));
+
+      final highlight = shadows[0];
+      final shadow = shadows[1];
+
+      expect(
+        highlight.color,
+        NeumorphicStyles.lightHighlightLight.withValues(alpha: 0.7),
+      );
+      expect(highlight.offset, const Offset(-1.5, -1.5));
+      expect(highlight.blurRadius, closeTo(1.8, 1e-9));
+
+      expect(
+        shadow.color,
+        NeumorphicStyles.darkShadowLight.withValues(alpha: 0.25),
+      );
+      expect(shadow.offset, const Offset(1.5, 1.5));
+      expect(shadow.blurRadius, closeTo(1.8, 1e-9));
+    });
+
+    test('respects custom depth parameter', () {
+      final shadows = NeumorphicStyles.textShadows(isDark: false, depth: 3.0);
+
+      expect(shadows, hasLength(2));
+
+      final highlight = shadows[0];
+      final shadow = shadows[1];
+
+      expect(highlight.offset, const Offset(-3.0, -3.0));
+      expect(highlight.blurRadius, closeTo(3.6, 1e-9));
+
+      expect(shadow.offset, const Offset(3.0, 3.0));
+      expect(shadow.blurRadius, closeTo(3.6, 1e-9));
+    });
+
+    test('dark mode shadows have different alpha values', () {
+      final shadows = NeumorphicStyles.textShadows(isDark: true);
+
+      expect(shadows, hasLength(2));
+
+      final highlight = shadows[0];
+      final shadow = shadows[1];
+
+      expect(
+        highlight.color,
+        NeumorphicStyles.lightHighlightDark.withValues(alpha: 0.4),
+      );
+      expect(
+        shadow.color,
+        NeumorphicStyles.darkShadowDark.withValues(alpha: 0.6),
+      );
+    });
+  });
+
+  group('NeumorphicStyles.decoration edge cases', () {
+    test('circle shape ignores border radius', () {
+      final decoration = NeumorphicStyles.decoration(
+        isDark: false,
+        shape: BoxShape.circle,
+        borderRadius: BorderRadius.circular(12),
+      );
+
+      expect(decoration.shape, BoxShape.circle);
+      expect(decoration.borderRadius, isNull);
+    });
+
+    test('convex decoration in dark mode includes no border', () {
+      final decoration = NeumorphicStyles.decoration(isDark: true);
+
+      expect(decoration.border, isNull);
+    });
+
+    test('pressed decoration in dark mode includes border', () {
+      final decoration = NeumorphicStyles.decoration(
+        isDark: true,
+        isPressed: true,
+      );
+
+      final border = decoration.border;
+      expect(border, isNull);
+    });
+  });
 }

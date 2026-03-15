@@ -19,6 +19,7 @@ import 'package:writer/state/chapter_edit_controller.dart';
 import 'package:writer/state/edit_permissions.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/state/tts_settings.dart';
+import 'package:writer/repositories/chapter_port.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/state/novel_providers_v2.dart';
@@ -26,6 +27,8 @@ import 'package:writer/models/chapter.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/common/errors/failures.dart';
+
+class MockChapterPort extends Mock implements ChapterPort {}
 
 class MockTtsDriver extends Mock implements TtsDriver {}
 
@@ -546,6 +549,47 @@ void main() {
     expect(find.text('Reached last chapter'), findsOneWidget);
   });
 
+  testWidgets('Method channel prev control triggers previous action', (
+    tester,
+  ) async {
+    await pumpScreen(tester, allChapters: testChapters, currentIdx: 0);
+    await tester.pumpAndSettle();
+
+    const channel = MethodChannel('com.huangjien.novel/media_control');
+    await tester.binding.defaultBinaryMessenger.handlePlatformMessage(
+      channel.name,
+      channel.codec.encodeMethodCall(const MethodCall('prev')),
+      (ByteData? data) {},
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Reached first chapter'), findsOneWidget);
+  });
+
+  testWidgets('Keyboard shortcut opens settings route', (tester) async {
+    await pumpScreen(tester);
+    await tester.pumpAndSettle();
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyR);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Settings Screen Test'), findsOneWidget);
+  });
+
+  testWidgets('Navigating to next chapter emits chapter label toast', (
+    tester,
+  ) async {
+    await pumpScreen(tester, allChapters: testChapters, currentIdx: 0);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.skip_next));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Chapter 2'), findsWidgets);
+  });
+
   testWidgets('Beta evaluation fails for empty content', (tester) async {
     const emptyChapter = Chapter(
       id: 'c1',
@@ -660,5 +704,172 @@ void main() {
     // Verify sidebar is gone
     expect(find.byType(AiChatSidebar), findsNothing);
     expect(chatNotifier.state, false);
+  });
+
+  testWidgets('isRTL returns true for RTL text direction', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          editRoleProvider(novelId).overrideWith((ref) async => EditRole.owner),
+          ttsDriverProvider.overrideWith((ref) => mockTtsDriver),
+          appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
+          themeControllerProvider.overrideWith((ref) => ThemeController(prefs)),
+          ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
+          aiChatServiceProvider.overrideWith((ref) => mockAiChatService),
+          isSignedInProvider.overrideWith((ref) => true),
+          authStateProvider.overrideWith((ref) => 'test-session'),
+          currentUserProvider.overrideWith((ref) async => null),
+          chaptersProviderV2(novelId).overrideWith((ref) async => testChapters),
+        ],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Builder(
+              builder: (context) {
+                // ignore: prefer_const_constructors
+                return ChapterReaderScreen(
+                  novelId: novelId,
+                  chapterId: chapterId,
+                  title: 'Test Chapter',
+                  initialOffset: 0,
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Verify RTL direction is applied by checking text alignment
+    final direction = Directionality.of(
+      tester.element(find.byType(ChapterReaderScreen).first),
+    );
+    expect(direction, TextDirection.rtl);
+  });
+
+  testWidgets('isRTL returns false for LTR text direction', (tester) async {
+    await pumpScreen(tester);
+    await tester.pumpAndSettle();
+
+    // Verify LTR direction is default
+    final direction = Directionality.of(
+      tester.element(find.byType(ChapterReaderScreen).first),
+    );
+    expect(direction, TextDirection.ltr);
+  });
+
+  testWidgets('Auto-start TTS triggers on initialization', (tester) async {
+    await pumpScreen(tester, autoStartTts: true);
+    await tester.pumpAndSettle();
+
+    verify(
+      () => mockTtsDriver.start(
+        content: any(named: 'content'),
+        startIndex: any(named: 'startIndex'),
+      ),
+    ).called(1);
+  });
+
+  testWidgets('Reader screen displays with multiple chapters', (tester) async {
+    const testChapters = [
+      Chapter(
+        id: 'c1',
+        novelId: novelId,
+        idx: 0,
+        title: 'Chapter 1',
+        content: 'Content 1',
+      ),
+      Chapter(
+        id: 'c2',
+        novelId: novelId,
+        idx: 1,
+        title: 'Chapter 2',
+        content: 'Content 2',
+      ),
+    ];
+
+    await pumpScreen(tester, allChapters: testChapters);
+    await tester.pumpAndSettle();
+
+    // Verify reader is displayed with multiple chapters available
+    expect(find.byType(ChapterReaderScreen), findsOneWidget);
+
+    // Verify we can find navigation buttons for multiple chapters
+    final nextButton = find.byWidgetPredicate(
+      (widget) => widget is Icon && widget.icon == Icons.skip_next,
+    );
+    expect(nextButton, findsOneWidget);
+  });
+
+  testWidgets('Back navigation with no changes navigates back', (tester) async {
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => const Scaffold(body: Text('Home')),
+        ),
+        GoRoute(
+          path: '/reader',
+          builder: (context, state) {
+            final queryNovelId =
+                state.uri.queryParameters['novelId'] ?? novelId;
+            final queryChapterId =
+                state.uri.queryParameters['chapterId'] ?? chapterId;
+            return ChapterReaderScreen(
+              novelId: queryNovelId,
+              chapterId: queryChapterId,
+              title: 'Test Chapter',
+              initialOffset: 0,
+            );
+          },
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          editRoleProvider(novelId).overrideWith((ref) async => EditRole.owner),
+          ttsDriverProvider.overrideWith((ref) => mockTtsDriver),
+          appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
+          themeControllerProvider.overrideWith((ref) => ThemeController(prefs)),
+          ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
+          aiChatServiceProvider.overrideWith((ref) => mockAiChatService),
+          isSignedInProvider.overrideWith((ref) => true),
+          authStateProvider.overrideWith((ref) => 'test-session'),
+          currentUserProvider.overrideWith((ref) async => null),
+          chaptersProviderV2(novelId).overrideWith((ref) async => testChapters),
+        ],
+        child: MaterialApp.router(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+
+    // Navigate to reader screen
+    router.push('/reader?novelId=$novelId&chapterId=$chapterId');
+    await tester.pumpAndSettle();
+
+    // Verify we're on reader screen
+    expect(find.byType(ChapterReaderScreen), findsOneWidget);
+
+    // Navigate back programmatically
+    router.pop();
+    await tester.pumpAndSettle();
+
+    // Should navigate back to home
+    expect(find.text('Home'), findsOneWidget);
+    expect(find.byType(ChapterReaderScreen), findsNothing);
   });
 }

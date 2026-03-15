@@ -155,7 +155,7 @@ test:
 	echo "Test log saved to: $$LOG_FILE"; \
 	cp $$LOG_FILE ../test.log; \
 	echo "Test log copied to project root: ../test.log"; \
-	echo "Checking per-file coverage (<70%)..." | tee -a ../test.log; \
+	echo "Checking per-file coverage (<75%)..." | tee -a ../test.log; \
 	{ LOG_FILE=$$LOG_FILE bash -lc 'set -o pipefail; dart check_coverage.dart 2>&1 | tee -a "$$LOG_FILE"' || true; } 2>&1 | tee -a ../test.log; \
 	{ LOG_FILE=$$LOG_FILE bash -lc 'set -o pipefail; dart check_target_coverage.dart 90 2>&1 | tee -a "$$LOG_FILE"' || true; } 2>&1 | tee -a ../test.log; \
 	echo "" | tee -a ../test.log; \

@@ -306,4 +306,371 @@ void main() {
       expect(isEnabled, isFalse);
     });
   });
+
+  group('BiometricSessionNotifier - Additional Coverage', () {
+    test('signInWithBiometrics handles expired tokens', () async {
+      when(
+        () => mockBiometricService.authenticate(
+          localizedReason: any(named: 'localizedReason'),
+        ),
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockBiometricService.validateStoredTokens(),
+      ).thenAnswer((_) async => BiometricTokenStatus.expired);
+      when(
+        () => mockBiometricService.clearBiometricData(),
+      ).thenAnswer((_) async {});
+
+      final result = await notifier.signInWithBiometrics();
+
+      expect(result, false);
+      expect(notifier.state, BiometricAuthState.disabled);
+      expect(notifier.lastErrorType, isNull);
+      verify(() => mockBiometricService.clearBiometricData()).called(1);
+    });
+
+    test('signInWithBiometrics handles token validation error', () async {
+      when(
+        () => mockBiometricService.authenticate(
+          localizedReason: any(named: 'localizedReason'),
+        ),
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockBiometricService.validateStoredTokens(),
+      ).thenAnswer((_) async => BiometricTokenStatus.error);
+
+      final result = await notifier.signInWithBiometrics();
+
+      expect(result, false);
+      expect(notifier.state, BiometricAuthState.failed);
+      expect(notifier.lastErrorType, BiometricErrorType.tokenError);
+    });
+
+    test('signInWithBiometrics handles refresh token success', () async {
+      when(
+        () => mockBiometricService.authenticate(
+          localizedReason: any(named: 'localizedReason'),
+        ),
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockBiometricService.validateStoredTokens(),
+      ).thenAnswer((_) async => BiometricTokenStatus.valid);
+      when(
+        () => mockBiometricService.getRefreshToken(),
+      ).thenAnswer((_) async => 'refresh_token');
+      when(() => mockAuthService.refresh('refresh_token')).thenAnswer(
+        (_) async => const SignInResult(
+          success: true,
+          sessionId: 'new_session_id',
+          refreshToken: 'new_refresh_token',
+        ),
+      );
+      when(
+        () => mockSessionNotifier.setSessionId('new_session_id'),
+      ).thenAnswer((_) async {});
+      when(
+        () => mockSessionNotifier.setRefreshToken('new_refresh_token'),
+      ).thenAnswer((_) async {});
+
+      final result = await notifier.signInWithBiometrics();
+
+      expect(result, true);
+      expect(notifier.state, BiometricAuthState.authenticated);
+      verify(
+        () => mockSessionNotifier.setSessionId('new_session_id'),
+      ).called(1);
+      verify(
+        () => mockSessionNotifier.setRefreshToken('new_refresh_token'),
+      ).called(1);
+    });
+
+    test('signInWithBiometrics handles refresh token failure', () async {
+      when(
+        () => mockBiometricService.authenticate(
+          localizedReason: any(named: 'localizedReason'),
+        ),
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockBiometricService.validateStoredTokens(),
+      ).thenAnswer((_) async => BiometricTokenStatus.valid);
+      when(
+        () => mockBiometricService.getRefreshToken(),
+      ).thenAnswer((_) async => 'refresh_token');
+      when(() => mockAuthService.refresh('refresh_token')).thenAnswer(
+        (_) async =>
+            const SignInResult(success: false, errorMessage: 'Refresh failed'),
+      );
+
+      final result = await notifier.signInWithBiometrics();
+
+      expect(result, false);
+      expect(notifier.state, BiometricAuthState.failed);
+      expect(notifier.lastErrorType, BiometricErrorType.tokensExpired);
+      verifyNever(() => mockSessionNotifier.setSessionId(any()));
+    });
+
+    test('signInWithBiometrics handles refresh token exception', () async {
+      when(
+        () => mockBiometricService.authenticate(
+          localizedReason: any(named: 'localizedReason'),
+        ),
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockBiometricService.validateStoredTokens(),
+      ).thenAnswer((_) async => BiometricTokenStatus.valid);
+      when(
+        () => mockBiometricService.getRefreshToken(),
+      ).thenAnswer((_) async => 'refresh_token');
+      when(
+        () => mockAuthService.refresh('refresh_token'),
+      ).thenThrow(Exception('Network error'));
+
+      final result = await notifier.signInWithBiometrics();
+
+      expect(result, false);
+      expect(notifier.state, BiometricAuthState.failed);
+      expect(notifier.lastErrorType, BiometricErrorType.tokenError);
+    });
+
+    test(
+      'signInWithBiometrics handles credential-based signin success',
+      () async {
+        when(
+          () => mockBiometricService.authenticate(
+            localizedReason: any(named: 'localizedReason'),
+          ),
+        ).thenAnswer((_) async => true);
+        when(
+          () => mockBiometricService.validateStoredTokens(),
+        ).thenAnswer((_) async => BiometricTokenStatus.noTokensWithCredentials);
+        when(
+          () => mockBiometricService.getStoredEmail(),
+        ).thenAnswer((_) async => 'test@example.com');
+        when(
+          () => mockBiometricService.getStoredPassword(),
+        ).thenAnswer((_) async => 'password');
+        when(
+          () => mockAuthService.signIn('test@example.com', 'password'),
+        ).thenAnswer(
+          (_) async => const SignInResult(
+            success: true,
+            sessionId: 'new_session',
+            refreshToken: 'new_refresh',
+          ),
+        );
+        when(
+          () => mockSessionNotifier.setSessionId('new_session'),
+        ).thenAnswer((_) async {});
+        when(
+          () => mockSessionNotifier.setRefreshToken('new_refresh'),
+        ).thenAnswer((_) async {});
+        when(
+          () => mockBiometricService.enableBiometricAuth(
+            'new_session',
+            refreshToken: 'new_refresh',
+          ),
+        ).thenAnswer((_) async {});
+
+        final result = await notifier.signInWithBiometrics();
+
+        expect(result, true);
+        expect(notifier.state, BiometricAuthState.authenticated);
+        verify(
+          () => mockBiometricService.enableBiometricAuth(
+            'new_session',
+            refreshToken: 'new_refresh',
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      'signInWithBiometrics handles credential-based signin with no credentials',
+      () async {
+        when(
+          () => mockBiometricService.authenticate(
+            localizedReason: any(named: 'localizedReason'),
+          ),
+        ).thenAnswer((_) async => true);
+        when(
+          () => mockBiometricService.validateStoredTokens(),
+        ).thenAnswer((_) async => BiometricTokenStatus.noTokensWithCredentials);
+        when(
+          () => mockBiometricService.getStoredEmail(),
+        ).thenAnswer((_) async => null);
+        when(
+          () => mockBiometricService.getStoredPassword(),
+        ).thenAnswer((_) async => 'password');
+
+        final result = await notifier.signInWithBiometrics();
+
+        expect(result, false);
+        expect(notifier.state, BiometricAuthState.failed);
+        expect(notifier.lastErrorType, BiometricErrorType.noTokens);
+        verifyNever(() => mockAuthService.signIn(any(), any()));
+      },
+    );
+
+    test(
+      'signInWithBiometrics handles credential-based signin with invalid credentials',
+      () async {
+        when(
+          () => mockBiometricService.authenticate(
+            localizedReason: any(named: 'localizedReason'),
+          ),
+        ).thenAnswer((_) async => true);
+        when(
+          () => mockBiometricService.validateStoredTokens(),
+        ).thenAnswer((_) async => BiometricTokenStatus.noTokensWithCredentials);
+        when(
+          () => mockBiometricService.getStoredEmail(),
+        ).thenAnswer((_) async => 'test@example.com');
+        when(
+          () => mockBiometricService.getStoredPassword(),
+        ).thenAnswer((_) async => 'password');
+        when(
+          () => mockAuthService.signIn('test@example.com', 'password'),
+        ).thenAnswer(
+          (_) async => const SignInResult(
+            success: false,
+            errorMessage: 'Invalid credentials',
+          ),
+        );
+
+        final result = await notifier.signInWithBiometrics();
+
+        expect(result, false);
+        expect(notifier.state, BiometricAuthState.failed);
+        expect(notifier.lastErrorType, BiometricErrorType.credentialsInvalid);
+      },
+    );
+
+    test(
+      'signInWithBiometrics handles credential-based signin with exception',
+      () async {
+        when(
+          () => mockBiometricService.authenticate(
+            localizedReason: any(named: 'localizedReason'),
+          ),
+        ).thenAnswer((_) async => true);
+        when(
+          () => mockBiometricService.validateStoredTokens(),
+        ).thenAnswer((_) async => BiometricTokenStatus.noTokensWithCredentials);
+        when(
+          () => mockBiometricService.getStoredEmail(),
+        ).thenAnswer((_) async => 'test@example.com');
+        when(
+          () => mockBiometricService.getStoredPassword(),
+        ).thenAnswer((_) async => 'password');
+        when(
+          () => mockAuthService.signIn('test@example.com', 'password'),
+        ).thenThrow(Exception('Network error'));
+
+        final result = await notifier.signInWithBiometrics();
+
+        expect(result, false);
+        expect(notifier.state, BiometricAuthState.failed);
+        expect(notifier.lastErrorType, BiometricErrorType.technicalError);
+      },
+    );
+
+    test('signInWithBiometrics handles session token with exception', () async {
+      when(
+        () => mockBiometricService.authenticate(
+          localizedReason: any(named: 'localizedReason'),
+        ),
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockBiometricService.validateStoredTokens(),
+      ).thenAnswer((_) async => BiometricTokenStatus.valid);
+      when(
+        () => mockBiometricService.getRefreshToken(),
+      ).thenAnswer((_) async => null);
+      when(
+        () => mockBiometricService.getSessionToken(),
+      ).thenAnswer((_) async => 'session_token');
+      when(
+        () => mockSessionNotifier.setSessionId('session_token'),
+      ).thenThrow(Exception('Session error'));
+
+      final result = await notifier.signInWithBiometrics();
+
+      expect(result, false);
+      expect(notifier.state, BiometricAuthState.failed);
+      expect(notifier.lastErrorType, BiometricErrorType.technicalError);
+    });
+
+    test('disableBiometricAuthDueToExpiration clears data', () async {
+      notifier.state = BiometricAuthState.authenticated;
+      when(
+        () => mockBiometricService.clearBiometricData(),
+      ).thenAnswer((_) async {});
+
+      await notifier.disableBiometricAuthDueToExpiration();
+
+      expect(notifier.state, BiometricAuthState.disabled);
+      verify(() => mockBiometricService.clearBiometricData()).called(1);
+    });
+
+    test('disableBiometricAuthDueToExpiration handles error', () async {
+      notifier.state = BiometricAuthState.authenticated;
+      when(
+        () => mockBiometricService.clearBiometricData(),
+      ).thenThrow(Exception('Clear error'));
+
+      await notifier.disableBiometricAuthDueToExpiration();
+
+      expect(notifier.state, BiometricAuthState.failed);
+    });
+
+    test('disableBiometricAuth handles error', () async {
+      notifier.state = BiometricAuthState.enabled;
+      when(
+        () => mockBiometricService.disableBiometricAuth(),
+      ).thenThrow(Exception('Disable error'));
+
+      await notifier.disableBiometricAuth();
+
+      expect(notifier.state, BiometricAuthState.failed);
+    });
+
+    test('clearBiometricData handles error', () async {
+      notifier.state = BiometricAuthState.enabled;
+      when(
+        () => mockBiometricService.clearBiometricData(),
+      ).thenThrow(Exception('Clear error'));
+
+      await notifier.clearBiometricData();
+
+      expect(notifier.state, BiometricAuthState.failed);
+    });
+
+    test('enableBiometricAuth with refresh token', () async {
+      when(
+        () => mockBiometricService.authenticate(
+          localizedReason: any(named: 'localizedReason'),
+        ),
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockBiometricService.enableBiometricAuth(
+          'token',
+          refreshToken: 'refresh',
+        ),
+      ).thenAnswer((_) async {});
+
+      final result = await notifier.enableBiometricAuth(
+        'token',
+        refreshToken: 'refresh',
+      );
+
+      expect(result, true);
+      expect(notifier.state, BiometricAuthState.enabled);
+      verify(
+        () => mockBiometricService.enableBiometricAuth(
+          'token',
+          refreshToken: 'refresh',
+        ),
+      ).called(1);
+    });
+  });
 }

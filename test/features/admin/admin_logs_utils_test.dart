@@ -44,7 +44,7 @@ This is not a JSON line
       expect(result.length, 3);
       expect(result[0]['level'], 'INFO');
       expect(result[1]['raw'], 'This is not a JSON line');
-      expect(result[1]['level'], 'INFO'); // Default level for malformed
+      expect(result[1]['level'], 'INFO');
       expect(result[2]['level'], 'ERROR');
     });
 
@@ -96,191 +96,300 @@ Not JSON at all
   });
 
   group('getAdminLogLevelColor', () {
-    late BuildContext context;
-
-    setUp(() {
-      // Create a test context with light theme
-      final theme = ThemeData.light();
-      context = _createTestContext(theme);
+    testWidgets('returns error color for ERROR level', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.light(),
+          home: Builder(
+            builder: (context) {
+              final color = getAdminLogLevelColor(context, 'ERROR');
+              expect(color, ThemeData.light().colorScheme.error);
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('returns error color for ERROR level', () {
-      final color = getAdminLogLevelColor(context, 'ERROR');
-      expect(color, const Color(0xFFFFB4AB));
+    testWidgets('returns error color for CRITICAL level', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.light(),
+          home: Builder(
+            builder: (context) {
+              final color = getAdminLogLevelColor(context, 'CRITICAL');
+              expect(color, ThemeData.light().colorScheme.error);
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('returns error color for CRITICAL level', () {
-      final color = getAdminLogLevelColor(context, 'CRITICAL');
-      expect(color, const Color(0xFFFFB4AB));
+    testWidgets('returns warning color for WARNING level', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.light(),
+          home: Builder(
+            builder: (context) {
+              final color = getAdminLogLevelColor(context, 'WARNING');
+              expect(color, const Color(0xFF9A5200));
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('returns warning color for WARNING level', () {
-      final color = getAdminLogLevelColor(context, 'WARNING');
-      expect(color, const Color(0xFF9A5200));
+    testWidgets('returns primary color for INFO level', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.light(),
+          home: Builder(
+            builder: (context) {
+              final color = getAdminLogLevelColor(context, 'INFO');
+              expect(color, ThemeData.light().colorScheme.primary);
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('returns primary color for INFO level', () {
-      final color = getAdminLogLevelColor(context, 'INFO');
-      expect(color, ThemeData.light().colorScheme.primary);
+    testWidgets('returns neutral color for DEBUG level', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.light(),
+          home: Builder(
+            builder: (context) {
+              final color = getAdminLogLevelColor(context, 'DEBUG');
+              expect(color, ThemeData.light().colorScheme.onSurfaceVariant);
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('returns neutral color for DEBUG level', () {
-      final color = getAdminLogLevelColor(context, 'DEBUG');
-      expect(color, ThemeData.light().colorScheme.onSurfaceVariant);
+    testWidgets('returns default color for unknown level', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.light(),
+          home: Builder(
+            builder: (context) {
+              final color = getAdminLogLevelColor(context, 'UNKNOWN');
+              expect(color, ThemeData.light().colorScheme.onSurface);
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('returns default color for unknown level', () {
-      final color = getAdminLogLevelColor(context, 'UNKNOWN');
-      expect(color, ThemeData.light().colorScheme.onSurface);
+    testWidgets('handles lowercase level strings', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.light(),
+          home: Builder(
+            builder: (context) {
+              final color = getAdminLogLevelColor(context, 'error');
+              expect(color, ThemeData.light().colorScheme.error);
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('handles lowercase level strings', () {
-      final color = getAdminLogLevelColor(context, 'error');
-      expect(color, const Color(0xFFFFB4AB));
+    testWidgets('handles mixed case level strings', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.light(),
+          home: Builder(
+            builder: (context) {
+              final color = getAdminLogLevelColor(context, 'WaRnInG');
+              expect(color, const Color(0xFF9A5200));
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('handles mixed case level strings', () {
-      final color = getAdminLogLevelColor(context, 'WaRnInG');
-      expect(color, const Color(0xFF9A5200));
-    });
+    testWidgets('returns dark theme colors in dark mode', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.dark(),
+          home: Builder(
+            builder: (context) {
+              final errorColor = getAdminLogLevelColor(context, 'ERROR');
+              expect(errorColor, const Color(0xFFFFB4AB));
 
-    test('returns dark theme colors in dark mode', () {
-      final darkTheme = ThemeData.dark();
-      final darkContext = _createTestContext(darkTheme);
+              final warningColor = getAdminLogLevelColor(context, 'WARNING');
+              expect(warningColor, const Color(0xFFFFD8A8));
 
-      final errorColor = getAdminLogLevelColor(darkContext, 'ERROR');
-      expect(errorColor, const Color(0xFFFFB4AB));
-
-      final warningColor = getAdminLogLevelColor(darkContext, 'WARNING');
-      expect(warningColor, const Color(0xFFFFD8A8));
-
-      final infoColor = getAdminLogLevelColor(darkContext, 'INFO');
-      expect(infoColor, const Color(0xFF9CB9FF));
+              final infoColor = getAdminLogLevelColor(context, 'INFO');
+              expect(infoColor, const Color(0xFF9CB9FF));
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
   });
 
   group('getAdminLogLevelBackgroundColor', () {
-    late BuildContext context;
-
-    setUp(() {
-      final theme = ThemeData.light();
-      context = _createTestContext(theme);
+    testWidgets('returns error container for ERROR level', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.light(),
+          home: Builder(
+            builder: (context) {
+              final color = getAdminLogLevelBackgroundColor(context, 'ERROR');
+              expect(color, ThemeData.light().colorScheme.errorContainer);
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('returns error container for ERROR level', () {
-      final color = getAdminLogLevelBackgroundColor(context, 'ERROR');
-      expect(color, ThemeData.light().colorScheme.errorContainer);
+    testWidgets('returns error container for CRITICAL level', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.light(),
+          home: Builder(
+            builder: (context) {
+              final color = getAdminLogLevelBackgroundColor(
+                context,
+                'CRITICAL',
+              );
+              expect(color, ThemeData.light().colorScheme.errorContainer);
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('returns error container for CRITICAL level', () {
-      final color = getAdminLogLevelBackgroundColor(context, 'CRITICAL');
-      expect(color, ThemeData.light().colorScheme.errorContainer);
+    testWidgets('returns warning background for WARNING level', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.light(),
+          home: Builder(
+            builder: (context) {
+              final color = getAdminLogLevelBackgroundColor(context, 'WARNING');
+              expect(color, const Color(0xFFFFE8CC));
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('returns warning background for WARNING level', () {
-      final color = getAdminLogLevelBackgroundColor(context, 'WARNING');
-      expect(color, const Color(0xFFFFE8CC));
+    testWidgets('returns primary container for INFO level', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.light(),
+          home: Builder(
+            builder: (context) {
+              final color = getAdminLogLevelBackgroundColor(context, 'INFO');
+              expect(color, ThemeData.light().colorScheme.primaryContainer);
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('returns primary container for INFO level', () {
-      final color = getAdminLogLevelBackgroundColor(context, 'INFO');
-      expect(color, ThemeData.light().colorScheme.primaryContainer);
+    testWidgets('returns surface container for DEBUG level', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.light(),
+          home: Builder(
+            builder: (context) {
+              final color = getAdminLogLevelBackgroundColor(context, 'DEBUG');
+              expect(
+                color,
+                ThemeData.light().colorScheme.surfaceContainerHighest,
+              );
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('returns surface container for DEBUG level', () {
-      final color = getAdminLogLevelBackgroundColor(context, 'DEBUG');
-      expect(color, ThemeData.light().colorScheme.surfaceContainerHighest);
+    testWidgets('returns default surface for unknown level', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.light(),
+          home: Builder(
+            builder: (context) {
+              final color = getAdminLogLevelBackgroundColor(context, 'UNKNOWN');
+              expect(color, ThemeData.light().colorScheme.surface);
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('returns default surface for unknown level', () {
-      final color = getAdminLogLevelBackgroundColor(context, 'UNKNOWN');
-      expect(color, ThemeData.light().colorScheme.surface);
+    testWidgets('handles lowercase level strings', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.light(),
+          home: Builder(
+            builder: (context) {
+              final color = getAdminLogLevelBackgroundColor(context, 'error');
+              expect(color, ThemeData.light().colorScheme.errorContainer);
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('handles lowercase level strings', () {
-      final color = getAdminLogLevelBackgroundColor(context, 'error');
-      expect(color, ThemeData.light().colorScheme.errorContainer);
+    testWidgets('returns dark theme colors in dark mode', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.dark(),
+          home: Builder(
+            builder: (context) {
+              final errorBg = getAdminLogLevelBackgroundColor(context, 'ERROR');
+              expect(errorBg, const Color(0xFF5C1D1D).withValues(alpha: 0.3));
+
+              final warningBg = getAdminLogLevelBackgroundColor(
+                context,
+                'WARNING',
+              );
+              expect(warningBg, const Color(0xFF5C3800).withValues(alpha: 0.3));
+
+              final infoBg = getAdminLogLevelBackgroundColor(context, 'INFO');
+              expect(infoBg, const Color(0xFF1A2F5C).withValues(alpha: 0.3));
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
 
-    test('returns dark theme colors in dark mode', () {
-      final darkTheme = ThemeData.dark();
-      final darkContext = _createTestContext(darkTheme);
-
-      final errorBg = getAdminLogLevelBackgroundColor(darkContext, 'ERROR');
-      expect(errorBg, const Color(0xFF5C1D1D).withValues(alpha: 0.3));
-
-      final warningBg = getAdminLogLevelBackgroundColor(darkContext, 'WARNING');
-      expect(warningBg, const Color(0xFF5C3800).withValues(alpha: 0.3));
-
-      final infoBg = getAdminLogLevelBackgroundColor(darkContext, 'INFO');
-      expect(infoBg, const Color(0xFF1A2F5C).withValues(alpha: 0.3));
-    });
-
-    test('alpha values are correctly applied in dark mode', () {
-      final darkTheme = ThemeData.dark();
-      final darkContext = _createTestContext(darkTheme);
-
-      final errorBg = getAdminLogLevelBackgroundColor(darkContext, 'ERROR');
-      expect(errorBg.alpha, lessThan(1.0));
-      expect(errorBg.alpha, greaterThan(0.0));
+    testWidgets('alpha values are correctly applied in dark mode', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.dark(),
+          home: Builder(
+            builder: (context) {
+              final errorBg = getAdminLogLevelBackgroundColor(context, 'ERROR');
+              expect(errorBg.a, lessThan(1.0));
+              expect(errorBg.a, greaterThan(0.0));
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
     });
   });
-}
-
-BuildContext _createTestContext(ThemeData theme) {
-  return _TestBuildContext(theme);
-}
-
-class _TestBuildContext implements BuildContext {
-  final ThemeData theme;
-
-  _TestBuildContext(this.theme);
-
-  @override
-  Widget get widget => throw UnimplementedError();
-
-  @override
-  bool get mounted => true;
-
-  @override
-  InheritedWidget inheritFromElement(
-    InheritedElement ancestor, {
-    Object? aspect,
-  }) {
-    if (ancestor.widget is _RootTheme) {
-      return theme;
-    }
-    throw UnimplementedError();
-  }
-
-  @override
-  Element? get element => throw UnimplementedError();
-
-  @override
-  Iterable<InheritedWidget> get inheritedElements =>
-      throw UnimplementedError();
-
-  @override
-  BuildOwner? get owner => throw UnimplementedError();
-
-  @override
-  RenderObject? get renderObject => throw UnimplementedError();
-
-  @override
-  RenderObject? get findRenderObject => throw UnimplementedError();
-
-  @override
-  Size get size => Size.zero;
-
-  @override
-  Offset get paintBounds => Offset.zero;
-}
-
-class _RootTheme extends InheritedWidget {
-  final ThemeData data;
-
-  const _RootTheme({required this.data, required Widget child}) : super(child: child);
-
-  @override
-  bool updateShouldNotify(_RootTheme oldWidget) => true;
 }
