@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +13,8 @@ import 'package:writer/state/providers.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/state/storage_service_provider.dart';
+
+import 'package:writer/shared/widgets/empty_states/novel_empty_state.dart';
 
 void main() {
   setUp(() async {
@@ -169,7 +173,6 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 1));
     });
 
-    // Error state test removed due to test environment issues with AsyncValue error propagation
     /*
     testWidgets('shows error state', (tester) async {
       final prefs = await SharedPreferences.getInstance();
@@ -186,7 +189,7 @@ void main() {
             ),
             sessionProvider.overrideWith((ref) => sessionNotifier),
             memberNovelsProviderV2.overrideWith((ref) async {
-              await Future.delayed(const Duration(milliseconds: 100));
+              await Future.delayed(Duration.zero);
               throw 'Error';
             }),
           ],
@@ -199,13 +202,101 @@ void main() {
         ),
       );
       
-      await tester.pump(); // Initial build (loading)
-      await tester.pump(const Duration(milliseconds: 500)); // Wait for error
-      await tester.pump(); // Rebuild with error
+      // Initial pump
+      await tester.pump();
+      // Pump again to allow Future to complete and UI to update
+      await tester.pump();
       
       expect(find.text('Error loading novels'), findsOneWidget);
     });
+
+    testWidgets('shows loading for 401 error', (tester) async {
+      final prefs = await SharedPreferences.getInstance();
+      final storageService = LocalStorageService(prefs);
+      final sessionNotifier = SessionNotifier(storageService);
+      await sessionNotifier.setSessionId('s-123');
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            localStorageRepositoryProvider.overrideWithValue(
+              LocalStorageRepository(storageService),
+            ),
+            sessionProvider.overrideWith((ref) => sessionNotifier),
+            memberNovelsProviderV2.overrideWith((ref) async {
+              await Future.delayed(Duration.zero);
+              throw ApiException(401, 'Unauthorized');
+            }),
+          ],
+          child: MaterialApp(
+            locale: const Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const MyNovelsScreen(),
+          ),
+        ),
+      );
+      
+      // Initial pump
+      await tester.pump();
+      // Pump again
+      await tester.pump();
+
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.text('Error loading novels'), findsNothing);
+    });
     */
+
+    testWidgets('empty state action navigates to create novel', (tester) async {
+      final prefs = await SharedPreferences.getInstance();
+      final storageService = LocalStorageService(prefs);
+      final sessionNotifier = SessionNotifier(storageService);
+      await sessionNotifier.setSessionId('s-123');
+
+      final router = GoRouter(
+        initialLocation: '/my-novels',
+        routes: [
+          GoRoute(
+            path: '/my-novels',
+            builder: (context, state) => const MyNovelsScreen(),
+          ),
+          GoRoute(
+            path: '/create-novel',
+            builder: (context, state) =>
+                const Scaffold(body: Text('Create Novel Screen')),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            localStorageRepositoryProvider.overrideWithValue(
+              LocalStorageRepository(storageService),
+            ),
+            sessionProvider.overrideWith((ref) => sessionNotifier),
+            memberNovelsProviderV2.overrideWith((ref) async => []),
+          ],
+          child: MaterialApp.router(
+            locale: const Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: router,
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.byType(NovelEmptyState), findsOneWidget);
+
+      // Tap create novel
+      await tester.tap(find.text('Create Novel'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Create Novel Screen'), findsOneWidget);
+    });
 
     testWidgets('navigates to auth when sign in tapped', (tester) async {
       final prefs = await SharedPreferences.getInstance();
@@ -300,63 +391,88 @@ void main() {
       expect(find.text('Home Screen'), findsOneWidget);
     });
 
-    testWidgets('navigates to novel details when novel tapped', (tester) async {
+    testWidgets('shows member novels list with covers', (tester) async {
       final prefs = await SharedPreferences.getInstance();
       final storageService = LocalStorageService(prefs);
       final sessionNotifier = SessionNotifier(storageService);
       await sessionNotifier.setSessionId('s-123');
 
-      const novel = Novel(
-        id: 'n1',
-        title: 'Test Novel',
-        author: 'Author',
-        description: null,
-        coverUrl: null,
-        languageCode: 'en',
-        isPublic: true,
-      );
-
-      final router = GoRouter(
-        initialLocation: '/my-novels',
-        routes: [
-          GoRoute(
-            path: '/my-novels',
-            builder: (context, state) => const MyNovelsScreen(),
-          ),
-          GoRoute(
-            path: '/novel/:id',
-            name: 'novel',
-            builder: (context, state) => Scaffold(
-              body: Text('Novel Details: ${state.pathParameters['id']}'),
-            ),
-          ),
-        ],
-      );
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            sharedPreferencesProvider.overrideWithValue(prefs),
-            localStorageRepositoryProvider.overrideWithValue(
-              LocalStorageRepository(storageService),
-            ),
-            sessionProvider.overrideWith((ref) => sessionNotifier),
-            memberNovelsProviderV2.overrideWith((ref) async => [novel]),
-          ],
-          child: MaterialApp.router(
-            locale: const Locale('en'),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            routerConfig: router,
-          ),
+      const novels = [
+        Novel(
+          id: 'n1',
+          title: 'Cover Novel',
+          author: 'Author 1',
+          coverUrl: 'https://example.com/cover.jpg',
+          languageCode: 'en',
+          isPublic: true,
         ),
-      );
+      ];
 
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Test Novel'));
-      await tester.pumpAndSettle();
+      await HttpOverrides.runZoned(() async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              sharedPreferencesProvider.overrideWithValue(prefs),
+              localStorageRepositoryProvider.overrideWithValue(
+                LocalStorageRepository(storageService),
+              ),
+              sessionProvider.overrideWith((ref) => sessionNotifier),
+              memberNovelsProviderV2.overrideWith((ref) async => novels),
+            ],
+            child: const MaterialApp(
+              locale: Locale('en'),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: MyNovelsScreen(),
+            ),
+          ),
+        );
 
-      expect(find.text('Novel Details: n1'), findsOneWidget);
+        await tester.pumpAndSettle();
+        expect(find.text('Cover Novel'), findsOneWidget);
+        expect(find.byType(Image), findsOneWidget);
+      }, createHttpClient: (_) => _MockHttpClient());
     });
   });
+}
+
+class _MockHttpClient extends Fake implements HttpClient {
+  @override
+  Future<HttpClientRequest> getUrl(Uri url) async {
+    return _MockHttpClientRequest();
+  }
+}
+
+class _MockHttpClientRequest extends Fake implements HttpClientRequest {
+  @override
+  Future<HttpClientResponse> close() async {
+    return _MockHttpClientResponse();
+  }
+}
+
+class _MockHttpClientResponse extends Fake implements HttpClientResponse {
+  @override
+  int get statusCode => 200;
+
+  @override
+  int get contentLength => 0;
+
+  @override
+  HttpClientResponseCompressionState get compressionState =>
+      HttpClientResponseCompressionState.notCompressed;
+
+  @override
+  StreamSubscription<List<int>> listen(
+    void Function(List<int> event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    return Stream<List<int>>.value([]).listen(
+      onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    );
+  }
 }

@@ -137,6 +137,62 @@ void main() {
     expect(res, hasLength(1));
     expect(res.single.novelId, 'n1');
   });
+
+  test(
+    'recentUserProgressProvider maps remote map with items when signed in',
+    () async {
+      final remote = MockRemoteRepository();
+      when(
+        () => remote.get('progress/recent', queryParameters: {'limit': '3'}),
+      ).thenAnswer(
+        (_) async => {
+          'items': [
+            {
+              'user_id': 'u1',
+              'novel_id': 'n1',
+              'chapter_id': 'c1',
+              'scroll_offset': 2.0,
+              'tts_char_index': 3,
+              'updated_at': '2024-01-01T00:00:00Z',
+            },
+          ],
+        },
+      );
+      final container = ProviderContainer(
+        overrides: [
+          isSignedInProvider.overrideWith((_) => true),
+          authStateProvider.overrideWith((_) => 'session'),
+          remoteRepositoryProvider.overrideWith((_) => remote),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final res = await container.read(recentUserProgressProvider.future);
+      expect(res, hasLength(1));
+      expect(res.single.novelId, 'n1');
+    },
+  );
+
+  test(
+    'recentUserProgressProvider returns empty list on unknown format',
+    () async {
+      final remote = MockRemoteRepository();
+      when(
+        () => remote.get('progress/recent', queryParameters: {'limit': '3'}),
+      ).thenAnswer((_) async => {'foo': 'bar'});
+      final container = ProviderContainer(
+        overrides: [
+          isSignedInProvider.overrideWith((_) => true),
+          authStateProvider.overrideWith((_) => 'session'),
+          remoteRepositoryProvider.overrideWith((_) => remote),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final res = await container.read(recentUserProgressProvider.future);
+      expect(res, isEmpty);
+    },
+  );
 }
 
 class _FakeProgressRepo implements ProgressPort {

@@ -13,6 +13,9 @@ import 'package:writer/state/providers.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/shared/widgets/app_dialog.dart';
+import 'package:writer/state/ai_agent_settings.dart';
+import 'package:writer/state/admin_settings.dart';
+import 'package:writer/shared/widgets/neumorphic_switch.dart';
 
 void main() {
   testWidgets('AppSettingsSection renders correctly', (
@@ -230,5 +233,140 @@ void main() {
 
     expect(find.byType(AppDialog), findsNothing);
     expect(prefs.getString('ai_service_url'), 'http://valid.com');
+  });
+
+  testWidgets('AppSettingsSection toggles Deep Agent settings', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final storageService = LocalStorageService(prefs);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          localStorageRepositoryProvider.overrideWithValue(
+            LocalStorageRepository(storageService),
+          ),
+          sessionProvider.overrideWith(
+            (ref) => SessionNotifier(storageService),
+          ),
+          appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
+          themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
+          motionSettingsProvider.overrideWith(
+            (_) => MotionSettingsNotifier(prefs),
+          ),
+          aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
+          aiAgentSettingsProvider.overrideWith(
+            (_) => AiAgentSettingsNotifier(prefs),
+          ),
+        ],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: SingleChildScrollView(child: AppSettingsSection()),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Find 'Deep Agent' settings
+    expect(find.text('Deep Agent Settings'), findsOneWidget);
+
+    // Toggle 'Prefer Deep Agent'
+    // It's a NeumorphicSwitch.
+    // There are multiple switches. We need to find the one for Prefer Deep Agent.
+    // We can find the switch that is a sibling of the text "Prefer Deep Agent for complex tasks".
+    // Or simpler: find by type NeumorphicSwitch and tap the first one (assuming order).
+    // The order in UI:
+    // 1. Prefer Deep Agent
+    // 2. Fallback to QA
+    // 3. Show Details
+    // 4. Admin Mode
+    // 5. Reduce Motion
+    // 6. Gestures
+    // 7. Biometric (if avail)
+
+    final switches = find.byType(NeumorphicSwitch);
+    // Initially Prefer Deep Agent is true (default).
+    // Let's tap the first switch to toggle it to false.
+    await tester.tap(switches.at(0));
+    await tester.pumpAndSettle();
+
+    expect(prefs.getBool('ai_prefer_deep_agent'), false);
+
+    // Toggle it back to true
+    await tester.tap(switches.at(0));
+    await tester.pumpAndSettle();
+    expect(prefs.getBool('ai_prefer_deep_agent'), true);
+
+    // Now 'Fallback to QA' (second switch). Default is true.
+    await tester.tap(switches.at(1));
+    await tester.pumpAndSettle();
+    expect(prefs.getBool('ai_deep_agent_fallback_to_qa'), false);
+  });
+
+  testWidgets('AppSettingsSection toggles Admin Mode', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final storageService = LocalStorageService(prefs);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          localStorageRepositoryProvider.overrideWithValue(
+            LocalStorageRepository(storageService),
+          ),
+          sessionProvider.overrideWith(
+            (ref) => SessionNotifier(storageService),
+          ),
+          appSettingsProvider.overrideWith((_) => AppSettingsNotifier(prefs)),
+          themeControllerProvider.overrideWith((_) => ThemeController(prefs)),
+          motionSettingsProvider.overrideWith(
+            (_) => MotionSettingsNotifier(prefs),
+          ),
+          aiServiceProvider.overrideWith((_) => AiServiceNotifier(prefs)),
+          adminModeProvider.overrideWith((_) => AdminModeNotifier(prefs)),
+        ],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: SingleChildScrollView(child: AppSettingsSection()),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Find Admin Mode switch.
+    // It is likely the 4th switch (after 3 deep agent switches).
+    // "Enable Admin Mode" text.
+
+    // Easier: find switch near the text.
+    // But let's rely on finding by type NeumorphicSwitch and index if needed,
+    // OR find the specific switch widget if possible.
+    // SettingsToggle has a NeumorphicSwitch.
+
+    // Let's find the text 'Enable Admin Mode' and tap the switch that is in the same row.
+    // Since we don't have easy "row" finder, let's just use index.
+    // 0: Prefer Deep Agent
+    // 1: Fallback
+    // 2: Show Details
+    // 3: Admin Mode
+
+    final switches = find.byType(NeumorphicSwitch);
+    expect(switches, findsAtLeastNWidgets(4));
+
+    final adminSwitch = switches.at(3);
+    await tester.ensureVisible(adminSwitch);
+    await tester.tap(adminSwitch);
+    await tester.pumpAndSettle();
+
+    expect(prefs.getBool('admin_mode'), true);
   });
 }

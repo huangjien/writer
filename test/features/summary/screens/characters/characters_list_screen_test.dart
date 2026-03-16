@@ -1,286 +1,138 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:writer/features/summary/screens/characters/characters_list_screen.dart';
 import 'package:writer/models/character_template_row.dart';
-import 'package:writer/models/scene_template_row.dart';
-import 'package:writer/models/template.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/l10n/app_localizations.dart';
-import 'package:writer/models/chapter_cache.dart';
-import 'package:writer/models/novel.dart';
-import 'package:writer/models/character.dart';
-import 'package:writer/models/character_note.dart';
-import 'package:writer/models/scene.dart';
-import 'package:writer/models/scene_note.dart';
-import 'package:writer/models/cache_metadata.dart';
+import 'package:writer/shared/api_exception.dart';
 
-class MockLocalStorageRepository implements LocalStorageRepository {
-  final List<CharacterTemplateRow> _templates;
-  final bool shouldThrowError;
-  final int? statusCode;
-
-  MockLocalStorageRepository({
-    List<CharacterTemplateRow>? templates,
-    this.shouldThrowError = false,
-    this.statusCode,
-  }) : _templates = templates ?? [];
-
-  @override
-  Future<List<CharacterTemplateRow>> listCharacterTemplates() async {
-    if (shouldThrowError) {
-      throw MockApiException(statusCode ?? 500, 'Error loading templates');
-    }
-    return _templates;
-  }
-
-  @override
-  Future<List<SceneTemplateRow>> listSceneTemplates({int? limit}) async {
-    return [];
-  }
-
-  @override
-  Future<void> saveChapter(ChapterCache chapter) async {}
-
-  @override
-  Future<void> saveChapters(List<ChapterCache> chapters) async {}
-
-  @override
-  Future<void> saveLibraryNovels(List<Novel> novels) async {}
-
-  @override
-  Future<void> saveSummaryText(String novelId, String text) async {}
-
-  @override
-  Future<void> saveCharacterForm(
-    String novelId,
-    Character character, {
-    int? idx,
-  }) async {}
-
-  @override
-  Future<void> saveCharacterNoteForm(
-    String novelId, {
-    String? title,
-    String? summaries,
-    String? synopses,
-    String languageCode = 'en',
-    int? idx,
-  }) async {}
-
-  @override
-  Future<void> saveSceneForm(String novelId, Scene scene, {int? idx}) async {}
-
-  @override
-  Future<void> saveCharacterTemplateForm(
-    String novelId,
-    TemplateItem item,
-  ) async {}
-
-  @override
-  Future<void> saveSceneTemplateForm(
-    String novelId,
-    TemplateItem item, {
-    String languageCode = 'en',
-  }) async {}
-
-  @override
-  Future<void> clearCacheByNovel(String novelId) async {}
-
-  @override
-  Future<int> clearChapterCache() async => 0;
-
-  @override
-  Future<void> deleteCharacterForm(String novelId) async {}
-
-  @override
-  Future<void> deleteCharacterNoteForm(String novelId) async {}
-
-  @override
-  Future<void> deleteSceneForm(String novelId) async {}
-
-  @override
-  Future<void> deleteCharacterTemplate(String id) async {}
-
-  @override
-  Future<void> deleteSceneTemplate(String id) async {}
-
-  @override
-  Future<void> removeChapter(String chapterId) async {}
-
-  @override
-  Future<void> removeNovel(String novelId) async {}
-
-  @override
-  Future<ChapterCache?> getChapter(String chapterId) async => null;
-
-  @override
-  Future<Character?> getCharacterForm(String novelId, {int? idx}) async => null;
-
-  @override
-  Future<Map<String, dynamic>?> getCharacterNoteForm(
-    String novelId, {
-    int? idx,
-  }) async => null;
-
-  @override
-  Future<Scene?> getSceneForm(String novelId, {int? idx}) async => null;
-
-  @override
-  Future<TemplateItem?> getCharacterTemplateForm(String novelId) async => null;
-
-  @override
-  Future<TemplateItem?> getSceneTemplateForm(String novelId) async => null;
-
-  @override
-  Future<String?> getSummaryText(String novelId) async => null;
-
-  @override
-  Future<List<Novel>> getLibraryNovels() async => [];
-
-  @override
-  Future<Set<String>> getKeys() async => {};
-
-  @override
-  Future<List<Novel>> getNovelsList({String key = 'novels_list'}) async => [];
-
-  @override
-  Future<List<ChapterCache>> getChaptersList(String novelId) async => [];
-
-  @override
-  Future<Set<String>> getDownloadedNovelIds() async => {};
-
-  @override
-  Future<List<CharacterNote>> listCharacterNotes(String novelId) async => [];
-
-  @override
-  Future<List<SceneNote>> listSceneNotes(String novelId) async => [];
-
-  @override
-  Future<List<SceneTemplateRow>> searchSceneTemplates(
-    String query, {
-    int? limit,
-    String? languageCode,
-  }) async => [];
-
-  @override
-  Future<void> renameChapterId({
-    required String from,
-    required String to,
-  }) async {}
-
-  @override
-  Future<void> saveNovel(Novel novel) async {}
-
-  @override
-  Future<void> saveNovelsList(List<Novel> novels, {String? key}) async {}
-
-  @override
-  Future<void> saveChaptersList(
-    String novelId,
-    List<Map<String, dynamic>> chapters,
-  ) async {}
-
-  @override
-  Future<Novel?> getNovel(String novelId) async => null;
-
-  @override
-  Future<int> nextCharacterIdx(String novelId) async => 2;
-
-  @override
-  Future<int> nextSceneIdx(String novelId) async => 2;
-
-  @override
-  Future<CharacterTemplateRow?> getCharacterTemplateById(String id) async =>
-      null;
-
-  @override
-  Future<SceneTemplateRow?> getSceneTemplateById(String id) async => null;
-
-  @override
-  Future<CacheMetadata?> getCacheMetadata(String key) async => null;
-}
-
-class MockApiException implements Exception {
-  final int statusCode;
-  final String message;
-  MockApiException(this.statusCode, this.message);
-}
+class MockLocalStorageRepository extends Mock
+    implements LocalStorageRepository {}
 
 void main() {
-  group('CharactersListScreen', () {
-    testWidgets('renders character list', (tester) async {
-      final characters = [
-        CharacterTemplateRow(
-          id: '1',
-          idx: 0,
-          createdAt: DateTime(2024, 1, 1),
-          updatedAt: DateTime(2024, 1, 1),
-          title: 'Hero',
-        ),
-      ];
+  late MockLocalStorageRepository mockRepo;
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            localStorageRepositoryProvider.overrideWithValue(
-              MockLocalStorageRepository(templates: characters),
-            ),
-          ],
-          child: const MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: CharactersListScreen(novelId: 'novel-1'),
-          ),
-        ),
-      );
+  setUp(() {
+    mockRepo = MockLocalStorageRepository();
+  });
 
-      await tester.pumpAndSettle();
+  Widget buildApp(Widget child) {
+    return ProviderScope(
+      overrides: [localStorageRepositoryProvider.overrideWithValue(mockRepo)],
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: child,
+      ),
+    );
+  }
 
-      expect(find.text('Hero'), findsOneWidget);
-    });
+  testWidgets('renders list of characters', (tester) async {
+    final characters = <CharacterTemplateRow>[
+      CharacterTemplateRow(
+        id: '1',
+        idx: 0,
+        title: 'Hero',
+        createdAt: DateTime(2024),
+        updatedAt: DateTime(2024),
+      ),
+      CharacterTemplateRow(
+        id: '2',
+        idx: 1,
+        title: 'Villain',
+        characterSummaries: 'Summary',
+        createdAt: DateTime(2024),
+        updatedAt: DateTime(2024),
+      ),
+    ];
 
-    testWidgets('shows error message on error', (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            localStorageRepositoryProvider.overrideWithValue(
-              MockLocalStorageRepository(shouldThrowError: true),
-            ),
-          ],
-          child: const MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: CharactersListScreen(novelId: 'novel-1'),
-          ),
-        ),
-      );
+    when(
+      () => mockRepo.listCharacterTemplates(),
+    ).thenAnswer((_) async => characters);
 
-      await tester.pumpAndSettle();
+    await tester.pumpWidget(
+      buildApp(const CharactersListScreen(novelId: 'n1')),
+    );
+    await tester.pumpAndSettle();
 
-      expect(find.byType(CircularProgressIndicator), findsNothing);
-    });
+    expect(find.text('Hero'), findsOneWidget);
+    expect(find.textContaining('Villain'), findsOneWidget);
+    expect(find.textContaining('Summary'), findsOneWidget);
+  });
 
-    testWidgets('shows empty state when no characters', (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            localStorageRepositoryProvider.overrideWithValue(
-              MockLocalStorageRepository(),
-            ),
-          ],
-          child: const MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: CharactersListScreen(novelId: 'novel-1'),
-          ),
-        ),
-      );
+  testWidgets('shows error state on generic error', (tester) async {
+    when(
+      () => mockRepo.listCharacterTemplates(),
+    ).thenThrow(Exception('Failed'));
 
-      await tester.pumpAndSettle();
+    await tester.pumpWidget(
+      buildApp(const CharactersListScreen(novelId: 'n1')),
+    );
+    await tester.pumpAndSettle();
 
-      expect(find.byType(CircularProgressIndicator), findsNothing);
-    });
+    expect(find.textContaining('Exception: Failed'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
+
+  testWidgets('ignores 401 error', (tester) async {
+    when(
+      () => mockRepo.listCharacterTemplates(),
+    ).thenThrow(ApiException(401, 'Auth error'));
+
+    await tester.pumpWidget(
+      buildApp(const CharactersListScreen(novelId: 'n1')),
+    );
+    await tester.pumpAndSettle();
+
+    // Should show empty list (no items) and no error
+    expect(find.byType(ListView), findsOneWidget);
+    expect(find.textContaining('Auth error'), findsNothing);
+  });
+
+  testWidgets('filters list by search query', (tester) async {
+    final characters = <CharacterTemplateRow>[
+      CharacterTemplateRow(
+        id: '1',
+        idx: 0,
+        title: 'Alice',
+        createdAt: DateTime(2024),
+        updatedAt: DateTime(2024),
+      ),
+      CharacterTemplateRow(
+        id: '2',
+        idx: 1,
+        title: 'Bob',
+        createdAt: DateTime(2024),
+        updatedAt: DateTime(2024),
+      ),
+    ];
+    when(
+      () => mockRepo.listCharacterTemplates(),
+    ).thenAnswer((_) async => characters);
+
+    await tester.pumpWidget(
+      buildApp(const CharactersListScreen(novelId: 'n1')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Alice'), findsOneWidget);
+    expect(find.text('Bob'), findsOneWidget);
+
+    // Enter search query
+    await tester.enterText(find.byType(TextField), 'ali');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Alice'), findsOneWidget);
+    expect(find.text('Bob'), findsNothing);
+
+    // Clear search
+    await tester.tap(find.byIcon(Icons.clear));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Alice'), findsOneWidget);
+    expect(find.text('Bob'), findsOneWidget);
   });
 }

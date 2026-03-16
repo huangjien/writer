@@ -11,6 +11,8 @@ import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/state/storage_service_provider.dart';
 
+import 'package:writer/shared/api_exception.dart';
+
 class MockRemoteRepository extends Mock implements RemoteRepository {}
 
 void main() {
@@ -536,6 +538,89 @@ void main() {
       expect(find.text('Database connection failed'), findsOneWidget);
       expect(find.text('High memory usage detected'), findsOneWidget);
       expect(find.byType(ListView), findsOneWidget);
+    });
+
+    testWidgets('ignores 401 error', (tester) async {
+      when(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenThrow(ApiException(401, 'Unauthorized'));
+
+      await tester.pumpWidget(
+        buildTestApp(
+          overrides: [
+            remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
+            sessionProvider.overrideWith((ref) => sessionNotifier),
+          ],
+          child: const AdminLogsScreen(),
+        ),
+      );
+
+      await tester.pump();
+
+      // Should remain in loading state (CircularProgressIndicator) because the error is ignored
+      // and _isLoading is not set to false
+      expect(find.byType(CircularProgressIndicator), findsWidgets);
+
+      // Do not use pumpAndSettle as it will timeout on infinite animation
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.byType(CircularProgressIndicator), findsWidgets);
+      expect(find.text('Failed to load logs'), findsNothing);
+    });
+
+    testWidgets('clears logs when result is null', (tester) async {
+      // First load some logs
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
+      when(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'logs': logsString,
+          'metadata': {},
+          'available_files': [],
+        },
+      );
+
+      await tester.pumpWidget(
+        buildTestApp(
+          overrides: [
+            remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
+            sessionProvider.overrideWith((ref) => sessionNotifier),
+          ],
+          child: const AdminLogsScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Application started'), findsOneWidget);
+
+      // Now return null (refresh)
+      when(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenAnswer((_) async => null);
+
+      await tester.tap(find.byIcon(Icons.refresh));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Application started'), findsNothing);
+      expect(find.textContaining('No logs available'), findsOneWidget);
     });
   });
 }

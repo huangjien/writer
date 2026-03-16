@@ -364,6 +364,14 @@ class _CharacterTemplatesContentState
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(templateFormProvider, (prev, next) {
+      if (next.error != null && next.error != prev?.error) {
+        _showSnackBar(
+          next.error!,
+          backgroundColor: Theme.of(context).colorScheme.error,
+        );
+      }
+    });
     final formState = ref.watch(templateFormProvider);
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(

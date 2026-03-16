@@ -91,6 +91,18 @@ void main() {
       expect(items, isEmpty);
     });
 
+    test('listCharacterNotes returns empty list on unknown format', () async {
+      when(
+        () => remote.get(
+          'characters',
+          queryParameters: any(named: 'queryParameters'),
+        ),
+      ).thenAnswer((_) async => {'foo': 'bar'}); // Not list, no items
+
+      final items = await repo.listCharacterNotes('n1');
+      expect(items, isEmpty);
+    });
+
     test('upsertCharacterNote posts mapped body', () async {
       final captured = <Map<String, dynamic>>[];
       when(() => remote.post(any(), any())).thenAnswer((inv) async {
@@ -178,6 +190,58 @@ void main() {
       verify(
         () => remote.get('scenes', queryParameters: {'novel_id': 'n1'}),
       ).called(1);
+    });
+
+    test('listSceneNotes maps items response', () async {
+      when(
+        () => remote.get(
+          'scenes',
+          queryParameters: any(named: 'queryParameters'),
+        ),
+      ).thenAnswer((_) async {
+        return {
+          'items': [
+            {
+              'id': 'sn2',
+              'novel_id': 'n1',
+              'idx': 2,
+              'title': null,
+              'scene_summaries': null,
+              'scene_synopses': null,
+              'language_code': 'en',
+              'created_at': '2024-01-01T00:00:00Z',
+              'updated_at': '2024-01-01T00:00:00Z',
+            },
+          ],
+        };
+      });
+
+      final items = await repo.listSceneNotes('n1');
+      expect(items.single.id, 'sn2');
+    });
+
+    test('listSceneNotes returns empty list on unknown format', () async {
+      when(
+        () => remote.get(
+          'scenes',
+          queryParameters: any(named: 'queryParameters'),
+        ),
+      ).thenAnswer((_) async => {'foo': 'bar'});
+
+      final items = await repo.listSceneNotes('n1');
+      expect(items, isEmpty);
+    });
+
+    test('listSceneNotes returns empty list on error', () async {
+      when(
+        () => remote.get(
+          'scenes',
+          queryParameters: any(named: 'queryParameters'),
+        ),
+      ).thenThrow(Exception('x'));
+
+      final items = await repo.listSceneNotes('n1');
+      expect(items, isEmpty);
     });
 
     test('upsertSceneNote posts mapped body', () async {
