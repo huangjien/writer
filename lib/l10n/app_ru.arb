@@ -153,8 +153,12 @@
   "indexOutOfRange": "Index must be between {min} and {max}",
   "@indexOutOfRange": {
     "placeholders": {
-      "min": {"type": "int"},
-      "max": {"type": "int"}
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "indexUnchanged": "Index unchanged",
@@ -267,7 +271,9 @@
   "confirmDeleteDescription": "This will delete '{title}' from your cloud library. Are you sure?",
   "@confirmDeleteDescription": {
     "placeholders": {
-      "title": {"type": "String"}
+      "title": {
+        "type": "String"
+      }
     }
   },
   "delete": "Delete",
@@ -324,37 +330,69 @@
   "aiChatContextLabel": "Context",
   "aiTokenCount": "{count} tokens",
   "@aiTokenCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "aiContextLoadError": "Error loading context: {error}",
   "@aiContextLoadError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatContextTooLongCompressing": "Context is too long ({tokens} tokens). Compressing...",
   "@aiChatContextTooLongCompressing": {
-    "placeholders": {"tokens": {"type": "int"}}
+    "placeholders": {
+      "tokens": {
+        "type": "int"
+      }
+    }
   },
   "aiChatContextCompressionFailedNote": "[Note: Context compression failed: {error}]",
   "@aiChatContextCompressionFailedNote": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatError": "Error: {error}",
   "@aiChatError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatDeepAgentError": "Deep Agent Error: {error}",
   "@aiChatDeepAgentError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatSearchFailed": "Search failed",
   "aiChatSearchError": "Search Error: {error}",
   "@aiChatSearchError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatRagSearchResultsTitle": "RAG Search Results",
   "aiChatRagRefinedQuery": "Refined Query: \"{query}\"",
   "@aiChatRagRefinedQuery": {
-    "placeholders": {"query": {"type": "String"}}
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
   },
   "aiChatRagNoResults": "No results found.",
   "aiChatRagUnknownType": "unknown",
@@ -362,13 +400,24 @@
   "aiServiceFeatureNotAvailable": "Feature not available for your plan",
   "aiServiceFailedToConnect": "Failed to connect to AI service: {error}",
   "@aiServiceFailedToConnect": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiServiceNoResponse": "No response from AI service",
   "aiDeepAgentDetailsTitle": "Deep Agent",
   "aiDeepAgentStop": "Stop: {reason} (rounds: {rounds})",
   "@aiDeepAgentStop": {
-    "placeholders": {"reason": {"type": "String"}, "rounds": {"type": "Object"}}
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      },
+      "rounds": {
+        "type": "Object"
+      }
+    }
   },
   "aiDeepAgentPlanLabel": "Plan:",
   "aiDeepAgentToolsLabel": "Tools:",
@@ -400,25 +449,48 @@
   "locationLabel": "Location",
   "languageLabel": "Language: {code}",
   "@languageLabel": {
-    "placeholders": {"code": {"type": "String"}}
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
   },
   "publicLabel": "Public",
   "privateLabel": "Private",
   "chaptersCount": "Chapters: {count}",
   "@chaptersCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "avgWordsPerChapter": "Avg words/chapter: {avg}",
   "@avgWordsPerChapter": {
-    "placeholders": {"avg": {"type": "int"}}
+    "placeholders": {
+      "avg": {
+        "type": "int"
+      }
+    }
   },
   "chapterLabel": "Chapter {idx}",
   "@chapterLabel": {
-    "placeholders": {"idx": {"type": "int"}}
+    "placeholders": {
+      "idx": {
+        "type": "int"
+      }
+    }
   },
   "chapterWithTitle": "Chapter {idx}: {title}",
   "@chapterWithTitle": {
-    "placeholders": {"idx": {"type": "int"}, "title": {"type": "String"}}
+    "placeholders": {
+      "idx": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
   },
   "refreshTooltip": "Refresh",
   "untitled": "Untitled",
@@ -437,9 +509,24 @@
   "pdfFailed": "Failed to generate PDF",
   "tableOfContents": "Table of Contents",
   "byAuthor": "by {name}",
-  "@byAuthor": {"placeholders": {"name": {"type": "String"}}},
+  "@byAuthor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "pageOfTotal": "Page {page} of {total}",
-  "@pageOfTotal": {"placeholders": {"page": {"type": "int"}, "total": {"type": "int"}}},
+  "@pageOfTotal": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "close": "Close",
   "openLink": "Open link",
   "invalidLink": "Invalid link",
@@ -447,7 +534,13 @@
   "copy": "Copy",
   "copiedToClipboard": "Copied to clipboard",
   "showingCachedPublicData": "{msg} — showing cached/public data",
-  "@showingCachedPublicData": {"placeholders": {"msg": {"type": "String"}}},
+  "@showingCachedPublicData": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
   "menu": "Menu",
   "metaLabel": "Meta",
   "aiServiceUnavailable": "AI Service Unavailable",
@@ -483,17 +576,41 @@
   "editPattern": "Edit Pattern",
   "editStoryLine": "Edit Story Line",
   "deletedWithTitle": "Deleted: {title}",
-  "@deletedWithTitle": {"placeholders": {"title": {"type": "String"}}},
+  "@deletedWithTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "deleteFailedWithTitle": "Delete failed: {title}",
-  "@deleteFailedWithTitle": {"placeholders": {"title": {"type": "String"}}},
+  "@deleteFailedWithTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "deleteErrorWithMessage": "Delete error: {error}",
-  "@deleteErrorWithMessage": {"placeholders": {"error": {"type": "String"}}},
+  "@deleteErrorWithMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "makePublic": "Make Public",
   "noPrompts": "No prompts found",
   "noPatterns": "No patterns",
   "noStoryLines": "No story lines",
   "conversionFailed": "Conversion failed: {error}",
-  "@conversionFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@conversionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "failedToAnalyze": "Failed to analyze",
   "aiCoachAnalyzing": "AI Coach is analyzing...",
   "retry": "Retry",
@@ -513,21 +630,51 @@
   "aiConvert": "AI Convert",
   "toggleAiCoach": "Toggle AI Coach",
   "retrieveFailed": "Retrieve failed: {error}",
-  "@retrieveFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@retrieveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "confirm": "Confirm",
   "lastRead": "Last read",
   "noRecentChapters": "No recent chapters",
   "failedToLoadConfig": "Failed to load config",
   "makePublicPromptConfirm": "Make public \"{promptKey}\" ({language})?",
-  "@makePublicPromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}},
+  "@makePublicPromptConfirm": {
+    "placeholders": {
+      "promptKey": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "content": "Content",
   "invalidKey": "Invalid key",
   "invalidLanguage": "Invalid language",
   "invalidInput": "Invalid input",
   "charsCount": "Characters: {count}",
-  "@charsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@charsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deletePromptConfirm": "Delete prompt \"{promptKey}\" ({language})?",
-  "@deletePromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}},
+  "@deletePromptConfirm": {
+    "placeholders": {
+      "promptKey": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "profileRetrieved": "Profile retrieved",
   "noProfileFound": "No profile found",
   "templateName": "Template Name",
@@ -607,17 +754,25 @@
   "removeFromLibrary": "Remove from Library",
   "@userIdCreated": {
     "placeholders": {
-      "id": {"type": "String"},
-      "createdAt": {"type": "String"}
+      "id": {
+        "type": "String"
+      },
+      "createdAt": {
+        "type": "String"
+      }
     }
   },
   "@failedToLoadUsers": {
     "placeholders": {
-      "statusCode": {"type": "int"},
-      "errorBody": {"type": "String"}
+      "statusCode": {
+        "type": "int"
+      },
+      "errorBody": {
+        "type": "String"
+      }
     }
   },
-  "createFirstNovelSubtitle": "Create your first novel to get started",
+  "createFirstNovelSubtitle": "Create your first novel to get started.",
   "navigationError": "Navigation error",
   "pdfStepPreparing": "Preparing chapters",
   "pdfStepGenerating": "Generating PDF",
@@ -650,14 +805,18 @@
   "adminLogsSavedTo": "Logs saved to {path}",
   "@adminLogsSavedTo": {
     "placeholders": {
-      "path": {"type": "String"}
+      "path": {
+        "type": "String"
+      }
     }
   },
   "adminLogsCopy": "Copy",
   "adminLogsFailedToDownload": "Failed to save: {error}",
   "@adminLogsFailedToDownload": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "adminLogsEntry": "Log Entry",
@@ -683,20 +842,26 @@
   "wordCount": "Word count: {count}",
   "@wordCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "characterCount": "Character count: {count}",
   "@characterCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "startWriting": "Start writing...",
   "failedToLoadChapter": "Failed to load chapter: {error}",
   "@failedToLoadChapter": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "saving": "Saving…",
@@ -723,7 +888,9 @@
   "checkboxState": "Checkbox State: {value}",
   "@checkboxState": {
     "placeholders": {
-      "value": {"type": "bool"}
+      "value": {
+        "type": "bool"
+      }
     }
   },
   "option1": "Option 1",
@@ -731,13 +898,17 @@
   "switchState": "Switch State: {value}",
   "@switchState": {
     "placeholders": {
-      "value": {"type": "bool"}
+      "value": {
+        "type": "bool"
+      }
     }
   },
   "sliderValue": "Value: {value}",
   "@sliderValue": {
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "enterTextHere": "Enter text here...",
@@ -749,7 +920,9 @@
   "foundContrastIssues": "Found {count} contrast issue(s) that may affect readability.",
   "@foundContrastIssues": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "allGood": "All Good!",
@@ -762,7 +935,9 @@
   "progressPercentage": "{percent}%",
   "@progressPercentage": {
     "placeholders": {
-      "percent": {"type": "int"}
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "review": "Review",
@@ -785,7 +960,9 @@
   "youreOffline": "You're offline. {message}",
   "@youreOffline": {
     "placeholders": {
-      "message": {"type": "String"}
+      "message": {
+        "type": "String"
+      }
     }
   },
   "download": "Download",
@@ -798,8 +975,6 @@
   "exitPreview": "Exit preview",
   "saveLabel": "Save",
   "exitZenMode": "Exit Zen mode",
-  "createFirstNovelSubtitle": "Create your first novel to get started.",
-  "searchLabel": "Search",
   "clearSearch": "Clear search",
   "notSignedInLabel": "Not signed in",
   "stylePreviewGrid": "Style preview grid",
@@ -826,12 +1001,32 @@
   "changesWillSyncCount": "{count} change(s) will sync when you're back online",
   "@changesWillSyncCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "toggleSidebar": "Переключить боковую панель",
   "quickSearch": "Быстрый поиск",
   "templateRetrieved": "Шаблон получен",
   "noTemplateFound": "Шаблон не найден",
-  "retrieveTemplate": "Получить шаблон"
+  "retrieveTemplate": "Получить шаблон",
+  "adminLogsMaxSize": "Max Size",
+  "adminLogsAllLevels": "ALL",
+  "adminLogsFileSizeKB": "{size} KB",
+  "adminLogsFileSizeMB": "{size} MB",
+  "@adminLogsFileSizeKB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@adminLogsFileSizeMB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  }
 }

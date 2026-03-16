@@ -154,8 +154,12 @@
   "indexOutOfRange": "El índice debe estar entre {min} y {max}",
   "@indexOutOfRange": {
     "placeholders": {
-      "min": {"type": "int"},
-      "max": {"type": "int"}
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "indexUnchanged": "Índice sin cambios",
@@ -268,7 +272,9 @@
   "confirmDeleteDescription": "Esto eliminará '{title}' de su biblioteca en la nube. ¿Está seguro?",
   "@confirmDeleteDescription": {
     "placeholders": {
-      "title": {"type": "String"}
+      "title": {
+        "type": "String"
+      }
     }
   },
   "delete": "Eliminar",
@@ -324,37 +330,69 @@
   "aiChatContextLabel": "Contexto",
   "aiTokenCount": "{count} tokens",
   "@aiTokenCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "aiContextLoadError": "Error al cargar el contexto: {error}",
   "@aiContextLoadError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatContextTooLongCompressing": "El contexto es demasiado largo ({tokens} tokens). Comprimiendo...",
   "@aiChatContextTooLongCompressing": {
-    "placeholders": {"tokens": {"type": "int"}}
+    "placeholders": {
+      "tokens": {
+        "type": "int"
+      }
+    }
   },
   "aiChatContextCompressionFailedNote": "[Nota: La compresión de contexto falló: {error}]",
   "@aiChatContextCompressionFailedNote": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatError": "Error: {error}",
   "@aiChatError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatDeepAgentError": "Error de Deep Agent: {error}",
   "@aiChatDeepAgentError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatSearchFailed": "Búsqueda fallida",
   "aiChatSearchError": "Error de búsqueda: {error}",
   "@aiChatSearchError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatRagSearchResultsTitle": "Resultados de búsqueda RAG",
   "aiChatRagRefinedQuery": "Consulta refinada: \"{query}\"",
   "@aiChatRagRefinedQuery": {
-    "placeholders": {"query": {"type": "String"}}
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
   },
   "aiChatRagNoResults": "No se encontraron resultados.",
   "aiChatRagUnknownType": "desconocido",
@@ -362,13 +400,24 @@
   "aiServiceFeatureNotAvailable": "Función no disponible para su plan",
   "aiServiceFailedToConnect": "Error al conectar con el servicio IA: {error}",
   "@aiServiceFailedToConnect": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiServiceNoResponse": "Sin respuesta del servicio IA",
   "aiDeepAgentDetailsTitle": "Deep Agent",
   "aiDeepAgentStop": "Parar: {reason} (rondas: {rounds})",
   "@aiDeepAgentStop": {
-    "placeholders": {"reason": {"type": "String"}, "rounds": {"type": "Object"}}
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      },
+      "rounds": {
+        "type": "Object"
+      }
+    }
   },
   "aiDeepAgentPlanLabel": "Plan:",
   "aiDeepAgentToolsLabel": "Herramientas:",
@@ -400,25 +449,48 @@
   "locationLabel": "Ubicación",
   "languageLabel": "Idioma: {code}",
   "@languageLabel": {
-    "placeholders": {"code": {"type": "String"}}
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
   },
   "publicLabel": "Público",
   "privateLabel": "Privado",
   "chaptersCount": "Capítulos: {count}",
   "@chaptersCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "avgWordsPerChapter": "Promedio palabras/capítulo: {avg}",
   "@avgWordsPerChapter": {
-    "placeholders": {"avg": {"type": "int"}}
+    "placeholders": {
+      "avg": {
+        "type": "int"
+      }
+    }
   },
   "chapterLabel": "Capítulo {idx}",
   "@chapterLabel": {
-    "placeholders": {"idx": {"type": "int"}}
+    "placeholders": {
+      "idx": {
+        "type": "int"
+      }
+    }
   },
   "chapterWithTitle": "Capítulo {idx}: {title}",
   "@chapterWithTitle": {
-    "placeholders": {"idx": {"type": "int"}, "title": {"type": "String"}}
+    "placeholders": {
+      "idx": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
   },
   "refreshTooltip": "Actualizar",
   "untitled": "Sin título",
@@ -437,9 +509,24 @@
   "pdfFailed": "Error al generar PDF",
   "tableOfContents": "Tabla de contenidos",
   "byAuthor": "por {name}",
-  "@byAuthor": {"placeholders": {"name": {"type": "String"}}},
+  "@byAuthor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "pageOfTotal": "Página {page} de {total}",
-  "@pageOfTotal": {"placeholders": {"page": {"type": "int"}, "total": {"type": "int"}}},
+  "@pageOfTotal": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "close": "Cerrar",
   "openLink": "Abrir enlace",
   "invalidLink": "Enlace no válido",
@@ -447,7 +534,13 @@
   "copy": "Copiar",
   "copiedToClipboard": "Copiado al portapapeles",
   "showingCachedPublicData": "{msg} — mostrando datos públicos/en caché",
-  "@showingCachedPublicData": {"placeholders": {"msg": {"type": "String"}}},
+  "@showingCachedPublicData": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
   "menu": "Menú",
   "metaLabel": "Meta",
   "aiServiceUnavailable": "Servicio IA no disponible",
@@ -483,17 +576,41 @@
   "editPattern": "Editar patrón",
   "editStoryLine": "Editar línea de historia",
   "deletedWithTitle": "Eliminado: {title}",
-  "@deletedWithTitle": {"placeholders": {"title": {"type": "String"}}},
+  "@deletedWithTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "deleteFailedWithTitle": "Error al eliminar: {title}",
-  "@deleteFailedWithTitle": {"placeholders": {"title": {"type": "String"}}},
+  "@deleteFailedWithTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "deleteErrorWithMessage": "Error al eliminar: {error}",
-  "@deleteErrorWithMessage": {"placeholders": {"error": {"type": "String"}}},
+  "@deleteErrorWithMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "makePublic": "Hacer público",
   "noPrompts": "No se encontraron instrucciones",
   "noPatterns": "Sin patrones",
   "noStoryLines": "Sin líneas de historia",
   "conversionFailed": "Conversión fallida: {error}",
-  "@conversionFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@conversionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "failedToAnalyze": "Error al analizar",
   "aiCoachAnalyzing": "Entrenador IA está analizando...",
   "retry": "Reintentar",
@@ -513,21 +630,51 @@
   "aiConvert": "Conversión IA",
   "toggleAiCoach": "Alternar entrenador IA",
   "retrieveFailed": "Error al recuperar: {error}",
-  "@retrieveFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@retrieveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "confirm": "Confirmar",
   "lastRead": "Leído por última vez",
   "noRecentChapters": "Sin capítulos recientes",
   "failedToLoadConfig": "Error al cargar configuración",
   "makePublicPromptConfirm": "¿Hacer pública \"{promptKey}\" ({language})?",
-  "@makePublicPromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}},
+  "@makePublicPromptConfirm": {
+    "placeholders": {
+      "promptKey": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "content": "Contenido",
   "invalidKey": "Clave no válida",
   "invalidLanguage": "Idioma no válido",
   "invalidInput": "Entrada no válida",
   "charsCount": "Caracteres: {count}",
-  "@charsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@charsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deletePromptConfirm": "¿Eliminar instrucción \"{promptKey}\" ({language})?",
-  "@deletePromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}},
+  "@deletePromptConfirm": {
+    "placeholders": {
+      "promptKey": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "profileRetrieved": "Perfil recuperado",
   "noProfileFound": "No se encontró perfil",
   "templateName": "Nombre de plantilla",
@@ -607,14 +754,22 @@
   "removeFromLibrary": "Eliminar de la biblioteca",
   "@userIdCreated": {
     "placeholders": {
-      "id": {"type": "String"},
-      "createdAt": {"type": "String"}
+      "id": {
+        "type": "String"
+      },
+      "createdAt": {
+        "type": "String"
+      }
     }
   },
   "@failedToLoadUsers": {
     "placeholders": {
-      "statusCode": {"type": "int"},
-      "errorBody": {"type": "String"}
+      "statusCode": {
+        "type": "int"
+      },
+      "errorBody": {
+        "type": "String"
+      }
     }
   },
   "createFirstNovelSubtitle": "Cree su primera novela para comenzar",
@@ -650,14 +805,18 @@
   "adminLogsSavedTo": "Registros guardados en {path}",
   "@adminLogsSavedTo": {
     "placeholders": {
-      "path": {"type": "String"}
+      "path": {
+        "type": "String"
+      }
     }
   },
   "adminLogsCopy": "Copiar",
   "adminLogsFailedToDownload": "Error al guardar: {error}",
   "@adminLogsFailedToDownload": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "adminLogsEntry": "Entrada de registro",
@@ -683,20 +842,26 @@
   "wordCount": "Conteo de palabras: {count}",
   "@wordCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "characterCount": "Conteo de caracteres: {count}",
   "@characterCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "startWriting": "Comenzar a escribir...",
   "failedToLoadChapter": "Error al cargar capítulo: {error}",
   "@failedToLoadChapter": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "saving": "Guardando…",
@@ -723,7 +888,9 @@
   "checkboxState": "Estado de casilla: {value}",
   "@checkboxState": {
     "placeholders": {
-      "value": {"type": "bool"}
+      "value": {
+        "type": "bool"
+      }
     }
   },
   "option1": "Opción 1",
@@ -731,13 +898,17 @@
   "switchState": "Estado de interruptor: {value}",
   "@switchState": {
     "placeholders": {
-      "value": {"type": "bool"}
+      "value": {
+        "type": "bool"
+      }
     }
   },
   "sliderValue": "Valor: {value}",
   "@sliderValue": {
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "enterTextHere": "Ingrese texto aquí...",
@@ -749,7 +920,9 @@
   "foundContrastIssues": "Se encontraron {count} problema(s) de contraste que pueden afectar la legibilidad.",
   "@foundContrastIssues": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "allGood": "¡Todo bien!",
@@ -762,7 +935,9 @@
   "progressPercentage": "{percent}%",
   "@progressPercentage": {
     "placeholders": {
-      "percent": {"type": "int"}
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "review": "Revisar",
@@ -785,7 +960,9 @@
   "youreOffline": "Está sin conexión. {message}",
   "@youreOffline": {
     "placeholders": {
-      "message": {"type": "String"}
+      "message": {
+        "type": "String"
+      }
     }
   },
   "download": "Descargar",
@@ -798,7 +975,6 @@
   "exitPreview": "Salir de vista previa",
   "saveLabel": "Guardar",
   "exitZenMode": "Salir del modo Zen",
-  "searchLabel": "Buscar",
   "clearSearch": "Limpiar búsqueda",
   "notSignedInLabel": "No iniciado sesión",
   "stylePreviewGrid": "Cuadrícula de vista previa de estilo",
@@ -825,12 +1001,32 @@
   "changesWillSyncCount": "{count} cambio(s) se sincronizará(n) cuando vuelva a estar en línea",
   "@changesWillSyncCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "toggleSidebar": "Alternar barra lateral",
   "quickSearch": "Búsqueda rápida",
   "templateRetrieved": "Plantilla recuperada",
   "noTemplateFound": "No se encontró plantilla",
-  "retrieveTemplate": "Recuperar plantilla"
+  "retrieveTemplate": "Recuperar plantilla",
+  "adminLogsMaxSize": "Max Size",
+  "adminLogsAllLevels": "ALL",
+  "adminLogsFileSizeKB": "{size} KB",
+  "adminLogsFileSizeMB": "{size} MB",
+  "@adminLogsFileSizeKB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@adminLogsFileSizeMB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  }
 }

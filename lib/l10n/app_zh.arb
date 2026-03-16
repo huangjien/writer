@@ -1,7 +1,7 @@
 {
   "@@locale": "zh",
   "helloWorld": "你好世界！",
-  "home": "首页",
+  "home": "主页",
   "settings": "设置",
   "appTitle": "写手",
   "about": "关于",
@@ -276,7 +276,6 @@
   "coverUrlLabel": "封面链接",
   "invalidCoverUrl": "请输入有效的 http(s) 链接且不包含空格。",
   "navigation": "导航",
-  "home": "主页",
   "chapterIndex": "章节索引",
   "summary": "摘要",
   "characters": "角色",
@@ -299,37 +298,69 @@
   "aiChatContextLabel": "上下文",
   "aiTokenCount": "{count} tokens",
   "@aiTokenCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "aiContextLoadError": "加载上下文出错：{error}",
   "@aiContextLoadError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatContextTooLongCompressing": "上下文过长（{tokens} tokens）。正在压缩...",
   "@aiChatContextTooLongCompressing": {
-    "placeholders": {"tokens": {"type": "int"}}
+    "placeholders": {
+      "tokens": {
+        "type": "int"
+      }
+    }
   },
   "aiChatContextCompressionFailedNote": "[注意：上下文压缩失败：{error}]",
   "@aiChatContextCompressionFailedNote": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatError": "错误：{error}",
   "@aiChatError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatDeepAgentError": "Deep Agent 错误：{error}",
   "@aiChatDeepAgentError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatSearchFailed": "搜索失败",
   "aiChatSearchError": "搜索错误：{error}",
   "@aiChatSearchError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatRagSearchResultsTitle": "RAG 搜索结果",
   "aiChatRagRefinedQuery": "优化后的查询：\"{query}\"",
   "@aiChatRagRefinedQuery": {
-    "placeholders": {"query": {"type": "String"}}
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
   },
   "aiChatRagNoResults": "未找到结果。",
   "aiChatRagUnknownType": "未知",
@@ -337,13 +368,24 @@
   "aiServiceFeatureNotAvailable": "你的套餐不支持此功能",
   "aiServiceFailedToConnect": "连接 AI 服务失败：{error}",
   "@aiServiceFailedToConnect": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiServiceNoResponse": "AI 服务没有返回结果",
   "aiDeepAgentDetailsTitle": "Deep Agent",
   "aiDeepAgentStop": "停止：{reason}（轮次：{rounds}）",
   "@aiDeepAgentStop": {
-    "placeholders": {"reason": {"type": "String"}, "rounds": {"type": "Object"}}
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      },
+      "rounds": {
+        "type": "Object"
+      }
+    }
   },
   "aiDeepAgentPlanLabel": "计划：",
   "aiDeepAgentToolsLabel": "工具：",
@@ -733,7 +775,7 @@
   "discover": "发现",
   "pitch": "音高",
   "back": "返回",
-  "createFirstNovelSubtitle": "创建您的第一本小说以开始",
+  "createFirstNovelSubtitle": "创建您的第一本小说以开始。",
   "navigationError": "导航错误",
   "pdfStepPreparing": "准备章节",
   "pdfStepGenerating": "生成 PDF",
@@ -766,14 +808,18 @@
   "adminLogsSavedTo": "日志已保存至 {path}",
   "@adminLogsSavedTo": {
     "placeholders": {
-      "path": {"type": "String"}
+      "path": {
+        "type": "String"
+      }
     }
   },
   "adminLogsCopy": "复制",
   "adminLogsFailedToDownload": "保存失败: {error}",
   "@adminLogsFailedToDownload": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "adminLogsEntry": "日志条目",
@@ -799,20 +845,26 @@
   "wordCount": "字数：{count}",
   "@wordCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "characterCount": "字符数：{count}",
   "@characterCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "startWriting": "开始写作...",
   "failedToLoadChapter": "加载章节失败：{error}",
   "@failedToLoadChapter": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "saving": "保存中…",
@@ -839,7 +891,9 @@
   "checkboxState": "复选框状态：{value}",
   "@checkboxState": {
     "placeholders": {
-      "value": {"type": "bool"}
+      "value": {
+        "type": "bool"
+      }
     }
   },
   "option1": "选项 1",
@@ -847,13 +901,17 @@
   "switchState": "开关状态：{value}",
   "@switchState": {
     "placeholders": {
-      "value": {"type": "bool"}
+      "value": {
+        "type": "bool"
+      }
     }
   },
   "sliderValue": "数值：{value}",
   "@sliderValue": {
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "enterTextHere": "在此输入文本...",
@@ -865,7 +923,9 @@
   "foundContrastIssues": "发现 {count} 个可能影响可读性的对比度问题。",
   "@foundContrastIssues": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "allGood": "一切正常！",
@@ -878,7 +938,9 @@
   "progressPercentage": "{percent}%",
   "@progressPercentage": {
     "placeholders": {
-      "percent": {"type": "int"}
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "review": "审查",
@@ -901,7 +963,9 @@
   "youreOffline": "您已离线。{message}",
   "@youreOffline": {
     "placeholders": {
-      "message": {"type": "String"}
+      "message": {
+        "type": "String"
+      }
     }
   },
   "download": "下载",
@@ -914,8 +978,6 @@
   "exitPreview": "退出预览",
   "saveLabel": "保存",
   "exitZenMode": "退出禅模式",
-  "createFirstNovelSubtitle": "创建您的第一本小说以开始。",
-  "searchLabel": "搜索",
   "clearSearch": "清除搜索",
   "notSignedInLabel": "未登录",
   "stylePreviewGrid": "样式预览网格",
@@ -942,10 +1004,29 @@
   "changesWillSyncCount": "{count} 项更改将在您重新上线时同步",
   "@changesWillSyncCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
-  "retry": "重试",
   "toggleSidebar": "切换侧边栏",
-  "quickSearch": "快速搜索"
+  "quickSearch": "快速搜索",
+  "adminLogsMaxSize": "Max Size",
+  "adminLogsAllLevels": "ALL",
+  "adminLogsFileSizeKB": "{size} KB",
+  "adminLogsFileSizeMB": "{size} MB",
+  "@adminLogsFileSizeKB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@adminLogsFileSizeMB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  }
 }

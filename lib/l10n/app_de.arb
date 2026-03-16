@@ -154,8 +154,12 @@
   "indexOutOfRange": "Index muss zwischen {min} und {max} liegen",
   "@indexOutOfRange": {
     "placeholders": {
-      "min": {"type": "int"},
-      "max": {"type": "int"}
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "indexUnchanged": "Index unverändert",
@@ -268,7 +272,9 @@
   "confirmDeleteDescription": "Dies wird '{title}' aus Ihrer Cloud-Bibliothek löschen. Sind Sie sicher?",
   "@confirmDeleteDescription": {
     "placeholders": {
-      "title": {"type": "String"}
+      "title": {
+        "type": "String"
+      }
     }
   },
   "delete": "Löschen",
@@ -324,37 +330,69 @@
   "aiChatContextLabel": "Kontext",
   "aiTokenCount": "{count} Tokens",
   "@aiTokenCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "aiContextLoadError": "Fehler beim Laden des Kontexts: {error}",
   "@aiContextLoadError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatContextTooLongCompressing": "Kontext ist zu lang ({tokens} Tokens). Komprimierung läuft...",
   "@aiChatContextTooLongCompressing": {
-    "placeholders": {"tokens": {"type": "int"}}
+    "placeholders": {
+      "tokens": {
+        "type": "int"
+      }
+    }
   },
   "aiChatContextCompressionFailedNote": "[Hinweis: Kontextkomprimierung fehlgeschlagen: {error}]",
   "@aiChatContextCompressionFailedNote": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatError": "Fehler: {error}",
   "@aiChatError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatDeepAgentError": "Deep Agent Fehler: {error}",
   "@aiChatDeepAgentError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatSearchFailed": "Suche fehlgeschlagen",
   "aiChatSearchError": "Suchfehler: {error}",
   "@aiChatSearchError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatRagSearchResultsTitle": "RAG-Suchergebnisse",
   "aiChatRagRefinedQuery": "Verfeinerte Abfrage: \"{query}\"",
   "@aiChatRagRefinedQuery": {
-    "placeholders": {"query": {"type": "String"}}
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
   },
   "aiChatRagNoResults": "Keine Ergebnisse gefunden.",
   "aiChatRagUnknownType": "unbekannt",
@@ -362,13 +400,24 @@
   "aiServiceFeatureNotAvailable": "Funktion für Ihren Plan nicht verfügbar",
   "aiServiceFailedToConnect": "Verbindung zum KI-Dienst fehlgeschlagen: {error}",
   "@aiServiceFailedToConnect": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiServiceNoResponse": "Keine Antwort vom KI-Dienst",
   "aiDeepAgentDetailsTitle": "Deep Agent",
   "aiDeepAgentStop": "Stopp: {reason} (Runden: {rounds})",
   "@aiDeepAgentStop": {
-    "placeholders": {"reason": {"type": "String"}, "rounds": {"type": "Object"}}
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      },
+      "rounds": {
+        "type": "Object"
+      }
+    }
   },
   "aiDeepAgentPlanLabel": "Plan:",
   "aiDeepAgentToolsLabel": "Tools:",
@@ -400,25 +449,48 @@
   "locationLabel": "Ort",
   "languageLabel": "Sprache: {code}",
   "@languageLabel": {
-    "placeholders": {"code": {"type": "String"}}
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
   },
   "publicLabel": "Öffentlich",
   "privateLabel": "Privat",
   "chaptersCount": "Kapitel: {count}",
   "@chaptersCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "avgWordsPerChapter": "Durchschnitt Wörter/Kapitel: {avg}",
   "@avgWordsPerChapter": {
-    "placeholders": {"avg": {"type": "int"}}
+    "placeholders": {
+      "avg": {
+        "type": "int"
+      }
+    }
   },
   "chapterLabel": "Kapitel {idx}",
   "@chapterLabel": {
-    "placeholders": {"idx": {"type": "int"}}
+    "placeholders": {
+      "idx": {
+        "type": "int"
+      }
+    }
   },
   "chapterWithTitle": "Kapitel {idx}: {title}",
   "@chapterWithTitle": {
-    "placeholders": {"idx": {"type": "int"}, "title": {"type": "String"}}
+    "placeholders": {
+      "idx": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
   },
   "refreshTooltip": "Aktualisieren",
   "untitled": "Unbenannt",
@@ -437,9 +509,24 @@
   "pdfFailed": "PDF-Generierung fehlgeschlagen",
   "tableOfContents": "Inhaltsverzeichnis",
   "byAuthor": "von {name}",
-  "@byAuthor": {"placeholders": {"name": {"type": "String"}}},
+  "@byAuthor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "pageOfTotal": "Seite {page} von {total}",
-  "@pageOfTotal": {"placeholders": {"page": {"type": "int"}, "total": {"type": "int"}}},
+  "@pageOfTotal": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "close": "Schließen",
   "openLink": "Link öffnen",
   "invalidLink": "Ungültiger Link",
@@ -447,7 +534,13 @@
   "copy": "Kopieren",
   "copiedToClipboard": "In die Zwischenablage kopiert",
   "showingCachedPublicData": "{msg} — zwischengespeicherte/öffentliche Daten werden angezeigt",
-  "@showingCachedPublicData": {"placeholders": {"msg": {"type": "String"}}},
+  "@showingCachedPublicData": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
   "menu": "Menü",
   "metaLabel": "Meta",
   "aiServiceUnavailable": "KI-Dienst nicht verfügbar",
@@ -483,17 +576,41 @@
   "editPattern": "Muster bearbeiten",
   "editStoryLine": "Story-Line bearbeiten",
   "deletedWithTitle": "Gelöscht: {title}",
-  "@deletedWithTitle": {"placeholders": {"title": {"type": "String"}}},
+  "@deletedWithTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "deleteFailedWithTitle": "Löschen fehlgeschlagen: {title}",
-  "@deleteFailedWithTitle": {"placeholders": {"title": {"type": "String"}}},
+  "@deleteFailedWithTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "deleteErrorWithMessage": "Löschfehler: {error}",
-  "@deleteErrorWithMessage": {"placeholders": {"error": {"type": "String"}}},
+  "@deleteErrorWithMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "makePublic": "Öffentlich machen",
   "noPrompts": "Keine Prompts gefunden",
   "noPatterns": "Keine Muster",
   "noStoryLines": "Keine Story-Lines",
   "conversionFailed": "Konvertierung fehlgeschlagen: {error}",
-  "@conversionFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@conversionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "failedToAnalyze": "Analyse fehlgeschlagen",
   "aiCoachAnalyzing": "KI-Coach analysiert...",
   "retry": "Wiederholen",
@@ -513,21 +630,51 @@
   "aiConvert": "KI-Konvertierung",
   "toggleAiCoach": "KI-Coach umschalten",
   "retrieveFailed": "Abruf fehlgeschlagen: {error}",
-  "@retrieveFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@retrieveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "confirm": "Bestätigen",
   "lastRead": "Zuletzt gelesen",
   "noRecentChapters": "Keine aktuellen Kapitel",
   "failedToLoadConfig": "Konfiguration konnte nicht geladen werden",
   "makePublicPromptConfirm": "\"{promptKey}\" ({language}) öffentlich machen?",
-  "@makePublicPromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}},
+  "@makePublicPromptConfirm": {
+    "placeholders": {
+      "promptKey": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "content": "Inhalt",
   "invalidKey": "Ungültiger Schlüssel",
   "invalidLanguage": "Ungültige Sprache",
   "invalidInput": "Ungültige Eingabe",
   "charsCount": "Zeichen: {count}",
-  "@charsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@charsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deletePromptConfirm": "Prompt \"{promptKey}\" ({language}) löschen?",
-  "@deletePromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}},
+  "@deletePromptConfirm": {
+    "placeholders": {
+      "promptKey": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "profileRetrieved": "Profil abgerufen",
   "noProfileFound": "Kein Profil gefunden",
   "templateName": "Vorlagenname",
@@ -607,14 +754,22 @@
   "removeFromLibrary": "Aus der Bibliothek entfernen",
   "@userIdCreated": {
     "placeholders": {
-      "id": {"type": "String"},
-      "createdAt": {"type": "String"}
+      "id": {
+        "type": "String"
+      },
+      "createdAt": {
+        "type": "String"
+      }
     }
   },
   "@failedToLoadUsers": {
     "placeholders": {
-      "statusCode": {"type": "int"},
-      "errorBody": {"type": "String"}
+      "statusCode": {
+        "type": "int"
+      },
+      "errorBody": {
+        "type": "String"
+      }
     }
   },
   "createFirstNovelSubtitle": "Erstellen Sie Ihren ersten Roman, um zu beginnen",
@@ -650,14 +805,18 @@
   "adminLogsSavedTo": "Logs gespeichert unter {path}",
   "@adminLogsSavedTo": {
     "placeholders": {
-      "path": {"type": "String"}
+      "path": {
+        "type": "String"
+      }
     }
   },
   "adminLogsCopy": "Kopieren",
   "adminLogsFailedToDownload": "Speichern fehlgeschlagen: {error}",
   "@adminLogsFailedToDownload": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "adminLogsEntry": "Log-Eintrag",
@@ -683,20 +842,26 @@
   "wordCount": "Wortanzahl: {count}",
   "@wordCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "characterCount": "Zeichenanzahl: {count}",
   "@characterCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "startWriting": "Schreiben beginnen...",
   "failedToLoadChapter": "Kapitel konnte nicht geladen werden: {error}",
   "@failedToLoadChapter": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "saving": "Speichern…",
@@ -723,7 +888,9 @@
   "checkboxState": "Checkbox-Status: {value}",
   "@checkboxState": {
     "placeholders": {
-      "value": {"type": "bool"}
+      "value": {
+        "type": "bool"
+      }
     }
   },
   "option1": "Option 1",
@@ -731,13 +898,17 @@
   "switchState": "Schalter-Status: {value}",
   "@switchState": {
     "placeholders": {
-      "value": {"type": "bool"}
+      "value": {
+        "type": "bool"
+      }
     }
   },
   "sliderValue": "Wert: {value}",
   "@sliderValue": {
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "enterTextHere": "Text hier eingeben...",
@@ -749,7 +920,9 @@
   "foundContrastIssues": "{count} Kontrastproblem(e) gefunden, die die Lesbarkeit beeinträchtigen könnten.",
   "@foundContrastIssues": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "allGood": "Alles gut!",
@@ -762,7 +935,9 @@
   "progressPercentage": "{percent}%",
   "@progressPercentage": {
     "placeholders": {
-      "percent": {"type": "int"}
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "review": "Überprüfung",
@@ -785,7 +960,9 @@
   "youreOffline": "Sie sind offline. {message}",
   "@youreOffline": {
     "placeholders": {
-      "message": {"type": "String"}
+      "message": {
+        "type": "String"
+      }
     }
   },
   "download": "Herunterladen",
@@ -798,7 +975,6 @@
   "exitPreview": "Vorschau beenden",
   "saveLabel": "Speichern",
   "exitZenMode": "Zen-Modus beenden",
-  "searchLabel": "Suchen",
   "clearSearch": "Suche löschen",
   "notSignedInLabel": "Nicht angemeldet",
   "stylePreviewGrid": "Stilvorschaugitter",
@@ -825,12 +1001,32 @@
   "changesWillSyncCount": "{count} Änderung(en) wird/werden synchronisiert, wenn Sie wieder online sind",
   "@changesWillSyncCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "toggleSidebar": "Seitenleiste umschalten",
   "quickSearch": "Schnellsuche",
   "templateRetrieved": "Vorlage abgerufen",
   "noTemplateFound": "Keine Vorlage gefunden",
-  "retrieveTemplate": "Vorlage abrufen"
+  "retrieveTemplate": "Vorlage abrufen",
+  "adminLogsMaxSize": "Max Size",
+  "adminLogsAllLevels": "ALL",
+  "adminLogsFileSizeKB": "{size} KB",
+  "adminLogsFileSizeMB": "{size} MB",
+  "@adminLogsFileSizeKB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@adminLogsFileSizeMB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:writer/features/admin/admin_logs_utils.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 class AdminLogsLevelFilters extends StatelessWidget {
   const AdminLogsLevelFilters({
@@ -15,6 +16,7 @@ class AdminLogsLevelFilters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Container(
@@ -24,7 +26,7 @@ class AdminLogsLevelFilters extends StatelessWidget {
         spacing: 8.0,
         children: [
           FilterChip(
-            label: const Text('ALL'),
+            label: Text(l10n.adminLogsAllLevels),
             selected: selectedLevel == null,
             onSelected: (selected) {
               onSelectedLevelChanged(selected ? null : 'INFO');

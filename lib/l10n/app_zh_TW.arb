@@ -298,37 +298,69 @@
   "aiChatContextLabel": "上下文",
   "aiTokenCount": "{count} tokens",
   "@aiTokenCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "aiContextLoadError": "載入上下文出錯：{error}",
   "@aiContextLoadError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatContextTooLongCompressing": "上下文過長（{tokens} tokens）。正在壓縮...",
   "@aiChatContextTooLongCompressing": {
-    "placeholders": {"tokens": {"type": "int"}}
+    "placeholders": {
+      "tokens": {
+        "type": "int"
+      }
+    }
   },
   "aiChatContextCompressionFailedNote": "[注意：上下文壓縮失敗：{error}]",
   "@aiChatContextCompressionFailedNote": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatError": "錯誤：{error}",
   "@aiChatError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatDeepAgentError": "Deep Agent 錯誤：{error}",
   "@aiChatDeepAgentError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatSearchFailed": "搜尋失敗",
   "aiChatSearchError": "搜尋錯誤：{error}",
   "@aiChatSearchError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatRagSearchResultsTitle": "RAG 搜尋結果",
   "aiChatRagRefinedQuery": "最佳化後的查詢：\"{query}\"",
   "@aiChatRagRefinedQuery": {
-    "placeholders": {"query": {"type": "String"}}
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
   },
   "aiChatRagNoResults": "未找到結果。",
   "aiChatRagUnknownType": "未知",
@@ -336,13 +368,24 @@
   "aiServiceFeatureNotAvailable": "您的方案不支援此功能",
   "aiServiceFailedToConnect": "連線 AI 服務失敗：{error}",
   "@aiServiceFailedToConnect": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiServiceNoResponse": "AI 服務沒有傳回結果",
   "aiDeepAgentDetailsTitle": "Deep Agent",
   "aiDeepAgentStop": "停止：{reason}（輪次：{rounds}）",
   "@aiDeepAgentStop": {
-    "placeholders": {"reason": {"type": "String"}, "rounds": {"type": "Object"}}
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      },
+      "rounds": {
+        "type": "Object"
+      }
+    }
   },
   "aiDeepAgentPlanLabel": "計劃：",
   "aiDeepAgentToolsLabel": "工具：",
@@ -729,7 +772,7 @@
   "discover": "發現",
   "pitch": "音高",
   "back": "返回",
-  "createFirstNovelSubtitle": "建立您的第一本小說以開始",
+  "createFirstNovelSubtitle": "建立您的第一本小說以開始。",
   "navigationError": "導航錯誤",
   "pdfStepPreparing": "準備章節",
   "pdfStepGenerating": "產生 PDF",
@@ -762,14 +805,18 @@
   "adminLogsSavedTo": "日誌已儲存至 {path}",
   "@adminLogsSavedTo": {
     "placeholders": {
-      "path": {"type": "String"}
+      "path": {
+        "type": "String"
+      }
     }
   },
   "adminLogsCopy": "複製",
   "adminLogsFailedToDownload": "儲存失敗: {error}",
   "@adminLogsFailedToDownload": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "adminLogsEntry": "日誌項目",
@@ -795,20 +842,26 @@
   "wordCount": "字數：{count}",
   "@wordCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "characterCount": "字元數：{count}",
   "@characterCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "startWriting": "開始寫作...",
   "failedToLoadChapter": "載入章節失敗：{error}",
   "@failedToLoadChapter": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "saving": "儲存中…",
@@ -835,7 +888,9 @@
   "checkboxState": "核取方塊狀態：{value}",
   "@checkboxState": {
     "placeholders": {
-      "value": {"type": "bool"}
+      "value": {
+        "type": "bool"
+      }
     }
   },
   "option1": "選項 1",
@@ -843,13 +898,17 @@
   "switchState": "開關狀態：{value}",
   "@switchState": {
     "placeholders": {
-      "value": {"type": "bool"}
+      "value": {
+        "type": "bool"
+      }
     }
   },
   "sliderValue": "數值：{value}",
   "@sliderValue": {
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "enterTextHere": "在此輸入文字...",
@@ -861,7 +920,9 @@
   "foundContrastIssues": "發現 {count} 個可能影響可讀性的對比度問題。",
   "@foundContrastIssues": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "allGood": "一切正常！",
@@ -874,7 +935,9 @@
   "progressPercentage": "{percent}%",
   "@progressPercentage": {
     "placeholders": {
-      "percent": {"type": "int"}
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "review": "審查",
@@ -897,7 +960,9 @@
   "youreOffline": "您已離線。{message}",
   "@youreOffline": {
     "placeholders": {
-      "message": {"type": "String"}
+      "message": {
+        "type": "String"
+      }
     }
   },
   "download": "下載",
@@ -910,8 +975,6 @@
   "exitPreview": "退出預覽",
   "saveLabel": "儲存",
   "exitZenMode": "退出禪模式",
-  "createFirstNovelSubtitle": "建立您的第一本小說以開始。",
-  "searchLabel": "搜尋",
   "clearSearch": "清除搜尋",
   "notSignedInLabel": "未登入",
   "stylePreviewGrid": "樣式預覽網格",
@@ -938,13 +1001,32 @@
   "changesWillSyncCount": "{count} 項變更將在您重新上線時同步",
   "@changesWillSyncCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
-  "retry": "重試",
   "toggleSidebar": "切換側邊欄",
   "quickSearch": "快速搜尋",
   "templateRetrieved": "範本已擷取",
   "noTemplateFound": "找不到範本",
-  "retrieveTemplate": "擷取範本"
+  "retrieveTemplate": "擷取範本",
+  "adminLogsMaxSize": "Max Size",
+  "adminLogsAllLevels": "ALL",
+  "adminLogsFileSizeKB": "{size} KB",
+  "adminLogsFileSizeMB": "{size} MB",
+  "@adminLogsFileSizeKB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@adminLogsFileSizeMB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  }
 }

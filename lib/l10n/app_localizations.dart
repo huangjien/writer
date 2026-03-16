@@ -3956,6 +3956,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Quick Search'**
   String get quickSearch;
+
+  /// No description provided for @adminLogsMaxSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Size'**
+  String get adminLogsMaxSize;
+
+  /// No description provided for @adminLogsAllLevels.
+  ///
+  /// In en, this message translates to:
+  /// **'ALL'**
+  String get adminLogsAllLevels;
+
+  /// No description provided for @adminLogsFileSizeKB.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} KB'**
+  String adminLogsFileSizeKB(String size);
+
+  /// No description provided for @adminLogsFileSizeMB.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} MB'**
+  String adminLogsFileSizeMB(String size);
 }
 
 class _AppLocalizationsDelegate

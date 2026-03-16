@@ -139,8 +139,7 @@
         "type": "String"
       }
     }
-  }
-  ,
+  },
   "chapters": "章",
   "noChaptersFound": "章が見つかりません。",
   "indexLabel": "インデックス {index}",
@@ -155,8 +154,12 @@
   "indexOutOfRange": "インデックスは{min}から{max}の間である必要があります",
   "@indexOutOfRange": {
     "placeholders": {
-      "min": {"type": "int"},
-      "max": {"type": "int"}
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "indexUnchanged": "インデックスは変更されていません",
@@ -197,8 +200,7 @@
   "typographyPreset": "タイポグラフィプリセット",
   "typographyComfortable": "快適",
   "typographyCompact": "コンパクト",
-  "typographySerifLike": "セリフ風"
-  ,
+  "typographySerifLike": "セリフ風",
   "fontPack": "フォントパック",
   "separateTypographyPresets": "ライト/ダークで別々のタイポグラフィを使用",
   "typographyLight": "ライトタイポグラフィ",
@@ -246,8 +248,7 @@
   "noUsageHistory": "使用履歴なし",
   "bundleNordCalm": "ノルドカーム",
   "bundleSolarizedFocus": "ソラライズフォーカス",
-  "bundleHighContrastReadability": "ハイコントラスト読みやすさ"
-  ,
+  "bundleHighContrastReadability": "ハイコントラスト読みやすさ",
   "customFontFamily": "カスタムフォントファミリー",
   "commonFonts": "共通フォント",
   "readerFontSize": "リーダーフォントサイズ",
@@ -260,24 +261,23 @@
   "clear": "クリア",
   "adminMode": "管理者モード",
   "reduceMotion": "動作を減らす",
-  "reduceMotionDescription": "視覚的な快適さのためにアニメーションを最小化します"
-  ,
+  "reduceMotionDescription": "視覚的な快適さのためにアニメーションを最小化します",
   "gesturesEnabled": "タッチジェスチャーを有効化",
   "gesturesEnabledDescription": "リーダーでスワイプとタップジェスチャーを有効にします",
   "readerSwipeSensitivity": "リーダースワイプ感度",
   "readerSwipeSensitivityDescription": "章ナビゲーションの最小スワイプ速度を調整します",
   "remove": "削除",
   "removedFromLibrary": "ライブラリから削除しました",
-  "undo": "元に戻す",
   "confirmDelete": "削除の確認",
   "confirmDeleteDescription": "これによりクラウドライブラリから「{title}」が削除されます。よろしいですか？",
   "@confirmDeleteDescription": {
     "placeholders": {
-      "title": {"type": "String"}
+      "title": {
+        "type": "String"
+      }
     }
   },
-  "delete": "削除"
-  ,
+  "delete": "削除",
   "reachedFirstChapter": "最初の章に到達しました",
   "previousChapter": "前の章",
   "nextChapter": "次の章",
@@ -289,8 +289,7 @@
   "prefetchNextChapter": "次の章をプリフェッチ",
   "prefetchNextChapterDescription": "待ち時間を減らすために次の章を事前に読み込みます。",
   "clearOfflineCache": "オフラインキャッシュをクリア",
-  "offlineCacheCleared": "オフラインキャッシュをクリアしました"
-  ,
+  "offlineCacheCleared": "オフラインキャッシュをクリアしました",
   "edit": "編集",
   "exitEdit": "編集を終了",
   "enterEditMode": "編集モードに入る",
@@ -299,8 +298,7 @@
   "save": "保存",
   "createNextChapter": "次の章を作成",
   "enterChapterTitle": "章のタイトルを入力",
-  "enterChapterContent": "章の内容を入力"
-  ,
+  "enterChapterContent": "章の内容を入力",
   "discardChangesTitle": "変更を破棄しますか？",
   "discardChangesMessage": "保存されていない変更があります。破棄しますか？",
   "keepEditing": "編集を続ける",
@@ -310,7 +308,6 @@
   "coverUrlLabel": "表紙URL",
   "invalidCoverUrl": "スペースを含まない有効なhttp(s) URLを入力してください。",
   "navigation": "ナビゲーション",
-  "home": "ホーム",
   "chapterIndex": "章の索引",
   "summary": "要約",
   "characters": "キャラクター",
@@ -333,37 +330,69 @@
   "aiChatContextLabel": "コンテキスト",
   "aiTokenCount": "{count}トークン",
   "@aiTokenCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "aiContextLoadError": "コンテキスト読み込みエラー: {error}",
   "@aiContextLoadError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatContextTooLongCompressing": "コンテキストが長すぎます（{tokens}トークン）。圧縮中...",
   "@aiChatContextTooLongCompressing": {
-    "placeholders": {"tokens": {"type": "int"}}
+    "placeholders": {
+      "tokens": {
+        "type": "int"
+      }
+    }
   },
   "aiChatContextCompressionFailedNote": "[注: コンテキスト圧縮失敗: {error}]",
   "@aiChatContextCompressionFailedNote": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatError": "エラー: {error}",
   "@aiChatError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatDeepAgentError": "ディープエージェントエラー: {error}",
   "@aiChatDeepAgentError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatSearchFailed": "検索失敗",
   "aiChatSearchError": "検索エラー: {error}",
   "@aiChatSearchError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatRagSearchResultsTitle": "RAG検索結果",
   "aiChatRagRefinedQuery": "洗練されたクエリ: 「{query}」",
   "@aiChatRagRefinedQuery": {
-    "placeholders": {"query": {"type": "String"}}
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
   },
   "aiChatRagNoResults": "結果が見つかりませんでした。",
   "aiChatRagUnknownType": "不明",
@@ -371,13 +400,24 @@
   "aiServiceFeatureNotAvailable": "このプランでは機能をご利用いただけません",
   "aiServiceFailedToConnect": "AIサービスへの接続に失敗しました: {error}",
   "@aiServiceFailedToConnect": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiServiceNoResponse": "AIサービスからの応答がありません",
   "aiDeepAgentDetailsTitle": "ディープエージェント",
   "aiDeepAgentStop": "停止: {reason}（ラウンド: {rounds}）",
   "@aiDeepAgentStop": {
-    "placeholders": {"reason": {"type": "String"}, "rounds": {"type": "Object"}}
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      },
+      "rounds": {
+        "type": "Object"
+      }
+    }
   },
   "aiDeepAgentPlanLabel": "プラン:",
   "aiDeepAgentToolsLabel": "ツール:",
@@ -409,25 +449,48 @@
   "locationLabel": "場所",
   "languageLabel": "言語: {code}",
   "@languageLabel": {
-    "placeholders": {"code": {"type": "String"}}
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
   },
   "publicLabel": "公開",
   "privateLabel": "非公開",
   "chaptersCount": "章数: {count}",
   "@chaptersCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "avgWordsPerChapter": "平均字数/章: {avg}",
   "@avgWordsPerChapter": {
-    "placeholders": {"avg": {"type": "int"}}
+    "placeholders": {
+      "avg": {
+        "type": "int"
+      }
+    }
   },
   "chapterLabel": "第{idx}章",
   "@chapterLabel": {
-    "placeholders": {"idx": {"type": "int"}}
+    "placeholders": {
+      "idx": {
+        "type": "int"
+      }
+    }
   },
   "chapterWithTitle": "第{idx}章: {title}",
   "@chapterWithTitle": {
-    "placeholders": {"idx": {"type": "int"}, "title": {"type": "String"}}
+    "placeholders": {
+      "idx": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
   },
   "refreshTooltip": "更新",
   "untitled": "無題",
@@ -440,16 +503,30 @@
   "contributorEmailLabel": "協力者メールアドレス",
   "contributorEmailHint": "協力者として追加するユーザーメールアドレスを入力",
   "addContributor": "協力者を追加",
-  "contributorAdded": "協力者を追加しました"
-  ,
+  "contributorAdded": "協力者を追加しました",
   "pdf": "PDF",
   "generatingPdf": "PDF生成中…",
   "pdfFailed": "PDF生成に失敗しました",
   "tableOfContents": "目次",
   "byAuthor": "作者: {name}",
-  "@byAuthor": {"placeholders": {"name": {"type": "String"}}},
+  "@byAuthor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "pageOfTotal": "{total}ページ中{page}ページ目",
-  "@pageOfTotal": {"placeholders": {"page": {"type": "int"}, "total": {"type": "int"}}},
+  "@pageOfTotal": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "close": "閉じる",
   "openLink": "リンクを開く",
   "invalidLink": "無効なリンク",
@@ -457,7 +534,13 @@
   "copy": "コピー",
   "copiedToClipboard": "クリップボードにコピーしました",
   "showingCachedPublicData": "{msg} — キャッシュ/公開データを表示中",
-  "@showingCachedPublicData": {"placeholders": {"msg": {"type": "String"}}},
+  "@showingCachedPublicData": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
   "menu": "メニュー",
   "metaLabel": "メタ",
   "aiServiceUnavailable": "AIサービス利用不可",
@@ -493,17 +576,41 @@
   "editPattern": "パターンを編集",
   "editStoryLine": "ストーリーラインを編集",
   "deletedWithTitle": "削除済み: {title}",
-  "@deletedWithTitle": {"placeholders": {"title": {"type": "String"}}},
+  "@deletedWithTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "deleteFailedWithTitle": "削除失敗: {title}",
-  "@deleteFailedWithTitle": {"placeholders": {"title": {"type": "String"}}},
+  "@deleteFailedWithTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "deleteErrorWithMessage": "削除エラー: {error}",
-  "@deleteErrorWithMessage": {"placeholders": {"error": {"type": "String"}}},
+  "@deleteErrorWithMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "makePublic": "公開にする",
   "noPrompts": "プロンプトが見つかりません",
   "noPatterns": "パターンがありません",
   "noStoryLines": "ストーリーラインがありません",
   "conversionFailed": "変換失敗: {error}",
-  "@conversionFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@conversionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "failedToAnalyze": "分析失敗",
   "aiCoachAnalyzing": "AIコーチが分析しています...",
   "retry": "再試行",
@@ -523,29 +630,57 @@
   "aiConvert": "AI変換",
   "toggleAiCoach": "AIコーチの切り替え",
   "retrieveFailed": "取得失敗: {error}",
-  "@retrieveFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@retrieveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "confirm": "確認",
   "lastRead": "最終読書",
   "noRecentChapters": "最近の章はありません",
   "failedToLoadConfig": "設定の読み込み失敗",
   "makePublicPromptConfirm": "「{promptKey}」({language})を公開にしますか？",
-  "@makePublicPromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}}
-  ,
+  "@makePublicPromptConfirm": {
+    "placeholders": {
+      "promptKey": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "content": "コンテンツ",
   "invalidKey": "無効なキー",
   "invalidLanguage": "無効な言語",
   "invalidInput": "無効な入力",
   "charsCount": "文字数: {count}",
-  "@charsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@charsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deletePromptConfirm": "プロンプト「{promptKey}」({language})を削除しますか？",
-  "@deletePromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}},
+  "@deletePromptConfirm": {
+    "placeholders": {
+      "promptKey": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "profileRetrieved": "プロフィールを取得しました",
   "noProfileFound": "プロフィールが見つかりません",
   "templateName": "テンプレート名",
   "retrieveProfile": "プロフィールを取得",
   "previewLabel": "プレビュー",
-  "markdownHint": "Markdownで説明を入力..."
-  ,
+  "markdownHint": "Markdownで説明を入力...",
   "templateNameExists": "テンプレート名は既に存在します",
   "aiServiceUrlHint": "AIサービスURLを入力（http/https）",
   "urlLabel": "URL",
@@ -602,30 +737,12 @@
   "updatePassword": "パスワードを更新",
   "noActiveSessionFound": "アクティブなセッションが見つかりません。再度ログインしてください。",
   "authenticationFailedSignInAgain": "認証に失敗しました。再度サインインしてください。",
-  "removedNovel": "「{title}」を削除しました",
-  "@removedNovel": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
-  "discover": "発見",
-  "profile": "プロフィール",
-  "libraryTitle": "ライブラリ",
   "accessDeniedNoAdminPrivileges": "アクセス拒否。管理者権限がありません。",
   "failedToLoadUsers": "ユーザー読み込み失敗: {statusCode} - {errorBody}",
   "smartSearchRequiresSignIn": "スマート検索を使用するにはサインインしてください",
   "smartSearch": "スマート検索",
   "failedToPersistTemplate": "テンプレートの保存失敗",
-  "listView": "リスト表示",
-  "gridView": "グリッド表示",
   "userIdCreated": "ユーザー{id}が{createdAt}に作成されました",
-  "searchNovels": "小説を検索...",
-  "allFilter": "すべて",
-  "readingFilter": "読書中",
-  "completedFilter": "完了",
-  "downloadedFilter": "ダウンロード済み",
   "tryAdjustingSearchCreateNovel": "検索を調整するか、新しい小説を作成してください",
   "sessionExpired": "セッションの有効期限切れ",
   "errorLoadingUsers": "ユーザー読み込みエラー",
@@ -637,17 +754,25 @@
   "removeFromLibrary": "ライブラリから削除",
   "@userIdCreated": {
     "placeholders": {
-      "id": {"type": "String"},
-      "createdAt": {"type": "String"}
+      "id": {
+        "type": "String"
+      },
+      "createdAt": {
+        "type": "String"
+      }
     }
   },
   "@failedToLoadUsers": {
     "placeholders": {
-      "statusCode": {"type": "int"},
-      "errorBody": {"type": "String"}
+      "statusCode": {
+        "type": "int"
+      },
+      "errorBody": {
+        "type": "String"
+      }
     }
   },
-  "createFirstNovelSubtitle": "最初の小説を作成して始めましょう",
+  "createFirstNovelSubtitle": "最初の小説を作成して始めましょう。",
   "navigationError": "ナビゲーションエラー",
   "pdfStepPreparing": "章を準備中",
   "pdfStepGenerating": "PDF生成中",
@@ -680,14 +805,18 @@
   "adminLogsSavedTo": "ログを保存しました: {path}",
   "@adminLogsSavedTo": {
     "placeholders": {
-      "path": {"type": "String"}
+      "path": {
+        "type": "String"
+      }
     }
   },
   "adminLogsCopy": "コピー",
   "adminLogsFailedToDownload": "保存に失敗しました: {error}",
   "@adminLogsFailedToDownload": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "adminLogsEntry": "ログエントリ",
@@ -713,20 +842,26 @@
   "wordCount": "文字数: {count}",
   "@wordCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "characterCount": "文字数: {count}",
   "@characterCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "startWriting": "執筆を開始...",
   "failedToLoadChapter": "章の読み込み失敗: {error}",
   "@failedToLoadChapter": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "saving": "保存中…",
@@ -753,7 +888,9 @@
   "checkboxState": "チェックボックスの状態: {value}",
   "@checkboxState": {
     "placeholders": {
-      "value": {"type": "bool"}
+      "value": {
+        "type": "bool"
+      }
     }
   },
   "option1": "オプション1",
@@ -761,13 +898,17 @@
   "switchState": "スイッチの状態: {value}",
   "@switchState": {
     "placeholders": {
-      "value": {"type": "bool"}
+      "value": {
+        "type": "bool"
+      }
     }
   },
   "sliderValue": "値: {value}",
   "@sliderValue": {
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "enterTextHere": "ここにテキストを入力...",
@@ -779,7 +920,9 @@
   "foundContrastIssues": "可読性に影響する{count}個のコントラスト問題が見つかりました。",
   "@foundContrastIssues": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "allGood": "すべて良好！",
@@ -792,7 +935,9 @@
   "progressPercentage": "{percent}%",
   "@progressPercentage": {
     "placeholders": {
-      "percent": {"type": "int"}
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "review": "レビュー",
@@ -815,7 +960,9 @@
   "youreOffline": "オフラインです。{message}",
   "@youreOffline": {
     "placeholders": {
-      "message": {"type": "String"}
+      "message": {
+        "type": "String"
+      }
     }
   },
   "download": "ダウンロード",
@@ -828,8 +975,6 @@
   "exitPreview": "プレビューを終了",
   "saveLabel": "保存",
   "exitZenMode": "禅モードを終了",
-  "createFirstNovelSubtitle": "最初の小説を作成して始めましょう。",
-  "searchLabel": "検索",
   "clearSearch": "検索をクリア",
   "notSignedInLabel": "未サインイン",
   "stylePreviewGrid": "スタイルプレビューグリッド",
@@ -856,13 +1001,32 @@
   "changesWillSyncCount": "オンラインに戻ったときに{count}件の変更が同期されます",
   "@changesWillSyncCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
-  "retry": "再試行",
   "toggleSidebar": "サイドバーを切り替え",
   "quickSearch": "クイック検索",
   "templateRetrieved": "テンプレートを取得しました",
   "noTemplateFound": "テンプレートが見つかりません",
-  "retrieveTemplate": "テンプレートを取得"
+  "retrieveTemplate": "テンプレートを取得",
+  "adminLogsMaxSize": "Max Size",
+  "adminLogsAllLevels": "ALL",
+  "adminLogsFileSizeKB": "{size} KB",
+  "adminLogsFileSizeMB": "{size} MB",
+  "@adminLogsFileSizeKB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@adminLogsFileSizeMB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  }
 }

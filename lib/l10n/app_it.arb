@@ -139,8 +139,7 @@
         "type": "String"
       }
     }
-  }
-  ,
+  },
   "chapters": "Capitoli",
   "noChaptersFound": "Nessun capitolo trovato.",
   "indexLabel": "Indice {index}",
@@ -155,8 +154,12 @@
   "indexOutOfRange": "L'indice deve essere tra {min} e {max}",
   "@indexOutOfRange": {
     "placeholders": {
-      "min": {"type": "int"},
-      "max": {"type": "int"}
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "indexUnchanged": "Indice invariato",
@@ -197,8 +200,7 @@
   "typographyPreset": "Preset tipografia",
   "typographyComfortable": "Confortevole",
   "typographyCompact": "Compatto",
-  "typographySerifLike": "Tipo Serif"
-  ,
+  "typographySerifLike": "Tipo Serif",
   "fontPack": "Pack font",
   "separateTypographyPresets": "Usa tipografia separata per chiaro/scuro",
   "typographyLight": "Tipografia chiara",
@@ -246,8 +248,7 @@
   "noUsageHistory": "Nessuna cronologia di utilizzo",
   "bundleNordCalm": "Nord Calmo",
   "bundleSolarizedFocus": "Focus Solarizzato",
-  "bundleHighContrastReadability": "Leggibilità alto contrasto"
-  ,
+  "bundleHighContrastReadability": "Leggibilità alto contrasto",
   "customFontFamily": "Famiglia font personalizzata",
   "commonFonts": "Font comuni",
   "readerFontSize": "Dimensione font lettore",
@@ -260,24 +261,23 @@
   "clear": "Cancella",
   "adminMode": "Modalità admin",
   "reduceMotion": "Riduci movimento",
-  "reduceMotionDescription": "Minimizza le animazioni per il comfort visivo"
-  ,
+  "reduceMotionDescription": "Minimizza le animazioni per il comfort visivo",
   "gesturesEnabled": "Abilita gesture touch",
   "gesturesEnabledDescription": "Abilita scorrimento e tocco nel lettore",
   "readerSwipeSensitivity": "Sensibilità scorrimento lettore",
   "readerSwipeSensitivityDescription": "Regola la velocità minima di scorrimento per la navigazione dei capitoli",
   "remove": "Rimuovi",
   "removedFromLibrary": "Rimosso dalla libreria",
-  "undo": "Annulla",
   "confirmDelete": "Conferma eliminazione",
   "confirmDeleteDescription": "Questo eliminerà '{title}' dalla tua libreria cloud. Sei sicuro?",
   "@confirmDeleteDescription": {
     "placeholders": {
-      "title": {"type": "String"}
+      "title": {
+        "type": "String"
+      }
     }
   },
-  "delete": "Elimina"
-  ,
+  "delete": "Elimina",
   "reachedFirstChapter": "Primo capitolo raggiunto",
   "previousChapter": "Capitolo precedente",
   "nextChapter": "Capitolo successivo",
@@ -289,8 +289,7 @@
   "prefetchNextChapter": "Precarica prossimo capitolo",
   "prefetchNextChapterDescription": "Precarica il prossimo capitolo per ridurre l'attesa.",
   "clearOfflineCache": "Svuota cache offline",
-  "offlineCacheCleared": "Cache offline svuotata"
-  ,
+  "offlineCacheCleared": "Cache offline svuotata",
   "edit": "Modifica",
   "exitEdit": "Esci da modifica",
   "enterEditMode": "Entra in modalità modifica",
@@ -299,8 +298,7 @@
   "save": "Salva",
   "createNextChapter": "Crea prossimo capitolo",
   "enterChapterTitle": "Inserisci titolo del capitolo",
-  "enterChapterContent": "Inserisci contenuto del capitolo"
-  ,
+  "enterChapterContent": "Inserisci contenuto del capitolo",
   "discardChangesTitle": "Scartare le modifiche?",
   "discardChangesMessage": "Hai modifiche non salvate. Vuoi scartarle?",
   "keepEditing": "Continua a modificare",
@@ -310,7 +308,6 @@
   "coverUrlLabel": "URL copertina",
   "invalidCoverUrl": "Inserisci un URL http(s) valido senza spazi.",
   "navigation": "Navigazione",
-  "home": "Home",
   "chapterIndex": "Indice capitoli",
   "summary": "Riassunto",
   "characters": "Personaggi",
@@ -333,37 +330,69 @@
   "aiChatContextLabel": "Contesto",
   "aiTokenCount": "{count} token",
   "@aiTokenCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "aiContextLoadError": "Errore nel caricamento del contesto: {error}",
   "@aiContextLoadError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatContextTooLongCompressing": "Il contesto è troppo lungo ({tokens} token). Compressione...",
   "@aiChatContextTooLongCompressing": {
-    "placeholders": {"tokens": {"type": "int"}}
+    "placeholders": {
+      "tokens": {
+        "type": "int"
+      }
+    }
   },
   "aiChatContextCompressionFailedNote": "[Nota: compressione contesto fallita: {error}]",
   "@aiChatContextCompressionFailedNote": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatError": "Errore: {error}",
   "@aiChatError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatDeepAgentError": "Errore Deep Agent: {error}",
   "@aiChatDeepAgentError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatSearchFailed": "Ricerca fallita",
   "aiChatSearchError": "Errore ricerca: {error}",
   "@aiChatSearchError": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiChatRagSearchResultsTitle": "Risultati ricerca RAG",
   "aiChatRagRefinedQuery": "Query raffinata: \"{query}\"",
   "@aiChatRagRefinedQuery": {
-    "placeholders": {"query": {"type": "String"}}
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
   },
   "aiChatRagNoResults": "Nessun risultato trovato.",
   "aiChatRagUnknownType": "sconosciuto",
@@ -371,13 +400,24 @@
   "aiServiceFeatureNotAvailable": "Funzionalità non disponibile per il tuo piano",
   "aiServiceFailedToConnect": "Impossibile connettersi al servizio AI: {error}",
   "@aiServiceFailedToConnect": {
-    "placeholders": {"error": {"type": "String"}}
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "aiServiceNoResponse": "Nessuna risposta dal servizio AI",
   "aiDeepAgentDetailsTitle": "Deep Agent",
   "aiDeepAgentStop": "Stop: {reason} (round: {rounds})",
   "@aiDeepAgentStop": {
-    "placeholders": {"reason": {"type": "String"}, "rounds": {"type": "Object"}}
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      },
+      "rounds": {
+        "type": "Object"
+      }
+    }
   },
   "aiDeepAgentPlanLabel": "Piano:",
   "aiDeepAgentToolsLabel": "Strumenti:",
@@ -409,25 +449,48 @@
   "locationLabel": "Posizione",
   "languageLabel": "Lingua: {code}",
   "@languageLabel": {
-    "placeholders": {"code": {"type": "String"}}
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
   },
   "publicLabel": "Pubblico",
   "privateLabel": "Privato",
   "chaptersCount": "Capitoli: {count}",
   "@chaptersCount": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "avgWordsPerChapter": "Media parole/capitolo: {avg}",
   "@avgWordsPerChapter": {
-    "placeholders": {"avg": {"type": "int"}}
+    "placeholders": {
+      "avg": {
+        "type": "int"
+      }
+    }
   },
   "chapterLabel": "Capitolo {idx}",
   "@chapterLabel": {
-    "placeholders": {"idx": {"type": "int"}}
+    "placeholders": {
+      "idx": {
+        "type": "int"
+      }
+    }
   },
   "chapterWithTitle": "Capitolo {idx}: {title}",
   "@chapterWithTitle": {
-    "placeholders": {"idx": {"type": "int"}, "title": {"type": "String"}}
+    "placeholders": {
+      "idx": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
   },
   "refreshTooltip": "Aggiorna",
   "untitled": "Senza titolo",
@@ -440,16 +503,30 @@
   "contributorEmailLabel": "Email collaboratore",
   "contributorEmailHint": "Inserisci email utente da aggiungere come collaboratore",
   "addContributor": "Aggiungi collaboratore",
-  "contributorAdded": "Collaboratore aggiunto"
-  ,
+  "contributorAdded": "Collaboratore aggiunto",
   "pdf": "PDF",
   "generatingPdf": "Generazione PDF…",
   "pdfFailed": "Generazione PDF fallita",
   "tableOfContents": "Indice",
   "byAuthor": "di {name}",
-  "@byAuthor": {"placeholders": {"name": {"type": "String"}}},
+  "@byAuthor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "pageOfTotal": "Pagina {page} di {total}",
-  "@pageOfTotal": {"placeholders": {"page": {"type": "int"}, "total": {"type": "int"}}},
+  "@pageOfTotal": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "close": "Chiudi",
   "openLink": "Apri link",
   "invalidLink": "Link non valido",
@@ -457,7 +534,13 @@
   "copy": "Copia",
   "copiedToClipboard": "Copiato negli appunti",
   "showingCachedPublicData": "{msg} — visualizzazione dati cache/pubblici",
-  "@showingCachedPublicData": {"placeholders": {"msg": {"type": "String"}}},
+  "@showingCachedPublicData": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
   "menu": "Menu",
   "metaLabel": "Meta",
   "aiServiceUnavailable": "Servizio AI non disponibile",
@@ -493,17 +576,41 @@
   "editPattern": "Modifica pattern",
   "editStoryLine": "Modifica story line",
   "deletedWithTitle": "Eliminato: {title}",
-  "@deletedWithTitle": {"placeholders": {"title": {"type": "String"}}},
+  "@deletedWithTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "deleteFailedWithTitle": "Eliminazione fallita: {title}",
-  "@deleteFailedWithTitle": {"placeholders": {"title": {"type": "String"}}},
+  "@deleteFailedWithTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "deleteErrorWithMessage": "Errore eliminazione: {error}",
-  "@deleteErrorWithMessage": {"placeholders": {"error": {"type": "String"}}},
+  "@deleteErrorWithMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "makePublic": "Rendi pubblico",
   "noPrompts": "Nessun prompt trovato",
   "noPatterns": "Nessun pattern",
   "noStoryLines": "Nessuna story line",
   "conversionFailed": "Conversione fallita: {error}",
-  "@conversionFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@conversionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "failedToAnalyze": "Analisi fallita",
   "aiCoachAnalyzing": "AI Coach sta analizzando...",
   "retry": "Riprova",
@@ -523,29 +630,57 @@
   "aiConvert": "Conversione AI",
   "toggleAiCoach": "Attiva/Disattiva AI Coach",
   "retrieveFailed": "Recupero fallito: {error}",
-  "@retrieveFailed": {"placeholders": {"error": {"type": "String"}}},
+  "@retrieveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "confirm": "Conferma",
   "lastRead": "Letto l'ultima volta",
   "noRecentChapters": "Nessun capitolo recente",
   "failedToLoadConfig": "Caricamento configurazione fallito",
   "makePublicPromptConfirm": "Rendere pubblico \"{promptKey}\" ({language})?",
-  "@makePublicPromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}}
-  ,
+  "@makePublicPromptConfirm": {
+    "placeholders": {
+      "promptKey": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "content": "Contenuto",
   "invalidKey": "Chiave non valida",
   "invalidLanguage": "Lingua non valida",
   "invalidInput": "Input non valido",
   "charsCount": "Caratteri: {count}",
-  "@charsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@charsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "deletePromptConfirm": "Eliminare il prompt \"{promptKey}\" ({language})?",
-  "@deletePromptConfirm": {"placeholders": {"promptKey": {"type": "String"}, "language": {"type": "String"}}},
+  "@deletePromptConfirm": {
+    "placeholders": {
+      "promptKey": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "profileRetrieved": "Profilo recuperato",
   "noProfileFound": "Nessun profilo trovato",
   "templateName": "Nome modello",
   "retrieveProfile": "Recupera profilo",
   "previewLabel": "Anteprima",
-  "markdownHint": "Inserisci descrizione in Markdown..."
-  ,
+  "markdownHint": "Inserisci descrizione in Markdown...",
   "templateNameExists": "Il nome modello esiste già",
   "aiServiceUrlHint": "Inserisci URL servizio AI (http/https)",
   "urlLabel": "URL",
@@ -602,30 +737,12 @@
   "updatePassword": "Aggiorna password",
   "noActiveSessionFound": "Nessuna sessione attiva trovata. Accedi di nuovo.",
   "authenticationFailedSignInAgain": "Autenticazione fallita. Accedi di nuovo.",
-  "removedNovel": "Rimosso {title}",
-  "@removedNovel": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
-  "discover": "Scopri",
-  "profile": "Profilo",
-  "libraryTitle": "Libreria",
   "accessDeniedNoAdminPrivileges": "Accesso negato. Non hai privilegi admin.",
   "failedToLoadUsers": "Caricamento utenti fallito: {statusCode} - {errorBody}",
   "smartSearchRequiresSignIn": "Accedi per usare la ricerca smart",
   "smartSearch": "Ricerca smart",
   "failedToPersistTemplate": "Salvataggio modello fallito",
-  "listView": "Vista elenco",
-  "gridView": "Vista griglia",
   "userIdCreated": "Utente {id} creato il {createdAt}",
-  "searchNovels": "Cerca romanzi...",
-  "allFilter": "Tutti",
-  "readingFilter": "In lettura",
-  "completedFilter": "Completati",
-  "downloadedFilter": "Scaricati",
   "tryAdjustingSearchCreateNovel": "Prova a modificare la ricerca o crea un nuovo romanzo",
   "sessionExpired": "Sessione scaduta",
   "errorLoadingUsers": "Errore caricamento utenti",
@@ -637,17 +754,25 @@
   "removeFromLibrary": "Rimuovi dalla libreria",
   "@userIdCreated": {
     "placeholders": {
-      "id": {"type": "String"},
-      "createdAt": {"type": "String"}
+      "id": {
+        "type": "String"
+      },
+      "createdAt": {
+        "type": "String"
+      }
     }
   },
   "@failedToLoadUsers": {
     "placeholders": {
-      "statusCode": {"type": "int"},
-      "errorBody": {"type": "String"}
+      "statusCode": {
+        "type": "int"
+      },
+      "errorBody": {
+        "type": "String"
+      }
     }
   },
-  "createFirstNovelSubtitle": "Crea il tuo primo romanzo per iniziare",
+  "createFirstNovelSubtitle": "Crea il tuo primo romanzo per iniziare.",
   "navigationError": "Errore navigazione",
   "pdfStepPreparing": "Preparazione capitoli",
   "pdfStepGenerating": "Generazione PDF",
@@ -680,14 +805,18 @@
   "adminLogsSavedTo": "Log salvati in {path}",
   "@adminLogsSavedTo": {
     "placeholders": {
-      "path": {"type": "String"}
+      "path": {
+        "type": "String"
+      }
     }
   },
   "adminLogsCopy": "Copia",
   "adminLogsFailedToDownload": "Salvataggio fallito: {error}",
   "@adminLogsFailedToDownload": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "adminLogsEntry": "Voce di log",
@@ -713,20 +842,26 @@
   "wordCount": "Conteggio parole: {count}",
   "@wordCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "characterCount": "Conteggio caratteri: {count}",
   "@characterCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "startWriting": "Inizia a scrivere...",
   "failedToLoadChapter": "Caricamento capitolo fallito: {error}",
   "@failedToLoadChapter": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "saving": "Salvataggio…",
@@ -753,7 +888,9 @@
   "checkboxState": "Stato checkbox: {value}",
   "@checkboxState": {
     "placeholders": {
-      "value": {"type": "bool"}
+      "value": {
+        "type": "bool"
+      }
     }
   },
   "option1": "Opzione 1",
@@ -761,13 +898,17 @@
   "switchState": "Stato interruttore: {value}",
   "@switchState": {
     "placeholders": {
-      "value": {"type": "bool"}
+      "value": {
+        "type": "bool"
+      }
     }
   },
   "sliderValue": "Valore: {value}",
   "@sliderValue": {
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "enterTextHere": "Inserisci testo qui...",
@@ -779,7 +920,9 @@
   "foundContrastIssues": "Trovati {count} problema/i di contrasto che potrebbero affettare la leggibilità.",
   "@foundContrastIssues": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "allGood": "Tutto OK!",
@@ -792,7 +935,9 @@
   "progressPercentage": "{percent}%",
   "@progressPercentage": {
     "placeholders": {
-      "percent": {"type": "int"}
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "review": "Revisiona",
@@ -815,7 +960,9 @@
   "youreOffline": "Sei offline. {message}",
   "@youreOffline": {
     "placeholders": {
-      "message": {"type": "String"}
+      "message": {
+        "type": "String"
+      }
     }
   },
   "download": "Scarica",
@@ -828,8 +975,6 @@
   "exitPreview": "Esci dall'anteprima",
   "saveLabel": "Salva",
   "exitZenMode": "Esci modalità Zen",
-  "createFirstNovelSubtitle": "Crea il tuo primo romanzo per iniziare.",
-  "searchLabel": "Cerca",
   "clearSearch": "Cancella ricerca",
   "notSignedInLabel": "Non accessibile",
   "stylePreviewGrid": "Griglia anteprima stile",
@@ -856,13 +1001,32 @@
   "changesWillSyncCount": "{count} modifica/e verranno sincronizzate quando tornerai online",
   "@changesWillSyncCount": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
-  "retry": "Riprova",
   "toggleSidebar": "Attiva/Disattiva barra laterale",
   "quickSearch": "Ricerca rapida",
   "templateRetrieved": "Modello recuperato",
   "noTemplateFound": "Nessun modello trovato",
-  "retrieveTemplate": "Recupera modello"
+  "retrieveTemplate": "Recupera modello",
+  "adminLogsMaxSize": "Max Size",
+  "adminLogsAllLevels": "ALL",
+  "adminLogsFileSizeKB": "{size} KB",
+  "adminLogsFileSizeMB": "{size} MB",
+  "@adminLogsFileSizeKB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@adminLogsFileSizeMB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -2036,6 +2036,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get quickSearch => '快速搜索';
+
+  @override
+  String get adminLogsMaxSize => 'Max Size';
+
+  @override
+  String get adminLogsAllLevels => 'ALL';
+
+  @override
+  String adminLogsFileSizeKB(String size) {
+    return '$size KB';
+  }
+
+  @override
+  String adminLogsFileSizeMB(String size) {
+    return '$size MB';
+  }
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -4070,4 +4086,20 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get quickSearch => '快速搜尋';
+
+  @override
+  String get adminLogsMaxSize => 'Max Size';
+
+  @override
+  String get adminLogsAllLevels => 'ALL';
+
+  @override
+  String adminLogsFileSizeKB(String size) {
+    return '$size KB';
+  }
+
+  @override
+  String adminLogsFileSizeMB(String size) {
+    return '$size MB';
+  }
 }

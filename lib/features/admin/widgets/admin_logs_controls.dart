@@ -84,7 +84,9 @@ class AdminLogsControls extends StatelessWidget {
                     final sizeKb = file['size_kb'] as double;
                     return DropdownMenuItem<int>(
                       value: index,
-                      child: Text('$name (${sizeKb.toStringAsFixed(1)} KB)'),
+                      child: Text(
+                        '$name (${l10n.adminLogsFileSizeKB(sizeKb.toStringAsFixed(1))})',
+                      ),
                     );
                   }).toList(),
                   onChanged: isLoading
@@ -99,10 +101,10 @@ class AdminLogsControls extends StatelessWidget {
               Expanded(
                 child: DropdownButtonFormField<int>(
                   initialValue: maxSizeKb,
-                  decoration: const InputDecoration(
-                    labelText: 'Max Size',
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(
+                  decoration: InputDecoration(
+                    labelText: l10n.adminLogsMaxSize,
+                    border: const OutlineInputBorder(),
+                    contentPadding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 8,
                     ),

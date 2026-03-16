@@ -2099,4 +2099,20 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get quickSearch => 'Schnellsuche';
+
+  @override
+  String get adminLogsMaxSize => 'Max Size';
+
+  @override
+  String get adminLogsAllLevels => 'ALL';
+
+  @override
+  String adminLogsFileSizeKB(String size) {
+    return '$size KB';
+  }
+
+  @override
+  String adminLogsFileSizeMB(String size) {
+    return '$size MB';
+  }
 }
