@@ -1,0 +1,86 @@
+name: Writer Docker Build and Deploy
+
+on:
+  workflow_run:
+    workflows: ["Writer CI"]
+    types: ["completed"]
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  RUN_REGION: europe-west1
+  AI_SERVICE_URL: ${{ vars.AI_SERVICE_URL }}
+  DOCKER_USER: ${{ github.repository_owner }}
+
+jobs:
+  writer-web:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter pub get
+      - name: Build Flutter web (with AI dart-define)
+        env:
+          AI_SERVICE_URL: ${{ vars.AI_SERVICE_URL }}
+        run: |
+          AI_DEFINE=""
+          if [ -n "$AI_SERVICE_URL" ]; then
+            AI_DEFINE="--dart-define=AI_SERVICE_URL=\"$AI_SERVICE_URL\""
+          else
+            AI_DEFINE="--dart-define=AI_SERVICE_URL=https://ai.huangjien.com/"
+          fi
+          flutter build web $AI_DEFINE
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          create_credentials_file: true
+          export_environment_variables: true
+          universe: googleapis.com
+          cleanup_credentials: true
+          access_token_lifetime: 3600s
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform
+          id_token_include_email: false
+      - uses: google-github-actions/setup-gcloud@v2
+      - run: gcloud config set project "$PROJECT_ID"
+      - run: gcloud info
+      - name: Enable APIs
+        run: |
+          gcloud services enable secretmanager.googleapis.com
+          gcloud services enable artifactregistry.googleapis.com
+
+      - name: Setup Artifact Registry
+        run: |
+          # Create repository if it doesn't exist
+          if ! gcloud artifacts repositories describe authorconsole --location="$RUN_REGION" >/dev/null 2>&1; then
+            gcloud artifacts repositories create authorconsole \
+              --repository-format=docker \
+              --location="$RUN_REGION" \
+              --description="Docker repository for AuthorConsole"
+          fi
+          # Configure Docker to authenticate with Artifact Registry
+          gcloud auth configure-docker "$RUN_REGION-docker.pkg.dev"
+
+      - name: Build and Push to GAR
+        run: |
+          IMAGE_URI="$RUN_REGION-docker.pkg.dev/$PROJECT_ID/authorconsole/writer-web:latest"
+          docker build -t "$IMAGE_URI" .
+          docker push "$IMAGE_URI"
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+
+      - id: deploy_writer
+        run: |
+          gcloud run deploy writer-web \
+            --quiet \
+            --region "$RUN_REGION" \
+            --update-secrets OPENAI_API_KEY=OPENAI_API_KEY:latest \
+            --update-env-vars AI_SERVICE_URL="$AI_SERVICE_URL" \
+            --image "$IMAGE_URI" \
+            --platform managed \
+            --port 8080 \
+            --allow-unauthenticated
