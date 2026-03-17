@@ -8,6 +8,7 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
 
 SECRETS_FOUND=0
+RUN_QUALITY_CHECKS=0
 
 PATTERNS=(
   # SSH and generic private keys
@@ -61,6 +62,11 @@ fi
 
 while IFS= read -r file; do
   [[ -z "$file" ]] && continue
+  case "$file" in
+    lib/*|test/*|pubspec.yaml|pubspec.lock|Makefile|writer/lib/*|writer/test/*|writer/pubspec.yaml|writer/pubspec.lock|writer/Makefile)
+      RUN_QUALITY_CHECKS=1
+      ;;
+  esac
   if is_text "$file"; then
     scan_file_for_secrets "$file"
   fi
@@ -71,6 +77,16 @@ if [[ "$SECRETS_FOUND" -eq 1 ]]; then
   echo "If this is a false positive, you may commit with --no-verify,"
   echo "or adjust the hook patterns in .githooks/pre-commit."
   exit 1
+fi
+
+if [[ "$RUN_QUALITY_CHECKS" -eq 1 ]]; then
+  echo "[pre-commit] Running make lint..."
+  make lint
+
+  echo "[pre-commit] Running make test..."
+  make test
+else
+  echo "[pre-commit] Skipping lint/test (no staged changes in lib/, test/, pubspec.*, or Makefile)"
 fi
 
 PUBSPEC_PATH="writer/pubspec.yaml"
