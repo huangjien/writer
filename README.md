@@ -19,7 +19,7 @@ Get up and running in 3 steps:
    # Or choose a platform:
    make dev-chrome    # Chrome desktop app
    make macos         # macOS app
-   make dev-android   # Android device/emulator
+   make build-android # Android APK release build
    ```
 
 3. **Verify setup**
@@ -145,8 +145,9 @@ This app uses a token-driven design system to keep the Writer UI visually and fu
 - Android build (copies APK to `/tmp/`): `make build-android`
 
 ### AI service URL
-- The app reads a default backend AI service URL from `AI_SERVICE_URL` at build time and stores the value in preferences:
-  - Default: `http://localhost:5600/`
+- The app reads `AI_SERVICE_URL` at build time and stores the value in preferences:
+  - App-level fallback when no dart-define is provided: `http://localhost:5600/`
+  - Makefile default used by `make` targets: `https://ai.huangjien.com/`
   - Override at build/run: `--dart-define=AI_SERVICE_URL=https://your-backend.example.com/`
 - The URL can be edited at runtime in Settings → App Settings → AI Service URL.
 
@@ -325,20 +326,17 @@ The deployment automatically configures these secrets from Secret Manager:
 - Clean Flutter build outputs: `make clean`
 
 ## CI
-- Workflow: `.github/workflows/ci.yml`
+- Workflow: `.github/workflows/writer-ci.yml`
   - Triggers on push, pull_request, and manual dispatch.
   - Sets up Flutter (stable), caches pub packages, runs `make lint`, and executes tests.
-  - Builds and publishes installers to GitHub Releases using the version from `writer/package.json`:
-    - Android: `app-release.apk` and `app-release.aab`.
-    - iOS: unsigned `.ipa` when available; otherwise zips `Runner.app` as a fallback.
-    - macOS: zipped `.app` bundle.
-    - Windows: zipped `Release` folder.
-  - Release publishing is skipped for `pull_request` events.
+  - Current workflow is quality-gate only (lint + tests); release publishing is not part of this workflow.
   - Android CI patches `isar_flutter_libs` to add `namespace` and set `compileSdkVersion 36`.
-  - `flutter_tts` is pinned to a Windows-compatible version (`4.0.2`) in `pubspec.yaml` to ensure the plugin’s CMake integrates cleanly on CI.
+  - `flutter_tts` version is managed in `pubspec.yaml` and CI applies the Windows plugin patch step from the Makefile flow.
 
 ## Security
 - Never store or ship secrets in the app or in public repos. Use them only server-side or in secure CI contexts.
 
 ## Notes
-- TTS locale mapping is covered by tests (`test/tts_locale_mapping_test.dart`). The task “Map app language preference to TTS language code” is tracked in `tasks.md` and can be extended if new locales are added.
+- TTS locale mapping is covered by tests (`test/tts_locale_mapping_test.dart`) and can be extended if new locales are added.
+- For documentation and command consistency maintenance, use `docs/docs_drift_checklist.md`.
+- Canonical AI coding policy lives in `RULES.md`; `AGENTS.md` is a delegating pointer.

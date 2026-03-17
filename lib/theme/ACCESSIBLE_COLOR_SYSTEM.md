@@ -147,7 +147,7 @@ Critical contrast issues fixed:
 ## Smart Contrast-Based Text Selection
 
 ### Implementation
-The `_onColor()` function in [themes.dart](file:///Users/huangjien/workspace/authorconsole/writer/lib/theme/themes.dart) now uses WCAG-compliant contrast calculation:
+The `_onColor()` function in [themes.dart](themes.dart) now uses WCAG-compliant contrast calculation:
 
 ```dart
 Color _onColor(Color bg) {
@@ -227,14 +227,14 @@ All pressed states meet WCAG AA requirement (4.5:1 for normal text).
 - ✅ Pressed states provide clear feedback
 - ✅ Shadows adjusted for dark mode visibility
 
-For detailed implementation, see [BUTTON_ACCESSIBILITY_FIX_REPORT.md](file:///Users/huangjien/workspace/authorconsole/writer/BUTTON_ACCESSIBILITY_FIX_REPORT.md).
+For detailed implementation, see this document's Button Accessibility section and related theme files.
 
 ---
 
 ## Usage Guidelines
 
 ### 1. When Using Custom Colors
-Always verify contrast using the [ContrastChecker](file:///Users/huangjien/workspace/authorconsole/writer/lib/theme/accessibility/contrast_checker.dart) utility:
+Always verify contrast using the [ContrastChecker](accessibility/contrast_checker.dart) utility:
 
 ```dart
 final result = ContrastChecker.calculateContrast(foregroundColor, backgroundColor);
@@ -244,7 +244,7 @@ if (!result.passesAA) {
 ```
 
 ### 2. For Neumorphic Components
-Use the updated [NeumorphicStyles](file:///Users/huangjien/workspace/authorconsole/writer/lib/theme/neumorphic_styles.dart) constants:
+Use the updated [NeumorphicStyles](neumorphic_styles.dart) constants:
 
 ```dart
 // Dark mode
@@ -255,7 +255,7 @@ NeumorphicStyles.lightBackground // #E0E5EC
 ```
 
 ### 3. For Glassmorphism Components
-Use updated [AppColors](file:///Users/huangjien/workspace/authorconsole/writer/lib/theme/design_tokens.dart) constants:
+Use updated [AppColors](design_tokens.dart) constants:
 
 ```dart
 // Dark mode
@@ -279,7 +279,7 @@ AppColors.glassBorderLight // 0x33FFFFFF (20% opacity)
 - [ ] Test with system accessibility settings enabled
 
 ### Automated Testing
-- [ ] Run [ContrastChecker](file:///Users/huangjien/workspace/authorconsole/writer/lib/theme/accessibility/contrast_checker.dart) on all color combinations
+- [ ] Run [ContrastChecker](accessibility/contrast_checker.dart) on all color combinations
 - [ ] Verify all generated themes pass WCAG AA (4.5:1 minimum)
 - [ ] Test on multiple screen sizes (mobile, tablet, desktop)
 - [ ] Verify with screen readers (VoiceOver, TalkBack, NVDA)
@@ -325,11 +325,10 @@ decoration: NeumorphicStyles.decoration(isDark: true)
 ## Resources
 
 ### Related Files
-- [design_tokens.dart](file:///Users/huangjien/workspace/authorconsole/writer/lib/theme/design_tokens.dart) - Central color definitions
-- [themes.dart](file:///Users/huangjien/workspace/authorconsole/writer/lib/theme/themes.dart) - Theme families and smart contrast selection
-- [neumorphic_styles.dart](file:///Users/huangjien/workspace/authorconsole/writer/lib/theme/neumorphic_styles.dart) - Neumorphism-specific colors
-- [contrast_checker.dart](file:///Users/huangjien/workspace/authorconsole/writer/lib/theme/accessibility/contrast_checker.dart) - WCAG compliance utilities
-- [CONTRAST_ANALYSIS_REPORT.md](file:///Users/huangjien/workspace/authorconsole/writer/CONTRAST_ANALYSIS_REPORT.md) - Detailed analysis and findings
+- [design_tokens.dart](design_tokens.dart) - Central color definitions
+- [themes.dart](themes.dart) - Theme families and smart contrast selection
+- [neumorphic_styles.dart](neumorphic_styles.dart) - Neumorphism-specific colors
+- [contrast_checker.dart](accessibility/contrast_checker.dart) - WCAG compliance utilities
 
 ### External References
 - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
