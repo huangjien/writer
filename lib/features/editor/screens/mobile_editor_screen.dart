@@ -380,10 +380,11 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
         .split(RegExp(r'\s+'))
         .where((word) => word.isNotEmpty)
         .length;
+    final l10n = AppLocalizations.of(context)!;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Word count: $wordCount'),
+        content: Text('${l10n.wordCount}: $wordCount'),
         duration: const Duration(seconds: 3),
       ),
     );
@@ -393,10 +394,11 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     final text = _contentController.text;
     final charCount = text.length;
+    final l10n = AppLocalizations.of(context)!;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Character count: $charCount'),
+        content: Text('${l10n.charCount}: $charCount'),
         duration: const Duration(seconds: 3),
       ),
     );

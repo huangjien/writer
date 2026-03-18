@@ -1028,5 +1028,20 @@
         "type": "String"
       }
     }
-  }
+  },
+  "size10KB": "10 KB",
+  "size50KB": "50 KB",
+  "size100KB": "100 KB",
+  "size500KB": "500 KB",
+  "size1MB": "1 MB",
+  "wordCount": "字數",
+  "charCount": "字符數",
+  "languageEnglish": "English",
+  "languageChinese": "中文",
+  "languageChineseTraditional": "繁體",
+  "languageGerman": "Deutsch",
+  "languageSpanish": "Español",
+  "languageFrench": "Français",
+  "languageItalian": "Italiano",
+  "languageJapanese": "日本語"
 }

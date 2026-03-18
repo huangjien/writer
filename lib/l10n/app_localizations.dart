@@ -3366,7 +3366,7 @@ abstract class AppLocalizations {
   /// No description provided for @wordCount.
   ///
   /// In en, this message translates to:
-  /// **'Word count: {count}'**
+  /// **'Word count'**
   String wordCount(int count);
 
   /// No description provided for @characterCount.
@@ -3980,6 +3980,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{size} MB'**
   String adminLogsFileSizeMB(String size);
+
+  /// No description provided for @size10KB.
+  ///
+  /// In en, this message translates to:
+  /// **'10 KB'**
+  String get size10KB;
+
+  /// No description provided for @size50KB.
+  ///
+  /// In en, this message translates to:
+  /// **'50 KB'**
+  String get size50KB;
+
+  /// No description provided for @size100KB.
+  ///
+  /// In en, this message translates to:
+  /// **'100 KB'**
+  String get size100KB;
+
+  /// No description provided for @size500KB.
+  ///
+  /// In en, this message translates to:
+  /// **'500 KB'**
+  String get size500KB;
+
+  /// No description provided for @size1MB.
+  ///
+  /// In en, this message translates to:
+  /// **'1 MB'**
+  String get size1MB;
+
+  /// No description provided for @charCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Character count'**
+  String get charCount;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @languageChinese.
+  ///
+  /// In en, this message translates to:
+  /// **'中文'**
+  String get languageChinese;
+
+  /// No description provided for @languageChineseTraditional.
+  ///
+  /// In en, this message translates to:
+  /// **'繁體'**
+  String get languageChineseTraditional;
+
+  /// No description provided for @languageGerman.
+  ///
+  /// In en, this message translates to:
+  /// **'Deutsch'**
+  String get languageGerman;
+
+  /// No description provided for @languageSpanish.
+  ///
+  /// In en, this message translates to:
+  /// **'Español'**
+  String get languageSpanish;
+
+  /// No description provided for @languageFrench.
+  ///
+  /// In en, this message translates to:
+  /// **'Français'**
+  String get languageFrench;
+
+  /// No description provided for @languageItalian.
+  ///
+  /// In en, this message translates to:
+  /// **'Italiano'**
+  String get languageItalian;
+
+  /// No description provided for @languageJapanese.
+  ///
+  /// In en, this message translates to:
+  /// **'日本語'**
+  String get languageJapanese;
 }
 
 class _AppLocalizationsDelegate

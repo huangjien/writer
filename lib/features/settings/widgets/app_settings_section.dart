@@ -198,15 +198,39 @@ class _AppSettingsSectionState extends ConsumerState<AppSettingsSection> {
                         .setLanguage(languageCode);
                   }
                 },
-                items: const [
-                  DropdownMenuItem(value: 'en', child: Text('English')),
-                  DropdownMenuItem(value: 'zh', child: Text('中文')),
-                  DropdownMenuItem(value: 'zh-TW', child: Text('繁體')),
-                  DropdownMenuItem(value: 'de', child: Text('Deutsch')),
-                  DropdownMenuItem(value: 'es', child: Text('Español')),
-                  DropdownMenuItem(value: 'fr', child: Text('Français')),
-                  DropdownMenuItem(value: 'it', child: Text('Italiano')),
-                  DropdownMenuItem(value: 'ja', child: Text('日本語')),
+                items: [
+                  DropdownMenuItem(
+                    value: 'en',
+                    child: Text(l10n.languageEnglish),
+                  ),
+                  DropdownMenuItem(
+                    value: 'zh',
+                    child: Text(l10n.languageChinese),
+                  ),
+                  DropdownMenuItem(
+                    value: 'zh-TW',
+                    child: Text(l10n.languageChineseTraditional),
+                  ),
+                  DropdownMenuItem(
+                    value: 'de',
+                    child: Text(l10n.languageGerman),
+                  ),
+                  DropdownMenuItem(
+                    value: 'es',
+                    child: Text(l10n.languageSpanish),
+                  ),
+                  DropdownMenuItem(
+                    value: 'fr',
+                    child: Text(l10n.languageFrench),
+                  ),
+                  DropdownMenuItem(
+                    value: 'it',
+                    child: Text(l10n.languageItalian),
+                  ),
+                  DropdownMenuItem(
+                    value: 'ja',
+                    child: Text(l10n.languageJapanese),
+                  ),
                 ],
               ),
             ],

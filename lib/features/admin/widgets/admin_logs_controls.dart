@@ -109,12 +109,27 @@ class AdminLogsControls extends StatelessWidget {
                       vertical: 8,
                     ),
                   ),
-                  items: const [
-                    DropdownMenuItem<int>(value: 10, child: Text('10 KB')),
-                    DropdownMenuItem<int>(value: 50, child: Text('50 KB')),
-                    DropdownMenuItem<int>(value: 100, child: Text('100 KB')),
-                    DropdownMenuItem<int>(value: 500, child: Text('500 KB')),
-                    DropdownMenuItem<int>(value: 1000, child: Text('1 MB')),
+                  items: [
+                    DropdownMenuItem<int>(
+                      value: 10,
+                      child: Text(l10n.size10KB),
+                    ),
+                    DropdownMenuItem<int>(
+                      value: 50,
+                      child: Text(l10n.size50KB),
+                    ),
+                    DropdownMenuItem<int>(
+                      value: 100,
+                      child: Text(l10n.size100KB),
+                    ),
+                    DropdownMenuItem<int>(
+                      value: 500,
+                      child: Text(l10n.size500KB),
+                    ),
+                    DropdownMenuItem<int>(
+                      value: 1000,
+                      child: Text(l10n.size1MB),
+                    ),
                   ],
                   onChanged: isLoading
                       ? null

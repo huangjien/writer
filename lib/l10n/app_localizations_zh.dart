@@ -1722,7 +1722,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String wordCount(int count) {
-    return '字数：$count';
+    return '字数';
   }
 
   @override
@@ -2052,6 +2052,48 @@ class AppLocalizationsZh extends AppLocalizations {
   String adminLogsFileSizeMB(String size) {
     return '$size MB';
   }
+
+  @override
+  String get size10KB => '10 KB';
+
+  @override
+  String get size50KB => '50 KB';
+
+  @override
+  String get size100KB => '100 KB';
+
+  @override
+  String get size500KB => '500 KB';
+
+  @override
+  String get size1MB => '1 MB';
+
+  @override
+  String get charCount => '字符数';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageChinese => '中文';
+
+  @override
+  String get languageChineseTraditional => '繁體';
+
+  @override
+  String get languageGerman => 'Deutsch';
+
+  @override
+  String get languageSpanish => 'Español';
+
+  @override
+  String get languageFrench => 'Français';
+
+  @override
+  String get languageItalian => 'Italiano';
+
+  @override
+  String get languageJapanese => '日本語';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3772,7 +3814,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String wordCount(int count) {
-    return '字數：$count';
+    return '字數';
   }
 
   @override
@@ -4102,4 +4144,46 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String adminLogsFileSizeMB(String size) {
     return '$size MB';
   }
+
+  @override
+  String get size10KB => '10 KB';
+
+  @override
+  String get size50KB => '50 KB';
+
+  @override
+  String get size100KB => '100 KB';
+
+  @override
+  String get size500KB => '500 KB';
+
+  @override
+  String get size1MB => '1 MB';
+
+  @override
+  String get charCount => '字符數';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageChinese => '中文';
+
+  @override
+  String get languageChineseTraditional => '繁體';
+
+  @override
+  String get languageGerman => 'Deutsch';
+
+  @override
+  String get languageSpanish => 'Español';
+
+  @override
+  String get languageFrench => 'Français';
+
+  @override
+  String get languageItalian => 'Italiano';
+
+  @override
+  String get languageJapanese => '日本語';
 }
