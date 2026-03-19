@@ -20,8 +20,13 @@ class _EditIntent extends Intent {
 }
 
 class CharacterTemplatesListScreen extends ConsumerStatefulWidget {
-  const CharacterTemplatesListScreen({super.key, required this.novelId});
+  const CharacterTemplatesListScreen({
+    super.key,
+    required this.novelId,
+    this.standalone = false,
+  });
   final String novelId;
+  final bool standalone;
 
   @override
   ConsumerState<CharacterTemplatesListScreen> createState() =>
@@ -112,6 +117,10 @@ class _CharacterTemplatesListScreenState
 
   void _openEdit(CharacterTemplateRow it) {
     ref.read(characterTemplatesListProvider.notifier).setSelectedId(it.id);
+    if (widget.standalone) {
+      context.push('/character-templates/${it.id}');
+      return;
+    }
     context.push('/novel/${widget.novelId}/character-templates/${it.id}');
   }
 
@@ -164,9 +173,15 @@ class _CharacterTemplatesListScreenState
                 tooltip: l10n.refreshTooltip,
               ),
             IconButton(
-              onPressed: () => context.push(
-                '/novel/${widget.novelId}/character-templates/new',
-              ),
+              onPressed: () {
+                if (widget.standalone) {
+                  context.push('/character-templates/new');
+                  return;
+                }
+                context.push(
+                  '/novel/${widget.novelId}/character-templates/new',
+                );
+              },
               icon: const Icon(Icons.add),
               tooltip: l10n.newLabel,
             ),

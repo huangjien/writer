@@ -58,6 +58,22 @@ void main() {
             body: const Center(child: Text('My Novels Screen')),
           ),
         ),
+        GoRoute(
+          path: '/character-templates',
+          builder: (context, state) => Scaffold(
+            appBar: AppBar(title: const Text('Character Templates')),
+            drawer: const AppDrawer(),
+            body: const Center(child: Text('Character Templates Screen')),
+          ),
+        ),
+        GoRoute(
+          path: '/scene-templates',
+          builder: (context, state) => Scaffold(
+            appBar: AppBar(title: const Text('Scene Templates')),
+            drawer: const AppDrawer(),
+            body: const Center(child: Text('Scene Templates Screen')),
+          ),
+        ),
       ],
     );
   }
@@ -153,7 +169,7 @@ void main() {
     );
     await tester.tap(find.text('Character Templates'));
     await tester.pumpAndSettle();
-    expect(find.text('My Novels Screen'), findsOneWidget);
+    expect(find.text('Character Templates Screen'), findsOneWidget);
     final s2 = tester.state<ScaffoldState>(find.byType(Scaffold));
     s2.openDrawer();
     await tester.pumpAndSettle();
@@ -164,6 +180,6 @@ void main() {
     );
     await tester.tap(find.text('Scene Templates'));
     await tester.pumpAndSettle();
-    expect(find.text('My Novels Screen'), findsOneWidget);
+    expect(find.text('Scene Templates Screen'), findsOneWidget);
   });
 }

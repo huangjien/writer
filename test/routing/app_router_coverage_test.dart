@@ -370,6 +370,24 @@ void main() {
     }
   });
 
+  testWidgets('navigates to standalone template screens', (tester) async {
+    final container = ProviderContainer(overrides: [...getOverrides(prefs)]);
+    addTearDown(container.dispose);
+
+    await pumpRouterApp(tester, container: container);
+    final router = container.read(appRouterProvider);
+    await tester.pumpAndSettle();
+
+    final routes = ['/character-templates', '/scene-templates'];
+    final types = [CharacterTemplatesListScreen, SceneTemplatesListScreen];
+
+    for (int i = 0; i < routes.length; i++) {
+      router.go(routes[i]);
+      await tester.pumpAndSettle();
+      expect(find.byType(types[i]), findsOneWidget);
+    }
+  });
+
   testWidgets('navigates to nested novel screens', (tester) async {
     final container = ProviderContainer(overrides: [...getOverrides(prefs)]);
     addTearDown(container.dispose);

@@ -2,20 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:writer/l10n/app_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:writer/state/novel_providers.dart';
 
-class AppDrawer extends ConsumerWidget {
+class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final libraryAsync = ref.watch(libraryNovelsProvider);
-    final defaultNovelId = libraryAsync.maybeWhen(
-      data: (list) => list.isNotEmpty ? list.first.id : null,
-      orElse: () => null,
-    );
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -60,24 +53,14 @@ class AppDrawer extends ConsumerWidget {
             leading: const Icon(Icons.assignment_ind_outlined),
             title: Text(l10n.characterTemplates),
             onTap: () {
-              final id = defaultNovelId;
-              if (id != null) {
-                context.go('/novel/$id/character-templates');
-              } else {
-                context.go('/my-novels');
-              }
+              context.go('/character-templates');
             },
           ),
           _DrawerListItem(
             leading: const Icon(Icons.assignment_outlined),
             title: Text(l10n.sceneTemplates),
             onTap: () {
-              final id = defaultNovelId;
-              if (id != null) {
-                context.go('/novel/$id/scene-templates');
-              } else {
-                context.go('/my-novels');
-              }
+              context.go('/scene-templates');
             },
           ),
           _DrawerListItem(

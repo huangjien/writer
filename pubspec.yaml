@@ -159,7 +159,6 @@ dependency_overrides:
   analyzer: ^11.0.0
   image: ^4.8.0
   meta: ^1.18.1
-  win32: ^6.0.0
 
 # Pin js package to latest version (discontinued but still functional)
 # The js package is used by flutter_secure_storage_web

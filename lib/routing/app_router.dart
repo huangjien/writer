@@ -120,6 +120,66 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const MobileToolsScreen(),
           ),
           GoRoute(
+            path: '/character-templates',
+            name: 'characterTemplatesStandalone',
+            builder: (context, state) {
+              return const CharacterTemplatesListScreen(
+                novelId: '__global__',
+                standalone: true,
+              );
+            },
+            routes: [
+              GoRoute(
+                path: 'new',
+                name: 'characterTemplatesStandaloneNew',
+                builder: (context, state) {
+                  return const CharacterTemplatesScreen(novelId: '__global__');
+                },
+              ),
+              GoRoute(
+                path: ':tid',
+                name: 'characterTemplatesStandaloneEdit',
+                builder: (context, state) {
+                  final tid = state.pathParameters['tid']!;
+                  return CharacterTemplatesScreen(
+                    novelId: '__global__',
+                    templateId: tid,
+                  );
+                },
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/scene-templates',
+            name: 'sceneTemplatesStandalone',
+            builder: (context, state) {
+              return const SceneTemplatesListScreen(
+                novelId: '__global__',
+                standalone: true,
+              );
+            },
+            routes: [
+              GoRoute(
+                path: 'new',
+                name: 'sceneTemplatesStandaloneNew',
+                builder: (context, state) {
+                  return const SceneTemplatesScreen(novelId: '__global__');
+                },
+              ),
+              GoRoute(
+                path: ':tid',
+                name: 'sceneTemplatesStandaloneEdit',
+                builder: (context, state) {
+                  final tid = state.pathParameters['tid']!;
+                  return SceneTemplatesScreen(
+                    novelId: '__global__',
+                    templateId: tid,
+                  );
+                },
+              ),
+            ],
+          ),
+          GoRoute(
             path: '/my-novels',
             name: 'myNovels',
             builder: (context, state) => const MyNovelsScreen(),

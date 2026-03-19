@@ -14,18 +14,27 @@ import 'package:writer/shared/widgets/error_state.dart';
 import 'package:writer/features/summary/state/template_list_state.dart';
 
 class SceneTemplatesListScreen extends ConsumerWidget {
-  const SceneTemplatesListScreen({super.key, required this.novelId});
+  const SceneTemplatesListScreen({
+    super.key,
+    required this.novelId,
+    this.standalone = false,
+  });
   final String novelId;
+  final bool standalone;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return _SceneTemplatesListContent(novelId: novelId);
+    return _SceneTemplatesListContent(novelId: novelId, standalone: standalone);
   }
 }
 
 class _SceneTemplatesListContent extends ConsumerStatefulWidget {
-  const _SceneTemplatesListContent({required this.novelId});
+  const _SceneTemplatesListContent({
+    required this.novelId,
+    required this.standalone,
+  });
   final String novelId;
+  final bool standalone;
 
   @override
   ConsumerState<_SceneTemplatesListContent> createState() =>
@@ -126,6 +135,10 @@ class _SceneTemplatesListContentState
   }
 
   void _openEdit(SceneTemplateRow it) {
+    if (widget.standalone) {
+      context.push('/scene-templates/${it.id}');
+      return;
+    }
     context.push('/novel/${widget.novelId}/scene-templates/${it.id}');
   }
 
@@ -175,8 +188,13 @@ class _SceneTemplatesListContentState
                 tooltip: l10n.refreshTooltip,
               ),
             IconButton(
-              onPressed: () =>
-                  context.push('/novel/${widget.novelId}/scene-templates/new'),
+              onPressed: () {
+                if (widget.standalone) {
+                  context.push('/scene-templates/new');
+                  return;
+                }
+                context.push('/novel/${widget.novelId}/scene-templates/new');
+              },
               icon: const Icon(Icons.add),
               tooltip: l10n.newLabel,
             ),

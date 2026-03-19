@@ -35,6 +35,16 @@ void main() {
             path: '/settings',
             builder: (context, state) => const Scaffold(body: Text('Settings')),
           ),
+          GoRoute(
+            path: '/character-templates',
+            builder: (context, state) =>
+                const Scaffold(body: Text('Character Templates Screen')),
+          ),
+          GoRoute(
+            path: '/scene-templates',
+            builder: (context, state) =>
+                const Scaffold(body: Text('Scene Templates Screen')),
+          ),
         ],
       );
     });
@@ -131,7 +141,7 @@ void main() {
       // but we can ensure it renders.
     });
 
-    testWidgets('shows snackbar for unimplemented features', (tester) async {
+    testWidgets('navigates to template screens', (tester) async {
       tester.view.physicalSize = const Size(800, 1200);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -149,13 +159,16 @@ void main() {
 
       // Tap Character Templates
       await tester.tap(find.text('Character Templates'));
-      await tester.pump();
-      expect(find.text('Select a novel first'), findsOneWidget);
+      await tester.pumpAndSettle();
+      expect(find.text('Character Templates Screen'), findsOneWidget);
+
+      router.go('/tools');
+      await tester.pumpAndSettle();
 
       // Tap Scene Templates
       await tester.tap(find.text('Scene Templates'));
-      await tester.pump();
-      expect(find.text('Select a novel first'), findsOneWidget);
+      await tester.pumpAndSettle();
+      expect(find.text('Scene Templates Screen'), findsOneWidget);
     });
 
     testWidgets('shows more menu', (tester) async {
