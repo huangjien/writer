@@ -30,6 +30,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/state/session_state.dart';
 import 'package:writer/shared/widgets/neumorphic_button.dart';
+import 'package:writer/shared/widgets/global_shortcuts_wrapper.dart';
 
 class MockUserRepository extends Mock implements UserRepository {}
 
@@ -108,6 +109,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(SettingsScreen), findsOneWidget);
+    expect(find.byType(SettingsShortcutsWrapper), findsOneWidget);
     expect(find.byType(AppSettingsSection), findsOneWidget);
 
     final listFinder = find.byType(ListView);

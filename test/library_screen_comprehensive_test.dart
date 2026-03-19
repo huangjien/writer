@@ -412,6 +412,8 @@ void main() {
 
       // Desktop doesn't use mobile bottom navigation
       expect(find.byType(MobileBottomNavBar), findsNothing);
+      final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
+      expect(scaffold.drawer, isNotNull);
     });
   });
 

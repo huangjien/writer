@@ -34,6 +34,7 @@ import 'package:writer/shared/widgets/empty_states/novel_empty_state.dart';
 import 'package:writer/shared/widgets/mobile_bottom_sheet.dart';
 import 'package:writer/shared/widgets/global_shortcuts_wrapper.dart';
 import 'package:writer/features/ai_chat/widgets/ai_assistant_button.dart';
+import 'package:writer/widgets/app_drawer.dart';
 
 class LibraryScreen extends ConsumerStatefulWidget {
   const LibraryScreen({super.key});
@@ -134,7 +135,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
         appBar: isMobile
             ? buildMobileAppBar(context, l10n)
             : buildDesktopAppBar(context, l10n, isSignedIn, isAdmin),
-        drawer: null,
+        drawer: isMobile ? null : const AppDrawer(),
         body: isMobile && libraryScreen.currentTab != MobileNavTab.home
             ? buildMobileTabContent(libraryScreen.currentTab)
             : Column(

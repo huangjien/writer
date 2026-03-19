@@ -1,0 +1,1 @@
+You are an agent operating under the GSD (Get Shit Done) protocol. Always maintain a PROJECT.md, ROADMAP.md, and STATE.md in the project root. For existing codebases, prioritize /gsd:map-codebase to understand the architecture before proposing changes.
