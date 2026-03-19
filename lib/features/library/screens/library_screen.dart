@@ -18,6 +18,7 @@ import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/state/progress_providers.dart';
+import 'package:writer/state/sync_service_provider.dart';
 import 'package:writer/models/novel.dart';
 import 'package:writer/models/user_progress.dart';
 import 'package:writer/widgets/offline_banner.dart';
@@ -138,7 +139,14 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
         drawer: isMobile ? null : const AppDrawer(),
         body: Column(
           children: [
-            const OfflineBanner(),
+            OfflineBanner(
+              onRetry: () {
+                ref.read(syncServiceProvider).syncPendingOperations();
+                ref.invalidate(pendingOperationsCountProvider);
+                ref.invalidate(libraryNovelsProviderV2);
+                ref.invalidate(recentUserProgressProvider);
+              },
+            ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(
@@ -411,7 +419,11 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                 icon: Icons.add,
                 label: l10n.createNovel,
                 onPressed: () {
-                  Navigator.of(context).pushNamed('/novel/create');
+                  _handleMobileTabNavigation(
+                    context: context,
+                    routeName: 'createNovel',
+                    fallbackRoute: '/create-novel',
+                  );
                 },
               )
             : null,
@@ -429,7 +441,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                       _handleMobileTabNavigation(
                         context: context,
                         routeName: 'createNovel',
-                        fallbackRoute: '/novel/create',
+                        fallbackRoute: '/create-novel',
                       );
                       break;
                     case MobileNavTab.read:

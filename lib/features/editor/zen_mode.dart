@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/theme/design_tokens.dart';
 
 class ZenModeBar extends StatelessWidget {
@@ -18,6 +19,7 @@ class ZenModeBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Material(
       color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.85),
       child: SafeArea(
@@ -30,24 +32,24 @@ class ZenModeBar extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                'Zen mode',
+                l10n.previewMode,
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
               const Spacer(),
               IconButton(
-                tooltip: preview ? 'Exit preview' : 'Preview',
+                tooltip: preview ? l10n.exitPreview : l10n.preview,
                 onPressed: onTogglePreview,
                 icon: Icon(preview ? Icons.edit : Icons.visibility),
               ),
               IconButton(
-                tooltip: 'Save',
+                tooltip: l10n.save,
                 onPressed: onSave,
                 icon: const Icon(Icons.save),
               ),
               IconButton(
-                tooltip: 'Exit Zen mode',
+                tooltip: l10n.exitZenMode,
                 onPressed: onExit,
                 icon: const Icon(Icons.close),
               ),

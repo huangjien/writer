@@ -26,6 +26,7 @@ import 'package:writer/features/library/widgets/library_grid_item.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/features/library/library_providers.dart';
 import 'package:writer/widgets/recent_chapters.dart';
+import 'package:writer/widgets/offline_banner.dart';
 import 'package:writer/shared/widgets/app_dialog.dart';
 
 void main() {
@@ -350,6 +351,39 @@ void main() {
 
       // Should show error section
       expect(find.byType(LibraryErrorSection), findsOneWidget);
+    });
+
+    testWidgets('wires offline banner retry callback', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            libraryNovelsProviderV2.overrideWith((ref) async => const []),
+            memberNovelsProviderV2.overrideWith((ref) async => const []),
+            chaptersProviderV2.overrideWith((ref, novelId) async => const []),
+            lastProgressProvider.overrideWith((ref, novelId) async => null),
+            isOnlineProvider.overrideWith((ref) => false),
+            hasPendingOperationsProvider.overrideWith((ref) => true),
+            pendingOperationsCountProvider.overrideWith((ref) async => 2),
+            syncStateValueProvider.overrideWith(
+              (ref) => const SyncState(status: SyncStatus.offline),
+            ),
+          ],
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: LibraryScreen(),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      final banner = tester.widget<OfflineBanner>(find.byType(OfflineBanner));
+      expect(banner.onRetry, isNotNull);
     });
   });
 
@@ -1228,7 +1262,7 @@ void main() {
               child: LibraryScreen(),
             ),
             routes: {
-              '/novel/create': (context) =>
+              '/create-novel': (context) =>
                   const Scaffold(body: Text('Create')),
               '/tools': (context) => const Scaffold(body: Text('Tools Route')),
               '/settings': (context) =>

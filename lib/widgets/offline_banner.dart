@@ -55,112 +55,107 @@ class OfflineBanner extends ConsumerWidget {
                   container: true,
                   liveRegion: true,
                   label: l10n.youreOfflineLabel,
-                  child: ExcludeSemantics(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.tertiaryContainer,
-                        borderRadius: BorderRadius.circular(Radii.m),
-                        border: theme.styleCardBorder,
-                        boxShadow: theme.styleCardShadows,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.tertiaryContainer,
+                      borderRadius: BorderRadius.circular(Radii.m),
+                      border: theme.styleCardBorder,
+                      boxShadow: theme.styleCardShadows,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Spacing.l,
+                        vertical: Spacing.m,
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: Spacing.l,
-                          vertical: Spacing.m,
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.cloud_off,
-                              color: theme.colorScheme.onTertiaryContainer,
-                              size: 20,
-                            ),
-                            const SizedBox(width: Spacing.m),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.cloud_off,
+                            color: theme.colorScheme.onTertiaryContainer,
+                            size: 20,
+                          ),
+                          const SizedBox(width: Spacing.m),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  l10n.youreOfflineLabel,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color:
+                                        theme.colorScheme.onTertiaryContainer,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                if (showPendingCount && pendingCount != null)
                                   Text(
-                                    l10n.youreOfflineLabel,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color:
-                                          theme.colorScheme.onTertiaryContainer,
-                                      fontWeight: FontWeight.w700,
+                                    message,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme
+                                          .colorScheme
+                                          .onTertiaryContainer
+                                          .withValues(alpha: 0.85),
                                     ),
                                   ),
-                                  if (showPendingCount && pendingCount != null)
-                                    Text(
-                                      message,
-                                      style: theme.textTheme.bodySmall
-                                          ?.copyWith(
-                                            color: theme
-                                                .colorScheme
-                                                .onTertiaryContainer
-                                                .withValues(alpha: 0.85),
-                                          ),
+                                if (showPendingCount && pendingCount == null)
+                                  Text(
+                                    message,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme
+                                          .colorScheme
+                                          .onTertiaryContainer
+                                          .withValues(alpha: 0.85),
                                     ),
-                                  if (showPendingCount && pendingCount == null)
-                                    Text(
-                                      message,
-                                      style: theme.textTheme.bodySmall
-                                          ?.copyWith(
-                                            color: theme
-                                                .colorScheme
-                                                .onTertiaryContainer
-                                                .withValues(alpha: 0.85),
-                                          ),
-                                    ),
-                                ],
+                                  ),
+                              ],
+                            ),
+                          ),
+                          if (onRetry != null)
+                            Padding(
+                              padding: const EdgeInsets.only(left: Spacing.s),
+                              child: NeumorphicButton(
+                                onPressed: onRetry,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: Spacing.m,
+                                  vertical: Spacing.s,
+                                ),
+                                borderRadius: BorderRadius.circular(Radii.xl),
+                                depth: 4,
+                                color: theme.colorScheme.tertiaryContainer,
+                                child: Text(
+                                  l10n.retry,
+                                  style: TextStyle(
+                                    color:
+                                        theme.colorScheme.onTertiaryContainer,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                               ),
                             ),
-                            if (onRetry != null)
-                              Padding(
-                                padding: const EdgeInsets.only(left: Spacing.s),
+                          if (onDismiss != null)
+                            Padding(
+                              padding: const EdgeInsets.only(left: Spacing.s),
+                              child: SizedBox(
+                                width: 36,
+                                height: 36,
                                 child: NeumorphicButton(
-                                  onPressed: onRetry,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: Spacing.m,
-                                    vertical: Spacing.s,
-                                  ),
-                                  borderRadius: BorderRadius.circular(Radii.xl),
+                                  onPressed: onDismiss,
+                                  semanticLabel: l10n.close,
+                                  padding: EdgeInsets.zero,
+                                  borderRadius: BorderRadius.circular(Radii.m),
                                   depth: 4,
                                   color: theme.colorScheme.tertiaryContainer,
-                                  child: Text(
-                                    l10n.retry,
-                                    style: TextStyle(
-                                      color:
-                                          theme.colorScheme.onTertiaryContainer,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+                                  child: Icon(
+                                    Icons.close,
+                                    size: 18,
+                                    color:
+                                        theme.colorScheme.onTertiaryContainer,
                                   ),
                                 ),
                               ),
-                            if (onDismiss != null)
-                              Padding(
-                                padding: const EdgeInsets.only(left: Spacing.s),
-                                child: SizedBox(
-                                  width: 36,
-                                  height: 36,
-                                  child: NeumorphicButton(
-                                    onPressed: onDismiss,
-                                    padding: EdgeInsets.zero,
-                                    borderRadius: BorderRadius.circular(
-                                      Radii.m,
-                                    ),
-                                    depth: 4,
-                                    color: theme.colorScheme.tertiaryContainer,
-                                    child: Icon(
-                                      Icons.close,
-                                      size: 18,
-                                      color:
-                                          theme.colorScheme.onTertiaryContainer,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
+                            ),
+                        ],
                       ),
                     ),
                   ),

@@ -96,4 +96,51 @@ void main() {
     expect(fakeRepo.lastSaved!.userId, 'auth-001');
     expect(fakeRepo.lastSaved!.novelId, 'n1');
   });
+
+  testWidgets('Authenticated user: Back triggers progress save', (
+    tester,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    final appNotifier = AppSettingsNotifier(prefs);
+    final fakeRepo = CapturingProgressPort();
+    final storageService = LocalStorageService(prefs);
+    final sessionNotifier = SessionNotifier(storageService);
+    await sessionNotifier.setSessionId('test-session');
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          appSettingsProvider.overrideWith((_) => appNotifier),
+          progressRepositoryProvider.overrideWith((_) => fakeRepo),
+          sessionProvider.overrideWith((_) => sessionNotifier),
+          currentUserProvider.overrideWith((ref) async {
+            final sid = ref.watch(sessionProvider);
+            if (sid == null || sid.isEmpty) return null;
+            return const BackendUser(id: 'auth-001');
+          }),
+        ],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ChapterReaderScreen(
+            chapterId: 'c1',
+            title: 'Progress Back',
+            content: 'Hello world. This is a chapter.',
+            novelId: 'n1',
+            autoStartTts: false,
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Back'));
+    await tester.pumpAndSettle();
+
+    expect(fakeRepo.saveCalls, 1);
+    expect(fakeRepo.lastSaved, isNotNull);
+    expect(fakeRepo.lastSaved!.userId, 'auth-001');
+    expect(fakeRepo.lastSaved!.novelId, 'n1');
+  });
 }

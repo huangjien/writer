@@ -139,7 +139,7 @@ class SyncService {
           break;
         }
 
-        final error = result.error ?? 'Sync failed';
+        final error = _classifySyncError(result.error);
         lastError = error;
         retryCount += 1;
         await _offlineQueue.incrementRetry(op.id);
@@ -190,8 +190,18 @@ class SyncService {
           return (success: await _syncMove(op), error: null);
       }
     } catch (e) {
-      return (success: false, error: e.toString());
+      return (success: false, error: _classifySyncError(e.toString()));
     }
+  }
+
+  String _classifySyncError(String? error) {
+    final value = error ?? 'Sync failed';
+    if (value.contains('ApiException(409)') ||
+        value.contains('statusCode: 409') ||
+        value.contains('409 Conflict')) {
+      return 'Sync conflict detected';
+    }
+    return value;
   }
 
   String? _stringFromData(Map<String, dynamic>? data, List<String> keys) {

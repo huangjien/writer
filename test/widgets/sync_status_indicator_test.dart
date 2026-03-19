@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:writer/l10n/app_localizations.dart';
+import 'package:writer/l10n/app_localizations_en.dart';
 import 'package:writer/models/sync_state.dart';
 import 'package:writer/state/sync_service_provider.dart';
 import 'package:writer/widgets/sync_status_indicator.dart';
 
 void main() {
+  Widget buildTestWidget(Widget child) {
+    return MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(body: child),
+    );
+  }
+
+  final en = AppLocalizationsEn();
+
   testWidgets('SyncStatusIndicator shows syncing state', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
@@ -15,14 +27,12 @@ void main() {
           ),
           hasPendingOperationsProvider.overrideWith((ref) => false),
         ],
-        child: const MaterialApp(
-          home: Scaffold(body: SyncStatusIndicator(showLabel: true)),
-        ),
+        child: buildTestWidget(const SyncStatusIndicator(showLabel: true)),
       ),
     );
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    expect(find.text('Syncing...'), findsOneWidget);
+    expect(find.text(en.loadingProgress), findsOneWidget);
   });
 
   testWidgets('SyncStatusIndicator shows synced state', (tester) async {
@@ -34,14 +44,12 @@ void main() {
           ),
           hasPendingOperationsProvider.overrideWith((ref) => false),
         ],
-        child: const MaterialApp(
-          home: Scaffold(body: SyncStatusIndicator(showLabel: true)),
-        ),
+        child: buildTestWidget(const SyncStatusIndicator(showLabel: true)),
       ),
     );
 
     expect(find.byIcon(Icons.cloud_done), findsOneWidget);
-    expect(find.text('Synced'), findsOneWidget);
+    expect(find.text(en.saved), findsOneWidget);
   });
 
   testWidgets('SyncStatusIndicator shows pending sync state', (tester) async {
@@ -53,14 +61,12 @@ void main() {
           ),
           hasPendingOperationsProvider.overrideWith((ref) => true),
         ],
-        child: const MaterialApp(
-          home: Scaffold(body: SyncStatusIndicator(showLabel: true)),
-        ),
+        child: buildTestWidget(const SyncStatusIndicator(showLabel: true)),
       ),
     );
 
     expect(find.byIcon(Icons.cloud_done), findsOneWidget);
-    expect(find.text('Pending sync'), findsOneWidget);
+    expect(find.text(en.changesWillSync), findsOneWidget);
   });
 
   testWidgets('SyncStatusIndicator shows offline state', (tester) async {
@@ -72,14 +78,12 @@ void main() {
           ),
           hasPendingOperationsProvider.overrideWith((ref) => false),
         ],
-        child: const MaterialApp(
-          home: Scaffold(body: SyncStatusIndicator(showLabel: true)),
-        ),
+        child: buildTestWidget(const SyncStatusIndicator(showLabel: true)),
       ),
     );
 
     expect(find.byIcon(Icons.cloud_off), findsOneWidget);
-    expect(find.text('Offline'), findsOneWidget);
+    expect(find.text(en.youreOfflineLabel), findsOneWidget);
   });
 
   testWidgets('SyncStatusIndicator shows error state', (tester) async {
@@ -91,14 +95,32 @@ void main() {
           ),
           hasPendingOperationsProvider.overrideWith((ref) => false),
         ],
-        child: const MaterialApp(
-          home: Scaffold(body: SyncStatusIndicator(showLabel: true)),
-        ),
+        child: buildTestWidget(const SyncStatusIndicator(showLabel: true)),
       ),
     );
 
     expect(find.byIcon(Icons.error_outline), findsOneWidget);
-    expect(find.text('Sync failed'), findsOneWidget);
+    expect(find.text(en.saveFailed), findsOneWidget);
+  });
+
+  testWidgets('SyncStatusIndicator shows conflict state', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          syncStateValueProvider.overrideWith(
+            (ref) => const SyncState(
+              status: SyncStatus.error,
+              errorMessage: 'Sync conflict detected',
+            ),
+          ),
+          hasPendingOperationsProvider.overrideWith((ref) => false),
+        ],
+        child: buildTestWidget(const SyncStatusIndicator(showLabel: true)),
+      ),
+    );
+
+    expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
+    expect(find.text(en.error), findsOneWidget);
   });
 
   testWidgets('SyncStatusIndicator hides label when showLabel is false', (
@@ -112,13 +134,11 @@ void main() {
           ),
           hasPendingOperationsProvider.overrideWith((ref) => false),
         ],
-        child: const MaterialApp(
-          home: Scaffold(body: SyncStatusIndicator(showLabel: false)),
-        ),
+        child: buildTestWidget(const SyncStatusIndicator(showLabel: false)),
       ),
     );
 
     expect(find.byIcon(Icons.cloud_done), findsOneWidget);
-    expect(find.text('Synced'), findsNothing);
+    expect(find.text(en.saved), findsNothing);
   });
 }

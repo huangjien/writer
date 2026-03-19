@@ -353,6 +353,32 @@ void main() {
           ),
         ).called(1);
       });
+
+      test('should classify 409 as sync conflict', () async {
+        final operation = OfflineOperation(
+          id: 'op_conflict',
+          type: OperationType.updateChapter,
+          chapterId: 'chapter123',
+          novelId: 'novel1',
+          data: {'title': 'Updated Chapter', 'content': 'Updated content'},
+          createdAt: DateTime.now(),
+          retryCount: RetryPolicy.maxRetries,
+        );
+
+        when(
+          mockOfflineQueue.getPendingOperations(),
+        ).thenAnswer((_) async => [operation]);
+        when(
+          mockRemote.patch('chapters/chapter123', any),
+        ).thenThrow(Exception('ApiException(409): conflict'));
+
+        await syncService.syncPendingOperations();
+
+        verify(mockRemote.patch('chapters/chapter123', any)).called(1);
+        verify(
+          mockOfflineQueue.markFailed('op_conflict', 'Sync conflict detected'),
+        ).called(1);
+      });
     });
 
     group('sync state management', () {

@@ -239,15 +239,15 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                     final errMsg = '${l10n.error}: ${l10n.pdfFailed}';
                     setState(() => _pdfGenerating = true);
                     final steps = <String>[
-                      'Preparing chapters',
-                      'Generating PDF',
-                      'Sharing',
+                      l10n.pdfStepPreparing,
+                      l10n.pdfStepGenerating,
+                      l10n.pdfStepSharing,
                     ];
                     final stories = <String>[
-                      'Tip: Write one clear intention per scene.',
-                      'Tip: Strong verbs make sentences feel alive.',
-                      'Tip: If stuck, rewrite the last paragraph.',
-                      'Tip: Dialogue reveals character faster than description.',
+                      l10n.tipIntention,
+                      l10n.tipVerbs,
+                      l10n.tipStuck,
+                      l10n.tipDialogue,
                     ];
                     final progress = ValueNotifier<int>(0);
                     unawaited(

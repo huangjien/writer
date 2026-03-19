@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/features/editor/zen_mode.dart';
+import 'package:writer/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('ZenModeBar wires buttons when preview is off', (tester) async {
@@ -10,6 +11,8 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: ZenModeBar(
             preview: false,
@@ -21,7 +24,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Zen mode'), findsOneWidget);
+    expect(find.text('Preview mode'), findsOneWidget);
     expect(find.byTooltip('Preview'), findsOneWidget);
     expect(find.byTooltip('Save'), findsOneWidget);
     expect(find.byTooltip('Exit Zen mode'), findsOneWidget);
@@ -41,6 +44,8 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: ZenModeBar(
             preview: true,

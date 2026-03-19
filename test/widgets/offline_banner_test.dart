@@ -120,6 +120,10 @@ void main() {
 
     await tester.pump();
 
+    expect(
+      find.bySemanticsLabel(RegExp('close', caseSensitive: false)),
+      findsOneWidget,
+    );
     await tester.tap(find.byIcon(Icons.close));
     expect(dismissed, true);
   });

@@ -29,6 +29,7 @@ import 'logic/edit_discard_dialog.dart';
 import 'logic/edit_mode.dart';
 import 'state/reader_session_state.dart';
 import 'state/reader_session_notifier.dart';
+import 'logic/progress_saver.dart';
 import 'package:writer/shared/widgets/error_view.dart';
 import 'package:writer/shared/widgets/feedback/enhanced_toast.dart';
 import 'package:writer/common/errors/failures.dart';
@@ -274,6 +275,8 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     final state = ref.read(readerSessionProvider);
     if (state.editMode && await _handleDirtyEdit()) return;
     if (!mounted) return;
+    await _saveProgressForTransition();
+    if (!mounted) return;
     try {
       context.pop();
     } catch (_) {
@@ -318,7 +321,42 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     // Navigate to mobile editor screen
     if (!mounted) return;
     final state = ref.read(readerSessionProvider);
+    await _saveProgressForTransition();
+    if (!mounted) return;
     context.push('/novel/${widget.novelId}/chapters/${state.chapterId}/edit');
+  }
+
+  Future<void> _saveProgressForTransition() async {
+    final l10n = AppLocalizations.of(context)!;
+    final notifier = ref.read(readerSessionProvider.notifier);
+    try {
+      final status = await notifier.saveProgress(
+        _controller.hasClients ? _controller.offset : 0.0,
+      );
+      if (!mounted) return;
+      if (status == SaveStatus.error) {
+        showEnhancedToast(
+          context,
+          message: l10n.saveFailed,
+          tone: EnhancedToastTone.error,
+          actionLabel: l10n.retry,
+          onAction: _saveProgressForTransition,
+        );
+      } else if (status == SaveStatus.noUser) {
+        showEnhancedToast(
+          context,
+          message: l10n.signInToSync,
+          tone: EnhancedToastTone.info,
+        );
+      }
+    } catch (_) {
+      if (!mounted) return;
+      showEnhancedToast(
+        context,
+        message: l10n.saveFailed,
+        tone: EnhancedToastTone.error,
+      );
+    }
   }
 
   void _onPlayStopPressed() {

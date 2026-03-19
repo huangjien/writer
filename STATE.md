@@ -6,7 +6,7 @@
 ## Active Phase
 - Milestone Closure
 - Focus: lock milestone results and transition to next scope
-- Execution plan completed: docs/plans/2026-03-19-ui-phase-execution-plan.md
+- Execution plan completed: docs/plans/2026-03-19-flow-resilience-accessibility-milestone-plan.md
 
 ## UI Execution Focus
 - Slice 1 complete: sidebar and navigation consistency
@@ -18,6 +18,12 @@
 ## Milestone Status
 - UI Phase milestone closed
 - Completion baseline: slices 1-4 complete, targeted regression suites passed, diagnostics clean
+- Flow Resilience & Accessibility milestone closed
+
+## Flow Milestone Focus
+- Slice 1 complete: journey transition clarity
+- Slice 2 complete: offline and sync UX reliability
+- Slice 3 complete: accessibility and localization consistency
 
 ## Current Baseline
 - Repository is an existing Flutter/Dart app with feature-first structure

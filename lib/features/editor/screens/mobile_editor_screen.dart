@@ -17,6 +17,7 @@ import 'package:writer/shared/widgets/feedback/enhanced_toast.dart';
 import 'package:writer/features/editor/focus_timer.dart';
 import 'package:writer/features/editor/writing_prompts.dart';
 import 'package:writer/features/editor/services/writing_streak_tracker.dart';
+import 'package:writer/common/errors/offline_exception.dart';
 import 'mobile_editor/mobile_editor_app_bar.dart';
 import 'mobile_editor/mobile_editor_body.dart';
 import 'mobile_editor/mobile_editor_menus.dart';
@@ -188,14 +189,27 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
         // Refresh chapters list
         ref.invalidate(chaptersProviderV2(widget.novelId));
       }
+    } on OfflineException {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+          _hasUnsavedChanges = false;
+        });
+        showEnhancedToast(
+          context,
+          message: l10n.changesWillSync,
+          tone: EnhancedToastTone.success,
+        );
+        ref.invalidate(chaptersProviderV2(widget.novelId));
+      }
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
         showEnhancedToast(
           context,
-          message: 'Save failed: $e',
+          message: '${l10n.saveFailed}: $e',
           tone: EnhancedToastTone.error,
-          actionLabel: 'Retry',
+          actionLabel: l10n.retry,
           onAction: _saveContent,
         );
       }
@@ -345,7 +359,23 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
     );
   }
 
-  void _onTabChanged(MobileNavTab tab) {
+  Future<void> _onTabChanged(MobileNavTab tab) async {
+    final shouldGuard =
+        tab == MobileNavTab.home ||
+        tab == MobileNavTab.read ||
+        tab == MobileNavTab.tools;
+    if (shouldGuard) {
+      final canLeave = await _confirmLeaveWithUnsavedChanges(context);
+      if (!canLeave) {
+        if (!mounted) return;
+        setState(() {
+          _currentTab = MobileNavTab.write;
+        });
+        return;
+      }
+    }
+    if (!mounted) return;
+
     setState(() {
       _currentTab = tab;
     });
@@ -361,9 +391,12 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
         // Already on write
         break;
       case MobileNavTab.read:
-        // Navigate to reading screen
-        // We need to know which chapter to read? Or just novel view?
-        context.push('/novel/${widget.novelId}');
+        final targetChapterId = _chapter?.id ?? widget.chapterId;
+        if (targetChapterId != null && targetChapterId.isNotEmpty) {
+          context.push('/novel/${widget.novelId}/chapters/$targetChapterId');
+        } else {
+          context.push('/novel/${widget.novelId}');
+        }
         break;
       case MobileNavTab.tools:
         context.pushNamed('tools');
@@ -421,19 +454,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
             AppButtons.text(
               onPressed: () {
                 Navigator.of(context).pop();
-
-                _isDiscarding = true;
-                if (_chapter != null) {
-                  _contentController.text = _chapter!.content ?? '';
-                  _titleController.text = _chapter!.title ?? '';
-                } else {
-                  _contentController.clear();
-                  _titleController.clear();
-                }
-                _hasUnsavedChanges = false;
-                _isDiscarding = false;
-
-                setState(() {});
+                _resetDraftToLastSaved();
               },
               label: l10n.discard,
               color: Theme.of(context).colorScheme.error,
@@ -443,6 +464,48 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
       );
     } else {
       Navigator.of(context).pop(); // Close sheet
+    }
+  }
+
+  Future<bool> _confirmLeaveWithUnsavedChanges(BuildContext context) async {
+    if (!_hasUnsavedChanges) return true;
+    final l10n = AppLocalizations.of(context)!;
+    final shouldDiscard = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AppDialog(
+        title: l10n.discardChangesTitle,
+        content: Text(l10n.discardChangesMessage),
+        actions: [
+          AppButtons.text(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            label: l10n.cancel,
+          ),
+          AppButtons.text(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            label: l10n.discard,
+            color: Theme.of(dialogContext).colorScheme.error,
+          ),
+        ],
+      ),
+    );
+    if (shouldDiscard != true) return false;
+    _resetDraftToLastSaved();
+    return true;
+  }
+
+  void _resetDraftToLastSaved() {
+    _isDiscarding = true;
+    if (_chapter != null) {
+      _contentController.text = _chapter!.content ?? '';
+      _titleController.text = _chapter!.title ?? '';
+    } else {
+      _contentController.clear();
+      _titleController.clear();
+    }
+    _hasUnsavedChanges = false;
+    _isDiscarding = false;
+    if (mounted) {
+      setState(() {});
     }
   }
 }

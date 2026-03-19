@@ -14,6 +14,7 @@ import 'package:writer/services/storage_service.dart';
 import 'package:writer/state/novel_providers_v2.dart';
 import 'package:writer/state/storage_service_provider.dart';
 import 'package:writer/shared/widgets/rich_text_toolbar.dart';
+import 'package:writer/common/errors/offline_exception.dart';
 
 class MockNovelRepository extends Mock implements NovelRepository {}
 
@@ -74,6 +75,14 @@ void main() {
           path: '/novel/:novelId',
           builder: (context, state) =>
               Scaffold(body: Text('Novel ${state.pathParameters['novelId']}')),
+        ),
+        GoRoute(
+          path: '/novel/:novelId/chapters/:chapterId',
+          builder: (context, state) => Scaffold(
+            body: Text(
+              'Chapter ${state.pathParameters['chapterId']} in ${state.pathParameters['novelId']}',
+            ),
+          ),
         ),
         GoRoute(
           path: '/tools',
@@ -332,6 +341,52 @@ void main() {
     expect(find.text('Save failed: Exception: Save failed'), findsOneWidget);
   });
 
+  testWidgets('shows queued sync message when save is offline', (tester) async {
+    when(
+      () => mockChapterRepository.getNextIdx('novel-1'),
+    ).thenAnswer((_) async => 1);
+    when(
+      () => mockChapterRepository.createChapter(
+        novelId: 'novel-1',
+        idx: 1,
+        title: 'Chapter 1',
+        content: 'New content',
+      ),
+    ).thenThrow(const OfflineException('Queued for sync'));
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Chapter Title'),
+      'Chapter 1',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Start writing...'),
+      'New content',
+    );
+    await tester.tap(find.byIcon(Icons.save));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text("Changes will sync when you're back online"),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('handles formatting actions', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
@@ -565,6 +620,104 @@ void main() {
     expect(find.text('Novel novel-1'), findsOneWidget);
   });
 
+  testWidgets('navigates to current chapter when chapter context exists', (
+    tester,
+  ) async {
+    const chapter = Chapter(
+      id: 'chapter-1',
+      novelId: 'novel-1',
+      title: 'Chapter 1',
+      content: 'Initial content',
+      idx: 1,
+    );
+    when(
+      () => mockChapterRepository.getChapter(chapter),
+    ).thenAnswer((_) async => chapter);
+
+    router = GoRouter(
+      initialLocation: '/editor/novel-1?chapterId=chapter-1',
+      routes: [
+        GoRoute(
+          path: '/novel/:novelId/chapters/:chapterId',
+          builder: (context, state) => Scaffold(
+            body: Text(
+              'Chapter ${state.pathParameters['chapterId']} in ${state.pathParameters['novelId']}',
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/editor/:novelId',
+          builder: (context, state) {
+            final novelId = state.pathParameters['novelId']!;
+            final chapterId = state.uri.queryParameters['chapterId'];
+            return Focus(
+              autofocus: true,
+              child: MobileEditorScreen(novelId: novelId, chapterId: chapterId),
+            );
+          },
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
+          chaptersProviderV2('novel-1').overrideWith((ref) async => [chapter]),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.book_outlined));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Chapter chapter-1 in novel-1'), findsOneWidget);
+  });
+
+  testWidgets('blocks tab leave when unsaved changes and cancel discard', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          novelRepositoryProvider.overrideWithValue(mockNovelRepository),
+          chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
+          storageServiceProvider.overrideWithValue(storage),
+        ],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Start writing...'),
+      'Dirty content',
+    );
+    await tester.pump();
+
+    await tester.tap(find.byIcon(Icons.book_outlined));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Discard changes?'), findsOneWidget);
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Edit mode'), findsOneWidget);
+    expect(find.text('Novel novel-1'), findsNothing);
+  });
+
   testWidgets('content text field is left aligned and top aligned', (
     tester,
   ) async {
@@ -609,7 +762,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Zen mode'), findsNothing);
+    expect(find.text('Preview mode'), findsNothing);
     expect(find.text('Edit mode'), findsOneWidget);
     expect(find.widgetWithText(TextField, 'Chapter Title'), findsOneWidget);
     expect(
@@ -622,7 +775,7 @@ void main() {
     await tester.tap(find.text('Zen mode'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Zen mode'), findsOneWidget);
+    expect(find.text('Preview mode'), findsOneWidget);
     expect(find.text('Edit mode'), findsNothing);
     expect(find.widgetWithText(TextField, 'Chapter Title'), findsNothing);
     expect(
@@ -645,7 +798,7 @@ void main() {
     await tester.tap(find.byTooltip('Exit Zen mode'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Zen mode'), findsNothing);
+    expect(find.text('Preview mode'), findsNothing);
     expect(find.text('Edit mode'), findsOneWidget);
     expect(find.widgetWithText(TextField, 'Chapter Title'), findsOneWidget);
     expect(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/sync_service_provider.dart';
 import 'package:writer/models/sync_state.dart';
 
@@ -21,24 +22,39 @@ class SyncStatusIndicator extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final syncState = ref.watch(syncStateValueProvider);
     final hasPending = ref.watch(hasPendingOperationsProvider);
+    final label = _labelText(context, syncState, hasPending);
 
     return Padding(
       padding: padding,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildIcon(syncState.status),
-          if (showLabel) ...[
-            const SizedBox(width: 8),
-            _buildLabel(context, syncState.status, hasPending),
+      child: Semantics(
+        label: label,
+        liveRegion: true,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildIcon(syncState),
+            if (showLabel) ...[
+              const SizedBox(width: 8),
+              _buildLabel(context, syncState, hasPending),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildIcon(SyncStatus status) {
-    switch (status) {
+  Widget _buildIcon(SyncState syncState) {
+    final hasConflict =
+        syncState.status == SyncStatus.error &&
+        (syncState.errorMessage ?? '').toLowerCase().contains('conflict');
+    if (hasConflict) {
+      return Icon(
+        Icons.warning_amber_rounded,
+        size: iconSize,
+        color: Colors.orange,
+      );
+    }
+    switch (syncState.status) {
       case SyncStatus.syncing:
         return SizedBox(
           width: iconSize,
@@ -54,32 +70,58 @@ class SyncStatusIndicator extends ConsumerWidget {
     }
   }
 
-  Widget _buildLabel(BuildContext context, SyncStatus status, bool hasPending) {
-    String label;
-    Color? color;
-
-    switch (status) {
-      case SyncStatus.syncing:
-        label = 'Syncing...';
-        color = null;
-        break;
-      case SyncStatus.synced:
-        label = hasPending ? 'Pending sync' : 'Synced';
-        color = hasPending ? Colors.orange : Colors.green;
-        break;
-      case SyncStatus.offline:
-        label = 'Offline';
-        color = Colors.grey;
-        break;
-      case SyncStatus.error:
-        label = 'Sync failed';
-        color = Colors.red;
-        break;
-    }
-
+  Widget _buildLabel(
+    BuildContext context,
+    SyncState syncState,
+    bool hasPending,
+  ) {
+    final label = _labelText(context, syncState, hasPending);
+    final color = _labelColor(syncState, hasPending);
     return Text(
       label,
       style: Theme.of(context).textTheme.bodySmall?.copyWith(color: color),
     );
+  }
+
+  String _labelText(
+    BuildContext context,
+    SyncState syncState,
+    bool hasPending,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    final hasConflict =
+        syncState.status == SyncStatus.error &&
+        (syncState.errorMessage ?? '').toLowerCase().contains('conflict');
+    if (hasConflict) {
+      return l10n.error;
+    }
+
+    switch (syncState.status) {
+      case SyncStatus.syncing:
+        return l10n.loadingProgress;
+      case SyncStatus.synced:
+        return hasPending ? l10n.changesWillSync : l10n.saved;
+      case SyncStatus.offline:
+        return l10n.youreOfflineLabel;
+      case SyncStatus.error:
+        return l10n.saveFailed;
+    }
+  }
+
+  Color? _labelColor(SyncState syncState, bool hasPending) {
+    final hasConflict =
+        syncState.status == SyncStatus.error &&
+        (syncState.errorMessage ?? '').toLowerCase().contains('conflict');
+    if (hasConflict) return Colors.orange;
+    switch (syncState.status) {
+      case SyncStatus.syncing:
+        return null;
+      case SyncStatus.synced:
+        return hasPending ? Colors.orange : Colors.green;
+      case SyncStatus.offline:
+        return Colors.grey;
+      case SyncStatus.error:
+        return Colors.red;
+    }
   }
 }
