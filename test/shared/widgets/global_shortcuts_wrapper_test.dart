@@ -401,5 +401,54 @@ void main() {
       expect(perf, isTrue);
       expect(tts, isTrue);
     });
+
+    testWidgets('SidebarShortcutsWrapper invokes callbacks for intents', (
+      tester,
+    ) async {
+      var toggledSidebar = false;
+      var toggledAi = false;
+      var chapters = false;
+      var characters = false;
+      var scenes = false;
+      var summaries = false;
+      var settings = false;
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: SidebarShortcutsWrapper(
+              onToggleSidebar: () => toggledSidebar = true,
+              onToggleAiSidebar: () => toggledAi = true,
+              onNavigateToChapters: () => chapters = true,
+              onNavigateToCharacters: () => characters = true,
+              onNavigateToScenes: () => scenes = true,
+              onNavigateToSummaries: () => summaries = true,
+              onNavigateToSettings: () => settings = true,
+              child: const Scaffold(body: Text('Sidebar')),
+            ),
+          ),
+        ),
+      );
+
+      final ctx = tester.element(find.text('Sidebar'));
+      Actions.invoke(ctx, const ToggleSidebarIntent());
+      Actions.invoke(ctx, const ToggleAiSidebarIntent());
+      Actions.invoke(ctx, const NavigateToChaptersIntent());
+      Actions.invoke(ctx, const NavigateToCharactersIntent());
+      Actions.invoke(ctx, const NavigateToScenesIntent());
+      Actions.invoke(ctx, const NavigateToSummariesIntent());
+      Actions.invoke(ctx, const NavigateSettingsIntent());
+      await tester.pump();
+
+      expect(toggledSidebar, isTrue);
+      expect(toggledAi, isTrue);
+      expect(chapters, isTrue);
+      expect(characters, isTrue);
+      expect(scenes, isTrue);
+      expect(summaries, isTrue);
+      expect(settings, isTrue);
+    });
   });
 }

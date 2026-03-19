@@ -51,6 +51,31 @@ void main() {
       expect(bottomSheet, findsOneWidget);
     });
 
+    testWidgets('keyboard shortcut help includes sidebar shortcuts', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => showKeyboardShortcutsDialog(context),
+                child: const Text('Show'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Show'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sidebar'), findsOneWidget);
+      expect(find.text('Toggle Left Sidebar'), findsOneWidget);
+      expect(find.text('Toggle AI Sidebar'), findsOneWidget);
+    });
+
     test('appendShortcutToTooltip combines text', () {
       final result = appendShortcutToTooltip('Save', 'Ctrl+S');
       expect(result, 'Save (Ctrl+S)');

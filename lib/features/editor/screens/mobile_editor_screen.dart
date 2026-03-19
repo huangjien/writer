@@ -246,9 +246,10 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
   }
 
   void _showWritingPrompts(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     MobileBottomSheet.show(
       context: context,
-      title: 'Writing prompts',
+      title: l10n.prompts,
       builder: (sheetContext) => WritingPromptsSheet(
         onInsert: (prompt) {
           Navigator.of(sheetContext).pop();
@@ -374,6 +375,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
   }
 
   void _showWordCount(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     final text = _contentController.text;
     final wordCount = text
@@ -383,38 +385,38 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Word count: $wordCount'),
+        content: Text(l10n.wordCount(wordCount)),
         duration: const Duration(seconds: 3),
       ),
     );
   }
 
   void _showCharacterCount(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     final text = _contentController.text;
     final charCount = text.length;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Character count: $charCount'),
+        content: Text(l10n.characterCount(charCount)),
         duration: const Duration(seconds: 3),
       ),
     );
   }
 
   void _discardChanges(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (_hasUnsavedChanges) {
       showDialog(
         context: context,
         builder: (context) => AppDialog(
-          title: 'Discard Changes?',
-          content: const Text(
-            'You have unsaved changes. Are you sure you want to discard them?',
-          ),
+          title: l10n.discardChangesTitle,
+          content: Text(l10n.discardChangesMessage),
           actions: [
             AppButtons.text(
               onPressed: () => Navigator.of(context).pop(),
-              label: 'Cancel',
+              label: l10n.cancel,
             ),
             AppButtons.text(
               onPressed: () {
@@ -433,7 +435,7 @@ class _MobileEditorScreenState extends ConsumerState<MobileEditorScreen> {
 
                 setState(() {});
               },
-              label: 'Discard',
+              label: l10n.discard,
               color: Theme.of(context).colorScheme.error,
             ),
           ],

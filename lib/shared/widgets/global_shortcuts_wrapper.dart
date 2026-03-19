@@ -209,6 +209,85 @@ class ChapterListShortcutsWrapper extends ConsumerWidget {
   }
 }
 
+/// Sidebar shortcuts wrapper
+class SidebarShortcutsWrapper extends ConsumerWidget {
+  const SidebarShortcutsWrapper({
+    super.key,
+    required this.onToggleSidebar,
+    required this.onToggleAiSidebar,
+    required this.onNavigateToChapters,
+    required this.onNavigateToCharacters,
+    required this.onNavigateToScenes,
+    required this.onNavigateToSummaries,
+    required this.onNavigateToSettings,
+    required this.child,
+  });
+
+  final VoidCallback onToggleSidebar;
+  final VoidCallback onToggleAiSidebar;
+  final VoidCallback onNavigateToChapters;
+  final VoidCallback onNavigateToCharacters;
+  final VoidCallback onNavigateToScenes;
+  final VoidCallback onNavigateToSummaries;
+  final VoidCallback onNavigateToSettings;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Shortcuts(
+      shortcuts: getSidebarShortcuts(),
+      child: Actions(
+        actions: <Type, Action<Intent>>{
+          ToggleSidebarIntent: CallbackAction<ToggleSidebarIntent>(
+            onInvoke: (_) {
+              onToggleSidebar();
+              return null;
+            },
+          ),
+          ToggleAiSidebarIntent: CallbackAction<ToggleAiSidebarIntent>(
+            onInvoke: (_) {
+              onToggleAiSidebar();
+              return null;
+            },
+          ),
+          NavigateToChaptersIntent: CallbackAction<NavigateToChaptersIntent>(
+            onInvoke: (_) {
+              onNavigateToChapters();
+              return null;
+            },
+          ),
+          NavigateToCharactersIntent:
+              CallbackAction<NavigateToCharactersIntent>(
+                onInvoke: (_) {
+                  onNavigateToCharacters();
+                  return null;
+                },
+              ),
+          NavigateToScenesIntent: CallbackAction<NavigateToScenesIntent>(
+            onInvoke: (_) {
+              onNavigateToScenes();
+              return null;
+            },
+          ),
+          NavigateToSummariesIntent: CallbackAction<NavigateToSummariesIntent>(
+            onInvoke: (_) {
+              onNavigateToSummaries();
+              return null;
+            },
+          ),
+          NavigateSettingsIntent: CallbackAction<NavigateSettingsIntent>(
+            onInvoke: (_) {
+              onNavigateToSettings();
+              return null;
+            },
+          ),
+        },
+        child: child,
+      ),
+    );
+  }
+}
+
 /// Settings shortcuts wrapper
 class SettingsShortcutsWrapper extends ConsumerWidget {
   const SettingsShortcutsWrapper({

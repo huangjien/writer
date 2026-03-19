@@ -8,6 +8,8 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
 import 'package:writer/shared/widgets/app_dialog.dart';
+import 'package:writer/shared/widgets/global_shortcuts_wrapper.dart';
+import 'package:writer/features/ai_chat/state/ai_chat_providers.dart';
 
 class SideBar extends ConsumerWidget {
   final String novelId;
@@ -23,129 +25,143 @@ class SideBar extends ConsumerWidget {
     final title = novelAsync.asData?.value?.title ?? l10n.navigation;
     return SizedBox(
       width: 260,
-      child: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            SizedBox(
-              height: 100,
-              child: DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                child: Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontSize: 20,
+      child: SidebarShortcutsWrapper(
+        onToggleSidebar: () {
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+        },
+        onToggleAiSidebar: () =>
+            ref.read(aiChatUiProvider.notifier).toggleSidebar(),
+        onNavigateToChapters: () => context.go('/novel/$novelId'),
+        onNavigateToCharacters: () => context.go('/novel/$novelId/characters'),
+        onNavigateToScenes: () => context.go('/novel/$novelId/scenes'),
+        onNavigateToSummaries: () => context.go('/novel/$novelId/summary'),
+        onNavigateToSettings: () => context.go('/settings'),
+        child: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              SizedBox(
+                height: 100,
+                child: DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontSize: 20,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            _DrawerListItem(
-              leading: const Icon(Icons.home),
-              title: Text(l10n.home),
-              onTap: () {
-                context.go('/');
-              },
-            ),
+              _DrawerListItem(
+                leading: const Icon(Icons.home),
+                title: Text(l10n.home),
+                onTap: () {
+                  context.go('/');
+                },
+              ),
 
-            _DrawerListItem(
-              leading: const Icon(Icons.settings),
-              title: Text(l10n.settings),
-              onTap: () {
-                context.go('/settings');
-              },
-            ),
-            _DrawerListItem(
-              leading: const Icon(Icons.list),
-              title: Text(l10n.chapterIndex),
-              onTap: () {
-                context.go('/novel/$novelId');
-              },
-            ),
-            const Divider(),
-            _DrawerListItem(
-              leading: const Icon(Icons.summarize),
-              title: Text(l10n.summary),
-              onTap: () {
-                context.go('/novel/$novelId/summary');
-              },
-            ),
-            _DrawerListItem(
-              leading: const Icon(Icons.person),
-              title: Text(l10n.characters),
-              onTap: () {
-                context.go('/novel/$novelId/characters');
-              },
-            ),
-            _DrawerListItem(
-              leading: const Icon(Icons.movie_creation_outlined),
-              title: Text(l10n.scenes),
-              onTap: () {
-                context.go('/novel/$novelId/scenes');
-              },
-            ),
-            if (isOwner) ...[
+              _DrawerListItem(
+                leading: const Icon(Icons.settings),
+                title: Text(l10n.settings),
+                onTap: () {
+                  context.go('/settings');
+                },
+              ),
+              _DrawerListItem(
+                leading: const Icon(Icons.list),
+                title: Text(l10n.chapterIndex),
+                onTap: () {
+                  context.go('/novel/$novelId');
+                },
+              ),
               const Divider(),
               _DrawerListItem(
-                leading: const Icon(Icons.edit),
-                title: Text(l10n.updateNovel),
+                leading: const Icon(Icons.summarize),
+                title: Text(l10n.summary),
                 onTap: () {
-                  Navigator.of(context).pop();
-                  try {
-                    context.pushNamed(
-                      'editNovel',
-                      pathParameters: {'id': novelId},
-                    );
-                  } catch (_) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => Scaffold(
-                          appBar: AppBar(title: Text(l10n.updateNovel)),
-                          body: NovelMetadataEditor(novelId: novelId),
-                        ),
-                      ),
-                    );
-                  }
+                  context.go('/novel/$novelId/summary');
                 },
               ),
               _DrawerListItem(
-                leading: const Icon(Icons.delete),
-                title: Text(l10n.deleteNovel),
-                onTap: () async {
-                  final confirmed = await showDialog<bool>(
-                    context: context,
-                    builder: (ctx) => AppDialog(
-                      title: l10n.deleteNovel,
-                      content: Text(l10n.deleteNovelConfirmation),
-                      actions: [
-                        AppButtons.text(
-                          onPressed: () => Navigator.of(ctx).pop(false),
-                          label: l10n.cancel,
-                        ),
-                        AppButtons.text(
-                          onPressed: () => Navigator.of(ctx).pop(true),
-                          label: l10n.delete,
-                          color: Theme.of(ctx).colorScheme.error,
-                        ),
-                      ],
-                    ),
-                  );
-                  if (confirmed != true) return;
-                  final repo = ref.read(novelRepositoryProvider);
-                  await repo.deleteNovel(novelId);
-                  if (!context.mounted) return;
-                  ref.invalidate(novelsProvider);
-                  ref.invalidate(memberNovelsProvider);
-                  context.goNamed('library');
+                leading: const Icon(Icons.person),
+                title: Text(l10n.characters),
+                onTap: () {
+                  context.go('/novel/$novelId/characters');
                 },
               ),
+              _DrawerListItem(
+                leading: const Icon(Icons.movie_creation_outlined),
+                title: Text(l10n.scenes),
+                onTap: () {
+                  context.go('/novel/$novelId/scenes');
+                },
+              ),
+              if (isOwner) ...[
+                const Divider(),
+                _DrawerListItem(
+                  leading: const Icon(Icons.edit),
+                  title: Text(l10n.updateNovel),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    try {
+                      context.pushNamed(
+                        'editNovel',
+                        pathParameters: {'id': novelId},
+                      );
+                    } catch (_) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => Scaffold(
+                            appBar: AppBar(title: Text(l10n.updateNovel)),
+                            body: NovelMetadataEditor(novelId: novelId),
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
+                _DrawerListItem(
+                  leading: const Icon(Icons.delete),
+                  title: Text(l10n.deleteNovel),
+                  onTap: () async {
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AppDialog(
+                        title: l10n.deleteNovel,
+                        content: Text(l10n.deleteNovelConfirmation),
+                        actions: [
+                          AppButtons.text(
+                            onPressed: () => Navigator.of(ctx).pop(false),
+                            label: l10n.cancel,
+                          ),
+                          AppButtons.text(
+                            onPressed: () => Navigator.of(ctx).pop(true),
+                            label: l10n.delete,
+                            color: Theme.of(ctx).colorScheme.error,
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed != true) return;
+                    final repo = ref.read(novelRepositoryProvider);
+                    await repo.deleteNovel(novelId);
+                    if (!context.mounted) return;
+                    ref.invalidate(novelsProvider);
+                    ref.invalidate(memberNovelsProvider);
+                    context.goNamed('library');
+                  },
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

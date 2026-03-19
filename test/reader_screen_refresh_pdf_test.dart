@@ -10,6 +10,7 @@ import 'package:writer/models/novel.dart';
 import 'package:writer/repositories/chapter_repository.dart';
 import 'package:writer/state/novel_providers.dart';
 import 'package:writer/state/novel_providers_v2.dart';
+import 'package:writer/widgets/side_bar.dart';
 
 class FakeChapterRepository implements ChapterRepository {
   @override
@@ -162,5 +163,42 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
     await tester.pump();
     expect(find.byIcon(Icons.picture_as_pdf), findsOneWidget);
+  });
+
+  testWidgets('ReaderScreen shows persistent sidebar on desktop', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          chaptersProviderV2.overrideWith(
+            (ref, novelId) async => [
+              Chapter(
+                id: 'c1',
+                novelId: novelId,
+                idx: 1,
+                title: 'One',
+                content: 'Hello',
+              ),
+            ],
+          ),
+        ],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: MediaQuery(
+            data: MediaQueryData(size: Size(1200, 800)),
+            child: ReaderScreen(novelId: 'novel-001'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.menu), findsNothing);
+    expect(find.byType(SideBar), findsOneWidget);
+    final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
+    expect(scaffold.drawer, isNull);
   });
 }

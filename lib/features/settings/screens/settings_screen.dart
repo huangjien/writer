@@ -194,7 +194,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 24),
                 child: Center(
                   child: AppButtons.text(
-                    color: Colors.orange,
+                    color: Theme.of(context).colorScheme.error,
                     onPressed: () async {
                       await ref.read(sessionProvider.notifier).clear();
                       ref.invalidate(currentUserProvider);

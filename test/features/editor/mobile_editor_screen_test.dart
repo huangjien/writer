@@ -124,7 +124,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(TextField), findsNWidgets(2)); // Title and Content
-    expect(find.text('Editor'), findsOneWidget);
+    expect(find.text('Edit mode'), findsOneWidget);
     expect(find.byIcon(Icons.save), findsOneWidget);
     expect(find.byIcon(Icons.format_bold), findsOneWidget);
   });
@@ -203,7 +203,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Unsaved'), findsNothing);
+    expect(find.text('Discard changes'), findsNothing);
 
     await tester.enterText(
       find.widgetWithText(TextField, 'Start writing...'),
@@ -211,7 +211,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Unsaved'), findsOneWidget);
+    expect(find.text('Discard changes'), findsOneWidget);
   });
 
   testWidgets('saves content successfully', (tester) async {
@@ -459,22 +459,22 @@ void main() {
     await tester.pumpAndSettle();
 
     // Tap Discard
-    await tester.tap(find.text('Discard Changes'));
+    await tester.tap(find.byIcon(Icons.delete_outline).first);
     await tester.pumpAndSettle();
 
     // Verify Dialog
-    expect(find.text('Discard Changes?'), findsOneWidget);
+    expect(find.text('Discard changes?'), findsOneWidget);
 
     // Cancel
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
-    expect(find.text('Discard Changes?'), findsNothing);
+    expect(find.text('Discard changes?'), findsNothing);
     expect(find.text('New content'), findsOneWidget);
 
     // Open Menu -> Discard again
     await tester.tap(find.byIcon(Icons.more_vert));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Discard Changes'));
+    await tester.tap(find.byIcon(Icons.delete_outline).first);
     await tester.pumpAndSettle();
 
     // Confirm Discard
@@ -483,7 +483,7 @@ void main() {
 
     // Content should be cleared (or reverted to initial)
     expect(find.text('New content'), findsNothing);
-    expect(find.text('Unsaved'), findsNothing);
+    expect(find.text('Discard changes'), findsNothing);
   });
 
   testWidgets('handles load error', (tester) async {
@@ -610,7 +610,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Zen mode'), findsNothing);
-    expect(find.text('Editor'), findsOneWidget);
+    expect(find.text('Edit mode'), findsOneWidget);
     expect(find.widgetWithText(TextField, 'Chapter Title'), findsOneWidget);
     expect(
       find.byWidgetPredicate((w) => w is TextField && w.expands),
@@ -623,7 +623,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Zen mode'), findsOneWidget);
-    expect(find.text('Editor'), findsNothing);
+    expect(find.text('Edit mode'), findsNothing);
     expect(find.widgetWithText(TextField, 'Chapter Title'), findsNothing);
     expect(
       find.byWidgetPredicate((w) => w is TextField && w.expands),
@@ -646,7 +646,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Zen mode'), findsNothing);
-    expect(find.text('Editor'), findsOneWidget);
+    expect(find.text('Edit mode'), findsOneWidget);
     expect(find.widgetWithText(TextField, 'Chapter Title'), findsOneWidget);
     expect(
       find.byWidgetPredicate((w) => w is TextField && w.expands),
@@ -711,10 +711,10 @@ void main() {
     const prompt = 'Write a scene where a small mistake changes everything.';
     await tester.tap(find.byIcon(Icons.more_vert));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Writing prompts'));
+    await tester.tap(find.text('Prompts').first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Writing prompts'), findsOneWidget);
+    expect(find.text('Prompts'), findsOneWidget);
     expect(find.text('Pick a prompt to insert'), findsOneWidget);
 
     await tester.tap(find.text(prompt));

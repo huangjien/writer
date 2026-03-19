@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/shared/widgets/keyboard_shortcuts.dart';
 
@@ -215,6 +217,11 @@ void main() {
         expect(intent, isNotNull);
       });
 
+      test('ToggleAiSidebarIntent can be created', () {
+        const intent = ToggleAiSidebarIntent();
+        expect(intent, isNotNull);
+      });
+
       test('NavigateToChaptersIntent can be created', () {
         const intent = NavigateToChaptersIntent();
         expect(intent, isNotNull);
@@ -397,6 +404,50 @@ void main() {
           (intent) => intent is ToggleSidebarIntent,
         );
         expect(hasToggleShortcut, isTrue);
+      });
+
+      test('getSidebarShortcuts maps B to ToggleSidebarIntent', () {
+        final shortcuts = getSidebarShortcuts();
+        final hasMetaBinding = shortcuts.entries.any((entry) {
+          final key = entry.key;
+          final intent = entry.value;
+          return key is SingleActivator &&
+              key.trigger == LogicalKeyboardKey.keyB &&
+              key.meta == usesMeta &&
+              intent is ToggleSidebarIntent;
+        });
+        final hasControlBinding = shortcuts.entries.any((entry) {
+          final key = entry.key;
+          final intent = entry.value;
+          return key is SingleActivator &&
+              key.trigger == LogicalKeyboardKey.keyB &&
+              key.control == !usesMeta &&
+              intent is ToggleSidebarIntent;
+        });
+        expect(hasMetaBinding, isTrue);
+        expect(hasControlBinding, isTrue);
+      });
+
+      test('getSidebarShortcuts maps I to ToggleAiSidebarIntent', () {
+        final shortcuts = getSidebarShortcuts();
+        final hasMetaBinding = shortcuts.entries.any((entry) {
+          final key = entry.key;
+          final intent = entry.value;
+          return key is SingleActivator &&
+              key.trigger == LogicalKeyboardKey.keyI &&
+              key.meta == usesMeta &&
+              intent is ToggleAiSidebarIntent;
+        });
+        final hasControlBinding = shortcuts.entries.any((entry) {
+          final key = entry.key;
+          final intent = entry.value;
+          return key is SingleActivator &&
+              key.trigger == LogicalKeyboardKey.keyI &&
+              key.control == !usesMeta &&
+              intent is ToggleAiSidebarIntent;
+        });
+        expect(hasMetaBinding, isTrue);
+        expect(hasControlBinding, isTrue);
       });
 
       test('getAdminShortcuts returns map', () {

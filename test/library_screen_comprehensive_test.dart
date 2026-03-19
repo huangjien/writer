@@ -1205,7 +1205,9 @@ void main() {
   });
 
   group('LibraryScreen - Mobile Navigation', () {
-    testWidgets('shows tools and more menus', (tester) async {
+    testWidgets('navigates tools and more tabs to real screens', (
+      tester,
+    ) async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
 
@@ -1228,6 +1230,9 @@ void main() {
             routes: {
               '/novel/create': (context) =>
                   const Scaffold(body: Text('Create')),
+              '/tools': (context) => const Scaffold(body: Text('Tools Route')),
+              '/settings': (context) =>
+                  const Scaffold(body: Text('Settings Route')),
             },
           ),
         ),
@@ -1239,17 +1244,12 @@ void main() {
       await tester.tap(toolsTab);
       await tester.pumpAndSettle();
 
-      // Verify Tools menu items (checking for one item is enough to verify menu opened)
-      // "Prompts" is in the tools menu
-      expect(find.text('Prompts'), findsOneWidget);
+      expect(find.text('Tools Route'), findsOneWidget);
 
-      // Close bottom sheet
-      // Drag the sheet down to dismiss it (more reliable than tapping barrier)
-      await tester.drag(
-        find.text('Prompts'),
-        const Offset(0, 500),
-        warnIfMissed: false,
+      final navigatorState = tester.state<NavigatorState>(
+        find.byType(Navigator).first,
       );
+      navigatorState.pop();
       await tester.pumpAndSettle();
 
       // Tap More tab
@@ -1257,9 +1257,7 @@ void main() {
       await tester.tap(moreTab);
       await tester.pumpAndSettle();
 
-      // Verify More menu items
-      // "Settings" is in the more menu
-      expect(find.text('Settings'), findsOneWidget);
+      expect(find.text('Settings Route'), findsOneWidget);
     });
   });
 

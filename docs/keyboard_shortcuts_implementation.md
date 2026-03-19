@@ -216,10 +216,19 @@ Row(
 
 ### Sidebar Intents
 - `ToggleSidebarIntent` - Toggle sidebar open/close
+- `ToggleAiSidebarIntent` - Toggle AI sidebar open/close
 - `NavigateToChaptersIntent` - Navigate to chapters
 - `NavigateToCharactersIntent` - Navigate to characters
 - `NavigateToScenesIntent` - Navigate to scenes
 - `NavigateToSummariesIntent` - Navigate to summaries
+
+### Sidebar Shortcut Contract
+- `Ctrl/Cmd + B` - Toggle left sidebar
+- `Ctrl/Cmd + I` - Toggle right sidebar (AI)
+- `Ctrl/Cmd + 1` - Chapters
+- `Ctrl/Cmd + 2` - Characters
+- `Ctrl/Cmd + 3` - Scenes
+- `Ctrl/Cmd + 4` - Summary
 
 ### Admin Intents
 - `OpenUserManagementIntent` - Open user management
@@ -332,6 +341,23 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 }
+```
+
+### Example 3: Sidebar with Shortcuts
+
+```dart
+SidebarShortcutsWrapper(
+  onToggleSidebar: () => _toggleLeftSidebar(),
+  onToggleAiSidebar: () => ref.read(aiChatUiProvider.notifier).toggleSidebar(),
+  onNavigateToChapters: () => context.go('/novel/$novelId'),
+  onNavigateToCharacters: () => context.go('/novel/$novelId/characters'),
+  onNavigateToScenes: () => context.go('/novel/$novelId/scenes'),
+  onNavigateToSummaries: () => context.go('/novel/$novelId/summary'),
+  onNavigateToSettings: () => context.go('/settings'),
+  child: Drawer(
+    child: YourSidebarContent(),
+  ),
+)
 ```
 
 ## Best Practices

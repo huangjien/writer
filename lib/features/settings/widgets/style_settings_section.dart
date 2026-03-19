@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/state/ui_style_controller.dart';
 import 'package:writer/theme/ui_styles.dart';
+import 'package:writer/theme/design_tokens.dart';
 import 'package:writer/shared/widgets/neumorphic_dropdown.dart';
 
 class StyleSettingsSection extends ConsumerWidget {
@@ -20,7 +21,7 @@ class StyleSettingsSection extends ConsumerWidget {
           leading: const Icon(Icons.style_outlined),
           title: Row(
             children: [
-              Expanded(child: Text(l10n.styles, semanticsLabel: 'UI Styles')),
+              Expanded(child: Text(l10n.styles, semanticsLabel: l10n.styles)),
               NeumorphicDropdown<UiStyleFamily>(
                 value: uiStyleState.family,
                 onChanged: (UiStyleFamily? style) {
@@ -62,7 +63,7 @@ class StyleSettingsSection extends ConsumerWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: Spacing.s),
           child: StylePreviewGrid(
             selected: uiStyleState.family,
             onSelected: (style) =>
@@ -103,16 +104,17 @@ class StylePreviewGrid extends StatelessWidget {
     // (halving width and height = 1/4 area)
     final crossAxisCount = screenWidth < 600 ? 6 : 10;
 
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
-      label: 'Style preview grid',
+      label: '${l10n.styles} ${l10n.previewLabel}',
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           childAspectRatio: 1,
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 8,
+          mainAxisSpacing: Spacing.s,
+          crossAxisSpacing: Spacing.s,
         ),
         itemCount: styles.length,
         itemBuilder: (context, index) {
@@ -204,7 +206,7 @@ class _StylePreviewCard extends StatelessWidget {
         child: GestureDetector(
           onTap: onTap,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: Motion.fast,
             decoration: decoration,
             child: previewContent,
           ),
@@ -312,7 +314,7 @@ class _StylePreviewCard extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Text(
-            'Liquid',
+            uiStyleDisplayName(UiStyleFamily.liquidGlass, context),
             style: Theme.of(
               context,
             ).textTheme.labelSmall?.copyWith(color: iconColor, fontSize: 10),

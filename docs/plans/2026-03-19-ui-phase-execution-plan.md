@@ -50,3 +50,11 @@ Drive a focused UI phase that improves consistency, accessibility, localization 
 - Shortcut behavior and documentation match
 - No hard-coded critical-path user-facing strings in touched UI
 - All modified UI states are covered by updated tests
+
+## Completion Status
+- Slice 1 complete
+- Slice 2 complete
+- Slice 3 complete
+- Slice 4 complete
+- Targeted widget/regression suites executed for each slice
+- Milestone marked complete in ROADMAP.md and STATE.md

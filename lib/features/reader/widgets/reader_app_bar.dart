@@ -5,10 +5,16 @@ import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/shared/widgets/app_buttons.dart';
 
 class ReaderAppBar extends ConsumerWidget implements PreferredSizeWidget {
-  const ReaderAppBar({super.key, required this.title, required this.onBack});
+  const ReaderAppBar({
+    super.key,
+    required this.title,
+    required this.onBack,
+    this.showMenu = true,
+  });
 
   final String title;
   final VoidCallback onBack;
+  final bool showMenu;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -34,13 +40,14 @@ class ReaderAppBar extends ConsumerWidget implements PreferredSizeWidget {
               ? l10n.aiAssistant
               : l10n.aiServiceUnavailable,
         ),
-        Builder(
-          builder: (context) => AppButtons.icon(
-            iconData: Icons.menu,
-            onPressed: () => Scaffold.of(context).openDrawer(),
-            tooltip: l10n.menu,
+        if (showMenu)
+          Builder(
+            builder: (context) => AppButtons.icon(
+              iconData: Icons.menu,
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: l10n.menu,
+            ),
           ),
-        ),
       ],
     );
   }

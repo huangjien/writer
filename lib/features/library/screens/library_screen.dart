@@ -136,300 +136,276 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
             ? buildMobileAppBar(context, l10n)
             : buildDesktopAppBar(context, l10n, isSignedIn, isAdmin),
         drawer: isMobile ? null : const AppDrawer(),
-        body: isMobile && libraryScreen.currentTab != MobileNavTab.home
-            ? buildMobileTabContent(libraryScreen.currentTab)
-            : Column(
-                children: [
-                  const OfflineBanner(),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        Spacing.l,
-                        Spacing.m,
-                        Spacing.l,
-                        Spacing.l,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SessionSection(isSignedIn: isSignedIn),
-                          if (isSignedIn) ...[
-                            ExpansionTile(
-                              tilePadding: EdgeInsets.zero,
-                              title: Text(
-                                l10n.recentlyRead,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              children: const [
-                                SizedBox(height: 8),
-                                SizedBox(height: 150, child: RecentChapters()),
-                              ],
-                            ),
-                            const SizedBox(height: Spacing.s),
-                          ],
-                          EnhancedSearchBar(
-                            onChanged: (query) {
-                              ref
-                                  .read(libraryScreenProvider.notifier)
-                                  .setSearchQuery(query);
-                            },
-                            hintText: l10n.searchNovels,
-                            onClear: () {
-                              ref
-                                  .read(libraryScreenProvider.notifier)
-                                  .setSearchQuery('');
-                            },
-                            showFilters: true,
-                            filters: [
-                              LibraryFilterChip(
-                                label: l10n.allFilter,
-                                selected:
-                                    libraryScreen.filter == LibraryFilter.all,
-                                onTap: () => ref
-                                    .read(libraryScreenProvider.notifier)
-                                    .setFilter(LibraryFilter.all),
-                                icon: Icons.apps,
-                              ),
-                              LibraryFilterChip(
-                                label: l10n.readingFilter,
-                                selected:
-                                    libraryScreen.filter ==
-                                    LibraryFilter.reading,
-                                onTap: () => ref
-                                    .read(libraryScreenProvider.notifier)
-                                    .setFilter(LibraryFilter.reading),
-                                icon: Icons.menu_book,
-                              ),
-                              LibraryFilterChip(
-                                label: l10n.completedFilter,
-                                selected:
-                                    libraryScreen.filter ==
-                                    LibraryFilter.completed,
-                                onTap: () => ref
-                                    .read(libraryScreenProvider.notifier)
-                                    .setFilter(LibraryFilter.completed),
-                                icon: Icons.check_circle,
-                              ),
-                              LibraryFilterChip(
-                                label: l10n.downloadedFilter,
-                                selected:
-                                    libraryScreen.filter ==
-                                    LibraryFilter.downloaded,
-                                onTap: () => ref
-                                    .read(libraryScreenProvider.notifier)
-                                    .setFilter(LibraryFilter.downloaded),
-                                icon: Icons.download_done,
-                              ),
-                            ],
+        body: Column(
+          children: [
+            const OfflineBanner(),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  Spacing.l,
+                  Spacing.m,
+                  Spacing.l,
+                  Spacing.l,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SessionSection(isSignedIn: isSignedIn),
+                    if (isSignedIn) ...[
+                      ExpansionTile(
+                        tilePadding: EdgeInsets.zero,
+                        title: Text(
+                          l10n.recentlyRead,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                           ),
-                          const SizedBox(height: Spacing.m),
-                          Expanded(
-                            child: novelsAsync.when(
-                              data: (novels) {
-                                final visible = filterNovels(
-                                  novels,
-                                  removedIds,
-                                  downloadedIds,
-                                  recentProgress,
-                                  libraryScreen.searchQuery,
-                                  libraryScreen.filter,
+                        ),
+                        children: const [
+                          SizedBox(height: 8),
+                          SizedBox(height: 150, child: RecentChapters()),
+                        ],
+                      ),
+                      const SizedBox(height: Spacing.s),
+                    ],
+                    EnhancedSearchBar(
+                      onChanged: (query) {
+                        ref
+                            .read(libraryScreenProvider.notifier)
+                            .setSearchQuery(query);
+                      },
+                      hintText: l10n.searchNovels,
+                      onClear: () {
+                        ref
+                            .read(libraryScreenProvider.notifier)
+                            .setSearchQuery('');
+                      },
+                      showFilters: true,
+                      filters: [
+                        LibraryFilterChip(
+                          label: l10n.allFilter,
+                          selected: libraryScreen.filter == LibraryFilter.all,
+                          onTap: () => ref
+                              .read(libraryScreenProvider.notifier)
+                              .setFilter(LibraryFilter.all),
+                          icon: Icons.apps,
+                        ),
+                        LibraryFilterChip(
+                          label: l10n.readingFilter,
+                          selected:
+                              libraryScreen.filter == LibraryFilter.reading,
+                          onTap: () => ref
+                              .read(libraryScreenProvider.notifier)
+                              .setFilter(LibraryFilter.reading),
+                          icon: Icons.menu_book,
+                        ),
+                        LibraryFilterChip(
+                          label: l10n.completedFilter,
+                          selected:
+                              libraryScreen.filter == LibraryFilter.completed,
+                          onTap: () => ref
+                              .read(libraryScreenProvider.notifier)
+                              .setFilter(LibraryFilter.completed),
+                          icon: Icons.check_circle,
+                        ),
+                        LibraryFilterChip(
+                          label: l10n.downloadedFilter,
+                          selected:
+                              libraryScreen.filter == LibraryFilter.downloaded,
+                          onTap: () => ref
+                              .read(libraryScreenProvider.notifier)
+                              .setFilter(LibraryFilter.downloaded),
+                          icon: Icons.download_done,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: Spacing.m),
+                    Expanded(
+                      child: novelsAsync.when(
+                        data: (novels) {
+                          final visible = filterNovels(
+                            novels,
+                            removedIds,
+                            downloadedIds,
+                            recentProgress,
+                            libraryScreen.searchQuery,
+                            libraryScreen.filter,
+                          );
+                          // Apply sort order
+                          visible.sort((a, b) {
+                            switch (libraryScreen.sort) {
+                              case LibrarySort.titleAsc:
+                                return a.title.toLowerCase().compareTo(
+                                  b.title.toLowerCase(),
                                 );
-                                // Apply sort order
-                                visible.sort((a, b) {
-                                  switch (libraryScreen.sort) {
-                                    case LibrarySort.titleAsc:
-                                      return a.title.toLowerCase().compareTo(
-                                        b.title.toLowerCase(),
-                                      );
-                                    case LibrarySort.authorAsc:
-                                      final aAuth = (a.author ?? '')
-                                          .toLowerCase();
-                                      final bAuth = (b.author ?? '')
-                                          .toLowerCase();
-                                      return aAuth.compareTo(bAuth);
+                              case LibrarySort.authorAsc:
+                                final aAuth = (a.author ?? '').toLowerCase();
+                                final bAuth = (b.author ?? '').toLowerCase();
+                                return aAuth.compareTo(bAuth);
+                            }
+                          });
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              LibraryListHeader(
+                                visibleCount: visible.length,
+                                totalCount: novels.length,
+                                sortValue:
+                                    libraryScreen.sort == LibrarySort.titleAsc
+                                    ? 'titleAsc'
+                                    : 'authorAsc',
+                                onSortChanged: (v) {
+                                  if (v == 'titleAsc') {
+                                    ref
+                                        .read(libraryScreenProvider.notifier)
+                                        .setSort(LibrarySort.titleAsc);
+                                  } else if (v == 'authorAsc') {
+                                    ref
+                                        .read(libraryScreenProvider.notifier)
+                                        .setSort(LibrarySort.authorAsc);
                                   }
-                                });
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    LibraryListHeader(
-                                      visibleCount: visible.length,
-                                      totalCount: novels.length,
-                                      sortValue:
-                                          libraryScreen.sort ==
-                                              LibrarySort.titleAsc
-                                          ? 'titleAsc'
-                                          : 'authorAsc',
-                                      onSortChanged: (v) {
-                                        if (v == 'titleAsc') {
-                                          ref
-                                              .read(
-                                                libraryScreenProvider.notifier,
-                                              )
-                                              .setSort(LibrarySort.titleAsc);
-                                        } else if (v == 'authorAsc') {
-                                          ref
-                                              .read(
-                                                libraryScreenProvider.notifier,
-                                              )
-                                              .setSort(LibrarySort.authorAsc);
-                                        }
-                                      },
-                                      viewMode: libraryScreen.viewMode,
-                                      onViewModeChanged: (mode) {
-                                        ref
-                                            .read(
-                                              libraryScreenProvider.notifier,
-                                            )
-                                            .setViewMode(mode);
-                                      },
-                                    ),
-                                    const SizedBox(height: Spacing.m),
-                                    if (visible.isEmpty)
-                                      Expanded(
-                                        child: NovelEmptyState(
-                                          title: l10n.noNovelsFound,
-                                          subtitle:
-                                              l10n.createFirstNovelSubtitle,
-                                          actionLabel: l10n.createNovel,
-                                          onAction: () =>
-                                              context.pushNamed('createNovel'),
-                                        ),
-                                      )
-                                    else
-                                      Expanded(
-                                        child:
-                                            libraryScreen.viewMode ==
-                                                LibraryViewMode.grid
-                                            ? GridView.builder(
-                                                gridDelegate:
-                                                    const SliverGridDelegateWithMaxCrossAxisExtent(
-                                                      maxCrossAxisExtent: 200,
-                                                      childAspectRatio: 0.6,
-                                                      crossAxisSpacing:
-                                                          Spacing.m,
-                                                      mainAxisSpacing:
-                                                          Spacing.m,
-                                                    ),
-                                                itemCount: visible.length,
-                                                itemBuilder: (context, index) {
-                                                  final novel = visible[index];
-                                                  return LibraryGridItem(
-                                                    novel: novel,
-                                                    isSignedIn: isSignedIn,
-                                                    canRemove: canRemove,
-                                                    canDownload: canDownload,
-                                                    onRemove: () => removeNovel(
+                                },
+                                viewMode: libraryScreen.viewMode,
+                                onViewModeChanged: (mode) {
+                                  ref
+                                      .read(libraryScreenProvider.notifier)
+                                      .setViewMode(mode);
+                                },
+                              ),
+                              const SizedBox(height: Spacing.m),
+                              if (visible.isEmpty)
+                                Expanded(
+                                  child: NovelEmptyState(
+                                    title: l10n.noNovelsFound,
+                                    subtitle: l10n.createFirstNovelSubtitle,
+                                    actionLabel: l10n.createNovel,
+                                    onAction: () =>
+                                        context.pushNamed('createNovel'),
+                                  ),
+                                )
+                              else
+                                Expanded(
+                                  child:
+                                      libraryScreen.viewMode ==
+                                          LibraryViewMode.grid
+                                      ? GridView.builder(
+                                          gridDelegate:
+                                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                                                maxCrossAxisExtent: 200,
+                                                childAspectRatio: 0.6,
+                                                crossAxisSpacing: Spacing.m,
+                                                mainAxisSpacing: Spacing.m,
+                                              ),
+                                          itemCount: visible.length,
+                                          itemBuilder: (context, index) {
+                                            final novel = visible[index];
+                                            return LibraryGridItem(
+                                              novel: novel,
+                                              isSignedIn: isSignedIn,
+                                              canRemove: canRemove,
+                                              canDownload: canDownload,
+                                              onRemove: () => removeNovel(
+                                                context,
+                                                l10n,
+                                                novel,
+                                              ),
+                                            );
+                                          },
+                                        )
+                                      : ListView.builder(
+                                          key: const ValueKey(
+                                            'libraryListView',
+                                          ),
+                                          itemCount: visible.length,
+                                          itemBuilder: (context, index) {
+                                            final novel = visible[index];
+                                            if (!isMobile) {
+                                              return LibraryItemRow(
+                                                novel: novel,
+                                                isSignedIn: isSignedIn,
+                                                canRemove: canRemove,
+                                                canDownload: canDownload,
+                                                onRemove: () {
+                                                  showDeleteConfirmDialog(
+                                                    context,
+                                                    l10n,
+                                                    novel,
+                                                    () => removeNovel(
                                                       context,
                                                       l10n,
                                                       novel,
                                                     ),
                                                   );
                                                 },
-                                              )
-                                            : ListView.builder(
-                                                key: const ValueKey(
-                                                  'libraryListView',
-                                                ),
-                                                itemCount: visible.length,
-                                                itemBuilder: (context, index) {
-                                                  final novel = visible[index];
-                                                  if (!isMobile) {
-                                                    return LibraryItemRow(
-                                                      novel: novel,
-                                                      isSignedIn: isSignedIn,
-                                                      canRemove: canRemove,
-                                                      canDownload: canDownload,
-                                                      onRemove: () {
-                                                        showDeleteConfirmDialog(
-                                                          context,
-                                                          l10n,
-                                                          novel,
-                                                          () => removeNovel(
-                                                            context,
-                                                            l10n,
-                                                            novel,
-                                                          ),
-                                                        );
-                                                      },
+                                              );
+                                            }
+                                            return OpenContainer(
+                                              closedElevation: 0,
+                                              closedColor: Colors.transparent,
+                                              transitionType:
+                                                  ContainerTransitionType
+                                                      .fadeThrough,
+                                              openBuilder: (context, _) {
+                                                return ReaderScreen(
+                                                  novelId: novel.id,
+                                                );
+                                              },
+                                              closedBuilder: (context, action) {
+                                                return MobileNovelCard(
+                                                  novel: novel,
+                                                  onTap: action,
+                                                  onLongPress: () {
+                                                    showDeleteConfirmDialog(
+                                                      context,
+                                                      l10n,
+                                                      novel,
+                                                      () => removeNovel(
+                                                        context,
+                                                        l10n,
+                                                        novel,
+                                                      ),
                                                     );
-                                                  }
-                                                  return OpenContainer(
-                                                    closedElevation: 0,
-                                                    closedColor:
-                                                        Colors.transparent,
-                                                    transitionType:
-                                                        ContainerTransitionType
-                                                            .fadeThrough,
-                                                    openBuilder: (context, _) {
-                                                      return ReaderScreen(
-                                                        novelId: novel.id,
-                                                      );
-                                                    },
-                                                    closedBuilder:
-                                                        (context, action) {
-                                                          return MobileNovelCard(
-                                                            novel: novel,
-                                                            onTap: action,
-                                                            onLongPress: () {
-                                                              showDeleteConfirmDialog(
-                                                                context,
-                                                                l10n,
-                                                                novel,
-                                                                () =>
-                                                                    removeNovel(
-                                                                      context,
-                                                                      l10n,
-                                                                      novel,
-                                                                    ),
-                                                              );
-                                                            },
-                                                            onDownload:
-                                                                canDownload
-                                                                ? () {}
-                                                                : null,
-                                                            onDelete: () {
-                                                              removeNovel(
-                                                                context,
-                                                                l10n,
-                                                                novel,
-                                                              );
-                                                            },
-                                                          );
-                                                        },
-                                                  );
-                                                },
-                                              ),
-                                      ),
-                                  ],
-                                );
-                              },
-                              loading: () => const LibraryLoadingList(),
-                              error: (err, st) {
-                                // Suppress 401 errors as they are handled by the repository/service layer
-                                // redirecting to login
-                                if (err is ApiException &&
-                                    err.statusCode == 401) {
-                                  return const SizedBox.shrink();
-                                }
-                                return LibraryErrorSection(
-                                  error: err,
-                                  message: err.toString(),
-                                  onRetry: () =>
-                                      ref.refresh(libraryNovelsProvider),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
+                                                  },
+                                                  onDownload: canDownload
+                                                      ? () {}
+                                                      : null,
+                                                  onDelete: () {
+                                                    removeNovel(
+                                                      context,
+                                                      l10n,
+                                                      novel,
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                            );
+                                          },
+                                        ),
+                                ),
+                            ],
+                          );
+                        },
+                        loading: () => const LibraryLoadingList(),
+                        error: (err, st) {
+                          // Suppress 401 errors as they are handled by the repository/service layer
+                          // redirecting to login
+                          if (err is ApiException && err.statusCode == 401) {
+                            return const SizedBox.shrink();
+                          }
+                          return LibraryErrorSection(
+                            error: err,
+                            message: err.toString(),
+                            onRetry: () => ref.refresh(libraryNovelsProvider),
+                          );
+                        },
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+            ),
+          ],
+        ),
         floatingActionButton: isMobile
             ? MobileFab(
                 icon: Icons.add,
@@ -443,7 +419,44 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
             ? MobileBottomNavBar(
                 currentTab: libraryScreen.currentTab,
                 onTabChanged: (tab) {
-                  ref.read(libraryScreenProvider.notifier).setCurrentTab(tab);
+                  switch (tab) {
+                    case MobileNavTab.home:
+                      ref
+                          .read(libraryScreenProvider.notifier)
+                          .setCurrentTab(MobileNavTab.home);
+                      return;
+                    case MobileNavTab.write:
+                      _handleMobileTabNavigation(
+                        context: context,
+                        routeName: 'createNovel',
+                        fallbackRoute: '/novel/create',
+                      );
+                      break;
+                    case MobileNavTab.read:
+                      _handleMobileTabNavigation(
+                        context: context,
+                        routeName: 'myNovels',
+                        fallbackRoute: '/my-novels',
+                      );
+                      break;
+                    case MobileNavTab.tools:
+                      _handleMobileTabNavigation(
+                        context: context,
+                        routeName: 'tools',
+                        fallbackRoute: '/tools',
+                      );
+                      break;
+                    case MobileNavTab.more:
+                      _handleMobileTabNavigation(
+                        context: context,
+                        routeName: 'settings',
+                        fallbackRoute: '/settings',
+                      );
+                      break;
+                  }
+                  ref
+                      .read(libraryScreenProvider.notifier)
+                      .setCurrentTab(MobileNavTab.home);
                 },
               )
             : null,
@@ -451,14 +464,17 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     );
   }
 
-  Widget buildMobileTabContent(MobileNavTab currentTab) {
-    switch (currentTab) {
-      case MobileNavTab.tools:
-        return const Center(child: Text('Prompts'));
-      case MobileNavTab.more:
-        return const Center(child: Text('Settings'));
-      default:
-        return Center(child: Text(currentTab.name));
+  void _handleMobileTabNavigation({
+    required BuildContext context,
+    required String routeName,
+    required String fallbackRoute,
+  }) {
+    try {
+      context.pushNamed(routeName);
+    } catch (_) {
+      try {
+        Navigator.of(context).pushNamed(fallbackRoute);
+      } catch (_) {}
     }
   }
 

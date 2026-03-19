@@ -38,6 +38,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
     final chaptersAsync = ref.watch(chaptersProviderV2(widget.novelId));
     final editPermsAsync = ref.watch(editPermissionsProvider(widget.novelId));
     final canEdit = editPermsAsync.asData?.value ?? false;
+    final isDesktop = MediaQuery.of(context).size.width >= Breakpoints.desktop;
 
     if (widget.chapterId != null) {
       return chaptersAsync.when(
@@ -89,6 +90,96 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
         },
       );
     }
+
+    final chapterListBody = Padding(
+      padding: const EdgeInsets.all(Spacing.l),
+      child: chaptersAsync.when(
+        data: (chapters) {
+          if (chapters.isEmpty) {
+            return ChapterEmptyState(
+              title: l10n.noChaptersFound,
+              subtitle: l10n.createNextChapter,
+              actionLabel: canEdit ? l10n.createNextChapter : null,
+              onAction: canEdit
+                  ? () => context.push('/novel/${widget.novelId}/chapters/new')
+                  : null,
+            );
+          }
+          return ListView.separated(
+            itemCount: chapters.length,
+            separatorBuilder: (_, _) => const Divider(height: 1),
+            itemBuilder: (context, index) {
+              final c = chapters[index];
+              final titleText = c.title?.trim();
+              final semanticsLabel = (titleText == null || titleText.isEmpty)
+                  ? '${l10n.chapter} ${c.idx}'
+                  : '${l10n.chapter} ${c.idx}: $titleText';
+              return Semantics(
+                button: true,
+                label: semanticsLabel,
+                child: ListTile(
+                  title: (titleText == null || titleText.isEmpty)
+                      ? Text('${l10n.chapter} ${c.idx}')
+                      : Row(
+                          children: [
+                            Text('${l10n.chapter} ${c.idx}'),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                titleText,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                  onTap: () {
+                    try {
+                      context.push('/novel/${widget.novelId}/chapters/${c.id}');
+                    } catch (_) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => ChapterReaderScreen(
+                            chapterId: c.id,
+                            title: c.title ?? l10n.chapterLabel(c.idx),
+                            content: c.content,
+                            novelId: widget.novelId,
+                            allChapters: chapters,
+                            currentIdx: index,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              );
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) {
+          if (e is ApiException && e.statusCode == 401) {
+            return const SizedBox.shrink();
+          }
+          return Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('${l10n.error}: $e'),
+                  const SizedBox(height: 16),
+                  AppButtons.secondary(
+                    label: l10n.reload,
+                    icon: Icons.refresh,
+                    onPressed: () =>
+                        ref.invalidate(chaptersProviderV2(widget.novelId)),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -234,110 +325,28 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                     }
                   },
           ),
-          Builder(
-            builder: (context) => AppButtons.icon(
-              iconData: Icons.menu,
-              tooltip: l10n.menu,
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
+          if (!isDesktop)
+            Builder(
+              builder: (context) => AppButtons.icon(
+                iconData: Icons.menu,
+                tooltip: l10n.menu,
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              ),
             ),
-          ),
         ],
       ),
-      drawer: SideBar(novelId: widget.novelId),
-      body: Padding(
-        padding: const EdgeInsets.all(Spacing.l),
-        child: chaptersAsync.when(
-          data: (chapters) {
-            if (chapters.isEmpty) {
-              return ChapterEmptyState(
-                title: l10n.noChaptersFound,
-                subtitle: l10n.createNextChapter,
-                actionLabel: canEdit ? l10n.createNextChapter : null,
-                onAction: canEdit
-                    ? () =>
-                          context.push('/novel/${widget.novelId}/chapters/new')
-                    : null,
-              );
-            }
-            return ListView.separated(
-              itemCount: chapters.length,
-              separatorBuilder: (_, _) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final c = chapters[index];
-                final titleText = c.title?.trim();
-                final semanticsLabel = (titleText == null || titleText.isEmpty)
-                    ? '${l10n.chapter} ${c.idx}'
-                    : '${l10n.chapter} ${c.idx}: $titleText';
-                return Semantics(
-                  button: true,
-                  label: semanticsLabel,
-                  child: ListTile(
-                    title: (titleText == null || titleText.isEmpty)
-                        ? Text('${l10n.chapter} ${c.idx}')
-                        : Row(
-                            children: [
-                              Text('${l10n.chapter} ${c.idx}'),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  titleText,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                    onTap: () {
-                      try {
-                        context.push(
-                          '/novel/${widget.novelId}/chapters/${c.id}',
-                        );
-                      } catch (_) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => ChapterReaderScreen(
-                              chapterId: c.id,
-                              title: c.title ?? l10n.chapterLabel(c.idx),
-                              content: c.content,
-                              novelId: widget.novelId,
-                              allChapters: chapters,
-                              currentIdx: index,
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                );
-              },
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) {
-            if (e is ApiException && e.statusCode == 401) {
-              return const SizedBox.shrink();
-            }
-            return Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('${l10n.error}: $e'),
-                    const SizedBox(height: 16),
-                    AppButtons.secondary(
-                      label: l10n.reload,
-                      icon: Icons.refresh,
-                      onPressed: () =>
-                          ref.invalidate(chaptersProviderV2(widget.novelId)),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ),
+      drawer: isDesktop ? null : SideBar(novelId: widget.novelId),
+      body: isDesktop
+          ? Row(
+              children: [
+                SideBar(novelId: widget.novelId),
+                const VerticalDivider(width: 1),
+                Expanded(child: chapterListBody),
+              ],
+            )
+          : chapterListBody,
     );
   }
 }

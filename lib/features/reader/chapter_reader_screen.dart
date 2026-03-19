@@ -14,6 +14,7 @@ import 'package:writer/state/edit_permissions.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/state/theme_controller.dart';
 import 'package:writer/theme/reader_background.dart';
+import 'package:writer/theme/design_tokens.dart';
 
 import 'widgets/edit_chapter_body.dart';
 import 'widgets/reader_bottom_bar_shell.dart';
@@ -466,6 +467,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     final motion = ref.watch(motionSettingsProvider);
 
     final bgColor = readerBackgroundColor(Theme.of(context).colorScheme, depth);
+    final isDesktop = MediaQuery.of(context).size.width >= Breakpoints.desktop;
 
     final current = state.allChapters.isNotEmpty
         ? state.allChapters[state.currentIdx].copyWith(
@@ -486,49 +488,65 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
 
     final isSignedIn = ref.watch(isSignedInProvider);
 
+    final readerBody = Stack(
+      children: [
+        Positioned.fill(
+          child: state.failure != null
+              ? ErrorView(
+                  message: state.failure!.message,
+                  onRetry: notifier.loadInitial,
+                )
+              : state.editMode
+              ? EditChapterBody(
+                  novelId: widget.novelId,
+                  current: current,
+                  previewMode: state.previewMode,
+                )
+              : ReaderBody(
+                  controller: _controller,
+                  content: state.content,
+                  ttsIndex: state.ttsIndex,
+                  autoplayBlocked: state.autoplayBlocked,
+                  onAutoplayContinue: () async {
+                    notifier.setAutoplayBlocked(false);
+                    await notifier.startTts();
+                  },
+                  gesturesEnabled: motion.gesturesEnabled,
+                  swipeMinVelocity: motion.swipeMinVelocity,
+                  boldEnabled: state.boldEnabled,
+                  reduceMotion: motion.reduceMotion,
+                  editMode: state.editMode,
+                  discardDialogOpen: state.discardDialogOpen,
+                  onToggleFullScreen: notifier.toggleFullScreen,
+                  onPlayStop: _onPlayStopPressed,
+                  onPrev: _onPrevPressed,
+                  onNext: _onNextPressed,
+                ),
+        ),
+      ],
+    );
+
     final readerScaffold = Scaffold(
       backgroundColor: bgColor,
       appBar: state.fullScreen
           ? null
-          : ReaderAppBar(title: state.title, onBack: _onBackPressed),
-      drawer: state.fullScreen ? null : SideBar(novelId: widget.novelId),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: state.failure != null
-                ? ErrorView(
-                    message: state.failure!.message,
-                    onRetry: notifier.loadInitial,
-                  )
-                : state.editMode
-                ? EditChapterBody(
-                    novelId: widget.novelId,
-                    current: current,
-                    previewMode: state.previewMode,
-                  )
-                : ReaderBody(
-                    controller: _controller,
-                    content: state.content,
-                    ttsIndex: state.ttsIndex,
-                    autoplayBlocked: state.autoplayBlocked,
-                    onAutoplayContinue: () async {
-                      notifier.setAutoplayBlocked(false);
-                      await notifier.startTts();
-                    },
-                    gesturesEnabled: motion.gesturesEnabled,
-                    swipeMinVelocity: motion.swipeMinVelocity,
-                    boldEnabled: state.boldEnabled,
-                    reduceMotion: motion.reduceMotion,
-                    editMode: state.editMode,
-                    discardDialogOpen: state.discardDialogOpen,
-                    onToggleFullScreen: notifier.toggleFullScreen,
-                    onPlayStop: _onPlayStopPressed,
-                    onPrev: _onPrevPressed,
-                    onNext: _onNextPressed,
-                  ),
-          ),
-        ],
-      ),
+          : ReaderAppBar(
+              title: state.title,
+              onBack: _onBackPressed,
+              showMenu: !isDesktop,
+            ),
+      drawer: state.fullScreen || isDesktop
+          ? null
+          : SideBar(novelId: widget.novelId),
+      body: state.fullScreen || !isDesktop
+          ? readerBody
+          : Row(
+              children: [
+                SideBar(novelId: widget.novelId),
+                const VerticalDivider(width: 1),
+                Expanded(child: readerBody),
+              ],
+            ),
       bottomNavigationBar: state.fullScreen
           ? null
           : SafeArea(

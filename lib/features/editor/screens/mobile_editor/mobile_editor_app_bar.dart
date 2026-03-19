@@ -28,7 +28,7 @@ class MobileEditorAppBar extends StatelessWidget
           Icon(Icons.edit, color: theme.colorScheme.primary, size: 24),
           const SizedBox(width: Spacing.s),
           Text(
-            'Editor',
+            l10n.editMode,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -45,7 +45,7 @@ class MobileEditorAppBar extends StatelessWidget
                 borderRadius: BorderRadius.circular(Radii.s),
               ),
               child: Text(
-                'Unsaved',
+                l10n.discardChanges,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onError,
                   fontWeight: FontWeight.w600,

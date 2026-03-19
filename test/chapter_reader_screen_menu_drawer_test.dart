@@ -14,6 +14,7 @@ import 'package:writer/state/session_state.dart';
 import 'package:writer/state/providers.dart';
 import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
+import 'package:writer/widgets/side_bar.dart';
 
 void main() {
   const novelId = 'n1';
@@ -83,5 +84,63 @@ void main() {
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
     expect(find.byType(Drawer), findsOneWidget);
+  });
+
+  testWidgets('desktop layout shows persistent sidebar', (tester) async {
+    final prefs = await SharedPreferences.getInstance();
+    final appSettings = AppSettingsNotifier(prefs);
+    final ttsSettings = TtsSettingsNotifier(prefs);
+    final motion = MotionSettingsNotifier(prefs);
+    final storageService = LocalStorageService(prefs);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          localStorageRepositoryProvider.overrideWithValue(
+            LocalStorageRepository(storageService),
+          ),
+          sessionProvider.overrideWith(
+            (ref) => SessionNotifier(storageService),
+          ),
+          appSettingsProvider.overrideWith((ref) => appSettings),
+          ttsSettingsProvider.overrideWith((ref) => ttsSettings),
+          motionSettingsProvider.overrideWith((ref) => motion),
+          remoteRepositoryProvider.overrideWith(
+            (ref) => RemoteRepository('http://localhost:5600/'),
+          ),
+          aiChatServiceProvider.overrideWith(
+            (ref) => AiChatService(ref.read(remoteRepositoryProvider)),
+          ),
+        ],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: MediaQuery(
+            data: MediaQueryData(size: Size(1200, 800)),
+            child: ChapterReaderScreen(
+              chapterId: 'c1',
+              title: 'T1',
+              content: 'C1',
+              novelId: novelId,
+              allChapters: [
+                Chapter(
+                  id: 'c1',
+                  novelId: novelId,
+                  idx: 1,
+                  title: 'T1',
+                  content: 'C1',
+                ),
+              ],
+              currentIdx: 0,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.menu), findsNothing);
+    expect(find.byType(SideBar), findsOneWidget);
+    final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
+    expect(scaffold.drawer, isNull);
   });
 }

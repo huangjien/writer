@@ -120,16 +120,15 @@ class LibraryGridItem extends ConsumerWidget {
           children: [
             Icon(
               Icons.menu_book,
-              color: Colors.white.withValues(alpha: 0.9),
+              color: colorScheme.onPrimary.withValues(alpha: 0.9),
               size: 32,
             ),
             const SizedBox(height: Spacing.xs),
             Text(
               novel.title,
               style: theme.textTheme.titleSmall?.copyWith(
-                color: Colors.white,
+                color: colorScheme.onPrimary,
                 fontWeight: FontWeight.bold,
-                fontSize: 12,
                 height: 1.3,
               ),
               textAlign: TextAlign.center,
@@ -144,6 +143,7 @@ class LibraryGridItem extends ConsumerWidget {
 
   Widget _buildProgressIndicator(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.s, vertical: 4),
@@ -152,10 +152,9 @@ class LibraryGridItem extends ConsumerWidget {
         borderRadius: BorderRadius.circular(Radii.s),
       ),
       child: Text(
-        'Not started',
+        l10n?.notStarted ?? 'Not started',
         style: theme.textTheme.labelSmall?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,
-          fontSize: 10,
         ),
       ),
     );

@@ -201,6 +201,10 @@ class ToggleSidebarIntent extends Intent {
   const ToggleSidebarIntent();
 }
 
+class ToggleAiSidebarIntent extends Intent {
+  const ToggleAiSidebarIntent();
+}
+
 class NavigateToChaptersIntent extends Intent {
   const NavigateToChaptersIntent();
 }
@@ -503,10 +507,16 @@ Map<ShortcutActivator, Intent> getSettingsShortcuts() {
 Map<ShortcutActivator, Intent> getSidebarShortcuts() {
   return <ShortcutActivator, Intent>{
     // Toggle sidebar
-    SingleActivator(LogicalKeyboardKey.keyD, meta: usesMeta):
+    SingleActivator(LogicalKeyboardKey.keyB, meta: usesMeta):
         const ToggleSidebarIntent(),
-    SingleActivator(LogicalKeyboardKey.keyD, control: !usesMeta):
+    SingleActivator(LogicalKeyboardKey.keyB, control: !usesMeta):
         const ToggleSidebarIntent(),
+
+    // Toggle AI sidebar
+    SingleActivator(LogicalKeyboardKey.keyI, meta: usesMeta):
+        const ToggleAiSidebarIntent(),
+    SingleActivator(LogicalKeyboardKey.keyI, control: !usesMeta):
+        const ToggleAiSidebarIntent(),
 
     // Quick navigation
     SingleActivator(LogicalKeyboardKey.digit1, meta: usesMeta):
