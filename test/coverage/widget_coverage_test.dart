@@ -10,7 +10,7 @@ void main() {
     // 1. AppBar Tests
     testWidgets('AppBar displays title correctly', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: Scaffold(
             appBar: AppBar(title: Text('Test Title')),
           ),
@@ -242,7 +242,7 @@ void main() {
 
     // 8. Edge Cases
     testWidgets('Handles special characters', (tester) async {
-      const specialText = '🎉\n\t<script>&\"\'</script>';
+      const specialText = '🎉\n\t<script>&"\'</script>';
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -387,9 +387,9 @@ void main() {
                 onPressed: () {
                   showDialog(
                     context: tester.element(find.byType(ElevatedButton)),
-                    builder: (context) => AlertDialog(
-                      title: const Text('Alert'),
-                      content: const Text('Content'),
+                    builder: (context) => const AlertDialog(
+                      title: Text('Alert'),
+                      content: Text('Content'),
                     ),
                   );
                 },
@@ -423,10 +423,10 @@ void main() {
 
     testWidgets('Scaffold with bottom navigation bar', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: Scaffold(
             bottomNavigationBar: BottomNavigationBar(
-              items: [
+              items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
                   label: 'Home',
@@ -446,12 +446,12 @@ void main() {
     // 13. Container Tests
     testWidgets('Container with decoration', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: Scaffold(
             body: Container(
               decoration: BoxDecoration(
                 color: Colors.red,
-                borderRadius: BorderRadius.all(Radius.circular(10)),
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
           ),
@@ -462,11 +462,11 @@ void main() {
 
     testWidgets('Container with padding', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: Scaffold(
             body: Container(
-              padding: EdgeInsets.all(16),
-              child: Text('Padded Content'),
+              padding: const EdgeInsets.all(16),
+              child: const Text('Padded Content'),
             ),
           ),
         ),
@@ -557,6 +557,7 @@ void main() {
                   onChanged: (newValue) {
                     setState(() {
                       value = newValue!;
+                    });
                   },
                 ),
               ),
@@ -668,10 +669,10 @@ void main() {
     // 22. Image Tests
     testWidgets('Image displays from network', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: Scaffold(
             body: Image(
-              image: NetworkImage('https://example.com/image.jpg'),
+              image: const NetworkImage('https://example.com/image.jpg'),
               errorBuilder: (context, error, stackTrace) {
                 return const Icon(Icons.error);
               },
@@ -768,7 +769,7 @@ void main() {
     // 28. Badge Tests
     testWidgets('Badge displays count', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: Badge(
               label: Text('5'),
@@ -806,11 +807,11 @@ void main() {
     // 30. ExpansionTile Tests
     testWidgets('ExpansionTile expands and collapses', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ExpansionTile(
-              title: const Text('Tap to expand'),
-              children: const [
+              title: Text('Tap to expand'),
+              children: [
                 ListTile(title: Text('Child 1')),
                 ListTile(title: Text('Child 2')),
               ],
