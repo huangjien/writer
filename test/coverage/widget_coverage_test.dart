@@ -623,20 +623,22 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Required';
-                }
-                return null;
-              },
+            body: Form(
+              child: TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Required';
+                  }
+                  return null;
+                },
+              ),
             ),
           ),
         ),
       );
 
-      final form = tester.widget<Form>(find.byType(Form));
-      expect(form, isNotNull);
+      expect(find.byType(TextFormField), findsOneWidget);
+      expect(find.byType(Form), findsOneWidget);
     });
 
     // 21. Dismissible Tests
@@ -662,7 +664,7 @@ void main() {
 
       expect(dismissed, isFalse);
       await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(dismissed, isTrue);
     });
 
