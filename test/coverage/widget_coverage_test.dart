@@ -10,7 +10,7 @@ void main() {
     // 1. AppBar Tests
     testWidgets('AppBar displays title correctly', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: Scaffold(
             appBar: AppBar(title: Text('Test Title')),
           ),
@@ -242,9 +242,9 @@ void main() {
 
     // 8. Edge Cases
     testWidgets('Handles special characters', (tester) async {
-      const specialText = '🎉\n\t<script>&\"\'</script>';
+      const specialText = '🎉\n\t<script>&"\'</script>';
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: Scaffold(
             body: Text(specialText),
           ),
@@ -423,10 +423,10 @@ void main() {
 
     testWidgets('Scaffold with bottom navigation bar', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: Scaffold(
             bottomNavigationBar: BottomNavigationBar(
-              items: [
+              items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home),
                   label: 'Home',
@@ -446,12 +446,12 @@ void main() {
     // 13. Container Tests
     testWidgets('Container with decoration', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: Scaffold(
             body: Container(
               decoration: BoxDecoration(
                 color: Colors.red,
-                borderRadius: BorderRadius.all(Radius.circular(10)),
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
           ),
@@ -462,11 +462,11 @@ void main() {
 
     testWidgets('Container with padding', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: Scaffold(
             body: Container(
-              padding: EdgeInsets.all(16),
-              child: Text('Padded Content'),
+              padding: const EdgeInsets.all(16),
+              child: const Text('Padded Content'),
             ),
           ),
         ),
@@ -557,6 +557,7 @@ void main() {
                   onChanged: (newValue) {
                     setState(() {
                       value = newValue!;
+                    });
                   },
                 ),
               ),
@@ -668,7 +669,7 @@ void main() {
     // 22. Image Tests
     testWidgets('Image displays from network', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: Scaffold(
             body: Image(
               image: NetworkImage('https://example.com/image.jpg'),
