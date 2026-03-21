@@ -9,6 +9,7 @@ import 'package:writer/repositories/novel_repository.dart';
 import 'package:writer/services/network_monitor.dart';
 import 'package:writer/models/cache_metadata.dart';
 import 'package:writer/services/storage_service.dart';
+import 'package:writer/services/performance_baseline_service.dart';
 
 enum DataManagerState { idle, loading, syncing, error }
 
@@ -17,6 +18,7 @@ class DataManager {
   final RemoteRepository _remote;
   final NetworkMonitor _network;
   final StorageService _storage;
+  final PerformanceBaselineService? _performanceBaseline;
   final StreamController<DataManagerState> _stateController =
       StreamController<DataManagerState>.broadcast();
   DataManagerState _currentState = DataManagerState.idle;
@@ -27,10 +29,12 @@ class DataManager {
     required RemoteRepository remote,
     required NetworkMonitor network,
     required StorageService storage,
+    PerformanceBaselineService? performanceBaseline,
   }) : _local = local,
        _remote = remote,
        _network = network,
-       _storage = storage;
+       _storage = storage,
+       _performanceBaseline = performanceBaseline;
 
   Stream<DataManagerState> get stateStream => _stateController.stream;
 
@@ -45,173 +49,220 @@ class DataManager {
   }
 
   Future<List<Novel>> getAllNovels({bool forceRefresh = false}) async {
-    try {
-      final cacheMeta = await _local.getCacheMetadata('novels_list');
-      final isCacheValid =
-          cacheMeta != null &&
-          !cacheMeta.isExpired(maxAge: const Duration(hours: 24));
+    return _measure(
+      'data_manager.get_all_novels',
+      tags: {
+        'force_refresh': forceRefresh.toString(),
+        'online': _network.isOnline.toString(),
+      },
+      operation: () async {
+        try {
+          final cacheMeta = await _local.getCacheMetadata('novels_list');
+          final isCacheValid =
+              cacheMeta != null &&
+              !cacheMeta.isExpired(maxAge: const Duration(hours: 24));
 
-      if (!forceRefresh && isCacheValid) {
-        final cached = await _local.getNovelsList();
-        if (cached.isNotEmpty) {
-          _triggerBackgroundSync().ignore();
-          return cached;
+          if (!forceRefresh && isCacheValid) {
+            final cached = await _local.getNovelsList();
+            if (cached.isNotEmpty) {
+              _triggerBackgroundSync().ignore();
+              return cached;
+            }
+          }
+
+          if (!_network.isOnline) {
+            final cached = await _local.getNovelsList();
+            if (cached.isNotEmpty) {
+              return cached;
+            }
+            return [];
+          }
+
+          _setState(DataManagerState.syncing);
+          final repo = NovelRepository(_remote);
+
+          final public = await repo.fetchPublicNovels();
+          final member = await repo.fetchMemberNovels();
+
+          final byId = <String, Novel>{};
+          for (final n in public) {
+            byId[n.id] = n;
+          }
+          for (final n in member) {
+            byId[n.id] = n;
+          }
+          final all = byId.values.toList();
+
+          await _local.saveNovelsList(all);
+          await _local.saveLibraryNovels(all);
+
+          _setState(DataManagerState.idle);
+          return all;
+        } on Object catch (e) {
+          _setState(DataManagerState.error, error: e.toString());
+          final cached = await _local.getNovelsList();
+          if (cached.isNotEmpty) return cached;
+          return [];
         }
-      }
-
-      if (!_network.isOnline) {
-        final cached = await _local.getNovelsList();
-        if (cached.isNotEmpty) {
-          return cached;
-        }
-        return [];
-      }
-
-      _setState(DataManagerState.syncing);
-      final repo = NovelRepository(_remote);
-
-      final public = await repo.fetchPublicNovels();
-      final member = await repo.fetchMemberNovels();
-
-      final byId = <String, Novel>{};
-      for (final n in public) {
-        byId[n.id] = n;
-      }
-      for (final n in member) {
-        byId[n.id] = n;
-      }
-      final all = byId.values.toList();
-
-      await _local.saveNovelsList(all);
-      await _local.saveLibraryNovels(all);
-
-      _setState(DataManagerState.idle);
-      return all;
-    } on Object catch (e) {
-      _setState(DataManagerState.error, error: e.toString());
-      final cached = await _local.getNovelsList();
-      if (cached.isNotEmpty) return cached;
-      return [];
-    }
+      },
+    );
   }
 
   Future<Novel?> getNovel(String novelId, {bool forceRefresh = false}) async {
-    try {
-      final cached = await _local.getNovel(novelId);
+    return _measure(
+      'data_manager.get_novel',
+      tags: {
+        'force_refresh': forceRefresh.toString(),
+        'online': _network.isOnline.toString(),
+      },
+      operation: () async {
+        try {
+          final cached = await _local.getNovel(novelId);
 
-      if (cached != null && !forceRefresh) {
-        _syncNovel(novelId).ignore();
-        return cached;
-      }
+          if (cached != null && !forceRefresh) {
+            _syncNovel(novelId).ignore();
+            return cached;
+          }
 
-      if (!_network.isOnline) {
-        return cached;
-      }
+          if (!_network.isOnline) {
+            return cached;
+          }
 
-      _setState(DataManagerState.syncing);
-      final repo = NovelRepository(_remote);
-      final remote = await repo.getNovel(novelId);
+          _setState(DataManagerState.syncing);
+          final repo = NovelRepository(_remote);
+          final remote = await repo.getNovel(novelId);
 
-      if (remote != null) {
-        await _local.saveNovel(remote);
-        await _saveCacheMetadata('novel_$novelId');
-      }
+          if (remote != null) {
+            await _local.saveNovel(remote);
+            await _saveCacheMetadata('novel_$novelId');
+          }
 
-      _setState(DataManagerState.idle);
-      return remote;
-    } on Object catch (e) {
-      _setState(DataManagerState.error, error: e.toString());
-      return await _local.getNovel(novelId);
-    }
+          _setState(DataManagerState.idle);
+          return remote;
+        } on Object catch (e) {
+          _setState(DataManagerState.error, error: e.toString());
+          return await _local.getNovel(novelId);
+        }
+      },
+    );
   }
 
   Future<List<Chapter>> getChapters(
     String novelId, {
     bool forceRefresh = false,
   }) async {
-    try {
-      final cacheMeta = await _local.getCacheMetadata('chapters_list_$novelId');
-      final isCacheValid =
-          cacheMeta != null &&
-          !cacheMeta.isExpired(maxAge: const Duration(hours: 24));
-      final cached = await _local.getChaptersList(novelId);
+    return _measure(
+      'data_manager.get_chapters',
+      tags: {
+        'force_refresh': forceRefresh.toString(),
+        'online': _network.isOnline.toString(),
+      },
+      operation: () async {
+        try {
+          final cacheMeta = await _local.getCacheMetadata(
+            'chapters_list_$novelId',
+          );
+          final isCacheValid =
+              cacheMeta != null &&
+              !cacheMeta.isExpired(maxAge: const Duration(hours: 24));
+          final cached = await _local.getChaptersList(novelId);
 
-      if (cached.isNotEmpty && !forceRefresh && isCacheValid) {
-        _syncChapters(novelId).ignore();
-        return cached.map(Chapter.fromCache).toList();
-      }
+          if (cached.isNotEmpty && !forceRefresh && isCacheValid) {
+            _syncChapters(novelId).ignore();
+            return cached.map(Chapter.fromCache).toList();
+          }
 
-      if (!_network.isOnline) {
-        if (cached.isNotEmpty) {
+          if (!_network.isOnline) {
+            if (cached.isNotEmpty) {
+              return cached.map(Chapter.fromCache).toList();
+            }
+            return [];
+          }
+
+          _setState(DataManagerState.syncing);
+          final repo = NovelRepository(_remote);
+          final chapters = await repo.fetchChaptersByNovel(novelId);
+
+          await _local.saveChaptersList(
+            novelId,
+            chapters
+                .map(
+                  (c) => {
+                    'id': c.id,
+                    'novel_id': c.novelId,
+                    'idx': c.idx,
+                    'title': c.title,
+                    'content': c.content,
+                  },
+                )
+                .toList(),
+          );
+
+          _setState(DataManagerState.idle);
+          return chapters;
+        } catch (e) {
+          _setState(DataManagerState.error, error: e.toString());
+          final cached = await _local.getChaptersList(novelId);
           return cached.map(Chapter.fromCache).toList();
         }
-        return [];
-      }
-
-      _setState(DataManagerState.syncing);
-      final repo = NovelRepository(_remote);
-      final chapters = await repo.fetchChaptersByNovel(novelId);
-
-      await _local.saveChaptersList(
-        novelId,
-        chapters
-            .map(
-              (c) => {
-                'id': c.id,
-                'novel_id': c.novelId,
-                'idx': c.idx,
-                'title': c.title,
-                'content': c.content,
-              },
-            )
-            .toList(),
-      );
-
-      _setState(DataManagerState.idle);
-      return chapters;
-    } catch (e) {
-      _setState(DataManagerState.error, error: e.toString());
-      final cached = await _local.getChaptersList(novelId);
-      return cached.map(Chapter.fromCache).toList();
-    }
+      },
+    );
   }
 
   Future<Chapter?> getChapter(Chapter chapter) async {
-    try {
-      final cached = await _local.getChapter(chapter.id);
-      if (cached != null) {
-        _syncChapter(chapter.id).ignore();
-        return Chapter.fromCache(cached);
-      }
+    return _measure(
+      'data_manager.get_chapter',
+      tags: {'online': _network.isOnline.toString()},
+      operation: () async {
+        try {
+          final cached = await _local.getChapter(chapter.id);
+          if (cached != null) {
+            _syncChapter(chapter.id).ignore();
+            return Chapter.fromCache(cached);
+          }
 
-      if (!_network.isOnline) {
-        return null;
-      }
+          if (!_network.isOnline) {
+            return null;
+          }
 
-      _setState(DataManagerState.syncing);
-      final repo = NovelRepository(_remote);
-      final remote = await repo.getChapter(chapter.id);
+          _setState(DataManagerState.syncing);
+          final repo = NovelRepository(_remote);
+          final remote = await repo.getChapter(chapter.id);
 
-      if (remote != null) {
-        await _local.saveChapter(
-          ChapterCache(
-            chapterId: remote.id,
-            novelId: remote.novelId,
-            idx: remote.idx,
-            title: remote.title,
-            content: remote.content ?? '',
-            lastUpdated: DateTime.now(),
-          ),
-        );
-      }
+          if (remote != null) {
+            await _local.saveChapter(
+              ChapterCache(
+                chapterId: remote.id,
+                novelId: remote.novelId,
+                idx: remote.idx,
+                title: remote.title,
+                content: remote.content ?? '',
+                lastUpdated: DateTime.now(),
+              ),
+            );
+          }
 
-      _setState(DataManagerState.idle);
-      return remote;
-    } on Object catch (e) {
-      _setState(DataManagerState.error, error: e.toString());
-      final cached = await _local.getChapter(chapter.id);
-      return cached != null ? Chapter.fromCache(cached) : null;
+          _setState(DataManagerState.idle);
+          return remote;
+        } on Object catch (e) {
+          _setState(DataManagerState.error, error: e.toString());
+          final cached = await _local.getChapter(chapter.id);
+          return cached != null ? Chapter.fromCache(cached) : null;
+        }
+      },
+    );
+  }
+
+  Future<T> _measure<T>(
+    String metric, {
+    required Future<T> Function() operation,
+    Map<String, String> tags = const {},
+  }) {
+    final perf = _performanceBaseline;
+    if (perf == null) {
+      return operation();
     }
+    return perf.measure(metric, operation, tags: tags);
   }
 
   Future<void> _syncNovel(String novelId) async {

@@ -14,6 +14,12 @@ class AdminLogsControls extends StatelessWidget {
     required this.onMaxSizeChanged,
     required this.onSearch,
     required this.onClearSearch,
+    required this.loggerController,
+    required this.onClearLogger,
+    required this.startDateController,
+    required this.endDateController,
+    required this.onClearStartDate,
+    required this.onClearEndDate,
   });
 
   final TextEditingController searchController;
@@ -25,6 +31,12 @@ class AdminLogsControls extends StatelessWidget {
   final ValueChanged<int> onMaxSizeChanged;
   final VoidCallback onSearch;
   final VoidCallback onClearSearch;
+  final TextEditingController loggerController;
+  final VoidCallback onClearLogger;
+  final TextEditingController startDateController;
+  final TextEditingController endDateController;
+  final VoidCallback onClearStartDate;
+  final VoidCallback onClearEndDate;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +73,70 @@ class AdminLogsControls extends StatelessWidget {
                 onPressed: isLoading ? () {} : onSearch,
                 label: l10n.searchLabel,
                 isLoading: isLoading,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: startDateController,
+                  decoration: InputDecoration(
+                    labelText: 'Start Date',
+                    hintText: 'YYYY-MM-DD',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.date_range),
+                    suffixIcon: startDateController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: isLoading ? null : onClearStartDate,
+                          )
+                        : null,
+                  ),
+                  onSubmitted: (_) => onSearch(),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: TextField(
+                  controller: endDateController,
+                  decoration: InputDecoration(
+                    labelText: 'End Date',
+                    hintText: 'YYYY-MM-DD',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.event),
+                    suffixIcon: endDateController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: isLoading ? null : onClearEndDate,
+                          )
+                        : null,
+                  ),
+                  onSubmitted: (_) => onSearch(),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: loggerController,
+                  decoration: InputDecoration(
+                    labelText: 'Logger',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.tag),
+                    suffixIcon: loggerController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: isLoading ? null : onClearLogger,
+                          )
+                        : null,
+                  ),
+                  onSubmitted: (_) => onSearch(),
+                ),
               ),
             ],
           ),

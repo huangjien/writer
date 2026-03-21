@@ -118,32 +118,37 @@ class LibraryItemRow extends ConsumerWidget {
     AppLocalizations l10n,
     MotionSettings motion,
     AsyncValue<UserProgress?> lastProgressAsync,
-    AsyncValue<List<Chapter>> chaptersAsync,
+    String novelId,
   ) {
     return lastProgressAsync.when(
       data: (p) {
         if (p == null) {
           return _progressNotStarted(l10n, motion);
         }
-        return chaptersAsync.when(
-          data: (chapters) => _progressLoaded(l10n, motion, chapters, p),
-          loading: () => Row(
-            children: [
-              const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(strokeWidth: 3),
+        return Consumer(
+          builder: (context, ref, _) {
+            final chaptersAsync = ref.watch(chaptersProviderV2(novelId));
+            return chaptersAsync.when(
+              data: (chapters) => _progressLoaded(l10n, motion, chapters, p),
+              loading: () => Row(
+                children: [
+                  const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 3),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l10n.loadingChapter,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  l10n.loadingChapter,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          error: (e, _) => Text(l10n.errorLoadingChapters),
+              error: (e, _) => Text(l10n.errorLoadingChapters),
+            );
+          },
         );
       },
       loading: () => Row(
@@ -325,7 +330,6 @@ class LibraryItemRow extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final motion = ref.watch(motionSettingsProvider);
     final lastProgressAsync = ref.watch(lastProgressProvider(n.id));
-    final chaptersAsync = ref.watch(chaptersProviderV2(n.id));
 
     return Shortcuts(
       shortcuts: <ShortcutActivator, Intent>{
@@ -393,12 +397,7 @@ class LibraryItemRow extends ConsumerWidget {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                      _progressWidget(
-                        l10n,
-                        motion,
-                        lastProgressAsync,
-                        chaptersAsync,
-                      ),
+                      _progressWidget(l10n, motion, lastProgressAsync, n.id),
                     ],
                   ),
                   leading: ImageUtils.getFilteredCoverUrl(n.coverUrl) != null

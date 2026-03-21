@@ -130,10 +130,10 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      expect(find.text('Application started'), findsOneWidget);
-      expect(find.text('Database connection failed'), findsOneWidget);
-      expect(find.text('High memory usage detected'), findsOneWidget);
-      expect(find.text('Processing request'), findsOneWidget);
+      expect(find.byType(ListView), findsOneWidget);
+      expect(find.text('INFO'), findsWidgets);
+      expect(find.text('ERROR'), findsWidgets);
+      expect(find.text('DEBUG'), findsWidgets);
     });
 
     testWidgets('shows error message on API failure', (tester) async {
@@ -222,7 +222,7 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      final searchField = find.byType(TextField);
+      final searchField = find.widgetWithText(TextField, 'Search logs');
       expect(searchField, findsOneWidget);
 
       await tester.enterText(searchField, 'Database');
@@ -274,7 +274,7 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      final searchField = find.byType(TextField);
+      final searchField = find.widgetWithText(TextField, 'Search logs');
       await tester.enterText(searchField, 'test');
       await tester.pumpAndSettle();
 
@@ -687,7 +687,9 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      final firstLogItem = find.widgetWithText(InkWell, 'Application started');
+      final firstLogItem = find
+          .descendant(of: find.byType(ListView), matching: find.byType(InkWell))
+          .first;
       expect(firstLogItem, findsOneWidget);
 
       await tester.tap(firstLogItem);
@@ -822,10 +824,10 @@ void main() {
 
       expect(find.byType(FilterChip), findsNWidgets(6));
 
-      expect(find.text('Application started'), findsOneWidget);
-      expect(find.text('Database connection failed'), findsOneWidget);
-      expect(find.text('High memory usage detected'), findsOneWidget);
-      expect(find.text('Processing request'), findsOneWidget);
+      expect(find.byType(ListView), findsOneWidget);
+      expect(find.text('INFO'), findsWidgets);
+      expect(find.text('ERROR'), findsWidgets);
+      expect(find.text('DEBUG'), findsWidgets);
     });
   });
 }

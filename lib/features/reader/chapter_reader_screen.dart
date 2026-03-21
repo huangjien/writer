@@ -110,6 +110,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
   );
   final _controller = ScrollController();
   bool _betaLoading = false;
+  ProviderSubscription<ReaderSessionState>? _readerSessionSubscription;
 
   bool isRTL(BuildContext context) {
     return Directionality.of(context) == TextDirection.rtl;
@@ -119,6 +120,10 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
   void initState() {
     super.initState();
     _controller.addListener(_onScroll);
+    _readerSessionSubscription = ref.listenManual(
+      readerSessionProvider,
+      _onReaderSessionChanged,
+    );
     if (widget.initialOffset > 0) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_controller.hasClients) _controller.jumpTo(widget.initialOffset);
@@ -178,6 +183,44 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
           break;
       }
     });
+  }
+
+  void _onReaderSessionChanged(
+    ReaderSessionState? prev,
+    ReaderSessionState next,
+  ) {
+    if (prev?.chapterId != next.chapterId) {
+      if (_controller.hasClients) {
+        _controller.animateTo(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+
+      if (prev?.chapterId != null && mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        showEnhancedToast(
+          context,
+          message: l10n.chapterLabel(next.currentIdx + 1),
+          tone: EnhancedToastTone.success,
+          duration: const Duration(milliseconds: 1500),
+        );
+      }
+    }
+    if (next.playbackCompleted && prev?.playbackCompleted != true) {
+      if (!mounted) return;
+      showEnhancedToast(
+        context,
+        message: AppLocalizations.of(context)!.reachedLastChapter,
+        tone: EnhancedToastTone.info,
+        duration: const Duration(seconds: 3),
+      );
+    }
+    if (next.editMode && prev?.editMode != true) {
+      if (!mounted) return;
+      _checkContrastAndAlert(context);
+    }
   }
 
   void _checkContrastAndAlert(BuildContext context) {
@@ -461,41 +504,6 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     // Current ReaderSessionState doesn't seem to have an 'error' field.
     // For now, let's wrap the logic in a safe way or if the state implies error.
 
-    ref.listen(readerSessionProvider, (prev, next) {
-      if (prev?.chapterId != next.chapterId) {
-        if (_controller.hasClients) {
-          _controller.animateTo(
-            0,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        }
-
-        if (prev?.chapterId != null && mounted) {
-          final l10n = AppLocalizations.of(context)!;
-          showEnhancedToast(
-            context,
-            message: l10n.chapterLabel(next.currentIdx + 1),
-            tone: EnhancedToastTone.success,
-            duration: const Duration(milliseconds: 1500),
-          );
-        }
-      }
-      if (next.playbackCompleted && prev?.playbackCompleted != true) {
-        if (!mounted) return;
-        showEnhancedToast(
-          context,
-          message: AppLocalizations.of(context)!.reachedLastChapter,
-          tone: EnhancedToastTone.info,
-          duration: const Duration(seconds: 3),
-        );
-      }
-      if (next.editMode && prev?.editMode != true) {
-        if (!mounted) return;
-        _checkContrastAndAlert(context);
-      }
-    });
-
     ReaderBackgroundDepth depth;
     try {
       depth = ref.watch(themeControllerProvider).readerBgDepth;
@@ -678,6 +686,7 @@ class _ChapterReaderContentState extends ConsumerState<_ChapterReaderContent> {
     try {
       ref.read(aiContextProvider.notifier).clearContextDelegate();
     } catch (_) {}
+    _readerSessionSubscription?.close();
     _controller.removeListener(_onScroll);
     _controller.dispose();
     super.dispose();

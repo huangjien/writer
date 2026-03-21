@@ -4,6 +4,7 @@ import 'package:writer/repositories/local_storage_repository.dart';
 import 'package:writer/services/prompts_service.dart';
 import 'package:writer/services/patterns_service.dart';
 import 'package:writer/services/auth_redirect_service.dart';
+import 'package:writer/services/performance_baseline_service.dart';
 
 import 'package:writer/services/story_lines_service.dart';
 import 'package:writer/services/pdf_service.dart';
@@ -116,6 +117,12 @@ final storyLinesServiceProvider = Provider<StoryLinesService>((ref) {
 final pdfServiceProvider = Provider<PdfService>((ref) {
   return PdfService();
 });
+
+final performanceBaselineServiceProvider = Provider<PerformanceBaselineService>(
+  (ref) {
+    return PerformanceBaselineService();
+  },
+);
 
 final isAdminProvider = Provider<bool>((ref) {
   // Simplification for now: check adminModeProvider.

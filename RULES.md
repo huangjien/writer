@@ -28,9 +28,7 @@ repository conventions.
   - `make lint`
 - Validate behavior with tests:
   - `make test`
-- For focused checks when needed:
-  - `dart analyze`
-  - `flutter test`
+- lint and test must 100% pass before merging
 
 ## Architecture and Structure
 - Follow separation of concerns across UI, state, services, repositories, and

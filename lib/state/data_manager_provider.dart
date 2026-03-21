@@ -10,10 +10,12 @@ final dataManagerProvider = Provider<DataManager>((ref) {
   final remote = ref.watch(remoteRepositoryProvider);
   final network = ref.watch(networkMonitorProvider);
   final storage = ref.watch(storageServiceProvider);
+  final performanceBaseline = ref.watch(performanceBaselineServiceProvider);
   return DataManager(
     local: local,
     remote: remote,
     network: network,
     storage: storage,
+    performanceBaseline: performanceBaseline,
   );
 });

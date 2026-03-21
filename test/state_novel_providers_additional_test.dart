@@ -215,6 +215,67 @@ void main() {
     },
   );
 
+  test(
+    'recentProgressDetailsProviderV2 filters missing novel or chapter',
+    () async {
+      final manager = MockDataManager();
+      const novel = Novel(
+        id: 'n1',
+        title: 'Novel',
+        author: null,
+        description: null,
+        coverUrl: null,
+        languageCode: 'en',
+        isPublic: false,
+      );
+      const chapter = Chapter(id: 'c1', novelId: 'n1', idx: 1, title: 'Ch');
+      final progressOk = UserProgress(
+        userId: 'u1',
+        novelId: 'n1',
+        chapterId: 'c1',
+        scrollOffset: 0,
+        ttsCharIndex: 0,
+        updatedAt: DateTime(2026, 1, 1),
+      );
+      final progressMissing = UserProgress(
+        userId: 'u1',
+        novelId: 'n2',
+        chapterId: 'c2',
+        scrollOffset: 0,
+        ttsCharIndex: 0,
+        updatedAt: DateTime(2026, 1, 2),
+      );
+
+      when(() => manager.getNovel('n1')).thenAnswer((_) async => novel);
+      when(() => manager.getChapter(any())).thenAnswer((invocation) async {
+        final input = invocation.positionalArguments.first as Chapter;
+        if (input.id == 'c1') {
+          return chapter;
+        }
+        return null;
+      });
+      when(() => manager.getNovel('n2')).thenAnswer((_) async => null);
+
+      final container = ProviderContainer(
+        overrides: [
+          isSignedInProvider.overrideWithValue(true),
+          authStateProvider.overrideWithValue('session'),
+          dataManagerProvider.overrideWithValue(manager),
+          recentUserProgressProvider.overrideWith(
+            (ref) async => [progressOk, progressMissing],
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final details = await container.read(
+        recentProgressDetailsProviderV2.future,
+      );
+      expect(details, hasLength(1));
+      expect(details.first.userProgress.chapterId, 'c1');
+    },
+  );
+
   test('novelsProviderV2 returns cached novels when not signed in', () async {
     final local = CapturingLocalRepo();
     const cached = [

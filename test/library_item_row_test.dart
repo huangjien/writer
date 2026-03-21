@@ -195,6 +195,52 @@ void main() {
     expect(find.text('Continue at chapter • One'), findsOneWidget);
   });
 
+  testWidgets('Does not fetch chapters when progress is not started', (
+    tester,
+  ) async {
+    const n = Novel(
+      id: 'n2b',
+      title: 'Alpha',
+      author: null,
+      description: null,
+      coverUrl: null,
+      languageCode: 'en',
+      isPublic: true,
+    );
+
+    var chaptersWatched = false;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          lastProgressProvider.overrideWith((ref, id) async => null),
+          chaptersProviderV2.overrideWith((ref, id) async {
+            chaptersWatched = true;
+            return <Chapter>[];
+          }),
+        ],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: LibraryItemRow(
+              novel: n,
+              isSignedIn: true,
+              canRemove: true,
+              canDownload: true,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('Not started'), findsOneWidget);
+    expect(chaptersWatched, isFalse);
+  });
+
   testWidgets('Download disabled shows tooltip and is inactive', (
     tester,
   ) async {

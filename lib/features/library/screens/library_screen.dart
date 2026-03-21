@@ -403,7 +403,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                           return LibraryErrorSection(
                             error: err,
                             message: err.toString(),
-                            onRetry: () => ref.refresh(libraryNovelsProvider),
+                            onRetry: () => ref.refresh(libraryNovelsProviderV2),
                           );
                         },
                       ),

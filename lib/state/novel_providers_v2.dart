@@ -7,27 +7,12 @@ import './progress_providers.dart';
 import './providers.dart';
 
 final novelsProviderV2 = FutureProvider<List<Novel>>((ref) async {
-  ref.watch(authStateProvider);
-  final isSignedIn = ref.watch(isSignedInProvider);
-  final dataManager = ref.watch(dataManagerProvider);
-
-  if (!isSignedIn) {
-    final local = ref.watch(localStorageRepositoryProvider);
-    return local.getLibraryNovels();
-  }
-
-  return dataManager.getAllNovels();
+  return ref.watch(libraryNovelsProviderV2.future);
 });
 
 final memberNovelsProviderV2 = FutureProvider<List<Novel>>((ref) async {
-  ref.watch(authStateProvider);
-  final isSignedIn = ref.watch(isSignedInProvider);
-  if (!isSignedIn) return const [];
-
-  final dataManager = ref.watch(dataManagerProvider);
-  final allNovels = await dataManager.getAllNovels();
-  final memberNovels = allNovels.where((n) => !n.isPublic).toList();
-  return memberNovels;
+  final allNovels = await ref.watch(libraryNovelsProviderV2.future);
+  return allNovels.where((n) => !n.isPublic).toList();
 });
 
 final libraryNovelsProviderV2 = FutureProvider<List<Novel>>((ref) async {
@@ -68,21 +53,27 @@ final recentProgressDetailsProviderV2 =
       final recentProgress = await ref.watch(recentUserProgressProvider.future);
       final dataManager = ref.watch(dataManagerProvider);
 
-      final details = <RecentProgressDetails>[];
-      for (final progress in recentProgress) {
-        final novel = await dataManager.getNovel(progress.novelId);
-        final chapter = await dataManager.getChapter(
-          Chapter(id: progress.chapterId, novelId: progress.novelId, idx: 0),
-        );
-        if (novel != null && chapter != null) {
-          details.add(
-            RecentProgressDetails(
-              userProgress: progress,
-              novel: novel,
-              chapter: chapter,
-            ),
+      final details = await Future.wait(
+        recentProgress.map((progress) async {
+          final novelFuture = dataManager.getNovel(progress.novelId);
+          final chapterFuture = dataManager.getChapter(
+            Chapter(id: progress.chapterId, novelId: progress.novelId, idx: 0),
           );
-        }
-      }
-      return details;
+          final results = await Future.wait<dynamic>([
+            novelFuture,
+            chapterFuture,
+          ]);
+          final novel = results[0] as Novel?;
+          final chapter = results[1] as Chapter?;
+          if (novel == null || chapter == null) {
+            return null;
+          }
+          return RecentProgressDetails(
+            userProgress: progress,
+            novel: novel,
+            chapter: chapter,
+          );
+        }),
+      );
+      return details.whereType<RecentProgressDetails>().toList();
     });

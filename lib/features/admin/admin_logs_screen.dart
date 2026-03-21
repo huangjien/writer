@@ -24,11 +24,15 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
   List<Map<String, dynamic>> _logs = [];
   bool _isLoading = false;
   String? _errorMessage;
+  Map<String, dynamic> _metadata = const {};
   int _maxSizeKb = 50;
   int _selectedFileIndex = 0;
   List<Map<String, dynamic>> _availableFiles = [];
 
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _loggerController = TextEditingController();
+  final TextEditingController _startDateController = TextEditingController();
+  final TextEditingController _endDateController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   String? _selectedLevel;
   final List<String> _logLevels = [
@@ -39,6 +43,8 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
     'CRITICAL',
   ];
 
+  static final RegExp _datePattern = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +54,9 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _loggerController.dispose();
+    _startDateController.dispose();
+    _endDateController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -59,6 +68,28 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
     });
 
     try {
+      final startDate = _startDateController.text.trim();
+      final endDate = _endDateController.text.trim();
+      if (!_isValidDateInput(startDate) || !_isValidDateInput(endDate)) {
+        setState(() {
+          _errorMessage = 'Invalid date format. Use YYYY-MM-DD.';
+          _logs = [];
+          _metadata = const {};
+          _isLoading = false;
+        });
+        return;
+      }
+      if (startDate.isNotEmpty &&
+          endDate.isNotEmpty &&
+          DateTime.parse(startDate).isAfter(DateTime.parse(endDate))) {
+        setState(() {
+          _errorMessage = 'Start Date must be on or before End Date.';
+          _logs = [];
+          _metadata = const {};
+          _isLoading = false;
+        });
+        return;
+      }
       final remote = ref.read(remoteRepositoryProvider);
       final result = await remote.getAdminLogsEnhanced(
         maxSizeKb: _maxSizeKb,
@@ -67,11 +98,17 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
         searchText: _searchController.text.isNotEmpty
             ? _searchController.text
             : null,
+        logger: _loggerController.text.isNotEmpty
+            ? _loggerController.text
+            : null,
+        startDate: startDate.isNotEmpty ? startDate : null,
+        endDate: endDate.isNotEmpty ? endDate : null,
       );
 
       if (result != null) {
         final logsString = result['logs'] as String?;
         final availableFiles = result['available_files'] as List<dynamic>?;
+        final metadata = result['metadata'] as Map<String, dynamic>?;
 
         setState(() {
           if (logsString != null && logsString.isNotEmpty) {
@@ -88,22 +125,52 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
                 )
                 .toList();
           }
+          _metadata = metadata ?? const {};
 
           _isLoading = false;
         });
       } else {
         setState(() {
           _logs = [];
+          _metadata = const {};
           _isLoading = false;
         });
       }
     } catch (e) {
-      if (e is ApiException && e.statusCode == 401) return;
+      if (e is ApiException && e.statusCode == 401) {
+        setState(() {
+          _errorMessage = null;
+          _logs = [];
+          _metadata = const {};
+          _isLoading = false;
+        });
+        return;
+      }
       setState(() {
-        _errorMessage = '$e';
+        if (e is ApiException) {
+          _errorMessage = '${e.statusCode}: ${e.rawMessage}';
+        } else {
+          _errorMessage = '$e';
+        }
         _logs = [];
+        _metadata = const {};
         _isLoading = false;
       });
+    }
+  }
+
+  bool _isValidDateInput(String value) {
+    if (value.isEmpty) return true;
+    if (!_datePattern.hasMatch(value)) return false;
+    try {
+      final parsed = DateTime.parse(value);
+      final normalized =
+          '${parsed.year.toString().padLeft(4, '0')}-'
+          '${parsed.month.toString().padLeft(2, '0')}-'
+          '${parsed.day.toString().padLeft(2, '0')}';
+      return normalized == value;
+    } catch (_) {
+      return false;
     }
   }
 
@@ -196,6 +263,9 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
         children: [
           AdminLogsControls(
             searchController: _searchController,
+            loggerController: _loggerController,
+            startDateController: _startDateController,
+            endDateController: _endDateController,
             isLoading: _isLoading,
             availableFiles: _availableFiles,
             selectedFileIndex: _selectedFileIndex,
@@ -217,6 +287,18 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
               _searchController.clear();
               _loadLogs();
             },
+            onClearLogger: () {
+              _loggerController.clear();
+              _loadLogs();
+            },
+            onClearStartDate: () {
+              _startDateController.clear();
+              _loadLogs();
+            },
+            onClearEndDate: () {
+              _endDateController.clear();
+              _loadLogs();
+            },
           ),
           AdminLogsLevelFilters(
             logLevels: _logLevels,
@@ -228,6 +310,24 @@ class _AdminLogsScreenState extends ConsumerState<AdminLogsScreen> {
               _loadLogs();
             },
           ),
+          if (_metadata.isNotEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              child: Wrap(
+                spacing: 12,
+                runSpacing: 4,
+                children: [
+                  if (_metadata['file'] != null)
+                    Text('File: ${_metadata['file']}'),
+                  if (_metadata['total_lines'] != null)
+                    Text('Total: ${_metadata['total_lines']}'),
+                  if (_metadata['filtered_lines'] != null)
+                    Text('Filtered: ${_metadata['filtered_lines']}'),
+                ],
+              ),
+            ),
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())

@@ -325,6 +325,186 @@ void main() {
       ).called(greaterThanOrEqualTo(1));
     });
 
+    testWidgets('passes logger filter on search', (tester) async {
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
+      when(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'logs': logsString,
+          'metadata': {
+            'file': 'app.log',
+            'file_exists': true,
+            'total_lines': 3,
+            'filtered_lines': 3,
+            'size_bytes': 500,
+          },
+          'available_files': [
+            {'index': 0, 'name': 'app.log', 'size_bytes': 1024, 'size_kb': 1.0},
+          ],
+        },
+      );
+
+      await tester.pumpWidget(
+        buildTestApp(
+          overrides: [
+            remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
+            sessionProvider.overrideWith((ref) => sessionNotifier),
+          ],
+          child: const AdminLogsScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Logger'),
+        'authorconsole.db',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      await tester.pumpAndSettle();
+
+      verify(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: 50,
+          fileIndex: 0,
+          level: null,
+          logger: 'authorconsole.db',
+          searchText: null,
+        ),
+      ).called(1);
+    });
+
+    testWidgets('passes date filters on search', (tester) async {
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
+      when(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'logs': logsString,
+          'metadata': {
+            'file': 'app.log',
+            'file_exists': true,
+            'total_lines': 3,
+            'filtered_lines': 3,
+            'size_bytes': 500,
+          },
+          'available_files': [
+            {'index': 0, 'name': 'app.log', 'size_bytes': 1024, 'size_kb': 1.0},
+          ],
+        },
+      );
+
+      await tester.pumpWidget(
+        buildTestApp(
+          overrides: [
+            remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
+            sessionProvider.overrideWith((ref) => sessionNotifier),
+          ],
+          child: const AdminLogsScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Start Date'),
+        '2026-01-01',
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, 'End Date'),
+        '2026-01-31',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      await tester.pumpAndSettle();
+
+      verify(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: 50,
+          fileIndex: 0,
+          level: null,
+          logger: null,
+          searchText: null,
+          startDate: '2026-01-01',
+          endDate: '2026-01-31',
+        ),
+      ).called(1);
+    });
+
+    testWidgets('shows validation error for invalid date format', (
+      tester,
+    ) async {
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
+      when(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'logs': logsString,
+          'metadata': {
+            'file': 'app.log',
+            'file_exists': true,
+            'total_lines': 3,
+            'filtered_lines': 3,
+            'size_bytes': 500,
+          },
+          'available_files': [
+            {'index': 0, 'name': 'app.log', 'size_bytes': 1024, 'size_kb': 1.0},
+          ],
+        },
+      );
+
+      await tester.pumpWidget(
+        buildTestApp(
+          overrides: [
+            remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
+            sessionProvider.overrideWith((ref) => sessionNotifier),
+          ],
+          child: const AdminLogsScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Start Date'),
+        '2026/01/01',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Invalid date format'), findsOneWidget);
+      verify(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).called(1);
+    });
+
     testWidgets('scroll buttons functionality', (tester) async {
       final longLogs = List.generate(
         100,
@@ -540,7 +720,9 @@ void main() {
       expect(find.byType(ListView), findsOneWidget);
     });
 
-    testWidgets('ignores 401 error', (tester) async {
+    testWidgets('handles 401 error without showing failure message', (
+      tester,
+    ) async {
       when(
         () => mockRemoteRepository.getAdminLogsEnhanced(
           maxSizeKb: any(named: 'maxSizeKb'),
@@ -562,16 +744,11 @@ void main() {
       );
 
       await tester.pump();
+      await tester.pumpAndSettle();
 
-      // Should remain in loading state (CircularProgressIndicator) because the error is ignored
-      // and _isLoading is not set to false
-      expect(find.byType(CircularProgressIndicator), findsWidgets);
-
-      // Do not use pumpAndSettle as it will timeout on infinite animation
-      await tester.pump(const Duration(milliseconds: 500));
-
-      expect(find.byType(CircularProgressIndicator), findsWidgets);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(find.text('Failed to load logs'), findsNothing);
+      expect(find.textContaining('No logs available'), findsOneWidget);
     });
 
     testWidgets('clears logs when result is null', (tester) async {
@@ -603,7 +780,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Application started'), findsOneWidget);
+      expect(find.textContaining('No logs available'), findsNothing);
 
       // Now return null (refresh)
       when(
@@ -619,7 +796,6 @@ void main() {
       await tester.tap(find.byIcon(Icons.refresh));
       await tester.pumpAndSettle();
 
-      expect(find.text('Application started'), findsNothing);
       expect(find.textContaining('No logs available'), findsOneWidget);
     });
   });

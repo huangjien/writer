@@ -11,6 +11,7 @@
 ## Milestones
 - UI Phase milestone: complete (Slices 1-4 delivered)
 - Flow Resilience & Accessibility milestone: complete (Slices 1-3 delivered)
+- Performance & Observability milestone: complete (Slices 1-3 delivered)
 
 ## Flow Resilience & Accessibility Phase
 - Reduce friction across library-to-reader-to-editor transitions
@@ -18,18 +19,21 @@
 - Expand accessibility and localization consistency checks
 - Execute plan in docs/plans/2026-03-19-flow-resilience-accessibility-milestone-plan.md
 
+## Performance & Observability Phase
+- Harden diagnostics for large libraries and long chapters
+- Improve flow efficiency in library and reader pathways
+- Strengthen admin observability for support operations
+- Execute plan in docs/plans/2026-03-20-performance-observability-milestone-plan.md
+
 ## Now
-- Stabilize core writing and reading flows
+- Lock milestone closure evidence and document outcomes
 - Maintain high confidence through lint and test gates
 - Keep routing, provider state, and repository boundaries coherent
-- Complete Slice 1: journey transition clarity
-- Complete Slice 2: offline and sync UX reliability
-- Complete Slice 3: accessibility and localization consistency
 
 ## Next
-- Harden performance diagnostics for large libraries and long chapters
-- Strengthen admin observability for support operations
-- Define and start the next milestone scope
+- Define follow-on milestone after observability handoff
+- Prioritize highest-impact reliability and maintainability debt
+- Preserve observability gains while expanding feature scope
 
 ## Later
 - Deepen AI-assisted writing workflows without coupling to UI internals

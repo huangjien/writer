@@ -11,6 +11,7 @@ import 'package:writer/models/chapter_cache.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:writer/services/storage_service.dart';
 import 'package:writer/models/cache_metadata.dart';
+import 'package:writer/services/performance_baseline_service.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -143,6 +144,7 @@ void main() {
     late LocalStorageRepository local;
     late MockRemoteRepository remote;
     late DataManager dataManager;
+    late PerformanceBaselineService performanceBaseline;
 
     setUp(() async {
       prefs = await SharedPreferences.getInstance();
@@ -151,11 +153,13 @@ void main() {
       storage = TestStorageService(prefs);
       local = LocalStorageRepository(storage);
       remote = MockRemoteRepository();
+      performanceBaseline = PerformanceBaselineService();
       dataManager = DataManager(
         local: local,
         remote: remote,
         network: monitor,
         storage: storage,
+        performanceBaseline: performanceBaseline,
       );
     });
 
@@ -190,6 +194,10 @@ void main() {
       expect(result.length, 1);
       expect(result.first.id, 'n-1');
       expect(dataManager.currentState, DataManagerState.idle);
+      expect(
+        performanceBaseline.samplesFor('data_manager.get_all_novels'),
+        isNotEmpty,
+      );
     });
 
     test('getAllNovels returns cached data when offline', () async {

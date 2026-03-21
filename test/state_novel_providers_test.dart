@@ -186,6 +186,76 @@ void main() {
       final chapters = await container.read(chaptersProviderV2('n1').future);
       expect(chapters, isEmpty);
     });
+
+    test('novelsProviderV2 reuses libraryNovelsProviderV2 result', () async {
+      const novels = [
+        Novel(
+          id: 'public-1',
+          title: 'Public',
+          author: 'Author',
+          description: 'Description',
+          coverUrl: null,
+          languageCode: 'en',
+          isPublic: true,
+        ),
+        Novel(
+          id: 'member-1',
+          title: 'Member',
+          author: 'Author',
+          description: 'Description',
+          coverUrl: null,
+          languageCode: 'en',
+          isPublic: false,
+        ),
+      ];
+
+      final container = ProviderContainer(
+        overrides: [
+          libraryNovelsProviderV2.overrideWith((ref) async => novels),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final resolved = await container.read(novelsProviderV2.future);
+      expect(resolved, novels);
+    });
+
+    test(
+      'memberNovelsProviderV2 filters from libraryNovelsProviderV2',
+      () async {
+        const novels = [
+          Novel(
+            id: 'public-1',
+            title: 'Public',
+            author: 'Author',
+            description: 'Description',
+            coverUrl: null,
+            languageCode: 'en',
+            isPublic: true,
+          ),
+          Novel(
+            id: 'member-1',
+            title: 'Member',
+            author: 'Author',
+            description: 'Description',
+            coverUrl: null,
+            languageCode: 'en',
+            isPublic: false,
+          ),
+        ];
+
+        final container = ProviderContainer(
+          overrides: [
+            libraryNovelsProviderV2.overrideWith((ref) async => novels),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final resolved = await container.read(memberNovelsProviderV2.future);
+        expect(resolved.length, 1);
+        expect(resolved.first.id, 'member-1');
+      },
+    );
   });
 
   group('novel_providers', () {
