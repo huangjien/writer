@@ -11,9 +11,7 @@ void main() {
     testWidgets('AppBar displays title correctly', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            appBar: AppBar(title: Text('Test Title')),
-          ),
+          home: Scaffold(appBar: AppBar(title: const Text('Test Title'))),
         ),
       );
       expect(find.text('Test Title'), findsOneWidget);
@@ -89,9 +87,7 @@ void main() {
       final controller = TextEditingController(text: 'Initial');
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: TextField(controller: controller),
-          ),
+          home: Scaffold(body: TextField(controller: controller)),
         ),
       );
       expect(find.byType(TextField), findsOneWidget);
@@ -102,9 +98,7 @@ void main() {
       final controller = TextEditingController(text: '');
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: TextField(controller: controller),
-          ),
+          home: Scaffold(body: TextField(controller: controller)),
         ),
       );
       expect(controller.text, isEmpty);
@@ -127,9 +121,7 @@ void main() {
     testWidgets('Card displays child widget', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: Card(child: Text('Card Content')),
-          ),
+          home: Scaffold(body: Card(child: Text('Card Content'))),
         ),
       );
       expect(find.text('Card Content'), findsOneWidget);
@@ -156,22 +148,14 @@ void main() {
     // 5. Loading State Tests
     testWidgets('CircularProgressIndicator displays', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: CircularProgressIndicator(),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: CircularProgressIndicator())),
       );
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
     testWidgets('LinearProgressIndicator displays', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: LinearProgressIndicator(),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: LinearProgressIndicator())),
       );
       expect(find.byType(LinearProgressIndicator), findsOneWidget);
     });
@@ -179,11 +163,7 @@ void main() {
     // 6. Icon Tests
     testWidgets('Icon displays correctly', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: Icon(Icons.star),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: Icon(Icons.star))),
       );
       expect(find.byIcon(Icons.star), findsOneWidget);
     });
@@ -192,11 +172,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: Icon(
-              Icons.favorite,
-              color: Colors.red,
-              size: 48,
-            ),
+            body: Icon(Icons.favorite, color: Colors.red, size: 48),
           ),
         ),
       );
@@ -206,22 +182,14 @@ void main() {
     // 7. Text Tests
     testWidgets('Text displays correctly', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: Text('Hello World'),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: Text('Hello World'))),
       );
       expect(find.text('Hello World'), findsOneWidget);
     });
 
     testWidgets('Text handles empty string', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: Text(''),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: Text(''))),
       );
       expect(find.byType(Text), findsOneWidget);
     });
@@ -230,11 +198,7 @@ void main() {
       final longText = 'A' * 100000;
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: SingleChildScrollView(
-              child: Text(longText),
-            ),
-          ),
+          home: Scaffold(body: SingleChildScrollView(child: Text(longText))),
         ),
       );
       expect(find.byType(Text), findsOneWidget);
@@ -244,11 +208,7 @@ void main() {
     testWidgets('Handles special characters', (tester) async {
       const specialText = '🎉\n\t<script>&"\'</script>';
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Text(specialText),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: Text(specialText))),
       );
       expect(find.byType(Text), findsOneWidget);
     });
@@ -256,9 +216,7 @@ void main() {
     testWidgets('Handles null title gracefully', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            appBar: AppBar(title: Text(null.toString())),
-          ),
+          home: Scaffold(appBar: AppBar(title: Text(null.toString()))),
         ),
       );
       expect(find.byType(AppBar), findsOneWidget);
@@ -290,11 +248,7 @@ void main() {
         const MaterialApp(
           home: Scaffold(
             body: Column(
-              children: [
-                Text('Child 1'),
-                Text('Child 2'),
-                Text('Child 3'),
-              ],
+              children: [Text('Child 1'), Text('Child 2'), Text('Child 3')],
             ),
           ),
         ),
@@ -308,12 +262,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: Row(
-              children: [
-                Text('Child 1'),
-                Text('Child 2'),
-              ],
-            ),
+            body: Row(children: [Text('Child 1'), Text('Child 2')]),
           ),
         ),
       );
@@ -328,11 +277,7 @@ void main() {
             body: Stack(
               children: [
                 Text('Bottom'),
-                Positioned(
-                  top: 10,
-                  left: 10,
-                  child: Text('Top'),
-                ),
+                Positioned(top: 10, left: 10, child: Text('Top')),
               ],
             ),
           ),
@@ -365,10 +310,7 @@ void main() {
           home: Scaffold(
             body: SingleChildScrollView(
               child: Column(
-                children: List.generate(
-                  100,
-                  (i) => Text('Item $i'),
-                ),
+                children: List.generate(100, (i) => Text('Item $i')),
               ),
             ),
           ),
@@ -387,9 +329,9 @@ void main() {
                 onPressed: () {
                   showDialog(
                     context: tester.element(find.byType(ElevatedButton)),
-                    builder: (context) => AlertDialog(
-                      title: const Text('Alert'),
-                      content: const Text('Content'),
+                    builder: (context) => const AlertDialog(
+                      title: Text('Alert'),
+                      content: Text('Content'),
                     ),
                   );
                 },
@@ -427,10 +369,7 @@ void main() {
           home: Scaffold(
             bottomNavigationBar: BottomNavigationBar(
               items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: 'Home',
-                ),
+                BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.settings),
                   label: 'Settings',
@@ -478,11 +417,7 @@ void main() {
     testWidgets('SafeArea respects device padding', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: SafeArea(
-              child: Text('Safe Content'),
-            ),
-          ),
+          home: Scaffold(body: SafeArea(child: Text('Safe Content'))),
         ),
       );
       expect(find.text('Safe Content'), findsOneWidget);
@@ -493,11 +428,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: SizedBox(
-              width: 100,
-              height: 100,
-              child: Text('Sized'),
-            ),
+            body: SizedBox(width: 100, height: 100, child: Text('Sized')),
           ),
         ),
       );
@@ -507,11 +438,7 @@ void main() {
     testWidgets('SizedBox expands to fill', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: SizedBox.expand(
-              child: Text('Expanded'),
-            ),
-          ),
+          home: Scaffold(body: SizedBox.expand(child: Text('Expanded'))),
         ),
       );
       expect(find.byType(SizedBox), findsOneWidget);
@@ -623,13 +550,15 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Required';
-                }
-                return null;
-              },
+            body: Form(
+              child: TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Required';
+                  }
+                  return null;
+                },
+              ),
             ),
           ),
         ),
@@ -662,7 +591,7 @@ void main() {
 
       expect(dismissed, isFalse);
       await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(dismissed, isTrue);
     });
 
@@ -672,7 +601,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: Image(
-              image: NetworkImage('https://example.com/image.jpg'),
+              image: const NetworkImage('https://example.com/image.jpg'),
               errorBuilder: (context, error, stackTrace) {
                 return const Icon(Icons.error);
               },
@@ -705,10 +634,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: Opacity(
-              opacity: 0.5,
-              child: Text('Semi-transparent'),
-            ),
+            body: Opacity(opacity: 0.5, child: Text('Semi-transparent')),
           ),
         ),
       );
@@ -720,13 +646,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: Column(
-              children: [
-                Text('Above'),
-                Divider(),
-                Text('Below'),
-              ],
-            ),
+            body: Column(children: [Text('Above'), Divider(), Text('Below')]),
           ),
         ),
       );
@@ -756,10 +676,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: Tooltip(
-              message: 'Help',
-              child: Icon(Icons.help),
-            ),
+            body: Tooltip(message: 'Help', child: Icon(Icons.help)),
           ),
         ),
       );
@@ -769,12 +686,9 @@ void main() {
     // 28. Badge Tests
     testWidgets('Badge displays count', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: Badge(
-              label: Text('5'),
-              child: Icon(Icons.mail),
-            ),
+            body: Badge(label: Text('5'), child: Icon(Icons.mail)),
           ),
         ),
       );
@@ -807,11 +721,11 @@ void main() {
     // 30. ExpansionTile Tests
     testWidgets('ExpansionTile expands and collapses', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ExpansionTile(
-              title: const Text('Tap to expand'),
-              children: const [
+              title: Text('Tap to expand'),
+              children: [
                 ListTile(title: Text('Child 1')),
                 ListTile(title: Text('Child 2')),
               ],
