@@ -24,6 +24,11 @@ class MockAiChatNotifier extends StateNotifier<AiChatState>
   }
 
   @override
+  Future<void> sendMessageStreaming(String message) async {
+    await sendMessage(message);
+  }
+
+  @override
   void startNewSession() {
     state = state.copyWith(
       currentSessionId: null,

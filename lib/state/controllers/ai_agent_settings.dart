@@ -8,6 +8,7 @@ const String _deepAgentReflectionModeKey = 'ai_deep_agent_reflection_mode';
 const String _deepAgentShowDetailsKey = 'ai_deep_agent_show_details';
 const String _deepAgentMaxPlanStepsKey = 'ai_deep_agent_max_plan_steps';
 const String _deepAgentMaxToolRoundsKey = 'ai_deep_agent_max_tool_rounds';
+const String _enableStreamingKey = 'ai_enable_streaming';
 
 enum DeepAgentReflectionMode { off, onFailure, always }
 
@@ -43,6 +44,7 @@ class AiAgentSettings {
   final bool deepAgentShowDetails;
   final int deepAgentMaxPlanSteps;
   final int deepAgentMaxToolRounds;
+  final bool enableStreaming;
 
   const AiAgentSettings({
     required this.preferDeepAgent,
@@ -51,6 +53,7 @@ class AiAgentSettings {
     required this.deepAgentShowDetails,
     required this.deepAgentMaxPlanSteps,
     required this.deepAgentMaxToolRounds,
+    required this.enableStreaming,
   });
 
   AiAgentSettings copyWith({
@@ -60,6 +63,7 @@ class AiAgentSettings {
     bool? deepAgentShowDetails,
     int? deepAgentMaxPlanSteps,
     int? deepAgentMaxToolRounds,
+    bool? enableStreaming,
   }) {
     return AiAgentSettings(
       preferDeepAgent: preferDeepAgent ?? this.preferDeepAgent,
@@ -72,6 +76,7 @@ class AiAgentSettings {
           deepAgentMaxPlanSteps ?? this.deepAgentMaxPlanSteps,
       deepAgentMaxToolRounds:
           deepAgentMaxToolRounds ?? this.deepAgentMaxToolRounds,
+      enableStreaming: enableStreaming ?? this.enableStreaming,
     );
   }
 }
@@ -100,6 +105,7 @@ class AiAgentSettingsNotifier extends StateNotifier<AiAgentSettings> {
       1,
       20,
     );
+    final enableStreaming = prefs.getBool(_enableStreamingKey) ?? true;
 
     return AiAgentSettings(
       preferDeepAgent: preferDeepAgent,
@@ -108,6 +114,7 @@ class AiAgentSettingsNotifier extends StateNotifier<AiAgentSettings> {
       deepAgentShowDetails: showDetails,
       deepAgentMaxPlanSteps: maxPlanSteps,
       deepAgentMaxToolRounds: maxToolRounds,
+      enableStreaming: enableStreaming,
     );
   }
 
@@ -148,6 +155,11 @@ class AiAgentSettingsNotifier extends StateNotifier<AiAgentSettings> {
     final v = _clampInt(value, 8, 1, 20);
     await _prefs.setInt(_deepAgentMaxToolRoundsKey, v);
     state = state.copyWith(deepAgentMaxToolRounds: v);
+  }
+
+  Future<void> setEnableStreaming(bool value) async {
+    await _prefs.setBool(_enableStreamingKey, value);
+    state = state.copyWith(enableStreaming: value);
   }
 }
 

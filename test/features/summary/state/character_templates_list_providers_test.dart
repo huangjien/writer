@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:writer/features/summary/state/character_templates_list_providers.dart';
 import 'package:writer/models/character_template_row.dart';
+import 'package:writer/models/skill.dart';
 import 'package:writer/models/token_usage.dart';
 import 'package:writer/repositories/remote_repository.dart';
 import 'package:writer/repositories/template_repository.dart';
@@ -52,6 +53,15 @@ class MockRemoteRepository implements RemoteRepository {
       throw Exception('Search failed');
     }
     return _searchResults.map((r) => r.toRow()).toList();
+  }
+
+  @override
+  Future<Stream<String>> stream(
+    String path,
+    Map<String, dynamic> body, {
+    bool retryUnauthorized = false,
+  }) async {
+    return const Stream.empty();
   }
 
   @override
@@ -141,6 +151,66 @@ class MockRemoteRepository implements RemoteRepository {
     String? startDate,
     String? endDate,
   }) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<SkillsListResponse> searchSkills({String? name}) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Skill> createSkill(CreateSkillRequest request) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ExecuteSkillResponse> executeSkill(
+    String skillName,
+    Map<String, dynamic> input,
+  ) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ValidateSkillResponse> validateSkill(
+    Map<String, dynamic> template,
+  ) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteSkill(String skillId) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Skill> getSkill(String skillId) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Skill> updateSkill(String skillId, UpdateSkillRequest request) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<String>> getSkillOwners(String skillId) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> addSkillOwner(String skillId, String ownerId) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> removeSkillOwner(String skillId, String ownerId) async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<SkillVersionsResponse> getSkillVersions(String skillId) async {
     throw UnimplementedError();
   }
 }

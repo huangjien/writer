@@ -41,6 +41,8 @@ void main() {
       mockRemote = MockRemoteRepository();
       mockNetworkMonitor = MockNetworkMonitor();
       mockLocalStorage = MockLocalStorageRepository();
+
+      registerFallbackValue(const Stream.empty());
     });
 
     test('provides SyncService instance with correct dependencies', () {

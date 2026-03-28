@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/models/api_error_response.dart';
+import 'package:writer/models/skill.dart';
 import 'package:writer/models/token_usage.dart';
 import 'package:writer/state/ai_service_settings.dart';
 import 'package:writer/state/session_state.dart';
@@ -289,6 +290,55 @@ class RemoteRepository {
   }
 
   // Deprecated usage mapping to new methods
+  Future<Stream<String>> stream(
+    String path,
+    Map<String, dynamic> body, {
+    bool retryUnauthorized = false,
+  }) async {
+    try {
+      final uri = Uri.parse(_url(path));
+      var headers = await _headers(withAuth: true);
+      var request = http.StreamedRequest('POST', uri);
+      request.headers.addAll(headers);
+      request.headers['Content-Type'] = 'application/json';
+      request.sink.add(utf8.encode(jsonEncode(body)));
+
+      var response = await _client.send(request).timeout(_timeout);
+
+      if (response.statusCode == 401) {
+        final hadAuth = headers.containsKey('X-Session-Id');
+        try {
+          await _onUnauthorized?.call();
+        } catch (_) {}
+        if (retryUnauthorized && hadAuth) {
+          headers = await _headers(withAuth: false);
+          request = http.StreamedRequest('POST', uri);
+          request.headers.addAll(headers);
+          request.headers['Content-Type'] = 'application/json';
+          request.sink.add(utf8.encode(jsonEncode(body)));
+          response = await _client.send(request).timeout(_timeout);
+        }
+      }
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        final responseBody = await response.stream.bytesToString();
+        throw _apiExceptionFromResponse(
+          http.Response(
+            responseBody,
+            response.statusCode,
+            headers: response.headers,
+          ),
+        );
+      }
+
+      return response.stream.transform(utf8.decoder);
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException(0, e.toString());
+    }
+  }
+
+  // Deprecated usage mapping to new methods
   Future<Map<String, dynamic>?> _postJson(
     String path,
     Map<String, dynamic> payload,
@@ -445,5 +495,141 @@ class RemoteRepository {
       return data;
     }
     return null;
+  }
+
+  // Skills API Methods
+
+  Future<SkillsListResponse> searchSkills({String? name}) async {
+    final queryParams = <String, String>{};
+    if (name != null && name.isNotEmpty) {
+      queryParams['name'] = name;
+    }
+    final data = await get('api/v1/skills', queryParameters: queryParams);
+    return SkillsListResponse.fromJson(data ?? {});
+  }
+
+  Future<Skill> createSkill(CreateSkillRequest request) async {
+    final data = await post('api/v1/skills', request.toJson());
+    return Skill.fromJson(data);
+  }
+
+  Future<ExecuteSkillResponse> executeSkill(
+    String skillName,
+    Map<String, dynamic> input,
+  ) async {
+    final request = ExecuteSkillRequest(skillName: skillName, input: input);
+    final data = await post('api/v1/skills/execute', request.toJson());
+    return ExecuteSkillResponse.fromJson(data);
+  }
+
+  Future<ValidateSkillResponse> validateSkill(
+    Map<String, dynamic> template,
+  ) async {
+    final request = ValidateSkillRequest(template: template);
+    final data = await post('api/v1/skills/validate', request.toJson());
+    return ValidateSkillResponse.fromJson(data);
+  }
+
+  Future<void> deleteSkill(String skillId) async {
+    await _delete('api/v1/skills/$skillId');
+  }
+
+  Future<Skill> getSkill(String skillId) async {
+    final data = await get('api/v1/skills/$skillId');
+    return Skill.fromJson(data);
+  }
+
+  Future<Skill> updateSkill(String skillId, UpdateSkillRequest request) async {
+    final data = await _patch('api/v1/skills/$skillId', request.toJson());
+    return Skill.fromJson(data);
+  }
+
+  Future<List<String>> getSkillOwners(String skillId) async {
+    final data =
+        await get('api/v1/skills/$skillId/owners') as Map<String, dynamic>;
+    return (data['owners'] as List<dynamic>).map((e) => e as String).toList();
+  }
+
+  Future<void> addSkillOwner(String skillId, String ownerId) async {
+    final request = AddOwnerRequest(ownerId: ownerId);
+    await post('api/v1/skills/$skillId/owners', request.toJson());
+  }
+
+  Future<void> removeSkillOwner(String skillId, String ownerId) async {
+    await _delete('api/v1/skills/$skillId/owners/$ownerId');
+  }
+
+  Future<SkillVersionsResponse> getSkillVersions(String skillId) async {
+    final data = await get('api/v1/skills/$skillId/versions');
+    return SkillVersionsResponse.fromJson(data);
+  }
+
+  Future<void> _delete(String path) async {
+    try {
+      final uri = Uri.parse(_url(path));
+      final headers = await _headers(withAuth: true);
+      var response = await _client
+          .delete(uri, headers: headers)
+          .timeout(_timeout);
+      if (response.statusCode == 401) {
+        final hadAuth = headers.containsKey('X-Session-Id');
+        try {
+          await _onUnauthorized?.call();
+        } catch (_) {}
+        if (hadAuth) {
+          final newHeaders = await _headers(withAuth: false);
+          response = await _client
+              .delete(uri, headers: newHeaders)
+              .timeout(_timeout);
+        }
+      }
+      if (response.statusCode >= 400) {
+        final error = jsonDecode(response.body) as Map<String, dynamic>;
+        throw ApiException(
+          response.statusCode,
+          error['detail'] ?? 'Delete request failed',
+        );
+      }
+    } on ApiException {
+      rethrow;
+    } catch (e) {
+      throw ApiException(0, 'DELETE request failed: $e');
+    }
+  }
+
+  Future<dynamic> _patch(String path, Map<String, dynamic> body) async {
+    try {
+      final uri = Uri.parse(_url(path));
+      final headers = await _headers(withAuth: true);
+      var response = await _client
+          .patch(uri, headers: headers, body: jsonEncode(body))
+          .timeout(_timeout);
+      if (response.statusCode == 401) {
+        final hadAuth = headers.containsKey('X-Session-Id');
+        try {
+          await _onUnauthorized?.call();
+        } catch (_) {}
+        if (hadAuth) {
+          final newHeaders = await _headers(withAuth: false);
+          response = await _client
+              .patch(uri, headers: newHeaders, body: jsonEncode(body))
+              .timeout(_timeout);
+        }
+      }
+      if (response.statusCode >= 400) {
+        final error = jsonDecode(response.body) as Map<String, dynamic>;
+        throw ApiException(
+          response.statusCode,
+          error['detail'] ?? 'PATCH request failed',
+        );
+      }
+      final str = response.body;
+      if (str.isEmpty) return null;
+      return jsonDecode(str);
+    } on ApiException {
+      rethrow;
+    } catch (e) {
+      throw ApiException(0, 'PATCH request failed: $e');
+    }
   }
 }

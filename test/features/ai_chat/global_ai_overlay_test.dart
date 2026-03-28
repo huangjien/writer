@@ -91,6 +91,7 @@ class MockAiAgentSettingsNotifier extends StateNotifier<AiAgentSettings>
           deepAgentShowDetails: false,
           deepAgentMaxPlanSteps: 10,
           deepAgentMaxToolRounds: 5,
+          enableStreaming: false,
         ),
       );
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/repositories/remote_repository.dart';
@@ -282,6 +284,62 @@ class AiChatService {
       return null;
     } catch (_) {
       return null;
+    }
+  }
+
+  Stream<String> streamMessage(
+    String message, {
+    AiAgentSettings? settings,
+  }) async* {
+    final preferDeepAgent = settings?.preferDeepAgent ?? true;
+
+    final body = <String, dynamic>{'question': message, 'stream': true};
+
+    if (preferDeepAgent) {
+      final reflectionMode =
+          (settings?.deepAgentReflectionMode ?? DeepAgentReflectionMode.off)
+              .wireValue;
+      final maxPlanSteps = settings?.deepAgentMaxPlanSteps;
+      final maxToolRounds = settings?.deepAgentMaxToolRounds;
+
+      body['reflection_mode'] = reflectionMode;
+      if (maxPlanSteps != null) body['max_plan_steps'] = maxPlanSteps;
+      if (maxToolRounds != null) body['max_tool_rounds'] = maxToolRounds;
+    }
+
+    try {
+      final responseStream = preferDeepAgent
+          ? await remote.stream('agents/deep-agent', body)
+          : await remote.stream('agents/qa', body);
+
+      await for (final chunk in responseStream) {
+        final lines = chunk.split('\n');
+        for (final line in lines) {
+          if (line.startsWith('data: ')) {
+            final data = line.substring(6).trim();
+            if (data.isEmpty || data == '[DONE]') continue;
+
+            try {
+              final json = data.startsWith('{') && data.endsWith('}')
+                  ? data
+                  : '{"content": "$data"}';
+              final decoded = jsonDecode(json) as Map<String, dynamic>;
+              final content =
+                  decoded['content'] ?? decoded['text'] ?? decoded['delta'];
+
+              if (content is String && content.isNotEmpty) {
+                yield content;
+              }
+            } catch (_) {
+              if (data.isNotEmpty) {
+                yield data;
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      yield _formatError(e, null);
     }
   }
 }

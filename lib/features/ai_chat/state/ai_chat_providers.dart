@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:uuid/uuid.dart';
 import 'package:writer/features/ai_chat/services/ai_chat_service.dart';
 import 'package:writer/l10n/app_localizations.dart';
 import 'package:writer/shared/constants.dart';
@@ -11,6 +10,7 @@ import 'package:writer/features/ai_chat/models/chat_message.dart';
 import 'package:writer/features/ai_chat/models/chat_session.dart';
 import 'package:writer/features/ai_chat/services/chat_storage_service.dart';
 import 'package:writer/features/ai_chat/utils/context_utils.dart';
+import 'package:uuid/uuid.dart';
 
 // --- Context Provider ---
 
@@ -479,6 +479,60 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
   void clearMessages() {
     state = state.copyWith(messages: [], isLoading: false);
     startNewSession();
+  }
+
+  Future<void> sendMessageStreaming(String message) async {
+    final settings = _settingsReader();
+    final userMsg = ChatMessage(content: message, isUser: true);
+    final newMessages = <ChatMessage>[...state.messages, userMsg];
+
+    state = state.copyWith(messages: newMessages, isLoading: true);
+    _updateSession(newMessages);
+
+    try {
+      final aiMsg = ChatMessage(content: '', isUser: false, isStreaming: true);
+      final messagesWithAi = <ChatMessage>[...newMessages, aiMsg];
+      state = state.copyWith(messages: messagesWithAi, isLoading: false);
+      _updateSession(messagesWithAi);
+
+      final buffer = StringBuffer();
+      await for (final chunk in _aiChatService.streamMessage(
+        message,
+        settings: settings,
+      )) {
+        buffer.write(chunk);
+        final updatedMsg = aiMsg.copyWith(content: buffer.toString());
+        final index = state.messages.indexWhere((m) => m == aiMsg);
+        if (index >= 0) {
+          final updatedMessages = [...state.messages];
+          updatedMessages[index] = updatedMsg;
+          state = state.copyWith(messages: updatedMessages);
+          _updateSession(updatedMessages);
+        }
+      }
+
+      final finalMsg = aiMsg.copyWith(
+        content: buffer.toString(),
+        isStreaming: false,
+      );
+      final index = state.messages.indexWhere((m) => m == aiMsg);
+      if (index >= 0) {
+        final finalMessages = [...state.messages];
+        finalMessages[index] = finalMsg;
+        state = state.copyWith(messages: finalMessages);
+        _updateSession(finalMessages);
+      }
+    } catch (e) {
+      final l10n = _l10n();
+      final errorMsg = ChatMessage(
+        content: l10n.aiChatError(e.toString()),
+        isUser: false,
+        isStreaming: false,
+      );
+      final finalMessages = <ChatMessage>[...newMessages, errorMsg];
+      state = state.copyWith(messages: finalMessages, isLoading: false);
+      _updateSession(finalMessages);
+    }
   }
 }
 

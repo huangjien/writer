@@ -12,6 +12,7 @@
 - UI Phase milestone: complete (Slices 1-4 delivered)
 - Flow Resilience & Accessibility milestone: complete (Slices 1-3 delivered)
 - Performance & Observability milestone: complete (Slices 1-3 delivered)
+- AI Chat Enhancement milestone: in progress (Slices 1-6 planned)
 
 ## Flow Resilience & Accessibility Phase
 - Reduce friction across library-to-reader-to-editor transitions
@@ -24,16 +25,21 @@
 - Improve flow efficiency in library and reader pathways
 - Strengthen admin observability for support operations
 - Execute plan in docs/plans/2026-03-20-performance-observability-milestone-plan.md
+- Status: complete
+
+## AI Chat Enhancement Phase
+- Enhance existing AI chat with streaming, rich rendering, voice input, writing tools
+- Execute plan in docs/plans/2026-03-28-ai-chat-enhancement-milestone-plan.md
 
 ## Now
-- Lock milestone closure evidence and document outcomes
+- Execute AI Chat Enhancement milestone
 - Maintain high confidence through lint and test gates
 - Keep routing, provider state, and repository boundaries coherent
 
 ## Next
-- Define follow-on milestone after observability handoff
+- Complete remaining slices in AI Chat Enhancement milestone
+- Define follow-on milestone after AI chat handoff
 - Prioritize highest-impact reliability and maintainability debt
-- Preserve observability gains while expanding feature scope
 
 ## Later
 - Deepen AI-assisted writing workflows without coupling to UI internals

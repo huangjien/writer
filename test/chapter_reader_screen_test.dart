@@ -620,6 +620,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           chapterRepositoryProvider.overrideWithValue(mockChapterRepository),
           novelRepositoryProvider.overrideWithValue(mockNovelRepository),
           ttsDriverProvider.overrideWith((ref) => mockTtsDriver),
@@ -640,6 +641,7 @@ void main() {
                 deepAgentShowDetails: false,
                 deepAgentMaxPlanSteps: 6,
                 deepAgentMaxToolRounds: 8,
+                enableStreaming: false,
               ),
               mockStorageService,
               contextNotifier,

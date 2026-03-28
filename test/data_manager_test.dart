@@ -103,6 +103,15 @@ class MockRemoteRepository extends RemoteRepository {
     }
     return null;
   }
+
+  @override
+  Future<Stream<String>> stream(
+    String path,
+    Map<String, dynamic> body, {
+    bool retryUnauthorized = false,
+  }) async {
+    return const Stream.empty();
+  }
 }
 
 class TestStorageService implements StorageService {

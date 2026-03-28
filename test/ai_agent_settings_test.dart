@@ -68,6 +68,7 @@ void main() {
       deepAgentShowDetails: false,
       deepAgentMaxPlanSteps: 6,
       deepAgentMaxToolRounds: 8,
+      enableStreaming: false,
     );
 
     final updated = settings.copyWith(
