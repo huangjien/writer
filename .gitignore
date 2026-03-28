@@ -47,4 +47,4 @@ app.*.map.json
 /android/app/release
 
 
-/backend/src/authorconsole_backend.egg-info/PKG-INFO
+/backend/src/authorconsole_backend.egg-info/PKG-INFOfailures/
