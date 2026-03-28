@@ -288,4 +288,151 @@ void main() {
     verify(() => mockNovelRepository.deleteNovel('novel-1')).called(1);
     expect(find.text('Library Screen'), findsOneWidget);
   });
+
+  testWidgets('SideBar navigation items navigate correctly', (tester) async {
+    final container = ProviderContainer(
+      overrides: [
+        novelProvider.overrideWith(
+          (ref, id) async => id == 'novel-1' ? sampleNovel : null,
+        ),
+        editRoleProvider.overrideWith((ref, id) async => EditRole.contributor),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final router = GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => Scaffold(
+            appBar: AppBar(),
+            drawer: const SideBar(novelId: 'novel-1'),
+            body: const Text('Root'),
+          ),
+        ),
+        GoRoute(
+          path: '/novel/novel-1',
+          builder: (_, __) => const Scaffold(body: Text('Chapters')),
+        ),
+        GoRoute(
+          path: '/novel/novel-1/summary',
+          builder: (_, __) => const Scaffold(body: Text('Summary')),
+        ),
+        GoRoute(
+          path: '/novel/novel-1/characters',
+          builder: (_, __) => const Scaffold(body: Text('Characters')),
+        ),
+        GoRoute(
+          path: '/novel/novel-1/scenes',
+          builder: (_, __) => const Scaffold(body: Text('Scenes')),
+        ),
+        GoRoute(
+          path: '/settings',
+          builder: (_, __) => const Scaffold(body: Text('Settings')),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Open drawer and tap Chapter Index
+    tester.state<ScaffoldState>(find.byType(Scaffold).first).openDrawer();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Chapter Index'));
+    await tester.pumpAndSettle();
+    expect(find.text('Chapters'), findsOneWidget);
+  });
+
+  testWidgets('SideBar Summary and Characters nav items work', (tester) async {
+    final container = ProviderContainer(
+      overrides: [
+        novelProvider.overrideWith(
+          (ref, id) async => id == 'novel-1' ? sampleNovel : null,
+        ),
+        editRoleProvider.overrideWith((ref, id) async => EditRole.contributor),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final router = GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => Scaffold(
+            appBar: AppBar(),
+            drawer: const SideBar(novelId: 'novel-1'),
+            body: const Text('Root'),
+          ),
+        ),
+        GoRoute(
+          path: '/novel/novel-1/summary',
+          builder: (_, __) => const Scaffold(body: Text('Summary Page')),
+        ),
+        GoRoute(
+          path: '/novel/novel-1/characters',
+          builder: (_, __) => const Scaffold(body: Text('Characters Page')),
+        ),
+        GoRoute(
+          path: '/novel/novel-1/scenes',
+          builder: (_, __) => const Scaffold(body: Text('Scenes Page')),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    tester.state<ScaffoldState>(find.byType(Scaffold).first).openDrawer();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Summary'));
+    await tester.pumpAndSettle();
+    expect(find.text('Summary Page'), findsOneWidget);
+  });
+
+  testWidgets('SideBar shows navigation title when novel is null', (
+    tester,
+  ) async {
+    final container = ProviderContainer(
+      overrides: [
+        novelProvider.overrideWith((ref, id) async => null),
+        editRoleProvider.overrideWith((ref, id) async => EditRole.contributor),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: createRouter(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Navigation'), findsOneWidget);
+  });
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,6 +26,7 @@ import 'package:writer/state/admin_settings.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/state/ui_style_controller.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:writer/state/storage_service_provider.dart';
@@ -428,5 +430,223 @@ void main() {
 
     await tester.pumpAndSettle();
     await tester.pumpAndSettle(const Duration(milliseconds: 500));
+  });
+
+  testWidgets(
+    'SettingsScreen admin can tap Admin Mode, Admin Logs, Style Guide links',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final user = User(id: '123', email: 'admin@example.com', isAdmin: true);
+      const backendUser = BackendUser(id: '123', email: 'admin@example.com');
+      final mockUserRepository = MockUserRepository();
+      when(
+        () => mockUserRepository.fetchUser(any()),
+      ).thenAnswer((_) async => user);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            themeControllerProvider.overrideWith(
+              (ref) => ThemeController(prefs),
+            ),
+            uiStyleControllerProvider.overrideWith(
+              (ref) => UiStyleController(prefs),
+            ),
+            appSettingsProvider.overrideWith(
+              (ref) => AppSettingsNotifier(prefs),
+            ),
+            ttsSettingsProvider.overrideWith(
+              (ref) => TtsSettingsNotifier(prefs),
+            ),
+            performanceSettingsProvider.overrideWith(
+              (ref) => PerformanceSettingsNotifier(prefs),
+            ),
+            aiServiceProvider.overrideWith(
+              (ref) => AiServiceNotifier(prefs),
+            ),
+            adminModeProvider.overrideWith(
+              (ref) => AdminModeNotifier(prefs),
+            ),
+            motionSettingsProvider.overrideWith(
+              (ref) => MotionSettingsNotifier(prefs),
+            ),
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            storageServiceProvider.overrideWithValue(
+              LocalStorageService(prefs),
+            ),
+            sessionProvider.overrideWith(
+              (ref) => SessionNotifier(LocalStorageService(prefs)),
+            ),
+            currentMonthUsageProvider.overrideWith((ref) async => null),
+            usageHistoryProvider.overrideWith((ref, arg) async => null),
+            isSignedInProvider.overrideWithValue(true),
+            currentUserProvider.overrideWith((ref) async => backendUser),
+            userRepositoryProvider.overrideWithValue(mockUserRepository),
+            userProvider.overrideWith(
+              (ref) => UserStateNotifier(
+                ref,
+                mockUserRepository,
+                AsyncValue.data(user),
+              ),
+            ),
+            isAdminProvider.overrideWith((ref) => true),
+          ],
+          child: MaterialApp.router(
+            routerConfig: GoRouter(
+              initialLocation: '/settings',
+              routes: [
+                GoRoute(
+                  path: '/settings',
+                  builder: (_, __) => const SettingsScreen(),
+                ),
+                GoRoute(
+                  path: '/admin',
+                  builder: (_, __) => const Scaffold(body: Text('Admin')),
+                ),
+                GoRoute(
+                  path: '/admin/logs',
+                  builder: (_, __) =>
+                      const Scaffold(body: Text('Admin Logs')),
+                ),
+                GoRoute(
+                  path: '/style-guide',
+                  builder: (_, __) =>
+                      const Scaffold(body: Text('Style Guide')),
+                ),
+              ],
+            ),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      final listFinder = find.byType(ListView);
+
+      // Scroll to Admin Mode
+      final adminModeFinder = find.text('Admin Mode');
+      while (!adminModeFinder.evaluate().isNotEmpty) {
+        await tester.drag(listFinder, const Offset(0, -500));
+        await tester.pumpAndSettle();
+      }
+
+      await tester.tap(adminModeFinder);
+      await tester.pumpAndSettle();
+
+      // Go back to settings via GoRouter
+      GoRouter.of(tester.element(find.byType(Scaffold).first)).go('/settings');
+      await tester.pumpAndSettle();
+
+      // Find Admin Logs link (scroll to bottom)
+      final adminLogsFinder = find.text('Admin Logs');
+      while (!adminLogsFinder.evaluate().isNotEmpty) {
+        await tester.drag(listFinder, const Offset(0, -500));
+        await tester.pumpAndSettle();
+      }
+      await tester.tap(adminLogsFinder);
+      await tester.pumpAndSettle();
+
+      // Go back to settings via GoRouter
+      GoRouter.of(tester.element(find.byType(Scaffold).first)).go('/settings');
+      await tester.pumpAndSettle();
+
+      final styleGuideFinder = find.text('Style Guide');
+      while (!styleGuideFinder.evaluate().isNotEmpty) {
+        await tester.drag(listFinder, const Offset(0, -500));
+        await tester.pumpAndSettle();
+      }
+      await tester.tap(styleGuideFinder);
+      await tester.pumpAndSettle();
+      expect(find.text('Style Guide'), findsOneWidget);
+    },
+  );
+
+  testWidgets('SettingsScreen shows sign-in button when not signed in', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final mockUserRepository = MockUserRepository();
+    when(
+      () => mockUserRepository.fetchUser(any()),
+    ).thenAnswer((_) async => null);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          themeControllerProvider.overrideWith(
+            (ref) => ThemeController(prefs),
+          ),
+          uiStyleControllerProvider.overrideWith(
+            (ref) => UiStyleController(prefs),
+          ),
+          appSettingsProvider.overrideWith(
+            (ref) => AppSettingsNotifier(prefs),
+          ),
+          ttsSettingsProvider.overrideWith(
+            (ref) => TtsSettingsNotifier(prefs),
+          ),
+          performanceSettingsProvider.overrideWith(
+            (ref) => PerformanceSettingsNotifier(prefs),
+          ),
+          aiServiceProvider.overrideWith(
+            (ref) => AiServiceNotifier(prefs),
+          ),
+          adminModeProvider.overrideWith(
+            (ref) => AdminModeNotifier(prefs),
+          ),
+          motionSettingsProvider.overrideWith(
+            (ref) => MotionSettingsNotifier(prefs),
+          ),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          storageServiceProvider.overrideWithValue(LocalStorageService(prefs)),
+          sessionProvider.overrideWith(
+            (ref) => SessionNotifier(LocalStorageService(prefs)),
+          ),
+          currentMonthUsageProvider.overrideWith((ref) async => null),
+          isSignedInProvider.overrideWithValue(false),
+          currentUserProvider.overrideWith((ref) async => null),
+          userRepositoryProvider.overrideWithValue(mockUserRepository),
+          userProvider.overrideWith(
+            (ref) => UserStateNotifier(
+              ref,
+              mockUserRepository,
+              const AsyncValue.data(null),
+            ),
+          ),
+          isAdminProvider.overrideWith((ref) => false),
+        ],
+        child: MaterialApp.router(
+          routerConfig: GoRouter(
+            initialLocation: '/settings',
+            routes: [
+              GoRoute(
+                path: '/settings',
+                builder: (_, __) => const SettingsScreen(),
+              ),
+              GoRoute(
+                path: '/auth',
+                builder: (_, __) => const Scaffold(body: Text('Auth')),
+              ),
+            ],
+          ),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    final listFinder = find.byType(ListView);
+    final signInFinder = find.widgetWithText(NeumorphicButton, 'Sign In');
+    while (!signInFinder.evaluate().isNotEmpty) {
+      await tester.drag(listFinder, const Offset(0, -500));
+      await tester.pumpAndSettle();
+    }
+    expect(signInFinder, findsOneWidget);
   });
 }

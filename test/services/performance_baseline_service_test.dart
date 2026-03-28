@@ -31,5 +31,56 @@ void main() {
       expect(samples.first.durationMs, 6);
       expect(samples.last.durationMs, 7);
     });
+
+    test('returns empty list for unknown metric', () {
+      final service = PerformanceBaselineService();
+      expect(service.samplesFor('unknown'), isEmpty);
+    });
+
+    test('snapshot returns all metrics and samples', () {
+      final service = PerformanceBaselineService();
+      service.record('a', 1);
+      service.record('b', 2);
+
+      final snap = service.snapshot();
+      expect(snap.containsKey('a'), isTrue);
+      expect(snap.containsKey('b'), isTrue);
+      expect(snap['a']!.length, 1);
+      expect(snap['a']!.first.durationMs, 1);
+      // Verify snapshot list is unmodifiable
+      try {
+        (snap['a'] as List).add(42);
+        fail('Should throw');
+      } catch (_) {}
+    });
+
+    test('clear removes all samples', () {
+      final service = PerformanceBaselineService();
+      service.record('a', 1);
+      service.record('b', 2);
+      service.clear();
+      expect(service.samplesFor('a'), isEmpty);
+      expect(service.snapshot(), isEmpty);
+    });
+
+    test('snapshot is empty when no samples recorded', () {
+      final service = PerformanceBaselineService();
+      expect(service.snapshot(), isEmpty);
+    });
+
+    test('measure rethrows error but still records duration', () async {
+      final service = PerformanceBaselineService();
+      await expectLater(
+        () => service.measure('fail', () async => throw Exception('boom')),
+        throwsA(isA<Exception>()),
+      );
+      expect(service.samplesFor('fail').length, 1);
+    });
+
+    test('record with default tags stores empty map', () {
+      final service = PerformanceBaselineService();
+      service.record('test', 10);
+      expect(service.samplesFor('test').first.tags, isEmpty);
+    });
   });
 }

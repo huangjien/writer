@@ -798,5 +798,207 @@ void main() {
 
       expect(find.textContaining('No logs available'), findsOneWidget);
     });
+
+    testWidgets('handles ApiException with status code in error', (tester) async {
+      when(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenThrow(ApiException(500, 'Internal Server Error'));
+
+      await tester.pumpWidget(
+        buildTestApp(
+          overrides: [
+            remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
+            sessionProvider.overrideWith((ref) => sessionNotifier),
+          ],
+          child: const AdminLogsScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('500: Internal Server Error'), findsOneWidget);
+    });
+
+    testWidgets('shows validation error when start date after end date', (
+      tester,
+    ) async {
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
+      when(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'logs': logsString,
+          'metadata': {},
+          'available_files': [],
+        },
+      );
+
+      await tester.pumpWidget(
+        buildTestApp(
+          overrides: [
+            remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
+            sessionProvider.overrideWith((ref) => sessionNotifier),
+          ],
+          child: const AdminLogsScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Start Date'),
+        '2026-12-31',
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, 'End Date'),
+        '2026-01-01',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.textContaining('Start Date must be on or before End Date'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('level filter triggers reload', (tester) async {
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
+      int callCount = 0;
+      when(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenAnswer(
+        (_) async {
+          callCount++;
+          return {
+            'logs': logsString,
+            'metadata': {},
+            'available_files': [],
+          };
+        },
+      );
+
+      await tester.pumpWidget(
+        buildTestApp(
+          overrides: [
+            remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
+            sessionProvider.overrideWith((ref) => sessionNotifier),
+          ],
+          child: const AdminLogsScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final initialCount = callCount;
+
+      // Tap ERROR level filter chip
+      await tester.tap(find.text('ERROR'));
+      await tester.pumpAndSettle();
+
+      expect(callCount, greaterThan(initialCount));
+    });
+
+    testWidgets('clear search fields trigger reload', (tester) async {
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
+      when(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'logs': logsString,
+          'metadata': {},
+          'available_files': [],
+        },
+      );
+
+      await tester.pumpWidget(
+        buildTestApp(
+          overrides: [
+            remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
+            sessionProvider.overrideWith((ref) => sessionNotifier),
+          ],
+          child: const AdminLogsScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Enter search text then clear
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Search logs'),
+        'test',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      await tester.pumpAndSettle();
+
+      verify(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          searchText: 'test',
+          logger: any(named: 'logger'),
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+        ),
+      ).called(1);
+    });
+
+    testWidgets('displays metadata when available', (tester) async {
+      final logsString = sampleLogs.map(jsonEncode).join('\n');
+      when(
+        () => mockRemoteRepository.getAdminLogsEnhanced(
+          maxSizeKb: any(named: 'maxSizeKb'),
+          fileIndex: any(named: 'fileIndex'),
+          level: any(named: 'level'),
+          logger: any(named: 'logger'),
+          searchText: any(named: 'searchText'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'logs': logsString,
+          'metadata': {
+            'file': 'app.log',
+            'total_lines': 100,
+            'filtered_lines': 3,
+          },
+          'available_files': [],
+        },
+      );
+
+      await tester.pumpWidget(
+        buildTestApp(
+          overrides: [
+            remoteRepositoryProvider.overrideWith((_) => mockRemoteRepository),
+            sessionProvider.overrideWith((ref) => sessionNotifier),
+          ],
+          child: const AdminLogsScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('File: app.log'), findsOneWidget);
+      expect(find.textContaining('Total: 100'), findsOneWidget);
+      expect(find.textContaining('Filtered: 3'), findsOneWidget);
+    });
   });
 }
