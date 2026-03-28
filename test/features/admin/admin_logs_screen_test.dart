@@ -799,7 +799,9 @@ void main() {
       expect(find.textContaining('No logs available'), findsOneWidget);
     });
 
-    testWidgets('handles ApiException with status code in error', (tester) async {
+    testWidgets('handles ApiException with status code in error', (
+      tester,
+    ) async {
       when(
         () => mockRemoteRepository.getAdminLogsEnhanced(
           maxSizeKb: any(named: 'maxSizeKb'),
@@ -885,16 +887,10 @@ void main() {
           logger: any(named: 'logger'),
           searchText: any(named: 'searchText'),
         ),
-      ).thenAnswer(
-        (_) async {
-          callCount++;
-          return {
-            'logs': logsString,
-            'metadata': {},
-            'available_files': [],
-          };
-        },
-      );
+      ).thenAnswer((_) async {
+        callCount++;
+        return {'logs': logsString, 'metadata': {}, 'available_files': []};
+      });
 
       await tester.pumpWidget(
         buildTestApp(

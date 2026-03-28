@@ -313,23 +313,28 @@ void main() {
         ),
         GoRoute(
           path: '/novel/novel-1',
-          builder: (_, __) => const Scaffold(body: Text('Chapters')),
+          // ignore: unnecessary_underscores
+          builder: (context, state) => const Scaffold(body: Text('Chapters')),
         ),
         GoRoute(
           path: '/novel/novel-1/summary',
-          builder: (_, __) => const Scaffold(body: Text('Summary')),
+          // ignore: unnecessary_underscores
+          builder: (context, state) => const Scaffold(body: Text('Summary')),
         ),
         GoRoute(
           path: '/novel/novel-1/characters',
-          builder: (_, __) => const Scaffold(body: Text('Characters')),
+          // ignore: unnecessary_underscores
+          builder: (context, state) => const Scaffold(body: Text('Characters')),
         ),
         GoRoute(
           path: '/novel/novel-1/scenes',
-          builder: (_, __) => const Scaffold(body: Text('Scenes')),
+          // ignore: unnecessary_underscores
+          builder: (context, state) => const Scaffold(body: Text('Scenes')),
         ),
         GoRoute(
           path: '/settings',
-          builder: (_, __) => const Scaffold(body: Text('Settings')),
+          // ignore: unnecessary_underscores
+          builder: (context, state) => const Scaffold(body: Text('Settings')),
         ),
       ],
     );
@@ -378,15 +383,21 @@ void main() {
         ),
         GoRoute(
           path: '/novel/novel-1/summary',
-          builder: (_, __) => const Scaffold(body: Text('Summary Page')),
+          // ignore: unnecessary_underscores
+          builder: (context, state) =>
+              const Scaffold(body: Text('Summary Page')),
         ),
         GoRoute(
           path: '/novel/novel-1/characters',
-          builder: (_, __) => const Scaffold(body: Text('Characters Page')),
+          // ignore: unnecessary_underscores
+          builder: (context, state) =>
+              const Scaffold(body: Text('Characters Page')),
         ),
         GoRoute(
           path: '/novel/novel-1/scenes',
-          builder: (_, __) => const Scaffold(body: Text('Scenes Page')),
+          // ignore: unnecessary_underscores
+          builder: (context, state) =>
+              const Scaffold(body: Text('Scenes Page')),
         ),
       ],
     );

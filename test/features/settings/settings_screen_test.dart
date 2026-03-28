@@ -26,7 +26,6 @@ import 'package:writer/state/admin_settings.dart';
 import 'package:writer/state/motion_settings.dart';
 import 'package:writer/state/ui_style_controller.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:writer/state/storage_service_provider.dart';
@@ -462,12 +461,8 @@ void main() {
             performanceSettingsProvider.overrideWith(
               (ref) => PerformanceSettingsNotifier(prefs),
             ),
-            aiServiceProvider.overrideWith(
-              (ref) => AiServiceNotifier(prefs),
-            ),
-            adminModeProvider.overrideWith(
-              (ref) => AdminModeNotifier(prefs),
-            ),
+            aiServiceProvider.overrideWith((ref) => AiServiceNotifier(prefs)),
+            adminModeProvider.overrideWith((ref) => AdminModeNotifier(prefs)),
             motionSettingsProvider.overrideWith(
               (ref) => MotionSettingsNotifier(prefs),
             ),
@@ -498,20 +493,25 @@ void main() {
               routes: [
                 GoRoute(
                   path: '/settings',
-                  builder: (_, __) => const SettingsScreen(),
+                  // ignore: unnecessary_underscores
+                  builder: (context, state) => const SettingsScreen(),
                 ),
                 GoRoute(
                   path: '/admin',
-                  builder: (_, __) => const Scaffold(body: Text('Admin')),
+                  // ignore: unnecessary_underscores
+                  builder: (context, state) =>
+                      const Scaffold(body: Text('Admin')),
                 ),
                 GoRoute(
                   path: '/admin/logs',
-                  builder: (_, __) =>
+                  // ignore: unnecessary_underscores
+                  builder: (context, state) =>
                       const Scaffold(body: Text('Admin Logs')),
                 ),
                 GoRoute(
                   path: '/style-guide',
-                  builder: (_, __) =>
+                  // ignore: unnecessary_underscores
+                  builder: (context, state) =>
                       const Scaffold(body: Text('Style Guide')),
                 ),
               ],
@@ -577,27 +577,17 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          themeControllerProvider.overrideWith(
-            (ref) => ThemeController(prefs),
-          ),
+          themeControllerProvider.overrideWith((ref) => ThemeController(prefs)),
           uiStyleControllerProvider.overrideWith(
             (ref) => UiStyleController(prefs),
           ),
-          appSettingsProvider.overrideWith(
-            (ref) => AppSettingsNotifier(prefs),
-          ),
-          ttsSettingsProvider.overrideWith(
-            (ref) => TtsSettingsNotifier(prefs),
-          ),
+          appSettingsProvider.overrideWith((ref) => AppSettingsNotifier(prefs)),
+          ttsSettingsProvider.overrideWith((ref) => TtsSettingsNotifier(prefs)),
           performanceSettingsProvider.overrideWith(
             (ref) => PerformanceSettingsNotifier(prefs),
           ),
-          aiServiceProvider.overrideWith(
-            (ref) => AiServiceNotifier(prefs),
-          ),
-          adminModeProvider.overrideWith(
-            (ref) => AdminModeNotifier(prefs),
-          ),
+          aiServiceProvider.overrideWith((ref) => AiServiceNotifier(prefs)),
+          adminModeProvider.overrideWith((ref) => AdminModeNotifier(prefs)),
           motionSettingsProvider.overrideWith(
             (ref) => MotionSettingsNotifier(prefs),
           ),
@@ -625,11 +615,13 @@ void main() {
             routes: [
               GoRoute(
                 path: '/settings',
-                builder: (_, __) => const SettingsScreen(),
+                // ignore: unnecessary_underscores
+                builder: (context, state) => const SettingsScreen(),
               ),
               GoRoute(
                 path: '/auth',
-                builder: (_, __) => const Scaffold(body: Text('Auth')),
+                // ignore: unnecessary_underscores
+                builder: (context, state) => const Scaffold(body: Text('Auth')),
               ),
             ],
           ),

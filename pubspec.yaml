@@ -32,7 +32,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  animations: ^2.0.8
+  animations: ^2.1.2
   connectivity_plus: ^7.0.0
   crypto: ^3.0.3
   cupertino_icons: ^1.0.8
@@ -155,10 +155,10 @@ flutter_launcher_icons:
     image_path: web/favicon.png
 
 dependency_overrides:
-  _fe_analyzer_shared: ^97.0.0
+  _fe_analyzer_shared: ^98.0.0
   analyzer: ^11.0.0
   image: ^4.8.0
-  meta: ^1.18.1
+  meta: ^1.18.2
 
 # Pin js package to latest version (discontinued but still functional)
 # The js package is used by flutter_secure_storage_web
