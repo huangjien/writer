@@ -85,7 +85,7 @@ flutter:
     - package.json
     - web/favicon.png
     - web/icons/Icon-192.png
-    - assets/fonts/
+    - assets/fonts/subset/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -106,33 +106,33 @@ flutter:
   fonts:
     - family: Noto Sans SC
       fonts:
-        - asset: assets/fonts/NotoSansSC-Regular.ttf
-        - asset: assets/fonts/NotoSansSC-Bold.ttf
+        - asset: assets/fonts/subset/NotoSansSC-Regular.ttf
+        - asset: assets/fonts/subset/NotoSansSC-Bold.ttf
           weight: 700
     - family: Inter
       fonts:
-        - asset: assets/fonts/Inter-Regular.ttf
-        - asset: assets/fonts/Inter-Bold.ttf
+        - asset: assets/fonts/subset/Inter-Regular.ttf
+        - asset: assets/fonts/subset/Inter-Bold.ttf
           weight: 700
     - family: Merriweather
       fonts:
-        - asset: assets/fonts/Merriweather-Regular.ttf
-        - asset: assets/fonts/Merriweather-Bold.ttf
+        - asset: assets/fonts/subset/Merriweather-Regular.ttf
+        - asset: assets/fonts/subset/Merriweather-Bold.ttf
           weight: 700
     - family: Roboto
       fonts:
-        - asset: assets/fonts/Roboto-Regular.ttf
-        - asset: assets/fonts/Roboto-Bold.ttf
+        - asset: assets/fonts/subset/Roboto-Regular.ttf
+        - asset: assets/fonts/subset/Roboto-Bold.ttf
           weight: 700
     - family: Noto Sans
       fonts:
-        - asset: assets/fonts/NotoSans-Regular.ttf
-        - asset: assets/fonts/NotoSans-Bold.ttf
+        - asset: assets/fonts/subset/NotoSans-Regular.ttf
+        - asset: assets/fonts/subset/NotoSans-Bold.ttf
           weight: 700
     - family: Noto Serif
       fonts:
-        - asset: assets/fonts/NotoSerif-Regular.ttf
-        - asset: assets/fonts/NotoSerif-Bold.ttf
+        - asset: assets/fonts/subset/NotoSerif-Regular.ttf
+        - asset: assets/fonts/subset/NotoSerif-Bold.ttf
           weight: 700
   #
   # For details regarding fonts from package dependencies,

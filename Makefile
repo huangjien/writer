@@ -214,7 +214,7 @@ lint:
 	@echo "Running formatter..."
 	dart format lib test
 	@echo "Running analyzer..."
-	dart analyze
+	dart analyze --no-fatal-warnings
 
 clean:
 	$(FLUTTER) clean

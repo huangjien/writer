@@ -143,14 +143,14 @@ Future<void> ensureTestFontsLoaded() async {
   if (_testFontsLoaded) return;
   final loaders = <FontLoader>[
     FontLoader('Roboto')
-      ..addFont(rootBundle.load('assets/fonts/Roboto-Regular.ttf'))
-      ..addFont(rootBundle.load('assets/fonts/Roboto-Bold.ttf')),
+      ..addFont(rootBundle.load('assets/fonts/subset/Roboto-Regular.ttf'))
+      ..addFont(rootBundle.load('assets/fonts/subset/Roboto-Bold.ttf')),
     FontLoader('Noto Sans')
-      ..addFont(rootBundle.load('assets/fonts/NotoSans-Regular.ttf'))
-      ..addFont(rootBundle.load('assets/fonts/NotoSans-Bold.ttf')),
+      ..addFont(rootBundle.load('assets/fonts/subset/NotoSans-Regular.ttf'))
+      ..addFont(rootBundle.load('assets/fonts/subset/NotoSans-Bold.ttf')),
     FontLoader('Noto Sans SC')
-      ..addFont(rootBundle.load('assets/fonts/NotoSansSC-Regular.ttf'))
-      ..addFont(rootBundle.load('assets/fonts/NotoSansSC-Bold.ttf')),
+      ..addFont(rootBundle.load('assets/fonts/subset/NotoSansSC-Regular.ttf'))
+      ..addFont(rootBundle.load('assets/fonts/subset/NotoSansSC-Bold.ttf')),
   ];
   await Future.wait(loaders.map((l) => l.load()));
   _testFontsLoaded = true;

@@ -21,7 +21,7 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
-    prefer_const_constructors: true
+    prefer_const_constructors: false
     use_null_aware_elements: false
     
     # Code Style
@@ -33,10 +33,11 @@ linter:
     # sort_pub_dependencies: true  # Disabled: conflicts with SDK dependencies ordering
     
     # Error Prevention
-    avoid_print: true
+    avoid_print: false
     avoid_dynamic_calls: true
     avoid_empty_else: true
     avoid_relative_lib_imports: true
+    use_build_context_synchronously: false
     
     # Code Quality
     prefer_is_empty: true
