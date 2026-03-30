@@ -72,7 +72,7 @@ void main() {
       });
 
       test('returns stored streak when last write was yesterday', () async {
-        final yesterday = DateTime.now().subtract(const Duration(days: 1));
+        final now = DateTime.now(); final yesterday = DateTime(now.year, now.month, now.day - 1);
         when(
           mockStorage.getString('writer.editor.last_write_date'),
         ).thenReturn(yesterday.toIso8601String());
@@ -86,7 +86,8 @@ void main() {
       });
 
       test('returns 0 when last write was more than 1 day ago', () async {
-        final twoDaysAgo = DateTime.now().subtract(const Duration(days: 2));
+        final now = DateTime.now();
+        final twoDaysAgo = DateTime(now.year, now.month, now.day - 2);
         when(
           mockStorage.getString('writer.editor.last_write_date'),
         ).thenReturn(twoDaysAgo.toIso8601String());
@@ -205,7 +206,8 @@ void main() {
       });
 
       test('increments streak when writing on consecutive days', () async {
-        final yesterday = DateTime.now().subtract(const Duration(days: 1));
+        final now = DateTime.now();
+        final yesterday = DateTime(now.year, now.month, now.day - 1);
         when(
           mockStorage.getString('writer.editor.last_write_date'),
         ).thenReturn(yesterday.toIso8601String());
@@ -229,7 +231,8 @@ void main() {
       });
 
       test('resets streak when writing after gap', () async {
-        final twoDaysAgo = DateTime.now().subtract(const Duration(days: 2));
+        final now = DateTime.now();
+        final twoDaysAgo = DateTime(now.year, now.month, now.day - 2);
         when(
           mockStorage.getString('writer.editor.last_write_date'),
         ).thenReturn(twoDaysAgo.toIso8601String());
@@ -298,7 +301,7 @@ void main() {
       });
 
       test('handles missing streak count gracefully', () async {
-        final yesterday = DateTime.now().subtract(const Duration(days: 1));
+        final now = DateTime.now(); final yesterday = DateTime(now.year, now.month, now.day - 1);
         when(
           mockStorage.getString('writer.editor.last_write_date'),
         ).thenReturn(yesterday.toIso8601String());
