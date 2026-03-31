@@ -72,7 +72,8 @@ void main() {
       });
 
       test('returns stored streak when last write was yesterday', () async {
-        final now = DateTime.now(); final yesterday = DateTime(now.year, now.month, now.day - 1);
+        final now = DateTime.now();
+        final yesterday = DateTime(now.year, now.month, now.day - 1);
         when(
           mockStorage.getString('writer.editor.last_write_date'),
         ).thenReturn(yesterday.toIso8601String());
@@ -301,7 +302,8 @@ void main() {
       });
 
       test('handles missing streak count gracefully', () async {
-        final now = DateTime.now(); final yesterday = DateTime(now.year, now.month, now.day - 1);
+        final now = DateTime.now();
+        final yesterday = DateTime(now.year, now.month, now.day - 1);
         when(
           mockStorage.getString('writer.editor.last_write_date'),
         ).thenReturn(yesterday.toIso8601String());

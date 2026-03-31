@@ -8,7 +8,7 @@ void main() {
         'id': 's1',
         'name': 'Test Skill',
         'description': 'A test',
-        'template': {'key': 'value'},
+        'template': <String, dynamic>{'key': 'value'},
         'author': 'user1',
         'owners': ['user1', 'user2'],
         'is_public': true,
@@ -33,7 +33,7 @@ void main() {
       final skill = Skill.fromJson({
         'id': 's1',
         'name': 'Test',
-        'template': {},
+        'template': <String, dynamic>{},
         'author': 'u',
         'owners': [],
         'created_at': '2026-01-01',
@@ -49,7 +49,7 @@ void main() {
         'id': 's1',
         'name': 'Test',
         'description': 'desc',
-        'template': {'k': 'v'},
+        'template': <String, dynamic>{'k': 'v'},
         'author': 'u',
         'owners': ['u'],
         'is_public': true,
@@ -88,7 +88,7 @@ void main() {
       expect(req.toJson(), {
         'name': 'Test',
         'description': 'desc',
-        'template': {'k': 'v'},
+        'template': <String, dynamic>{'k': 'v'},
       });
     });
 
@@ -141,7 +141,9 @@ void main() {
   group('ValidateSkillRequest', () {
     test('toJson serializes template', () {
       final req = ValidateSkillRequest(template: {'k': 'v'});
-      expect(req.toJson(), {'template': {'k': 'v'}});
+      expect(req.toJson(), {
+        'template': <String, dynamic>{'k': 'v'},
+      });
     });
   });
 
@@ -174,7 +176,7 @@ void main() {
           {
             'id': 's1',
             'name': 'A',
-            'template': {},
+            'template': <String, dynamic>{},
             'author': 'u',
             'owners': [],
             'created_at': '2026-01-01',

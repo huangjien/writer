@@ -92,7 +92,13 @@ class WritingStreakTracker {
     final a = (14 - m) ~/ 12;
     final y2 = y + 4800 - a;
     final m2 = m + 12 * a - 3;
-    return d + ((153 * m2 + 2) ~/ 5) + 365 * y2 + y2 ~/ 4 - y2 ~/ 100 + y2 ~/ 400 - 32045;
+    return d +
+        ((153 * m2 + 2) ~/ 5) +
+        365 * y2 +
+        y2 ~/ 4 -
+        y2 ~/ 100 +
+        y2 ~/ 400 -
+        32045;
   }
 
   static String _formatDate(DateTime dt) {
